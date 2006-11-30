@@ -1,0 +1,299 @@
+/*
+ * [[
+ * Copyright (C) 2001 - 2006 The Software Conservancy as Trustee. All rights
+ * reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Nothing in this notice shall be deemed to grant any rights to
+ * trademarks, copyrights, patents, trade secrets or any other intellectual
+ * property of the licensor or any contributor except as expressly stated
+ * herein. No patent license is granted separate from the Software, for
+ * code that you delete from the Software, or for combinations of the
+ * Software with other software or hardware.
+ * ]]
+ */
+
+package org.oa3.adaptor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import junit.framework.TestCase;
+
+import org.oa3.connector.TestReadConnector;
+import org.oa3.connector.TestWriteConnector;
+import org.oa3.processor.TestProcessor;
+import org.oa3.router.RoutingMap;
+
+public class AdaptorTestCase extends TestCase {
+
+	/**
+	 * AdaptorInPoint -> AdaptorOutPoint
+	 * ReadConnector sends one message and then "closes", causing adaptor to stop and 
+	 * WriteConnector to check it has received it's expected output.
+	 */
+	public void test1() {
+		
+		// create inpoint
+		AdaptorInpoint inpoint = new AdaptorInpoint();
+		TestReadConnector inconnector = new TestReadConnector();
+		inconnector.setDataString("foobar");
+		inpoint.setConnector(inconnector);
+		
+		// create outpoint
+		AdaptorOutpoint outpoint = new AdaptorOutpoint();
+		TestWriteConnector outconnector = new TestWriteConnector();
+		outconnector.setExpectedOutput(inconnector.getDataString());
+		outpoint.setConnector(outconnector);
+		
+		// create routing map
+		RoutingMap routingMap = new RoutingMap();
+		Map processMap = new HashMap();
+		processMap.put(inpoint, outpoint);
+		routingMap.setProcessMap(processMap);
+		
+		// create adaptor
+		Adaptor adaptor =  new Adaptor();
+		adaptor.setRoutingMap(routingMap);
+		adaptor.setRunInpointsInCallingThread(true);
+		
+		// run adaptor
+		adaptor.run();
+		assertTrue(adaptor.getExitCode() == 0);
+	}
+	
+	/**
+	 * ReadConnector -> WriteConnector
+	 * uses "autoboxing" so no need to construct AdaptorInPoint & AdaptorOutPoint
+	 * sends ten messages in with batch size of 3, ReadConnector closes when when
+	 * all messages have been sent, causing adaptor to stop and WriteConnector to
+	 * check it has received it's expected output.
+	 */
+	public void test2() {
+		
+		// create inpoint
+		TestReadConnector inpoint = new TestReadConnector("InPoint");
+		inpoint.setDataString("foobar");
+		inpoint.setBatchSize(3);
+		inpoint.setMaxSend(10);
+		
+		// create outpoint
+		TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+		List output = new ArrayList();
+		for (int i = 0; i < 10; i++) {
+			output.add(inpoint.getDataString().replaceAll("%n", String.valueOf(i+1)));
+		}
+		outpoint.setExpectedOutput(output);
+		
+		// create routing map
+		RoutingMap routingMap = new RoutingMap();
+		Map processMap = new HashMap();
+		processMap.put(inpoint, outpoint);
+		routingMap.setProcessMap(processMap);
+		
+		// create adaptor
+		Adaptor adaptor =  new Adaptor();
+		adaptor.setRoutingMap(routingMap);
+		adaptor.setRunInpointsInCallingThread(true);
+		
+		// run adaptor
+		adaptor.run();
+		assertTrue(adaptor.getExitCode() == 0);
+	}
+	
+	/**
+	 * IReadConnector -> IDataProcessor -> IWriteConnector
+	 * uses "autoboxing" so no need to construct AdaptorInPoint, Node & AdaptorOutPoint
+	 * ReadConnector sends one message and then "closes", causing adaptor to stop and 
+	 * WriteConnector to check it has received it's expected output.
+	 */
+	public void test3() {
+		
+		// create inpoint
+		TestReadConnector inpoint = new TestReadConnector("InPoint");
+		inpoint.setDataString("foobar");
+		
+		// create processor
+		TestProcessor processor = new TestProcessor("Processor1");
+		
+		// create outpoint
+		TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+		outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+		
+		// create routing map
+		RoutingMap routingMap = new RoutingMap();
+		Map processMap = new HashMap();
+		processMap.put(inpoint, processor);
+		processMap.put(processor, outpoint);
+		routingMap.setProcessMap(processMap);
+		
+		// create adaptor
+		Adaptor adaptor =  new Adaptor();
+		adaptor.setRoutingMap(routingMap);
+		adaptor.setRunInpointsInCallingThread(true);
+		
+		// run adaptor
+		adaptor.run();
+		assertTrue(adaptor.getExitCode() == 0);
+	}
+	
+	/**
+	 * Exception routing example
+	 */
+	public void test4() {
+		
+		// create inpoint
+		TestReadConnector inpoint = new TestReadConnector("InPoint");
+		inpoint.setDataString("foobar");
+		inpoint.setBatchSize(3);
+		inpoint.setMaxSend(10);
+		
+		// create processor
+		TestProcessor processor = new TestProcessor("Processor1");
+		
+		// create processor which deliberately throws a RuntimeException
+		TestProcessor exceptor = new TestProcessor("Exceptor");
+		exceptor.setExceptionFrequency(3);
+		
+		// create processor which deliberately throws a NPE
+		TestProcessor npeExceptor = new TestProcessor("NpeExceptor");
+		npeExceptor.setExceptionClassName("java.lang.NullPointerException");
+		npeExceptor.setExceptionFrequency(5);
+		
+		// create outpoint for processed data
+		TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+		outpoint.setExpectedOutput(createStringList(processor.getId() + "(" + inpoint.getDataString() + ")", 10));
+		
+		// create outpoint for MessageExceptions
+		TestWriteConnector errOutpoint = new TestWriteConnector("Error1");
+		errOutpoint.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + inpoint.getDataString(), 3));
+
+		// create outpoint for MessageExceptions
+		TestWriteConnector npeOutpoint = new TestWriteConnector("Error2");
+		npeOutpoint.setExpectedOutput(createStringList("java.lang.NullPointerException:null:" + processor.getId() + "(" + inpoint.getDataString() + ")", 2));
+
+		// create routing map
+		RoutingMap routingMap = new RoutingMap();
+
+		Map processMap = new HashMap();
+		List inpointRecipients = new ArrayList();
+		inpointRecipients.add(processor);
+		inpointRecipients.add(exceptor);
+		processMap.put(inpoint, inpointRecipients);
+		List processorRecipients = new ArrayList();
+		processorRecipients.add(outpoint);
+		processorRecipients.add(npeExceptor);
+		processMap.put(processor, processorRecipients);
+		routingMap.setProcessMap(processMap);
+		
+		Map exceptionMap = new HashMap();
+		exceptionMap.put("java.lang.NullPointerException", npeOutpoint);
+		exceptionMap.put("java.lang.Exception", errOutpoint);
+		routingMap.setExceptionMap(exceptionMap);
+		
+		// create adaptor
+		Adaptor adaptor =  new Adaptor();
+		adaptor.setRoutingMap(routingMap);
+		adaptor.setRunInpointsInCallingThread(true);
+		
+		// run adaptor
+		adaptor.run();
+		assertTrue(adaptor.getExitCode() == 0);
+	}
+
+	/**
+	 * Discard routing example
+	 */
+	public void test5() {
+		
+		// create inpoint
+		TestReadConnector inpoint = new TestReadConnector("InPoint");
+		inpoint.setDataString("foobar");
+		
+		// create processor
+		TestProcessor processor = new TestProcessor("Processor1");
+		
+		// create processor which deliberately discards data
+		TestProcessor discarder = new TestProcessor("Discarder");
+		discarder.setDiscardFrequency(1);
+		
+		// create processor which deliberately discards data
+		TestProcessor discarder2 = new TestProcessor("Discarder2");
+		discarder2.setDiscardFrequency(1);
+		
+		// create outpoint for processed data
+		TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+		outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+		
+		// create outpoint for first discarder
+		TestWriteConnector discard = new TestWriteConnector("Discard1");
+		discard.setExpectedOutput(inpoint.getDataString());
+
+		// create outpoint for first discarder
+		TestWriteConnector discard2 = new TestWriteConnector("Discard2");
+		discard2.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+		
+		// create outpoint for first discarder
+		TestWriteConnector discard3 = new TestWriteConnector("Discard3");
+		discard3.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+
+		// create routing map
+		RoutingMap routingMap = new RoutingMap();
+
+		Map processMap = new HashMap();
+		List inpointRecipients = new ArrayList();
+		inpointRecipients.add(processor);
+		inpointRecipients.add(discarder);
+		processMap.put(inpoint, inpointRecipients);
+		List processorRecipients = new ArrayList();
+		processorRecipients.add(outpoint);
+		processorRecipients.add(discarder2);
+		processMap.put(processor, processorRecipients);
+		routingMap.setProcessMap(processMap);
+		
+		Map discardMap = new HashMap();
+		discardMap.put(discarder, discard);
+		List discarder2Recipients = new ArrayList();
+		discarder2Recipients.add(discard2);
+		discarder2Recipients.add(discard3);
+		discardMap.put(discarder2, discarder2Recipients);
+		routingMap.setDiscardMap(discardMap);
+		
+		// create adaptor
+		Adaptor adaptor =  new Adaptor();
+		adaptor.setRoutingMap(routingMap);
+		adaptor.setRunInpointsInCallingThread(true);
+		
+		// run adaptor
+		adaptor.run();
+		assertTrue(adaptor.getExitCode() == 0);
+	}
+	
+	public static List createStringList(String s, int n) {
+		ArrayList list = new ArrayList();
+		for (int i = 0; i < n; i++) {
+			list.add(s);
+		}
+		return list;
+	}
+}
