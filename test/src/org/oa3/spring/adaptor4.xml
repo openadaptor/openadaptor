@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="adaptor" class="org.oa3.adaptor.Adaptor">
+    <property name="routingMap" ref="routingMap"/>
+  </bean>
+
+  <bean id="routingMap" class="org.oa3.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="InPoint">
+          <list>
+            <ref bean="Exceptor"/>
+            <ref bean="Processor"/>
+          </list>
+        </entry>
+        <entry key-ref="Processor">
+          <list>
+            <ref bean="OutPoint"/>
+            <ref bean="NpeExceptor"/>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.NullPointerException" value-ref="NpeError"/>
+        <entry key="java.lang.Exception" value-ref="Error"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="InPoint" class="org.oa3.connector.TestReadConnector">
+    <property name="id" value="InPoint"/>
+  </bean>
+
+  <bean id="Processor" class="org.oa3.processor.TestProcessor">
+    <property name="id" value="Processor"/>
+  </bean>
+
+  <bean id="OutPoint" class="org.oa3.connector.TestWriteConnector">
+    <property name="id" value="OutPoint"/>
+    <property name="expectedOutput" value="Processor(test data 1)"/>
+  </bean>
+  
+  <bean id="Exceptor" class="org.oa3.processor.TestProcessor">
+    <property name="id" value="Exceptor"/>
+    <property name="exceptionFrequency" value="1"/>
+  </bean>
+  
+  <bean id="NpeExceptor" class="org.oa3.processor.TestProcessor">
+    <property name="id" value="NpeExceptor"/>
+    <property name="exceptionClassName" value="java.lang.NullPointerException"/>
+    <property name="exceptionFrequency" value="1"/>
+  </bean>
+  
+  <bean id="Error" class="org.oa3.connector.TestWriteConnector">
+    <property name="id" value="Error"/>
+    <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
+  </bean>
+  
+  <bean id="NpeError" class="org.oa3.connector.TestWriteConnector">
+    <property name="id" value="NpeError"/>
+    <property name="expectedOutput" value="java.lang.NullPointerException:null:Processor(test data 1)"/>
+  </bean>
+  
+</beans>

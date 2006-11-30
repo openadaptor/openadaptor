@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="adaptor" class="org.oa3.adaptor.Adaptor">
+    <property name="routingMap" ref="routingMap"/>
+  </bean>
+
+  <bean id="routingMap" class="org.oa3.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="InPoint" value-ref="Processor"/>
+        <entry key-ref="Processor" value-ref="OutPoint"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="InPoint" class="org.oa3.connector.TestReadConnector">
+    <property name="id" value="InPoint"/>
+  </bean>
+
+  <bean id="Processor" class="org.oa3.processor.TestProcessor">
+    <property name="id" value="Processor"/>
+  </bean>
+
+  <bean id="OutPoint" class="org.oa3.connector.TestWriteConnector">
+    <property name="id" value="OutPoint"/>
+    <property name="expectedOutput" value="Processor(test data 1)"/>
+  </bean>
+
+</beans>
