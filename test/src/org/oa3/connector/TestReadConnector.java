@@ -80,8 +80,16 @@ public class TestReadConnector extends Component implements IReadConnector {
 		exceptionFrequency = frequency;
 	}
 	
-	public Object[] next() {
-		
+  public boolean isDry() {
+    return count >= maxSend;
+  }
+  
+	public Object[] next(long timeoutMs) {
+
+    if (isDry()) {
+      return null;
+    }
+
 		// sleep configured time
 		if (intervalMs > 0) {
 			try {
@@ -90,15 +98,8 @@ public class TestReadConnector extends Component implements IReadConnector {
 			}
 		}
 
-		// allocate next batch
+		// allocate and populate next batch
 		Object[] data = new String[count + batchSize >= maxSend ? maxSend - count : batchSize];
-
-		// if next batch is empty, return null to denote eof
-		if (data.length == 0) {
-			return null;
-		}
-
-		// populate batch
 		for (int i = 0; i < data.length; i++) {
 			count++;
 			if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
