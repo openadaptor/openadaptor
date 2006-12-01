@@ -46,7 +46,6 @@ import org.oa3.Response.ExceptionBatch;
 import org.oa3.connector.IWriteConnector;
 import org.oa3.node.Node;
 import org.oa3.transaction.ITransactional;
-import org.oa3.transaction.ITransactionalResource;
 
 public class AdaptorOutpoint extends Node {
 
@@ -98,7 +97,9 @@ public class AdaptorOutpoint extends Node {
     Object resource = null;
     if (msg.getTransaction() != null && connector instanceof ITransactional) {
       resource = ((ITransactional)connector).getResource();
-      msg.getTransaction().enlist(resource);
+      if (resource != null) {
+        msg.getTransaction().enlist(resource);
+      }
     }
     
 		Response processorResponse = super.process(msg);

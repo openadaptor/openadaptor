@@ -31,46 +31,67 @@
  * ]]
  */
 
-package org.oa3;
+package org.oa3.transaction;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import org.oa3.transaction.ITransaction;
+public class Transaction implements ITransaction {
 
-
-public class Message {
-	private Object sender;
-	private Object[] data;
-  private ITransaction transaction;
-	
-  public Message(final Object[] data, final Object sender, final ITransaction transaction) {
-    this.data = data;
-    this.sender = sender;
-    this.transaction = transaction;
+  private boolean rollbackOnly = false;
+  private List resources =  new ArrayList();
+  private Object LOCK = new Object();
+  
+  public Transaction(final long id, final long timeoutMs) {
   }
   
-  public Message(final List data, final Object sender, final ITransaction transaction) {
-    this.data = (Object[]) data.toArray(new Object[data.size()]);
-    this.sender = sender;
-    this.transaction = transaction;
+  public void begin() {
+    
   }
-  
-  public Message(final Object data, final Object sender, final ITransaction transaction) {
-    this.data = new Object[] {data};
-    this.sender = sender;
-    this.transaction = transaction;
- }
-  
-	public Object getSender() {
-		return sender;
-	}
-	
-	public Object[] getData() {
-		return data;
-	}
 
-  public ITransaction getTransaction() {
-    return transaction;
+  public void commit() {
+    if (!rollbackOnly) {
+      synchronized (LOCK) {
+        for (Iterator iter = resources.iterator(); iter.hasNext();) {
+          ITransactionalResource resource = (ITransactionalResource) iter.next();
+          resource.commit();
+        }
+      }
+    } else {
+      throw new RuntimeException("transaction has been marked for rollback only");
+    }
   }
-	
+
+  public void delistForCommit(Object resource) {
+  }
+
+  public void delistForRollback(Object resource) {
+  }
+
+  public void enlist(Object resource) {
+    if (resource instanceof ITransactionalResource) {
+      synchronized (LOCK) {
+        if (!resources.contains(resource)) {
+          resources.add(resources.size(), resource);
+        }
+      }
+    } else {
+      throw new RuntimeException("attempt to enlist resource that is not an instance of " + ITransactionalResource.class.getName());
+    }
+  }
+
+  public void rollback() {
+    synchronized (LOCK) {
+      for (Iterator iter = resources.iterator(); iter.hasNext();) {
+        ITransactionalResource resource = (ITransactionalResource) iter.next();
+        resource.rollback();
+      }
+    }
+  }
+
+  public void setRollbackOnly() {
+    rollbackOnly = true;
+  }
+
 }

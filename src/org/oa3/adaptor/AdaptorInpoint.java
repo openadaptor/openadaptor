@@ -44,8 +44,6 @@ import org.oa3.node.Node;
 import org.oa3.transaction.ITransaction;
 import org.oa3.transaction.ITransactionManager;
 import org.oa3.transaction.ITransactional;
-import org.oa3.transaction.ITransactionalResource;
-import org.oa3.transaction.Transaction;
 
 public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
@@ -118,17 +116,20 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
         ITransaction transaction = null;
         try {
           if (connector instanceof ITransactional) {
-            transaction = transactionManager.getTransaction();
             Object resource = ((ITransactional)connector).getResource();
-            transaction.enlist(resource);
+            if (resource != null) {
+              transaction = transactionManager.getTransaction();
+              log.debug("enlisting in transaction");
+              transaction.enlist(resource);
+            }
           }
 					Object[] data = connector.next(timeoutMs);
 					if (data != null) {
-            Message msg = new Message(data, this);
-            msg.setTransaction(transaction);
+            Message msg = new Message(data, this, transaction);
             process(msg);
           }
           if (transaction != null) {
+            log.debug("committing transaction");
             transaction.commit();
           }
 				} catch (Throwable e) {
@@ -136,6 +137,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 					exitCode = 1;
 					stop();
           if (transaction != null) {
+            log.info("rolling back transaction");
             transaction.rollback();
           }
 				}
@@ -148,6 +150,9 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
 	public void setAdaptor(Adaptor adaptor) {
 		setNext(adaptor);
+    if (transactionManager == null) {
+      transactionManager = adaptor.getTransactionManager();
+    }
 	}
 
 	public int getExitCode() {

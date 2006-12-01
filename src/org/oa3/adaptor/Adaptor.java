@@ -47,6 +47,8 @@ import org.oa3.Response;
 import org.oa3.State;
 import org.oa3.router.IRoutingMap;
 import org.oa3.router.Router;
+import org.oa3.transaction.ITransactionManager;
+import org.oa3.transaction.TransactionManager;
 
 public class Adaptor implements IMessageProcessor, Runnable, AdaptorMBean {
 
@@ -58,9 +60,11 @@ public class Adaptor implements IMessageProcessor, Runnable, AdaptorMBean {
 	private boolean runInpointsInCallingThread = false;
 	private Thread[] inpointThreads = new Thread[0];
 	private State state = State.CREATED;
+  private ITransactionManager transactionManager;
 	
 	public Adaptor() {
 		super();
+    transactionManager = new TransactionManager();
 	}
 	
 	public Adaptor(final IRoutingMap routingMap) {
@@ -96,6 +100,14 @@ public class Adaptor implements IMessageProcessor, Runnable, AdaptorMBean {
 		this.runInpointsInCallingThread = runInpointsInCallingThread;
 	}
 
+  public void setTransactionManager(final ITransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+  }
+  
+  public ITransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+  
 	public Response process(Message msg) {
 		return processor.process(msg);
 	}

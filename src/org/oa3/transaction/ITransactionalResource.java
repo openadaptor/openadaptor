@@ -31,46 +31,10 @@
  * ]]
  */
 
-package org.oa3;
+package org.oa3.transaction;
 
-import java.util.List;
-
-import org.oa3.transaction.ITransaction;
-
-
-public class Message {
-	private Object sender;
-	private Object[] data;
-  private ITransaction transaction;
-	
-  public Message(final Object[] data, final Object sender, final ITransaction transaction) {
-    this.data = data;
-    this.sender = sender;
-    this.transaction = transaction;
-  }
-  
-  public Message(final List data, final Object sender, final ITransaction transaction) {
-    this.data = (Object[]) data.toArray(new Object[data.size()]);
-    this.sender = sender;
-    this.transaction = transaction;
-  }
-  
-  public Message(final Object data, final Object sender, final ITransaction transaction) {
-    this.data = new Object[] {data};
-    this.sender = sender;
-    this.transaction = transaction;
- }
-  
-	public Object getSender() {
-		return sender;
-	}
-	
-	public Object[] getData() {
-		return data;
-	}
-
-  public ITransaction getTransaction() {
-    return transaction;
-  }
-	
+public interface ITransactionalResource {
+  void begin();
+  void commit();
+  void rollback();
 }

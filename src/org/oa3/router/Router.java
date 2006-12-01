@@ -45,6 +45,7 @@ import org.oa3.Response;
 import org.oa3.Response.DiscardBatch;
 import org.oa3.Response.ExceptionBatch;
 import org.oa3.Response.OutputBatch;
+import org.oa3.transaction.ITransaction;
 
 public class Router implements IMessageProcessor {
 
@@ -76,44 +77,47 @@ public class Router implements IMessageProcessor {
 		for (Iterator iter = destinations.iterator(); iter.hasNext();) {
 			IMessageProcessor node = (IMessageProcessor) iter.next();
 			Response response = node.process(msg);
-			processResponse(node, response);
+			processResponse(node, response, msg.getTransaction());
 		}
 		return new Response();
 	}
 	
-	private void processResponse(IMessageProcessor node, Response response) {
+	private void processResponse(IMessageProcessor node, Response response, ITransaction transction) {
 		List batches = response.getBatches();
 		for (Iterator iter = batches.iterator(); iter.hasNext();) {
 			List batch = (List) iter.next();
 			if (batch instanceof OutputBatch) {
-				processOutput(node, ((OutputBatch)batch).getOutput());
+				processOutput(node, ((OutputBatch)batch).getOutput(), transction);
 			} else if (batch instanceof DiscardBatch) {
-				processDiscards(node, ((DiscardBatch)batch).getDiscard());
+				processDiscards(node, ((DiscardBatch)batch).getDiscard(), transction);
 			} else if (batch instanceof ExceptionBatch) {
-				processExceptions(node, ((ExceptionBatch)batch).getMessageExceptions());
+				processExceptions(node, ((ExceptionBatch)batch).getMessageExceptions(), transction);
 			}
 		}
 	}
 
-	private void processOutput(IMessageProcessor node, Object[] output) {
+	private void processOutput(IMessageProcessor node, Object[] output, ITransaction transaction) {
 		if (output.length > 0) {
-			process(new Message(output, node), routingMap.getProcessDestinations(node));
+      Message msg = new Message(output, node, transaction);
+			process(msg, routingMap.getProcessDestinations(node));
 		}
 	}
 
-	private void processDiscards(IMessageProcessor node, Object[] discardedInput) {
+	private void processDiscards(IMessageProcessor node, Object[] discardedInput, ITransaction transaction) {
 		log.info(node.toString() + " discarded " + discardedInput.length + " input(s)");
 		if (discardedInput.length > 0) {
-			process(new Message(discardedInput, node), routingMap.getDiscardDestinations(node));
+      Message msg = new Message(discardedInput, node, transaction);
+      process(msg, routingMap.getDiscardDestinations(node));
 		}
 	}
 
-	private void processExceptions(IMessageProcessor node, MessageException[] exceptions) {
+	private void processExceptions(IMessageProcessor node, MessageException[] exceptions, ITransaction transaction) {
 		log.warn(node.toString() + " caught " + exceptions.length + " exceptions");
 		for (int i = 0; i < exceptions.length; i++) {
 			List destinations = routingMap.getExceptionDestinations(node, exceptions[i].getException());
 			if (destinations.size() > 0) {
-				process(new Message(exceptions[i], node), destinations);
+        Message msg = new Message(exceptions[i], node, transaction);
+        process(msg, destinations);
 			} else {
 				throw new RuntimeException(exceptions[0].getException());
 			}

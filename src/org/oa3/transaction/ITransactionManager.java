@@ -30,47 +30,35 @@
  * Software with other software or hardware.
  * ]]
  */
+package org.oa3.transaction;
+/*
+ * File: $Header: /cvs/oa3/src/org/oa3/transaction/ITransactionManager.java,v 1.9 2006/10/20 15:08:29 kscully Exp $
+ * Rev:  $Revision: 1.9 $
+ * Created Sep 28, 2005 by Kevin Scully
+ */
 
-package org.oa3;
+/**
+ *  Interface implemented by TransactionManagers used by oa3 Nodes.
+ *
+ * @author Kevin Scully
+ */
+public interface ITransactionManager {
 
-import java.util.List;
+    /**
+     * Return an appropriate ITransaction instance
+     * @return a transaction.
+     */
+    public ITransaction getTransaction();
 
-import org.oa3.transaction.ITransaction;
+    /**
+     * Set the Transaction timeout. In MilliSeconds.
+     * @param timeoutInMilliseconds default timeout imposed by the transaction manager.
+     */
+    public void setTransactionTimeout(long timeoutMs);
 
+    /**
+     * Allow the transaction manager to be stopped or released if necessary.
+     */
+    public void stop();
 
-public class Message {
-	private Object sender;
-	private Object[] data;
-  private ITransaction transaction;
-	
-  public Message(final Object[] data, final Object sender, final ITransaction transaction) {
-    this.data = data;
-    this.sender = sender;
-    this.transaction = transaction;
-  }
-  
-  public Message(final List data, final Object sender, final ITransaction transaction) {
-    this.data = (Object[]) data.toArray(new Object[data.size()]);
-    this.sender = sender;
-    this.transaction = transaction;
-  }
-  
-  public Message(final Object data, final Object sender, final ITransaction transaction) {
-    this.data = new Object[] {data};
-    this.sender = sender;
-    this.transaction = transaction;
- }
-  
-	public Object getSender() {
-		return sender;
-	}
-	
-	public Object[] getData() {
-		return data;
-	}
-
-  public ITransaction getTransaction() {
-    return transaction;
-  }
-	
 }

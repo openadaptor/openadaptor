@@ -113,7 +113,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		
 		if (next != null) {
 			if (!response.containsExceptions()) {
-				response = next.process(new Message(response.getCollatedOutput(), this));
+				response = next.process(new Message(response.getCollatedOutput(), this, msg.getTransaction()));
 			} else {
 				MessageException[] exceptions = response.getCollatedExceptions();
 				throw new RuntimeException(exceptions[0].getException());
