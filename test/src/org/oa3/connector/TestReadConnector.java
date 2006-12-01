@@ -34,8 +34,10 @@
 package org.oa3.connector;
 
 import org.oa3.Component;
+import org.oa3.transaction.ITransactional;
+import org.oa3.transaction.TestTransactionalResource;
 
-public class TestReadConnector extends Component implements IReadConnector {
+public class TestReadConnector extends Component implements IReadConnector, ITransactional {
 
 	private int count = 0;
 
@@ -48,8 +50,12 @@ public class TestReadConnector extends Component implements IReadConnector {
 	private String dataString = "test data %n";
 	
 	private int exceptionFrequency = 0;
+  
+  private int expectedCommitCount = -1;
+  
+  private TestTransactionalResource transactionalResource = null;
 
-	public TestReadConnector() {
+  public TestReadConnector() {
 	}
 
 	public TestReadConnector(String id) {
@@ -105,8 +111,10 @@ public class TestReadConnector extends Component implements IReadConnector {
 			if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
 				throw new RuntimeException("configured runtime exception");
 			}
-			
 			data[i] = dataString.replaceAll("%n", String.valueOf(count));
+      if (transactionalResource != null) {
+        transactionalResource.incrementRecordCount();
+      }
 		}
 		
 		return data;
@@ -116,6 +124,33 @@ public class TestReadConnector extends Component implements IReadConnector {
 	}
 
 	public void disconnect() {
+    if (transactionalResource != null) {
+      checkCommitCount();
+    }
 	}
+
+  private void checkCommitCount() {
+    if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {
+      throw new RuntimeException("expected commit count = " + expectedCommitCount 
+          + " actual = " + transactionalResource.getCommittedCount());
+    }
+  }
+
+  public Object getResource() {
+    return transactionalResource;
+  }
+
+  public void setExpectedCommitCount(int expectedCommitCount) {
+    this.expectedCommitCount = expectedCommitCount;
+  }
+  
+  public void setTransactional(boolean transactional) {
+    if (transactional) {
+      transactionalResource = new TestTransactionalResource();
+    } else {
+      transactionalResource = null;
+    }
+  }
+
 
 }

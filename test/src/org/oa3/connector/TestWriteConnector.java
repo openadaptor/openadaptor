@@ -41,8 +41,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.Component;
+import org.oa3.transaction.ITransactional;
+import org.oa3.transaction.TestTransactionalResource;
 
-public class TestWriteConnector extends Component implements IWriteConnector {
+public class TestWriteConnector extends Component implements IWriteConnector, ITransactional {
 
 	private static final Log log = LogFactory.getLog(TestWriteConnector.class);
 	
@@ -50,7 +52,9 @@ public class TestWriteConnector extends Component implements IWriteConnector {
 	private List expectedOutput = new ArrayList();
 	private int exceptionFrequency = 0;
 	private int count;
-	
+  private int expectedCommitCount = -1;
+	private TestTransactionalResource transactionalResource;
+  
 	public TestWriteConnector() {
 	}
 
@@ -105,10 +109,42 @@ public class TestWriteConnector extends Component implements IWriteConnector {
 			}
 			throw new RuntimeException("output was not expected output");
 		}
+    
+    if (transactionalResource != null) {
+      checkCommitCount();
+    }
+
 	}
+
+  private void checkCommitCount() {
+    if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {
+      throw new RuntimeException("expected commit count = " + expectedCommitCount 
+          + " actual = " + transactionalResource.getCommittedCount());
+    }
+  }
 
 	private void record(String line) {
 		output.add(line);
+    if (transactionalResource != null) {
+      transactionalResource.incrementRecordCount();
+    }
 	}
+
+
+  public Object getResource() {
+    return transactionalResource;
+  }
+
+  public void setExpectedCommitCount(int expectedCommitCount) {
+    this.expectedCommitCount = expectedCommitCount;
+  }
+  
+  public void setTransactional(boolean transactional) {
+    if (transactional) {
+      transactionalResource = new TestTransactionalResource();
+    } else {
+      transactionalResource = null;
+    }
+  }
 
 }
