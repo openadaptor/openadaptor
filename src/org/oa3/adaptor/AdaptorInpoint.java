@@ -107,11 +107,11 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
 	public void run() {
 		if (!isState(State.RUNNING)) {
-			log.warn(toString() + " has not been started");
+			log.warn(getId() + " has not been started");
 			exitCode = 0;
 		}
 		try {
-			log.info(toString() + " running");
+			log.info(getId() + " running");
 			while (isState(State.RUNNING) && !connector.isDry()) {
         ITransaction transaction = null;
         try {
@@ -129,7 +129,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
             process(msg);
           }
           if (transaction != null) {
-            log.debug("committing transaction");
+            log.debug(getId() + "committing transaction");
             transaction.commit();
           }
 				} catch (Throwable e) {
@@ -143,7 +143,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 				}
 			}
 		} finally {
-			log.info(toString() + " no longer running");
+			log.info(getId() + " no longer running");
 			stop();
 		}
 	}
