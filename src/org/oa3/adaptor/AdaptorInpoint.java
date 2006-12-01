@@ -41,6 +41,11 @@ import org.oa3.Message;
 import org.oa3.State;
 import org.oa3.connector.IReadConnector;
 import org.oa3.node.Node;
+import org.oa3.transaction.ITransaction;
+import org.oa3.transaction.ITransactionManager;
+import org.oa3.transaction.ITransactional;
+import org.oa3.transaction.ITransactionalResource;
+import org.oa3.transaction.Transaction;
 
 public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
@@ -48,7 +53,9 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 	
 	private IReadConnector connector;
 	private boolean enabled = true;
+  private long timeoutMs = 1000;
 	private int exitCode = 0;
+  private ITransactionManager transactionManager;
 	
 	public AdaptorInpoint() {
 		super();
@@ -71,6 +78,14 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 		this.enabled = enabled;
 	}
 	
+  public void setTimeoutMs(long timeout) {
+    this.timeoutMs = timeout;
+  }
+  
+  public void setTransactionManager(final ITransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+  }
+  
 	public void validate(List exceptions) {
 		super.validate(exceptions);
 		if (connector == null) {
@@ -99,17 +114,30 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 		}
 		try {
 			log.info(toString() + " running");
-			while (isState(State.RUNNING)) {
-				try {
-					Object[] data = connector.next();
-					if (data == null) {
-						break;
-					}
-					process(new Message(data, this));
+			while (isState(State.RUNNING) && !connector.isDry()) {
+        ITransaction transaction = null;
+        try {
+          if (connector instanceof ITransactional) {
+            transaction = transactionManager.getTransaction();
+            Object resource = ((ITransactional)connector).getResource();
+            transaction.enlist(resource);
+          }
+					Object[] data = connector.next(timeoutMs);
+					if (data != null) {
+            Message msg = new Message(data, this);
+            msg.setTransaction(transaction);
+            process(msg);
+          }
+          if (transaction != null) {
+            transaction.commit();
+          }
 				} catch (Throwable e) {
 					log.error(getId() + " stopping, uncaught exception", e);
 					exitCode = 1;
 					stop();
+          if (transaction != null) {
+            transaction.rollback();
+          }
 				}
 			}
 		} finally {

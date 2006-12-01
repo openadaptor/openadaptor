@@ -35,10 +35,13 @@ package org.oa3;
 
 import java.util.List;
 
+import org.oa3.transaction.ITransaction;
+
 
 public class Message {
 	private Object sender;
 	private Object[] data;
+  private ITransaction transaction;
 	
 	public Message(final Object[] data, final Object sender) {
 		this.data = data;
@@ -62,5 +65,13 @@ public class Message {
 	public Object[] getData() {
 		return data;
 	}
+
+  public void setTransaction(final ITransaction transaction) {
+    this.transaction = transaction;
+  }
+  
+  public ITransaction getTransaction() {
+    return transaction;
+  }
 	
 }

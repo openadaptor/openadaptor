@@ -34,8 +34,8 @@
 package org.oa3.connector;
 
 public interface IReadConnector {
-
 	void connect();
 	void disconnect();
-	Object[] next();
+  boolean isDry();
+	Object[] next(long timeoutMs);
 }
