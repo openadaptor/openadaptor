@@ -46,10 +46,6 @@ public class Transaction implements ITransaction {
   public Transaction(final long id, final long timeoutMs) {
   }
   
-  public void begin() {
-    
-  }
-
   public void commit() {
     if (!rollbackOnly) {
       synchronized (LOCK) {
@@ -73,6 +69,7 @@ public class Transaction implements ITransaction {
     if (resource instanceof ITransactionalResource) {
       synchronized (LOCK) {
         if (!resources.contains(resource)) {
+          ((ITransactionalResource)resource).begin();
           resources.add(resources.size(), resource);
         }
       }

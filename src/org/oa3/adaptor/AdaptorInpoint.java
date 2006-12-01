@@ -47,115 +47,120 @@ import org.oa3.transaction.ITransactional;
 
 public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
-	private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
-	
-	private IReadConnector connector;
-	private boolean enabled = true;
+  private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
+
+  private IReadConnector connector;
+
+  private boolean enabled = true;
+
   private long timeoutMs = 1000;
-	private int exitCode = 0;
+
+  private int exitCode = 0;
+
   private ITransactionManager transactionManager;
-	
-	public AdaptorInpoint() {
-		super();
-	}
 
-	public AdaptorInpoint(String id) {
-		super(id);
-	}
+  public AdaptorInpoint() {
+    super();
+  }
 
-	public AdaptorInpoint(final String id, final IReadConnector connector) {
-		this(id);
-		this.connector = connector;
-	}
-	
-	public void setConnector(final IReadConnector connector) {
-		this.connector = connector;
-	}
-	
-	public void setEnabled(final boolean enabled) {
-		this.enabled = enabled;
-	}
-	
+  public AdaptorInpoint(String id) {
+    super(id);
+  }
+
+  public AdaptorInpoint(final String id, final IReadConnector connector) {
+    this(id);
+    this.connector = connector;
+  }
+
+  public void setConnector(final IReadConnector connector) {
+    this.connector = connector;
+  }
+
+  public void setEnabled(final boolean enabled) {
+    this.enabled = enabled;
+  }
+
   public void setTimeoutMs(long timeout) {
     this.timeoutMs = timeout;
   }
-  
+
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
-  
-	public void validate(List exceptions) {
-		super.validate(exceptions);
-		if (connector == null) {
-			exceptions.add(new RuntimeException(toString() + " does not have a connector"));
-		}
-	}
 
-	public void start() {
-		if (enabled) {
-			connector.connect();
-			super.start();
-		} else {
-			log.info(toString() + " is not enabled");
-		}
-	}
-	
-	public void stop() {
-		connector.disconnect();
-		super.stop();
-	}
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+    if (connector == null) {
+      exceptions.add(new RuntimeException(toString() + " does not have a connector"));
+    }
+  }
 
-	public void run() {
-		if (!isState(State.RUNNING)) {
-			log.warn(getId() + " has not been started");
-			exitCode = 0;
-		}
-		try {
-			log.info(getId() + " running");
-			while (isState(State.RUNNING) && !connector.isDry()) {
+  public void start() {
+    if (enabled) {
+      connector.connect();
+      super.start();
+    } else {
+      log.info(toString() + " is not enabled");
+    }
+  }
+
+  public void stop() {
+    connector.disconnect();
+    super.stop();
+  }
+
+  public void run() {
+    if (!isState(State.RUNNING)) {
+      log.warn(getId() + " has not been started");
+      exitCode = 0;
+    }
+    try {
+      log.info(getId() + " running");
+      while (isState(State.RUNNING) && !connector.isDry()) {
         ITransaction transaction = null;
         try {
-          if (connector instanceof ITransactional) {
-            Object resource = ((ITransactional)connector).getResource();
-            if (resource != null) {
-              transaction = transactionManager.getTransaction();
-              log.debug("enlisting in transaction");
-              transaction.enlist(resource);
-            }
-          }
-					Object[] data = connector.next(timeoutMs);
-					if (data != null) {
+          transaction = transactionManager.getTransaction();
+          enlistConnector(transaction);
+          Object[] data = connector.next(timeoutMs);
+          if (data != null) {
             Message msg = new Message(data, this, transaction);
             process(msg);
           }
-          if (transaction != null) {
-            log.debug(getId() + "committing transaction");
-            transaction.commit();
-          }
-				} catch (Throwable e) {
-					log.error(getId() + " stopping, uncaught exception", e);
-					exitCode = 1;
-					stop();
-          if (transaction != null) {
-            log.info("rolling back transaction");
-            transaction.rollback();
-          }
-				}
-			}
-		} finally {
-			log.info(getId() + " no longer running");
-			stop();
-		}
-	}
+          log.debug(getId() + "committing transaction");
+          transaction.commit();
+        } catch (Throwable e) {
+          log.error(getId() + " stopping, uncaught exception", e);
+          exitCode = 1;
+          stop();
+          log.info("rolling back transaction");
+          transaction.rollback();
+        }
+      }
+    } finally {
+      log.info(getId() + " no longer running");
+      stop();
+    }
+  }
 
-	public void setAdaptor(Adaptor adaptor) {
-		setNext(adaptor);
+  public void setAdaptor(Adaptor adaptor) {
+    setNext(adaptor);
     if (transactionManager == null) {
       transactionManager = adaptor.getTransactionManager();
     }
-	}
+  }
 
-	public int getExitCode() {
-		return exitCode;
-	}
+  public int getExitCode() {
+    return exitCode;
+  }
+
+  private void enlistConnector(ITransaction transaction) {
+    if (connector instanceof ITransactional) {
+      Object resource = ((ITransactional) connector).getResource();
+      if (resource != null) {
+        log.debug("enlisting in transaction");
+        transaction.enlist(resource);
+      }
+    }
+  }
+
 }

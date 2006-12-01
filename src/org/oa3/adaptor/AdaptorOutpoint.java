@@ -95,7 +95,7 @@ public class AdaptorOutpoint extends Node {
 	public Response process(Message msg) {
     
     Object resource = null;
-    if (msg.getTransaction() != null && connector instanceof ITransactional) {
+    if (connector instanceof ITransactional) {
       resource = ((ITransactional)connector).getResource();
       if (resource != null) {
         msg.getTransaction().enlist(resource);

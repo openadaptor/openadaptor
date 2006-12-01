@@ -43,10 +43,6 @@ package org.oa3.transaction;
  * used. (E.g. for JTA this would be an XAResource)
  */
 public interface ITransaction {
-    /**
-     * Start a transaction
-     */
-    public void begin();
 
     /**
      * Do whatever is needed to commit the open Transaction(s).

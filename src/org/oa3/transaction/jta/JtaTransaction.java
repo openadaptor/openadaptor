@@ -50,9 +50,6 @@ public class JtaTransaction implements ITransaction {
     this.transaction = transaction;
   }
 
-  public void begin() {
-  }
-
   public void commit() {
 
     try {
