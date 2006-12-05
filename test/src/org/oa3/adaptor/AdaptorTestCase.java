@@ -42,8 +42,11 @@ import junit.framework.TestCase;
 
 import org.oa3.connector.TestReadConnector;
 import org.oa3.connector.TestWriteConnector;
+import org.oa3.core.adaptor.Adaptor;
+import org.oa3.core.adaptor.AdaptorInpoint;
+import org.oa3.core.adaptor.AdaptorOutpoint;
+import org.oa3.core.router.RoutingMap;
 import org.oa3.processor.TestProcessor;
-import org.oa3.router.RoutingMap;
 
 public class AdaptorTestCase extends TestCase {
 

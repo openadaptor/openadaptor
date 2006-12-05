@@ -3,7 +3,7 @@
 
 <beans>
   
-	<bean id="MBeanServer" class="org.oa3.jmx.MBeanServer">
+	<bean id="MBeanServer" class="org.oa3.core.jmx.MBeanServer">
     <constructor-arg value="8082"/>
   </bean>
   

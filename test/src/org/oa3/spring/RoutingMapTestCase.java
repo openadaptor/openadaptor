@@ -37,12 +37,12 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.ILifecycleListener;
-import org.oa3.IMessageProcessor;
-import org.oa3.Message;
-import org.oa3.Response;
-import org.oa3.State;
-import org.oa3.router.IRoutingMap;
+import org.oa3.core.IMessageProcessor;
+import org.oa3.core.Message;
+import org.oa3.core.Response;
+import org.oa3.core.lifecycle.ILifecycleListener;
+import org.oa3.core.lifecycle.State;
+import org.oa3.core.router.IRoutingMap;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 

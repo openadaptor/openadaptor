@@ -35,7 +35,8 @@ package org.oa3.processor;
 
 import java.util.List;
 
-import org.oa3.Component;
+import org.oa3.core.Component;
+import org.oa3.core.IDataProcessor;
 
 public class TestProcessor extends Component implements IDataProcessor {
 

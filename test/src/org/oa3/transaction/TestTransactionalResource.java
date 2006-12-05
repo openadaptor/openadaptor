@@ -1,5 +1,7 @@
 package org.oa3.transaction;
 
+import org.oa3.core.transaction.ITransactionalResource;
+
 
 public class TestTransactionalResource implements ITransactionalResource {
 

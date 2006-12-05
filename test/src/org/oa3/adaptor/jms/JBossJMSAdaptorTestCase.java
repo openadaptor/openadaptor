@@ -14,24 +14,24 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.oa3.IMessageProcessor;
-import org.oa3.LifecycleComponent;
-import org.oa3.Message;
-import org.oa3.Response;
-import org.oa3.adaptor.Adaptor;
 import org.oa3.connector.TestWriteConnector;
 import org.oa3.connector.jms.JBossJMSTestCase;
-import org.oa3.connector.jms.JMSConnection;
-import org.oa3.connector.jms.JMSListener;
-import org.oa3.connector.jms.JMSPublisher;
 import org.oa3.connector.stream.FileReaderTestCase;
-import org.oa3.connector.stream.reader.FileReader;
-import org.oa3.connector.stream.reader.StreamReadConnector;
-import org.oa3.connector.stream.reader.StringRecordReader;
-import org.oa3.connector.stream.writer.FileWriter;
-import org.oa3.connector.stream.writer.StreamWriteConnector;
-import org.oa3.jmx.MBeanServer;
-import org.oa3.router.RoutingMap;
+import org.oa3.core.IMessageProcessor;
+import org.oa3.core.Message;
+import org.oa3.core.Response;
+import org.oa3.core.adaptor.Adaptor;
+import org.oa3.core.jmx.MBeanServer;
+import org.oa3.core.lifecycle.LifecycleComponent;
+import org.oa3.core.router.RoutingMap;
+import org.oa3.iostream.reader.FileReader;
+import org.oa3.iostream.reader.StreamReadConnector;
+import org.oa3.iostream.reader.StringRecordReader;
+import org.oa3.iostream.writer.FileWriter;
+import org.oa3.iostream.writer.StreamWriteConnector;
+import org.oa3.jms.JMSConnection;
+import org.oa3.jms.JMSListener;
+import org.oa3.jms.JMSPublisher;
 
 public class JBossJMSAdaptorTestCase extends TestCase {
 

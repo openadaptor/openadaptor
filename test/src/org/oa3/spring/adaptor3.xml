@@ -3,11 +3,11 @@
 
 <beans>
   
-  <bean id="adaptor" class="org.oa3.adaptor.Adaptor">
+  <bean id="adaptor" class="org.oa3.core.adaptor.Adaptor">
     <property name="routingMap" ref="routingMap"/>
   </bean>
 
-  <bean id="routingMap" class="org.oa3.router.RoutingMap">
+  <bean id="routingMap" class="org.oa3.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="InPoint" value-ref="Processor"/>

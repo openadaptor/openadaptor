@@ -38,8 +38,9 @@ import java.util.Map;
 
 import org.oa3.connector.TestReadConnector;
 import org.oa3.connector.TestWriteConnector;
+import org.oa3.core.adaptor.Adaptor;
+import org.oa3.core.router.RoutingMap;
 import org.oa3.processor.TestProcessor;
-import org.oa3.router.RoutingMap;
 
 import junit.framework.TestCase;
 

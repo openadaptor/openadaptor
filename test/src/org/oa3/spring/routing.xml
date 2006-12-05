@@ -3,7 +3,7 @@
 
 <beans>
   
-  <bean id="test1" class="org.oa3.router.RoutingMap">
+  <bean id="test1" class="org.oa3.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="InPoint" value-ref="OutPoint"/>
@@ -22,7 +22,7 @@
     </property>
   </bean>
   
-  <bean id="test2" class="org.oa3.router.RoutingMap">
+  <bean id="test2" class="org.oa3.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="InPoint" value-ref="Processor1"/>

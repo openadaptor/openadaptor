@@ -40,8 +40,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.Component;
-import org.oa3.transaction.ITransactional;
+import org.oa3.core.Component;
+import org.oa3.core.IWriteConnector;
+import org.oa3.core.transaction.ITransactional;
 import org.oa3.transaction.TestTransactionalResource;
 
 public class TestWriteConnector extends Component implements IWriteConnector, ITransactional {
