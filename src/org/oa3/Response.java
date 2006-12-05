@@ -107,7 +107,7 @@ public class Response {
 	}
 	
 	public MessageException[] getCollatedExceptions() {
-		List l = getCollatedBatches(OutputBatch.class);
+		List l = getCollatedBatches(ExceptionBatch.class);
 		return (MessageException[]) l.toArray(new MessageException[l.size()]);
 	}
 	
