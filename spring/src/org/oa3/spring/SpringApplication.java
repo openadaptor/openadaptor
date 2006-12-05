@@ -43,7 +43,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.ILifecycleComponent;
+import org.oa3.core.lifecycle.ILifecycleComponent;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -164,7 +164,7 @@ public class SpringApplication {
 	private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort) {
 		MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
 		if (mbeanServer == null && jmxPort != 0) {
-			mbeanServer = new org.oa3.jmx.MBeanServer(jmxPort);
+			mbeanServer = new org.oa3.core.jmx.MBeanServer(jmxPort);
 		}
 		if (mbeanServer != null) {
 			String[] beanNames = factory.getBeanDefinitionNames();
