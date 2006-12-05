@@ -35,7 +35,7 @@ package org.oa3.util;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.oa3.OAException;
+import org.oa3.core.exception.OAException;
 
 /**
  * Helper methods for use with Java properties files
