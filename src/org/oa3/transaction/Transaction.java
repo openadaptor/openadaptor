@@ -39,11 +39,16 @@ import java.util.List;
 
 public class Transaction implements ITransaction {
 
+  private final long id;
+  private final long timeoutMs;
+  
   private boolean rollbackOnly = false;
   private List resources =  new ArrayList();
   private Object LOCK = new Object();
   
   public Transaction(final long id, final long timeoutMs) {
+    this.id=id;
+    this.timeoutMs=timeoutMs;
   }
   
   public void commit() {
@@ -91,4 +96,7 @@ public class Transaction implements ITransaction {
     rollbackOnly = true;
   }
 
+  public String toString() {
+    return ("Txn_"+id);
+  }
 }
