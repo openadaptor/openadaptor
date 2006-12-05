@@ -98,6 +98,7 @@ public class AdaptorOutpoint extends Node {
     if (connector instanceof ITransactional) {
       resource = ((ITransactional)connector).getResource();
       if (resource != null) {
+        log.debug(getId() + " enlisting in transaction");
         msg.getTransaction().enlist(resource);
       }
     }

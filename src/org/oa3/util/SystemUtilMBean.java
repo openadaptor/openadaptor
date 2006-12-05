@@ -34,7 +34,9 @@
 package org.oa3.util;
 
 public interface SystemUtilMBean {
-	public void exit();
-	public String getMemory();
-	public String dumpThreads();
+  public void exit();
+
+  public String getMemory();
+
+  public String dumpThreads();
 }

@@ -35,27 +35,28 @@ package org.oa3.util;
 
 public class Runnables implements Runnable {
 
-	private Runnable[] mRunnables;
-	private Thread[] mThreads;
+  private Runnable[] mRunnables;
 
-	public Runnables(Runnable[] runnables) {
-		mRunnables = new Runnable[runnables.length];
-		for (int i = 0; i < mRunnables.length; i++) {
-			mRunnables[i] = runnables[i];
-		}
-	}
-	
-	public void run() {
-		mThreads = new Thread[mRunnables.length];
-		for (int i = 0; i < mThreads.length; i++) {
-			mThreads[i] = new Thread(mRunnables[i], "run" + i);
-			mThreads[i].start();
-		}
-		for (int i = 0; i < mThreads.length; i++) {
-			try {
-				mThreads[i].join();
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+  private Thread[] mThreads;
+
+  public Runnables(Runnable[] runnables) {
+    mRunnables = new Runnable[runnables.length];
+    for (int i = 0; i < mRunnables.length; i++) {
+      mRunnables[i] = runnables[i];
+    }
+  }
+
+  public void run() {
+    mThreads = new Thread[mRunnables.length];
+    for (int i = 0; i < mThreads.length; i++) {
+      mThreads[i] = new Thread(mRunnables[i], "run" + i);
+      mThreads[i].start();
+    }
+    for (int i = 0; i < mThreads.length; i++) {
+      try {
+        mThreads[i].join();
+      } catch (InterruptedException e) {
+      }
+    }
+  }
 }

@@ -75,15 +75,17 @@ public class LifecycleComponent extends Component implements ILifecycleComponent
 	}
 
 	public void stop() {
-		lifecycleDelegate.setState(State.STOPPED);
-		log.info(toString() + " stopped");
+    if (lifecycleDelegate.getState() != State.STOPPED) {
+  		lifecycleDelegate.setState(State.STOPPED);
+  		log.info(toString() + " stopped");
+    }
 	}
 
 	public void validate(List exceptions) {
 	}
 	
 	public void waitForState(State state) {
-		log.debug(" waiting for " + toString() + " to be " + state.toString());
+		log.debug("waiting for " + toString() + " to be " + state.toString());
 		lifecycleDelegate.waitForState(state);
 	}
 	

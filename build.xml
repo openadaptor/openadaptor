@@ -81,6 +81,7 @@
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.src}">
           <include name="**/*TestCase.java"/>
+          <exclude name="**/JBoss*.java"/>
         </fileset>
       </batchtest>  
     </junit>

@@ -4,8 +4,15 @@
 <beans>
   
   <bean id="adaptor" class="org.oa3.adaptor.Adaptor">
+    <!-- <property name="messageProcessor" ref="router"/> -->
     <property name="routingMap" ref="routingMap"/>
   </bean>
+  
+  <!--
+  <bean id="router" class="org.o3.router.Router">
+    <property name="routingMap" ref="routingMap"/>
+  </bean>
+  -->
   
   <bean id="routingMap" class="org.oa3.router.RoutingMap">
     <property name="processMap">

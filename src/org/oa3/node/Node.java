@@ -127,5 +127,9 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		super.validate(exceptions);
 		processor.validate(exceptions);
 	}
+  
+  protected void resetProcessor(Object context) {
+    processor.reset(context);
+  }
 
 }

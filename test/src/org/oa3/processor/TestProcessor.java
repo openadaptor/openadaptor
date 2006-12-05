@@ -99,7 +99,7 @@ public class TestProcessor extends Component implements IDataProcessor {
 		return new Object[] {buffer.toString()};
 	}
 
-	public void reset() {
+	public void reset(Object context) {
 	}
 
 	public void validate(List exceptions) {

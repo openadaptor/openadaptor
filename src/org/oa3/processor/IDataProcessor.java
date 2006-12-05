@@ -40,7 +40,7 @@ public interface IDataProcessor {
 	
 	void validate(List exceptions);
 	
-	void reset();
+	void reset(Object context);
 	
 	/**
 	 * processes some data and returns zero or many objects as output
@@ -56,7 +56,7 @@ public interface IDataProcessor {
 			return new Object[] { data };
 		}
 
-		public void reset() {
+		public void reset(Object context) {
 		}
 
 		public void validate(List exceptions) {

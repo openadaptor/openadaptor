@@ -40,7 +40,9 @@ import java.util.List;
 
 public class Response {
 
-	private List currentBatch = null;
+	public static final Response EMPTY = new Response();
+  
+  private List currentBatch = null;
 	private List batches = new ArrayList();
 	private boolean containsDiscards = false;
 	private boolean containsExceptions = false;

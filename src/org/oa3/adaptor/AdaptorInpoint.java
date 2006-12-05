@@ -59,6 +59,8 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
   private ITransactionManager transactionManager;
 
+  private Object prevReaderContext;
+
   public AdaptorInpoint() {
     super();
   }
@@ -104,11 +106,6 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     }
   }
 
-  public void stop() {
-    connector.disconnect();
-    super.stop();
-  }
-
   public void run() {
     if (!isState(State.RUNNING)) {
       log.warn(getId() + " has not been started");
@@ -123,22 +120,27 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
           enlistConnector(transaction);
           Object[] data = connector.next(timeoutMs);
           if (data != null) {
+            if (connector.getReaderContext() == prevReaderContext) {
+              resetProcessor(connector.getReaderContext());
+              prevReaderContext = connector.getReaderContext();
+            }
             Message msg = new Message(data, this, transaction);
             process(msg);
           }
-          log.debug(getId() + "committing transaction");
+          log.debug(getId() + " committing transaction");
           transaction.commit();
         } catch (Throwable e) {
           log.error(getId() + " stopping, uncaught exception", e);
           exitCode = 1;
           stop();
-          log.info("rolling back transaction");
+          log.info(" rolling back transaction");
           transaction.rollback();
         }
       }
     } finally {
       log.info(getId() + " no longer running");
       stop();
+      connector.disconnect();
     }
   }
 
@@ -157,7 +159,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     if (connector instanceof ITransactional) {
       Object resource = ((ITransactional) connector).getResource();
       if (resource != null) {
-        log.debug("enlisting in transaction");
+        log.debug(getId() + " enlisting in transaction");
         transaction.enlist(resource);
       }
     }

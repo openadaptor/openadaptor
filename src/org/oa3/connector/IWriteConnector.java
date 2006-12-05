@@ -35,7 +35,9 @@ package org.oa3.connector;
 
 public interface IWriteConnector {
 
-	void connect();
-	void disconnect();
-	Object deliver(Object[] data);
+  void connect();
+
+  void disconnect();
+
+  Object deliver(Object[] data);
 }
