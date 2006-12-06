@@ -42,7 +42,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
 
 /**
  * Utility processor which allows multiple processors to be grouped and treated as one.

@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.SAXParser;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
 import org.oa3.util.URLUtils;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -62,9 +61,9 @@ import org.xml.sax.SAXParseException;
  *
  * @author Russ Fennell
  */
-public class XMLValidatorProcessor implements IDataProcessor {
+public class XmlValidator implements IDataProcessor {
 
-  public static final Log log = LogFactory.getLog(XMLValidatorProcessor.class);
+  public static final Log log = LogFactory.getLog(XmlValidator.class);
 
   private String schemaURL = null;
 
@@ -119,21 +118,20 @@ public class XMLValidatorProcessor implements IDataProcessor {
    * @throws RecordException if the record is not a string or does not contain
    * valid XML or if it fails to be validated against the schema
    */
-  public Object[] process(Object record) {
-    if (!(record instanceof String)) {
-      throw new RuntimeException("Record is not an XML string");
+  public Object[] process(Object data) {
+    if (!(data instanceof String)) {
+      throw new RuntimeException("data is not an XML string");
     }
 
-    String xml = (String) record;
-
-    if (!validate(xml)) {
-      log.info("XML is invalid. Check the logs for the cause");
-      return new Object[0];
+    try {
+      in.setCharacterStream(new StringReader((String)data));
+      parser.parse(in);
+    } catch (Exception e) {
+      throw new RuntimeException("xml is invalid : " + e.getMessage());
     }
 
-    // all we do is return the original record unmodified
-    log.info("XML is valid");
-    return new Object[] { record };
+    log.debug("XML validated");
+    return new Object[] {data};
   }
 
   /**
@@ -166,35 +164,13 @@ public class XMLValidatorProcessor implements IDataProcessor {
     // ignore any schema errors
     parser.setErrorHandler(new OAXMLParserErrorHandler());
 
-    log.debug("Parser initialised");
+    log.debug("parser initialised");
   }
 
   /**
    * Hook to allow the processor to be reset. Does nothing.
    */
   public void reset(Object context) {
-  }
-
-  /**
-   * Parses the supplied XML using the schema supplied via the setSchemaURL() call
-   *
-   * @param xml the XML text to be validated
-   *
-   * @return true if the supplied XML can be parsed and is valid according to
-   * the defined schema. Note, any parser errors will be logged and false
-   * returned
-   */
-  private boolean validate(String xml) {
-    try {
-      in.setCharacterStream(new StringReader(xml));
-      parser.parse(in);
-
-      return true;
-    } catch (Exception e) {
-      log.error("Failed to parse xml: " + e.toString());
-    }
-
-    return false;
   }
 
   // INNER CLASSES
