@@ -14,7 +14,7 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxillary.iostream.reader.FileReader;
+import org.oa3.auxillary.iostream.reader.FileReadConnector;
 import org.oa3.auxillary.iostream.reader.StreamReadConnector;
 import org.oa3.auxillary.iostream.reader.StringRecordReader;
 import org.oa3.auxillary.iostream.writer.FileWriter;
@@ -56,7 +56,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     StreamReadConnector inpoint = new StreamReadConnector();
     inpoint.setId("FileIn");
 
-    FileReader fileReader = new FileReader();
+    FileReadConnector fileReader = new FileReadConnector();
     fileReader.setPath(filename);
     inpoint.setStreamReader(fileReader);
     inpoint.setRecordReader(new StringRecordReader());
