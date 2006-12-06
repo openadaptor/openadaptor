@@ -10,9 +10,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.iostream.reader.FileReader;
-import org.oa3.iostream.reader.StreamReadConnector;
-import org.oa3.iostream.reader.StringRecordReader;
+import org.oa3.auxillary.iostream.reader.FileReader;
+import org.oa3.auxillary.iostream.reader.StreamReadConnector;
+import org.oa3.auxillary.iostream.reader.StringRecordReader;
 
 public class FileReaderTestCase extends TestCase {
 
