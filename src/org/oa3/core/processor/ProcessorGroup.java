@@ -37,7 +37,6 @@ package org.oa3.core.processor;
  * Rev:  $Revision: 1.7 $
  * Created Jun 05, 2006 by Eddy Higgins
  */
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;

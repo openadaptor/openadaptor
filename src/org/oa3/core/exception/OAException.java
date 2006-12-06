@@ -38,8 +38,6 @@ package org.oa3.core.exception;
  * Created Sep 28, 2005 by Kevin Scully
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IComponent;
 
 /**
@@ -61,16 +59,11 @@ public class OAException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  private static final Log log = LogFactory.getLog(OAException.class);
-
-  private Throwable nestedException;
-
   private IComponent component = null;
 
   public OAException(String msg, Throwable cause, IComponent c) {
+    super(msg, cause);
     component = c;
-    nestedException = cause;
-    log.error(msg + " : " + (nestedException != null ? nestedException.getMessage() : ""));
   }
 
   public OAException(String msg, Throwable cause) {
@@ -87,5 +80,9 @@ public class OAException extends RuntimeException {
 
   public IComponent getComponent() {
     return component;
+  }
+  
+  public String getMessage() {
+    return (component != null ? component.getId() : "") + ":" + super.getMessage(); 
   }
 }

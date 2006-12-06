@@ -32,42 +32,28 @@
  */
 package org.oa3.core.exception;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IComponent;
 
 /**
  * General purpose OAException used by Nodes when an operation times out.
  */
-public class TimeoutException extends RuntimeException {
+public class TimeoutException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
-  private static final Log log = LogFactory.getLog(TimeoutException.class);
-
-  private Throwable nestedException;
-
-  private IComponent _c = null;
-
   public TimeoutException(String msg, Throwable cause, IComponent c) {
-    _c = c;
-    nestedException = cause;
-    log.error(msg + " : " + nestedException != null ? nestedException.getMessage() : "");
+    super(msg, cause, c);
   }
 
   public TimeoutException(String msg, Throwable cause) {
-    this(msg, cause, null);
+    super(msg, cause);
   }
 
   public TimeoutException(String msg, IComponent c) {
-    this(msg, null, c);
+    super(msg, c);
   }
 
   public TimeoutException(String msg) {
-    this(msg, null, null);
-  }
-
-  public IComponent getComponent() {
-    return _c;
+    super(msg);
   }
 }
