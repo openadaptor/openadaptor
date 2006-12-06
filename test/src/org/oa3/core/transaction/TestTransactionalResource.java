@@ -1,4 +1,4 @@
-package org.oa3.transaction;
+package org.oa3.core.transaction;
 
 import org.oa3.core.transaction.ITransactionalResource;
 

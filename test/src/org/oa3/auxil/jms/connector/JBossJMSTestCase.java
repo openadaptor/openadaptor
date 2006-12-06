@@ -1,4 +1,4 @@
-package org.oa3.connector.jms;
+package org.oa3.auxil.jms.connector;
 
 import java.util.ArrayList;
 import java.util.Iterator;

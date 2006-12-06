@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.connector;
+package org.oa3.core.connector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.oa3.core.Component;
 import org.oa3.core.IWriteConnector;
 import org.oa3.core.transaction.ITransactional;
-import org.oa3.transaction.TestTransactionalResource;
+import org.oa3.core.transaction.TestTransactionalResource;
 
 public class TestWriteConnector extends Component implements IWriteConnector, ITransactional {
 

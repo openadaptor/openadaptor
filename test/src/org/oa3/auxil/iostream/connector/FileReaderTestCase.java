@@ -1,4 +1,4 @@
-package org.oa3.connector.stream;
+package org.oa3.auxil.iostream.connector;
 
 import java.io.BufferedWriter;
 import java.io.File;

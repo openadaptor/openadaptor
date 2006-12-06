@@ -1,13 +1,13 @@
-package org.oa3.adaptor;
+package org.oa3.core.adaptor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.oa3.connector.TestReadConnector;
-import org.oa3.connector.TestWriteConnector;
 import org.oa3.core.adaptor.Adaptor;
+import org.oa3.core.connector.TestReadConnector;
+import org.oa3.core.connector.TestWriteConnector;
+import org.oa3.core.processor.TestProcessor;
 import org.oa3.core.router.RoutingMap;
-import org.oa3.processor.TestProcessor;
 
 import junit.framework.TestCase;
 

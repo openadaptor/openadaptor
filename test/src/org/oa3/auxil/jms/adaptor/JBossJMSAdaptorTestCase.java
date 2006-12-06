@@ -1,4 +1,4 @@
-package org.oa3.adaptor.jms;
+package org.oa3.auxil.jms.adaptor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
+import org.oa3.auxil.iostream.connector.FileReaderTestCase;
 import org.oa3.auxil.iostream.reader.FileReadConnector;
 import org.oa3.auxil.iostream.reader.StreamReadConnector;
 import org.oa3.auxil.iostream.reader.StringRecordReader;
@@ -22,13 +23,12 @@ import org.oa3.auxil.iostream.writer.StreamWriteConnector;
 import org.oa3.auxil.jms.JMSConnection;
 import org.oa3.auxil.jms.JMSListener;
 import org.oa3.auxil.jms.JMSPublisher;
-import org.oa3.connector.TestWriteConnector;
-import org.oa3.connector.jms.JBossJMSTestCase;
-import org.oa3.connector.stream.FileReaderTestCase;
+import org.oa3.auxil.jms.connector.JBossJMSTestCase;
 import org.oa3.core.IMessageProcessor;
 import org.oa3.core.Message;
 import org.oa3.core.Response;
 import org.oa3.core.adaptor.Adaptor;
+import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.jmx.MBeanServer;
 import org.oa3.core.lifecycle.LifecycleComponent;
 import org.oa3.core.router.RoutingMap;

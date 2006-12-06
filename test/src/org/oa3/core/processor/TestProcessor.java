@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.processor;
+package org.oa3.core.processor;
 
 import java.util.List;
 

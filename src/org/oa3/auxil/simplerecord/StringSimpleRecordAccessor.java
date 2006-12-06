@@ -126,7 +126,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          Ignored as it is not needed.
    * @return The object associated with the supplied key
-   * @throws org.oa3.processor.RecordFormatException
+   * @throws org.oa3.core.processor.RecordFormatException
    *           if strict is false, and the record is not <tt>null</tt> and not a <code>String</code>.
    */
   public Object get(Object key) throws RecordFormatException {
@@ -146,7 +146,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param value
    *          Object to be stored. Must be a <code>String</code> if strict is set.
    * @return The Object which has just been stored.
-   * @throws org.oa3.processor.RecordFormatException
+   * @throws org.oa3.core.processor.RecordFormatException
    *           if supplied value is not <tt>null</tt> and not a <code>String</code>, and <code>strictM/code>
    *                                                  is set.
    */
@@ -163,7 +163,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          ignored
    * @return Object containing the previously stored record value.
-   * @throws org.oa3.processor.RecordException
+   * @throws org.oa3.core.processor.RecordException
    *           if the operation cannot be completed.
    */
   public Object remove(Object key) throws RecordException {
@@ -229,7 +229,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param record
    *          The object to be represented as an ISimpleRecord. Must be an XMLString or a Dom4J <code>Document</code>
    * @return ISimpleRecord view on the underlying XML Document.
-   * @throws org.oa3.processor.RecordException
+   * @throws org.oa3.core.processor.RecordException
    *           if the record cannot be represented as an ISimpleRecord
    */
   public ISimpleRecord asSimpleRecord(Object record) throws RecordException {

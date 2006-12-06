@@ -398,7 +398,7 @@ public class Expression implements IExpression {
    * //ToDo: Improve javadoc here...
    * @param attributeReference
    * @return the value of the attribute that is referred to
-   * @throws org.oa3.processor.RecordException
+   * @throws org.oa3.core.processor.RecordException
    */
   private Object getValue(ISimpleRecord record, String attributeReference) throws RecordException {
     //Expression.log.debug("Resolving attributeReference:"+attributeReference);
