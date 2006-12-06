@@ -33,6 +33,7 @@
 package org.oa3.auxil.xml;
 
 import java.io.StringReader;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -141,8 +142,7 @@ public class XMLValidatorProcessor implements IRecordProcessor {
    *
    * @return empty list
    */
-  public Exception[] validate() {
-    return new Exception[0];
+  public void validate(List exceptions) {
   }
 
   /**

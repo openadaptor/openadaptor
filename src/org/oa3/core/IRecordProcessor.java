@@ -32,6 +32,8 @@
  */
 package org.oa3.core;
 
+import java.util.List;
+
 import org.oa3.core.exception.RecordException;
 
 /*
@@ -50,6 +52,7 @@ import org.oa3.core.exception.RecordException;
  */
 
 public interface IRecordProcessor {
+  
   /**
    * Process a single input record.
    * <p>
@@ -79,21 +82,8 @@ public interface IRecordProcessor {
    * <br>
    * Note that validate() should not have any impact outside of the processor itself.
    * <p>
-   * Default behaviour should be a no-op that returns an empty Exception[].
-   * validate() should never return <tt>null</tt>
    */
-  public Exception[] validate();
-
-  /**
-   * Prepare this processor for use.
-   * <p>
-   * This method is provides a hook to perform any (first-time) initialisation required by the implementation.
-   * This might include obtaining resources required etc.
-   * initialise might have an external impact (clearing temporary files for example).
-   * <p>
-   * Default behaviour should be a no-op.
-   */
-  public void initialise();
+  void validate(List exceptions);
 
   /**
    * Resets the state of this processor.

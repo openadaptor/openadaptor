@@ -34,6 +34,7 @@ package org.oa3.auxil.xml;
 
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
@@ -88,15 +89,12 @@ public class XSLTProcessor implements IRecordProcessor {
    * 
    * @return an empty list
    */
-  public Exception[] validate() {
-    return new Exception[0];
-  }
-
-  /**
-   * Called by the adaptor at start-up. Loads the XSLT from the file defined in the properties
-   */
-  public void initialise() {
-    loadXSLT();
+  public void validate(List exceptions) {
+    try {
+      loadXSLT();
+    } catch (RuntimeException ex) {
+      exceptions.add(ex);
+    }
   }
 
   /**

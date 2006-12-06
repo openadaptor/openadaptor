@@ -38,6 +38,7 @@ package org.oa3.core.processor;
  * Created Jun 05, 2006 by Eddy Higgins
  */
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,31 +93,11 @@ public class ProcessorGroup implements IRecordProcessor {
    * Invoke validation of the component properties provided by each of the processors in this group.
    * @return Exception list.
    */
-  public Exception[] validate() {
-    ArrayList groupExceptions = new ArrayList();
+  public void validate(List exceptions) {
     if (processors != null) {
       for (int i = 0; i < processors.length; i++) {
-        Exception[] exceptions = processors[i].validate();
-
-        for (int k = 0; k < exceptions.length; k++) {
-          groupExceptions.add(exceptions[k]);
-        }
+        processors[i].validate(exceptions);
       }
-    }
-    return (Exception[]) groupExceptions.toArray(new Exception[] {});
-  }
-
-  /**
-   * This will initialise each of the processors in this group.
-   *
-   */
-  public void initialise() {
-    if (processors != null) {
-      for (int i = 0; i < processors.length; i++) {
-        processors[i].initialise();
-      }
-    } else {
-      log.warn("ProcessorGroup has no configured processors.");
     }
   }
 
