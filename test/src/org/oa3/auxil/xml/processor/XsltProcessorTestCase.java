@@ -42,7 +42,7 @@ import junit.framework.TestCase;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-import org.oa3.auxil.xml.XsltProcessor;
+import org.oa3.auxil.processor.xml.XsltProcessor;
 import org.oa3.util.FileUtils;
 
 /**

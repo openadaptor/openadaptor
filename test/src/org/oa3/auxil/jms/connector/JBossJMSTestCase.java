@@ -6,10 +6,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.jms.JMSConnection;
-import org.oa3.auxil.jms.JMSListener;
-import org.oa3.auxil.jms.JMSPublisher;
-import org.oa3.auxil.jndi.JNDIConnection;
+import org.oa3.auxil.connector.jms.JMSConnection;
+import org.oa3.auxil.connector.jms.JMSListener;
+import org.oa3.auxil.connector.jms.JMSPublisher;
+import org.oa3.auxil.connector.jndi.JNDIConnection;
 
 /**
  * assumes standard JBOSS distro is runnning.

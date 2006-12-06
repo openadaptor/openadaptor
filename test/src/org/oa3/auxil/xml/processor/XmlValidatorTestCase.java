@@ -5,7 +5,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.xml.XmlValidator;
+import org.oa3.auxil.processor.xml.XmlValidator;
 import org.oa3.util.FileUtils;
 
 public class XmlValidatorTestCase extends TestCase {
