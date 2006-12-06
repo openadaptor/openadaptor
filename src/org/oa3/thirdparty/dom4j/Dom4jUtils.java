@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.dom4j;
+package org.oa3.thirdparty.dom4j;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/util/Dom4jUtils.java,v 1.9 2006/10/19 11:19:24 higginse Exp $ Rev: $Revision: 1.9 $

@@ -30,31 +30,51 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecords;
+package org.oa3.auxil.orderedmap;
 
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/ISimpleRecordAccessor.java,v 1.5 2006/10/17 16:26:28 higginse Exp $
- * Rev: $Revision: 1.5 $ Created Sep 18, 2006 by Eddy Higgins
+ * File: $Header: /cvs/oa3/src/org/oa3/util/OrderedMapUtils.java,v 1.4 2006/10/19 11:19:24 higginse Exp $ Rev:
+ * $Revision: 1.4 $ Created May 31, 2006 by Eddy Higgins
  */
+import org.oa3.core.exception.NullRecordException;
 import org.oa3.core.exception.RecordException;
+import org.oa3.core.exception.RecordFormatException;
 
 /**
- * General Interface for helper (facade) classes which provide access to (<code>Object</code>) Records, as
- * ISimpleRecord implementations.
+ * Utility methods for Ordered Maps
  * 
  * @author Eddy Higgins
  */
-public interface ISimpleRecordAccessor {
+public class OrderedMapUtils {
+  
+  // private static Log log = LogFactory.getLog(OrderedMapUtils.class);
+
+  private OrderedMapUtils() {
+  } // No instantiation allowed.
+
   /**
-   * Generate an <code>ISimpleRecord</code> representation of the supplied record <code>Object</code>.
-   * <p>
-   * Note: To get back the underlying Record object, use ISimpleRecord.getRecord()
+   * This method simply converts a record into an Ordered Map, probably just by casting it. If it cannot, then a
+   * RecordException will be thrown.
    * 
    * @param record
-   *          the object to be accessed as an ISimpleRecord
-   * @return a view of the record as an ISimpleRecord.
-   * @throws RecordException
-   *           if the supplied record cannot be viewed as an <code>ISimpleRecord</code>
+   *          A candidate object which might be an ordered map
+   * @return the object as an ordered Map (probably just cast).
+   * @throws NullRecordException
+   *           if the incoming record is <tt>null</tt>
+   * @throws RecordFormatException
+   *           if the incoming record is not an <code>IOrderedMap</code>
    */
-  public ISimpleRecord asSimpleRecord(Object record) throws RecordException;
+  public static IOrderedMap extractOrderedMap(Object record) throws RecordException {
+    IOrderedMap result = null;
+    if (record instanceof IOrderedMap) {
+      result = (IOrderedMap) record;
+    } else {
+      if (record == null) {
+        throw new NullRecordException("Expected IOrderedMap. Null record not permitted.");
+      } else {
+        throw new RecordFormatException("Expected IOrderedMap . Got [" + record.getClass().getName() + "]");
+      }
+    }
+    return result;
+  }
 }

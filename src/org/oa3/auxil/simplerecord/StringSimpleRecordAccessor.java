@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecords;
+package org.oa3.auxil.simplerecord;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/collections/StringSimpleRecordAccessor.java,v 1.1 2006/11/10 12:14:45 higginse

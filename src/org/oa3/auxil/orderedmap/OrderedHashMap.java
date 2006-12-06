@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.orderedmaps;
+package org.oa3.auxil.orderedmap;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/collections/OrderedHashMap.java,v 1.7 2006/10/17 15:49:18 higginse Exp $ Rev:

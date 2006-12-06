@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.dom4j;
+package org.oa3.thirdparty.dom4j;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/collections/Dom4jSimpleRecordAccessor.java,v 1.12 2006/11/09 11:44:20 higginse
@@ -41,8 +41,8 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.oa3.auxil.simplerecords.ISimpleRecord;
-import org.oa3.auxil.simplerecords.ISimpleRecordAccessor;
+import org.oa3.auxil.simplerecord.ISimpleRecord;
+import org.oa3.auxil.simplerecord.ISimpleRecordAccessor;
 import org.oa3.core.exception.RecordException;
 
 /**

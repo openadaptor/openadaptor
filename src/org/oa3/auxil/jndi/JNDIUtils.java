@@ -44,8 +44,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 
-import org.oa3.auxil.orderedmaps.IOrderedMap;
-import org.oa3.auxil.orderedmaps.OrderedHashMap;
+import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.oa3.auxil.orderedmap.OrderedHashMap;
 
 /**
  * Miscellaneous JNDI Utilities.

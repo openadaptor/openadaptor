@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.orderedmaps;
+package org.oa3.auxil.orderedmap;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/collections/IOrderedMap.java,v 1.11 2006/10/17 15:49:18 higginse Exp $ Rev:
@@ -40,7 +40,7 @@ package org.oa3.auxil.orderedmaps;
 import java.util.List;
 import java.util.Map;
 
-import org.oa3.auxil.simplerecords.ISimpleRecord;
+import org.oa3.auxil.simplerecord.ISimpleRecord;
 
 /**
  * This extends the <code>Map</code> interface to add <code>List</code>-like behaviour.

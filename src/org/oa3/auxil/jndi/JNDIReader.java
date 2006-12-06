@@ -44,7 +44,7 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmaps.IOrderedMap;
+import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.core.exception.OAException;
 
 /**

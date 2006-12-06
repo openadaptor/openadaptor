@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecords;
+package org.oa3.auxil.simplerecord;
 
 import org.oa3.core.exception.RecordException;
 
