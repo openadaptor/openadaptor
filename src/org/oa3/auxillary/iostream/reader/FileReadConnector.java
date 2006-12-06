@@ -48,7 +48,7 @@ import org.oa3.util.FileUtils;
  * 
  * @author Eddy Higgins
  */
-public class FileReader extends URLReader {
+public class FileReadConnector extends URLReadConnector {
   // private static final Log log = LogFactory.getLog(FileReader.class);
 
   private String path;

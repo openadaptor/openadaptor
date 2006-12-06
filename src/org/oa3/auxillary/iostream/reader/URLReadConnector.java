@@ -50,9 +50,9 @@ import org.oa3.core.exception.OAException;
  * 
  * @author Eddy Higgins
  */
-public class URLReader extends AbstractStreamReader {
+public class URLReadConnector extends AbstractStreamReader {
   
-  private static final Log log = LogFactory.getLog(URLReader.class);
+  private static final Log log = LogFactory.getLog(URLReadConnector.class);
 
   /**
    * This is the url which will be used to connect to.

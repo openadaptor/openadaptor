@@ -58,8 +58,8 @@ import org.oa3.core.exception.OAException;
  * 
  * @author Eddy Higgins
  */
-public class DirectoryReader extends AbstractStreamReader {
-  private static final Log log = LogFactory.getLog(DirectoryReader.class);
+public class DirectoryReadConnector extends AbstractStreamReader {
+  private static final Log log = LogFactory.getLog(DirectoryReadConnector.class);
 
   /**
    * Path to the directory being read.
