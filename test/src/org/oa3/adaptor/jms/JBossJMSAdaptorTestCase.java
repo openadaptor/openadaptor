@@ -14,14 +14,14 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxillary.iostream.reader.FileReadConnector;
-import org.oa3.auxillary.iostream.reader.StreamReadConnector;
-import org.oa3.auxillary.iostream.reader.StringRecordReader;
-import org.oa3.auxillary.iostream.writer.FileWriter;
-import org.oa3.auxillary.iostream.writer.StreamWriteConnector;
-import org.oa3.auxillary.jms.JMSConnection;
-import org.oa3.auxillary.jms.JMSListener;
-import org.oa3.auxillary.jms.JMSPublisher;
+import org.oa3.auxil.iostream.reader.FileReadConnector;
+import org.oa3.auxil.iostream.reader.StreamReadConnector;
+import org.oa3.auxil.iostream.reader.StringRecordReader;
+import org.oa3.auxil.iostream.writer.FileWriter;
+import org.oa3.auxil.iostream.writer.StreamWriteConnector;
+import org.oa3.auxil.jms.JMSConnection;
+import org.oa3.auxil.jms.JMSListener;
+import org.oa3.auxil.jms.JMSPublisher;
 import org.oa3.connector.TestWriteConnector;
 import org.oa3.connector.jms.JBossJMSTestCase;
 import org.oa3.connector.stream.FileReaderTestCase;

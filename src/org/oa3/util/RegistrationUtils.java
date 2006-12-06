@@ -52,7 +52,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxillary.iostream.RFC2279;
+import org.oa3.auxil.iostream.RFC2279;
 
 /**
  * Adaptor registration is a process for collecting active adaptor information in a central location. If the property
