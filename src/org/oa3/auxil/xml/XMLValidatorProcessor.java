@@ -38,8 +38,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.SAXParser;
-import org.oa3.core.IRecordProcessor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 import org.oa3.util.URLUtils;
@@ -63,7 +62,7 @@ import org.xml.sax.SAXParseException;
  *
  * @author Russ Fennell
  */
-public class XMLValidatorProcessor implements IRecordProcessor {
+public class XMLValidatorProcessor implements IDataProcessor {
 
   public static final Log log = LogFactory.getLog(XMLValidatorProcessor.class);
 
@@ -120,9 +119,10 @@ public class XMLValidatorProcessor implements IRecordProcessor {
    * @throws RecordException if the record is not a string or does not contain
    * valid XML or if it fails to be validated against the schema
    */
-  public Object[] processRecord(Object record) throws RecordException {
-    if (!(record instanceof String))
-      throw new RecordFormatException("Record is not an XML string");
+  public Object[] process(Object record) {
+    if (!(record instanceof String)) {
+      throw new RuntimeException("Record is not an XML string");
+    }
 
     String xml = (String) record;
 
@@ -143,17 +143,14 @@ public class XMLValidatorProcessor implements IRecordProcessor {
    * @return empty list
    */
   public void validate(List exceptions) {
-  }
-
-  /**
-   * Hook to perform any (first-time) initialisation required by the
-   * implementation. Checks to make sure that URL for the schema has been
-   * defined as it is a mandatory property.
-   */
-  public void initialise() {
-    // todo: we should catch the OAException and rethrow a checked exception here!!
-    if (forcingURLValidation)
-      URLUtils.validateURLAsDataSource(schemaURL);
+    
+    if (forcingURLValidation) {
+      try {
+        URLUtils.validateURLAsDataSource(schemaURL);
+      } catch (RuntimeException e) {
+        exceptions.add(e);
+      }
+    }
 
     // set up the parser to use validation and set the schema location
     try {
@@ -162,7 +159,7 @@ public class XMLValidatorProcessor implements IRecordProcessor {
       parser.setFeature("http://apache.org/xml/features/validation/schema-full-checking", true);
       parser.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schemaURL);
     } catch (Exception e) {
-      throw new OAException("Failed to initialise the parser: " + e.toString());
+      exceptions.add(e);
     }
 
     // we must have some sort of error handler or the parser will simply
@@ -175,7 +172,7 @@ public class XMLValidatorProcessor implements IRecordProcessor {
   /**
    * Hook to allow the processor to be reset. Does nothing.
    */
-  public void reset() {
+  public void reset(Object context) {
   }
 
   /**

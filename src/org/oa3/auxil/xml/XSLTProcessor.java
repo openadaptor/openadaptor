@@ -50,7 +50,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.DocumentSource;
-import org.oa3.core.IRecordProcessor;
+import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.ProcessorException;
 import org.oa3.util.FileUtils;
 
@@ -65,7 +65,7 @@ import org.oa3.util.FileUtils;
  * 
  * @author Russ Fennell
  */
-public class XSLTProcessor implements IRecordProcessor {
+public class XSLTProcessor implements IDataProcessor {
 
   private static final Log log = LogFactory.getLog(XSLTProcessor.class);
 
@@ -97,11 +97,7 @@ public class XSLTProcessor implements IRecordProcessor {
     }
   }
 
-  /**
-   * No op, just writes to log
-   */
-  public void reset() {
-    log.debug("Reset - no action required");
+  public void reset(Object context) {
   }
 
   /**
@@ -143,7 +139,7 @@ public class XSLTProcessor implements IRecordProcessor {
    * @throws ProcessorException
    *           if the record type is not supported
    */
-  public Object[] processRecord(Object record) throws ProcessorException {
+  public Object[] process(Object record) throws ProcessorException {
     if (record == null)
       return null;
 

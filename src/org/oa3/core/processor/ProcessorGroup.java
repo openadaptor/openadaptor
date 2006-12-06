@@ -41,7 +41,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IRecordProcessor;
+import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -57,7 +57,7 @@ import org.oa3.core.exception.RecordException;
  *
  * @author Eddy Higgins
  */
-public class ProcessorGroup implements IRecordProcessor {
+public class ProcessorGroup implements IDataProcessor {
 
   private static Log log = LogFactory.getLog(ProcessorGroup.class);
 
@@ -66,7 +66,7 @@ public class ProcessorGroup implements IRecordProcessor {
   /**
    * list of the processors in this group.
    */
-  private IRecordProcessor[] processors;
+  private IDataProcessor[] processors;
 
   //BEGIN Bean getters/setters
 
@@ -74,7 +74,7 @@ public class ProcessorGroup implements IRecordProcessor {
    * list of the processors in this group.
    * @param processors list of the processors in this group.
    */
-  public void setProcessors(IRecordProcessor[] processors) {
+  public void setProcessors(IDataProcessor[] processors) {
     this.processors = processors;
   }
 
@@ -82,7 +82,7 @@ public class ProcessorGroup implements IRecordProcessor {
    * list of the processors in this group.
    * @return list of the processors in this group.
    */
-  public IRecordProcessor[] getProcessors() {
+  public IDataProcessor[] getProcessors() {
     return (processors);
   }
 
@@ -103,10 +103,10 @@ public class ProcessorGroup implements IRecordProcessor {
   /**
    * This will reset each of the processors in this processor group.
    */
-  public void reset() {
+  public void reset(Object context) {
     if (processors != null) {
       for (int i = 0; i < processors.length; i++) {
-        processors[i].reset();
+        processors[i].reset(context);
       }
     } else {
       log.warn("ProcessorGroup has no configured processors.");
@@ -125,19 +125,18 @@ public class ProcessorGroup implements IRecordProcessor {
    *
    * @return record, untouched or null if the record is to be skipped.
    */
-  public Object[] processRecord(Object record) throws RecordException {
+  public Object[] process(Object record) {
     Object[] input; //This will get set immediately in the loop
     Object[] output = new Object[] { record }; //Prime the loop.
     if (processors != null) {
       //Walk through each processor. Each one takes the ouput of the
       //previous one as input.
       for (int i = 0; i < processors.length; i++) {
-        IRecordProcessor processor = processors[i];
-        log.debug("applying processor: " + processor);
+        log.debug("applying processor: " + processors[i]);
         input = output;
         output = new Object[0];
         for (int j = 0; j < input.length; j++) {
-          Object[] results = processor.processRecord(input[j]);
+          Object[] results = processors[i].process(input[j]);
           int count = results.length;
           if (count > 0) {// Add 'em to output
             Object[] tmp = new Object[output.length + count];
