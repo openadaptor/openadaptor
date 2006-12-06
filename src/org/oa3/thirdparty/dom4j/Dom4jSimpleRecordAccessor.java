@@ -53,7 +53,7 @@ import org.oa3.core.exception.RecordException;
  * @author Eddy Higgins
  */
 public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpleRecord {
-  
+
   private static final Log log = LogFactory.getLog(Dom4jSimpleRecordAccessor.class);
 
   /**

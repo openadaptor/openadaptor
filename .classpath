@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test/src"/>
-	<classpathentry kind="src" path="spring/src"/>
+	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="src" output="stub/classes" path="stub/src"/>
+	<classpathentry kind="src" output="test/classes" path="test/src"/>
+	<classpathentry kind="src" output="spring/classes" path="spring/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
@@ -17,7 +18,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
 	<classpathentry kind="lib" path="test/lib/jotm.jar"/>
-	<classpathentry kind="lib" path="test/lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="test/lib/jbossall-client.jar"/>
+	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="test/lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

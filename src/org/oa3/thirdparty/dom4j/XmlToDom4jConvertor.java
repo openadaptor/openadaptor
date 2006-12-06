@@ -30,38 +30,39 @@
  * Software with other software or hardware.
  * ]]
  */
+package org.oa3.thirdparty.dom4j;
 
-package org.oa3.core;
+/*
+ * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/XmlToDom4jConvertorProcessor.java,v 1.4 2006/10/20 15:21:35
+ * fennelr Exp $ Rev: $Revision: 1.4 $ Created Jun 30, 2006 by Eddy Higgins
+ */
+import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.core.exception.RecordException;
 
-import java.util.List;
+/**
+ * Converts XML documents (as Strings) to Dom4j Documents
+ * 
+ * @author Eddy Higgins
+ */
+public class XmlToDom4jConvertor extends AbstractConverter {
+  //private static final Log log = LogFactory.getLog(XmlToDom4jConvertorProcessor.class);
 
-
-public interface IDataProcessor {
-	
-	void validate(List exceptions);
-	
-	void reset(Object context);
-  
-	/**
-	 * processes some data and returns zero or many objects as output
-	 * @param data
-	 * @return output, null indicates that data was disgarded, this is distinct from empty
-	 * array which indicates no return value
-	 */
-	Object[] process(Object data);
-	
-	static final class NullProcessor implements IDataProcessor {
-
-		public Object[] process(Object data) {
-			return new Object[] { data };
-		}
-
-		public void reset(Object context) {
-		}
-
-		public void validate(List exceptions) {
-		}
-		
-	}
-
+  /**
+   * Convert an incoming record into a dom4j Document. Valid input records may contain an XML String,a Dom4j Document,
+   * or null. If not, a RecordFormatException will be thrown. Note that if a null input record is supplied, null will be
+   * returned. The real work is done by Dom4jUtils.getDocument()
+   * 
+   * @param record
+   *          containing an XML Document (dom4j) or a String containing an XML Document
+   * 
+   * @return Dom4J Document representing the XML
+   * 
+   * @throws RecordException
+   *           if conversion fails
+   * 
+   * @see Dom4jUtils
+   */
+  protected Object convert(Object record) throws RecordException {
+    return (Dom4jUtils.getDocument(record));
+  }
 }

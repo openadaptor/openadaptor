@@ -30,31 +30,76 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.oa3.auxil.converter.fixedwidth;
 
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/RecordException.java,v 1.1 2006/05/10 16:07:19 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created May 09. 2006 by Eddy Higgins
+ * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/FixedWidthFieldDetail.java,v 1.2 2006/10/20 15:21:35 fennelr
+ * Exp $ Rev: $Revision: 1.2 $ Created Jun 22, 2006 by oa3 Core Team
  */
 
 /**
- * Exception class for exceptions related to processing Records
+ * Defines a fixed width field. Allows you to set the various attributes required to manipulate a field: <p/> <p/>
  * 
- * @author OA3 Core Team
+ * <pre>
+ *       fieldWidth      the number of characters the field will be made up of. Default = 0
+ *       fieldName       the name used to reference the field. Default = null
+ *       trim            wether the field is to have whitespace trimmed. Default = false
+ * </pre>
+ * 
+ * @author Russ Fennell
  */
-public class RecordException extends RuntimeException {
+public class FixedWidthFieldDetail {
+  private int fieldWidth = 0;
 
-  private static final long serialVersionUID = 1L;
+  private String fieldName = null;
 
-  protected RecordException() {
-    super();
+  private boolean trim = false;
+
+  /**
+   * @return the field width value. Defaults to 0
+   */
+  public int getFieldWidth() {
+    return fieldWidth;
   }
 
-  public RecordException(String msg) {
-    super(msg);
+  /**
+   * @return the field name value. Defaults to null
+   */
+  public String getFieldName() {
+    return fieldName;
   }
 
-  public RecordException(String msg, Throwable cause) {
-    super(msg, cause);
+  /**
+   * @return true if the field is to be trimmed. Defaults to false
+   */
+  public boolean isTrim() {
+    return trim;
+  }
+
+  /**
+   * Sets the field width
+   * 
+   * @param fieldWidth
+   */
+  public void setFieldWidth(int fieldWidth) {
+    this.fieldWidth = fieldWidth;
+  }
+
+  /**
+   * Sets the field name
+   * 
+   * @param fieldName
+   */
+  public void setFieldName(String fieldName) {
+    this.fieldName = fieldName;
+  }
+
+  /**
+   * Sets the flag to indicate if the field should be trimmed orr not
+   * 
+   * @param trim
+   */
+  public void setTrim(boolean trim) {
+    this.trim = trim;
   }
 }
