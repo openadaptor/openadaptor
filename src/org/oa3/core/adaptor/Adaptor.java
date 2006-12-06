@@ -54,6 +54,9 @@ public class Adaptor implements IMessageProcessor, Runnable, AdaptorMBean {
 
 	private static final Log log = LogFactory.getLog(Adaptor.class);
 	
+  public static final String ADAPTOR_START_TIMESTAMP_PROPERTY="oa3.adaptor.start";
+  public static final String ADAPTOR_START_TIMESTAMP_FORMAT="yyyy/MM/dd HH:mm:ss";
+  
 	private IMessageProcessor processor;
 	private List inpoints;
 	private List components;

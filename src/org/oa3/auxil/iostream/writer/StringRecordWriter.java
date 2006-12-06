@@ -36,9 +36,11 @@ package org.oa3.auxil.iostream.writer;
  * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/writer/StringRecordWriter.java,v 1.3 2006/08/31 10:01:37 shirea
  * Exp $ Rev: $Revision: 1.3 $ Created Feb 24, 2005 by Eddy Higgins
  */
-import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.io.Writer;
 
-import java.io.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Very simplistic String Record Writer. Basically treats cr and lf as record delimiters.
@@ -47,7 +49,7 @@ import java.io.*;
  */
 public class StringRecordWriter implements IRecordWriter {
 
-  static Logger log = Logger.getLogger(StringRecordWriter.class.getName());
+  public static final Log log = LogFactory.getLog(StringRecordWriter.class);
 
   static final String DEFAULT_DELIMITER = System.getProperty("line.separator", "\n");
 
