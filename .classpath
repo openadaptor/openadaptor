@@ -24,9 +24,13 @@
 	<classpathentry kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry kind="lib" path="lib/jta-spec.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="test/lib/jmock.jar"/>
 	<classpathentry kind="lib" path="test/lib/log4j.jar"/>
+	<classpathentry kind="lib" path="test/lib/mockrunner-jms.jar"/>
+	<classpathentry kind="lib" path="test/lib/spring-mock.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="test/lib/dumbster.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
+
