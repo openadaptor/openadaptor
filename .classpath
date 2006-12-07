@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="test/lib/log4j.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="test/lib/dumbster.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
