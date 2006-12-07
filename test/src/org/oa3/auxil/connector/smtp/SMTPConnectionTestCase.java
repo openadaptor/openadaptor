@@ -31,11 +31,11 @@
  * ]]
  */
 
-package org.oa3.auxil.smtp.connector;
+package org.oa3.auxil.connector.smtp;
 
 import junit.framework.TestCase;
 import com.dumbster.smtp.SimpleSmtpServer;
-import org.oa3.auxil.smtp.SMTPConnection;
+import org.oa3.auxil.connector.smtp.SMTPConnection;
 /*
 * File: $Header: $
 * Rev: $Revision: $

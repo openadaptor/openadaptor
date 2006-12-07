@@ -40,70 +40,74 @@ import org.oa3.core.IDataProcessor;
 
 public class TestProcessor extends Component implements IDataProcessor {
 
-	private Class exceptionClass = RuntimeException.class;
-	private int exceptionFrequency = 0;
-	private int discardFrequency = 0;
-	private int gobbleFrequency = 0;
-	private int count = 0;
+  private Class exceptionClass = RuntimeException.class;
 
-	public TestProcessor() {
-	}
-	
-	public TestProcessor(String id) {
-		super(id);
-	}
-	
-	public void setExceptionClassName(String c) {
-		try {
-			exceptionClass = Class.forName(c);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
-	
-	public void setExceptionFrequency(int frequency) {
-		this.exceptionFrequency = frequency;
-	}
+  private int exceptionFrequency = 0;
 
-	public void setDiscardFrequency(int frequency) {
-		this.discardFrequency = frequency;
-	}
+  private int discardFrequency = 0;
 
-	public void setGobbleFrequency(int frequency) {
-		this.gobbleFrequency = frequency;
-	}
+  private int gobbleFrequency = 0;
 
-	public Object[] process(Object data) {
-		count++;
-		
-		if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
-			RuntimeException ex = null;
-			try {
-				ex = (RuntimeException) exceptionClass.newInstance();
-			} catch (Exception e) {
-				throw new RuntimeException("failed to throw runtimeException " + exceptionClass.getName());
-			}
-			throw ex;
-		}
+  private int count = 0;
 
-		if (discardFrequency > 0 && (count % discardFrequency == 0)) {
-			return null;
-		}
+  public TestProcessor() {
+  }
 
-		if (gobbleFrequency > 0 && (count % gobbleFrequency == 0)) {
-			return new Object[0];
-		}
+  public TestProcessor(String id) {
+    super(id);
+  }
 
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(getId() != null ? getId() : TestProcessor.class.getName());
-		buffer.append("(").append(data.toString()).append(")");
-		return new Object[] {buffer.toString()};
-	}
+  public void setExceptionClassName(String c) {
+    try {
+      exceptionClass = Class.forName(c);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
 
-	public void reset(Object context) {
-	}
+  public void setExceptionFrequency(int frequency) {
+    this.exceptionFrequency = frequency;
+  }
 
-	public void validate(List exceptions) {
-	}
+  public void setDiscardFrequency(int frequency) {
+    this.discardFrequency = frequency;
+  }
+
+  public void setGobbleFrequency(int frequency) {
+    this.gobbleFrequency = frequency;
+  }
+
+  public Object[] process(Object data) {
+    count++;
+
+    if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
+      RuntimeException ex = null;
+      try {
+        ex = (RuntimeException) exceptionClass.newInstance();
+      } catch (Exception e) {
+        throw new RuntimeException("failed to throw runtimeException " + exceptionClass.getName());
+      }
+      throw ex;
+    }
+
+    if (discardFrequency > 0 && (count % discardFrequency == 0)) {
+      return null;
+    }
+
+    if (gobbleFrequency > 0 && (count % gobbleFrequency == 0)) {
+      return new Object[0];
+    }
+
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(getId() != null ? getId() : TestProcessor.class.getName());
+    buffer.append("(").append(data.toString()).append(")");
+    return new Object[] { buffer.toString() };
+  }
+
+  public void reset(Object context) {
+  }
+
+  public void validate(List exceptions) {
+  }
 
 }

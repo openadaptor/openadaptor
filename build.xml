@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="openadaptor3" default="recompile.all">
   
-  <property name="dir.stub.classes" value="classes"/>
-  <property name="dir.stub.lib" value="lib"/>
-  <property name="dir.stub.src" value="src"/>
+  <property name="dir.stub.classes" value="stub/classes"/>
+  <property name="dir.stub.lib" value="stub/lib"/>
+  <property name="dir.stub.src" value="stub/src"/>
   
   <property name="dir.classes" value="classes"/>
   <property name="dir.lib" value="lib"/>

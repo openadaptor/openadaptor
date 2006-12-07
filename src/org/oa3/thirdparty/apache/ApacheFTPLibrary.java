@@ -42,10 +42,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
 import org.oa3.auxil.connector.ftp.IFTPLibrary;
 import org.oa3.core.exception.OAException;
 
@@ -70,7 +71,8 @@ import org.oa3.core.exception.OAException;
  * @see AbstractFTPLibrary
  */
 public class ApacheFTPLibrary extends AbstractFTPLibrary {
-  static Logger log = Logger.getLogger(ApacheFTPLibrary.class);
+  
+  private static final Log log = LogFactory.getLog(ApacheFTPLibrary.class);
 
   private FTPClient _ftpClient;
 

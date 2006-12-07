@@ -30,14 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.xml.processor;
+package org.oa3.auxil.processor.xml;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +42,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.oa3.auxil.processor.xml.XsltProcessor;
-import org.oa3.util.FileUtils;
 import org.oa3.util.ResourceUtil;
 import org.xml.sax.InputSource;
 

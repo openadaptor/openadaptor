@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.auxil.smtp;
+package org.oa3.auxil.connector.smtp;
 /*
 * File: $Header: /cvs/oa3/src/org/oa3/connector/smtp/SMTPWriteConnector.java,v 1.5 2006/11/01 09:10:11 fennelr Exp $
 * Rev: $Revision: 1.5 $

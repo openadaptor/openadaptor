@@ -43,7 +43,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.core.exception.OAException;
 import org.oa3.thirdparty.apache.AbstractFTPLibrary;
 
@@ -68,7 +69,8 @@ import sun.net.ftp.FtpClient;
  * @author Russ Fennell
  */
 public class SunFTPLibrary extends AbstractFTPLibrary {
-  static Logger log = Logger.getLogger(SunFTPLibrary.class);
+  
+  private static final Log log = LogFactory.getLog(SunFTPLibrary.class);
 
   // SunFTP client object that will perform the actual file transfer
   private FtpClient _ftpClient;

@@ -31,13 +31,13 @@
  * ]]
  */
 
-package org.oa3.auxil.smtp.connector;
+package org.oa3.auxil.connector.smtp;
 
 import junit.framework.TestCase;
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
-import org.oa3.auxil.smtp.SMTPWriteConnector;
-import org.oa3.auxil.smtp.SMTPConnection;
+import org.oa3.auxil.connector.smtp.SMTPWriteConnector;
+import org.oa3.auxil.connector.smtp.SMTPConnection;
 
 import java.util.Iterator;
 
