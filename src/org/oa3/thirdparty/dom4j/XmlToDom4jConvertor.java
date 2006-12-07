@@ -36,7 +36,7 @@ package org.oa3.thirdparty.dom4j;
  * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/XmlToDom4jConvertorProcessor.java,v 1.4 2006/10/20 15:21:35
  * fennelr Exp $ Rev: $Revision: 1.4 $ Created Jun 30, 2006 by Eddy Higgins
  */
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -44,7 +44,7 @@ import org.oa3.core.exception.RecordException;
  * 
  * @author Eddy Higgins
  */
-public class XmlToDom4jConvertor extends AbstractConverter {
+public class XmlToDom4jConvertor extends AbstractConvertor {
   //private static final Log log = LogFactory.getLog(XmlToDom4jConvertorProcessor.class);
 
   /**

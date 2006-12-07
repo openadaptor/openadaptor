@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.fixedwidth;
+package org.oa3.auxil.convertor.fixedwidth;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/FixedWidthFieldDetail.java,v 1.2 2006/10/20 15:21:35 fennelr

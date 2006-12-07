@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 
@@ -53,7 +53,7 @@ import org.oa3.core.exception.RecordFormatException;
  * 
  * @author Eddy Higgins
  */
-public class Dom4jToXmlConvertor extends AbstractConverter {
+public class Dom4jToXmlConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(Dom4jToXmlConvertor.class);
 
   // If true then the outputXML will be pretty-printed

@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.xml;
+package org.oa3.auxil.convertor.xml;
 
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/XmlToOrderedMapConvertorProcessor.java,v 1.17 2006/10/30
@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
 import org.oa3.core.exception.RecordException;
@@ -62,7 +62,7 @@ import org.oa3.thirdparty.dom4j.Dom4jUtils;
  * 
  * @author Eddy Higgins
  */
-public class XmlToOrderedMapConvertor extends AbstractConverter {
+public class XmlToOrderedMapConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(XmlToOrderedMapConvertor.class);
 
   protected String xpathExpression;

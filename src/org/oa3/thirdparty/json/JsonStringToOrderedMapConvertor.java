@@ -37,7 +37,7 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
 import org.oa3.core.exception.NullRecordException;
@@ -50,7 +50,7 @@ import org.oa3.core.exception.RecordFormatException;
  * 
  * @author Kevin Scully
  */
-public class JsonStringToOrderedMapConvertor extends AbstractConverter {
+public class JsonStringToOrderedMapConvertor extends AbstractConvertor {
 
   /**
    * Performs the the actual conversion. Returns the successfully converted record or throw a RecordException.

@@ -41,7 +41,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;

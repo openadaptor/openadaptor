@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.fixedwidth;
+package org.oa3.auxil.convertor.fixedwidth;
 
 import java.util.ArrayList;
 

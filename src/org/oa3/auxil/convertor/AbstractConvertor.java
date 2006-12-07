@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter;
+package org.oa3.auxil.convertor;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import org.oa3.core.exception.RecordException;
  * 
  * @author Eddy Higgins
  */
-public abstract class AbstractConverter implements IDataProcessor {
+public abstract class AbstractConvertor implements IDataProcessor {
 
   // private static final Log log = LogFactory.getLog(AbstractRecordConvertorProcessor.class);
 

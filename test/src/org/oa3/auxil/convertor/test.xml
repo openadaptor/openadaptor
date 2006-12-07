@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<A>
+  <B>
+    <Y>Y_VAL</Y>
+    <Z>Z_VAL</Z>
+  </B>
+  <C>
+    <Y>Y_VAL</Y>
+    <Z>Z_VAL</Z>
+  </C>
+  <C>
+    <Y>Y_VAL2</Y>
+    <Z>Z_VAL2</Z>
+  </C>
+</A>

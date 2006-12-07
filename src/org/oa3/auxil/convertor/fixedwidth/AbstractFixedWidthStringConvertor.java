@@ -30,13 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.fixedwidth;
+package org.oa3.auxil.convertor.fixedwidth;
 
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.core.exception.OAException;
 
 /**
@@ -56,7 +56,7 @@ import org.oa3.core.exception.OAException;
  * @see AbstractFixedWidthStringConvertor
  * @see FixedWidthStringToOrderedMapConvertor
  */
-public abstract class AbstractFixedWidthStringConvertor extends AbstractConverter {
+public abstract class AbstractFixedWidthStringConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(AbstractFixedWidthStringConvertor.class);
 
   // List of the field names/width mappings.

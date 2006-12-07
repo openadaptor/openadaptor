@@ -37,7 +37,7 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
 import org.oa3.auxil.orderedmap.OrderedMapUtils;
@@ -50,7 +50,7 @@ import org.oa3.core.exception.RecordFormatException;
  * 
  * @author Kevin Scully
  */
-public class OrderedMapToJsonStringConvertor extends AbstractConverter {
+public class OrderedMapToJsonStringConvertor extends AbstractConvertor {
 
   // Size of tab to use when pretty print. 0 means don't pretty print.
   protected int tabSize = 0;

@@ -41,7 +41,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
@@ -59,7 +59,7 @@ import org.openadaptor.dataobjects.SimpleDataObject;
  * 
  * @author Eddy Higgins
  */
-public class OrderedMapToDataObjectConvertor extends AbstractConverter implements RFC2279 {
+public class OrderedMapToDataObjectConvertor extends AbstractConvertor implements RFC2279 {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
   // BEGIN Bean getters/setters

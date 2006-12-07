@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.xml;
+package org.oa3.auxil.convertor.xml;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,7 +44,7 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
@@ -54,7 +54,7 @@ import org.oa3.core.exception.RecordFormatException;
  * 
  * @author Eddy Higgins
  */
-public class OrderedMapToXmlConvertor extends AbstractConverter implements RFC2279 {
+public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC2279 {
   private static final Log log = LogFactory.getLog(OrderedMapToXmlConvertor.class);
 
   public static final String DEFAULT_ROOT_ELEMENT_TAG = "root";
@@ -132,7 +132,7 @@ public class OrderedMapToXmlConvertor extends AbstractConverter implements RFC22
    * @throws RecordException
    *           if the record is not an IOrderedMap
    */
-  protected Object convert(Object record) throws RecordException {
+  public Object convert(Object record) throws RecordException {
     if (!(record instanceof IOrderedMap))
       throw new RecordFormatException("Record is not an IOrderedMap. Record: " + record);
 

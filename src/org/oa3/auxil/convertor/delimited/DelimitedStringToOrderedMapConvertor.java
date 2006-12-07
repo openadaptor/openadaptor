@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.delimited;
+package org.oa3.auxil.convertor.delimited;
 
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;

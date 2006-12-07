@@ -30,14 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.converter.delimited;
+package org.oa3.auxil.convertor.delimited;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.converter.AbstractConverter;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
 import org.oa3.core.exception.NullRecordException;
@@ -49,7 +49,7 @@ import org.oa3.core.exception.RecordFormatException;
  * 
  * @author Eddy Higgins
  */
-public abstract class AbstractDelimitedStringConvertor extends AbstractConverter {
+public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor {
 
   private final static Log log = LogFactory.getLog(AbstractDelimitedStringConvertor.class);
 
