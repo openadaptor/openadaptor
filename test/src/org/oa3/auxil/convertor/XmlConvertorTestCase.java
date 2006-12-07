@@ -35,6 +35,7 @@ package org.oa3.auxil.convertor;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
@@ -51,181 +52,165 @@ import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
+import org.oa3.util.ResourceUtil;
 
 /**
  * This tests the XmlConvertors implementation.
+ * 
  * @author OA3 Core Team
  */
 public class XmlConvertorTestCase extends TestCase {
-    private static final String XML_FILE="test/src/org/oa3/auxil/convertor/test.xml";
-    private String xmlString;
-    private Document xmlDocument;
-    private IOrderedMap om;
-    private XmlToOrderedMapConvertor xml2om;
-    private OrderedMapToXmlConvertor om2xml;
-    protected void setUp() throws Exception {
-        super.setUp();
-        xmlString =readXmlFile(XML_FILE);
-        xmlDocument=generateXmlDocument(xmlString);
-        om=generateTestOrderedMap();
-        xml2om =new XmlToOrderedMapConvertor();
-        om2xml =new OrderedMapToXmlConvertor();
+
+  private String xmlString;
+
+  private Document xmlDocument;
+
+  private IOrderedMap om;
+
+  private XmlToOrderedMapConvertor xml2om;
+
+  private OrderedMapToXmlConvertor om2xml;
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    xmlString = ResourceUtil.readFileContents(this, "test.xml");
+    xmlDocument = generateXmlDocument(xmlString);
+    om = generateTestOrderedMap();
+    xml2om = new XmlToOrderedMapConvertor();
+    om2xml = new OrderedMapToXmlConvertor();
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+  }
+
+  private IOrderedMap generateTestOrderedMap() {
+    IOrderedMap root = new OrderedHashMap();
+    IOrderedMap parent = new OrderedHashMap();
+    IOrderedMap child = new OrderedHashMap();
+    IOrderedMap child2 = new OrderedHashMap();
+    child.put("Y", "Y_VAL");
+    child.put("Z", "Z_VAL");
+    parent.put("B", child);
+    child = new OrderedHashMap();
+    child.put("Y", "Y_VAL");
+    child.put("Z", "Z_VAL");
+
+    child2 = new OrderedHashMap();
+    child2.put("Y", "Y_VAL2");
+    child2.put("Z", "Z_VAL2");
+    parent.put("C", new Object[] { child, child2 });
+
+    root.put("A", parent);
+    return root;
+  }
+
+  private static Document generateXmlDocument(String xml) {
+    Document document = null;
+    try {
+      return (DocumentHelper.parseText(xml));
+    } catch (DocumentException de) {
+      fail("Unit test problem - " + de.toString());
+    }
+    return document;
+  }
+
+  public void testTwoWayConversion() {
+    try {
+      // IOrderedMap map=(IOrderedMap)xml2om.convert(xmlString);
+      Object[] resultArray = xml2om.process(xmlString);
+      assertTrue(resultArray.length == 1);
+      IOrderedMap map = (IOrderedMap) resultArray[0];
+      System.out.println(map);
+      // String xml=(String)om2xml.convert(map);
+      resultArray = om2xml.process(map);
+      assertTrue(resultArray.length == 1);
+      String xml = (String) resultArray[0];
+      System.out.println(xml);
+      assertEquals(xmlString, xml);
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }
+  }
+
+  public void testXmlToOrderedMapConversion() {
+    try {
+      // IOrderedMap map=(IOrderedMap)xml2om.convert(xmlString);
+      Object[] resultArray = xml2om.process(xmlString);
+      assertTrue(resultArray.length == 1);
+      IOrderedMap map = (IOrderedMap) resultArray[0];
+      System.out.println(map);
+      assertEquals(om.toString(), map.toString()); // Close enough
+      // map=(IOrderedMap)xml2om.convert(xmlDocument);
+      resultArray = xml2om.process(xmlDocument);
+      assertTrue(resultArray.length == 1);
+      map = (IOrderedMap) resultArray[0];
+      assertEquals(om.toString(), map.toString()); // Close enough.
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-    private String readXmlFile(String filename) {
-        StringBuffer sb=new StringBuffer();
-        FileInputStream fis;
-        try {
-            fis=new FileInputStream(filename);
-            BufferedReader br=new BufferedReader(new InputStreamReader(fis));
-            String line=null;
-            while ((line=br.readLine()) !=null) {
-                sb.append(line).append("\n");
-            }
-            br.close();
-            fis.close();
-        }
-        catch (IOException ioe) {
-            fail("Unit Test problem - unable to read XML file:"+filename+". Exception: "+ioe.toString());
-        }
-        return sb.toString();
-    }
-    private IOrderedMap generateTestOrderedMap() {
-        IOrderedMap root=new OrderedHashMap();
-        IOrderedMap parent=new OrderedHashMap();
-        IOrderedMap child=new OrderedHashMap();
-        IOrderedMap child2=new OrderedHashMap();
-        child.put("Y","Y_VAL");
-        child.put("Z","Z_VAL");
-        parent.put("B",child);
-        child=new OrderedHashMap();
-        child.put("Y","Y_VAL");
-        child.put("Z","Z_VAL");
+  }
 
-        child2=new OrderedHashMap();
-        child2.put("Y","Y_VAL2");
-        child2.put("Z","Z_VAL2");
-        parent.put("C",new Object[] {child,child2});
-
-        root.put("A",parent);
-        return root;
-    }
-    private static Document generateXmlDocument(String xml) {
-        Document document=null;
-        try {
-            return(DocumentHelper.parseText(xml));
-        }
-        catch (DocumentException de) {
-            fail("Unit test problem - "+de.toString());
-        }
-        return document;
+  public void testInvalidInputs() {
+    try {
+      // xml2om.convert(om);
+      xml2om.process(om);
+      fail("Convertor should not accept non String/Document value " + om.getClass().getName());
+    } catch (RecordFormatException pe) {
+      ;
+    } catch (Exception e) {
+      fail("Wrong exception thrown [" + e + "]");
     }
 
-    public void testTwoWayConversion() {
-        try {
-            //IOrderedMap map=(IOrderedMap)xml2om.convert(xmlString);
-            Object[] resultArray = xml2om.process(xmlString);
-            assertTrue(resultArray.length == 1);
-            IOrderedMap map = (IOrderedMap)resultArray[0];
-            System.out.println(map);
-            //String xml=(String)om2xml.convert(map);
-            resultArray = om2xml.process(map);
-            assertTrue(resultArray.length == 1);
-            String xml = (String)resultArray[0];
-            System.out.println(xml);
-            assertEquals(xmlString,xml);
-        }
-        catch (RecordException re) {
-            fail("Unexpected RecordException - "+re);
-        }
-    }
-    public void testXmlToOrderedMapConversion() {
-        try{
-            //IOrderedMap map=(IOrderedMap)xml2om.convert(xmlString);
-            Object[] resultArray = xml2om.process(xmlString);
-            assertTrue(resultArray.length == 1);
-            IOrderedMap map = (IOrderedMap)resultArray[0];
-            System.out.println(map);
-            assertEquals(om.toString(),map.toString()); // Close enough
-            //map=(IOrderedMap)xml2om.convert(xmlDocument);
-            resultArray = xml2om.process(xmlDocument);
-            assertTrue(resultArray.length == 1);
-            map = (IOrderedMap)resultArray[0];
-            assertEquals(om.toString(),map.toString()); // Close enough.
-        }
-        catch (RecordException re) {
-            fail("Unexpected RecordException - "+re);
-        }
-
+    try {
+      om2xml.convert(xmlString);
+      om2xml.process(xmlString);
+      fail("Convertor should not accept non IOrderedMap value " + om.getClass().getName());
+    } catch (RecordFormatException pe) {
+      ;
+    } catch (Exception e) {
+      fail("Wrong exception thrown [" + e + "]");
     }
 
-    public void testInvalidInputs() {
-        try {
-            //xml2om.convert(om);
-            xml2om.process(om);
-            fail("Convertor should not accept non String/Document value "+om.getClass().getName());
-        }
-        catch(RecordFormatException pe) {
-            ;
-        }
-        catch(Exception e) {
-            fail("Wrong exception thrown [" + e + "]");
-        }
+  }
 
-        try {
-            om2xml.convert(xmlString);
-            om2xml.process(xmlString);
-            fail("Convertor should not accept non IOrderedMap value "+om.getClass().getName());
-        }
-        catch(RecordFormatException pe) {
-            ;
-        }
-        catch(Exception e) {
-            fail("Wrong exception thrown [" + e + "]");
-        }
+  public void testOrderedMapToXmlConversion() {
+    try {
+      // String xml=(String)om2xml.convert(om);
 
+      Object[] resultArray = om2xml.process(om);
+      assertTrue(resultArray.length == 1);
+      String xml = (String) resultArray[0];
+
+      assertEquals(xmlString, xml);
+
+      om2xml.setReturnXmlAsString(false);
+      // Document doc=(Document)om2xml.convert(om);
+      resultArray = om2xml.process(om);
+      assertTrue(resultArray.length == 1);
+      Document doc = (Document) resultArray[0];
+
+      String encoding = doc.getXMLEncoding();
+      assertEquals(XmlConvertorTestCase.docAsString(xmlDocument, encoding), XmlConvertorTestCase.docAsString(doc,
+          encoding));
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
     }
+  }
 
-    public void testOrderedMapToXmlConversion() {
-        try {
-            //String xml=(String)om2xml.convert(om);
-
-            Object[] resultArray = om2xml.process(om);
-            assertTrue(resultArray.length == 1);
-            String xml = (String)resultArray[0];
-
-            assertEquals(xmlString,xml);
-
-            om2xml.setReturnXmlAsString(false);
-            //Document doc=(Document)om2xml.convert(om);
-            resultArray = om2xml.process(om);
-            assertTrue(resultArray.length == 1);
-            Document doc = (Document)resultArray[0];
-
-            String encoding=doc.getXMLEncoding();
-            assertEquals(XmlConvertorTestCase.docAsString(xmlDocument,encoding),XmlConvertorTestCase.docAsString(doc,encoding));
-        }
-        catch (RecordException re) {
-            fail("Unexpected RecordException - "+re);
-        }
+  private static String docAsString(Document doc, String encoding) {
+    StringWriter sw = new StringWriter();
+    OutputFormat outputFormat = OutputFormat.createCompactFormat();
+    if (encoding != null) {
+      outputFormat.setEncoding(encoding); // This definitely sets it in the header!
     }
-
-    private static String docAsString(Document doc,String encoding) {
-        StringWriter sw=new StringWriter();
-        OutputFormat outputFormat=OutputFormat.createCompactFormat();
-        if (encoding!=null) {
-            outputFormat.setEncoding(encoding); //This definitely sets it in the header!
-        }
-        XMLWriter writer= new XMLWriter(sw, outputFormat);
-        try {
-            writer.write(doc);
-        }
-        catch (IOException ioe) {
-            fail("Failed to write XML as a String. Reason: "+ioe.toString());
-        }
-        return sw.toString();
+    XMLWriter writer = new XMLWriter(sw, outputFormat);
+    try {
+      writer.write(doc);
+    } catch (IOException ioe) {
+      fail("Failed to write XML as a String. Reason: " + ioe.toString());
     }
+    return sw.toString();
+  }
 }

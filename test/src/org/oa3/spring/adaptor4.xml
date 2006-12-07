@@ -32,36 +32,36 @@
     </property>
   </bean>
 
-  <bean id="InPoint" class="org.oa3.connector.TestReadConnector">
+  <bean id="InPoint" class="org.oa3.core.connector.TestReadConnector">
     <property name="id" value="InPoint"/>
   </bean>
 
-  <bean id="Processor" class="org.oa3.processor.TestProcessor">
+  <bean id="Processor" class="org.oa3.core.processor.TestProcessor">
     <property name="id" value="Processor"/>
   </bean>
 
-  <bean id="OutPoint" class="org.oa3.connector.TestWriteConnector">
+  <bean id="OutPoint" class="org.oa3.core.connector.TestWriteConnector">
     <property name="id" value="OutPoint"/>
     <property name="expectedOutput" value="Processor(test data 1)"/>
   </bean>
   
-  <bean id="Exceptor" class="org.oa3.processor.TestProcessor">
+  <bean id="Exceptor" class="org.oa3.core.processor.TestProcessor">
     <property name="id" value="Exceptor"/>
     <property name="exceptionFrequency" value="1"/>
   </bean>
   
-  <bean id="NpeExceptor" class="org.oa3.processor.TestProcessor">
+  <bean id="NpeExceptor" class="org.oa3.core.processor.TestProcessor">
     <property name="id" value="NpeExceptor"/>
     <property name="exceptionClassName" value="java.lang.NullPointerException"/>
     <property name="exceptionFrequency" value="1"/>
   </bean>
   
-  <bean id="Error" class="org.oa3.connector.TestWriteConnector">
+  <bean id="Error" class="org.oa3.core.connector.TestWriteConnector">
     <property name="id" value="Error"/>
     <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
   </bean>
   
-  <bean id="NpeError" class="org.oa3.connector.TestWriteConnector">
+  <bean id="NpeError" class="org.oa3.core.connector.TestWriteConnector">
     <property name="id" value="NpeError"/>
     <property name="expectedOutput" value="java.lang.NullPointerException:null:Processor(test data 1)"/>
   </bean>

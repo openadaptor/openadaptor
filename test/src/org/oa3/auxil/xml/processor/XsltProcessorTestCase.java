@@ -32,7 +32,11 @@
  */
 package org.oa3.auxil.xml.processor;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +48,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.oa3.auxil.processor.xml.XsltProcessor;
 import org.oa3.util.FileUtils;
+import org.oa3.util.ResourceUtil;
+import org.xml.sax.InputSource;
 
 /**
  * @see XsltProcessor
@@ -51,14 +57,6 @@ import org.oa3.util.FileUtils;
  * @author Russ Fennell
  */
 public class XsltProcessorTestCase extends TestCase {
-
-  public static final String PATH = "test/src/org/oa3/auxil/xml/processor";
-
-  private static final String INPUT_FILENAME = PATH + "/input.xml";
-
-  private static final String XSL_FILENAME = PATH + "/transform.xsl";
-
-  private static final String OUTPUT_FILENAME = PATH + "/output.xml";
 
   private XsltProcessor processor = new XsltProcessor();
 
@@ -72,7 +70,7 @@ public class XsltProcessorTestCase extends TestCase {
   }
 
   public void testValidateMissingTransformFile() {
-    processor.setXsltFile(XSL_FILENAME + "-XXXX");
+    processor.setXsltFile("XXXX");
     List exceptions = new ArrayList();
     processor.validate(exceptions);
     assertFalse("Failed to detect that the XSLT file doesn't exist", exceptions.isEmpty());
@@ -83,7 +81,8 @@ public class XsltProcessorTestCase extends TestCase {
    */
   public void testDocumentTransform() {
     validateTransformFile();
-    Object[] results = processor.process(createDOMFromFile());
+    String xml = ResourceUtil.readFileContents(this, "input.xml");
+    Object[] results = processor.process(createDOM(xml));
     assertEquals(1, results.length);
     assertTrue(results[0] instanceof String);
     checkOutput((String) results[0]);
@@ -96,7 +95,8 @@ public class XsltProcessorTestCase extends TestCase {
     validateTransformFile();
     Object[] results = null;
     try {
-      results = processor.process(FileUtils.getFileContents(INPUT_FILENAME));
+      String xml = ResourceUtil.readFileContents(this, "input.xml");
+      results = processor.process(xml);
     } catch (Exception e) {
       fail(e.getMessage());
     }
@@ -106,37 +106,28 @@ public class XsltProcessorTestCase extends TestCase {
   }
 
   private void validateTransformFile() {
-    processor.setXsltFile(XSL_FILENAME);
+    String s = ResourceUtil.findResource(this, "transform.xsl");
+    processor.setXsltFile(s);
     List exceptions = new ArrayList();
     processor.validate(exceptions);
     assertTrue("validation has failed", exceptions.isEmpty());
   }
 
   private void checkOutput(String output) {
-    try {
-      String expected = FileUtils.getFileContents(OUTPUT_FILENAME);
-      if (expected.length() < output.length()) {
-        expected = expected.replaceAll("\n", "\r\n");
-      }
-      assertEquals(expected, output);
-    } catch (IOException e) {
-      fail("Failed to read file contents: " + e.getMessage());
-    }
+    String expected = ResourceUtil.readFileContents(this, "output.xml");
+    output = output.replaceAll("\r\n", "\n");
+    assertEquals(expected, output);
   }
 
-  private Document createDOMFromFile() {
+  private Document createDOM(String xml) {
     try {
-      URL url = FileUtils.toURL(INPUT_FILENAME);
-      if (url == null)
-        fail("Failed to find sample XML: ");
-
       SAXReader reader = new SAXReader();
-      return reader.read(url);
+      InputSource is = new InputSource(new StringReader(xml));
+      return reader.read(is);
     } catch (DocumentException e) {
       fail("Failed to parse sample XML: " + e.getMessage());
     }
 
     return null;
   }
-
 }

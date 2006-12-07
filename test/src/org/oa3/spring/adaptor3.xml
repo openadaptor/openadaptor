@@ -16,15 +16,15 @@
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.oa3.connector.TestReadConnector">
+  <bean id="InPoint" class="org.oa3.core.connector.TestReadConnector">
     <property name="id" value="InPoint"/>
   </bean>
 
-  <bean id="Processor" class="org.oa3.processor.TestProcessor">
+  <bean id="Processor" class="org.oa3.core.processor.TestProcessor">
     <property name="id" value="Processor"/>
   </bean>
 
-  <bean id="OutPoint" class="org.oa3.connector.TestWriteConnector">
+  <bean id="OutPoint" class="org.oa3.core.connector.TestWriteConnector">
     <property name="id" value="OutPoint"/>
     <property name="expectedOutput" value="Processor(test data 1)"/>
   </bean>

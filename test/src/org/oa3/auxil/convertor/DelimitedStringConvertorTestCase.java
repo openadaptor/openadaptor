@@ -62,12 +62,10 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
-    ds = DelimitedStringConvertorTestCase.generateDelimitedString(
-        DelimitedStringConvertorTestCase.DELIMITER, DelimitedStringConvertorTestCase.VALUES);
-    om = DelimitedStringConvertorTestCase.generateOrderedMap(DelimitedStringConvertorTestCase.NAMES,
-        DelimitedStringConvertorTestCase.VALUES);
+    ds = generateDelimitedString(DELIMITER, VALUES);
+    om = generateOrderedMap(NAMES, VALUES);
     dsom = new DelimitedStringToOrderedMapConvertor();
-    dsom.setFieldNames(DelimitedStringConvertorTestCase.NAMES);
+    dsom.setFieldNames(NAMES);
     omds = new OrderedMapToDelimitedStringConvertor();
   }
 
@@ -113,12 +111,10 @@ public class DelimitedStringConvertorTestCase extends TestCase {
     try {
       dsom.setFirstRecordContainsFieldNames(true);
 
-      String headerDS = generateDelimitedString(DelimitedStringConvertorTestCase.DELIMITER,
-          DelimitedStringConvertorTestCase.NAMES);
+      String headerDS = generateDelimitedString(DELIMITER, NAMES);
       Object[] maps = dsom.process(headerDS);
       assertEquals(maps.length, 0);
-      assertEquals(headerDS, generateDelimitedString(DelimitedStringConvertorTestCase.DELIMITER, dsom
-          .getFieldNames()));
+      assertEquals(headerDS, generateDelimitedString(DELIMITER, dsom.getFieldNames()));
 
       maps = dsom.process(ds);
       assertEquals(maps.length, 1);
@@ -150,7 +146,7 @@ public class DelimitedStringConvertorTestCase extends TestCase {
   public void testOrderedMapToDelimitedStringConversion() {
     omds.validate(null);
     try {
-      omds.setDelimiter(DelimitedStringConvertorTestCase.DELIMITER);
+      omds.setDelimiter(DELIMITER);
       Object[] dsList = omds.process(om);
       assertEquals(dsList.length, 1);
       assertEquals(ds, (String) dsList[0]);
@@ -162,16 +158,15 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
   public void testOrderedMapToDelimitedStringWithExplicitHeader() {
     try {
-      omds.setDelimiter(DelimitedStringConvertorTestCase.DELIMITER);
+      omds.setDelimiter(DELIMITER);
       omds.setOutputHeader(true);
-      omds.setFieldNames(DelimitedStringConvertorTestCase.NAMES);
+      omds.setFieldNames(NAMES);
       omds.validate(null);
 
       Object[] dsList = omds.process(om);
       assertEquals(dsList.length, 2);
 
-      assertEquals(generateDelimitedString(DelimitedStringConvertorTestCase.DELIMITER,
-          DelimitedStringConvertorTestCase.NAMES), (String) dsList[0]);
+      assertEquals(generateDelimitedString(DELIMITER, NAMES), (String) dsList[0]);
 
       assertEquals(ds, (String) dsList[1]);
     } catch (RecordException re) {
@@ -182,15 +177,14 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
   public void testOrderedMapToDelimitedStringWithImplicitHeader() {
     try {
-      omds.setDelimiter(DelimitedStringConvertorTestCase.DELIMITER);
+      omds.setDelimiter(DELIMITER);
       omds.setOutputHeader(true);
       omds.validate(null);
 
       Object[] dsList = omds.process(om);
       assertEquals(dsList.length, 2);
 
-      assertEquals(generateDelimitedString(DelimitedStringConvertorTestCase.DELIMITER,
-          DelimitedStringConvertorTestCase.NAMES), (String) dsList[0]);
+      assertEquals(generateDelimitedString(DELIMITER, NAMES), (String) dsList[0]);
 
       assertEquals(ds, (String) dsList[1]);
     } catch (RecordException re) {

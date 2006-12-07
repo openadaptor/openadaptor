@@ -1,5 +1,6 @@
 package org.oa3.auxil.xml.processor;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import junit.framework.TestCase;
 
 import org.oa3.auxil.processor.xml.XmlValidator;
 import org.oa3.util.FileUtils;
+import org.oa3.util.ResourceUtil;
 
 public class XmlValidatorTestCase extends TestCase {
 
@@ -19,8 +21,8 @@ public class XmlValidatorTestCase extends TestCase {
   }
 
   public void testMissingSchemaFile() {
-    String url = "file:" + XsltProcessorTestCase.PATH + "/schemaX.xsd";
-    validator.setSchemaURL(url);
+    String s = ResourceUtil.findResource(this, "schemaX.xsd");
+    validator.setSchemaURL("file:" + s);
     List exceptions = new ArrayList();
     validator.validate(exceptions);
     assertFalse("unexpected exceptions", exceptions.isEmpty());
@@ -29,7 +31,7 @@ public class XmlValidatorTestCase extends TestCase {
   public void testValid() {
     validateSchemaFile();
     try {
-      String s = FileUtils.getFileContents(XsltProcessorTestCase.PATH + "/input.xml");
+      String s = ResourceUtil.readFileContents(this, "input.xml");
       validator.process(s);
     } catch (Exception e) {
       e.printStackTrace();
@@ -40,7 +42,7 @@ public class XmlValidatorTestCase extends TestCase {
   public void testinvalid() {
     validateSchemaFile();
     try {
-      String s = FileUtils.getFileContents(XsltProcessorTestCase.PATH + "/output.xml");
+      String s = ResourceUtil.readFileContents(this, "output.xml");
       validator.process(s);
       fail("failed to throw exception for invalid xml");
     } catch (Exception e) {
@@ -48,8 +50,8 @@ public class XmlValidatorTestCase extends TestCase {
   }
 
   private void validateSchemaFile() {
-    String url = "file:" + XsltProcessorTestCase.PATH + "/schema.xsd";
-    validator.setSchemaURL(url);
+    String s = ResourceUtil.findResource(this, "schema.xsd");
+    validator.setSchemaURL(s);
     List exceptions = new ArrayList();
     validator.validate(exceptions);
     assertTrue("unexpected exceptions", exceptions.isEmpty());
