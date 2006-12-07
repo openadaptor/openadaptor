@@ -203,7 +203,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
     // document done. Phew.
     if (returnAsString) { // Darn, need to output the Document as a String.
       StringWriter sw = new StringWriter();
-      OutputFormat outputFormat = OutputFormat.createPrettyPrint();
+      OutputFormat outputFormat = OutputFormat.createCompactFormat();
       if (encoding != null) {
         OrderedMapToXmlConvertor.log.info("Output Format encoding as " + encoding);
         outputFormat.setEncoding(encoding); // This definitely sets it in the header!
