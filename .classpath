@@ -13,13 +13,17 @@
 	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib"/>
-	<classpathentry exported="true" kind="lib" path="lib/jta-spec1_0_1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
 	<classpathentry kind="lib" path="test/lib/jotm.jar"/>
 	<classpathentry kind="lib" path="test/lib/jbossall-client.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
-	<classpathentry kind="lib" path="test/lib/log4j-1.2.9.jar"/>
+	<classpathentry kind="lib" path="lib/commons-jxpath.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j.jar"/>
+	<classpathentry kind="lib" path="lib/jta-spec.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="test/lib/log4j.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
