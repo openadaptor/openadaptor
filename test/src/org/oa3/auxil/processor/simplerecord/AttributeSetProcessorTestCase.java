@@ -35,7 +35,8 @@ package org.oa3.auxil.processor.simplerecord;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.expression.ExpressionException;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
@@ -47,7 +48,7 @@ import org.oa3.core.exception.RecordException;
  */
 public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyProcessor {
 
-  static Logger log = Logger.getLogger(AttributeSetProcessorTestCase.class);
+  private static final Log log = LogFactory.getLog(AttributeSetProcessorTestCase.class);
 
   protected static final String TARGET_ATTRIBUTE_NAME = "target";
 

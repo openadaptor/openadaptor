@@ -36,7 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
@@ -46,7 +47,7 @@ import org.oa3.core.exception.RecordFormatException;
  */
 public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAbstractSimpleRecordProcessor {
 
-  static Logger log = Logger.getLogger(SimpleRecordAttributeExistsProcessorTestCase.class);
+  private static final Log log = LogFactory.getLog(SimpleRecordAttributeExistsProcessorTestCase.class);
 
   private static final String X = "x";
 

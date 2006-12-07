@@ -35,7 +35,8 @@ package org.oa3.auxil.processor.simplerecord;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jmock.Mock;
 import org.oa3.auxil.expression.Expression;
 import org.oa3.auxil.expression.ExpressionException;
@@ -48,7 +49,7 @@ import org.oa3.core.exception.RecordException;
  */
 public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecordProcessor {
 
-  static Logger log = Logger.getLogger(ConditionProcessorTestCase.class);
+  private static final Log log = LogFactory.getLog(ConditionProcessorTestCase.class);
 
   protected static final String REFERENCE_EXPRESSION_STRING = "{attributeName} = 'joe bloggs'";
 
