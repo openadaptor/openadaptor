@@ -94,6 +94,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     if (!isConnected()) {
       jmsConnection.connect();
       jmsConnection.getSession();
+      jmsConnection.getProducer();
     }
   }
 

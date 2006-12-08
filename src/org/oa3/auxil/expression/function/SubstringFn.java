@@ -47,7 +47,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class SubstringFn extends AbstractFunction {
   public static final String NAME = "substring";
 
-  //private static final Log log = LogFactory.getLog(SubstringFn.class);
+  // private static final Log log = LogFactory.getLog(SubstringFn.class);
 
   public SubstringFn() {
     super(NAME, 3);

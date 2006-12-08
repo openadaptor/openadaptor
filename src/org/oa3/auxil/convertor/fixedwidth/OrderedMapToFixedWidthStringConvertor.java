@@ -150,11 +150,18 @@ public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStr
         Object o = map.get(key);
         value = o.toString();
       } else {
-        OrderedMapToFixedWidthStringConvertor.log.warn("Field [" + key
-            + "] not found in the map. Will use blank field");
+        OrderedMapToFixedWidthStringConvertor.log
+            .warn("Field [" + key + "] not found in the map. Will use blank field");
       }
 
-      rec += trimPadValue(value, width);
+      rec += trimPadValue(value, width, fieldDetails[i].isRightAlign());
+
+      // this possibly doesn't make sense as you could trim out the whitespace
+      // we inserted to make the field the correct width but this is what the
+      // user wanted. We can get away with trimming the record itself as there
+      // should only ever be whitespace at the end :-)
+      if (fieldDetails[i].isTrim())
+        rec = rec.trim();
     }
 
     return rec;
@@ -192,35 +199,47 @@ public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStr
       int width = fieldDetails[i].getFieldWidth();
       String value = (String) map.get(i);
 
-      rec += trimPadValue(value, width);
+      rec += trimPadValue(value, width, fieldDetails[i].isRightAlign());
     }
 
     return rec;
   }
 
   /**
-   * Either trims the supplied string or pads it out (using spaces) to the required width and returns the new string
-   * 
-   * @param s
-   *          the string to pad/trim
-   * @param width
-   *          the width that the resulting string will be
-   * 
+   * Either trims the supplied string or pads it out (using spaces) to the
+   * required width and returns the new string.
+   * <p/>
+   *
+   * If rightAlign is true then we either add space to the left of the text
+   * or trim the text from the right.
+   *
+   * @param s the string to pad/trim
+   * @param width the width that the resulting string will be
+   * @param rightAlign if true then the text will be right aligned in the field
+   *
    * @return the original string but now at the required length
    */
-  private String trimPadValue(String s, int width) {
+  private String trimPadValue(String s, int width, boolean rightAlign) {
 
     // pad
     if (s.length() < width) {
       StringBuffer buffer = new StringBuffer(s);
-      for (int i = width - s.length(); i > 0; --i)
-        buffer.append(" ");
+      for (int i = width - s.length(); i > 0; --i) {
+        if (rightAlign)
+          buffer.insert(0, " ");
+        else
+          buffer.append(" ");
+      }
       return buffer.toString();
     }
 
     // trim
-    if (s.length() > width)
-      return s.substring(0, width);
+    if (s.length() > width) {
+      if (rightAlign)
+        return s.substring(s.length() - width);
+      else
+        return s.substring(0, width);
+    }
 
     // the string is already at the required length
     return s;

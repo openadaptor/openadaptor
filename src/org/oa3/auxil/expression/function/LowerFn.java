@@ -42,7 +42,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class LowerFn extends AbstractFunction {
   public static final String NAME = "lower";
 
-  //private static final Log log = LogFactory.getLog(LowerFn.class);
+  // private static final Log log = LogFactory.getLog(LowerFn.class);
 
   public LowerFn() {
     super(NAME, 1);

@@ -31,40 +31,43 @@
  * ]]
  */
 package org.oa3.auxil.expression;
+
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/IPostfixFunction.java,v 1.4 2006/11/01 18:06:52 higginse Exp $
- * Rev:  $Revision: 1.4 $
- * Created Sep 15 2006 by Eddy Higgins
+ * File: $Header: /cvs/oa3/src/org/oa3/expression/IPostfixFunction.java,v 1.4 2006/11/01 18:06:52 higginse Exp $ Rev:
+ * $Revision: 1.4 $ Created Sep 15 2006 by Eddy Higgins
  */
 import java.util.Stack;
 
 /**
  * Interface for PostFix functions (which are used by expressions).
  * <p>
- * Implementing classes should be able to perform postfix operations
- * using operands from a (supplied) stack.
- * The resulting value will be available on the top of the stack.
+ * Implementing classes should be able to perform postfix operations using operands from a (supplied) stack. The
+ * resulting value will be available on the top of the stack.
+ * 
  * @author Eddy Higgins
  */
-public interface IPostfixFunction  {
-    /**
-     * perform the postfix function, using arguments provided
-     * on the supplied stack.
-     * @param stack Stack which contains function operands
-     * @throws ExpressionException if execution fails for any reason
-     */
-    public void execute(Stack stack) throws ExpressionException;
+public interface IPostfixFunction {
+  /**
+   * perform the postfix function, using arguments provided on the supplied stack.
+   * 
+   * @param stack
+   *          Stack which contains function operands
+   * @throws ExpressionException
+   *           if execution fails for any reason
+   */
+  public void execute(Stack stack) throws ExpressionException;
 
-    /**
-     * Get the name of this function.
-     * @return String containing the name of the function.
-     *         Should not be <tt>null</tt> and should be unique.
-     */
-    public String getName();
+  /**
+   * Get the name of this function.
+   * 
+   * @return String containing the name of the function. Should not be <tt>null</tt> and should be unique.
+   */
+  public String getName();
 
-    /**
-     * Return the number of arguments expected by this function
-     * @return int containing the number of arguments expected
-     */
-    public int getArgCount();
+  /**
+   * Return the number of arguments expected by this function
+   * 
+   * @return int containing the number of arguments expected
+   */
+  public int getArgCount();
 }

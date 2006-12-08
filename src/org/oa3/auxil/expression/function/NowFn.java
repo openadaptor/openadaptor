@@ -46,7 +46,7 @@ import java.util.Date;
 public class NowFn extends AbstractFunction {
   public static final String NAME = "now";
 
-  //private static final Log log = LogFactory.getLog(NowFn.class);
+  // private static final Log log = LogFactory.getLog(NowFn.class);
 
   public NowFn() {
     super(NAME, 0);

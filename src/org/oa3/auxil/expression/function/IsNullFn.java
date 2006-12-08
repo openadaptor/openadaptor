@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,7 +21,7 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
+ * 
  * Nothing in this notice shall be deemed to grant any rights to
  * trademarks, copyrights, patents, trade secrets or any other intellectual
  * property of the licensor or any contributor except as expressly stated
@@ -32,35 +32,44 @@
  */
 package org.oa3.auxil.expression.function;
 
+import org.apache.log4j.Logger;
 import org.oa3.auxil.expression.ExpressionException;
 
 /**
- * Evaluate String.endsWith()
+ * Replaces NULL with the specified replacement value in much the same fashion as the isNull() function in T-SQL.
  * 
- * @author Kevin Scully
+ * @author Russ Fennell
  */
-public class EndsWithFn extends AbstractFunction {
-  public static final String NAME = "endswith";
+public class IsNullFn extends AbstractFunction {
+  static Logger log = Logger.getLogger(IsNullFn.class);
 
-  // private static final Log log = LogFactory.getLog(EndsWithFn.class);
-
-  public EndsWithFn() {
-    super(NAME, 2);
+  /**
+   * Calls super constructor with an name of "isnull" and an argCount of 2
+   */
+  public IsNullFn() {
+    super("isnull", 2);
   }
 
   /**
-   * Test if first argument is a <code>String</code> which ends with the second argument, which should also be a
-   * <code>String</code> ((String)args[0]).endsWith((String)args[1]) Return a Boolean Object with the result.
-   * 
    * @param args
-   *          Object array which is expected to hold two Strings
-   * @return Boolean object with value as defined above.
+   *          Object array which is expected to hold the value to be tested and the default value to return if the first
+   *          is null
+   * 
+   * @return the string or the replacement value if it is null
+   * 
+   * @throws ExpressionException
+   *           if the default value is null
    */
   protected Object operate(Object[] args) throws ExpressionException {
-    String arg0 = getArgAsString(args[0], null);
-    validateNotNull(arg0, 0);
-    validateArg(args[1] instanceof String, 1, "Argument must be a non-null String");
-    return new Boolean(arg0.endsWith((String) args[1]));
+    String value = getArgAsString(args[0], null);
+
+    if (value == null) {
+      value = getArgAsString(args[1], null);
+      validateNotNull(value, 1);
+      log.debug("Using default value [" + value + ']');
+    }
+
+    return value;
   }
 
 }

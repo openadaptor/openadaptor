@@ -764,11 +764,13 @@ public class JMSConnection {
 
   protected void close() {
     try {
-      if (consumer != null) {
-        consumer.close();
+      closeConsumer();
+      closeProducer();
+      if (session != null) {
+        session.close();
       }
       if (connection != null) {
-        connection.close();
+          connection.close();
       }
       setConnection(null);
     } catch (JMSException e) {

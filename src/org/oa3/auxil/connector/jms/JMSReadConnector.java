@@ -122,6 +122,7 @@ public class JMSReadConnector extends AbstractReadConnector implements ITransact
     if (!isConnected()) {
       jmsConnection.connect();
       jmsConnection.getSession();
+      jmsConnection.getConsumer();
     }
   }
 

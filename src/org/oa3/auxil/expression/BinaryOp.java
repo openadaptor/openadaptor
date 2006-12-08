@@ -33,9 +33,8 @@
 package org.oa3.auxil.expression;
 
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/BinaryOp.java,v 1.8 2006/11/10 16:31:16 higginse Exp $
- * Rev:  $Revision: 1.8 $
- * Created Sep 25 2006 by Eddy Higgins
+ * File: $Header: /cvs/oa3/src/org/oa3/expression/BinaryOp.java,v 1.8 2006/11/10 16:31:16 higginse Exp $ Rev: $Revision:
+ * 1.8 $ Created Sep 25 2006 by Eddy Higgins
  */
 
 import java.util.Date;
@@ -47,24 +46,23 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Implementation of basic binary postfix functions.
  * <p>
- * It expects two non-null operand Objects on the stack, and will present the
- * result back on the stack.
+ * It expects two non-null operand Objects on the stack, and will present the result back on the stack.
  * <UL>
- *   <LI>Null operands, or operands operator combinations which the class cannot handle
- *       will result in MathExceptions.
- *   <LI>The class of the result depends on the operator and the incoming operand types</LI>
+ * <LI>Null operands, or operands operator combinations which the class cannot handle will result in MathExceptions.
+ * <LI>The class of the result depends on the operator and the incoming operand types</LI>
  * </UL>
+ * 
  * @author Eddy Higgins
  */
 public class BinaryOp implements IPostfixFunction {
   public static final Log log = LogFactory.getLog(BinaryOp.class);
 
-  //Operator symbol - for debug output only
+  // Operator symbol - for debug output only
   protected final char op;
 
   /**
-   * Return the operator corresponding to this operation.
-   * See ExpressionToken for a full list of known operators.
+   * Return the operator corresponding to this operation. See ExpressionToken for a full list of known operators.
+   * 
    * @return char representing the operator.
    */
   protected char getOp() {
@@ -73,6 +71,7 @@ public class BinaryOp implements IPostfixFunction {
 
   /**
    * Return the name of this function.
+   * 
    * @return String version of the operator.
    */
   public String getName() {
@@ -80,7 +79,7 @@ public class BinaryOp implements IPostfixFunction {
   }
 
   public int getArgCount() {
-    return 2; //Duh! It's a binary operator
+    return 2; // Duh! It's a binary operator
   }
 
   public BinaryOp(int op) {
@@ -89,16 +88,19 @@ public class BinaryOp implements IPostfixFunction {
 
   /**
    * Executes this binary operation by taking two operands from the stack and pushing the result
-   * @param stack A stack containing at least the two input operands (in reverse order)
-   * @throws ExpressionException if less than two operands are supplied on the stack, or if
-   *         an inappropriate operator/operand combination occurs.
+   * 
+   * @param stack
+   *          A stack containing at least the two input operands (in reverse order)
+   * @throws ExpressionException
+   *           if less than two operands are supplied on the stack, or if an inappropriate operator/operand combination
+   *           occurs.
    */
   public void execute(Stack stack) throws ExpressionException {
     if (stack == null) {
       throw new ExpressionException("<null> stack not permitted");
     }
     if (stack.size() > 1) {
-      Object operand2 = stack.pop(); //Reverse order on the stack
+      Object operand2 = stack.pop(); // Reverse order on the stack
       Object operand1 = stack.pop();
       Object result = operate(operand1, operand2);
       stack.push(result);
@@ -109,14 +111,16 @@ public class BinaryOp implements IPostfixFunction {
 
   /**
    * Implementation of postfix function.
-   *
+   * 
    * <UL>
-   *   <LI>Operands should be non-null Number Objects or a MathException will result.
-   *   <LI>The result will be either a Double or Long depending on the incoming
-   *       operand types.</LI>
+   * <LI>Operands should be non-null Number Objects or a MathException will result.
+   * <LI>The result will be either a Double or Long depending on the incoming operand types.</LI>
    * </UL>
-   * @param arg1 Number
-   * @param arg2 Number
+   * 
+   * @param arg1
+   *          Number
+   * @param arg2
+   *          Number
    * @return Object with result (one of Double or Long)
    * @throws org.oa3.expression.ExpressionException
    */
@@ -124,33 +128,36 @@ public class BinaryOp implements IPostfixFunction {
   protected Object operate(Object arg1, Object arg2) throws ExpressionException {
     if (arg1 == null || arg2 == null) {
       return nullOp(arg1, arg2);
-      //throw new ExpressionException("Null arguments not permitted");
+      // throw new ExpressionException("Null arguments not permitted");
     }
-    //Convert dates into longs for operations. It's hack-tastic!
-    if (arg1 instanceof Date) { //Get the millis value.
+    // Convert dates into longs for operations. It's hack-tastic!
+    if (arg1 instanceof Date) { // Get the millis value.
       arg1 = new Long(((Date) arg1).getTime());
     }
-    if (arg2 instanceof Date) { //Get the millis value.
+    if (arg2 instanceof Date) { // Get the millis value.
       arg2 = new Long(((Date) arg2).getTime());
     }
 
-    if ((arg1 instanceof Number) && (arg2 instanceof Number)) {//Numeric add
-      if ((arg1 instanceof Double) || (arg1 instanceof Float) || (arg2 instanceof Double) || (arg2 instanceof Float)) { //Result will be a double
+    if ((arg1 instanceof Number) && (arg2 instanceof Number)) {// Numeric add
+      if ((arg1 instanceof Double) || (arg1 instanceof Float) || (arg2 instanceof Double) || (arg2 instanceof Float)) { // Result
+                                                                                                                        // will
+                                                                                                                        // be a
+                                                                                                                        // double
         return doubleOp(((Number) arg1).doubleValue(), ((Number) arg2).doubleValue());
-      } else {//Non floating point. Treat 'em all as Longs, for now.
-        //ToDO: Optimisation: Allow Integer results.
+      } else {// Non floating point. Treat 'em all as Longs, for now.
+        // ToDO: Optimisation: Allow Integer results.
         return longOp(((Number) arg1).longValue(), ((Number) arg2).longValue());
       }
     } else { // Not numeric
       if ((arg1 instanceof Boolean) && (arg2 instanceof Boolean)) {
         return boolOp(((Boolean) arg1).booleanValue(), ((Boolean) arg2).booleanValue());
       } else {
-        //if (((arg1 instanceof Date) && (arg2 instanceof Date))){
-        //    return dateOp((Date)arg1,(Date)arg2);
-        //}
-        //else { //Hmm try string
+        // if (((arg1 instanceof Date) && (arg2 instanceof Date))){
+        // return dateOp((Date)arg1,(Date)arg2);
+        // }
+        // else { //Hmm try string
         return stringOp(arg1.toString(), arg2.toString());
-        //}
+        // }
       }
     }
   }
@@ -199,7 +206,7 @@ public class BinaryOp implements IPostfixFunction {
 
     default:
       throw new ExpressionException("Attempted unrecognised expression operation: " + op);
-      //break;
+      // break;
     }
     return result;
   }
@@ -248,7 +255,7 @@ public class BinaryOp implements IPostfixFunction {
 
     default:
       throw new ExpressionException("Attempted unrecognised expression operation: " + op);
-      //break;
+      // break;
     }
     return result;
   }
@@ -265,12 +272,12 @@ public class BinaryOp implements IPostfixFunction {
     case ExpressionToken.OP_EQ:
       result = b1 == b2;
       break;
-    case ExpressionToken.OP_NE: //Note - it's integer division.
+    case ExpressionToken.OP_NE: // Note - it's integer division.
       result = b1 != b2;
       break;
     default:
       throw new ExpressionException("Attempted unrecognised expression operation: " + op);
-      //break;
+      // break;
     }
     return new Boolean(result);
   }
@@ -286,7 +293,7 @@ public class BinaryOp implements IPostfixFunction {
       break;
     default:
       throw new ExpressionException("Illegal operation for null operand: " + op);
-      //break;
+      // break;
     }
     return new Boolean(result);
   }
@@ -322,7 +329,7 @@ public class BinaryOp implements IPostfixFunction {
 
     default:
       throw new ExpressionException("Unable to perform <String> " + op + " <String>");
-      //break;
+      // break;
     }
     return result;
   }
@@ -362,7 +369,7 @@ public class BinaryOp implements IPostfixFunction {
       break;
     default:
       throw new ExpressionException("Attempted unrecognised expression operation: " + op);
-      //break;
+      // break;
     }
     return result;
   }

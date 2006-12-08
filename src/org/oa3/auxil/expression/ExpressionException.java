@@ -36,18 +36,22 @@ import org.oa3.core.exception.RecordException;
 
 /**
  * Exception class for exceptions related to handling expression exceptions.
- *
+ * 
  * @author Eddy Higgins
  */
 public class ExpressionException extends RecordException {
 
   private static final long serialVersionUID = 1L;
 
-    protected ExpressionException() {super();}
+  protected ExpressionException() {
+    super();
+  }
 
-    public ExpressionException(String msg) {super(msg);}
+  public ExpressionException(String msg) {
+    super(msg);
+  }
 
-    public ExpressionException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+  public ExpressionException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
 }

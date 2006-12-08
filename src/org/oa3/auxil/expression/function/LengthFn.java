@@ -46,7 +46,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class LengthFn extends AbstractFunction {
   public static final String NAME = "length";
 
-  //private static final Log log = LogFactory.getLog(LengthFn.class);
+  // private static final Log log = LogFactory.getLog(LengthFn.class);
 
   public LengthFn() {
     super(LengthFn.NAME, 1);

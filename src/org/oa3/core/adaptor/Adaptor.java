@@ -131,7 +131,7 @@ public class Adaptor implements IMessageProcessor, Runnable, AdaptorMBean {
 		log.info("all inpoints are stopped");
 		stopNonInpoints();
 		if (getExitCode() != 0) {
-			log.error("adaptor exited with " + getExitCode());
+			log.fatal("adaptor exited with " + getExitCode());
 		}
 	}
 

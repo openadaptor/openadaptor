@@ -33,9 +33,8 @@
 package org.oa3.auxil.expression;
 
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/Expression.java,v 1.20 2006/11/06 11:18:06 shirea Exp $
- * Rev:  $Revision: 1.20 $
- * Created Sep 26 2006 by Eddy Higgins
+ * File: $Header: /cvs/oa3/src/org/oa3/expression/Expression.java,v 1.20 2006/11/06 11:18:06 shirea Exp $ Rev:
+ * $Revision: 1.20 $ Created Sep 26 2006 by Eddy Higgins
  */
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,7 +49,8 @@ import org.oa3.core.exception.RecordException;
 import org.oa3.thirdparty.dom4j.Dom4jUtils;
 
 /**
- * This class extracts values from records (<code>ISimpleRecord</code> instances) and uses them to evaluate an expression.
+ * This class extracts values from records (<code>ISimpleRecord</code> instances) and uses them to evaluate an
+ * expression.
  * <p>
  * Expressions are pre-compiled to speed up execution.
  * <p>
@@ -58,17 +58,13 @@ import org.oa3.thirdparty.dom4j.Dom4jUtils;
  * <p>
  * Expressions not supported include:
  * <ul>
- *   <li>
- *     <b>Missing trailing bracket</b> e.g. <code>"(round(9.3)"</code>.
- *     <p>
- *     Workaround: make sure you always have matching brackets.
- *   </li>
- *   <li>
- *     <b>Expressions as arguments to nested functions</b> when they rely on sub-expression being treated as a full expression
- *     e.g. <code>"format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy')"</code>.
- *     <p>
- *     Workaround: break into multiple expressions.
- *   </li>
+ * <li> <b>Missing trailing bracket</b> e.g. <code>"(round(9.3)"</code>.
+ * <p>
+ * Workaround: make sure you always have matching brackets. </li>
+ * <li> <b>Expressions as arguments to nested functions</b> when they rely on sub-expression being treated as a full
+ * expression e.g. <code>"format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy')"</code>.
+ * <p>
+ * Workaround: break into multiple expressions. </li>
  * </ul>
  */
 public class Expression implements IExpression {
@@ -84,38 +80,35 @@ public class Expression implements IExpression {
   private Map typeConversionMap;
 
   /**
-   * Temporary flag to enable/disable shortCircuitEvaluation.
-   * This should disappear once we're happy that the short-circuit
-   * stuff works ok!
+   * Temporary flag to enable/disable shortCircuitEvaluation. This should disappear once we're happy that the
+   * short-circuit stuff works ok!
    */
   private boolean shortCircuitEvaluation = true;
 
   /**
-   * If true, then throw an exception whenever an attribute is referenced, but
-   * doesn't exist within an ISimpleRecord instance.
-   * default is false - it will just return null instead.
+   * If true, then throw an exception whenever an attribute is referenced, but doesn't exist within an ISimpleRecord
+   * instance. default is false - it will just return null instead.
    */
   private boolean throwExceptionOnMissingAttribute = false;
 
   private ExpressionToken[] compiledExpression;
 
-  //BEGIN Implementation of IExpression
+  // BEGIN Implementation of IExpression
 
-  //Temporary flag to allow/prevent functions.
-  //At the time of writing, function support is
-  //very simplistic, and has the side effect of allowing many types
-  //of non-sensical expressions to be specified.
+  // Temporary flag to allow/prevent functions.
+  // At the time of writing, function support is
+  // very simplistic, and has the side effect of allowing many types
+  // of non-sensical expressions to be specified.
   private boolean tmpFunctionSupport = true;
 
-  //BEGIN Bean Accessors
+  // BEGIN Bean Accessors
 
   public void setExpression(String expression) throws ExpressionException {
     this.expression = expression;
-    //compile the expression if it isn't null.
+    // compile the expression if it isn't null.
     compiledExpression = expression == null ? null : compile();
     /**
-     * Process the compiled expression for possible short-circuiting
-     * of boolean (AND/OR) ops.
+     * Process the compiled expression for possible short-circuiting of boolean (AND/OR) ops.
      */
     if (shortCircuitEvaluation && (compiledExpression != null)) {
       log.debug("Investigating evaluation short circuit possiblities.");
@@ -129,8 +122,9 @@ public class Expression implements IExpression {
   }
 
   /**
-   * This map may be used to provide type 'hints' for arguments to the expression
-   * Currently supported types are Double,Long,Date,String.
+   * This map may be used to provide type 'hints' for arguments to the expression Currently supported types are
+   * Double,Long,Date,String.
+   * 
    * @return Map of attribute name to type
    */
 
@@ -139,9 +133,9 @@ public class Expression implements IExpression {
   }
 
   /**
-   * This map may be used to provide type 'hints' for arguments to the expression
-   * Currently supported types are Double,Long,Date,String.
-   *
+   * This map may be used to provide type 'hints' for arguments to the expression Currently supported types are
+   * Double,Long,Date,String.
+   * 
    * @param attributeTypeMap
    */
   public void setAttributeTypeMap(Map attributeTypeMap) {
@@ -149,21 +143,22 @@ public class Expression implements IExpression {
   }
 
   /**
-   * Flag to indicate if short-circuit expression evaluation should be
-   * applied.
+   * Flag to indicate if short-circuit expression evaluation should be applied.
    * <p>
    * The default value is <tt>true</tt>
-   * @param enabled short circuit evaluation is enabled if this is <tt>true</tt>
+   * 
+   * @param enabled
+   *          short circuit evaluation is enabled if this is <tt>true</tt>
    */
   public void setShortCircuitEvaluation(boolean enabled) {
     this.shortCircuitEvaluation = enabled;
   }
 
   /**
-   * Flag to indicate if short-circuit expression evaluation should be
-   * applied.
+   * Flag to indicate if short-circuit expression evaluation should be applied.
    * <p>
    * The default value is <tt>true</tt>
+   * 
    * @return <tt>true</tt> if short circuit evaluation is enabled.
    */
   public boolean getShortCircuitEvaluation() {
@@ -178,13 +173,12 @@ public class Expression implements IExpression {
     this.throwExceptionOnMissingAttribute = throwExceptionOnMissingAttribute;
   }
 
-  //END Bean Accessors
+  // END Bean Accessors
 
   /**
-   * Evaluate the expression.
-   * This takes each token in turn and processes it against the postfix & operator stacks.
-   * When all tokens are processed, the postfix stack should contain
-   * a single value which is the result of the expression.
+   * Evaluate the expression. This takes each token in turn and processes it against the postfix & operator stacks. When
+   * all tokens are processed, the postfix stack should contain a single value which is the result of the expression.
+   * 
    * @return Object containing the result of the expression.
    */
   public Object evaluate(ISimpleRecord record) throws RecordException {
@@ -194,18 +188,19 @@ public class Expression implements IExpression {
     postfixStack.clear();
     for (int i = 0; i < compiledExpression.length; i++) {
       ExpressionToken token = compiledExpression[i];
-      //Check for short circuit evaluation of boolean ops.
+      // Check for short circuit evaluation of boolean ops.
       if (token.shortCircuitNextIndex > 0) {
-        Object stackVal = postfixStack.peek(); //Top of stack must contain a boolean
+        Object stackVal = postfixStack.peek(); // Top of stack must contain a boolean
         if (stackVal instanceof Boolean) {
-          if (token.shortCircuitExpectedStackValue == ((Boolean) stackVal).booleanValue()) { //Result is already known.
+          if (token.shortCircuitExpectedStackValue == ((Boolean) stackVal).booleanValue()) { // Result is already
+                                                                                              // known.
             log.debug("Shortcircuiting expression from step " + i + "to step " + token.shortCircuitNextIndex);
             i = token.shortCircuitNextIndex;
             token = compiledExpression[i];
 
-            //For now we just push another of the same value so the boolean op will return the same. Ugh!
-            //ToDo: Fix this - there's actually no need to execute the boolean op any more.
-            postfixStack.push(new Boolean(token.shortCircuitExpectedStackValue)); //Push another of the same.
+            // For now we just push another of the same value so the boolean op will return the same. Ugh!
+            // ToDo: Fix this - there's actually no need to execute the boolean op any more.
+            postfixStack.push(new Boolean(token.shortCircuitExpectedStackValue)); // Push another of the same.
           }
         } else {
           log.warn("Short circuit evaluation expected a boolean on stack, but found " + stackVal);
@@ -227,24 +222,24 @@ public class Expression implements IExpression {
     return postfixStack.pop();
   }
 
-  //END   Implementation of IExpression
+  // END Implementation of IExpression
 
   public Expression() {
     postfixStack = new Stack();
     operatorStack = new Stack();
   }
 
-  //ToDo: Could optimise - put actual expected boolean into shortcircuitop (faster evaluate)
+  // ToDo: Could optimise - put actual expected boolean into shortcircuitop (faster evaluate)
 
   /**
    * Add short circuit indicators for boolean operators AND and OR.
    * <p>
-   * Basically it works out where the second operand of an operation begins,
-   * and adds a skip step which is followed if the top of stack contains the
-   * appropriate value after evaluating the first operand.
+   * Basically it works out where the second operand of an operation begins, and adds a skip step which is followed if
+   * the top of stack contains the appropriate value after evaluating the first operand.
    * <p>
-   *
-   * @param compiledExpression The expression to be evaluated (fully until now)
+   * 
+   * @param compiledExpression
+   *          The expression to be evaluated (fully until now)
    */
   private void applyShortCircuitEvaluation(ExpressionToken[] compiledExpression) {
     for (int i = 0; i < compiledExpression.length; i++) {
@@ -271,11 +266,12 @@ public class Expression implements IExpression {
 
   /**
    * Compile the expression.
+   * 
    * @return the expression compiled into an <code>ExpressionToken[]</code>.
    * @throws ExpressionException
    */
   private ExpressionToken[] compile() throws ExpressionException {
-    postfixStack.clear(); //Not strictly necessary
+    postfixStack.clear(); // Not strictly necessary
     operatorStack.clear();
     operatorStack.push(ExpressionToken.EOF);
     List steps = new ArrayList();
@@ -301,11 +297,11 @@ public class Expression implements IExpression {
   private void processToken(List steps, ExpressionToken token) throws ExpressionException {
     Expression.log.debug("Processing token " + token);
     ExpressionToken stackOp = (ExpressionToken) operatorStack.peek();
-    //Check flag to see if functionSupport is enabled.
-    //ToDo: More permanent solution to this.
+    // Check flag to see if functionSupport is enabled.
+    // ToDo: More permanent solution to this.
     if (tmpFunctionSupport) {
-      //If the last token was a function, the next token MUST be an open bracket.
-      //This is a hack which uses the resolved flag to mean 'args read'
+      // If the last token was a function, the next token MUST be an open bracket.
+      // This is a hack which uses the resolved flag to mean 'args read'
       if (stackOp.type == ExpressionToken.TYPE_FN) {
         if (!stackOp.resolved && (ExpressionToken.L_BRACKET != token)) {
           throw new ExpressionException("Expected " + ExpressionToken.L_BRACKET + " after function " + stackOp.value);
@@ -316,22 +312,22 @@ public class Expression implements IExpression {
     }
 
     switch (token.type) {
-    case ExpressionToken.TYPE_VALUE: //It's a value. Push it
+    case ExpressionToken.TYPE_VALUE: // It's a value. Push it
       steps.add(token);
       break;
     case ExpressionToken.OP_L_BRACKET:
       operatorStack.push(token);
       break;
-    //Functions handling is very iffy thus far
-    //It's only included now because we really need substring functionality.
-    case ExpressionToken.OP_COMMA: //Arguments
-      //NB:
-      //Function support is flaky at the moment. Thus it is being con
-      if (tmpFunctionSupport) {//Behaviour is controlled by flag.
+    // Functions handling is very iffy thus far
+    // It's only included now because we really need substring functionality.
+    case ExpressionToken.OP_COMMA: // Arguments
+      // NB:
+      // Function support is flaky at the moment. Thus it is being con
+      if (tmpFunctionSupport) {// Behaviour is controlled by flag.
         while ((stackOp != ExpressionToken.L_BRACKET) && (stackOp != ExpressionToken.COMMA)
             && (stackOp != ExpressionToken.EOF)) {
           steps.add(stackOp);
-          operatorStack.pop();//throw away the used operator.
+          operatorStack.pop();// throw away the used operator.
           stackOp = (ExpressionToken) operatorStack.peek();
         }
         if (stackOp == ExpressionToken.COMMA) {
@@ -345,7 +341,7 @@ public class Expression implements IExpression {
     case ExpressionToken.OP_R_BRACKET:
       while ((stackOp != ExpressionToken.L_BRACKET) && (stackOp != ExpressionToken.EOF)) {
         steps.add(stackOp);
-        operatorStack.pop();//throw away the used operator.
+        operatorStack.pop();// throw away the used operator.
         stackOp = (ExpressionToken) operatorStack.peek();
       }
       if (stackOp == ExpressionToken.L_BRACKET) {
@@ -355,10 +351,10 @@ public class Expression implements IExpression {
         throw new ExpressionException("Missing " + (char) ExpressionToken.OP_L_BRACKET);
       }
       break;
-    default: //Regular operator
+    default: // Regular operator
       while ((operatorStack.size() > 1) && stackOp.inputPrecedence <= token.inputPrecedence) {
         steps.add(stackOp);
-        operatorStack.pop(); //Pop off the consumed operator
+        operatorStack.pop(); // Pop off the consumed operator
         stackOp = (ExpressionToken) operatorStack.peek();
       }
       if (token != ExpressionToken.EOF) {
@@ -369,10 +365,9 @@ public class Expression implements IExpression {
   }
 
   /**
-   * get the value of this token. If the value is a String
-   * and is surrounded by '{' '}' then it is an attribute
-   * reference that needs further resolution, handled
-   * by getValue(String attributeReference)
+   * get the value of this token. If the value is a String and is surrounded by '{' '}' then it is an attribute
+   * reference that needs further resolution, handled by getValue(String attributeReference)
+   * 
    * @param tokenValue
    * @return the value of this variable.
    */
@@ -391,40 +386,38 @@ public class Expression implements IExpression {
   }
 
   /**
-   * Resolve the value of an attributeReference
-   * While there are embedded {} in the reference,
-   * then recursively resolve them until the
-   * value has been retrieved.
-   * //ToDo: Improve javadoc here...
+   * Resolve the value of an attributeReference While there are embedded {} in the reference, then recursively resolve
+   * them until the value has been retrieved. //ToDo: Improve javadoc here...
+   * 
    * @param attributeReference
    * @return the value of the attribute that is referred to
    * @throws org.oa3.core.processor.RecordException
    */
   private Object getValue(ISimpleRecord record, String attributeReference) throws RecordException {
-    //Expression.log.debug("Resolving attributeReference:"+attributeReference);
+    // Expression.log.debug("Resolving attributeReference:"+attributeReference);
     if (record == null) {
       throw new ExpressionException("Cannot reference an attribute in a <null> record");
     }
     Object result;
     int open = attributeReference.indexOf(ExpressionToken.OP_L_BRACE);
-    if (open < 0) { //Just return the value
-      //First check if we need to guarantee existance of attribute.
+    if (open < 0) { // Just return the value
+      // First check if we need to guarantee existance of attribute.
       if (throwExceptionOnMissingAttribute) {
-        //Need to verify that the record exists, or throw an exception
+        // Need to verify that the record exists, or throw an exception
         if (!record.containsKey(attributeReference)) {
           throw new RecordException("Attribute " + attributeReference + " is expected, but cannot be accessed");
         }
       }
-      //Ok. Just get the value.
+      // Ok. Just get the value.
       result = record.get(attributeReference);
-      //Now check if we need to post-convert the type.
+      // Now check if we need to post-convert the type.
       if ((result != null) && (typeConversionMap != null) && (typeConversionMap.containsKey(attributeReference))) {
-        //Need to attempt type conversion.
+        // Need to attempt type conversion.
         result = Dom4jUtils.asTypedValue(result.toString(), (String) typeConversionMap.get(attributeReference));
 
       }
-    } else {//Further dereferencing required.
-      //Expression.log.debug("Still contains a reference");
+    } else {// Further dereferencing required.
+      // Expression.log.debug("Still contains a reference");
       int close = attributeReference.lastIndexOf(ExpressionToken.OP_R_BRACE);
       String start = attributeReference.substring(0, open);
       String ref = attributeReference.substring(open + 1, close);
@@ -442,6 +435,7 @@ public class Expression implements IExpression {
 
   /**
    * Convenience method to create an expression from a String.
+   * 
    * @param expressionString
    * @return IExpression which had been generated from the supplied Expression <code>String</code>
    * @throws ExpressionException
@@ -452,76 +446,45 @@ public class Expression implements IExpression {
     return expression;
   }
 
-  //////////
-  //Temporary development-testing-only methods
-  
-  /*
-  private static void process(IOrderedMap map, String line) {
-    System.out.println("Processing : " + line);
-    try {
-      Expression e = new Expression();
-      e.setExpression(line);
-      Object result = e.evaluate(map);
-      System.out.println(line + " = " + result);
-    } catch (RecordException ee) {
-      System.out.println("Failed: " + ee.toString());
-    } catch (NullPointerException npe) {
-      System.out.println("NullPointerException: " + npe.toString());
-    }
-  }
-  */
-  
-  /*
-  public static void main(String args[]) throws IOException {
-    RunAdaptor adaptorGenerator = new RunAdaptor();
-    try {
-      adaptorGenerator.initialise("dummy");
-    } catch (Exception e) {
-      log.info("Ignoring adaptor exception " + e);
-    }
+  // ////////
+  // Temporary development-testing-only methods
 
-    // command args ignored
-    IOrderedMap map = new OrderedHashMap();
-    map.put("alpha", new Integer(4));
-    map.put("beta", new Double(6.0));
-    map.put("stringOne", "alpha");
-    map.put("stringDate", "01/Jul/2006");
-    map.put("dateObject", new Date());
+  /*
+   * private static void process(IOrderedMap map, String line) { System.out.println("Processing : " + line); try {
+   * Expression e = new Expression(); e.setExpression(line); Object result = e.evaluate(map); System.out.println(line + " = " +
+   * result); } catch (RecordException ee) { System.out.println("Failed: " + ee.toString()); } catch
+   * (NullPointerException npe) { System.out.println("NullPointerException: " + npe.toString()); } }
+   */
 
-    map.put("market", "liffe");
-    map.put("id_liffe", "LI_04539");
-    map.put("nully", null);
-    map.put("long1003", new Long(1003));
-    map.put("long1002", new Long(1002));
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    String line;
-    //        NewOperatorPrecedenceParser.process(map,"{stringOne}");
-    process(map, "3/(4*5)");
-    process(map, "{alpha}/2");
-    process(map, "{id_{market}}+' is the id'");
-    process(map, "dateparse({stringDate},'dd/MMM/yyyy') < (dateparse('31/Oct/2006','dd/MMM/yyyy'))");
-    process(map, "dateparse({stringDate},'dd/MMM/yyyy') < dateparse('31/Oct/2006','dd/MMM/yyyy')");
-    process(map, "(3=4) & (4=5)");
-    process(map, "({nonExistent} eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart())");
-    process(map, "({nonExistent} eq null) or ((dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart()))");
-    process(map, "not ({nonExistent} ne null) and (not( dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart() ))"); // de morgan's law applied to previous line
-    process(map, "({stringDate} eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart())"); // should fail
-    process(map, "({stringDate} eq null) or ((dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart()))"); // should fail
-    process(map, "(null eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart())");
-    process(map, "format(dateparse('22.10.2006','dd.MM.yyyy') - 1000,'dd.MM.yyyy')"); // should fail: expressions as args not supported
-    process(map,
-        "(dateparse(format(dateparse('22.10.2006','dd.MM.yyyy'),'dd.MM.yyyy'),'dd.MM.yyyy') lt adaptorstart())");
-    process(map,
-        "(dateparse(format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy'),'dd.MM.yyyy') lt adaptorstart())"); // should fail: expressions as args not supported
-    process(map,
-        "dateparse(format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy'),'dd.MM.yyyy') lt adaptorstart()"); // should fail: expressions as args not supported
-    process(map, "(dateparse('22.10.2006','dd.MM.yyyy') lt adaptorstart()"); // missing final ")"
-    process(map, "(round(9.3)"); // missing final ")"
-    process(map, "format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy')"); // fails: expression as argument to nested function
-    while ((line = br.readLine()) != null) {
-      process(map, line);
-    }
-  }
-  */
+  /*
+   * public static void main(String args[]) throws IOException { RunAdaptor adaptorGenerator = new RunAdaptor(); try {
+   * adaptorGenerator.initialise("dummy"); } catch (Exception e) { log.info("Ignoring adaptor exception " + e); }
+   *  // command args ignored IOrderedMap map = new OrderedHashMap(); map.put("alpha", new Integer(4)); map.put("beta",
+   * new Double(6.0)); map.put("stringOne", "alpha"); map.put("stringDate", "01/Jul/2006"); map.put("dateObject", new
+   * Date());
+   * 
+   * map.put("market", "liffe"); map.put("id_liffe", "LI_04539"); map.put("nully", null); map.put("long1003", new
+   * Long(1003)); map.put("long1002", new Long(1002)); BufferedReader br = new BufferedReader(new
+   * InputStreamReader(System.in)); String line; // NewOperatorPrecedenceParser.process(map,"{stringOne}"); process(map,
+   * "3/(4*5)"); process(map, "{alpha}/2"); process(map, "{id_{market}}+' is the id'"); process(map,
+   * "dateparse({stringDate},'dd/MMM/yyyy') < (dateparse('31/Oct/2006','dd/MMM/yyyy'))"); process(map,
+   * "dateparse({stringDate},'dd/MMM/yyyy') < dateparse('31/Oct/2006','dd/MMM/yyyy')"); process(map, "(3=4) & (4=5)");
+   * process(map, "({nonExistent} eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart())"); process(map,
+   * "({nonExistent} eq null) or ((dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart()))"); process(map, "not
+   * ({nonExistent} ne null) and (not( dateparse({nonExistent},'dd.MM.yyyy') lt adaptorstart() ))"); // de morgan's law
+   * applied to previous line process(map, "({stringDate} eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt
+   * adaptorstart())"); // should fail process(map, "({stringDate} eq null) or ((dateparse({nonExistent},'dd.MM.yyyy')
+   * lt adaptorstart()))"); // should fail process(map, "(null eq null) or (dateparse({nonExistent},'dd.MM.yyyy') lt
+   * adaptorstart())"); process(map, "format(dateparse('22.10.2006','dd.MM.yyyy') - 1000,'dd.MM.yyyy')"); // should
+   * fail: expressions as args not supported process(map,
+   * "(dateparse(format(dateparse('22.10.2006','dd.MM.yyyy'),'dd.MM.yyyy'),'dd.MM.yyyy') lt adaptorstart())");
+   * process(map, "(dateparse(format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy'),'dd.MM.yyyy') lt
+   * adaptorstart())"); // should fail: expressions as args not supported process(map,
+   * "dateparse(format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy'),'dd.MM.yyyy') lt
+   * adaptorstart()"); // should fail: expressions as args not supported process(map,
+   * "(dateparse('22.10.2006','dd.MM.yyyy') lt adaptorstart()"); // missing final ")" process(map, "(round(9.3)"); //
+   * missing final ")" process(map, "format(dateparse('22.10.2006','dd.MM.yyyy') - 24*60*60*1000,'dd.MM.yyyy')"); //
+   * fails: expression as argument to nested function while ((line = br.readLine()) != null) { process(map, line); } }
+   */
 
 }

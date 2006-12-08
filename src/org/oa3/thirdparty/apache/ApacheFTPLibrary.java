@@ -453,27 +453,6 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
   }
 
   /**
-   * Sets the file transfer mode toi BINARY.
-   * 
-   * @param b -
-   *          If false then will be set to ASCII
-   */
-  public void setBinaryTransfer(boolean b) {
-    // set the transfer mode - default to ASCII
-    try {
-      if (b) {
-        _ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-        log.debug("Binary transfer mode set");
-      } else {
-        _ftpClient.setFileType(FTP.ASCII_FILE_TYPE);
-        log.debug("ASCII transfer mode set");
-      }
-    } catch (IOException e) {
-      throw new OAException("Failed to set " + (b ? "binary" : "ascii") + " transfer mode: " + e.getMessage());
-    }
-  }
-
-  /**
    * There are a few FTPClient methods that do not complete the entire sequence of FTP commands to complete a
    * transaction. These commands require some action by the programmer after the reception of a positive intermediate
    * command. After the programmer's code completes its actions, it must call this method to receive the completion

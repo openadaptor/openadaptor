@@ -33,19 +33,24 @@
 package org.oa3.auxil.convertor.fixedwidth;
 
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/FixedWidthFieldDetail.java,v 1.2 2006/10/20 15:21:35 fennelr
- * Exp $ Rev: $Revision: 1.2 $ Created Jun 22, 2006 by oa3 Core Team
+ * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/FixedWidthFieldDetail.java,v 1.3 2006/11/30 15:10:45 fennelr Exp $
+ * Rev:  $Revision: 1.3 $
+ * Created Jun 22, 2006 by oa3 Core Team
  */
 
 /**
- * Defines a fixed width field. Allows you to set the various attributes required to manipulate a field: <p/> <p/>
- * 
+ * Defines a fixed width field. Allows you to set the various attributes required
+ * to manipulate a field:
+ * <p/>
+ * <p/>
  * <pre>
- *       fieldWidth      the number of characters the field will be made up of. Default = 0
- *       fieldName       the name used to reference the field. Default = null
- *       trim            wether the field is to have whitespace trimmed. Default = false
+ *      fieldWidth      the number of characters the field will be made up of. Default = 0
+ *      fieldName       the name used to reference the field. Default = null
+ *      trim            wether the field is to have whitespace trimmed. Default = false
+ *      rightAlign      if true then align the text to the right hand side of the field by
+ *                      padding from the left. Default is false.
  * </pre>
- * 
+ *
  * @author Russ Fennell
  */
 public class FixedWidthFieldDetail {
@@ -54,6 +59,8 @@ public class FixedWidthFieldDetail {
   private String fieldName = null;
 
   private boolean trim = false;
+
+  private boolean rightAlign = false;
 
   /**
    * @return the field width value. Defaults to 0
@@ -78,7 +85,7 @@ public class FixedWidthFieldDetail {
 
   /**
    * Sets the field width
-   * 
+   *
    * @param fieldWidth
    */
   public void setFieldWidth(int fieldWidth) {
@@ -87,7 +94,7 @@ public class FixedWidthFieldDetail {
 
   /**
    * Sets the field name
-   * 
+   *
    * @param fieldName
    */
   public void setFieldName(String fieldName) {
@@ -96,10 +103,27 @@ public class FixedWidthFieldDetail {
 
   /**
    * Sets the flag to indicate if the field should be trimmed orr not
-   * 
+   *
    * @param trim
    */
   public void setTrim(boolean trim) {
     this.trim = trim;
+  }
+
+  /**
+   * @return true if the text in the field is to be aligned to the right
+   * hand side.
+   */
+  public boolean isRightAlign() {
+    return rightAlign;
+  }
+
+  /**
+   * Sets the flag to turn right align on
+   *
+   * @param rightAlign true/false
+   */
+  public void setRightAlign(boolean rightAlign) {
+    this.rightAlign = rightAlign;
   }
 }

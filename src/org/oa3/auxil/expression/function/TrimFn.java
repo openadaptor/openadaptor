@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,7 +21,7 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
+ * 
  * Nothing in this notice shall be deemed to grant any rights to
  * trademarks, copyrights, patents, trade secrets or any other intellectual
  * property of the licensor or any contributor except as expressly stated
@@ -32,35 +32,35 @@
  */
 package org.oa3.auxil.expression.function;
 
+import org.apache.log4j.Logger;
 import org.oa3.auxil.expression.ExpressionException;
 
 /**
- * Evaluate String.endsWith()
+ * Implementation of String.trim()
  * 
- * @author Kevin Scully
+ * @author Russ Fennell
  */
-public class EndsWithFn extends AbstractFunction {
-  public static final String NAME = "endswith";
+public class TrimFn extends AbstractFunction {
+  static Logger log = Logger.getLogger(TrimFn.class);
 
-  // private static final Log log = LogFactory.getLog(EndsWithFn.class);
-
-  public EndsWithFn() {
-    super(NAME, 2);
+  /**
+   * Calls super constructor with an name of "trim" and an argCount of 1
+   */
+  public TrimFn() {
+    super("trim", 1);
   }
 
   /**
-   * Test if first argument is a <code>String</code> which ends with the second argument, which should also be a
-   * <code>String</code> ((String)args[0]).endsWith((String)args[1]) Return a Boolean Object with the result.
-   * 
    * @param args
-   *          Object array which is expected to hold two Strings
-   * @return Boolean object with value as defined above.
+   *          Object array which is expected to hold one String
+   * 
+   * @return a copy of the string, with leading and trailing whitespace omitted.
    */
   protected Object operate(Object[] args) throws ExpressionException {
-    String arg0 = getArgAsString(args[0], null);
-    validateNotNull(arg0, 0);
-    validateArg(args[1] instanceof String, 1, "Argument must be a non-null String");
-    return new Boolean(arg0.endsWith((String) args[1]));
+    String arg = getArgAsString(args[0], null);
+    validateNotNull(arg, 0);
+
+    return (arg.trim());
   }
 
 }

@@ -139,6 +139,19 @@ public class FixedWidthStringConvertorTestCase extends TestCase {
     assertEquals(false, cnvtr.getFieldDetails()[1].isTrim());
     assertEquals(true, cnvtr.getFieldDetails()[2].isTrim());
 
+    // right align - default
+    details = new FixedWidthFieldDetail[]{fd1};
+    cnvtr.setFieldDetails(details);
+    assertEquals(false, cnvtr.getFieldDetails()[0].isRightAlign());
+
+
+    // right align - values set
+    fd1.setRightAlign(true);
+    details = new FixedWidthFieldDetail[]{fd1};
+    cnvtr.setFieldDetails(details);
+    assertEquals(true, cnvtr.getFieldDetails()[0].isRightAlign());
+    fd1.setRightAlign(false);
+
     // null field details
     // todo check for NullRecordException
     try {

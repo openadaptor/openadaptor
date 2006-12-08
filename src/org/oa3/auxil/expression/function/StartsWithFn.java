@@ -42,7 +42,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class StartsWithFn extends AbstractFunction {
   public static final String NAME = "startswith";
 
-  //private static final Log log = LogFactory.getLog(StartsWithFn.class);
+  // private static final Log log = LogFactory.getLog(StartsWithFn.class);
 
   public StartsWithFn() {
     super(NAME, 2);

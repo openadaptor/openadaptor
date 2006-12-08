@@ -42,7 +42,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class FloorFn extends AbstractFunction {
   public static final String NAME = "floor";
 
-  //private static final Log log = LogFactory.getLog(FloorFn.class);
+  // private static final Log log = LogFactory.getLog(FloorFn.class);
 
   public FloorFn() {
     super(NAME, 1);

@@ -44,7 +44,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class RoundFn extends AbstractFunction {
   public static final String NAME = "round";
 
-  //private static final Log log = LogFactory.getLog(RoundFn.class);
+  // private static final Log log = LogFactory.getLog(RoundFn.class);
 
   public RoundFn() {
     super(NAME, 1);

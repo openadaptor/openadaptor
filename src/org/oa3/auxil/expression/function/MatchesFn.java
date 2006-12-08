@@ -46,7 +46,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class MatchesFn extends AbstractFunction {
   public static final String NAME = "matches";
 
-  //private static final Log log = LogFactory.getLog(MatchesFn.class);
+  // private static final Log log = LogFactory.getLog(MatchesFn.class);
 
   public MatchesFn() {
     super(MatchesFn.NAME, 2);

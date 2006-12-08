@@ -46,7 +46,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class SystemPropertyFn extends AbstractFunction {
   public static final String NAME = "systemproperty";
 
-  //private static final Log log = LogFactory.getLog(SystemPropertyFn.class);
+  // private static final Log log = LogFactory.getLog(SystemPropertyFn.class);
 
   public SystemPropertyFn() {
     this(NAME, 1);

@@ -48,7 +48,7 @@ import org.oa3.auxil.expression.ExpressionException;
 public class DateFn extends AbstractFunction {
   public static final String NAME = "date";
 
-  //private static final Log log = LogFactory.getLog(DateFn.class);
+  // private static final Log log = LogFactory.getLog(DateFn.class);
 
   public DateFn() {
     super(DateFn.NAME, 1);
