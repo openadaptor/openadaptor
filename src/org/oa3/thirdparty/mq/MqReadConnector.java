@@ -1,0 +1,147 @@
+/*
+ * [[ Copyright (C) 2001 - 2006 The Software Conservancy as Trustee. All rights
+ * reserved. Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions: The
+ * above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS
+ * IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+ * LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. Nothing in
+ * this notice shall be deemed to grant any rights to trademarks, copyrights,
+ * patents, trade secrets or any other intellectual property of the licensor or
+ * any contributor except as expressly stated herein. No patent license is
+ * granted separate from the Software, for code that you delete from the
+ * Software, or for combinations of the Software with other software or
+ * hardware. ]]
+ */
+package org.oa3.thirdparty.mq;
+/*
+ * File: $Header$ 
+ * Rev:  $Revision$
+ */
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.exception.OAException;
+import org.oa3.core.transaction.ITransactional;
+
+/**
+ * ReadConnector that use MqConnection to read messages from an IBM MQ Queue.
+ */
+public class MqReadConnector extends AbstractReadConnector implements ITransactional {
+
+  private static final Log log = LogFactory.getLog(MqReadConnector.class);
+
+  /**
+   * MQ character set switch. If true, and message character set is 285 UK
+   * EBCDIC, then switch to character set 37 US EBCDIC. This allows workaround
+   * if mq libraries do not support UK EBCDIC since numbers, letters, space, +, -
+   * and fullstop are all the same
+   */
+  protected boolean _UK_US_EBCDIC_Switch = true;
+
+  protected MqConnection connection = null;
+
+  // Bean Properties
+
+  /**
+   * Returns MQ connection
+   * 
+   * @return MqConnection
+   */
+  public MqConnection getConnection() {
+    return connection;
+  }
+
+  /**
+   * Set MQ Connection
+   */
+  public void setConnection(MqConnection connection) {
+    this.connection = connection;
+  }
+
+  // End Bean Properties
+
+  /**
+   * Establish a connection to external message transport. If already connected
+   * then do nothing.
+   * 
+   * @throws org.oa3.control.OAException
+   */
+  public void connect() {
+    if (getConnection() == null) throw new OAException("No MqConnection configured");
+    
+      getConnection().connectToMQ(true);
+    
+    
+    connected = true;
+    log.debug("MqReadConnector successfully connected");
+  }
+
+  /**
+   * Disconnect from the external message transport. If already disconnected
+   * then do nothing.
+   * 
+   * @throws org.oa3.control.OAException
+   */
+  public void disconnect() {
+    try {
+      getConnection().close();
+    }
+    
+    finally {
+      connected = false;
+      log.debug("MqReadConnector disconnected");
+    }
+  }
+
+  /**
+   * All connectors must be able to return a Transaction Resource. A null value
+   * is perfectly legal.
+   * 
+   * @return transaction spec
+   */
+  public Object getResource() {
+    return getConnection().getResource();
+  }
+
+  //
+
+  /**
+   * @param timeoutMs
+   *        Maximum read timeout in milliseconds
+   * @return Object array containing read records or null if no data read.
+   */
+  public Object[] nextRecord(long timeoutMs) throws OAException {
+    return nextRecord();
+  }
+
+  /**
+   * @return Object[] containing the next batch of records from this connector.
+   */
+  protected Object[] nextRecord() throws OAException {
+    
+    Object message = getConnection().nextRecord();   
+    
+    if (message != null) return new Object[] { message };
+    else return null;
+
+  }
+
+  public Object getReaderContext() {
+    // not relevant
+    return null;
+  }
+
+  public boolean isDry() {
+    // TODO Not sure what this means in this context (at least not yet)
+    return false;
+  }
+}
