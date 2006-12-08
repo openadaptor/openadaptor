@@ -52,7 +52,7 @@ public interface ITransactionManager {
 
     /**
      * Set the Transaction timeout. In MilliSeconds.
-     * @param timeoutInMilliseconds default timeout imposed by the transaction manager.
+     * @param timeoutMs default timeout imposed by the transaction manager.
      */
     public void setTransactionTimeout(long timeoutMs);
 
