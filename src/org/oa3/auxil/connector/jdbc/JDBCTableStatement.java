@@ -104,6 +104,8 @@ public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
    * @throws OAException
    */
   public int executeStatement(IOrderedMap om,Connection connection) throws OAException {
+
+    //TODO: Add in jdbc batch functionality
     int updateCount=0;
     PreparedStatement ps;
     IOrderedMap mappedOM;
