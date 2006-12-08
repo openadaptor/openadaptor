@@ -44,6 +44,7 @@ import javax.management.ObjectName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.lifecycle.ILifecycleComponent;
+import org.oa3.util.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -90,6 +91,12 @@ public class SpringApplication {
 			System.exit(1);
 		}
 
+    System.setProperty(Application.PROPERTY_CONFIG_URL, configUrl);
+    if (propsUrl != null) {
+      System.setProperty(Application.PROPERTY_PROPS_URL, propsUrl);
+    }
+    System.setProperty(Application.PROPERTY_COMPONENT_ID, beanName);
+    
 		runXml(configUrl, propsUrl, beanName, jmxPort);
 	}
 

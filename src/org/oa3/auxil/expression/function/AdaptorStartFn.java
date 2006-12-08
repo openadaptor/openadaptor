@@ -43,7 +43,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.core.adaptor.Adaptor;
+import org.oa3.util.Application;
 
 /**
  * Function to provide access to the Adaptor start timestamp as a <code>Date</code>.
@@ -64,7 +64,7 @@ public class AdaptorStartFn extends SystemPropertyFn {
 
   public AdaptorStartFn() {
     super(AdaptorStartFn.NAME, 0);
-    sdf = new SimpleDateFormat(Adaptor.ADAPTOR_START_TIMESTAMP_FORMAT);
+    sdf = new SimpleDateFormat(Application.START_TIMESTAMP_FORMAT);
   }
 
   /**
@@ -81,12 +81,12 @@ public class AdaptorStartFn extends SystemPropertyFn {
   protected Object operate(Object[] args) throws ExpressionException {
     Date result = startTimestamp;
     if (result == null) { // Not already set. Look it up.
-      String startTimestamp = System.getProperty(Adaptor.ADAPTOR_START_TIMESTAMP_PROPERTY);
+      String startTimestamp = System.getProperty(Application.PROPERTY_START_TIMESTAMP);
       if (startTimestamp != null) {
         try {
           result = sdf.parse(startTimestamp);
         } catch (ParseException pe) {
-          log.warn("Failed to get " + Adaptor.ADAPTOR_START_TIMESTAMP_PROPERTY);
+          log.warn("Failed to get " + Application.PROPERTY_START_TIMESTAMP);
         }
       }
     }

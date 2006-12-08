@@ -64,8 +64,8 @@ import org.oa3.auxil.connector.iostream.RFC2279;
  * 
  * @author Eddy Higgins
  */
-public class RegistrationUtils {
-  private static Log log = LogFactory.getLog(RegistrationUtils.class.getName());
+public class PropertiesPoster {
+  private static Log log = LogFactory.getLog(PropertiesPoster.class.getName());
 
   /**
    * W3C state that UTF-8 should be used (not doing so may introduce compatibilities)
@@ -74,7 +74,7 @@ public class RegistrationUtils {
    */
   private static final String DEFAULT_ENCODING = RFC2279.UTF_8;
 
-  private RegistrationUtils() {
+  private PropertiesPoster() {
   } // No instantiation allowed.
 
   /**
@@ -87,11 +87,10 @@ public class RegistrationUtils {
    * @param properties
    * @throws Exception
    */
-  public static void register(String registrationURL, Properties properties) throws Exception {
+  public static void post(String registrationURL, Properties properties) throws Exception {
 
     URL url = new URL(registrationURL);
     String postData = generatePOSTData(properties);
-    log.debug("Registering adaptor");
     log.debug("Protocol: " + url.getProtocol());
     if (url.getProtocol().equals("https")) {
 
