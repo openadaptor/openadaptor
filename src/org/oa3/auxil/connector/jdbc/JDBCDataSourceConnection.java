@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.connector.jdbc;
+package org.oa3.auxil.connector.jdbc;
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCDataSourceConnection.java,v 1.5 2006/10/18 14:31:02 ottalk Exp $
  * Rev:  $Revision: 1.5 $
