@@ -19,7 +19,7 @@ public class XmlValidatorTestCase extends TestCase {
   }
 
   public void testMissingSchemaFile() {
-    String s = ResourceUtil.findResource(this, "schemaX.xsd");
+    String s = ResourceUtil.getResourcePath(this, "schemaX.xsd");
     validator.setSchemaURL("file:" + s);
     List exceptions = new ArrayList();
     validator.validate(exceptions);
@@ -48,7 +48,7 @@ public class XmlValidatorTestCase extends TestCase {
   }
 
   private void validateSchemaFile() {
-    String s = ResourceUtil.findResource(this, "schema.xsd");
+    String s = ResourceUtil.getResourcePath(this, "schema.xsd");
     validator.setSchemaURL(s);
     List exceptions = new ArrayList();
     validator.validate(exceptions);

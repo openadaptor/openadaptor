@@ -49,7 +49,7 @@ public class TestWriteConnector extends Component implements IWriteConnector, IT
 
 	private static final Log log = LogFactory.getLog(TestWriteConnector.class);
 	
-	private List output = new ArrayList();
+	private final List output = new ArrayList();
 	private List expectedOutput = new ArrayList();
 	private int exceptionFrequency = 0;
 	private int count;
@@ -125,6 +125,7 @@ public class TestWriteConnector extends Component implements IWriteConnector, IT
   }
 
 	private void record(String line) {
+    log.debug("received [" + line + "]");
 		output.add(line);
     if (transactionalResource != null) {
       transactionalResource.incrementRecordCount();

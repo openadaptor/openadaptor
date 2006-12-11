@@ -43,12 +43,13 @@ import org.oa3.core.Response;
 import org.oa3.core.lifecycle.ILifecycleListener;
 import org.oa3.core.lifecycle.State;
 import org.oa3.core.router.IRoutingMap;
+import org.oa3.util.ResourceUtil;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 
 public class RoutingMapTestCase extends TestCase {
 
-	ListableBeanFactory factory = SpringApplication.getBeanFactory("file:test/src/org/oa3/spring/routing.xml", null);
+	ListableBeanFactory factory = SpringApplication.getBeanFactory(ResourceUtil.getResourcePath(this, "routing.xml"), null);
 
 	private IRoutingMap getRoutingMap(String testName) {
 		return (IRoutingMap) factory.getBean(testName);

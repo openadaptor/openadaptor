@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oa3.core.IComponent;
 import org.oa3.core.IWriteConnector;
 import org.oa3.core.Message;
 import org.oa3.core.Response;
@@ -147,4 +148,17 @@ public class AdaptorOutpoint extends Node {
     
 		return response;
 	}
+
+  public String getId() {
+    String id = super.getId();
+    if (id == null && connector instanceof IComponent) {
+      return ((IComponent)connector).getId();
+    }
+    return id;
+  }
+  
+  public String toString() {
+    return getId();
+  }
+
 }

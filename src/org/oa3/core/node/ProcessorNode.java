@@ -31,67 +31,18 @@
  * ]]
  */
 
-package org.oa3.core.lifecycle;
+package org.oa3.core.node;
 
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
+public final class ProcessorNode extends Node {
 
-public class LifecycleComponent extends Component implements ILifecycleComponent {
+  public String getId() {
+    String id = super.getId();
+    return id != null ? id : getProcessorId();
+  }
+  
+  public String toString() {
+    return getId();
+  }
 
-	private static final Log log = LogFactory.getLog(LifecycleComponent.class);
-	
-	private LifecycleDelegate lifecycleDelegate;
-
-	public LifecycleComponent() {
-		lifecycleDelegate = new LifecycleDelegate(this, State.CREATED);
-	}
-	
-	public LifecycleComponent(String id) {
-		super(id);
-		lifecycleDelegate = new LifecycleDelegate(this, State.CREATED);
-	}
-	
-	public void addListener(ILifecycleListener listener) {
-		lifecycleDelegate.addListener(listener);
-	}
-
-	public boolean isState(State state) {
-		return lifecycleDelegate.isState(state);
-	}
-
-	protected void setState(State state) {
-		lifecycleDelegate.setState(state);
-	}
-	
-	public void removeListener(ILifecycleListener listener) {
-		lifecycleDelegate.removeListener(listener);
-	}
-
-	public void start() {
-		lifecycleDelegate.setState(State.RUNNING);
-		log.info(getId() + " started");
-	}
-
-	public void stop() {
-    if (lifecycleDelegate.getState() != State.STOPPED) {
-  		lifecycleDelegate.setState(State.STOPPED);
-  		log.info(getId() + " stopped");
-    }
-	}
-
-	public void validate(List exceptions) {
-	}
-	
-	public void waitForState(State state) {
-		log.debug("waiting for " + getId() + " to be " + state);
-		lifecycleDelegate.waitForState(state);
-	}
-	
-	public State getState() {
-		return lifecycleDelegate.getState();
-	}
-	
 }

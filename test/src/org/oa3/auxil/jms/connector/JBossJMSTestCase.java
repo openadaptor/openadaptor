@@ -7,8 +7,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSListener;
-import org.oa3.auxil.connector.jms.JMSPublisher;
+import org.oa3.auxil.connector.jms.JMSReadConnector;
+import org.oa3.auxil.connector.jms.JMSWriteConnector;
 import org.oa3.auxil.connector.jndi.JNDIConnection;
 
 /**
@@ -35,7 +35,7 @@ public class JBossJMSTestCase extends TestCase {
       connection.setDurable(true);
       connection.setClientID("push");
 
-      JMSPublisher connector = new JMSPublisher();
+      JMSWriteConnector connector = new JMSWriteConnector();
       connector.setJmsConnection(connection);
       connector.connect();
       connector.deliver((Object[]) inputs.toArray()); 
@@ -58,7 +58,7 @@ public class JBossJMSTestCase extends TestCase {
       connection.setDurable(true);
       connection.setClientID("pop");
 
-      JMSListener connector = new JMSListener();
+      JMSReadConnector connector = new JMSReadConnector();
       connector.setJmsConnection(connection);
       connector.connect();
 

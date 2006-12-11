@@ -15,7 +15,7 @@ public class Component implements IComponent {
 		return id;
 	}
 	
-	public void setId(String id) {
+	public final void setId(String id) {
 		this.id = id;
 	}
 	

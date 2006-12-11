@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oa3.core.IComponent;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.IMessageProcessor;
 import org.oa3.core.Message;
@@ -48,15 +49,13 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 
 	private static final Log log = LogFactory.getLog(Node.class);
 	
-	private static final IDataProcessor NULL_PROCESSOR = new IDataProcessor.NullProcessor();
-
 	private IMessageProcessor next;
 
 	private IDataProcessor processor;
 
 	public Node(final String id, final IDataProcessor processor, final IMessageProcessor next) {
 		super(id);
-		this.processor = processor != null ? processor : NULL_PROCESSOR;
+		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
 		this.next = next;
 	}
 
@@ -132,4 +131,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
     processor.reset(context);
   }
 
+  protected String getProcessorId() {
+    if (processor instanceof IComponent) {
+      return ((IComponent)processor).getId();
+    }
+    return null;
+  }
 }

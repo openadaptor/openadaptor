@@ -50,7 +50,7 @@ public interface IDataProcessor {
 	 */
 	Object[] process(Object data);
 	
-	static final class NullProcessor implements IDataProcessor {
+  public static final IDataProcessor NULL_PROCESSOR = new IDataProcessor() {
 
 		public Object[] process(Object data) {
 			return new Object[] { data };
@@ -61,7 +61,6 @@ public interface IDataProcessor {
 
 		public void validate(List exceptions) {
 		}
-		
-	}
+	};
 
 }

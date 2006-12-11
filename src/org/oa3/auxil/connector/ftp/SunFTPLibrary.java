@@ -278,7 +278,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _connected = false;
       log.debug("SunFTP connection closed");
     } catch (IOException e) {
-      throw new ComponentException("Failed to close SunFTP Server" + e.toString(), this);
+      throw new ComponentException("Failed to close SunFTP Server " + e.toString(), this);
     }
   }
 

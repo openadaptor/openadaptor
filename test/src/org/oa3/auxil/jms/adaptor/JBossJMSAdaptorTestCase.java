@@ -21,8 +21,8 @@ import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
 import org.oa3.auxil.connector.iostream.writer.FileWriter;
 import org.oa3.auxil.connector.iostream.writer.StreamWriteConnector;
 import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSListener;
-import org.oa3.auxil.connector.jms.JMSPublisher;
+import org.oa3.auxil.connector.jms.JMSReadConnector;
+import org.oa3.auxil.connector.jms.JMSWriteConnector;
 import org.oa3.auxil.jms.connector.JBossJMSTestCase;
 import org.oa3.core.IMessageProcessor;
 import org.oa3.core.Message;
@@ -68,7 +68,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("push");
     connection.setTransacted(true);
 
-    JMSPublisher outpoint = new JMSPublisher();
+    JMSWriteConnector outpoint = new JMSWriteConnector();
     outpoint.setId("JmsOut");
     outpoint.setJmsConnection(connection);
 
@@ -97,7 +97,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("pop");
     connection.setTransacted(true);
 
-    JMSListener inpoint = new JMSListener();
+    JMSReadConnector inpoint = new JMSReadConnector();
     inpoint.setJmsConnection(connection);
     inpoint.setId("JmsIn");
 
@@ -135,7 +135,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("pop");
     connection.setTransacted(true);
 
-    JMSListener inpoint = new JMSListener();
+    JMSReadConnector inpoint = new JMSReadConnector();
     inpoint.setJmsConnection(connection);
     inpoint.setId("JmsIn");
     inpoint.setTimeout(1000);
@@ -207,7 +207,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
   /**
    * hack to sleep and then open a  url to the http interface to the jmx interface
    */
-  public class JMXStopThread extends Thread {
+  public static class JMXStopThread extends Thread {
     public void run() {
       try {
         Thread.sleep(2000);

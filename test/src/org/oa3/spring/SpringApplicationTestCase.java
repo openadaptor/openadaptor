@@ -34,6 +34,7 @@
 package org.oa3.spring;
 
 import org.oa3.spring.SpringApplication;
+import org.oa3.util.ResourceUtil;
 
 import junit.framework.TestCase;
 
@@ -47,31 +48,33 @@ public class SpringApplicationTestCase extends TestCase {
 	
 	public void testNoProps() {
 		try {
-			SpringApplication.runXml("file:test/src/org/oa3/spring/test.xml", null, "Test");
+			SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), null, "Test");
 			fail();
 		} catch (RuntimeException e) {
 		}
 	}
 	
 	public void testPropsFile() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/test.xml", "file:test/src/org/oa3/spring/test.properties", "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), 
+        ResourceUtil.getResourcePath(this, "test.properties"), "Test");
 		assertTrue(result.equals("foo"));
 	}
 	
 	public void testSystemProps() {
 		System.setProperty("message", "foobar");
-		SpringApplication.runXml("file:test/src/org/oa3/spring/test.xml", null, "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), null, "Test");
 		assertTrue(result.equals("foobar"));
 	}
 	
 	public void testSystemPropsOverride() {
 		System.setProperty("message", "foobar");
-		SpringApplication.runXml("file:test/src/org/oa3/spring/test.xml", "file:test/src/org/oa3/spring/test.properties", "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), ResourceUtil.getResourcePath(this, "test.properties"), "Test");
 		assertTrue(result.equals("foo"));
 	}
 	
 	public void testRunner() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/test.xml", "file:test/src/org/oa3/spring/test.properties", "Runnables");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), 
+        ResourceUtil.getResourcePath(this, "test.properties"), "Runnables");
 		assertTrue(result.equals("run1run2") || result.equals("run2run1"));
 	}
 	

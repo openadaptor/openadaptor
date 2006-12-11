@@ -43,7 +43,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.lifecycle.ILifecycleComponent;
+import org.oa3.core.IComponent;
 import org.oa3.util.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -54,153 +54,160 @@ import org.springframework.core.io.UrlResource;
 
 public class SpringApplication {
 
-	private static Log log = LogFactory.getLog(SpringApplication.class);
+  private static Log log = LogFactory.getLog(SpringApplication.class);
 
-	/**
-	 * read cmd line args and run SpringApplication
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		String configUrl = null;
-		String propsUrl = null;
-		String beanName = null;
-		int jmxPort = 0;
+  /**
+   * read cmd line args and run SpringApplication
+   * 
+   * @param args
+   */
+  public static void main(String[] args) {
+    String configUrl = null;
+    String propsUrl = null;
+    String beanName = null;
+    int jmxPort = 0;
 
-		try {
-			for (int i = 0; i < args.length; i++) {
-				if (args[i].equals("-config")) {
-					configUrl = args[++i];
-				} else if (args[i].equals("-props")) {
-					propsUrl = args[++i];
-				} else if (args[i].equals("-bean")) {
-					beanName = args[++i];
-				} else if (args[i].equals("-jmx")) {
-					jmxPort = Integer.parseInt(args[++i]);
-				} else {
-					throw new RuntimeException("unrecognised cmd line arg " + args[i]);
-				}
-			}
-		} catch (RuntimeException e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			System.err.println("usage: java " + SpringApplication.class.getName()
-					+ " -config <spring xml config file url> "
-					+ "-bean <bean id> "
-					+ "\n  [-props <properties file url] "
-					+ "\n  [-jmx <http port to run jmx http adaptor>");
-			System.exit(1);
-		}
+    try {
+      for (int i = 0; i < args.length; i++) {
+        if (args[i].equals("-config")) {
+          configUrl = args[++i];
+        } else if (args[i].equals("-props")) {
+          propsUrl = args[++i];
+        } else if (args[i].equals("-bean")) {
+          beanName = args[++i];
+        } else if (args[i].equals("-jmx")) {
+          jmxPort = Integer.parseInt(args[++i]);
+        } else {
+          throw new RuntimeException("unrecognised cmd line arg " + args[i]);
+        }
+      }
+    } catch (RuntimeException e) {
+      System.err.println(e.getMessage());
+      e.printStackTrace();
+      System.err
+          .println("usage: java " + SpringApplication.class.getName() + " -config <spring xml config file url> "
+              + "-bean <bean id> " + "\n  [-props <properties file url] "
+              + "\n  [-jmx <http port to run jmx http adaptor>");
+      System.exit(1);
+    }
 
     System.setProperty(Application.PROPERTY_CONFIG_URL, configUrl);
     if (propsUrl != null) {
       System.setProperty(Application.PROPERTY_PROPS_URL, propsUrl);
     }
     System.setProperty(Application.PROPERTY_COMPONENT_ID, beanName);
-    
-		runXml(configUrl, propsUrl, beanName, jmxPort);
-	}
 
-	public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {
-		return getBeanFactory(configUrl, propsUrl, 0);
-	}
-	
-	public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl, int jmxPort) {
-		try {
-			XmlBeanFactory factory = new XmlBeanFactory(new UrlResource(configUrl));
-			preProcessFactory(propsUrl, factory);
-			setComponentIds(factory);
-			configureMBeanServer(factory, jmxPort);
-			return factory;
-		} catch (BeansException e) {
-			log.error("error", e);
-			throw new RuntimeException("BeansException : " + e.getMessage());
-		} catch (MalformedURLException e) {
-			log.error("error", e);
-			throw new RuntimeException("MalformedUrlException : " + e.getMessage());
-		}
-	}
+    runXml(configUrl, propsUrl, beanName, jmxPort);
+  }
 
-	public static void runXml(String configUrl, String propsUrl, String beanId) {
-		runXml(configUrl, propsUrl, beanId, 0);
-	}
+  public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {
+    return getBeanFactory(configUrl, propsUrl, 0);
+  }
 
-	/**
-	 * run a spring application, creates Xml bean factory from url
-	 * post processes factory using optional properties url and system properties
-	 * gets runnable bean and calls run
-	 * 
-	 * @param configUrl url that points to xml spring config
-	 * @param propsUrl url that points to properties file
-	 * @param beanId id of bean that implements Runnable
-	 */
-	public static void runXml(String configUrl, String propsUrl, String beanId, int jmxPort) {
-		try {
-			ListableBeanFactory factory = getBeanFactory(configUrl, propsUrl, jmxPort);
-			Runnable runnerBean = (Runnable) factory.getBean(beanId);
-			Thread.currentThread().setName(beanId);
-			runnerBean.run();
-		} catch (BeansException e) {
-			log.error("bean exception", e);
-			throw new RuntimeException("BeansException : " + e.getMessage());
-		}
-	}
+  public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl, int jmxPort) {
+    try {
+      if (configUrl.indexOf(":") == -1) {
+        configUrl = "file:" + configUrl;
+      }
+      XmlBeanFactory factory = new XmlBeanFactory(new UrlResource(configUrl));
+      preProcessFactory(propsUrl, factory);
+      setComponentIds(factory);
+      configureMBeanServer(factory, jmxPort);
+      return factory;
+    } catch (BeansException e) {
+      log.error("error", e);
+      throw new RuntimeException("BeansException : " + e.getMessage());
+    } catch (MalformedURLException e) {
+      log.error("error", e);
+      throw new RuntimeException("MalformedUrlException : " + e.getMessage());
+    }
+  }
 
-	private static void preProcessFactory(String propsUrl, XmlBeanFactory factory) throws MalformedURLException {
-		PropertyPlaceholderConfigurer configurer = new PropertyPlaceholderConfigurer();
-		if (propsUrl != null) {
-			configurer.setLocation(new UrlResource(propsUrl));
-		}
-		configurer.setProperties(System.getProperties());
-		configurer.postProcessBeanFactory(factory);
-	}
+  public static void runXml(String configUrl, String propsUrl, String beanId) {
+    runXml(configUrl, propsUrl, beanId, 0);
+  }
 
-	
-	private static void setComponentIds(XmlBeanFactory factory) {
-		String[] beanNames = factory.getBeanDefinitionNames();
-		for (int i = 0; i < beanNames.length; i++) {
-			Object bean = factory.getBean(beanNames[i]);
-			if (bean instanceof ILifecycleComponent) {
-				ILifecycleComponent component = (ILifecycleComponent) bean;
-				if (component.getId() == null) {
-					component.setId(beanNames[i]);
-				}
-			}
-		}
-	}
+  /**
+   * run a spring application, creates Xml bean factory from url post processes factory using optional properties url
+   * and system properties gets runnable bean and calls run
+   * 
+   * @param configUrl
+   *          url that points to xml spring config
+   * @param propsUrl
+   *          url that points to properties file
+   * @param beanId
+   *          id of bean that implements Runnable
+   */
+  public static void runXml(String configUrl, String propsUrl, String beanId, int jmxPort) {
+    try {
+      ListableBeanFactory factory = getBeanFactory(configUrl, propsUrl, jmxPort);
+      Runnable runnerBean = (Runnable) factory.getBean(beanId);
+      Thread.currentThread().setName(beanId);
+      runnerBean.run();
+    } catch (BeansException e) {
+      log.error("bean exception", e);
+      throw new RuntimeException("BeansException : " + e.getMessage());
+    }
+  }
 
-	private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort) {
-		MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
-		if (mbeanServer == null && jmxPort != 0) {
-			mbeanServer = new org.oa3.core.jmx.MBeanServer(jmxPort);
-		}
-		if (mbeanServer != null) {
-			String[] beanNames = factory.getBeanDefinitionNames();
-			for (int i = 0; i < beanNames.length; i++) {
-				attemptToRegisterBean(factory, mbeanServer, beanNames[i]);
-			}
-		}
-	}
+  private static void preProcessFactory(String propsUrl, XmlBeanFactory factory) throws MalformedURLException {
+    PropertyPlaceholderConfigurer configurer = new PropertyPlaceholderConfigurer();
+    if (propsUrl != null) {
+      if (propsUrl.indexOf(":") == -1) {
+        propsUrl = "file:" + propsUrl;
+      }
+      configurer.setLocation(new UrlResource(propsUrl));
+    }
+    configurer.setProperties(System.getProperties());
+    configurer.postProcessBeanFactory(factory);
+  }
 
-	private static void attemptToRegisterBean(XmlBeanFactory factory, MBeanServer mbeanServer, String beanName) {
-		Object bean = factory.getBean(beanName);
-		if (!(bean instanceof MBeanServer)) {
-			try {
-				ObjectName name = new ObjectName("beans:id=" + beanName);
-				mbeanServer.registerMBean(bean, name);
-				log.info("registered bean " + beanName);
-			} catch (NotCompliantMBeanException e) {
-				log.debug("bean " + beanName + " is not compliant : " + e.getMessage());
-			} catch (Exception e) {
-				log.error("failed to register mbean " + beanName, e);
-			}
-		}
-	}
+  private static void setComponentIds(XmlBeanFactory factory) {
+    String[] beanNames = factory.getBeanDefinitionNames();
+    for (int i = 0; i < beanNames.length; i++) {
+      Object bean = factory.getBean(beanNames[i]);
+      if (bean instanceof IComponent) {
+        IComponent component = (IComponent) bean;
+        if (component.getId() == null) {
+          component.setId(beanNames[i]);
+        }
+      }
+    }
+  }
 
-	public static Object getFirstBeanOfType(DefaultListableBeanFactory factory, Class beanClass) {
-		Map beanMap = factory.getBeansOfType(MBeanServer.class);
-		for (Iterator iter = beanMap.values().iterator(); iter.hasNext();) {
-			return iter.next();
-		}
-		return null;
-	}
+  private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort) {
+    MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
+    if (mbeanServer == null && jmxPort != 0) {
+      mbeanServer = new org.oa3.core.jmx.MBeanServer(jmxPort);
+    }
+    if (mbeanServer != null) {
+      String[] beanNames = factory.getBeanDefinitionNames();
+      for (int i = 0; i < beanNames.length; i++) {
+        attemptToRegisterBean(factory, mbeanServer, beanNames[i]);
+      }
+    }
+  }
+
+  private static void attemptToRegisterBean(XmlBeanFactory factory, MBeanServer mbeanServer, String beanName) {
+    Object bean = factory.getBean(beanName);
+    if (!(bean instanceof MBeanServer)) {
+      try {
+        ObjectName name = new ObjectName("beans:id=" + beanName);
+        mbeanServer.registerMBean(bean, name);
+        log.info("registered bean " + beanName);
+      } catch (NotCompliantMBeanException e) {
+        log.debug("bean " + beanName + " is not compliant : " + e.getMessage());
+      } catch (Exception e) {
+        log.error("failed to register mbean " + beanName, e);
+      }
+    }
+  }
+
+  public static Object getFirstBeanOfType(DefaultListableBeanFactory factory, Class beanClass) {
+    Map beanMap = factory.getBeansOfType(MBeanServer.class);
+    for (Iterator iter = beanMap.values().iterator(); iter.hasNext();) {
+      return iter.next();
+    }
+    return null;
+  }
 }

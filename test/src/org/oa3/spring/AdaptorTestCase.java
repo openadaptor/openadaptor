@@ -34,28 +34,29 @@
 package org.oa3.spring;
 
 import org.oa3.spring.SpringApplication;
+import org.oa3.util.ResourceUtil;
 
 import junit.framework.TestCase;
 
 public class AdaptorTestCase extends TestCase {
 
 	public void test1() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/adaptor1.xml", null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "adaptor");
 	}
 	
 	public void test2() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/adaptor2.xml", null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "adaptor");
 	}
 	
 	public void test3() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/adaptor3.xml", null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "adaptor");
 	}
 	
 	public void test4() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/adaptor4.xml", null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "adaptor");
 	}
 
 	public void test5() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/adaptor5.xml", null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "adaptor");
 	}
 }

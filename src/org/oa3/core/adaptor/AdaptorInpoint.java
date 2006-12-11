@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oa3.core.IComponent;
 import org.oa3.core.IReadConnector;
 import org.oa3.core.Message;
 import org.oa3.core.lifecycle.State;
@@ -45,7 +46,7 @@ import org.oa3.core.transaction.ITransaction;
 import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.ITransactional;
 
-public class AdaptorInpoint extends Node implements IAdaptorInpoint {
+public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
   private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
 
@@ -102,7 +103,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
       connector.connect();
       super.start();
     } else {
-      log.info(toString() + " is not enabled");
+      log.info(getId() + " is not enabled");
     }
   }
 
@@ -118,15 +119,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
         try {
           transaction = transactionManager.getTransaction();
           enlistConnector(transaction);
-          Object[] data = connector.next(timeoutMs);
-          if (data != null) {
-            if (connector.getReaderContext() == prevReaderContext) {
-              resetProcessor(connector.getReaderContext());
-              prevReaderContext = connector.getReaderContext();
-            }
-            Message msg = new Message(data, this, transaction);
-            process(msg);
-          }
+          getDataAndProcess(transaction);
           log.debug(getId() + " committing transaction");
           transaction.commit();
         } catch (Throwable e) {
@@ -141,6 +134,22 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
       log.info(getId() + " no longer running");
       stop();
       connector.disconnect();
+    }
+  }
+
+  /**
+   * extracted so that frameworks can plug in their own transaction management
+   * @param transaction
+   */
+  public void getDataAndProcess(ITransaction transaction) {
+    Object[] data = connector.next(timeoutMs);
+    if (data != null) {
+      if (connector.getReaderContext() == prevReaderContext) {
+        resetProcessor(connector.getReaderContext());
+        prevReaderContext = connector.getReaderContext();
+      }
+      Message msg = new Message(data, this, transaction);
+      process(msg);
     }
   }
 
@@ -165,4 +174,15 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     }
   }
 
+  public String getId() {
+    String id = super.getId();
+    if (id == null && connector instanceof IComponent) {
+      return ((IComponent)connector).getId();
+    }
+    return id;
+  }
+  
+  public String toString() {
+    return getId();
+  }
 }

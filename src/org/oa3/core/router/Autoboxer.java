@@ -45,6 +45,7 @@ import org.oa3.core.IWriteConnector;
 import org.oa3.core.adaptor.AdaptorInpoint;
 import org.oa3.core.adaptor.AdaptorOutpoint;
 import org.oa3.core.node.Node;
+import org.oa3.core.node.ProcessorNode;
 
 public class Autoboxer implements IAutoboxer {
 
@@ -83,9 +84,9 @@ public class Autoboxer implements IAutoboxer {
 	}
 
 	public Node autobox(IDataProcessor processor) {
-		Node node = (Node) nodeMap.get(processor);
+    Node node = (Node) nodeMap.get(processor);
 		if (node == null) {
-			node = new Node(processor.toString());
+			node = new ProcessorNode();
 			node.setProcessor(processor);
 			nodeMap.put(processor, node);
 		}
@@ -95,7 +96,7 @@ public class Autoboxer implements IAutoboxer {
 	public Node autobox(IReadConnector connector) {
 		AdaptorInpoint node = (AdaptorInpoint) nodeMap.get(connector);
 		if (node == null) {
-			node = new AdaptorInpoint(connector.toString());
+			node = new AdaptorInpoint();
 			node.setConnector(connector);
 			nodeMap.put(connector, node);
 		}
@@ -105,7 +106,7 @@ public class Autoboxer implements IAutoboxer {
 	public Node autobox(IWriteConnector connector) {
 		AdaptorOutpoint node = (AdaptorOutpoint) nodeMap.get(connector);
 		if (node == null) {
-			node = new AdaptorOutpoint(connector.toString());
+			node = new AdaptorOutpoint();
 			node.setConnector(connector);
 			nodeMap.put(connector, node);
 		}

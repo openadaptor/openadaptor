@@ -29,7 +29,7 @@ public class ResourceUtil {
   }
 
   public static void writeFileContents(Object caller, String filename, String contents) {
-    String s = findResource(caller, filename);
+    String s = getResourcePath(caller, filename);
     try {
       FileWriter writer = new FileWriter(s);
       writer.write(contents);
@@ -40,7 +40,7 @@ public class ResourceUtil {
     }
   }
 
-  public static String findResource(Object caller, String filename) {
+  public static String getResourcePath(Object caller, String filename) {
     String s = caller.getClass().getPackage().getName();
     s = s.replaceAll("\\.", "/");
     s = "test/src/" + s + "/" + filename;

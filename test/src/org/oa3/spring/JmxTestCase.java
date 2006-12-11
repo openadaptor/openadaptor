@@ -34,12 +34,13 @@
 package org.oa3.spring;
 
 import org.oa3.spring.SpringApplication;
+import org.oa3.util.ResourceUtil;
 
 import junit.framework.TestCase;
 
 public class JmxTestCase extends TestCase {
 	public void test() {
-		SpringApplication.runXml("file:test/src/org/oa3/spring/jmx.xml", null, "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "jmx.xml"), null, "Test");
 	}
 	
 	public static final class Test implements Runnable, TestMBean {
