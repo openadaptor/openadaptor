@@ -48,7 +48,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
 
 /**
  * Some useful helper methods to centralise common functions
@@ -67,7 +66,7 @@ public class FileUtils {
    *          the path of the new file. If the new name is an existing directory then the file will be moved into it and
    *          keep the same file name
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the destination file exists
    */
   public static void moveFile(String fileName, String newName) {
@@ -83,26 +82,26 @@ public class FileUtils {
    *          the new file. If the new file is an existing directory then the file will be moved into it and keep the
    *          same file name
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the source file does not exist or is a directory or if the destination file exists
    */
   public static void moveFile(File oldFile, File newFile) {
     if (!oldFile.exists())
-      throw new OAException("File not found [" + oldFile.getName() + "]");
+      throw new RuntimeException("File not found [" + oldFile.getName() + "]");
 
     if (oldFile.isDirectory())
-      throw new OAException("File is a directory");
+      throw new RuntimeException("File is a directory");
 
     if (newFile.exists()) {
       if (newFile.isDirectory()) {
         newFile = new File(newFile.getPath() + File.separator + oldFile.getName());
 
         if (newFile.exists())
-          throw new OAException("New file name [" + newFile.getPath() + "] exists. Cannot move file");
+          throw new RuntimeException("New file name [" + newFile.getPath() + "] exists. Cannot move file");
 
         log.info("File will be moved to " + newFile.getPath());
       } else {
-        throw new OAException("New file name [" + newFile.getPath() + "] exists. Cannot move file");
+        throw new RuntimeException("New file name [" + newFile.getPath() + "] exists. Cannot move file");
       }
     }
 
@@ -156,7 +155,7 @@ public class FileUtils {
    * @param dirName
    *          the path to the new directory
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the path points to an existing file or there was a problem creatinmg the directory
    */
   public static void mkdir(String dirName) {
@@ -167,12 +166,12 @@ public class FileUtils {
         log.warn("Directory [" + d.getPath() + "] already exists.");
         return;
       } else {
-        throw new OAException("Path [" + d.getPath() + "] exists and is a file");
+        throw new RuntimeException("Path [" + d.getPath() + "] exists and is a file");
       }
     }
 
     if (!d.mkdirs())
-      throw new OAException("Failed to create directory [" + d.getPath() + "]");
+      throw new RuntimeException("Failed to create directory [" + d.getPath() + "]");
 
     log.debug("Directory [" + d.getPath() + "] successfully created");
   }
@@ -412,7 +411,7 @@ public class FileUtils {
    * @param fileName
    *          the name of the file
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the named directory points to a file
    */
   public static File createOrGetFile(String directory, String fileName) {
@@ -423,7 +422,7 @@ public class FileUtils {
       log.debug("Created directory [" + d.getPath() + "]");
     } else {
       if (d.isFile())
-        throw new OAException("The supplied directory [" + directory + "] points to a file");
+        throw new RuntimeException("The supplied directory [" + directory + "] points to a file");
     }
 
     File f = new File(d.getPath() + "/" + fileName);
@@ -452,13 +451,13 @@ public class FileUtils {
     log.debug("Creating file [" + path + "]");
 
     if (path == null)
-      throw new OAException("Null path passed");
+      throw new RuntimeException("Null path passed");
 
     File f = new File(path);
 
     if (f.exists()) {
       if (!overwrite)
-        throw new OAException("File exists");
+        throw new RuntimeException("File exists");
       else
         log.debug("File exists, will overwrite");
 
@@ -469,7 +468,7 @@ public class FileUtils {
         try {
           s = FileUtils.getFileContents(f);
         } catch (IOException e) {
-          throw new OAException("Failed to append to contents: " + e.toString());
+          throw new RuntimeException("Failed to append to contents: " + e.toString());
         }
 
         contents = s + "\n" + contents;
@@ -499,7 +498,7 @@ public class FileUtils {
       out.write(contents);
       out.close();
     } catch (Exception e) {
-      throw new OAException("Error writing to file [" + f.getPath() + "}: " + e.toString());
+      throw new RuntimeException("Error writing to file [" + f.getPath() + "}: " + e.toString(), null);
     } finally {
       if (fsStream != null)
         try {

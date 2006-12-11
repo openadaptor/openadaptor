@@ -32,7 +32,8 @@ import javax.transaction.xa.XAException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.Component;
+import org.oa3.core.exception.ComponentException;
 
 import com.ibm.mq.*;
 
@@ -47,7 +48,7 @@ import com.ibm.mq.*;
  * of mq.jar. This is not ideal but avoids thenecessity for conditional compilition being built 
  * into the build script.
  */
-public class MqConnection { 
+public class MqConnection extends Component { 
 
   private static final Log log = LogFactory.getLog(MqConnection.class);
 
@@ -397,11 +398,11 @@ public class MqConnection {
       queueManager = xaQueueManager.getQueueManager();
       transactionalResource = xaQueueManager.getXAResource();
       } catch (MQException mqe) {
-       throw new OAException("Failed to create MQXAQueueManager with " +
-       mqe.toString());
+       throw new ComponentException("Failed to create MQXAQueueManager with " +
+       mqe.toString(), this);
       } catch (XAException xae) {
-       throw new OAException("Failed to create MQXAResource with " +
-       xae.toString());
+       throw new ComponentException("Failed to create MQXAResource with " +
+       xae.toString(), this);
       }
     } else if (isUseLocalTransaction()) {
       try {
@@ -519,7 +520,7 @@ public class MqConnection {
       //
       // thrown when read string fails
       //
-      throw new OAException("Caught Exception examining message, " + ioe.toString());
+      throw new ComponentException("Caught Exception examining message, " + ioe.toString(), this);
     }
     return messageString;
   }

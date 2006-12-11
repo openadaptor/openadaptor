@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Defines the common elements of a fixed width converter. <p/>
@@ -101,14 +101,14 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    * @param details
    *          list of field details mappings
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if the fieldWidths have already been set
    * 
    * @see FixedWidthFieldDetail
    */
   public void setFieldDetails(FixedWidthFieldDetail[] details) {
     if (fieldWidths != null)
-      throw new OAException("You cannot define both fieldDetails and fieldWidths");
+      throw new ComponentException("You cannot define both fieldDetails and fieldWidths", this);
 
     this.fieldDetails = details;
   }
@@ -128,7 +128,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    * @param widths
    *          list of the field widths
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if the field details have already been set or if you define both field details and widths
    */
   public void setFieldWidths(Integer[] widths) {
@@ -139,7 +139,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     if (fieldWidths == null) {
       // if the fieldDetails have been set then we have a problem
       if (fieldDetails != null)
-        throw new OAException("You cannot define both fieldDetails and fieldWidths");
+        throw new ComponentException("You cannot define both fieldDetails and fieldWidths", this);
 
       // create new fieldDetails based on the widths
       fieldDetails = new FixedWidthFieldDetail[widths.length];
@@ -155,7 +155,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     // 2. props editor update
     else {
       if (widths.length != fieldDetails.length)
-        throw new OAException("Error updated field widths: the length does not match the existing field details length");
+        throw new ComponentException("Error updated field widths: the length does not match the existing field details length", this);
 
       for (int i = 0; i < widths.length; i++) {
         Integer width = widths[i];
@@ -232,7 +232,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
   /**
    * @return false if the field name supplied is null or an empty string
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if there are multiple fields defined with the same name
    */
   public boolean isValidFieldName(String name) {
@@ -240,7 +240,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     int a = names.indexOf(name);
     int b = names.lastIndexOf(name);
     if (a != b)
-      throw new OAException("Multiple field names defined");
+      throw new ComponentException("Multiple field names defined", this);
 
     return (name != null && !name.equals(""));
   }

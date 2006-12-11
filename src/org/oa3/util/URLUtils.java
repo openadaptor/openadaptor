@@ -39,7 +39,6 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
 
 /**
  * Some useful helper methods to centralise common functions
@@ -59,12 +58,12 @@ public class URLUtils {
    * 
    * Note that in the case of files you do not need to supply the "file:" protocol.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.RuntimeException
    *           if the url is null, or it does not exist, or it does not contain any data
    */
   public static void validateURLAsDataSource(String url) {
     if (url == null || url.equals(""))
-      throw new OAException("Null url");
+      throw new RuntimeException("Null url");
 
     // check the url is of valid format, exists and contains data
     try {
@@ -95,7 +94,7 @@ public class URLUtils {
         throw new Exception("Unable to read from file");
       }
     } catch (Exception e) {
-      throw new OAException("Invalid URL [" + url + "]: " + e.toString());
+      throw new RuntimeException("Invalid URL [" + url + "]: " + e.toString());
     }
 
     log.info("URL [" + url + "] is valid");

@@ -45,7 +45,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.thirdparty.apache.AbstractFTPLibrary;
 
 import sun.net.TelnetInputStream;
@@ -85,7 +85,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we failed to create the client
    */
   public void connect() {
@@ -95,7 +95,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _ftpClient = new FtpClient(hostName, port);
       _connected = true;
     } catch (IOException e) {
-      throw new OAException("Failed to create SunFTP Client: " + e.getMessage());
+      throw new ComponentException("Failed to create SunFTP Client: " + e.getMessage(), this);
     }
 
     log.debug("Connected to " + hostName);
@@ -119,7 +119,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we failed to log into the remote serevr or if we fail to set the transfer mode
    */
   public void logon() {
@@ -132,7 +132,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug(userName + " logged in");
     } catch (IOException e) {
       close();
-      throw new OAException("Failed to login to SunFTP Server: " + e.getMessage());
+      throw new ComponentException("Failed to login to SunFTP Server: " + e.getMessage(), this);
     }
 
     // set the file transfer mode
@@ -146,8 +146,8 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       }
     } catch (IOException e) {
       close();
-      throw new OAException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
-          + e.getMessage());
+      throw new ComponentException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
+          + e.getMessage(), this);
     }
   }
 
@@ -162,7 +162,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we cannot open the transfer stream with the remote server
    */
   public InputStreamReader get(String fileName) {
@@ -183,7 +183,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open SunFTP stream:" + e.getMessage());
+      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -202,7 +202,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -226,7 +226,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open SunFTP stream:" + e.getMessage());
+      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -244,7 +244,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -260,7 +260,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open SunFTP stream:" + e.getMessage());
+      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return _out;
@@ -269,16 +269,16 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
   /**
    * Close the connection to the remote server
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we failed to close to connection
    */
-  public void close() throws OAException {
+  public void close() throws ComponentException {
     try {
       _ftpClient.closeServer();
       _connected = false;
       log.debug("SunFTP connection closed");
     } catch (IOException e) {
-      throw new OAException("Failed to close SunFTP Server" + e.toString());
+      throw new ComponentException("Failed to close SunFTP Server" + e.toString(), this);
     }
   }
 
@@ -315,7 +315,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws org.oa3.control.OAException -
+   * @throws org.oa3.control.ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName) {
@@ -331,7 +331,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _ftpClient.readServerResponse();
     } catch (Exception e) {
       close();
-      throw new OAException("Failed to delete " + fileName + ": " + e.getMessage());
+      throw new ComponentException("Failed to delete " + fileName + ": " + e.getMessage(), this);
     }
   }
 
@@ -354,7 +354,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return array of the file names or null if none found
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if there was an communications error
    */
   public String[] fileList(String filePattern) {
@@ -377,7 +377,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       }
     } catch (Exception e) {
       close();
-      throw new OAException("Error retrieving file list: " + e.getMessage());
+      throw new ComponentException("Error retrieving file list: " + e.getMessage(), this);
     }
 
     // no files - well return null then
@@ -397,7 +397,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * @param directoryName -
    *          the new directory
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we fail to change directory or it does not exist
    */
   public void cd(String directoryName) {
@@ -410,7 +410,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       // check that the directory exists
       if (!directoryExists(directoryName)) {
         close();
-        throw new OAException("The directory (" + directoryName + ") does NOT exist");
+        throw new ComponentException("The directory (" + directoryName + ") does NOT exist", this);
       }
 
       // set up the working directory
@@ -419,7 +419,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
 
     } catch (IOException e) {
       close();
-      throw new OAException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage());
+      throw new ComponentException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
     }
 
   }

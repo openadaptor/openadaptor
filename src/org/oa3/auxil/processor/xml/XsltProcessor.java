@@ -53,6 +53,7 @@ import org.dom4j.io.DocumentSource;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.ProcessorException;
 import org.oa3.util.FileUtils;
+import org.oa3.core.Component;
 
 /**
  * Applies the XSLT defined in the properties to the record and returns the result as an String.
@@ -65,7 +66,7 @@ import org.oa3.util.FileUtils;
  * 
  * @author Russ Fennell
  */
-public class XsltProcessor implements IDataProcessor {
+public class XsltProcessor extends Component implements IDataProcessor {
 
   private static final Log log = LogFactory.getLog(XsltProcessor.class);
 
@@ -110,12 +111,12 @@ public class XsltProcessor implements IDataProcessor {
    */
   private void loadXSLT() {
     if (xsltFile == null)
-      throw new ProcessorException("xsltFile property not set");
+      throw new ProcessorException("xsltFile property not set", this);
 
     // if the file doesn't exist try to get it via the classpath
     URL url = FileUtils.toURL(xsltFile);
     if (url == null)
-      throw new ProcessorException("File not found: " + xsltFile);
+      throw new ProcessorException("File not found: " + xsltFile, this);
 
     // load the transform
     try {
@@ -124,7 +125,7 @@ public class XsltProcessor implements IDataProcessor {
 
       log.info("Loaded XSLT [" + xsltFile + "] successfully");
     } catch (TransformerConfigurationException e) {
-      throw new ProcessorException("Failed to load XSLT: " + e.getMessage());
+      throw new ProcessorException("Failed to load XSLT: " + e.getMessage(), this);
     }
   }
 
@@ -150,7 +151,7 @@ public class XsltProcessor implements IDataProcessor {
       return transform((Document) record);
 
     // if we get this far then we cannot process the record
-    throw new ProcessorException("Invalid record (type: " + record.getClass().toString() + "). Cannot apply transform");
+    throw new ProcessorException("Invalid record (type: " + record.getClass().toString() + "). Cannot apply transform", this);
   }
 
   /**
@@ -185,7 +186,7 @@ public class XsltProcessor implements IDataProcessor {
 
       return new String[] { output };
     } catch (TransformerException e) {
-      throw new ProcessorException("Transform failed: " + e.getMessage());
+      throw new ProcessorException("Transform failed: " + e.getMessage(), this);
     }
   }
 
@@ -200,11 +201,11 @@ public class XsltProcessor implements IDataProcessor {
    * @throws ProcessorException
    *           if the supplied XML cannot be parsed
    */
-  private static Document createDOMFromString(String xml) {
+  private Document createDOMFromString(String xml) {
     try {
       return DocumentHelper.parseText(xml);
     } catch (DocumentException e) {
-      throw new ProcessorException("Failed to parse XML: " + e.getMessage());
+      throw new ProcessorException("Failed to parse XML: " + e.getMessage(), this);
     }
   }
 }

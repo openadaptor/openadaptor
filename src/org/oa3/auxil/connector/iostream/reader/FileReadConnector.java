@@ -36,7 +36,7 @@ package org.oa3.auxil.connector.iostream.reader;
  * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/FileReader.java,v 1.3 2006/10/18 17:09:05 higginse Exp $
  * Rev: $Revision: 1.3 $ Created Nov 4, 2005 by Eddy Higgins
  */
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.util.FileUtils;
 
 /**
@@ -57,7 +57,7 @@ public class FileReadConnector extends URLReadConnector {
    * Not yet completed private boolean deleteOriginal=false; private String movePath;
    */
   // BEGIN Bean getters/setters
-  public void setPath(String path) throws OAException {
+  public void setPath(String path) throws ComponentException {
     this.path = path;
     setUrl(FileUtils.toURL(this.path));
   }
@@ -67,8 +67,8 @@ public class FileReadConnector extends URLReadConnector {
   }
 
   /*
-   * Not yet completed. public void setMovePath(String path) throws OAException { if
-   * (!FileUtils.checkDirectoryPath(path,true)){ throw new OAException("Unable to create movePath of "+path); }
+   * Not yet completed. public void setMovePath(String path) throws ComponentException { if
+   * (!FileUtils.checkDirectoryPath(path,true)){ throw new ComponentException("Unable to create movePath of "+path); }
    * movePath=path; validateProperties(); } public String getMovePath() {return movePath;}
    * 
    * public void setDeleteOriginal(boolean deleteOriginal){ this.deleteOriginal=deleteOriginal; validateProperties(); }

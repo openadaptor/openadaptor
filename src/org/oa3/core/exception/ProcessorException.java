@@ -44,17 +44,9 @@ import org.oa3.core.IComponent;
  * General Exception class for Processor Related exceptions.
  * @author OA3 Core Team
  */
-public class ProcessorException extends OAException {
+public class ProcessorException extends ComponentException {
 
   private static final long serialVersionUID = 1L;
-
-  public ProcessorException(String msg) {
-    super(msg);
-  }
-
-  public ProcessorException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
 
   public ProcessorException(String msg, IComponent c) {
     super(msg, c);

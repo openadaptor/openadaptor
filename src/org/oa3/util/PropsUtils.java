@@ -35,8 +35,6 @@ package org.oa3.util;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.oa3.core.exception.OAException;
-
 /**
  * Helper methods for use with Java properties files
  * 
@@ -56,7 +54,7 @@ public class PropsUtils {
    * 
    * @return the integer value of the property or the default value
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the property value cannot be converted into an int
    */
   public static int getIntFromProps(Properties props, String name, int defaultValue) {
@@ -68,7 +66,7 @@ public class PropsUtils {
       try {
         i = Integer.parseInt(s);
       } catch (NumberFormatException e) {
-        throw new OAException("Failed to convert " + name + " to int: " + e.getMessage());
+        throw new RuntimeException("Failed to convert " + name + " to int: " + e.getMessage());
       }
     }
 
@@ -87,7 +85,7 @@ public class PropsUtils {
    * 
    * @return the float value of the property or the default value
    * 
-   * @throws OAException
+   * @throws RuntimeException
    *           if the property value cannot be converted into a float
    */
   public static float getFloatFromProps(Properties props, String name, float defaultValue) {
@@ -99,7 +97,7 @@ public class PropsUtils {
       try {
         f = Float.parseFloat(s);
       } catch (NumberFormatException e) {
-        throw new OAException("Failed to convert " + name + " to float: " + e.getMessage());
+        throw new RuntimeException("Failed to convert " + name + " to float: " + e.getMessage());
       }
     }
 

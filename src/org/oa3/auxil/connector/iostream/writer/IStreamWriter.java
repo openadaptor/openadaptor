@@ -39,7 +39,7 @@ package org.oa3.auxil.connector.iostream.writer;
 import java.io.Writer;
 
 import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Interface for Stream Writers.
@@ -54,7 +54,7 @@ public interface IStreamWriter extends RFC2279 {
 
   public String getEncoding();
 
-  public void connect() throws OAException;
+  public void connect() throws ComponentException;
 
-  public void disconnect() throws OAException;
+  public void disconnect() throws ComponentException;
 }

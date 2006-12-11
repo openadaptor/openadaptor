@@ -36,17 +36,17 @@ package org.oa3.auxil.connector.jdbc;
  * Rev:  $Revision: 1.10 $
  * Created May 26, 2006 by Kuldip Ottal
  */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.OAException;
-
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.oa3.auxil.orderedmap.OrderedHashMap;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This class replicates the behaviour of BCG Message functionality in openadaptor
@@ -54,7 +54,7 @@ import java.util.ArrayList;
  * using the stored procedure specified, to the node to which it is attached
  * @author Kuldip Ottal
  */
-public class JDBCMessageListener  extends JDBCListener  {
+public class JDBCMessageListener extends JDBCListener  {
 
   private static final Log log = LogFactory.getLog(JDBCMessageListener.class.getName());
 
@@ -122,10 +122,10 @@ public class JDBCMessageListener  extends JDBCListener  {
    * Get the next record.
    *
    * @return  an array containing the next record to be processed.
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
 
-  public Object[] nextRecord()  throws OAException  {
+  public Object[] nextRecord() throws ComponentException  {
     Object[] result=null;
     ArrayList recordArrayList = new ArrayList();
     int columnCount = 0;
@@ -148,7 +148,7 @@ public class JDBCMessageListener  extends JDBCListener  {
         messageDataRowAvailable = false;
 
       } catch (SQLException sqle) {
-        throw new OAException(sqle.getMessage(), sqle);
+        throw new ComponentException(sqle.getMessage(), sqle, this);
       }
     }
     return result;

@@ -42,7 +42,7 @@ import java.io.Reader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractReadConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This is the main connector implementation for reading streams of records.
@@ -119,7 +119,7 @@ public class StreamReadConnector extends AbstractReadConnector {
    * <LI> Prime the record reader (having assigned a <code>DefaultRecordReader</code> if necessary) with the retrieved<code>Reader</code>.
    * </UL>
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if an IOException occurs during the connection attempt.
    */
   public void connect() {
@@ -136,7 +136,7 @@ public class StreamReadConnector extends AbstractReadConnector {
       recordReader.setReader(_reader);
     } catch (IOException ioe) { // Bugger
       log.error("Failed to set the reader for this connector" + ioe.toString());
-      throw new OAException("Failed to set the reader on the recordReader - " + ioe.toString(), ioe);
+      throw new ComponentException("Failed to set the reader on the recordReader - " + ioe.toString(), ioe, this);
     }
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
@@ -147,7 +147,7 @@ public class StreamReadConnector extends AbstractReadConnector {
    * <p>
    * It will disconnect the streamReader if it is not already disconnected.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if the stream reader disconnect throws one.
    */
   public void disconnect() {
@@ -166,17 +166,17 @@ public class StreamReadConnector extends AbstractReadConnector {
    * <p>
    * Currently, this just crudely calls disconnect() and connect().
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           If the disconnect/connect calls throw one
    */
-  public void refreshData() throws OAException {
+  public void refreshData() throws ComponentException {
     // ToDo: Make refreshData return a boolean.
     log.info("Refreshing data after poll");
     // boolean result=true;
     try {
       disconnect();
       connect();
-    } catch (OAException oae) {
+    } catch (ComponentException oae) {
       log.info("Failed to refresh data: " + oae.getMessage());
       // result=false;
     }
@@ -189,10 +189,10 @@ public class StreamReadConnector extends AbstractReadConnector {
    * Returns an Object[] containing the record, or <tt>null</tt> if input is exhausted.
    * 
    * @return Object[] containing the record, or <tt>null</tt> if input is exhausted.
-   * @throws OAException
+   * @throws ComponentException
    *           if the underlying recordReader throws an IOException.
    */
-  public Object[] nextRecord(long timeoutMs) throws OAException {
+  public Object[] nextRecord(long timeoutMs) throws ComponentException {
     Object[] records = null;
     try {
       Object record = recordReader.next();
@@ -200,7 +200,7 @@ public class StreamReadConnector extends AbstractReadConnector {
         records = new Object[] { record };
       }
     } catch (IOException ioe) {
-      throw new OAException(ioe.getMessage(), ioe);
+      throw new ComponentException(ioe.getMessage(), ioe, this);
     }
     return records;
   }

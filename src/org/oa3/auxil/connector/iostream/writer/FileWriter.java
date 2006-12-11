@@ -42,7 +42,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.util.FileUtils;
 
 /**
@@ -83,7 +83,7 @@ public class FileWriter extends AbstractStreamWriter {
     return path;
   }
 
-  public void setPath(String path) throws OAException {
+  public void setPath(String path) throws ComponentException {
     this.path = path;
   }
 
@@ -106,9 +106,9 @@ public class FileWriter extends AbstractStreamWriter {
    * "moveExistingFileTo" has been set and a file with the same name exists then it is moved prior to writing out any
    * data.
    * 
-   * @throws OAException
+   * @throws ComponentException
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     if (moveExistingFileTo != null) {
       File f = new File(path);
       if (f.exists())
@@ -126,14 +126,14 @@ public class FileWriter extends AbstractStreamWriter {
     } catch (IOException ioe) {
       // Only catching exceptions that the super class doesn't
       log.error("Failed to open file - " + path + ". Exception - " + ioe.toString());
-      throw new OAException("Failed to open path " + path, ioe);
+      throw new ComponentException("Failed to open path " + path, ioe, this);
     }
   }
 
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if there was a problem with AbstractStreamWriter.disconnect()
    */
   public void disconnect() {

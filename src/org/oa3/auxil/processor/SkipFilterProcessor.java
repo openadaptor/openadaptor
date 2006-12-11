@@ -39,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.Component;
 import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 public class SkipFilterProcessor extends Component implements IDataProcessor {
@@ -140,7 +140,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
 
         // sanity check
         if (s.equals("0"))
-          exceptions.add(new OAException("Cannot skip the zero'th record", this));
+          exceptions.add(new ComponentException("Cannot skip the zero'th record", this));
 
         // not a list so must be a record number
         if (s.indexOf("-") == -1) {
@@ -152,7 +152,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
         String[] extreems = s.split("-");
 
         if (extreems.length != 2)
-          exceptions.add(new OAException("Failed to parse skipRecord [" + s + "]", this));
+          exceptions.add(new ComponentException("Failed to parse skipRecord [" + s + "]", this));
 
         int start, end;
         try {
@@ -162,7 +162,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
           for (int j = start; j <= end; j++)
             records2skip.add(new Integer(j));
         } catch (NumberFormatException e) {
-          exceptions.add(new OAException("Failed to parse skipRecord [" + s + "]: " + e.getMessage(), this));
+          exceptions.add(new ComponentException("Failed to parse skipRecord [" + s + "]: " + e.getMessage(), this));
         }
       }
 
@@ -194,7 +194,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * 
    * Check pre-condition of properties required to be set, and compile pattern.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if the preconditions are not met
    */
 

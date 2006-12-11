@@ -38,7 +38,7 @@ package org.oa3.thirdparty.mq;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * WriteConnector that use MqConnection to write messages to an IBM MQ Queue.
@@ -91,11 +91,11 @@ public class MqWriteConnector extends AbstractWriteConnector {
    * Establish a connection to external message transport without starting the
    * externalconnector. If already connected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void connect() {
     if (!connected) {
-      if (getConnection() == null) throw new OAException("No MqConnection configured");
+      if (getConnection() == null) throw new ComponentException("No MqConnection configured", this);
 
       getConnection().connectToMQ(false);
 

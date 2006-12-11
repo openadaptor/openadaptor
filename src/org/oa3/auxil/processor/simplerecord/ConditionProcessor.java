@@ -45,7 +45,7 @@ import org.oa3.auxil.expression.IExpression;
 import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
 import org.oa3.auxil.simplerecord.ISimpleRecord;
 import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -196,7 +196,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
    * of failures and returns an exception. For example: <p/> <blockquote>
    * 
    * <pre>
-   * OAException e = checkAtLeastOneOfProperty(new String[] { attributeName, &quot;expression&quot; }, new boolean[] {
+   * ComponentException e = checkAtLeastOneOfProperty(new String[] { attributeName, &quot;expression&quot; }, new boolean[] {
    *     attributeName != null, expression != null });
    * if (e != null)
    *   throw e;
@@ -209,7 +209,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
    *          array of attribute names
    * @param tests
    *          array of test (eg. attribute != null )
-   * @return OAException containing the list of attributes test. or null
+   * @return ComponentException containing the list of attributes test. or null
    */
   protected Exception checkAtLeastOneOfProperty(String[] names, boolean[] tests) {
     Exception result = null;
@@ -226,7 +226,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
 
       sb.append(names[names.length - 1]);
 
-      result = new OAException("At least one of " + sb.toString() + " must be set.");
+      result = new ComponentException("At least one of " + sb.toString() + " must be set.", this);
     }
 
     return result;

@@ -34,7 +34,7 @@ package org.oa3.auxil.connector.jms;
 
 import org.oa3.core.Component;
 import org.oa3.core.IWriteConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.transaction.ITransactional;
 
 /*
@@ -63,11 +63,11 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @param records -
    *          an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
-  public Object deliver(Object[] records) throws OAException {
+  public Object deliver(Object[] records) throws ComponentException {
     if (!isConnected())
-      throw new OAException("Attempting to deliver via a disconnected Connector");
+      throw new ComponentException("Attempting to deliver via a disconnected Connector", this);
     if (isConnected()) {
       int size = records.length;
       // ToDo: Get OA team to review the way the unbatching is done.
@@ -79,7 +79,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
         if (record != null) // todo Really necessary?
           getJmsConnection().deliver(record);
         else
-          throw new OAException("Cannot deliver null record.");
+          throw new ComponentException("Cannot deliver null record.", this);
       }
       return msgIds;
     }

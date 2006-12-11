@@ -37,7 +37,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -100,7 +100,7 @@ public class TestSkipFilterProcessor extends TestCase {
     try {
       cp.validate(null);
       fail("Failed to detect zero'th record cannot be skipped");
-    } catch (OAException e) {
+    } catch (ComponentException e) {
       assertTrue(true);
     }
 
@@ -109,7 +109,7 @@ public class TestSkipFilterProcessor extends TestCase {
     try {
       cp.validate(null);
       fail("Failed to detect negative record cannot be skipped");
-    } catch (OAException e) {
+    } catch (ComponentException e) {
       assertTrue(true);
     }
   }

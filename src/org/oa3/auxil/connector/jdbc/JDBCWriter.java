@@ -40,7 +40,7 @@ package org.oa3.auxil.connector.jdbc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 
 import java.sql.Connection;
@@ -233,9 +233,9 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
    *
    * @param records Ordered map
    * @return Object String with number of rows updated hopefully.
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
-  public Object deliver(Object[] records) throws OAException {
+  public Object deliver(Object[] records) throws ComponentException {
     String result=null;
     IOrderedMap om=null;
     //Todo: Rectify massive inefficiencies of creating a SQL statement even when we don't need to.
@@ -248,7 +248,7 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
         updateCount += jdbcStatement.executeStatement(om,connection);
       }
       else {
-        throw new OAException("Malformed data for writer - not IOrderedMap");
+        throw new ComponentException("Malformed data for writer - not IOrderedMap", this);
       }
     }
     result= updateCount + " rows updated";
@@ -259,7 +259,7 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
   /**
    * Set up JDBC connection and transaction spec
    */
-  public void connect() throws OAException{
+  public void connect() throws ComponentException{
     log.debug("Connector: [" + getId() + "] connecting ....");
     try {
       connection = jdbcConnection.connect();
@@ -267,7 +267,7 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
       configureWriteMechanism();
     }
     catch (SQLException sqle) {
-      throw new OAException("Failed to establish JDBC connection - " + sqle.toString(), sqle);
+      throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
     }
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
@@ -277,9 +277,9 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
    * This method ensures only one write mechanism is configure,
    * it then requests a IJDBCStatement object from the JDBCStatement factory.
    *
-   * @throws OAException
+   * @throws ComponentException
    */
-  private void configureWriteMechanism() throws OAException {
+  private void configureWriteMechanism() throws ComponentException {
     String writeMechanism="";
 
     if (!(tableName.equals("")) && storedProcName.equals("") && sqlStatement.equals("")) {
@@ -292,7 +292,7 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
       writeMechanism=SQL_STATEMENT;
       jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, sqlStatement, delimiter, null, connection);
     } else {
-      throw new OAException("No valid write mechanism, or more than one write mechanism configured");
+      throw new ComponentException("No valid write mechanism, or more than one write mechanism configured", this);
     }
   }
 
@@ -300,9 +300,9 @@ public class JDBCWriter extends AbstractWriteConnector implements IJDBCConstants
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    *
-   * @throws OAException
+   * @throws ComponentException
    */
-  public void disconnect() throws OAException {
+  public void disconnect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
     if (connection != null) {
       try {

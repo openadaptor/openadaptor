@@ -37,14 +37,11 @@ package org.oa3.auxil.connector.jdbc;
  * Created May 25, 2006 by oa3 Core Team
  */
 
-import org.oa3.auxil.connector.jdbc.JDBCConnection;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 import javax.transaction.xa.XAResource;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 
 /**
@@ -54,7 +51,7 @@ import java.sql.SQLException;
  */
 public class JDBCDataSourceConnection extends JDBCConnection {
 
-  private static final Log log = LogFactory.getLog(JDBCDataSourceConnection.class.getName());
+  //private static final Log log = LogFactory.getLog(JDBCDataSourceConnection.class.getName());
 
   private DataSource dataSource;
 

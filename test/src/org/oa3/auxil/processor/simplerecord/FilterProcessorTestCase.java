@@ -42,7 +42,7 @@ import org.oa3.auxil.expression.Expression;
 import org.oa3.auxil.expression.ExpressionException;
 import org.oa3.auxil.expression.IExpression;
 import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -327,7 +327,7 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     testProcessor.validate(exceptions);
     assertTrue("Expected one validate exceptions.", exceptions.size() == 1);
     Exception e = (Exception) exceptions.get(0);
-    assertTrue("Expect validate to return one OAException", e instanceof OAException);
+    assertTrue("Expect validate to return one OAException", e instanceof ComponentException);
   }
 
 }

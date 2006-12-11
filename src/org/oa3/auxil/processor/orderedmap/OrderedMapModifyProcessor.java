@@ -38,13 +38,14 @@ import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedMapUtils;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
+import org.oa3.core.Component;
 
 /**
  * An Abstract Processor which applies a transform to an IOrderedMap record.
  * 
  * @author OA3 Core Team
  */
-public abstract class OrderedMapModifyProcessor implements IDataProcessor {
+public abstract class OrderedMapModifyProcessor extends Component implements IDataProcessor {
 
   protected Object attribute;
 

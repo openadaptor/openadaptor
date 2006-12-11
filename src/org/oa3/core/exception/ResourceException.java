@@ -42,16 +42,12 @@ import org.oa3.core.IComponent;
 /**
  * OAException type intended for use when exceptions occur using external resources.
  */
-public class ResourceException extends OAException {
+public class ResourceException extends ComponentException {
 
   private static final long serialVersionUID = 1L;
 
-  public ResourceException(String msg) {
-    super(msg);
-  }
-
-  public ResourceException(String msg, Throwable cause) {
-    super(msg, cause);
+  public ResourceException(String msg,IComponent c) {
+    super(msg, c);
   }
 
   public ResourceException(String msg, Throwable cause, IComponent c) {

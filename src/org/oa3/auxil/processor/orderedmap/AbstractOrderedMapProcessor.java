@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.core.IDataProcessor;
+import org.oa3.core.Component;
 import org.oa3.core.exception.NullRecordException;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
@@ -50,7 +51,7 @@ import org.oa3.core.exception.RecordFormatException;
  *
  * @author OA3 Core Team
  */
-public abstract class AbstractOrderedMapProcessor implements IDataProcessor {
+public abstract class AbstractOrderedMapProcessor extends Component implements IDataProcessor {
 
   /**
    * Process a single record, which must be an instance of an IOrderedMap.

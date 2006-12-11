@@ -85,7 +85,7 @@ public class OMValueTypeModifyProcessor extends OrderedMapModifyProcessor {
             }
             else {
                 // Can't handle this
-                throw new ProcessorException("Unsupported OrderedMap Type Transform.");
+                throw new ProcessorException("Unsupported OrderedMap Type Transform.", this);
             }
 
             map.put(getAttribute(), newValue);

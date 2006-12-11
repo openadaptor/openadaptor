@@ -37,7 +37,7 @@ package org.oa3.auxil.connector.jdbc;
  * Created Oct 22, 2006 by Kuldip Ottal
  */
 
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import java.sql.Connection;
 
 /**
@@ -54,9 +54,9 @@ public class JDBCStatementFactory implements IJDBCConstants {
    * @param delimiter The character to be used to delimit variables, which are to be replaced with values from oa3 data record
    * @param connection JDBC Connection
    * @return IJDBCStatement
-   * @throws OAException
+   * @throws ComponentException
    */
-  public static IJDBCStatement createStatement(String writeMechanism, String objectName, String delimiter,Object mapping,Connection connection) throws OAException {
+  public static IJDBCStatement createStatement(String writeMechanism, String objectName, String delimiter,Object mapping,Connection connection) throws ComponentException {
     if (writeMechanism.equals(DATABASE_TABLE)) {
       return new JDBCTableStatement(objectName,mapping,connection);
     }
@@ -66,7 +66,7 @@ public class JDBCStatementFactory implements IJDBCConstants {
     if (writeMechanism.equals(SQL_STATEMENT)) {
       return new JDBCSqlStatement(objectName,delimiter,connection);
     }
-    throw new OAException ("Unrecognised JDBC write mechanism");
+    throw new RuntimeException ("Unrecognised JDBC write mechanism");
   }
 }
 

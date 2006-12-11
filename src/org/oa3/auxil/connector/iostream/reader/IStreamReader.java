@@ -39,7 +39,7 @@ package org.oa3.auxil.connector.iostream.reader;
 import java.io.Reader;
 
 import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Interface by which Listeners can extract individual records from a Reader.
@@ -86,16 +86,16 @@ public interface IStreamReader extends RFC2279 {
   /**
    * Connects the underlying data stream and makes this reader available for use.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if a problem occurs during connection
    */
-  public void connect() throws OAException;
+  public void connect() throws ComponentException;
 
   /**
    * Disconnect the underlying data stream.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if a problem occurs on disconnect
    */
-  public void disconnect() throws OAException;
+  public void disconnect() throws ComponentException;
 }

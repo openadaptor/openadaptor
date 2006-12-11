@@ -35,7 +35,8 @@ package org.oa3.auxil.connector.smtp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
+import org.oa3.core.Component;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -53,7 +54,7 @@ import java.util.Date;
 * Created Dec 6, 2006 by oa3 Core Team
 */
 
-public class SMTPConnection {
+public class SMTPConnection extends Component {
 
   private static final Log log = LogFactory.getLog(SMTPConnection.class.getName());
 
@@ -278,7 +279,7 @@ public class SMTPConnection {
   /**
    * Set up javamail objects required to create connection to smtp server.
    */
-  protected void createConnection() throws OAException {
+  protected void createConnection() throws ComponentException {
     Session session;
 
     try {
@@ -290,7 +291,7 @@ public class SMTPConnection {
         props.put("mail.smtp.host", mailHost);
         props.put("mail.smtp.port", mailHostPort);
       } else {
-        throw new OAException ("FATAL: mailHost property not set");
+        throw new ComponentException ("FATAL: mailHost property not set", this);
       }
       // Get a Session object
       session = Session.getInstance(props, null);
@@ -317,7 +318,7 @@ public class SMTPConnection {
       message.setSentDate(new Date());
 
     } catch (MessagingException me) {
-      throw new OAException(me.getMessage(), me);
+      throw new ComponentException(me.getMessage(), me, this);
     }
     log.debug("Successfully connected.");
     connected=true;

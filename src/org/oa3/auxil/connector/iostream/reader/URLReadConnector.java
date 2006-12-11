@@ -43,7 +43,7 @@ import java.net.URLConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * StreamReader which connects to, and reads from, the supplied URL.
@@ -107,9 +107,9 @@ public class URLReadConnector extends AbstractStreamReader {
    * This will connect to a configured URL and obtain an <code>InputStream</code> from the connection. This will in
    * turn be used by the base class to get an appropriate <code>Reader</code>.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Opening URL " + url);
     try {
 
@@ -122,14 +122,14 @@ public class URLReadConnector extends AbstractStreamReader {
       super.connect();
     } catch (IOException ioe) { // Only catching exceptions that the super class doesn't
       log.error("Failed to open url - " + url + ". Exception - " + ioe.toString());
-      throw new OAException("Failed to open url " + url, ioe);
+      throw new ComponentException("Failed to open url " + url, ioe, this);
     }
   }
 
   /**
    * Disconnect this <code>Reader</code>.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if there's a problem with the disconnect.
    */
   public void disconnect() {

@@ -42,7 +42,7 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * @author OA3 Core Team
@@ -80,10 +80,10 @@ public class SocketWriter extends AbstractStreamWriter {
   /**
    * Establish a Socket Connection
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
 
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Opening socket connection to host:port " + hostname + ":" + port);
     try {
       socket = new Socket(hostname, port);
@@ -92,19 +92,19 @@ public class SocketWriter extends AbstractStreamWriter {
       ;
     } catch (UnknownHostException uhe) {
       log.error("Unknown host - " + hostname + "." + uhe.toString());
-      throw new OAException("Unknown host - " + hostname, uhe);
+      throw new ComponentException("Unknown host - " + hostname, uhe, this);
     }
 
     catch (IOException ioe) {
       log.error("IOException - " + ioe.toString());
-      throw new OAException("IOException: " + hostname, ioe);
+      throw new ComponentException("IOException: " + hostname, ioe, this);
     }
   }
 
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void disconnect() {
     log.debug("Disconnecting from host:port " + hostname + ":" + port);

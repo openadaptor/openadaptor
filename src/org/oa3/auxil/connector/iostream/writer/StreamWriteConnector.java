@@ -42,7 +42,7 @@ import java.io.Writer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This is the main Connector for Stream based record writers. It requires: IStreamWriter- Writer to do the actual
@@ -85,7 +85,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
   /**
    * Establish a connection to external message transport. If already connected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void connect() {
     log.debug("Connector: [" + getId() + "] connecting ....");
@@ -103,7 +103,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void disconnect() {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
@@ -116,7 +116,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
     }
   }
 
-  public Object deliver(Object[] records) throws OAException {
+  public Object deliver(Object[] records) throws ComponentException {
     Object result = null;
     try {
       if (records != null) {
@@ -126,7 +126,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
       }
       recordWriter.flush();
     } catch (IOException ioe) {
-      throw new OAException(ioe.getMessage(), ioe);
+      throw new ComponentException(ioe.getMessage(), ioe, this);
     }
     return result;// ToDo: Revisit this - can't return anything sensible here yet.
   }

@@ -43,10 +43,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
+import org.oa3.core.Component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Generic abstract class to allow input from any Stream-oriented source of data.
@@ -61,7 +62,7 @@ import org.oa3.core.exception.OAException;
  * @see IRecordReader
  * @author Eddy higgins
  */
-public abstract class AbstractStreamReader implements IStreamReader {
+public abstract class AbstractStreamReader extends Component implements IStreamReader {
   private static final Log log = LogFactory.getLog(AbstractStreamReader.class);
 
   /**
@@ -124,20 +125,20 @@ public abstract class AbstractStreamReader implements IStreamReader {
    * <code>InputStream</code> available. It then derives an <code>InputStreamReader</code> for use, and sets the
    * state to connected.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if the underlying <code>InputStream</code> is <tt>null</tt> or an unsupported encoding has been
    *           configured for the reader.
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Getting a reader using encoding " + _encoding);
 
     if (_inputStream == null) {
-      throw new OAException("InputStream is not initialised");
+      throw new ComponentException("InputStream is not initialised", this);
     }
     try {
       _reader = new InputStreamReader(_inputStream, _encoding);
     } catch (UnsupportedEncodingException uee) {
-      throw new OAException("Unsupported Encoding - " + _encoding);
+      throw new ComponentException("Unsupported Encoding - " + _encoding, this);
     }
     connected = true;
     log.info("Connected (Reader created)");
@@ -149,7 +150,7 @@ public abstract class AbstractStreamReader implements IStreamReader {
    * It does this by closing the <code>Reader</code> and, in turn, the underlying <code>InputStream</code> (if they
    * are not null).
    */
-  public void disconnect() throws OAException {
+  public void disconnect() throws ComponentException {
     log.debug("Disconnecting (closing reader)");
     if (_reader != null) {
       try {

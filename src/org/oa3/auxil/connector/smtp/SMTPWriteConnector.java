@@ -40,7 +40,7 @@ package org.oa3.auxil.connector.smtp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.connector.AbstractWriteConnector;
 import javax.mail.MessagingException;
 
@@ -79,9 +79,9 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
    *
    * @param records - an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
-  public Object deliver(Object[] records) throws OAException {
+  public Object deliver(Object[] records) throws ComponentException {
     String result=null;
     String body="";
 
@@ -96,10 +96,10 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
           //Send message
           smtpConnection.send();
         } else {
-          throw new OAException("Malformed data for smtp write connector - record has null value");
+          throw new ComponentException("Malformed data for smtp write connector - record has null value", this);
         }
       } catch (MessagingException me) {
-        throw new OAException(me.getMessage(), me);
+        throw new ComponentException(me.getMessage(), me, this);
       }
     }
 

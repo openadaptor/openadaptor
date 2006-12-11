@@ -45,7 +45,7 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
@@ -124,7 +124,7 @@ public class JNDIReader extends AbstractJNDIReader {
    * <p>
    * If already connected, do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if an AuthenticationException or NamingException occurs
    */
   public void connect() {
@@ -133,10 +133,10 @@ public class JNDIReader extends AbstractJNDIReader {
       _ctxt = jndiConnection.connect();
     } catch (AuthenticationException ae) {
       log.warn("Failed JNDI authentication for principal: " + jndiConnection.getSecurityPrincipal());
-      throw new OAException("Failed to Authenticate JNDI connection - " + ae.toString(), ae);
+      throw new ComponentException("Failed to Authenticate JNDI connection - " + ae.toString(), ae, this);
     } catch (NamingException ne) {
       log.warn(ne.getMessage());
-      throw new OAException("Failed to establish JNDI connection - " + ne.toString(), ne);
+      throw new ComponentException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
     }
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
@@ -147,7 +147,7 @@ public class JNDIReader extends AbstractJNDIReader {
    * <p>
    * If already disconnected, do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if a NamingException occurs.
    */
   public void disconnect() {
@@ -171,9 +171,9 @@ public class JNDIReader extends AbstractJNDIReader {
    * If the result set is empty, then it returns <tt>null</tt> indicating that the reader is exhausted.
    * 
    * @return Object[] containing an IOrderedMap of results, or <tt>null</tt>
-   * @throws OAException
+   * @throws ComponentException
    */
-  public Object[] nextRecord(long timeoutMs) throws OAException {
+  public Object[] nextRecord(long timeoutMs) throws ComponentException {
     Object[] result = null;
     try {
       if (!_searchHasExecuted) {
@@ -188,7 +188,7 @@ public class JNDIReader extends AbstractJNDIReader {
         result = new Object[] { map };
       }
     } catch (NamingException ne) {
-      throw new OAException(ne.getMessage(), ne);
+      throw new ComponentException(ne.getMessage(), ne, this);
     }
     return result;
   }

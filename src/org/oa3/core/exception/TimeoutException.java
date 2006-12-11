@@ -37,7 +37,7 @@ import org.oa3.core.IComponent;
 /**
  * General purpose OAException used by Nodes when an operation times out.
  */
-public class TimeoutException extends OAException {
+public class TimeoutException extends ComponentException {
 
   private static final long serialVersionUID = 1L;
 
@@ -45,15 +45,8 @@ public class TimeoutException extends OAException {
     super(msg, cause, c);
   }
 
-  public TimeoutException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
-
   public TimeoutException(String msg, IComponent c) {
     super(msg, c);
   }
 
-  public TimeoutException(String msg) {
-    super(msg);
-  }
 }

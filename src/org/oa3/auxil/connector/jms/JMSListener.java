@@ -40,7 +40,7 @@ package org.oa3.auxil.connector.jms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractReadConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.transaction.ITransactional;
 
 /**
@@ -128,7 +128,7 @@ public class JMSListener extends AbstractReadConnector implements ITransactional
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void disconnect() {
     if (isConnected()) {
@@ -158,11 +158,11 @@ public class JMSListener extends AbstractReadConnector implements ITransactional
    * Return the next array of received records.
    * 
    * @return Object[] Array of record objects.
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
-  public Object[] nextRecord(long timeoutMs) throws OAException {
+  public Object[] nextRecord(long timeoutMs) throws ComponentException {
     if (!isConnected()) {
-      throw new OAException("Calling next on a disconnected Connector");
+      throw new ComponentException("Calling next on a disconnected Connector", this);
     }
     Object[] records = null;
     if ((getPollLimit() <= 0) || (pollsCompleted < getPollLimit())) {

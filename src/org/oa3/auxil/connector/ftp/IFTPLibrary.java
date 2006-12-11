@@ -39,7 +39,7 @@ package org.oa3.auxil.connector.ftp;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Defines the actions a FTP library must be able to perform
@@ -52,7 +52,7 @@ public interface IFTPLibrary {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set.
    * 
-   * @throws OAException
+   * @throws ComponentException
    */
   public void connect();
 
@@ -70,7 +70,7 @@ public interface IFTPLibrary {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws OAException
+   * @throws ComponentException
    */
   public void logon();
 
@@ -85,7 +85,7 @@ public interface IFTPLibrary {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws OAException
+   * @throws ComponentException
    */
   public InputStreamReader get(String fileName);
 
@@ -102,7 +102,7 @@ public interface IFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -120,7 +120,7 @@ public interface IFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -129,7 +129,7 @@ public interface IFTPLibrary {
   /**
    * Close the connection to the remote server
    */
-  public void close() throws OAException;
+  public void close() throws ComponentException;
 
   /**
    * Check for directory on remote server. Assumes that the client is already connected and logged into the remote
@@ -140,7 +140,7 @@ public interface IFTPLibrary {
    * 
    * @return boolean to indicate the presence of the directory
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not connected and logged into the remote server
    */
   public boolean directoryExists(String dirName);
@@ -151,7 +151,7 @@ public interface IFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName);
@@ -164,7 +164,7 @@ public interface IFTPLibrary {
    * 
    * @return - array of the file names or null if none found
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if there was an communications error
    */
   public String[] fileList(String filePattern);
@@ -198,7 +198,7 @@ public interface IFTPLibrary {
    * 
    * @return true if the transfer has been successful
    * 
-   * @throws OAException
+   * @throws ComponentException
    */
   public boolean verifyFileTransfer();
 }

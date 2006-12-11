@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractReadConnector;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.thirdparty.apache.AbstractFTPLibrary;
 
 /**
@@ -196,7 +196,7 @@ public class FTPReader extends AbstractReadConnector {
    * 
    * @return an array containing a single element (the next record) or null
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if there are any problems transferring the file
    */
   public Object[] nextRecord(long timeoutMs) {
@@ -269,7 +269,7 @@ public class FTPReader extends AbstractReadConnector {
       contents = writer.toString();
 
       if (!ftp.verifyFileTransfer())
-        throw new OAException("Failed to transfer file");
+        throw new ComponentException("Failed to transfer file", this);
 
       log.info("File transferred: " + contents.length() + " btye(s)");
 
@@ -279,7 +279,7 @@ public class FTPReader extends AbstractReadConnector {
         ftp.delete(currentfileName);
       }
     } catch (Exception e) {
-      throw new OAException("Failed to retrieve source file(s) [" + currentfileName + "]: " + e.getMessage());
+      throw new ComponentException("Failed to retrieve source file(s) [" + currentfileName + "]: " + e.getMessage(), this);
     }
 
     return contents;
@@ -288,7 +288,7 @@ public class FTPReader extends AbstractReadConnector {
   /**
    * Conencts to the remote server and logs in. Sets up an array of the one or many file names to be retrieved.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if there was any problems with the FTP client actions
    */
   public void connect() {
@@ -302,7 +302,7 @@ public class FTPReader extends AbstractReadConnector {
     if (sourceFile.indexOf("*") > -1) {
       String[] files = ftp.fileList(sourceFile);
       if (files == null)
-        throw new OAException("No files match the pattern [" + sourceFile + "]");
+        throw new ComponentException("No files match the pattern [" + sourceFile + "]", this);
 
       for (int i = 0; i < files.length; i++)
         _fileNames.add(files[i]);

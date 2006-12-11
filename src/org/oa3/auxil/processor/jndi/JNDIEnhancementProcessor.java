@@ -51,7 +51,7 @@ import org.oa3.auxil.connector.jndi.JNDISearch;
 import org.oa3.auxil.connector.jndi.JNDIUtils;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -299,18 +299,18 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
     }
 
 
-    public void enforcePreconditions() throws OAException
+    public void enforcePreconditions() throws ComponentException
     {
         // Enforce preconditions:
         if ((incomingMap == null || incomingMap.size()<1) && (recordKeyUsedAsSearchBase == null))
         {
             log.warn("Must provide an incomingKeyMap and/or set recordKeyUsedAsSearchBase.");
-            throw new OAException("Must provide an incomingKeyMap and/or set recordKeyUsedAsSearchBase.");
+            throw new ComponentException("Must provide an incomingKeyMap and/or set recordKeyUsedAsSearchBase.", this);
         }
         if ((outgoingMap == null || outgoingMap.size()<1) && (recordKeySetByExistence == null))
         {
             log.warn("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence.");
-            throw new OAException("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence.");
+            throw new ComponentException("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence.", this);
         }
 
         String[] bases = search.getSearchBases();
@@ -318,20 +318,20 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
             // Must provide a searchBase in the embedded JNDISearch:
             if (bases == null || bases.length < 1) {
                 log.warn("Must provide a non-empty search.searchBases (or provide recordKeyUsedAsSearchBase).");
-                throw new OAException("Must provide a non-empty search.searchBases (or provide recordKeyUsedAsSearchBase).");
+                throw new ComponentException("Must provide a non-empty search.searchBases (or provide recordKeyUsedAsSearchBase).", this);
             }
         } else {
             // Must not provide a searchBase in the embedded JNDISearch as well:
             if (bases != null && bases.length > 0) {
                 log.warn("Must provide either a search.searchBases or a recordKeyUsedAsSearchBase (not both!).");
-                throw new OAException("Must provide either a search.searchBases or a recordKeyUsedAsSearchBase (not both!).");
+                throw new ComponentException("Must provide either a search.searchBases or a recordKeyUsedAsSearchBase (not both!).", this);
             }
             // Must provide an incomingMap and/or a search filter in the embedded JNDISearch (eg. "(objectclass=*"))
             String filter = search.getFilter();
             if ((incomingMap == null || incomingMap.size()<1) && (filter == null || filter.length()==0))
             {
                 log.warn("Must provide an incomingMap and/or a search.filter.");
-                throw new OAException("Must provide an incomingMap and/or a search.filter.");
+                throw new ComponentException("Must provide an incomingMap and/or a search.filter.", this);
             }
         }
 
@@ -375,9 +375,9 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
 
 
     /**
-     * @throws OAException
+     * @throws ComponentException
      */
-    public void initialise() throws OAException
+    public void initialise() throws ComponentException
     {
         // relied on to allow this class to be subclassed by code that repeats the following with a different reader:
         search=reader.getSearch();

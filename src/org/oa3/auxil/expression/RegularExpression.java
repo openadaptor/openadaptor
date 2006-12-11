@@ -43,7 +43,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.OAException;
 import org.oa3.core.exception.RecordException;
 
 /**
@@ -169,10 +168,10 @@ public class RegularExpression extends Expression implements IExpression {
     ArrayList exceptions = new ArrayList();
 
     if (getValue() == null)
-      exceptions.add(new OAException("Required property called \"value\" is missing."));
+      exceptions.add(new ExpressionException("Required property called \"value\" is missing."));
 
     if (getMatch() == null)
-      exceptions.add(new OAException("Required property called \"match\" is missing."));
+      exceptions.add(new ExpressionException("Required property called \"match\" is missing."));
 
     if (!isModifyMatches() && isReplaceAll())
       log.info("Property \"replaceAll\" will be IGNORED because property \"modifyMatches\" is false.");

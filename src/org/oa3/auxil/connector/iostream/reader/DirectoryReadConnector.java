@@ -48,7 +48,7 @@ import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * StreamReader which will read files from a directory.
@@ -142,10 +142,10 @@ public class DirectoryReadConnector extends AbstractStreamReader {
   /**
    * Read all matching files from the configured directory, and create a SequenceInputStream from the matching files.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if there is a problem accessing the directory.
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Reading Directory path " + path);
     try {
       File[] files = getFiles(path, filter);
@@ -158,14 +158,14 @@ public class DirectoryReadConnector extends AbstractStreamReader {
       super.connect();
     } catch (IOException ioe) { // Only catching exceptions that the super class doesn't
       log.error("Failed to read directory [" + path + "]  - " + ioe.toString());
-      throw new OAException("Failed to open directory " + path, ioe);
+      throw new ComponentException("Failed to open directory " + path, ioe, this);
     }
   }
 
   /**
    * Disconnect this StreamReader.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void disconnect() {
     log.debug("Disconnecting from directory" + path);

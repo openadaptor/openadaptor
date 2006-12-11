@@ -48,7 +48,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.oa3.auxil.connector.ftp.IFTPLibrary;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This component will provide basic File Transfer Protocol (FTP) connunication to allow the adaptor to GET a file from
@@ -99,10 +99,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set. Sets the file transfer mode.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we fail to connect to the remote server or we fail to set BINARY mode (if required)
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Connecting to " + hostName + " on port " + port);
 
     try {
@@ -130,14 +130,14 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
           log.debug("ASCII transfer mode set");
         }
       } catch (IOException e) {
-        throw new OAException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
-            + e.getMessage());
+        throw new ComponentException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
+            + e.getMessage(), this);
       }
 
       log.debug("ApacheFTPLibrary object initialised and connected to " + hostName);
     } catch (Exception e) {
       close();
-      throw new OAException("Failed to initialise the ApacheFTPLibrary object: " + e.getMessage());
+      throw new ComponentException("Failed to initialise the ApacheFTPLibrary object: " + e.getMessage(), this);
     }
   }
 
@@ -159,10 +159,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we failt o log into the remote server
    */
-  public void logon() throws OAException {
+  public void logon() throws ComponentException {
     log.debug("Logging in " + userName);
 
     try {
@@ -176,7 +176,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
 
     } catch (Exception e) {
       close();
-      throw new OAException("Failed to login to FTP Server:" + e);
+      throw new ComponentException("Failed to login to FTP Server:" + e, this);
     }
   }
 
@@ -193,10 +193,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we cannot open the remote stream
    */
-  public InputStreamReader get(String fileName) throws OAException {
+  public InputStreamReader get(String fileName) throws ComponentException {
 
     InputStreamReader file;
 
@@ -217,7 +217,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("FTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open FTP stream:" + e.toString());
+      throw new ComponentException("Cannot open FTP stream:" + e.toString(), this);
     }
 
     return file;
@@ -236,11 +236,11 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter put(String fileName) throws OAException {
+  public OutputStreamWriter put(String fileName) throws ComponentException {
     log.debug("put() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
     OutputStreamWriter file;
 
@@ -261,7 +261,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("File transfer stream created using FTP PUT for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open FTP stream:" + e.getMessage());
+      throw new ComponentException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -279,11 +279,11 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter append(String fileName) throws OAException {
+  public OutputStreamWriter append(String fileName) throws ComponentException {
     log.debug("append() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
     OutputStreamWriter file;
 
@@ -304,7 +304,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("File transfer stream created using FTP APPEND for " + fileName);
     } catch (IOException e) {
       close();
-      throw new OAException("Cannot open FTP stream:" + e.getMessage());
+      throw new ComponentException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -313,10 +313,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
   /**
    * Close the connection to the remote server
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if the connection fails to close
    */
-  public void close() throws OAException {
+  public void close() throws ComponentException {
     try {
       if (_ftpClient.isConnected()) {
         // You must logout as a deadlock can occur in some VM's (if the
@@ -326,7 +326,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
         log.debug("FTP Connection closed");
       }
     } catch (Exception e) {
-      throw new OAException("Failed to close FTP Server" + e.toString());
+      throw new ComponentException("Failed to close FTP Server" + e.toString(), this);
     }
   }
 
@@ -339,10 +339,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return boolean to indicate the presence of the directory
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not connected and logged into the remote server
    */
-  public boolean directoryExists(String dirName) throws OAException {
+  public boolean directoryExists(String dirName) throws ComponentException {
     boolean _isPresent = false;
 
     checkLoggedIn();
@@ -370,10 +370,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
-  public void delete(String fileName) throws OAException {
+  public void delete(String fileName) throws ComponentException {
     log.debug("Deleting " + fileName);
 
     checkLoggedIn();
@@ -383,7 +383,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       _ftpClient.deleteFile(fileName);
     } catch (Exception e) {
       close();
-      throw new OAException("Failed to delete " + fileName + ": " + e.getMessage());
+      throw new ComponentException("Failed to delete " + fileName + ": " + e.getMessage(), this);
     }
   }
 
@@ -395,10 +395,10 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return - array of the file names or null if none found
    * 
-   * @throws OAException -
+   * @throws ComponentException -
    *           if there was an communications error
    */
-  public String[] fileList(String filePattern) throws OAException {
+  public String[] fileList(String filePattern) throws ComponentException {
     log.debug("Getting directory listing: dir=" + getCurrentWorkingDirectory() + ", file pattern=" + filePattern);
 
     checkLoggedIn();
@@ -414,7 +414,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
         log.debug("Failed to get file list [" + filePattern + "]: No Files Found");
     } catch (Exception e) {
       close();
-      throw new OAException("Error retrieving file list: " + e.getMessage());
+      throw new ComponentException("Error retrieving file list: " + e.getMessage(), this);
     }
 
     return s;
@@ -437,7 +437,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.info("Changed directory to [" + directoryName + "]");
     } catch (IOException e) {
       close();
-      throw new OAException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage());
+      throw new ComponentException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
     }
   }
 
@@ -460,17 +460,17 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * 
    * @return true if the transfer has been successful
    * 
-   * @throws OAException
+   * @throws ComponentException
    *           if we fail to verify the transfer
    */
-  public boolean verifyFileTransfer() throws OAException {
+  public boolean verifyFileTransfer() throws ComponentException {
     boolean success = false;
     try {
       if (_ftpClient.completePendingCommand())
         success = true;
     } catch (IOException e) {
       close();
-      throw new OAException("Failed to verify file transfer: " + e.getMessage());
+      throw new ComponentException("Failed to verify file transfer: " + e.getMessage(), this);
     }
 
     return success;

@@ -68,7 +68,8 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.connector.jndi.JNDIConnection;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
+import org.oa3.core.Component;
 import org.oa3.core.exception.ResourceException;
 
 /* 
@@ -115,7 +116,7 @@ import org.oa3.core.exception.ResourceException;
  * force a rollback.
  * </ol>
  */
-public class JMSConnection {
+public class JMSConnection extends Component {
 
   private static final Log log = LogFactory.getLog(JMSConnection.class);
 
@@ -325,11 +326,11 @@ public class JMSConnection {
       //((TopicPublisher)getProducer()).publish( textMessage, getDeliveryMode(), getJMSPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
-      throw new OAException("JMSException during publish.", jmse);
-    } catch (OAException oae) {
+      throw new ComponentException("JMSException during publish.", jmse, this);
+    } catch (ComponentException oae) {
       throw oae; // Make sure it isn't swallowed !
     } catch (Exception e) {
-      throw new OAException("Exception during publish.", e);
+      throw new ComponentException("Exception during publish.", e, this);
     }
     return msgId;
   }
@@ -346,11 +347,11 @@ public class JMSConnection {
       //((QueueSender) getProducer()).send( textMessage, getDeliveryMode(), getJMSPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
-      throw new OAException("JMSException during publish.", jmse);
-    } catch (OAException oae) {
+      throw new ComponentException("JMSException during publish.", jmse, this);
+    } catch (ComponentException oae) {
       throw oae; // Make sure it isn't swallowed !
     } catch (Exception e) {
-      throw new OAException("Exception during publish.", e);
+      throw new ComponentException("Exception during publish.", e, this);
     }
     return msgId;
   }
@@ -375,7 +376,7 @@ public class JMSConnection {
     } else {
       // We have never needed more message types in practice.
       // If we do need them in future this is where they go.
-      throw new OAException("Undeliverable record type [" + messageBody.getClass().getName() + "]");
+      throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
     }
     return msg;
   }
@@ -400,7 +401,7 @@ public class JMSConnection {
       }
     } catch (JMSException jmse) {
       log.error("receiveMessages - could not receive message [JMSException: " + jmse + "]");
-      throw new OAException("receiveMessages - could not receive message.", jmse);
+      throw new ComponentException("receiveMessages - could not receive message.", jmse, this);
     }
     if (msg != null) {
       return unpackJMSMessage(msg);
@@ -409,7 +410,7 @@ public class JMSConnection {
     }
   }
 
-  protected Object unpackJMSMessage(Message msg) throws OAException {
+  protected Object unpackJMSMessage(Message msg) throws ComponentException {
 
     Object msgContents = null;
     try {
@@ -422,12 +423,12 @@ public class JMSConnection {
           msgContents = ((ObjectMessage) msg).getObject();
         } else {
           // Todo This needs to be a fatal error
-          throw new OAException("Unsupported JMS Message Type.");
+          throw new ComponentException("Unsupported JMS Message Type.", this);
         }
       }
     } catch (JMSException e) {
       //log.error("Error processing JMS Message text [" + e + "]");
-      throw new OAException("Error processing JMS Message text.", e);
+      throw new ComponentException("Error processing JMS Message text.", e, this);
     }
     return msgContents;
   }
@@ -444,7 +445,7 @@ public class JMSConnection {
    */
   public Session getSession() {
     if (!isConnected()) {
-      throw new OAException("Attempt to get a session without calling connect() first");
+      throw new ComponentException("Attempt to get a session without calling connect() first", this);
     }
     //  TODO: review the assumption that we do nothing if the session is already set
     if (session == null) {
@@ -457,7 +458,7 @@ public class JMSConnection {
         // We have a session and oa3 takes responsibility for being ready for messages so we can start
         connection.start(); 
       } catch (JMSException jmse) {
-        throw new OAException("Unable to create session from connection", jmse);
+        throw new ComponentException("Unable to create session from connection", jmse, this);
       }
     }
     return session;
@@ -513,11 +514,11 @@ public class JMSConnection {
           if (connectionFactory == null) {
             String reason = "Unable to get a connectionFactory. This may be because the required JMS implementation jars are not available on the classpath";
             log.error(reason);
-            throw new OAException(reason);
+            throw new ComponentException(reason, this);
           } else {
             String reason = "Factory object is not an instance of ConnectionFactory. This should not happen";
             log.error(reason);
-            throw new OAException(reason);
+            throw new ComponentException(reason, this);
           }
         }
       }
@@ -528,7 +529,7 @@ public class JMSConnection {
       if (!topicQueueDefined && factoriesUnified) {
         // We haven't a prayer of guessing so bail out
         throw new ResourceException(
-            "Using JMS 1.0.2 and cannot determine whether using Queue or Topic. Please set one of Properties 'queue' or 'topic' on JMSConnection to true");
+            "Using JMS 1.0.2 and cannot determine whether using Queue or Topic. Please set one of Properties 'queue' or 'topic' on JMSConnection to true", this);
       }
 
       if (topicQueueDefined) { // Follow the properties
@@ -557,22 +558,22 @@ public class JMSConnection {
         try {
           connection.setClientID(clientID);
         } catch (InvalidClientIDException ice) {
-          throw new OAException(
+          throw new ComponentException(
               "Error setting clientID. ClientID either duplicate(most likely) or invalid. Check for other connected clients",
-              ice);
+              ice, this);
         } catch (IllegalStateException ise) {
-          throw new OAException(
+          throw new ComponentException(
               "Error setting clientID. ClientID most likely administratively set. Check ConnectionFactory settings",
-              ise);
+              ise, this);
         }
       }
 
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
-      throw new OAException(" JMSException during connect.", e);
+      throw new ComponentException(" JMSException during connect.", e, this);
     } catch (NamingException e) {
       log.error("NamingException during connect." + e);
-      throw new OAException("NamingException during connect.", e);
+      throw new ComponentException("NamingException during connect.", e, this);
     }
 
   }
@@ -647,7 +648,7 @@ public class JMSConnection {
       try {
         consumer.close();
       } catch (JMSException e) {
-        throw new OAException("Unable close consumer for  [" + destinationName + "]", e);
+        throw new ComponentException("Unable close consumer for  [" + destinationName + "]", e, this);
       } finally {
         consumer = null;
       }
@@ -660,7 +661,7 @@ public class JMSConnection {
     try {
       topic = (Topic) getCtx().lookup(destination);
     } catch (NamingException e) {
-      throw new OAException("Unable to resolve Topic for [" + destination + "]", e);
+      throw new ComponentException("Unable to resolve Topic for [" + destination + "]", e, this);
     }
     try {
       if (durable) {
@@ -670,7 +671,7 @@ public class JMSConnection {
         subscriber = (((TopicSession) getSession()).createSubscriber(topic, messageSelector, noLocal));
       }
     } catch (JMSException e) {
-      throw new OAException("Unable to subscriber for Topic [" + destination + "]", e);
+      throw new ComponentException("Unable to subscriber for Topic [" + destination + "]", e, this);
     }
     log.info("Consumer initialized for JMSDestination=" + topic);
 
@@ -684,13 +685,13 @@ public class JMSConnection {
     try {
       queue = (Queue) getCtx().lookup(aDestination);
     } catch (NamingException e) {
-      throw new OAException("Unable to resolve Queue for [" + aDestination + "]", e);
+      throw new ComponentException("Unable to resolve Queue for [" + aDestination + "]", e, this);
     }
     // Create a Queue Receiver
     try {
       aReceiver = queueSession.createReceiver(queue, messageSelector);
     } catch (JMSException e) {
-      throw new OAException("Exception creating JMS QueueReceiver ", e);
+      throw new ComponentException("Exception creating JMS QueueReceiver ", e, this);
     }
     return aReceiver;
   }
@@ -715,7 +716,7 @@ public class JMSConnection {
       try {
         producer.close();
       } catch (JMSException e) {
-        throw new OAException("Unable close producer for  [" + destinationName + "]", e);
+        throw new ComponentException("Unable close producer for  [" + destinationName + "]", e, this);
       } finally {
         producer = null;
       }
@@ -729,13 +730,13 @@ public class JMSConnection {
     try {
       topic = (Topic) getCtx().lookup(subject);
     } catch (NamingException e) {
-      throw new OAException("Unable to resolve Topic for [" + subject + "]", e);
+      throw new ComponentException("Unable to resolve Topic for [" + subject + "]", e, this);
     }
     // Create a message producer (TopicPublisher)
     try {
       aPublisher = topicSession.createPublisher((Topic) topic);
     } catch (JMSException e) {
-      throw new OAException("Exception creating JMS Producer ", e);
+      throw new ComponentException("Exception creating JMS Producer ", e, this);
     }
 
     log.info(" Producer initialised for JMSDestination=" + topic);
@@ -749,13 +750,13 @@ public class JMSConnection {
     try {
       queue = (Queue) getCtx().lookup(aDestination);
     } catch (NamingException e) {
-      throw new OAException("Unable to resolve Queue for [" + aDestination + "]", e);
+      throw new ComponentException("Unable to resolve Queue for [" + aDestination + "]", e, this);
     }
     // Create a Queue Sender
     try {
       aSender = queueSession.createSender(queue);
     } catch (JMSException e) {
-      throw new OAException("Exception creating JMS QueueSender ", e);
+      throw new ComponentException("Exception creating JMS QueueSender ", e, this);
     }
     return aSender;
   }
@@ -774,7 +775,7 @@ public class JMSConnection {
       }
       setConnection(null);
     } catch (JMSException e) {
-      throw new OAException("Unable close connection for  [" + destinationName + "]", e);
+      throw new ComponentException("Unable close connection for  [" + destinationName + "]", e, this);
     }
   }
 

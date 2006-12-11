@@ -37,14 +37,16 @@ package org.oa3.thirdparty.apache;
  */
 
 import org.oa3.auxil.connector.ftp.IFTPLibrary;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
+import org.oa3.core.Component;
+
 
 /**
  * Simple abstract class that will set the connection properties necessary to create an FTP session with a remote server
  * 
  * @author Russ Fennell
  */
-public abstract class AbstractFTPLibrary implements IFTPLibrary {
+public abstract class AbstractFTPLibrary extends Component implements IFTPLibrary {
 
   protected String hostName;
 
@@ -161,12 +163,12 @@ public abstract class AbstractFTPLibrary implements IFTPLibrary {
 
   /**
    * checks to see if the FTP client is connected and logged in. If not then disconnects the client to free up the
-   * resources and throws an OAException
+   * resources and throws an ComponentException
    */
-  protected void checkLoggedIn() throws OAException {
+  protected void checkLoggedIn() throws ComponentException {
     if (!isLoggedIn()) {
       close();
-      throw new OAException("The client is NOT logged into a remote server");
+      throw new ComponentException("The client is NOT logged into a remote server", this);
     }
   }
 }

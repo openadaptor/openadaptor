@@ -37,7 +37,8 @@ package org.oa3.auxil.connector.jdbc;
  * Created Oct 22, 2006 by Kuldip Ottal
  */
 
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
+import org.oa3.core.Component;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,7 +59,7 @@ import java.util.regex.Matcher;
  * It uses the supplied ordered map values to replace the placeholder variables
  * and then executes the sql against the database.
  */
-public class JDBCSqlStatement implements IJDBCStatement {
+public class JDBCSqlStatement extends Component implements IJDBCStatement {
 
   private static final Log log = LogFactory.getLog(JDBCSqlStatement.class.getName());
 
@@ -77,9 +78,9 @@ public class JDBCSqlStatement implements IJDBCStatement {
    * @param delimiter Delimiter character used to indicate placeholder variables
    * @param mapping Not used
    * @param connection Not used
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
-  public void initialiseStatement(String sqlStatement, String delimiter,Object mapping, Connection connection) throws OAException {
+  public void initialiseStatement(String sqlStatement, String delimiter,Object mapping, Connection connection) throws ComponentException {
     this.sql=sqlStatement;
     this.delimiter=delimiter;
   }
@@ -92,9 +93,9 @@ public class JDBCSqlStatement implements IJDBCStatement {
    * @param om Ordered Map
    * @param connection JDBC Connection
    * @return int Number of database rows updated
-   * @throws OAException
+   * @throws ComponentException
    */
-  public int executeStatement(IOrderedMap om, Connection connection) throws OAException {
+  public int executeStatement(IOrderedMap om, Connection connection) throws ComponentException {
     int updateCount=0;
     Statement stmt;
     String parsedSql="";
@@ -110,7 +111,7 @@ public class JDBCSqlStatement implements IJDBCStatement {
         throw new SQLException("Empty parsed sql statement");
       }
     } catch (SQLException sqle) {
-      throw new OAException(sqle.getMessage(), sqle);
+      throw new RuntimeException(sqle.getMessage(), sqle);
     }
     return updateCount;
   }
@@ -120,9 +121,9 @@ public class JDBCSqlStatement implements IJDBCStatement {
    *
    * @param map - ordered map to be processed.
    * @return parsed sql statement to be executed against database.
-   * @throws OAException
+   * @throws ComponentException
    */
-  private String parseSqlStatement(String sqlStatement,IOrderedMap map) throws OAException{
+  private String parseSqlStatement(String sqlStatement,IOrderedMap map) throws ComponentException{
 
     String parsedSqlStatement=sqlStatement;
     List omKeys = map.keys();
@@ -135,7 +136,7 @@ public class JDBCSqlStatement implements IJDBCStatement {
       }
       parsedSqlStatement = stringCleanUp(parsedSqlStatement,delimiter,false);
     } else {
-      throw new OAException ("Invalid SQL statement placeholders");
+      throw new ComponentException ("Invalid SQL statement placeholders", this);
     }
 
     return parsedSqlStatement;
@@ -146,9 +147,9 @@ public class JDBCSqlStatement implements IJDBCStatement {
    *
    * @param omKeys - list of ordered map keys to be processed.
    * @return boolean indicate whether all placeholders are present in ordered map
-   * @throws OAException
+   * @throws ComponentException
    */
-  private boolean validatePlaceHolders(String sqlStatement, List omKeys) throws OAException {
+  private boolean validatePlaceHolders(String sqlStatement, List omKeys) throws ComponentException {
     boolean valid=true;
 
     //get keys from sql statement
@@ -168,7 +169,7 @@ public class JDBCSqlStatement implements IJDBCStatement {
       String key = (String) sqlStatementKeysIterator.next();
       if (!(omKeys.contains(key))) {
         valid=false;
-        throw new OAException("Sql statement placeholder '" + key + "' not found in OrderedMap");
+        throw new ComponentException("Sql statement placeholder '" + key + "' not found in OrderedMap", this);
       }
     }
 

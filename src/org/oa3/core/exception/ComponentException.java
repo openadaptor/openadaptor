@@ -55,27 +55,19 @@ import org.oa3.core.IComponent;
  * @author Kevin Scully
  */
 
-public class OAException extends RuntimeException {
+public class ComponentException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
   private IComponent component = null;
 
-  public OAException(String msg, Throwable cause, IComponent c) {
+  public ComponentException(String msg, Throwable cause, IComponent c) {
     super(msg, cause);
     component = c;
   }
 
-  public OAException(String msg, Throwable cause) {
-    this(msg, cause, null);
-  }
-
-  public OAException(String msg, IComponent c) {
+  public ComponentException(String msg, IComponent c) {
     this(msg, null, c);
-  }
-
-  public OAException(String msg) {
-    this(msg, null, null);
   }
 
   public IComponent getComponent() {

@@ -43,7 +43,7 @@ import java.net.Socket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Simple StreamReader to listen on a socket, and provide a StreamReader based on the first connection that receives.
@@ -80,10 +80,10 @@ public class SocketReader extends AbstractStreamReader {
    * Simple singleThreaded first pass. connect() method name is slightly misleading as it's really the adaptor which is
    * connecting to it.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if an IOException occurs
    */
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Connect: Listening for connections on port " + port);
     try {
       serverSocket = new ServerSocket(port);
@@ -94,14 +94,14 @@ public class SocketReader extends AbstractStreamReader {
       ;
     } catch (IOException ioe) {
       log.error("IOException - " + ioe.toString());
-      throw new OAException(ioe.toString(), ioe);
+      throw new ComponentException(ioe.toString(), ioe, this);
     }
   }
 
   /**
    * Disconnect this StreamReader.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    *           if an IOException occurs.
    */
   public void disconnect() {

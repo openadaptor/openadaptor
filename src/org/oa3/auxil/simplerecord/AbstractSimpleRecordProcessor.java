@@ -43,7 +43,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
+import org.oa3.core.Component;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 
@@ -54,7 +55,7 @@ import org.oa3.core.exception.RecordFormatException;
  *
  * @author OA3 Core Team
  */
-public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
+public abstract class AbstractSimpleRecordProcessor extends Component implements IDataProcessor {
 
   private static final Log log = LogFactory.getLog(AbstractSimpleRecordProcessor.class);
 
@@ -138,7 +139,7 @@ public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
    * <p/>
    *
    * <blockquote><pre>
-   *      OAException e = checkMandatoryProperty(foo, foo!=null);
+   *      ComponentException e = checkMandatoryProperty(foo, foo!=null);
    *      if ( e != null )
    *          throw e;
    * </pre></blockquote>
@@ -146,10 +147,10 @@ public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
    * @param name the property name
    * @param propTest the result of a test (eg. name!=null)
    *
-   * @return null if the test suceeded or an OAException if it failed
+   * @return null if the test suceeded or an ComponentException if it failed
    */
   protected Exception checkMandatoryProperty(String name, boolean propTest) {
-    return propTest ? null : new OAException("property " + name + " is mandatory");
+    return propTest ? null : new ComponentException("property " + name + " is mandatory", this);
   }
 
   /**
@@ -159,7 +160,7 @@ public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
    * <p/>
    *
    * <blockquote><pre>
-   *      OAException e = checkExactlyOneOfProperty(
+   *      ComponentException e = checkExactlyOneOfProperty(
    *          new String[] {attributeName,"expression"},
    *          new boolean[] {attributeName!=null,expression!=null} );
    *      if ( e != null )
@@ -172,7 +173,7 @@ public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
    * @param names array of attribute names
    * @param tests array of test (eg. attribute != null )
    *
-   * @return OAException containing the names of any attributes that fail the tests
+   * @return ComponentException containing the names of any attributes that fail the tests
    * or null
    */
   protected Exception checkExactlyOneOfProperty(String[] names, boolean[] tests) {
@@ -190,7 +191,7 @@ public abstract class AbstractSimpleRecordProcessor implements IDataProcessor {
 
       sb.append(names[names.length - 1]);
 
-      result = new OAException("Exactly one of " + sb.toString() + " must be set");
+      result = new ComponentException("Exactly one of " + sb.toString() + " must be set", this);
     }
 
     return result;

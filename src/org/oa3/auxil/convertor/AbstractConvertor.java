@@ -36,13 +36,14 @@ import java.util.List;
 
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.exception.RecordException;
+import org.oa3.core.Component;
 
 /**
  * Abstract implementation of IDataProcessor that converts from one data representation to another
  * 
  * @author Eddy Higgins
  */
-public abstract class AbstractConvertor implements IDataProcessor {
+public abstract class AbstractConvertor extends Component implements IDataProcessor {
 
   // private static final Log log = LogFactory.getLog(AbstractRecordConvertorProcessor.class);
 

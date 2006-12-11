@@ -37,22 +37,27 @@ package org.oa3.auxil.connector.jdbc;
  * Created Oct 30, 2006 by Kuldip Ottal
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.oa3.auxil.orderedmap.OrderedHashMap;
+import org.oa3.core.Component;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This class implements the <code>IJDBCStatement</code> interface.
  * The class writes data to the database using a stored procedure. It uses the supplied JDBC connection to
  * gather information about the stored procedure and then generates and executes the sql required.
  */
-public class JDBCStoredProcStatement implements IJDBCStatement,IJDBCConstants {
+public class JDBCStoredProcStatement extends Component implements IJDBCStatement,IJDBCConstants {
 
   private static final Log log = LogFactory.getLog(JDBCStoredProcStatement.class.getName());
 
@@ -79,9 +84,9 @@ public class JDBCStoredProcStatement implements IJDBCStatement,IJDBCConstants {
    * @param delimiter Not used
    * @param mapping Mapping object created from configuration file
    * @param connection JDBC Connection
-   * @throws OAException
+   * @throws ComponentException
    */
-  public void initialiseStatement(String storedProcName,String delimiter, Object mapping, Connection connection) throws OAException {
+  public void initialiseStatement(String storedProcName,String delimiter, Object mapping, Connection connection) throws ComponentException {
     log.info("Getting parameter information for stored proc '" + storedProcName + "' ...");
 
     try {
@@ -90,7 +95,7 @@ public class JDBCStoredProcStatement implements IJDBCStatement,IJDBCConstants {
       //Load properties with stored procedure metadata values
       storedProcTypes = getTargetStoredProcTypes(storedProcName, connection);
     } catch (SQLException sqle) {
-      throw new OAException("Failed to sql types information for target table, " + sqle.toString(), sqle);
+      throw new ComponentException("Failed to sql types information for target table, " + sqle.toString(), sqle, this);
     }
     sql ="{ call "+ storedProcName + "(";
   }
@@ -101,9 +106,9 @@ public class JDBCStoredProcStatement implements IJDBCStatement,IJDBCConstants {
    * @param om IOrderedMap
    * @param connection
    * @return int Number of updated database rows
-   * @throws OAException
+   * @throws ComponentException
    */
-  public int executeStatement(IOrderedMap om, Connection connection) throws OAException {
+  public int executeStatement(IOrderedMap om, Connection connection) throws ComponentException {
     CallableStatement cs;
     int updateCount=0;
     IOrderedMap mappedOM;
@@ -121,7 +126,7 @@ public class JDBCStoredProcStatement implements IJDBCStatement,IJDBCConstants {
       log.info("Executing Callable statement (Stored Proc)  to insert data: " + generatedSql);
       updateCount += cs.executeUpdate();
     } catch (SQLException sqle) {
-      throw new OAException(sqle.getMessage(),sqle);
+      throw new ComponentException(sqle.getMessage(),sqle, this);
     }
     //Return number of rows updated
     return updateCount;

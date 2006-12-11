@@ -38,7 +38,7 @@ package org.oa3.auxil.connector.jdbc;
  */
 
 
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import java.sql.Connection;
 
@@ -55,9 +55,9 @@ public interface IJDBCStatement {
    * @param objectName Name of the database object to be used to write data
    * @param delimiter If applicable, this wraps variables which are to be replaced with fieldnames
    * @param connection JDBC connection
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
-  public void initialiseStatement(String objectName, String delimiter, Object mapping, Connection connection) throws OAException;
+  public void initialiseStatement(String objectName, String delimiter, Object mapping, Connection connection) throws ComponentException;
 
   /**
    * This method generates the sql required to write the data contained in the
@@ -68,7 +68,7 @@ public interface IJDBCStatement {
    * @param om Ordered Map
    * @param connection JDBC connection
    * @return number of rows updated
-   * @throws OAException
+   * @throws ComponentException
    */
-  public int executeStatement(IOrderedMap om, Connection connection) throws OAException;
+  public int executeStatement(IOrderedMap om, Connection connection) throws ComponentException;
 }

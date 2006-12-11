@@ -44,13 +44,14 @@ import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.Component;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * 
  * @author OA3 Core Team
  */
-public abstract class AbstractStreamWriter implements IStreamWriter {
+public abstract class AbstractStreamWriter extends Component implements IStreamWriter {
   
   private static final Log log = LogFactory.getLog(AbstractStreamWriter.class);
 
@@ -75,21 +76,21 @@ public abstract class AbstractStreamWriter implements IStreamWriter {
 
   // END Bean getters/setters
 
-  public void connect() throws OAException {
+  public void connect() throws ComponentException {
     log.debug("Getting a writer using encoding " + encoding);
 
     if (outputStream == null) {
-      throw new OAException("OutputStream is not initialised");
+      throw new ComponentException("OutputStream is not initialised", this);
     }
     try {
       writer = new OutputStreamWriter(outputStream, encoding);
     } catch (UnsupportedEncodingException uee) { // Todo - perhaps let this fall out as an IOException
-      throw new OAException("Unsupported Encoding - " + encoding);
+      throw new ComponentException("Unsupported Encoding - " + encoding, this);
     }
     log.info("Connected (reader created)");
   }
 
-  public void disconnect() throws OAException {
+  public void disconnect() throws ComponentException {
     log.debug("Disconnecting (closing writer)");
     if (writer != null) {
       try {

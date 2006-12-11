@@ -37,16 +37,22 @@ package org.oa3.auxil.connector.jdbc;
  * Created Oct 30, 2006 by Kuldip Ottal
  */
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.OAException;
-
-import java.sql.*;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
+import org.oa3.core.Component;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * This class implements the <code>IJDBCStatement</code> interface.
@@ -54,7 +60,7 @@ import java.util.Map;
  * gather information about the database table and then generates and executes the sql required.
  *
  */
-public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
+public class JDBCTableStatement extends Component implements IJDBCStatement, IJDBCConstants {
 
   private static final Log log = LogFactory.getLog(JDBCTableStatement.class.getName());
 
@@ -77,9 +83,9 @@ public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
    * @param tableName
    * @param delimiter Not currently used
    * @param connection JDBC connection
-   * @throws org.oa3.core.exception.OAException
+   * @throws org.oa3.core.exception.ComponentException
    */
-  public void initialiseStatement(String tableName, String delimiter,Object mapping,Connection connection) throws OAException {
+  public void initialiseStatement(String tableName, String delimiter,Object mapping,Connection connection) throws ComponentException {
     this.tableName = tableName;
     log.info("Getting sql types information for target table...");
     try {
@@ -88,7 +94,7 @@ public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
       //Load bean properties with database metadata values
       getDBTableDetails(tableName, connection);
     } catch (SQLException sqle) {
-      throw new OAException("Failed to sql types information for target table, " + sqle.toString(), sqle);
+      throw new ComponentException("Failed to sql types information for target table, " + sqle.toString(), sqle, this);
     }
   }
 
@@ -101,9 +107,9 @@ public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
    * @param om Ordered Map
    * @param connection JDBC connection
    * @return int Number of rows updated
-   * @throws OAException
+   * @throws ComponentException
    */
-  public int executeStatement(IOrderedMap om,Connection connection) throws OAException {
+  public int executeStatement(IOrderedMap om,Connection connection) throws ComponentException {
 
     //TODO: Add in jdbc batch functionality
     int updateCount=0;
@@ -127,7 +133,7 @@ public class JDBCTableStatement implements IJDBCStatement, IJDBCConstants {
       //Execute Prepared statement
       updateCount += ps.executeUpdate();
     } catch (SQLException sqle) {
-      throw new OAException(sqle.getMessage(),sqle);
+      throw new ComponentException(sqle.getMessage(),sqle, this);
     }
     return updateCount;
   }

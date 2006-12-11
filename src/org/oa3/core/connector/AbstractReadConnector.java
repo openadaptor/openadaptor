@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.oa3.core.Component;
 import org.oa3.core.IReadConnector;
 import org.oa3.core.adaptor.IAdaptorInpoint;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Abstract superclass that implements common functionality for Read Connectors.
@@ -67,7 +67,7 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
    * 
    * @return an array of records to be processed
    */
-  public Object[] next(long timeoutMs) throws OAException {
+  public Object[] next(long timeoutMs) throws ComponentException {
     log.debug("Fetching next record...");
     Object[] result = nextRecord(timeoutMs);
 
@@ -94,7 +94,7 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
     return result;
   }
 
-  public void refreshData() throws OAException {
+  public void refreshData() throws ComponentException {
     log.info("Default refreshData() behaviour is a no-op");
   }
 
@@ -103,7 +103,7 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
    * 
    * @return Object[] containing the next batch of records from this connector.
    */
-  public abstract Object[] nextRecord(long timeoutMs) throws OAException;
+  public abstract Object[] nextRecord(long timeoutMs) throws ComponentException;
 
   /**
    * Set the Source instance used as entry point to the Pipeline.
@@ -120,7 +120,7 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
   /**
    * Establish a connection to external message transport. If already connected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void connect() {
     log.debug("Connector: [" + getId() + "] connecting ....");
@@ -131,7 +131,7 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.OAException
+   * @throws org.oa3.control.ComponentException
    */
   public void disconnect() {
     log.debug("Connector: [" + getId() + "] disconnecting ....");

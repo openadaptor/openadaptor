@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
 import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 
@@ -233,7 +233,7 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
     // if both are set we have a problem.
 
     if (throwExceptionOnMissingAttribute && createOnMissingAttribute) {
-      e = new OAException("Cannot set both of throwExceptionOnMissingAttribute and createOnMissingAttribute to true.");
+      e = new ComponentException("Cannot set both of throwExceptionOnMissingAttribute and createOnMissingAttribute to true.", this);
       exceptions.add(e);
     }
   }

@@ -32,21 +32,18 @@
  */
 package org.oa3.auxil.connector.jdbc;
 
-import org.oa3.core.connector.AbstractReadConnector;
-import org.oa3.core.exception.OAException;
-import org.oa3.auxil.connector.jdbc.JDBCConnection;
-import org.oa3.auxil.connector.jdbc.JDBCXAConnection;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.sql.*;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCListener.java,v 1.24 2006/10/18 14:31:02 ottalk Exp $
- * Rev:  $Revision: 1.24 $
- * Created Oct 20, 2005 by Eddy Higgins
- */
+import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.oa3.auxil.orderedmap.OrderedHashMap;
+import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.exception.ComponentException;
 
 
 /**
@@ -119,7 +116,7 @@ public class JDBCListener extends AbstractReadConnector {
    * Establish a connection to external message transport. If already
    * connected then do nothing.
    *
-   * @throws OAException
+   * @throws ComponentException
    */
   public void connect() {
     log.debug("Connector: [" + getId() + "] connecting ....");
@@ -129,7 +126,7 @@ public class JDBCListener extends AbstractReadConnector {
       //transactionspec = createITransactionSpec();
     }
     catch (SQLException sqle) {
-      throw new OAException("Failed to establish JDBC connection - " + sqle.toString(), sqle);
+      throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
     }
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
@@ -138,7 +135,7 @@ public class JDBCListener extends AbstractReadConnector {
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    *
-   * @throws OAException
+   * @throws ComponentException
    */
   public void disconnect() {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
@@ -171,9 +168,9 @@ public class JDBCListener extends AbstractReadConnector {
    * //ToDo: Make this capable of batching the records.
    *
    * @return  an array containing the next record to be processed.
-   * @throws OAException
+   * @throws ComponentException
    */
-  public Object[] nextRecord(long timeoutMs) throws OAException {
+  public Object[] nextRecord(long timeoutMs) throws ComponentException {
     Object[] result=null;
     try {
       //Guarantee that query has executed at least once
@@ -195,7 +192,7 @@ public class JDBCListener extends AbstractReadConnector {
       }
     }
     catch (SQLException sqle) {
-      throw new OAException(sqle.getMessage(), sqle);
+      throw new ComponentException(sqle.getMessage(), sqle, this);
     }
     return result;
   }
@@ -203,15 +200,15 @@ public class JDBCListener extends AbstractReadConnector {
   /**
    * Method called by inpoint to re-run query to fetch more data
    *
-   * @throws OAException
+   * @throws ComponentException
    */
-  public void refreshData() throws OAException {
+  public void refreshData() throws ComponentException {
     log.info("Refreshing data - executing query");
     try {
       runQuery();
     }
     catch (SQLException sqle) {
-      throw new OAException(sqle.getMessage(), sqle);
+      throw new ComponentException(sqle.getMessage(), sqle, this);
     }
 
   }

@@ -51,7 +51,7 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.OAException;
+import org.oa3.core.exception.ComponentException;
 
 /**
  * Common Resource Utilities for OA3
@@ -80,7 +80,7 @@ public class ResourceUtils {
    * 
    * @return Properties object containg information on the build enviroment
    */
-  public static Properties getBuildProperties() throws OAException {
+  public static Properties getBuildProperties() throws ComponentException {
     if (buildProperties == null) {// Attempt to get them.
       log.info("Retrieving build information from " + OA3_JAR_NAME);
       try {
@@ -90,7 +90,7 @@ public class ResourceUtils {
         try {
           buildProperties = getPropertiesFromClasspathResource(BUILD_PROPERTIES);
         } catch (MissingResourceException mre) {
-          throw new OAException("Failed to get build properties via " + BUILD_PROPERTIES);
+          throw new RuntimeException("Failed to get build properties via " + BUILD_PROPERTIES);
         }
       }
     }
@@ -192,7 +192,7 @@ public class ResourceUtils {
         String value = (String) props.get(key);
         System.out.println(key + " -> " + value);
       }
-    } catch (OAException e) {
+    } catch (ComponentException e) {
       System.err.println(e);
     }
   }
