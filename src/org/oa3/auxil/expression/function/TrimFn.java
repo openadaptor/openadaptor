@@ -32,7 +32,8 @@
  */
 package org.oa3.auxil.expression.function;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.expression.ExpressionException;
 
 /**
@@ -41,7 +42,8 @@ import org.oa3.auxil.expression.ExpressionException;
  * @author Russ Fennell
  */
 public class TrimFn extends AbstractFunction {
-  static Logger log = Logger.getLogger(TrimFn.class);
+  
+  private static final Log log = LogFactory.getLog(TrimFn.class);
 
   /**
    * Calls super constructor with an name of "trim" and an argCount of 1

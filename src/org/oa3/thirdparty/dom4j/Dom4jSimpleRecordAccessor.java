@@ -37,7 +37,8 @@ package org.oa3.thirdparty.dom4j;
  * Rev:  $Revision: 1.14 $
  * Created Sep 18, 2006 by Eddy Higgins
  */
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -52,7 +53,8 @@ import org.oa3.core.exception.RecordException;
  * @author Eddy Higgins
  */
 public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpleRecord {
-  static Logger log = Logger.getLogger(Dom4jSimpleRecordAccessor.class);
+  
+  private static final Log log = LogFactory.getLog(Dom4jSimpleRecordAccessor.class);
 
   /**
    * This is the underlying object for the accessor.
