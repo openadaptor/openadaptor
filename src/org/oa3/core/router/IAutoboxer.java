@@ -33,8 +33,19 @@
 
 package org.oa3.core.router;
 
+import java.util.List;
 import java.util.Map;
+
+import org.oa3.core.IDataProcessor;
+import org.oa3.core.IReadConnector;
+import org.oa3.core.IWriteConnector;
+import org.oa3.core.node.Node;
 
 public interface IAutoboxer {
 	Map autobox(Map map);
+  List autobox(List list);
+  Object autobox(Object o);
+  Node autobox(IDataProcessor processor);
+  Node autobox(IReadConnector connector);
+  Node autobox(IWriteConnector connector);
 }

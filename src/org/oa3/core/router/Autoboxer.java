@@ -59,7 +59,7 @@ public class Autoboxer implements IAutoboxer {
 		return newMap;
 	}
 
-	protected List autobox(List list) {
+	public List autobox(List list) {
 		ArrayList newList = new ArrayList();
 		for (Iterator iter = list.iterator(); iter.hasNext();) {
 			newList.add(autobox(iter.next()));
@@ -67,7 +67,7 @@ public class Autoboxer implements IAutoboxer {
 		return newList;
 	}
 	
-	private Object autobox(Object o) {
+	public Object autobox(Object o) {
 		if (o instanceof Map) {
 			o = autobox((Map)o);
 		} else if (o instanceof List) {
@@ -82,7 +82,7 @@ public class Autoboxer implements IAutoboxer {
 		return o;
 	}
 
-	protected Node autobox(IDataProcessor processor) {
+	public Node autobox(IDataProcessor processor) {
 		Node node = (Node) nodeMap.get(processor);
 		if (node == null) {
 			node = new Node(processor.toString());
@@ -92,7 +92,7 @@ public class Autoboxer implements IAutoboxer {
 		return node;
 	}
 
-	protected Node autobox(IReadConnector connector) {
+	public Node autobox(IReadConnector connector) {
 		AdaptorInpoint node = (AdaptorInpoint) nodeMap.get(connector);
 		if (node == null) {
 			node = new AdaptorInpoint(connector.toString());
@@ -102,7 +102,7 @@ public class Autoboxer implements IAutoboxer {
 		return node;
 	}
 
-	protected Node autobox(IWriteConnector connector) {
+	public Node autobox(IWriteConnector connector) {
 		AdaptorOutpoint node = (AdaptorOutpoint) nodeMap.get(connector);
 		if (node == null) {
 			node = new AdaptorOutpoint(connector.toString());

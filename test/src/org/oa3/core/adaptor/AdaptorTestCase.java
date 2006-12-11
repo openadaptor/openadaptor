@@ -292,6 +292,92 @@ public class AdaptorTestCase extends TestCase {
 		assertTrue(adaptor.getExitCode() == 0);
 	}
 	
+  public void testParallelPipelines() {
+    
+    // pipeline 1
+    TestReadConnector inpoint1 = new TestReadConnector("i1");
+    inpoint1.setDataString("foobar");
+    TestProcessor processor1 = new TestProcessor("p1");
+    TestWriteConnector outpoint1 = new TestWriteConnector("o1");
+    outpoint1.setExpectedOutput(processor1.getId() + "(" + inpoint1.getDataString() + ")");
+    
+    // pipeline 2
+    TestReadConnector inpoint2 = new TestReadConnector("i2");
+    inpoint2.setDataString("barfoo");
+    TestProcessor processor2 = new TestProcessor("p2");
+    TestWriteConnector outpoint2 = new TestWriteConnector("o2");
+    outpoint2.setExpectedOutput(processor2.getId() + "(" + inpoint2.getDataString() + ")");
+    
+    // create routing map
+    RoutingMap routingMap = new RoutingMap();
+    Map processMap = new HashMap();
+    processMap.put(inpoint1, processor1);
+    processMap.put(processor1, outpoint1);
+    processMap.put(inpoint2, processor2);
+    processMap.put(processor2, outpoint2);
+    routingMap.setProcessMap(processMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setRoutingMap(routingMap);
+    adaptor.setRunInpointsInCallingThread(true);
+    
+    // run adaptor
+    try {
+      adaptor.run();
+      fail("should not be allow to run multiple inpoint from calling thread");
+    } catch (Exception e) {
+    }
+    
+    adaptor.setRunInpointsInCallingThread(false);
+    adaptor.run();
+    assertTrue(adaptor.getExitCode() == 0);
+    
+  }
+
+  public void testFanIn() {
+    
+    // create inpoint1
+    TestReadConnector inpoint1 = new TestReadConnector("i1");
+    inpoint1.setDataString("foobar");
+    inpoint1.setMaxSend(10);
+    inpoint1.setIntervalMs(10);
+    TestProcessor processor1 = new TestProcessor("p1");
+    
+    // create inpoint2
+    TestReadConnector inpoint2 = new TestReadConnector("i2");
+    inpoint2.setDataString("foobar");
+    inpoint2.setMaxSend(5);
+    inpoint2.setIntervalMs(5);
+
+    TestWriteConnector outpoint1 = new TestWriteConnector("o1");
+    outpoint1.setExpectedOutput(createStringList(processor1.getId() + "(" + inpoint1.getDataString() + ")", 15));
+
+    // create routing map
+    RoutingMap routingMap = new RoutingMap();
+    Map processMap = new HashMap();
+    processMap.put(inpoint1, processor1);
+    processMap.put(processor1, outpoint1);
+    processMap.put(inpoint2, processor1);
+    routingMap.setProcessMap(processMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setRoutingMap(routingMap);
+    adaptor.setRunInpointsInCallingThread(true);
+    
+    // run adaptor
+    try {
+      adaptor.run();
+      fail("should not be allow to run multiple inpoint from calling thread");
+    } catch (Exception e) {
+    }
+    
+    adaptor.setRunInpointsInCallingThread(false);
+    adaptor.run();
+    assertTrue(adaptor.getExitCode() == 0);
+  }
+
 	public static List createStringList(String s, int n) {
 		ArrayList list = new ArrayList();
 		for (int i = 0; i < n; i++) {
