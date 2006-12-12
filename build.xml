@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="openadaptor3" default="recompile.all">
   
+  <tstamp/>
+  <property name="tag" value="local"/>
+  
   <property name="dir.stub.classes" value="stub/classes"/>
   <property name="dir.stub.lib" value="stub/lib"/>
   <property name="dir.stub.src" value="stub/src"/>
@@ -57,6 +60,16 @@
   
   <target name="compile">
     <javac srcdir="${dir.src}" destdir="${dir.classes}" classpathref="classpath"/>
+    <copy todir="${dir.classes}" overwrite="true">
+      <fileset dir="${dir.src}">
+        <include name="**/*.properties"/>
+      </fileset>
+      <filterset>
+        <filter token="BUILDCOMPILER" value="${ant.java.version}"/>
+        <filter token="BUILDTIME" value="${DSTAMP}:${TSTAMP}"/>
+        <filter token="BUILDTAG" value="${tag}"/>
+      </filterset>
+    </copy>
   </target>
   
   <target name="compile.spring">
@@ -65,6 +78,11 @@
   
   <target name="compile.test">
     <javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" classpathref="classpath.test"/>
+    <copy todir="${dir.test.classes}" overwrite="true">
+      <fileset dir="${dir.test.src}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
   </target>
   
   <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test" description="clean all compile and test output"/>
