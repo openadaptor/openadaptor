@@ -45,13 +45,17 @@ import org.oa3.core.Response.DiscardBatch;
 import org.oa3.core.Response.ExceptionBatch;
 import org.oa3.core.Response.OutputBatch;
 import org.oa3.core.exception.MessageException;
+import org.oa3.core.lifecycle.ILifecycleComponent;
+import org.oa3.core.lifecycle.ILifecycleComponentContainer;
+import org.oa3.core.lifecycle.ILifecycleComponentManager;
 import org.oa3.core.transaction.ITransaction;
 
-public class Router implements IMessageProcessor {
+public class Router implements IMessageProcessor,ILifecycleComponentContainer {
 
 	private static Log log = LogFactory.getLog(Router.class);
 	
 	private IRoutingMap routingMap;
+  private ILifecycleComponentManager componentManager;
 	
 	public Router() {
 		super();
@@ -65,10 +69,31 @@ public class Router implements IMessageProcessor {
 	public void setRoutingMap(final IRoutingMap routingMap) {
 		this.routingMap = routingMap;
 	}
-	
-	public Response process(Message msg) {
+	//BEGIN implementation of ILifecycleComponentContainer 
+  
+	public void setComponentManager(ILifecycleComponentManager manager) {
+    if (componentManager!=null){
+      throw new RuntimeException("ComponentManager has already been set for this router");
+    }
+    this.componentManager=manager;
+    registerComponents();
+  }
+  //END   implementation of ILifecycleComponentContainer 
+
+  public Response process(Message msg) {
 		return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
 	}
+  
+  private void registerComponents() {
+    for (Iterator it=routingMap.getMessageProcessors().iterator();it.hasNext();){
+      Object processor=it.next();
+      if (processor instanceof ILifecycleComponent){
+        componentManager.register((ILifecycleComponent)processor);
+      } else {
+        log.debug("Not registering (non-ILifecycleComponent) processor "+processor);
+      }
+    }
+  }
 	
 	private Response process(Message msg, List destinations) {
 		if (log.isDebugEnabled()) {

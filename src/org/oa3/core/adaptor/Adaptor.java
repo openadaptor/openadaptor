@@ -34,7 +34,6 @@
 package org.oa3.core.adaptor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +43,8 @@ import org.oa3.core.IMessageProcessor;
 import org.oa3.core.Message;
 import org.oa3.core.Response;
 import org.oa3.core.lifecycle.ILifecycleComponent;
+import org.oa3.core.lifecycle.ILifecycleComponentContainer;
+import org.oa3.core.lifecycle.ILifecycleComponentManager;
 import org.oa3.core.lifecycle.State;
 import org.oa3.core.router.IRoutingMap;
 import org.oa3.core.router.Router;
@@ -51,7 +52,7 @@ import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.TransactionManager;
 import org.oa3.util.Application;
 
-public class Adaptor extends Application implements IMessageProcessor, Runnable, AdaptorMBean {
+public class Adaptor extends Application implements IMessageProcessor,ILifecycleComponentManager, Runnable, AdaptorMBean {
 
 	private static final Log log = LogFactory.getLog(Adaptor.class);
 	
@@ -62,32 +63,29 @@ public class Adaptor extends Application implements IMessageProcessor, Runnable,
 	private Thread[] inpointThreads = new Thread[0];
 	private State state = State.CREATED;
   private ITransactionManager transactionManager;
+  private boolean started=false;
 	
 	public Adaptor() {
 		super();
     transactionManager = new TransactionManager();
+    inpoints=new ArrayList();
+    components=new ArrayList();
 	}
 	
+  /**
+   * @deprecated - Routing map shouldn't be visible to Adaptor.
+   * @param routingMap
+   */
 	public Adaptor(final IRoutingMap routingMap) {
 		this();
 		this.setRoutingMap(routingMap);
 	}
-	
+	/**
+   *@deprecated - RoutingMap shouldn't be visible to Adaptor. 
+   * @param routingMap
+	 */
 	public void setRoutingMap(final IRoutingMap routingMap) {
 		setMessageProcessor(new Router(routingMap));
-		components = new ArrayList();
-		inpoints = new ArrayList();
-		Collection processors = routingMap.getMessageProcessors();
-		for (Iterator iter = processors.iterator(); iter.hasNext();) {
-			IMessageProcessor processor = (IMessageProcessor) iter.next();
-			if (processor instanceof IAdaptorInpoint) {
-				inpoints.add(processor);
-				((IAdaptorInpoint)processor).setAdaptor(this);
-			}
-			if (processor instanceof ILifecycleComponent) {
-				components.add(processor);
-			}
-		}
 	}
 	
 	public void setMessageProcessor(final IMessageProcessor processor) {
@@ -95,6 +93,10 @@ public class Adaptor extends Application implements IMessageProcessor, Runnable,
 			throw new RuntimeException("message processor has already been set");
 		}
 		this.processor = processor;
+    if (processor instanceof ILifecycleComponentContainer) {
+      log.debug("MessageProcessor is also a component container. Registering with processor.");
+      ((ILifecycleComponentContainer)processor).setComponentManager(this);
+    }
 	}
 	
 	public void setRunInpointsInCallingThread(final boolean runInpointsInCallingThread) {
@@ -108,13 +110,42 @@ public class Adaptor extends Application implements IMessageProcessor, Runnable,
   public ITransactionManager getTransactionManager() {
     return transactionManager;
   }
+  //BEGIN Implementation of ILifecycleComponentManager
   
+  public void register(ILifecycleComponent component) {
+    if (started) {
+      throw new RuntimeException("Cannot register component with running adaptor");
+    }
+    log.debug("Adaptor is registering component "+component);
+    components.add(component);
+   if (component instanceof IAdaptorInpoint) {
+      log.debug("Adaptor is registering inpoint"+component);
+      inpoints.add(component);
+      ((IAdaptorInpoint)component).setAdaptor(this);
+   }
+  }
+
+  public ILifecycleComponent unregister(ILifecycleComponent component) {
+    ILifecycleComponent match=null;
+    if (started) {
+      throw new RuntimeException("Cannot unregister component from running adaptor");
+    }
+    if (components.remove(component)){
+      match=component;
+      inpoints.remove(component);
+    }
+    return match;
+  }
+  //END   Implementation of ILifecycleComponentManager
+
+  //END Implementation of ILifecycleComponentManager  
 	public Response process(Message msg) {
 		return processor.process(msg);
 	}
 
 	public void start() {
 		validate();
+    started=true;
 		startNonInpoints();
 		startInpoints();
 		
