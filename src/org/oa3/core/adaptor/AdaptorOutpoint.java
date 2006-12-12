@@ -45,6 +45,7 @@ import org.oa3.core.Response;
 import org.oa3.core.Response.DiscardBatch;
 import org.oa3.core.Response.ExceptionBatch;
 import org.oa3.core.exception.MessageException;
+import org.oa3.core.lifecycle.State;
 import org.oa3.core.node.Node;
 import org.oa3.core.transaction.ITransactional;
 
@@ -89,6 +90,7 @@ public class AdaptorOutpoint extends Node {
 	}
 	
 	public void stop() {
+    setState(State.STOPPING);
 		connector.disconnect();
 		super.stop();
 	}

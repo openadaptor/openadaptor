@@ -89,9 +89,9 @@ import org.oa3.thirdparty.apache.AbstractFTPLibrary;
  * @see IFTPLibrary
  * @see AbstractFTPLibrary
  */
-public class FTPReader extends AbstractReadConnector {
+public class FTPReadConnector extends AbstractReadConnector {
   
-  private static final Log log = LogFactory.getLog(FTPReader.class);
+  private static final Log log = LogFactory.getLog(FTPReadConnector.class);
 
   // list of file names to be retrieved from the remote server
   private ArrayList _fileNames = new ArrayList();
@@ -112,6 +112,13 @@ public class FTPReader extends AbstractReadConnector {
 
   private String currentfileName;
 
+  public FTPReadConnector() {
+  }
+
+  public FTPReadConnector(String id) {
+    super(id);
+  }
+  
   /**
    * Set the FTP library that will perform the actual file transfer. Defaults to use the SunFTPLibrary
    */

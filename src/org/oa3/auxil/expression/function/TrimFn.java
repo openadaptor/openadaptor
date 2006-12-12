@@ -32,8 +32,6 @@
  */
 package org.oa3.auxil.expression.function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.expression.ExpressionException;
 
 /**
@@ -43,7 +41,7 @@ import org.oa3.auxil.expression.ExpressionException;
  */
 public class TrimFn extends AbstractFunction {
   
-  private static final Log log = LogFactory.getLog(TrimFn.class);
+  //private static final Log log = LogFactory.getLog(TrimFn.class);
 
   /**
    * Calls super constructor with an name of "trim" and an argCount of 1

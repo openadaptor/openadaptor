@@ -260,7 +260,7 @@ public class Adaptor extends Application implements IMessageProcessor, Runnable,
 	private void stopNonInpoints() {
 		for (Iterator iter = components.iterator(); iter.hasNext();) {
 			ILifecycleComponent component  = (ILifecycleComponent) iter.next();
-			if (!inpoints.contains(component)) {
+			if (!inpoints.contains(component) && component.isState(State.RUNNING)) {
 				component.stop();
 			}
 		}

@@ -62,6 +62,13 @@ public class StreamWriteConnector extends AbstractWriteConnector {
 
   private IRecordWriter defaultRecordWriter = new StringRecordWriter();
 
+  public StreamWriteConnector() {
+  }
+
+  public StreamWriteConnector(String id) {
+    super(id);
+  }
+  
   // BEGIN Bean getters/setters
 
   public void setStreamWriter(IStreamWriter streamWriter) {

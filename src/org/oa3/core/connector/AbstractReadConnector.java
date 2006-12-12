@@ -57,6 +57,13 @@ public abstract class AbstractReadConnector extends Component implements IReadCo
 
   protected int timeout = DEFAULT_TIMEOUT;
 
+  public AbstractReadConnector() {
+  }
+  
+  public AbstractReadConnector(String id) {
+    super(id);
+  }
+  
   /**
    * This holds the polling configuration for this connector. It may be null, in which case polling is not configured.
    */

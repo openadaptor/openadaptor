@@ -51,6 +51,13 @@ public abstract class AbstractWriteConnector extends Component implements IWrite
 
   protected boolean connected;
 
+  protected AbstractWriteConnector() {
+  }
+
+  protected AbstractWriteConnector(String id) {
+    super(id);
+  }
+
   /**
    * True if connected.
    * 

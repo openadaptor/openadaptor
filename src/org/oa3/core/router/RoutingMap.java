@@ -200,7 +200,8 @@ public class RoutingMap implements IRoutingMap {
 		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
 			Object element = (Object) iterator.next();
 			if (!(element instanceof IMessageProcessor)) {
-				throw new RuntimeException("value " + element.toString() + " is not IMessageProcessor");
+				throw new RuntimeException("value " + element.toString() + "(" 
+            + element.getClass().getName() + ") is not IMessageProcessor");
 			}
 		}
 		return list;

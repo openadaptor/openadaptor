@@ -65,6 +65,13 @@ public class StreamReadConnector extends AbstractReadConnector {
 
   protected IRecordReader recordReader;
 
+  public StreamReadConnector() {
+  }
+
+  public StreamReadConnector(String id) {
+    super(id);
+  }
+  
   // BEGIN Bean getters/setters
 
   /**

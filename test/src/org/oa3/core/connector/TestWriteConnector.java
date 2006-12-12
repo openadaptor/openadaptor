@@ -47,91 +47,100 @@ import org.oa3.core.transaction.TestTransactionalResource;
 
 public class TestWriteConnector extends Component implements IWriteConnector, ITransactional {
 
-	private static final Log log = LogFactory.getLog(TestWriteConnector.class);
-	
-	private final List output = new ArrayList();
-	private List expectedOutput = new ArrayList();
-	private int exceptionFrequency = 0;
-	private int count;
+  private static final Log log = LogFactory.getLog(TestWriteConnector.class);
+
+  private boolean connected = false;
+
+  private final List output = new ArrayList();
+
+  private List expectedOutput = new ArrayList();
+
+  private int exceptionFrequency = 0;
+
+  private int count;
+
   private int expectedCommitCount = -1;
-	private TestTransactionalResource transactionalResource;
-  
-	public TestWriteConnector() {
-	}
 
-	public TestWriteConnector(String id) {
-		super(id);
-	}
-	
-	public void setExpectedOutput(Object output) {
-		expectedOutput.clear();
-		if (output instanceof Collection) {
-			expectedOutput.addAll((Collection)output);
-		} else {
-			expectedOutput.add(output);
-		}
-	}
-	
-	public void setExceptionFrequency(int frequency) {
-		this.exceptionFrequency = frequency;
-	}
-	
-	public Object deliver(Object[] records) {
-		
-		for (int i = 0; i < records.length; i++) {
-			count++;
-			if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
-				throw new RuntimeException("test");
-			}
-			record(records[i].toString());
-		}
-		return null;
-	}
+  private TestTransactionalResource transactionalResource;
 
-	public void connect() {
-		output.clear();
-		count = 0;
-	}
+  public TestWriteConnector() {
+  }
 
-	public void disconnect() {
-		if (!expectedOutput.equals(output)) {
-			log.error( getId() + " output was not expected output, switch debug on to see more detail");
-			if (log.isDebugEnabled()) {
-				log.debug(getId() + " output was...");
-				for (Iterator iter = output.iterator(); iter.hasNext();) {
-					log.debug(getId() + " " + iter.next());
+  public TestWriteConnector(String id) {
+    super(id);
+  }
 
-				}
-				log.debug(getId() + " expected output was...");
-				for (Iterator iter = expectedOutput.iterator(); iter.hasNext();) {
-					log.debug(getId() + " " + iter.next());
-
-				}
-			}
-			throw new RuntimeException("output was not expected output");
-		}
-    
-    if (transactionalResource != null) {
-      checkCommitCount();
-    }
-
-	}
-
-  private void checkCommitCount() {
-    if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {
-      throw new RuntimeException("expected commit count = " + expectedCommitCount 
-          + " actual = " + transactionalResource.getCommittedCount());
+  public void setExpectedOutput(Object output) {
+    expectedOutput.clear();
+    if (output instanceof Collection) {
+      expectedOutput.addAll((Collection) output);
+    } else {
+      expectedOutput.add(output);
     }
   }
 
-	private void record(String line) {
+  public void setExceptionFrequency(int frequency) {
+    this.exceptionFrequency = frequency;
+  }
+
+  public synchronized Object deliver(Object[] records) {
+
+    for (int i = 0; i < records.length; i++) {
+      count++;
+      if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
+        throw new RuntimeException("test");
+      }
+      record(records[i].toString());
+    }
+    return null;
+  }
+
+  public synchronized void connect() {
+    output.clear();
+    count = 0;
+    connected = true;
+  }
+
+  public synchronized void disconnect() {
+    if (connected) {
+      if (!expectedOutput.equals(output)) {
+        log.error(getId() + " output was not expected output, switch debug on to see more detail");
+        if (log.isDebugEnabled()) {
+          log.debug(getId() + " output was...");
+          for (Iterator iter = output.iterator(); iter.hasNext();) {
+            log.debug(getId() + " " + iter.next());
+
+          }
+          log.debug(getId() + " expected output was...");
+          for (Iterator iter = expectedOutput.iterator(); iter.hasNext();) {
+            log.debug(getId() + " " + iter.next());
+
+          }
+        }
+        throw new RuntimeException("output was not expected output");
+      }
+
+      if (transactionalResource != null) {
+        checkCommitCount();
+      }
+    }
+
+  }
+
+  private void checkCommitCount() {
+    if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {
+      throw new RuntimeException("expected commit count = " + expectedCommitCount + " actual = "
+          + transactionalResource.getCommittedCount());
+    }
+  }
+
+  private void record(String line) {
     log.debug("received [" + line + "]");
-		output.add(line);
+    output.add(line);
     if (transactionalResource != null) {
       transactionalResource.incrementRecordCount();
     }
-	}
-
+  }
 
   public Object getResource() {
     return transactionalResource;
@@ -140,7 +149,7 @@ public class TestWriteConnector extends Component implements IWriteConnector, IT
   public void setExpectedCommitCount(int expectedCommitCount) {
     this.expectedCommitCount = expectedCommitCount;
   }
-  
+
   public void setTransactional(boolean transactional) {
     if (transactional) {
       transactionalResource = new TestTransactionalResource();

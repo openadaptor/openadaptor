@@ -55,6 +55,13 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   /** JMS Connetion component that does all the real work. */
   private JMSConnection jmsConnection;
 
+  public JMSWriteConnector() {
+  }
+
+  public JMSWriteConnector(String id) {
+    super(id);
+  }
+  
   // Connector Interfaces
 
   /**

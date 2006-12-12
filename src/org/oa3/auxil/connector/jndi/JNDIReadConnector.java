@@ -56,9 +56,9 @@ import org.oa3.core.exception.ComponentException;
  * @see JNDISearch
  * @author Eddy Higgins
  */
-public class JNDIReader extends AbstractJNDIReader {
+public class JNDIReadConnector extends AbstractJNDIReadConnector {
   
-  private static final Log log = LogFactory.getLog(JNDIReader.class);
+  private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
 
   // internal state:
   /**
@@ -81,6 +81,14 @@ public class JNDIReader extends AbstractJNDIReader {
    * JNDIConnection which this reader will use
    */
   protected JNDIConnection jndiConnection;
+
+  public JNDIReadConnector() {
+  }
+
+  public JNDIReadConnector(String id) {
+    super(id);
+  }
+  
 
   // BEGIN Bean getters/setters
 

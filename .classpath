@@ -31,5 +31,9 @@
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="test/lib/dumbster.jar"/>
 	<classpathentry kind="lib" path="test/lib/log4j.jar"/>
+	<classpathentry kind="lib" path="test/lib/jonas_timer.jar"/>
+	<classpathentry kind="lib" path="test/lib/jotm_jrmp_stubs.jar"/>
+	<classpathentry kind="lib" path="test/lib/mockrunner-jdbc.jar"/>
+	<classpathentry kind="lib" path="test/lib/carol.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

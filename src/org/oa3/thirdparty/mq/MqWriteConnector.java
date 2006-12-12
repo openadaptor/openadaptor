@@ -52,6 +52,13 @@ public class MqWriteConnector extends AbstractWriteConnector {
    */
   private MqConnection connection;
 
+  public MqWriteConnector() {
+  }
+
+  public MqWriteConnector(String id) {
+    super(id);
+  }
+
   // Bean Properties
 
   /**

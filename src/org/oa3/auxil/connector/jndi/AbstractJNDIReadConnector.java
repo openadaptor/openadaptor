@@ -42,7 +42,14 @@ import org.oa3.core.connector.AbstractReadConnector;
 /**
  * Abstract base class for connectors which use JNDI searches.
  */
-public abstract class AbstractJNDIReader extends AbstractReadConnector {
+public abstract class AbstractJNDIReadConnector extends AbstractReadConnector {
+
+  protected AbstractJNDIReadConnector() {
+  }
+
+  protected AbstractJNDIReadConnector(String id) {
+    super(id);
+  }
   
   //private static final Log log = LogFactory.getLog(AbstractJNDIReader.class);
 

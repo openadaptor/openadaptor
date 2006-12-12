@@ -671,7 +671,7 @@ public class JMSConnection extends Component {
         subscriber = (((TopicSession) getSession()).createSubscriber(topic, messageSelector, noLocal));
       }
     } catch (JMSException e) {
-      throw new ComponentException("Unable to subscriber for Topic [" + destination + "]", e, this);
+      throw new ComponentException("Unable to subscribe for Topic [" + destination + "]", e, this);
     }
     log.info("Consumer initialized for JMSDestination=" + topic);
 

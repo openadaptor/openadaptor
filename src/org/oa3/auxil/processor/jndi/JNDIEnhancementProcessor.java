@@ -45,8 +45,8 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.jndi.AbstractJNDIReader;
-import org.oa3.auxil.connector.jndi.JNDIReader;
+import org.oa3.auxil.connector.jndi.AbstractJNDIReadConnector;
+import org.oa3.auxil.connector.jndi.JNDIReadConnector;
 import org.oa3.auxil.connector.jndi.JNDISearch;
 import org.oa3.auxil.connector.jndi.JNDIUtils;
 import org.oa3.auxil.orderedmap.IOrderedMap;
@@ -87,7 +87,7 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
     protected String[] configDefinedSearchAttributes; // derived from attributes property of embedded search property
 
     // bean properties:
-    protected AbstractJNDIReader reader;
+    protected AbstractJNDIReadConnector reader;
     protected Map incomingMap;
     protected Map outgoingMap;
     protected String recordKeyUsedAsSearchBase = null;
@@ -96,12 +96,12 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
     protected String valueIfDoesNotExist ="false";
 
     //BEGIN Bean getters/setters
-    public void setReader(JNDIReader reader) {
+    public void setReader(JNDIReadConnector reader) {
         this.reader=reader;
     }
 
-    public JNDIReader getReader() {
-        return (JNDIReader)reader;
+    public JNDIReadConnector getReader() {
+        return (JNDIReadConnector)reader;
     }
 
     public void setIncomingMap(Map incomingMap) {
@@ -225,7 +225,7 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
         IOrderedMap[] results=null;
         boolean treatMultiValuedAttributesAsArray=search.getTreatMultiValuedAttributesAsArray();
         String joinArraysWithSeparator=search.getJoinArraysWithSeparator();
-        NamingEnumeration current=search.execute(((JNDIReader)reader).getContext());
+        NamingEnumeration current=search.execute(((JNDIReadConnector)reader).getContext());
         ArrayList resultList=new ArrayList();
         while (current.hasMore()) {
             resultList.add(JNDIUtils.getOrderedMap((SearchResult)current.next(),treatMultiValuedAttributesAsArray,joinArraysWithSeparator));

@@ -63,6 +63,13 @@ public class JMSReadConnector extends AbstractReadConnector implements ITransact
   /** Current poll count. */
   private int pollsCompleted = 0;
 
+  public JMSReadConnector() {
+  }
+  
+  public JMSReadConnector(String id) {
+    super(id);
+  }
+  
   // BEGIN bean getters/setters
 
   /**

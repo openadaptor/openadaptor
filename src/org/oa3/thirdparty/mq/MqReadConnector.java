@@ -49,6 +49,13 @@ public class MqReadConnector extends AbstractReadConnector implements ITransacti
 
   protected MqConnection connection = null;
 
+  public MqReadConnector() {
+  }
+
+  public MqReadConnector(String id) {
+    super(id);
+  }
+
   // Bean Properties
 
   /**
