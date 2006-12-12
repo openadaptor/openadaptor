@@ -53,6 +53,9 @@ public class JDBCTransactionalResource implements ITransactionalResource {
     this.connection = connection;
   }
 
+  /**
+   * Determine if connection is transactional, if it is,start transaction
+   */
   public void begin() {
     try {
       if (!connection.isTransacted()) {
@@ -66,6 +69,9 @@ public class JDBCTransactionalResource implements ITransactionalResource {
     log.debug("JDBC Transaction begun");
   }
 
+  /**
+   * Commit transaction if connection is transactional
+   */
   public void commit() {
     try {
       if (!connection.isTransacted()) {
@@ -79,6 +85,9 @@ public class JDBCTransactionalResource implements ITransactionalResource {
     }
   }
 
+  /**
+   * Rollback transaction if connection is transactional
+   */
   public void rollback() {
     try {
       if (!connection.isTransacted()) {

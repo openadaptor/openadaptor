@@ -164,7 +164,7 @@ public class JDBCConnection extends Component {
    * @throws SQLException
    */
   public Connection connect() throws SQLException {
-    
+
     //Attempt to load jdbc driver class
     try {
       Class.forName(driver);
@@ -188,14 +188,29 @@ public class JDBCConnection extends Component {
     return connection;
   }
 
+  /**
+   * Begin database transaction by taking control of commits and rollbacks
+   *
+   * @throws SQLException
+   */
   protected void beginTransaction() throws SQLException {
     connection.setAutoCommit(false);
   }
 
+  /**
+   * Commit database transaction
+   *
+   * @throws SQLException
+   */
   protected void commitTransaction() throws SQLException {
     connection.commit();
   }
 
+  /**
+   * Roll back database transaction
+   *
+   * @throws SQLException
+   */
   protected void rollbackTransaction() throws SQLException {
     connection.rollback();
   }
