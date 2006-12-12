@@ -50,9 +50,9 @@ import org.oa3.core.exception.ComponentException;
  * 
  * @author Eddy Higgins
  */
-public class URLReadConnector extends AbstractStreamReader {
+public class URLReader extends AbstractStreamReader {
   
-  private static final Log log = LogFactory.getLog(URLReadConnector.class);
+  private static final Log log = LogFactory.getLog(URLReader.class);
 
   /**
    * This is the url which will be used to connect to.
@@ -110,11 +110,16 @@ public class URLReadConnector extends AbstractStreamReader {
    * @throws org.oa3.control.ComponentException
    */
   public void connect() throws ComponentException {
-    log.debug("Opening URL " + url);
     try {
 
-      urlConnection = url.openConnection();
-      _inputStream = urlConnection.getInputStream();
+      if (url != null) {
+        log.debug("Opening URL " + url);
+        urlConnection = url.openConnection();
+        _inputStream = urlConnection.getInputStream();
+      } else {
+        _inputStream = System.in;
+      }
+      
       /**
        * Flag the source of these records.
        */

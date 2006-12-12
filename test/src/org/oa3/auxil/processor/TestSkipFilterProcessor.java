@@ -37,7 +37,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 
 /**

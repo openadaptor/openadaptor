@@ -46,8 +46,6 @@ import org.oa3.core.lifecycle.ILifecycleComponent;
 import org.oa3.core.lifecycle.ILifecycleComponentContainer;
 import org.oa3.core.lifecycle.ILifecycleComponentManager;
 import org.oa3.core.lifecycle.State;
-import org.oa3.core.router.IRoutingMap;
-import org.oa3.core.router.Router;
 import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.TransactionManager;
 import org.oa3.util.Application;
@@ -70,22 +68,6 @@ public class Adaptor extends Application implements IMessageProcessor,ILifecycle
     transactionManager = new TransactionManager();
     inpoints=new ArrayList();
     components=new ArrayList();
-	}
-	
-  /**
-   * @deprecated - Routing map shouldn't be visible to Adaptor.
-   * @param routingMap
-   */
-	public Adaptor(final IRoutingMap routingMap) {
-		this();
-		this.setRoutingMap(routingMap);
-	}
-	/**
-   *@deprecated - RoutingMap shouldn't be visible to Adaptor. 
-   * @param routingMap
-	 */
-	public void setRoutingMap(final IRoutingMap routingMap) {
-		setMessageProcessor(new Router(routingMap));
 	}
 	
 	public void setMessageProcessor(final IMessageProcessor processor) {

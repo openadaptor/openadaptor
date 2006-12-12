@@ -35,8 +35,6 @@ package org.oa3.core.processor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.oa3.core.exception.ProcessorException;
-
 /*
  * File: $Header: /cvs/oa3/test/src/org/oa3/processor/mock/MockExceptionCallback.java,v 1.2 2006/10/20 15:25:24 higginse
  * Exp $ Rev: $Revision: 1.2 $ Created Dec 9, 2005 by Kevin Scully
@@ -49,6 +47,7 @@ public class MockExceptionCallback {
     return payloadExceptionList;
   }
 
+  /*
   private class PayloadExceptionEntry {
     Object payload;
 
@@ -67,5 +66,6 @@ public class MockExceptionCallback {
       return exception;
     }
   }
+  */
 
 }

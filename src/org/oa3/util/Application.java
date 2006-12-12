@@ -155,7 +155,7 @@ public class Application {
         PropertiesPoster.post(url, props);
         log.info("posted system properties to " + url);
       } catch (Exception e) {
-        log.warn("failed to post system properties", e);
+        log.warn("failed to post system properties : " + e.getMessage());
       }
     } else {
       log.info("registration url property (" + PROPERTY_REGISTRATION_URL + ") is not configured");

@@ -42,6 +42,7 @@ import org.oa3.core.adaptor.AdaptorOutpoint;
 import org.oa3.core.connector.TestReadConnector;
 import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.processor.TestProcessor;
+import org.oa3.core.router.Router;
 import org.oa3.core.router.RoutingMap;
 
 import junit.framework.TestCase;
@@ -98,7 +99,7 @@ public class ConnectorAndProcessorTestCase extends TestCase {
 		TestWriteConnector discardOutpoint = new TestWriteConnector("d");
 		discardOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("x", 1));
 
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
 		processMap.put(inpoint, outpoint);
@@ -110,10 +111,11 @@ public class ConnectorAndProcessorTestCase extends TestCase {
 
 		Map discardMap = new HashMap();
 		discardMap.put(outpoint, discardOutpoint);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -139,15 +141,16 @@ public class ConnectorAndProcessorTestCase extends TestCase {
 		outconnector.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", maxSend));
 		outpoint.setConnector(outconnector);
 		
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
 		processMap.put(inpoint, outpoint);
 		routingMap.setProcessMap(processMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -173,15 +176,16 @@ public class ConnectorAndProcessorTestCase extends TestCase {
 		TestProcessor processor = new TestProcessor("p");
 		outpoint.setProcessor(processor);
 		
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
 		processMap.put(inpoint, outpoint);
 		routingMap.setProcessMap(processMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor

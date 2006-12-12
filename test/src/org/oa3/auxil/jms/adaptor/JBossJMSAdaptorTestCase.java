@@ -15,7 +15,7 @@ import javax.management.ObjectName;
 import junit.framework.TestCase;
 
 import org.oa3.auxil.connector.iostream.FileReaderTestCase;
-import org.oa3.auxil.connector.iostream.reader.FileReadConnector;
+import org.oa3.auxil.connector.iostream.reader.FileReader;
 import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
 import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
 import org.oa3.auxil.connector.iostream.writer.FileWriter;
@@ -31,6 +31,7 @@ import org.oa3.core.adaptor.Adaptor;
 import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.jmx.MBeanServer;
 import org.oa3.core.lifecycle.LifecycleComponent;
+import org.oa3.core.router.Router;
 import org.oa3.core.router.RoutingMap;
 
 public class JBossJMSAdaptorTestCase extends TestCase {
@@ -56,7 +57,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     StreamReadConnector inpoint = new StreamReadConnector();
     inpoint.setId("FileIn");
 
-    FileReadConnector fileReader = new FileReadConnector();
+    FileReader fileReader = new FileReader();
     fileReader.setPath(filename);
     inpoint.setStreamReader(fileReader);
     inpoint.setRecordReader(new StringRecordReader());
@@ -72,15 +73,16 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     outpoint.setId("JmsOut");
     outpoint.setJmsConnection(connection);
 
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
     processMap.put(inpoint, outpoint);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor
@@ -109,7 +111,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     // create adaptor
     Adaptor adaptor =  new Adaptor();
 
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
     List recipients = new ArrayList();
@@ -117,9 +119,10 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     recipients.add(new Stopper(adaptor, stopRecord, 2));
     processMap.put(inpoint, recipients);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
-    // set adaptor routing
-    adaptor.setRoutingMap(routingMap);
+    // create adaptor
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor
@@ -143,15 +146,16 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     // create outpoint
     TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
     
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
     processMap.put(inpoint, outpoint);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
 
     // create mbean server and register adaptor

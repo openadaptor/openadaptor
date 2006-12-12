@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="src" output="example/classes" path="example/src"/>
 	<classpathentry kind="src" output="stub/classes" path="stub/src"/>
 	<classpathentry kind="src" output="test/classes" path="test/src"/>
 	<classpathentry kind="src" output="spring/classes" path="spring/src"/>

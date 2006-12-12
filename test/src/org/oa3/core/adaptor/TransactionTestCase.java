@@ -7,6 +7,7 @@ import org.oa3.core.adaptor.Adaptor;
 import org.oa3.core.connector.TestReadConnector;
 import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.processor.TestProcessor;
+import org.oa3.core.router.Router;
 import org.oa3.core.router.RoutingMap;
 
 import junit.framework.TestCase;
@@ -32,17 +33,18 @@ public class TransactionTestCase extends TestCase {
     outpoint.setTransactional(true);
     outpoint.setExpectedCommitCount(5);
    
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
     processMap.put(inpoint, processor);
     processMap.put(processor, outpoint);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
 
     // run adaptor
@@ -72,17 +74,18 @@ public class TransactionTestCase extends TestCase {
     outpoint.setTransactional(true);
     outpoint.setExpectedCommitCount(5);
    
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
     processMap.put(inpoint, processor);
     processMap.put(processor, outpoint);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
 
     // run adaptor
@@ -115,7 +118,7 @@ public class TransactionTestCase extends TestCase {
     TestWriteConnector errorOutpoint = new TestWriteConnector("e");
     errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
 
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
@@ -126,10 +129,11 @@ public class TransactionTestCase extends TestCase {
     Map exceptionMap = new HashMap();
     exceptionMap.put("java.lang.Exception", errorOutpoint);
     routingMap.setExceptionMap(exceptionMap);
-
+    Router router = new Router(routingMap);
+    
     // create adaptor
     Adaptor adaptor = new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
 
     // run adaptor
@@ -161,7 +165,7 @@ public class TransactionTestCase extends TestCase {
     inpoint.setTransactional(true);
     inpoint.setExpectedCommitCount(2);
 
-    // create routing map
+    // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
@@ -171,10 +175,11 @@ public class TransactionTestCase extends TestCase {
     
     Map exceptionMap = new HashMap();
     routingMap.setExceptionMap(exceptionMap);
-
+    Router router = new Router(routingMap);
+    
     // create adaptor
     Adaptor adaptor = new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
 
     // run adaptor

@@ -83,6 +83,7 @@ public class MBeanServer implements javax.management.MBeanServer {
     HtmlAdaptorServer html = new HtmlAdaptorServer(port);
     try {
 			mServer.registerMBean(html, new ObjectName("jmx:id=http"));
+      log.info("starting jmx http adaptor on port " + port);
 			html.start();
     } catch(Exception e) {
     	log.error("failed to start HtmlAdaptorServer", e);

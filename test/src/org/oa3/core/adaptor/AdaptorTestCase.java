@@ -46,6 +46,7 @@ import org.oa3.core.adaptor.AdaptorOutpoint;
 import org.oa3.core.connector.TestReadConnector;
 import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.processor.TestProcessor;
+import org.oa3.core.router.Router;
 import org.oa3.core.router.RoutingMap;
 
 public class AdaptorTestCase extends TestCase {
@@ -74,10 +75,11 @@ public class AdaptorTestCase extends TestCase {
 		Map processMap = new HashMap();
 		processMap.put(inpoint, outpoint);
 		routingMap.setProcessMap(processMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create router
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -108,15 +110,16 @@ public class AdaptorTestCase extends TestCase {
 		}
 		outpoint.setExpectedOutput(output);
 		
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
 		processMap.put(inpoint, outpoint);
 		routingMap.setProcessMap(processMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -143,16 +146,17 @@ public class AdaptorTestCase extends TestCase {
 		TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
 		outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
 		
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
 		processMap.put(inpoint, processor);
 		processMap.put(processor, outpoint);
 		routingMap.setProcessMap(processMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -213,10 +217,11 @@ public class AdaptorTestCase extends TestCase {
 		exceptionMap.put("java.lang.NullPointerException", npeOutpoint);
 		exceptionMap.put("java.lang.Exception", errOutpoint);
 		routingMap.setExceptionMap(exceptionMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -281,10 +286,11 @@ public class AdaptorTestCase extends TestCase {
 		discarder2Recipients.add(discard3);
 		discardMap.put(discarder2, discarder2Recipients);
 		routingMap.setDiscardMap(discardMap);
-		
-		// create adaptor
-		Adaptor adaptor =  new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor =  new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 		
 		// run adaptor
@@ -316,10 +322,11 @@ public class AdaptorTestCase extends TestCase {
     processMap.put(inpoint2, processor2);
     processMap.put(processor2, outpoint2);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor
@@ -360,10 +367,11 @@ public class AdaptorTestCase extends TestCase {
     processMap.put(processor1, outpoint1);
     processMap.put(inpoint2, processor1);
     routingMap.setProcessMap(processMap);
+    Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setRoutingMap(routingMap);
+    adaptor.setMessageProcessor(router);
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor

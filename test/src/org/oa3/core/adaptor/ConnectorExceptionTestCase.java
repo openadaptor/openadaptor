@@ -40,6 +40,7 @@ import org.oa3.core.adaptor.Adaptor;
 import org.oa3.core.connector.TestReadConnector;
 import org.oa3.core.connector.TestWriteConnector;
 import org.oa3.core.processor.TestProcessor;
+import org.oa3.core.router.Router;
 import org.oa3.core.router.RoutingMap;
 
 import junit.framework.TestCase;
@@ -65,7 +66,7 @@ public class ConnectorExceptionTestCase extends TestCase {
 		TestWriteConnector errorOutpoint = new TestWriteConnector("e");
 		errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
 
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
@@ -76,10 +77,11 @@ public class ConnectorExceptionTestCase extends TestCase {
 		Map exceptionMap = new HashMap();
 		exceptionMap.put("java.lang.Exception", errorOutpoint);
 		routingMap.setExceptionMap(exceptionMap);
-
-		// create adaptor
-		Adaptor adaptor = new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 
 		// run adaptor
@@ -106,7 +108,7 @@ public class ConnectorExceptionTestCase extends TestCase {
 		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 1));
 		outpoint.setExceptionFrequency(2);
 
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
@@ -116,10 +118,11 @@ public class ConnectorExceptionTestCase extends TestCase {
 		
 		Map exceptionMap = new HashMap();
 		routingMap.setExceptionMap(exceptionMap);
-
-		// create adaptor
-		Adaptor adaptor = new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 
 		// run adaptor
@@ -149,7 +152,7 @@ public class ConnectorExceptionTestCase extends TestCase {
 		TestWriteConnector errorOutpoint = new TestWriteConnector("e");
 		errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 0));
 
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
@@ -160,10 +163,11 @@ public class ConnectorExceptionTestCase extends TestCase {
 		Map exceptionMap = new HashMap();
 		exceptionMap.put("java.lang.Exception", errorOutpoint);
 		routingMap.setExceptionMap(exceptionMap);
-
-		// create adaptor
-		Adaptor adaptor = new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 
 		// run adaptor
@@ -188,7 +192,7 @@ public class ConnectorExceptionTestCase extends TestCase {
 		TestWriteConnector outpoint = new TestWriteConnector("o");
 		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 4));
 
-		// create routing map
+		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
@@ -198,10 +202,11 @@ public class ConnectorExceptionTestCase extends TestCase {
 		
 		Map exceptionMap = new HashMap();
 		routingMap.setExceptionMap(exceptionMap);
-
-		// create adaptor
-		Adaptor adaptor = new Adaptor();
-		adaptor.setRoutingMap(routingMap);
+    Router router = new Router(routingMap);
+    
+    // create adaptor
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
 		adaptor.setRunInpointsInCallingThread(true);
 
 		// run adaptor

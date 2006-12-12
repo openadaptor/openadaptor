@@ -41,22 +41,22 @@ import junit.framework.TestCase;
 public class AdaptorTestCase extends TestCase {
 
 	public void test1() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "Adaptor");
 	}
 	
 	public void test2() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "Adaptor");
 	}
 	
 	public void test3() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "Adaptor");
 	}
 	
 	public void test4() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "Adaptor");
 	}
 
 	public void test5() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "adaptor");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "Adaptor");
 	}
 }

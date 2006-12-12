@@ -10,7 +10,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.iostream.reader.FileReadConnector;
+import org.oa3.auxil.connector.iostream.reader.FileReader;
 import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
 import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
 
@@ -21,7 +21,7 @@ public class FileReaderTestCase extends TestCase {
   public void testSingleRecord() {
     StreamReadConnector connector = new StreamReadConnector();
 
-    FileReadConnector streamReader = new FileReadConnector();
+    FileReader streamReader = new FileReader();
     List input = new ArrayList();
     input.add("larry");
     input.add("curly");
@@ -55,7 +55,7 @@ public class FileReaderTestCase extends TestCase {
   public void testLineRecords() {
     StreamReadConnector connector = new StreamReadConnector();
 
-    FileReadConnector streamReader = new FileReadConnector();
+    FileReader streamReader = new FileReader();
     List input = new ArrayList();
     input.add("larry");
     input.add("curly");
