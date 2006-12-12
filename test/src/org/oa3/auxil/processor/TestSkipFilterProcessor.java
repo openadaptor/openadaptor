@@ -95,23 +95,17 @@ public class TestSkipFilterProcessor extends TestCase {
     assertEquals(new Integer(4), cp.records2skip.get(3));
     assertEquals(new Integer(5), cp.records2skip.get(4));
 
+    List validationExceptions=new ArrayList();
     // non existant records: 0
     cp.setSkipRecords(new String[] { "0" });
-    try {
-      cp.validate(null);
-      fail("Failed to detect zero'th record cannot be skipped");
-    } catch (ComponentException e) {
-      assertTrue(true);
-    }
+    cp.validate(validationExceptions);
+    assertTrue("Failed to detect zero'th record cannot be skipped",validationExceptions.size()>0);
 
+    validationExceptions.clear();
     // non existant records: -1
     cp.setSkipRecords(new String[] { "-1" });
-    try {
-      cp.validate(null);
-      fail("Failed to detect negative record cannot be skipped");
-    } catch (ComponentException e) {
-      assertTrue(true);
-    }
+    cp.validate(validationExceptions);
+    assertTrue("Failed to detect negative record cannot be skipped",validationExceptions.size()>0);
   }
 
   private Object[] processBatch(Object[] recordBatch) {
