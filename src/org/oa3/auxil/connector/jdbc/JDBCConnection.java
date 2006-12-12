@@ -38,6 +38,9 @@ package org.oa3.auxil.connector.jdbc;
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oa3.core.Component;
+
+import javax.sql.XAConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -49,7 +52,7 @@ import java.util.Properties;
  * It is little more than a thin wrapper around a java.sql.Connection.
  * @author Eddy Higgins.
  */
-public class JDBCConnection {
+public class JDBCConnection extends Component {
 
   private static final Log log = LogFactory.getLog(JDBCConnection.class.getName());
 
@@ -57,8 +60,10 @@ public class JDBCConnection {
   private String url;
   private String username;
   private String password;
-
-
+  private Connection connection = null;
+  private boolean isTransacted = false;
+  /** transactional resource, can either be XAResource or ITransactionalResource */
+  private Object transactionalResource = null;
   /**
    * The JDBCConnection class can be initialised with all required resources
    * @param driver
@@ -127,6 +132,30 @@ public class JDBCConnection {
    */
   public String getPassword() { return password; }
 
+  /**
+   * Is JDBC Connection transacted
+   *
+   * @return boolean
+   */
+  public boolean isTransacted() {
+    return isTransacted;
+  }
+
+  /**
+   * Set connection to be transacted
+   */
+  public void setTransacted(boolean transacted) {
+    this.isTransacted = transacted;
+  }
+
+  /**
+   * returns transactional resource, can either be XAResource or ITransactionalResource
+   *
+   * @return transactionalResource
+   */
+  public Object getTransactionalResource() {
+    return transactionalResource;
+  }
 
   /**
    * Instantiate the JDBC driver and set up connection to database using credentials
@@ -135,8 +164,7 @@ public class JDBCConnection {
    * @throws SQLException
    */
   public Connection connect() throws SQLException {
-    Connection connection = null;
-
+    
     //Attempt to load jdbc driver class
     try {
       Class.forName(driver);
@@ -152,6 +180,23 @@ public class JDBCConnection {
 
     log.info("Connecting to " + url + " as " + username);
     connection = DriverManager.getConnection(url, props);
+
+    if (connection instanceof XAConnection) {
+      transactionalResource = ((XAConnection)connection).getXAResource();
+    }
+
     return connection;
+  }
+
+  protected void beginTransaction() throws SQLException {
+    connection.setAutoCommit(false);
+  }
+
+  protected void commitTransaction() throws SQLException {
+    connection.commit();
+  }
+
+  protected void rollbackTransaction() throws SQLException {
+    connection.rollback();
   }
 }

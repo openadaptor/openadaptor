@@ -65,7 +65,6 @@ public interface IJDBCStatement {
    *
    * It then executes this sql against the database.
    *
-   * @param om Ordered Map
    * @param connection JDBC connection
    * @return number of rows updated
    * @throws ComponentException
