@@ -143,6 +143,8 @@
     </delete>
   </target>
 
+  <target name="test.clean" depends="recompile.all, test"/>
+  
   <target name="test" depends="compile.all" description="run tests">
     <junit>
       <classpath refid="classpath.test"/>
