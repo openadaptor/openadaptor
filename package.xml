@@ -64,7 +64,7 @@
     <copy todir="${dir.package.example}">
       <fileset dir="${dir.example}">
         <include name="README*"/>
-       <include name="spring/**"/>
+        <include name="spring/**"/>
         <include name="src/**"/>
       </fileset>
     </copy>
@@ -74,5 +74,5 @@
       <fileset dir="${dir.spring.src}"/>
     </javadoc>
   </target>
-
+  
 </project>

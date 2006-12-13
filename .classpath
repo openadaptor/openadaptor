@@ -36,5 +36,7 @@
 	<classpathentry kind="lib" path="lib/jmxri.jar"/>
 	<classpathentry kind="lib" path="lib/jmxtools.jar"/>
 	<classpathentry kind="lib" path="lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/jdom.jar"/>
+	<classpathentry kind="lib" path="lib/rome.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
