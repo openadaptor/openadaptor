@@ -212,7 +212,7 @@ public class JDBCMessageReadConnector extends JDBCReadConnector  {
 
     callableStatement = "{ call " + messageStoredProcedure + "(?,?) }";
 
-    CallableStatement cs = connection.prepareCall(callableStatement);
+    CallableStatement cs = jdbcConnection.getConnection().prepareCall(callableStatement);
     cs.setInt(1,Integer.parseInt(messageServiceID));
     cs.setString(2,updateMessageStatus);
     return cs.executeQuery();
@@ -250,7 +250,7 @@ public class JDBCMessageReadConnector extends JDBCReadConnector  {
     log.debug("Executing '" + applicationCallableStatement + "' to retrieve data");
 
 
-    messageDataCS = connection.prepareCall(applicationCallableStatement);
+    messageDataCS = jdbcConnection.getConnection().prepareCall(applicationCallableStatement);
 
     //Build up parameter list for callable statement
     int parameterCount=1;

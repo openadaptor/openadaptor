@@ -105,6 +105,13 @@ public class JDBCConnection extends Component {
   public void setPassword(String password) {this.password = password;}
 
   /**
+   * Set JDBC connection
+   */
+  public void setConnection(Connection connection) {
+    this.connection = connection;
+  }
+
+  /**
    * Return JDBC driver string
    *
    * @return JDBC driver string
@@ -131,6 +138,15 @@ public class JDBCConnection extends Component {
    * @return database password credential
    */
   public String getPassword() { return password; }
+
+  /**
+   * JDBC connection
+   *
+   * @return connection
+   */
+  public Connection getConnection() {
+    return connection;
+  }
 
   /**
    * Is JDBC Connection transacted
@@ -160,10 +176,9 @@ public class JDBCConnection extends Component {
   /**
    * Instantiate the JDBC driver and set up connection to database using credentials
    *
-   * @return jdbc connection
    * @throws SQLException
    */
-  public Connection connect() throws SQLException {
+  public void connect() throws SQLException {
 
     //Attempt to load jdbc driver class
     try {
@@ -184,8 +199,25 @@ public class JDBCConnection extends Component {
     if (connection instanceof XAConnection) {
       transactionalResource = ((XAConnection)connection).getXAResource();
     }
+  }
 
-    return connection;
+  /**
+   * Close the connection.
+   */
+  public void disconnect() throws SQLException{
+    if (connection != null) {
+      connection.close();
+      connection=null;
+    }
+  }
+
+  /**
+   * True if there is an existing connection.
+   *
+   * @return boolean
+   */
+  public boolean isConnected() {
+    return (connection != null);
   }
 
   /**

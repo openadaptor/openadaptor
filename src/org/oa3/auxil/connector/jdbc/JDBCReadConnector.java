@@ -32,12 +32,10 @@
  */
 package org.oa3.auxil.connector.jdbc;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.orderedmap.IOrderedMap;
@@ -57,14 +55,11 @@ public class JDBCReadConnector extends AbstractReadConnector {
 
   protected String sql;
   protected JDBCConnection jdbcConnection;
-  protected Connection connection;
   protected ResultSet rs = null;
   protected ResultSetMetaData rsmd=null;
   protected boolean rowAvailable=false;
-
   protected boolean queryHasExecuted;
-  protected boolean istransacted=false;
-  //protected ITransactionSpec transactionspec;
+
 
   //BEGIN Bean getters/setters
 
@@ -77,11 +72,6 @@ public class JDBCReadConnector extends AbstractReadConnector {
    *  Set sql statement to be executed
    */
   public void setSql(String sql) { this.sql = sql;}
-
-  /**
-   * Is this connector transacted
-   */
-  public void setIsTransacted(boolean transacted) { istransacted = transacted; }
 
   /**
    * Returns sql statement to be executed
@@ -97,10 +87,6 @@ public class JDBCReadConnector extends AbstractReadConnector {
    */
   public JDBCConnection getJdbcConnection()     { return jdbcConnection; }
 
-  /**
-   * @return boolean, is this connector transacted
-   */
-  public boolean getIsTransacted() { return istransacted; }
 
   /**
    * Returns transaction spec
@@ -121,9 +107,7 @@ public class JDBCReadConnector extends AbstractReadConnector {
   public void connect() {
     log.debug("Connector: [" + getId() + "] connecting ....");
     try {
-      connection = jdbcConnection.connect();
-      //Attempt to set up transaction spec
-      //transactionspec = createITransactionSpec();
+      jdbcConnection.connect();
     }
     catch (SQLException sqle) {
       throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
@@ -137,15 +121,15 @@ public class JDBCReadConnector extends AbstractReadConnector {
    *
    * @throws ComponentException
    */
-  public void disconnect() {
+  public void disconnect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
     if (rs != null) {
       try {
         rs.close();
-        connection.close();
+        jdbcConnection.disconnect();
       }
       catch (SQLException sqle) {
-        log.warn(sqle.getMessage());
+        throw new ComponentException("Failed to disconnect JDBC connection - " + sqle.toString(), sqle, this);
       }
     }
     connected = false;
@@ -254,37 +238,10 @@ public class JDBCReadConnector extends AbstractReadConnector {
    * @throws SQLException
    */
   private ResultSet getResults(String sql) throws SQLException {
-    Statement s = connection.createStatement();
+    Statement s = jdbcConnection.getConnection().createStatement();
     log.info("Executing SQL: " + sql);
     return (s.executeQuery(sql));
   }
 
-  /**
-   * If istransacted property is set, attempt to get a transaction spec from JDBC connection
-   *
-   * @return Transaction spec
-   * @throws SQLException
-   */
 
-  //TODO: Reimplement transaction
-  /*
-  protected ITransactionSpec createITransactionSpec() throws SQLException {
-    ITransactionSpec spec = null;
-    if ( istransacted) {
-      spec = new JtaTransactionSpec();
-      try {
-        spec.setResource(((JDBCXAConnection) getJdbcConnection()).getXaDataSource().getXAConnection().getXAResource());
-      } catch (SQLException se) {
-        throw new SQLException("Failed to get JTA transaction spec from JDBC connection - " + se);
-      }
-      spec.setTimeout(getTimeout());
-
-    } else {
-      spec = new DefaultTransactionSpec();
-      spec.setTimeout(getTimeout());
-    }
-    return spec;
-
-  }
-  */
 }

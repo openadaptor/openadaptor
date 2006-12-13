@@ -42,8 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
 import org.oa3.core.exception.ComponentException;
 import org.oa3.auxil.orderedmap.IOrderedMap;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.List;
@@ -69,7 +67,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
   private String delimiter = "$";
   private IJDBCStatement jdbcStatement;
   private JDBCConnection jdbcConnection;
-  private Connection connection;
   private Map omKeyToDBTableColumnMapping;
   private List omKeyToStoredProcParameterMapping;
 
@@ -129,20 +126,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
    */
   public void setJdbcConnection(JDBCConnection jdbcConnection) {
     this.jdbcConnection = jdbcConnection;
-  }
-
-  /**
-   * @return JDBC Connection
-   */
-  public Connection getConnection() {
-    return connection;
-  }
-
-  /**
-   * Set JDBC Connection
-   */
-  public void setConnection(Connection connection) {
-    this.connection = connection;
   }
 
   /**
@@ -208,7 +191,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
       Object record =records[recordIndex];
       if (record instanceof IOrderedMap) {
         om = (IOrderedMap) record;
-        updateCount += jdbcStatement.executeStatement(om,connection);
+        updateCount += jdbcStatement.executeStatement(om,jdbcConnection.getConnection());
       }
       else {
         throw new ComponentException("Malformed data for writer - not IOrderedMap", this);
@@ -220,13 +203,12 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
   }
 
   /**
-   * Set up JDBC connection and transaction spec
+   * Set up JDBC connection
    */
   public void connect() throws ComponentException{
     log.debug("Connector: [" + getId() + "] connecting ....");
     try {
-      connection = jdbcConnection.connect();
-      //transactionspec = createITransactionSpec();
+      jdbcConnection.connect();
       configureWriteMechanism();
     }
     catch (SQLException sqle) {
@@ -247,13 +229,13 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
 
     if (!(tableName.equals("")) && storedProcName.equals("") && sqlStatement.equals("")) {
       writeMechanism=DATABASE_TABLE;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, tableName, delimiter, omKeyToDBTableColumnMapping, connection);
+      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, tableName, delimiter, omKeyToDBTableColumnMapping, jdbcConnection.getConnection());
     } else if (tableName.equals("") && !(storedProcName.equals("")) && sqlStatement.equals("")) {
       writeMechanism=STORED_PROCEDURE;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, storedProcName, delimiter, omKeyToStoredProcParameterMapping, connection);
+      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, storedProcName, delimiter, omKeyToStoredProcParameterMapping, jdbcConnection.getConnection());
     } else if (tableName.equals("") && storedProcName.equals("") && !(sqlStatement.equals(""))) {
       writeMechanism=SQL_STATEMENT;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, sqlStatement, delimiter, null, connection);
+      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, sqlStatement, delimiter, null, jdbcConnection.getConnection());
     } else {
       throw new ComponentException("No valid write mechanism, or more than one write mechanism configured", this);
     }
@@ -267,13 +249,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
    */
   public void disconnect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
-    if (connection != null) {
-      try {
-        connection.close();
-      }
-      catch (SQLException sqle) {
-        log.warn(sqle.getMessage());
-      }
+
+    try {
+      jdbcConnection.disconnect();
+    } catch (SQLException sqle) {
+      throw new ComponentException("Failed to disconnect JDBC connection - " + sqle.toString(), sqle, this);
     }
     connected = false;
     log.info("Connector: [" + getId() + "] disconnected");
