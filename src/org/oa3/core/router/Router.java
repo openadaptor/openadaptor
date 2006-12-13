@@ -69,7 +69,6 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
 	public void setRoutingMap(final IRoutingMap routingMap) {
 		this.routingMap = routingMap;
 	}
-	//BEGIN implementation of ILifecycleComponentContainer 
   
 	public void setComponentManager(ILifecycleComponentManager manager) {
     if (componentManager!=null){
@@ -78,7 +77,6 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
     this.componentManager=manager;
     registerComponents();
   }
-  //END   implementation of ILifecycleComponentContainer 
 
   public Response process(Message msg) {
 		return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));

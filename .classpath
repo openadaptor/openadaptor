@@ -7,9 +7,6 @@
 	<classpathentry kind="src" output="spring/classes" path="spring/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jmxremote.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jmxtools.jar"/>
 	<classpathentry exported="true" kind="lib" path="spring/lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
@@ -31,10 +28,13 @@
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="test/lib/dumbster.jar"/>
-	<classpathentry kind="lib" path="test/lib/log4j.jar"/>
 	<classpathentry kind="lib" path="test/lib/jonas_timer.jar"/>
 	<classpathentry kind="lib" path="test/lib/jotm_jrmp_stubs.jar"/>
 	<classpathentry kind="lib" path="test/lib/mockrunner-jdbc.jar"/>
 	<classpathentry kind="lib" path="test/lib/carol.jar"/>
+	<classpathentry kind="lib" path="lib/jmxremote.jar"/>
+	<classpathentry kind="lib" path="lib/jmxri.jar"/>
+	<classpathentry kind="lib" path="lib/jmxtools.jar"/>
+	<classpathentry kind="lib" path="lib/log4j.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

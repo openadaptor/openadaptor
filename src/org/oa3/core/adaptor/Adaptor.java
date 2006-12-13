@@ -50,233 +50,238 @@ import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.TransactionManager;
 import org.oa3.util.Application;
 
-public class Adaptor extends Application implements IMessageProcessor,ILifecycleComponentManager, Runnable, AdaptorMBean {
+public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
+    AdaptorMBean {
 
-	private static final Log log = LogFactory.getLog(Adaptor.class);
-	
-	private IMessageProcessor processor;
-	private List inpoints;
-	private List components;
-	private boolean runInpointsInCallingThread = false;
-	private Thread[] inpointThreads = new Thread[0];
-	private State state = State.CREATED;
+  private static final Log log = LogFactory.getLog(Adaptor.class);
+
+  private IMessageProcessor processor;
+
+  private List inpoints;
+
+  private List components;
+
+  private boolean runInpointsInCallingThread = false;
+
+  private Thread[] inpointThreads = new Thread[0];
+
+  private State state = State.CREATED;
+
   private ITransactionManager transactionManager;
-  private boolean started=false;
-	
-	public Adaptor() {
-		super();
+
+  private boolean started = false;
+
+  public Adaptor() {
+    super();
     transactionManager = new TransactionManager();
-    inpoints=new ArrayList();
-    components=new ArrayList();
-	}
-	
-	public void setMessageProcessor(final IMessageProcessor processor) {
-		if (this.processor != null) {
-			throw new RuntimeException("message processor has already been set");
-		}
-		this.processor = processor;
+    inpoints = new ArrayList();
+    components = new ArrayList();
+  }
+
+  public void setMessageProcessor(final IMessageProcessor processor) {
+    if (this.processor != null) {
+      throw new RuntimeException("message processor has already been set");
+    }
+    this.processor = processor;
     if (processor instanceof ILifecycleComponentContainer) {
       log.debug("MessageProcessor is also a component container. Registering with processor.");
-      ((ILifecycleComponentContainer)processor).setComponentManager(this);
+      ((ILifecycleComponentContainer) processor).setComponentManager(this);
     }
-	}
-	
-	public void setRunInpointsInCallingThread(final boolean runInpointsInCallingThread) {
-		this.runInpointsInCallingThread = runInpointsInCallingThread;
-	}
+  }
+
+  public void setRunInpointsInCallingThread(final boolean runInpointsInCallingThread) {
+    this.runInpointsInCallingThread = runInpointsInCallingThread;
+  }
 
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
-  
+
   public ITransactionManager getTransactionManager() {
     return transactionManager;
   }
-  //BEGIN Implementation of ILifecycleComponentManager
-  
+
   public void register(ILifecycleComponent component) {
     if (started) {
       throw new RuntimeException("Cannot register component with running adaptor");
     }
-    log.debug("Adaptor is registering component "+component);
     components.add(component);
-   if (component instanceof IAdaptorInpoint) {
-      log.debug("Adaptor is registering inpoint"+component);
+    if (component instanceof IAdaptorInpoint) {
+      log.debug("inpoint " + component.getId() + " registered with adaptor");
       inpoints.add(component);
-      ((IAdaptorInpoint)component).setAdaptor(this);
-   }
+      ((IAdaptorInpoint) component).setAdaptor(this);
+    } else {
+      log.debug("component " + component.getId() + " registered with adaptor");
+    }
   }
 
   public ILifecycleComponent unregister(ILifecycleComponent component) {
-    ILifecycleComponent match=null;
+    ILifecycleComponent match = null;
     if (started) {
       throw new RuntimeException("Cannot unregister component from running adaptor");
     }
-    if (components.remove(component)){
-      match=component;
+    if (components.remove(component)) {
+      match = component;
       inpoints.remove(component);
     }
     return match;
   }
-  //END   Implementation of ILifecycleComponentManager
 
-  //END Implementation of ILifecycleComponentManager  
-	public Response process(Message msg) {
-		return processor.process(msg);
-	}
+  public Response process(Message msg) {
+    return processor.process(msg);
+  }
 
-	public void start() {
-		validate();
-    started=true;
-		startNonInpoints();
-		startInpoints();
-		
-		if (runInpointsInCallingThread) {
-			runInpoint();
-		} else {
-			runInpointThreads();
-		}
-		
-		log.info("waiting for inpoints to stop");
-		waitForInpointsToStop();
-		log.info("all inpoints are stopped");
-		stopNonInpoints();
-		if (getExitCode() != 0) {
-			log.fatal("adaptor exited with " + getExitCode());
-		}
-	}
+  public void start() {
+    validate();
+    started = true;
+    startNonInpoints();
+    startInpoints();
 
-	public void stop() {
-		stopInpoints();
-		stopNonInpoints();
-		for (Iterator iter = components.iterator(); iter.hasNext();) {
-			ILifecycleComponent component  = (ILifecycleComponent) iter.next();
-			component.waitForState(State.STOPPED);
-		}
-	}
+    if (runInpointsInCallingThread) {
+      runInpoint();
+    } else {
+      runInpointThreads();
+    }
 
-	public void interrupt() {
-		for (int i = 0; i < inpointThreads.length; i++) {
-			inpointThreads[i].interrupt();
-		}
-	}
-	
-	public void validate(List exceptions) {
+    log.info("waiting for inpoints to stop");
+    waitForInpointsToStop();
+    log.info("all inpoints are stopped");
+    stopNonInpoints();
+    if (getExitCode() != 0) {
+      log.fatal("adaptor exited with " + getExitCode());
+    }
+  }
 
-		if (inpoints.isEmpty()) {
-			exceptions.add(new Exception("no inpoints"));
-		}
-		
-		if (runInpointsInCallingThread && inpoints.size() > 1) {
-			exceptions.add(new Exception("runInpointsInCallingThread == true but multiple inpoints"));
-		}
-		
-		for (Iterator iter = components.iterator(); iter.hasNext();) {
-			IMessageProcessor processor = (IMessageProcessor) iter.next();
-			if (processor instanceof ILifecycleComponent) {
-				try {
-					((ILifecycleComponent)processor).validate(exceptions);
-				} catch (Exception e) {
-					log.error("validation exception for " + processor.toString() + " : ", e);
-					exceptions.add(e);
-				}
-			}
-		}
-	}
+  public void stop() {
+    stopInpoints();
+    stopNonInpoints();
+    for (Iterator iter = components.iterator(); iter.hasNext();) {
+      ILifecycleComponent component = (ILifecycleComponent) iter.next();
+      component.waitForState(State.STOPPED);
+    }
+  }
 
-	public void run() {
-		start();
-	}
+  public void interrupt() {
+    for (int i = 0; i < inpointThreads.length; i++) {
+      inpointThreads[i].interrupt();
+    }
+  }
 
-	public State getState() {
-		return state;
-	}
+  public void validate(List exceptions) {
 
-	public int getExitCode() {
-		int exitCode = 0;
-		for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-			IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-			exitCode += inpoint.getExitCode();
-		}
-		return exitCode;
-	}
-	
-	private void validate() {
-		List exceptions = new ArrayList();
-		validate(exceptions);
-		if (exceptions.size() > 0) {
-			for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
-				Exception exception = (Exception) iter.next();
-				log.error(exception);
-			}
-			throw new RuntimeException("adaptor validation failed");
-		}
-	}
+    if (inpoints.isEmpty()) {
+      exceptions.add(new Exception("no inpoints"));
+    }
 
-	private void runInpoint() {
-		if (inpoints.size() != 1) {
-			throw new RuntimeException("cannot run inpoint directly as there are " 
-					+ inpoints.size() + " inpoints");
-		}
-		IAdaptorInpoint inpoint = (IAdaptorInpoint) inpoints.get(0);
-		setState(State.RUNNING);
-		inpoint.run();
-	}
+    if (runInpointsInCallingThread && inpoints.size() > 1) {
+      exceptions.add(new Exception("runInpointsInCallingThread == true but multiple inpoints"));
+    }
 
-	private void setState(final State state) {
-		this.state = state;
-	}
+    for (Iterator iter = components.iterator(); iter.hasNext();) {
+      IMessageProcessor processor = (IMessageProcessor) iter.next();
+      if (processor instanceof ILifecycleComponent) {
+        try {
+          ((ILifecycleComponent) processor).validate(exceptions);
+        } catch (Exception e) {
+          log.error("validation exception for " + processor.toString() + " : ", e);
+          exceptions.add(e);
+        }
+      }
+    }
+  }
 
-	private void waitForInpointsToStop() {
-		for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-			IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-			inpoint.waitForState(State.STOPPED);
-		}
-	}
+  public void run() {
+    start();
+  }
 
-	private void runInpointThreads() {
-		inpointThreads = new Thread[inpoints.size()];
-		int i = 0;
-		for (Iterator iter = inpoints.iterator(); iter.hasNext(); i++) {
-			IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-			inpointThreads[i] = new Thread(inpoint, inpoint.getId());
-		}
-		setState(State.RUNNING);
-		for (int j = 0; j < inpointThreads.length; j++) {
-			inpointThreads[j].start();
-		}
-	}
+  public State getState() {
+    return state;
+  }
 
-	private void startInpoints() {
-		for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-			IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-		  inpoint.start();
-		}
-	}
+  public int getExitCode() {
+    int exitCode = 0;
+    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
+      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
+      exitCode += inpoint.getExitCode();
+    }
+    return exitCode;
+  }
 
-	private void stopInpoints() {
-		for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-			IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-		  inpoint.stop();
-		}
-	}
+  private void validate() {
+    List exceptions = new ArrayList();
+    validate(exceptions);
+    if (exceptions.size() > 0) {
+      for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
+        Exception exception = (Exception) iter.next();
+        log.error(exception);
+      }
+      throw new RuntimeException("adaptor validation failed");
+    }
+  }
 
-	private void startNonInpoints() {
-		for (Iterator iter = components.iterator(); iter.hasNext();) {
-			ILifecycleComponent component  = (ILifecycleComponent) iter.next();
-			if (!inpoints.contains(component)) {
-				component.start();
-			}
-		}
-	}
+  private void runInpoint() {
+    if (inpoints.size() != 1) {
+      throw new RuntimeException("cannot run inpoint directly as there are " + inpoints.size() + " inpoints");
+    }
+    IAdaptorInpoint inpoint = (IAdaptorInpoint) inpoints.get(0);
+    setState(State.RUNNING);
+    inpoint.run();
+  }
 
-	private void stopNonInpoints() {
-		for (Iterator iter = components.iterator(); iter.hasNext();) {
-			ILifecycleComponent component  = (ILifecycleComponent) iter.next();
-			if (!inpoints.contains(component) && component.isState(State.RUNNING)) {
-				component.stop();
-			}
-		}
-	}
+  private void setState(final State state) {
+    this.state = state;
+  }
+
+  private void waitForInpointsToStop() {
+    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
+      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
+      inpoint.waitForState(State.STOPPED);
+    }
+  }
+
+  private void runInpointThreads() {
+    inpointThreads = new Thread[inpoints.size()];
+    int i = 0;
+    for (Iterator iter = inpoints.iterator(); iter.hasNext(); i++) {
+      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
+      inpointThreads[i] = new Thread(inpoint, inpoint.getId());
+    }
+    setState(State.RUNNING);
+    for (int j = 0; j < inpointThreads.length; j++) {
+      inpointThreads[j].start();
+    }
+  }
+
+  private void startInpoints() {
+    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
+      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
+      inpoint.start();
+    }
+  }
+
+  private void stopInpoints() {
+    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
+      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
+      inpoint.stop();
+    }
+  }
+
+  private void startNonInpoints() {
+    for (Iterator iter = components.iterator(); iter.hasNext();) {
+      ILifecycleComponent component = (ILifecycleComponent) iter.next();
+      if (!inpoints.contains(component)) {
+        component.start();
+      }
+    }
+  }
+
+  private void stopNonInpoints() {
+    for (Iterator iter = components.iterator(); iter.hasNext();) {
+      ILifecycleComponent component = (ILifecycleComponent) iter.next();
+      if (!inpoints.contains(component) && component.isState(State.RUNNING)) {
+        component.stop();
+      }
+    }
+  }
 
 }

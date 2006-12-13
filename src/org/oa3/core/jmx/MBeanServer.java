@@ -88,7 +88,7 @@ public class MBeanServer implements javax.management.MBeanServer {
     } catch(Exception e) {
     	log.error("failed to start HtmlAdaptorServer", e);
     }
-}
+  }
 
 	public void addNotificationListener(ObjectName arg0,
 			NotificationListener arg1, NotificationFilter arg2, Object arg3)

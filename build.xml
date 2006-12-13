@@ -2,7 +2,8 @@
 <project name="openadaptor3" default="recompile.all">
   
   <tstamp/>
-  <property name="tag" value="local"/>
+  <property file="checkout.properties"/>
+  <property name="tag" value="untagged"/>
   
   <property name="dir.stub.classes" value="stub/classes"/>
   <property name="dir.stub.lib" value="stub/lib"/>
@@ -170,4 +171,5 @@
       <arg value="${bean}"/>
     </java>
   </target>
+  
 </project>

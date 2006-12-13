@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-  <description> 
+<!--
     Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
     will automatically be registered. The adaptor will be registered and this example includes 
     a utility bean that exposes useful methods for viewing JVM properties.
@@ -11,13 +10,20 @@
     at http://localhost:8082).
     
     The actual adaptor, simply reads stdin and writes to stdout.
-  </description>
+-->
+
+<beans>
   
+  <!-- embed this in your config to expose jmx interface via http & rmi -->
 	<bean class="org.oa3.core.jmx.MBeanServer">
     <constructor-arg value="8082"/>
   </bean>
   
+  <!-- embed this in your config to expose useful management bean -->
   <bean id="SystemUtil" class="org.oa3.util.SystemUtil"/>
+  
+  <!-- embed this in your config to expose log4j management -->
+  <bean id="LogAdmin" class="org.oa3.thirdparty.log4j.LogAdmin"/>
   
   <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
     <property name="messageProcessor" ref="Router"/>

@@ -44,6 +44,7 @@ import javax.management.ObjectName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IComponent;
+import org.oa3.core.jmx.MBeanProvider;
 import org.oa3.util.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -85,9 +86,9 @@ public class SpringApplication {
       System.err.println(e.getMessage());
       e.printStackTrace();
       System.err
-          .println("usage: java " + SpringApplication.class.getName() + " -config <spring xml config file url> "
-              + "-bean <bean id> " + "\n  [-props <properties file url] "
-              + "\n  [-jmx <http port to run jmx http adaptor>");
+          .println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
+              + "\n  -bean <id> " + "\n  [-props <url>] "
+              + "\n  [-jmx <http port>]");
       System.exit(1);
     }
 
@@ -183,13 +184,16 @@ public class SpringApplication {
     if (mbeanServer != null) {
       String[] beanNames = factory.getBeanDefinitionNames();
       for (int i = 0; i < beanNames.length; i++) {
-        attemptToRegisterBean(factory, mbeanServer, beanNames[i]);
+        Object bean = factory.getBean(beanNames[i]);
+        if (bean instanceof MBeanProvider) {
+          bean = ((MBeanProvider)bean).getMBean();
+        }
+        attemptToRegisterBean(bean, mbeanServer, beanNames[i]);
       }
     }
   }
 
-  private static void attemptToRegisterBean(XmlBeanFactory factory, MBeanServer mbeanServer, String beanName) {
-    Object bean = factory.getBean(beanName);
+  private static void attemptToRegisterBean(Object bean, MBeanServer mbeanServer, String beanName) {
     if (!(bean instanceof MBeanServer)) {
       try {
         ObjectName name = new ObjectName("beans:id=" + beanName);

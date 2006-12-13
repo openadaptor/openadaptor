@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-  <description> 
+<!--
     Illustrates how to get the adaptor to "register" itself at start up.
     By defining the oa3.registration.url, the adaptor will post the resolved
     system properties of the adaptor at start up time.
@@ -14,8 +13,11 @@
     such as registration.
     
     The actual adaptor, simply reads stdin and writes to stdout.
-  </description>
+-->
+
+<beans>
   
+  <!-- embed this in your config to get the adaptor to post it's system props to a jsp -->
   <bean id="SystemProperties" class="org.oa3.util.SystemProperties">
     <property name="properties">
       <props>

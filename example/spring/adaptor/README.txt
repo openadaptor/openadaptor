@@ -4,8 +4,7 @@ The place to start is
 
   simple.xml
   
-To run this you first need to set your classpath correctly (see top level README.txt), or
-if you have a source distribution you can run the adaptor using the run.example.spring target.
+To run this you first need to set your classpath correctly (see top level README.txt).
 
 Once you have done this you can run from the command line like this...
 
