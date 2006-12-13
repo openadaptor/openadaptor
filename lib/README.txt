@@ -13,4 +13,6 @@ commons-lang.jar        2.0
 dom4j.jar               1.6.1
 jmxri.jar               ?
 jta-spec.jar            1_0_1
+rome-09.jar             0_9
+jdom                    1_0
 
