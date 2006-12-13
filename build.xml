@@ -4,81 +4,81 @@
   <tstamp/>
   <property file="checkout.properties"/>
   <property name="tag" value="untagged"/>
-  
+
   <property name="dir.stub.classes" value="stub/classes"/>
   <property name="dir.stub.lib" value="stub/lib"/>
   <property name="dir.stub.src" value="stub/src"/>
-  
+
   <property name="dir.classes" value="classes"/>
   <property name="dir.lib" value="lib"/>
   <property name="dir.src" value="src"/>
-  
+
   <property name="dir.spring.classes" value="spring/classes"/>
   <property name="dir.spring.lib" value="spring/lib"/>
   <property name="dir.spring.src" value="spring/src"/>
-  
+
   <property name="dir.test.classes" value="test/classes"/>
   <property name="dir.test.lib" value="test/lib"/>
   <property name="dir.test.src" value="test/src"/>
   <property name="dir.test.output" value="test/output"/>
-  
+
   <property name="dir.example" value="example"/>
   <property name="dir.example.classes" value="example/classes"/>
   <property name="dir.example.src" value="example/src"/>
-  
+
   <mkdir dir="${dir.stub.classes}"/>
   <mkdir dir="${dir.classes}"/>
   <mkdir dir="${dir.spring.classes}"/>
   <mkdir dir="${dir.test.classes}"/>
   <mkdir dir="${dir.test.output}"/>
   <mkdir dir="${dir.example.classes}"/>
-  
+
   <path id="classpath.stub">
-    <pathelement path="${dir.stub.classes}"/> 
+    <pathelement path="${dir.stub.classes}"/>
   </path>
 
   <path id="classpath">
-    <pathelement path="${dir.stub.classes}"/> 
+    <pathelement path="${dir.stub.classes}"/>
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
   </path>
 
   <path id="classpath.spring">
-    <pathelement path="${dir.classes}"/> 
-    <pathelement path="${dir.stub.classes}"/> 
+    <pathelement path="${dir.classes}"/>
+    <pathelement path="${dir.stub.classes}"/>
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
   </path>
 
   <path id="classpath.test">
-    <pathelement path="${dir.classes}"/> 
-    <pathelement path="${dir.stub.classes}"/> 
-    <pathelement path="${dir.spring.classes}"/> 
-    <pathelement path="${dir.test.classes}"/> 
+    <pathelement path="${dir.classes}"/>
+    <pathelement path="${dir.stub.classes}"/>
+    <pathelement path="${dir.spring.classes}"/>
+    <pathelement path="${dir.test.classes}"/>
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
-    <pathelement path="${dir.test.lib}"/> 
+    <pathelement path="${dir.test.lib}"/>
   </path>
 
   <path id="classpath.example">
-    <pathelement path="${dir.example}"/> 
-    <pathelement path="${dir.classes}"/> 
-    <pathelement path="${dir.stub.classes}"/> 
-    <pathelement path="${dir.spring.classes}"/> 
-    <pathelement path="${dir.example.classes}"/> 
+    <pathelement path="${dir.example}"/>
+    <pathelement path="${dir.classes}"/>
+    <pathelement path="${dir.stub.classes}"/>
+    <pathelement path="${dir.spring.classes}"/>
+    <pathelement path="${dir.example.classes}"/>
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
   </path>
 
   <target name="recompile.all" depends="clean.all, compile.all" description="clean and compile all code and tests"/>
-  
+
   <target name="compile.all" depends="compile.stub, compile, compile.spring, compile.test, compile.example" description="compile code and tests output"/>
-  
+
   <target name="compile.stub">
     <javac srcdir="${dir.stub.src}" destdir="${dir.stub.classes}" classpathref="classpath.stub"/>
   </target>
-  
+
   <target name="compile">
     <javac srcdir="${dir.src}" destdir="${dir.classes}" classpathref="classpath"/>
     <copy todir="${dir.classes}" overwrite="true">
@@ -92,11 +92,11 @@
       </filterset>
     </copy>
   </target>
-  
+
   <target name="compile.spring">
     <javac srcdir="${dir.spring.src}" destdir="${dir.spring.classes}" classpathref="classpath.spring"/>
   </target>
-  
+
   <target name="compile.test">
     <javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" classpathref="classpath.test"/>
     <copy todir="${dir.test.classes}" overwrite="true">
@@ -109,27 +109,27 @@
   <target name="compile.example">
     <javac srcdir="${dir.example.src}" destdir="${dir.example.classes}" classpathref="classpath.example"/>
   </target>
-  
+
   <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test, clean.example" description="clean all compile and test output"/>
-  
+
   <target name="clean.stub">
     <delete>
       <fileset dir="${dir.stub.classes}" includes="**/*"/>
     </delete>
   </target>
-  
+
   <target name="clean">
     <delete>
       <fileset dir="${dir.classes}" includes="**/*"/>
     </delete>
   </target>
-  
+
   <target name="clean.spring">
     <delete>
       <fileset dir="${dir.spring.classes}" includes="**/*"/>
     </delete>
   </target>
-  
+
   <target name="clean.test">
     <delete>
       <fileset dir="${dir.test.classes}" includes="**/*"/>
@@ -142,7 +142,7 @@
       <fileset dir="${dir.example.classes}" includes="**/*"/>
     </delete>
   </target>
-  
+
   <target name="test" depends="compile.all" description="run tests">
     <junit>
       <classpath refid="classpath.test"/>
@@ -150,9 +150,10 @@
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.src}">
           <include name="**/*TestCase.java"/>
-          <exclude name="**/JBoss*.java"/>
+          <exclude name="**/JBoss*.java"/>          
+          <exclude name="**/MQ*.java"/>
         </fileset>
-      </batchtest>  
+      </batchtest>
     </junit>
     <junitreport todir="${dir.test.output}">
       <fileset dir="${dir.test.output}">
@@ -162,7 +163,7 @@
      </junitreport>
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
-  
+
   <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean to be defined">
     <java classname="org.oa3.spring.SpringApplication" classpathref="classpath.example">
       <arg value="-config"/>
@@ -171,5 +172,5 @@
       <arg value="${bean}"/>
     </java>
   </target>
-  
+
 </project>
