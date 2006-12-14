@@ -10,11 +10,12 @@
  Data terminates: File
 
  Note: If you wish to run it through a proxy, then the adaptor will need to be run with
- appropriate System properties for the proxy configuration, e.g
+ appropriate System properties for the proxy configuration, e.g.
+
  -D http.proxyHost=<proxy-host> -D http.proxyPort=<proxy-port>
 
  Run using
-  java org.oa3.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.oa3.spring.SpringApplication -config rss.xml -bean Adaptor
  -->
 <beans>
   <description>
@@ -28,7 +29,7 @@
     -D http.proxyHost= {proxy-host} -D http.proxyPort={proxy-port}
 
     Run using
-      java org.oa3.spring.SpringApplication -config simple.xml -bean Adaptor
+      java org.oa3.spring.SpringApplication -config rss.xml -bean Adaptor
   </description>
 
   <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
