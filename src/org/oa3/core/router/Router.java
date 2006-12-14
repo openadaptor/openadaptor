@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IMessageProcessor;
 import org.oa3.core.Message;
 import org.oa3.core.Response;
+import org.oa3.core.Response.DataBatch;
 import org.oa3.core.Response.DiscardBatch;
 import org.oa3.core.Response.ExceptionBatch;
 import org.oa3.core.Response.OutputBatch;
@@ -52,25 +53,25 @@ import org.oa3.core.transaction.ITransaction;
 
 public class Router implements IMessageProcessor,ILifecycleComponentContainer {
 
-	private static Log log = LogFactory.getLog(Router.class);
-	
-	private IRoutingMap routingMap;
+  private static Log log = LogFactory.getLog(Router.class);
+
+  private IRoutingMap routingMap;
   private ILifecycleComponentManager componentManager;
-	
-	public Router() {
-		super();
-	}
-	
-	public Router(final IRoutingMap routingMap) {
-		this();
-		this.routingMap = routingMap;
-	}
-	
-	public void setRoutingMap(final IRoutingMap routingMap) {
-		this.routingMap = routingMap;
-	}
-  
-	public void setComponentManager(ILifecycleComponentManager manager) {
+
+  public Router() {
+    super();
+  }
+
+  public Router(final IRoutingMap routingMap) {
+    this();
+    this.routingMap = routingMap;
+  }
+
+  public void setRoutingMap(final IRoutingMap routingMap) {
+    this.routingMap = routingMap;
+  }
+
+  public void setComponentManager(ILifecycleComponentManager manager) {
     if (componentManager!=null){
       throw new RuntimeException("ComponentManager has already been set for this router");
     }
@@ -79,82 +80,70 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
   }
 
   public Response process(Message msg) {
-		return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
-	}
-  
+    return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
+  }
+
   private void registerComponents() {
     for (Iterator it=routingMap.getMessageProcessors().iterator();it.hasNext();){
       Object processor=it.next();
       if (processor instanceof ILifecycleComponent){
         componentManager.register((ILifecycleComponent)processor);
       } else {
-        log.debug("Not registering (non-ILifecycleComponent) processor "+processor);
+        log.info("Not registering (non-ILifecycleComponent) processor "+processor);
       }
     }
   }
-	
-	private Response process(Message msg, List destinations) {
-		if (log.isDebugEnabled()) {
-			logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
-		}
-		for (Iterator iter = destinations.iterator(); iter.hasNext();) {
-			IMessageProcessor node = (IMessageProcessor) iter.next();
-			Response response = node.process(msg);
-			processResponse(node, response, msg.getTransaction());
-		}
-		return new Response();
-	}
-	
-	private void processResponse(IMessageProcessor node, Response response, ITransaction transction) {
-		List batches = response.getBatches();
-		for (Iterator iter = batches.iterator(); iter.hasNext();) {
-			List batch = (List) iter.next();
-			if (batch instanceof OutputBatch) {
-				processOutput(node, ((OutputBatch)batch).getOutput(), transction);
-			} else if (batch instanceof DiscardBatch) {
-				processDiscards(node, ((DiscardBatch)batch).getDiscard(), transction);
-			} else if (batch instanceof ExceptionBatch) {
-				processExceptions(node, ((ExceptionBatch)batch).getMessageExceptions(), transction);
-			}
-		}
-	}
 
-	private void processOutput(IMessageProcessor node, Object[] output, ITransaction transaction) {
-		if (output.length > 0) {
-      Message msg = new Message(output, node, transaction);
-			process(msg, routingMap.getProcessDestinations(node));
-		}
-	}
+  private Response process(Message msg, List destinations) {
+    if (log.isDebugEnabled()) {
+      logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
+    }
+    for (Iterator iter = destinations.iterator(); iter.hasNext();) {
+      IMessageProcessor node = (IMessageProcessor) iter.next();
+      Response response = node.process(msg);
+      processResponse(node, response, msg.getTransaction());
+    }
+    return new Response();
+  }
 
-	private void processDiscards(IMessageProcessor node, Object[] discardedInput, ITransaction transaction) {
-		log.info(node.toString() + " discarded " + discardedInput.length + " input(s)");
-		if (discardedInput.length > 0) {
-      Message msg = new Message(discardedInput, node, transaction);
-      process(msg, routingMap.getDiscardDestinations(node));
-		}
-	}
-
-	private void processExceptions(IMessageProcessor node, MessageException[] exceptions, ITransaction transaction) {
-		log.warn(node.toString() + " caught " + exceptions.length + " exceptions");
-		for (int i = 0; i < exceptions.length; i++) {
-			List destinations = routingMap.getExceptionDestinations(node, exceptions[i].getException());
-			if (destinations.size() > 0) {
-        Message msg = new Message(exceptions[i], node, transaction);
+  private void processResponse(IMessageProcessor node, Response response, ITransaction transaction) {
+    List batches = response.getBatches();
+    for (Iterator iter = batches.iterator(); iter.hasNext();) {
+      DataBatch batch = (DataBatch) iter.next();
+      if (batch instanceof OutputBatch) {
+        process(new Message(batch.getData(),node,transaction),routingMap.getProcessDestinations(node));
+      } else if (batch instanceof DiscardBatch) {
+        log.info(node.toString() + " discarded " + batch.size() + " input(s)");
+        process(new Message(batch.getData(),node,transaction),routingMap.getDiscardDestinations(node));
+      } else if (batch instanceof ExceptionBatch) {
+        processExceptions(node, batch.getData(), transaction);
+      }
+    }
+  }
+ 
+  private void processExceptions(IMessageProcessor node, Object[] exceptions, ITransaction transaction) {
+    log.warn(node.toString() + " caught " + exceptions.length + " exceptions");
+    for (int i = 0; i < exceptions.length; i++) {
+      MessageException messageException=(MessageException)exceptions[i];
+      List destinations = routingMap.getExceptionDestinations(node, messageException.getException());
+      if (destinations.size() > 0) {
+        Message msg = new Message(messageException, node, transaction);
         process(msg, destinations);
-			} else {
-				throw new RuntimeException(exceptions[0].getException());
-			}
-		}
-	}
+      } else {
+        //throw new RuntimeException(((MessageException)exceptions[0]).getException());
+        throw new RuntimeException("No route defined for Exception "+messageException.getException());
+      }
+    }
+  }
 
-	private void logRoutingDebug(IMessageProcessor sender, List destinations) {
-		StringBuffer buffer = new StringBuffer();
-		for (Iterator iter = destinations.iterator(); iter.hasNext();) {
-			IMessageProcessor node = (IMessageProcessor) iter.next();
-			buffer.append(buffer.length() > 0 ? "," : "");
-			buffer.append(node.toString());
-		}
-		log.debug("[" + sender.toString() + "]->[" + buffer.toString() + "]");
-	}
+  private void logRoutingDebug(IMessageProcessor sender, List destinations) {
+    StringBuffer buffer = new StringBuffer();
+    for (Iterator iter = destinations.iterator(); iter.hasNext();) {
+      IMessageProcessor node = (IMessageProcessor) iter.next();
+      buffer.append(buffer.length() > 0 ? "," : "");
+      buffer.append(node.toString());
+    }
+    log.debug("[" + sender.toString() + "]->[" + buffer.toString() + "]");
+  }
 
 }
