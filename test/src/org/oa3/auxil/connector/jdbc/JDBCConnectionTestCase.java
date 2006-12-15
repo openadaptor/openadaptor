@@ -34,8 +34,6 @@
 package org.oa3.auxil.connector.jdbc;
 
 import junit.framework.TestCase;
-import com.mockrunner.mock.jdbc.MockConnection;
-
 import java.sql.SQLException;
 /*
 * File: $Header: $
@@ -43,33 +41,43 @@ import java.sql.SQLException;
 * Created Dec 12, 2006 by oa3 Core Team
 */
 
+/**
+ * This test case uses the Hypersonic database. The database is created in memory when a jdbc connection is established.
+ *
+ */
 public class JDBCConnectionTestCase extends TestCase {
+    private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
+    private static final String DB_URL="jdbc:hsqldb:mem:oa3test";
+    private static final String DB_USER="sa";
+    private static final String DB_PASSWORD="";
 
-  private JDBCConnection jdbcConnection;
-  private MockConnection connection;
+    private JDBCConnection jdbcConnection;
 
-  protected void setUp() throws Exception {
-    super.setUp();
+    protected void setUp() throws Exception {
+      super.setUp();
 
-    jdbcConnection = new JDBCConnection();
-    connection = new MockConnection();
-    jdbcConnection.setConnection(connection);
-  }
+      jdbcConnection = new JDBCConnection();
+      jdbcConnection.setDriver(DB_DRIVER);
+      jdbcConnection.setUrl(DB_URL);
+      jdbcConnection.setUsername(DB_USER);
+      jdbcConnection.setPassword(DB_PASSWORD);
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
+    }
 
-    connection = null;
-    jdbcConnection = null;
-  }
+    protected void tearDown() throws Exception {
+      super.tearDown();
+      jdbcConnection.disconnect();
+      jdbcConnection = null;
+    }
 
-  public void testConnection() throws SQLException {
-    assertTrue("JDBCConnection not connected", jdbcConnection.isConnected());
-  }
+    public void testConnection() throws SQLException {
+      jdbcConnection.connect();
+      assertTrue("JDBCConnection not connected", jdbcConnection.isConnected());
+    }
 
-  public void testDisconnection() throws SQLException {
-    jdbcConnection.disconnect();
-    assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
-  }
+    public void testDisconnection() throws SQLException {
+      jdbcConnection.disconnect();
+      assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
+    }
 
 }
