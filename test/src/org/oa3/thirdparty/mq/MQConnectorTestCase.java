@@ -175,4 +175,50 @@ public class MQConnectorTestCase extends TestCase {
     return readData;
   }
 
+  public void testConnectForReadWithUseLocalTransactions() {
+    MqConnection mqConnection = new MqConnection();
+    mqConnection.setChannelName(channelName);
+    mqConnection.setHostName(hostName);
+    mqConnection.setManagerName(managerName);
+    mqConnection.setPort(port);
+    mqConnection.setQueueName(queueName);
+    mqConnection.setUserName(userName);
+    mqConnection.setPassword(password);
+
+    mqConnection.setUseLocalTransactions(true);
+
+    try {
+      mqConnection.connectToMQ(true);
+    }
+    catch (Exception e) {
+      fail("connection failed with error: " + e);
+    }
+
+    assertNotNull("TransactionResource should not be null", mqConnection.getResource());
+    assertTrue("TransactionResource should be an MqTransactionalResource", mqConnection.getResource() instanceof MqTransactionalResource);
+  }
+
+  public void testConnectForWriteWithUseLocalTransactions() {
+    MqConnection mqConnection = new MqConnection();
+    mqConnection.setChannelName(channelName);
+    mqConnection.setHostName(hostName);
+    mqConnection.setManagerName(managerName);
+    mqConnection.setPort(port);
+    mqConnection.setQueueName(queueName);
+    mqConnection.setUserName(userName);
+    mqConnection.setPassword(password);
+
+    mqConnection.setUseLocalTransactions(true);
+
+    try {
+      mqConnection.connectToMQ(false);
+    }
+    catch (Exception e) {
+      fail("connection failed with error: " + e);
+    }
+
+    assertNotNull("TransactionResource should not be null", mqConnection.getResource());
+    assertTrue("TransactionResource should be an MqTransactionalResource", mqConnection.getResource() instanceof MqTransactionalResource);
+  }
+
 }
