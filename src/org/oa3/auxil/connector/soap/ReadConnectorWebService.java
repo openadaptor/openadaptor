@@ -8,25 +8,21 @@ import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
 import org.codehaus.xfire.transport.http.XFireServlet;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.oa3.auxil.connector.QueuingReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.util.ResourceUtils;
+import org.oa3.auxil.connector.http.JettyReadConnector;
 
-public class ReadConnectorWebService extends QueuingReadConnector implements IStringDataProcessor {
+/**
+ * ReadConnector that exposes a webservice which allows external clients to send it data
+ * @author perryj
+ *
+ */
+public class ReadConnectorWebService extends JettyReadConnector implements IStringDataProcessor {
 
   private static final Log log = LogFactory.getLog(ReadConnectorWebService.class);
 
-  private static final String CONTEXT = "soap";
-
   private String serviceName = "openadaptorws";
 
-  private int localJettyPort = 8080;
-  private Server server;
-  
   public ReadConnectorWebService() {
+    super();
   }
 
   public ReadConnectorWebService(String id) {
@@ -37,54 +33,34 @@ public class ReadConnectorWebService extends QueuingReadConnector implements ISt
     serviceName = name;
   }
   
-  public void setJettyServer(final Server server) {
-    this.server = server;
-    localJettyPort = 0;
-  }
-  
-  public void setLocalJettyPort(final int port) {
-    if (server != null) {
-      throw new ComponentException("attempt to configure jettyServer and localJettyPort", this);
-    }
-    localJettyPort = port;
-  }
-  
   public void connect() {
-    if (localJettyPort > 0 && server == null) {
-      server = new Server(localJettyPort);
-      try {
-        server.start();
-      } catch (Exception e) {
-        log.error("failed to start jetty server", e);
-        throw new ComponentException("failed to start local jetty server", this);
-      }
+    if (getServlet() == null) {
+      setServlet(new StringDataProcessorServlet());
     }
-    Context root = new Context(server,"/" + CONTEXT,Context.SESSIONS);
-    root.addServlet(new ServletHolder(new StringDataProcessorServlet()), "/*");
-  }
-
-  public void disconnect() {
-    if (localJettyPort > 0 && server != null) {
-      try {
-        server.stop();
-      } catch (Exception e) {
-        log.error("failed to stop jetty server", e);
-      }
-    }
+    super.connect();
   }
 
   public void process(String s) {
-    if (log.isDebugEnabled()) {
-      log.debug(getId() + " received data [" + s + "]"); 
-    }
     enqueue(s);
   }
   
   public String getEndpoint() {
-    return "http://" + ResourceUtils.getLocalHostname() + ":" + localJettyPort + "/" + CONTEXT + "/" + serviceName + "?wsdl";
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("http://");
+    buffer.append(getJettyHost());
+    buffer.append(":");
+    buffer.append(getJettyPort());
+    buffer.append(getContext().equals("/") ? "" : getContext());
+    buffer.append("/");
+    buffer.append(serviceName);
+    buffer.append("?wsdl");
+    return buffer.toString();
   }
-  
+
   class StringDataProcessorServlet extends XFireServlet {
+
+    private static final long serialVersionUID = 1L;
+
     public void init() throws ServletException
     {
       super.init();
