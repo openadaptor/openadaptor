@@ -54,6 +54,12 @@
         <property name="queueName" value="${mq.queue}"/>
         <property name="userName" value="${mq.user}"/>
         <property name="password" value="${mq.password}"/>
+        <!--
+          Set one or other (not both) of the following to true
+          in order to enable the appropriate transaction mode.
+          -->
+        <property name="useLocalTransactions" value="false"/>
+        <property name="useXATransactions" value="false"/>
       </bean>
     </property>
   </bean>
