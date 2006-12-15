@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * ReadConnector that registers a
+ * ReadConnector that registers a servlet to accept HttpRequests for processing 
  * 
  * @author perryj
  * 
@@ -37,9 +37,8 @@ public class ReadConnectorServlet extends JettyReadConnector {
   }
 
   /**
-   * set the expected parameters to process, if this is not set then HttpServletRequest is queued for processing. If a
-   * single parameter is specified then this single value is queued for processing. Otherwise a map of the parameters
-   * and values is queued for processing.
+   * set the expected parameters to process, If a single parameter is specified then this single 
+   * value is queued for processing. Otherwise a map of the parameters and values is queued.
    * 
    * @param params
    */
@@ -50,6 +49,10 @@ public class ReadConnectorServlet extends JettyReadConnector {
     }
   }
 
+  /**
+   * @see setParameterNames
+   * @param param
+   */
   public void setParameterName(String param) {
     parameterNames = new String[1];
     parameterNames[0] = param;
@@ -94,7 +97,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
   }
 
   private void process(HttpServletRequest request, HttpServletResponse response) {
-    
+
     // single param configuration - queues string value
     if (parameterNames.length == 1) {
       String data = request.getParameter(parameterNames[0]);
@@ -105,8 +108,8 @@ public class ReadConnectorServlet extends JettyReadConnector {
         log.error(getId() + " " + msg);
         writeErrorNoThrow(response, msg);
       }
-    } 
-    
+    }
+
     // multiple param configuration - queues map
     else {
       Map map = new HashMap();
