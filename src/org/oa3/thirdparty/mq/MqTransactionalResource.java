@@ -44,16 +44,18 @@ public class MqTransactionalResource implements ITransactionalResource {
   private static final Log log = LogFactory.getLog(MqTransactionalResource.class);
 
   protected MqConnection mqConnection;
-  
+
   /**
-   * @param connection
+   * @param connection The MqConnection Object.
    */
   public MqTransactionalResource(MqConnection connection) {
     this.mqConnection = connection;
   }
 
   public void begin() {
-    mqConnection.setUseLocalTransaction(true);
+    if (!mqConnection.isUseLocalTransactions()) {
+      throw new RuntimeException("Attempting to start a transaction with an untransacted MQ Series queue manager.");
+    }
     log.debug("Beginning MQ Transaction");
   }
 

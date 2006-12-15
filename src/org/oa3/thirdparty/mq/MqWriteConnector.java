@@ -39,11 +39,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
 import org.oa3.core.exception.ComponentException;
+import org.oa3.core.transaction.ITransactional;
 
 /**
  * WriteConnector that use MqConnection to write messages to an IBM MQ Queue.
  */
-public class MqWriteConnector extends AbstractWriteConnector {
+public class MqWriteConnector extends AbstractWriteConnector implements ITransactional {
 
   private static final Log log = LogFactory.getLog(MqWriteConnector.class);
 
@@ -98,14 +99,13 @@ public class MqWriteConnector extends AbstractWriteConnector {
    * Establish a connection to external message transport without starting the
    * externalconnector. If already connected then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.oa3.core.exception.ComponentException
    */
   public void connect() {
     if (!connected) {
       if (getConnection() == null) throw new ComponentException("No MqConnection configured", this);
-
+      getConnection().setId(getId()+"_Connection");
       getConnection().connectToMQ(false);
-
       connected = true;
       log.debug("MqWriteConnector successfully connected");
     }

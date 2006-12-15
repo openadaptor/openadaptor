@@ -80,14 +80,12 @@ public class MqReadConnector extends AbstractReadConnector implements ITransacti
    * Establish a connection to external message transport. If already connected
    * then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.oa3.core.exception.ComponentException
    */
   public void connect() {
     if (getConnection() == null) throw new ComponentException("No MqConnection configured", this);
-    
-      getConnection().connectToMQ(true);
-    
-    
+    getConnection().setId(getId()+"_Connection");
+    getConnection().connectToMQ(true);
     connected = true;
     log.debug("MqReadConnector successfully connected");
   }
@@ -96,13 +94,12 @@ public class MqReadConnector extends AbstractReadConnector implements ITransacti
    * Disconnect from the external message transport. If already disconnected
    * then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.oa3.core.exception.ComponentException
    */
   public void disconnect() {
     try {
       getConnection().close();
-    }
-    
+    }    
     finally {
       connected = false;
       log.debug("MqReadConnector disconnected");

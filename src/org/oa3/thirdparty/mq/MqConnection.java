@@ -41,7 +41,8 @@ import com.ibm.mq.*;
  * MqConnection is responsible for all interaction with MQ. It is responsible
  * for making connections and actual reading and writing of data. It acquires
  * XAResources for distributed transaction management and interacts with local
- * transaction managers for local transaction management. 
+ * transaction managers for local transaction management. MB this connection component
+ * is not shareable between Connectors.
  * <br><br> 
  * Since IBMS's mq.jar is freely downloadable but not distributable direct access to the mq
  * a non-functional stub-api has been mocked up. This allows oa3 to build even in the absence 
@@ -80,10 +81,10 @@ public class MqConnection extends Component {
    * Set to true if you wish to use XA Transactions, for example manage the
    * transactioning via JTA.
    */
-  protected boolean useXA = false;
+  protected boolean useXATransactions = false;
 
   /** Set to true if local transactions required. */
-  protected boolean useLocalTransaction = false;
+  protected boolean useLocalTransactions = false;
 
   protected MQQueueManager queueManager ;
 
@@ -281,16 +282,16 @@ public class MqConnection extends Component {
    * 
    * @return boolean
    */
-  public boolean isUseXA() {
-    return useXA;
+  public boolean isUseXATransactions() {
+    return useXATransactions;
   }
 
   /**
    * Set to true if you wish to use XA Transactions, for example manage the
    * transactioning via JTA.
    */
-  public void setUseXA(boolean useXA) {
-    this.useXA = useXA;
+  public void setUseXATransactions(boolean useXATransactions) {
+    this.useXATransactions = useXATransactions;
   }
 
   /**
@@ -300,8 +301,8 @@ public class MqConnection extends Component {
    * 
    * @return boolean
    */
-  public boolean isUseLocalTransaction() {
-    return useLocalTransaction;
+  public boolean isUseLocalTransactions() {
+    return useLocalTransactions;
   }
 
   /**
@@ -309,8 +310,8 @@ public class MqConnection extends Component {
    * read/write. This allows Local Transaction Management to work. Default value
    * is false.
    */
-  public void setUseLocalTransaction(boolean useLocalTransaction) {
-    this.useLocalTransaction = useLocalTransaction;
+  public void setUseLocalTransactions(boolean useLocalTransactions) {
+    this.useLocalTransactions = useLocalTransactions;
   }
 
   /**
@@ -392,29 +393,44 @@ public class MqConnection extends Component {
     if ( getPassword() != null ) MQEnvironment.password = getPassword();
     if ( getCcsid() != 0 ) MQEnvironment.CCSID = getCcsid();
 
-    if (isUseXA()) {
-      try {
-        MQXAQueueManager xaQueueManager = new MQXAQueueManager(getManagerName());
-      queueManager = xaQueueManager.getQueueManager();
-      transactionalResource = xaQueueManager.getXAResource();
-      } catch (MQException mqe) {
-       throw new ComponentException("Failed to create MQXAQueueManager with " +
-       mqe.toString(), this);
-      } catch (XAException xae) {
-       throw new ComponentException("Failed to create MQXAResource with " +
-       xae.toString(), this);
-      }
-    } else if (isUseLocalTransaction()) {
+    if(isUseLocalTransactions() && isUseXATransactions()) {
+      // Both active. Can't allow this.
+      throw new ComponentException("useXATransactions and useLocalTransactions cannot both be true.", this);
+    }
+    else if (!(isUseLocalTransactions() || isUseXATransactions()) ){
+      // Neither transaction mode is active
       try {
         queueManager = new MQQueueManager(getManagerName());
-        transactionalResource = new MqTransactionalResource(this);
+        transactionalResource = null;
       }
       catch (Exception mqe) {
-        throw new RuntimeException("Failed to create MQQueueManager.", mqe);
+        throw new ComponentException("Failed to create MQQueueManager for untransacted session.", mqe, this);
       }
-    } else {
-          queueManager = new MQQueueManager(getManagerName());
-      transactionalResource = null;
+    }
+    else if (isUseLocalTransactions()) {
+      // Use Local MQ Transactions
+      try {
+        queueManager = new MQQueueManager(getManagerName());
+        if (isUseLocalTransactions())
+          transactionalResource = new MqTransactionalResource(this);
+      }
+      catch (Exception mqe) {
+        throw new ComponentException("Failed to create MQQueueManager for useLocalTransactions non XA session.", mqe, this);
+      }
+    }
+    else if (isUseXATransactions()) {
+      // Use XA Transactions
+      try {
+        MQXAQueueManager xaQueueManager = new MQXAQueueManager(getManagerName());
+        queueManager = xaQueueManager.getQueueManager();
+        transactionalResource = xaQueueManager.getXAResource();
+      } catch (MQException mqe) {
+        throw new ComponentException("Failed to create MQXAQueueManager with " +
+            mqe.toString(), this);
+      } catch (XAException xae) {
+        throw new ComponentException("Failed to create MQXAResource with " +
+            xae.toString(), this);
+      }
     }
 
     try {
@@ -445,9 +461,7 @@ public class MqConnection extends Component {
   }
 
   /**
-   * Close queue via proxy
-   * 
-   * @throws OaMqException
+   * Close queue via proxy.
    */
   public void close() {
     try {
@@ -461,7 +475,6 @@ public class MqConnection extends Component {
    * Fetch next record
    * 
    * @return String
-   * @throws OaMqException
    */
   public String nextRecord()  {
     String messageString = null;
@@ -605,7 +618,7 @@ public class MqConnection extends Component {
     //
     
      getMessageOptions = new MQGetMessageOptions(); 
-     if (isUseLocalTransaction()) { 
+     if (isUseLocalTransactions()) {
        if (isConvertOption()) {
            getMessageOptions.options = MQC.MQPMO_SYNCPOINT | MQC.MQGMO_CONVERT; 
            }
@@ -630,7 +643,7 @@ public class MqConnection extends Component {
     //
     
      putMessageOptions = new MQPutMessageOptions(); 
-     if (useLocalTransaction) {
+     if (useLocalTransactions) {
        if (useAllContext) { 
          putMessageOptions.options = MQC.MQPMO_SYNCPOINT | MQC.MQOO_SET_ALL_CONTEXT; 
          } else { 
