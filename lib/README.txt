@@ -12,7 +12,13 @@ xml-apis.jar            ?
 commons-lang.jar        2.0
 dom4j.jar               1.6.1
 jmxri.jar               ?
-jta-spec.jar            1_0_1
-rome-09.jar             0_9
-jdom                    1_0
+jta-spec.jar            1.0.1
+rome.jar                0.9
+jdom                    1.0
+jetty.jar               6.0.1
+jetty-util.jar          6.0.1
+servlet-api.jar         2.5-6.0.1
+xfire-all.jar           1.2.3
+wstx-asl.jar            3.0.1
+stax-api.jar            1.0.1
 

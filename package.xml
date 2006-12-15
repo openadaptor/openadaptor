@@ -15,7 +15,7 @@
   <target name="zippedpackage" depends="package, zip" description="create zipped package"/>
   
   <target name="zip">
-    <zip destfile="openadaptor-${tag}.zip">
+    <zip destfile="openadaptor-${tag}-bin.zip">
       <zipfileset dir="${dir.package}" prefix="openadaptor-${tag}"/>
     </zip>
   </target>
