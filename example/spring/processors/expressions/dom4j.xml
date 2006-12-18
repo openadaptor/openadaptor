@@ -26,33 +26,32 @@
   <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="XML_Inpoint" value-ref="dom4j_convertor"/>
-        <entry key-ref="dom4j_convertor" value-ref="AttributeSetExample"/>
-        <entry key-ref="AttributeSetExample" value-ref="AttributeSetExample2"/>
-        <entry key-ref="AttributeSetExample2" value-ref="ConditionProcessorExample"/>
-        <entry key-ref="ConditionProcessorExample" value-ref="AttributeRemoveExample"/>
-        <entry key-ref="AttributeRemoveExample" value-ref="toXML"/>
-        <entry key-ref="toXML" value-ref="Outpoint"/>
+        <entry key-ref="XmlInpoint" value-ref="dom4j_convertor"/>
+        <entry key-ref="dom4j_convertor" value-ref="SetTotalValue"/>
+        <entry key-ref="SetTotalValue" value-ref="AddAuthorTitle"/>
+        <entry key-ref="AddAuthorTitle" value-ref="ConditionalQuantify"/>
+        <entry key-ref="ConditionalQuantify" value-ref="RemoveRedundantAttributes"/>
+        <entry key-ref="RemoveRedundantAttributes" value-ref="ConvertToXMLText"/>
+        <entry key-ref="ConvertToXMLText" value-ref="Outpoint"/>
       </map>
     </property>
   </bean>
 
-
-  <bean id="XML_Inpoint" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="XmlInpoint" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Read in an xml document consisting of a single record.
       This record is converted into a dom4j document.
     </description>
     <property name="streamReader">
       <bean class="org.oa3.auxil.connector.iostream.reader.FileReader">
-        <property name="path" value="books.xml"/>
+        <property name="path" value="book.xml"/>
       </bean>
     </property>
   </bean>
 
   <bean id="dom4j_convertor" class="org.oa3.thirdparty.dom4j.XmlToDom4jConvertor"/>
 
-  <bean id="AttributeSetExample" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
+  <bean id="SetTotalValue" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
     <description>
       This example sets a record value as the result of an expression.
       It calculates price * quantity and stores it as totalValue
@@ -69,18 +68,18 @@
         </description>
         <property name="attributeTypeMap">
           <map>
-            <entry key="/booklist/book/price" value="Double"/>
-            <entry key="/booklist/book/quantity" value="Long"/>
+            <entry key="/book/price" value="Double"/>
+            <entry key="/book/quantity" value="Long"/>
           </map>
         </property>
-        <property name="expression" value="{/booklist/book/price} * {/booklist/book/quantity}"/>
+        <property name="expression" value="{/book/price} * {/book/quantity}"/>
       </bean>
     </property>
     <!-- This is attribute where the result of the expression is stored -->
-    <property name="attributeName" value="/booklist/book/totalvalue"/>
+    <property name="attributeName" value="/book/totalvalue"/>
   </bean>
 
-  <bean id="AttributeSetExample2" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
+  <bean id="AddAuthorTitle" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
     <description>
       This example is even simpler, do some simple string concatenation.
       As no type mapping is required, the expression can just be provided
@@ -89,11 +88,11 @@
     <property name="simpleRecordAccessor">
       <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
     </property>
-    <property name="expressionString" value="'Hon. '+{/booklist/book/author}+' the second'"/>
-    <property name="attributeName" value="/booklist/book/copiedAuthor"/>
+    <property name="expressionString" value="'Hon. '+{/book/author}+' the second'"/>
+    <property name="attributeName" value="/book/copiedAuthor"/>
   </bean>
 
-  <bean id="ConditionProcessorExample" class="org.oa3.auxil.processor.simplerecord.ConditionProcessor">
+  <bean id="ConditionalQuantify" class="org.oa3.auxil.processor.simplerecord.ConditionProcessor">
     <description>
       This example illustrates setting an attribute value depending
       on the result of a boolean expression, e.g. the info attribute
@@ -106,10 +105,10 @@
       <bean class="org.oa3.auxil.expression.Expression">
         <property name="attributeTypeMap">
           <map>
-            <entry key="/booklist/book/quantity" value="Long"/>
+            <entry key="/book/quantity" value="Long"/>
           </map>
         </property>
-        <property name="expression" value="{/booklist/book/quantity} gt 3"/>
+        <property name="expression" value="{/book/quantity} gt 3"/>
       </bean>
     </property>
     <property name="thenProcessor">
@@ -117,7 +116,7 @@
         <property name="simpleRecordAccessor">
           <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
         </property>
-        <property name="attributeName" value="/booklist/book/info"/>
+        <property name="attributeName" value="/book/info"/>
         <property name="expressionString" value="'many'"/>
       </bean>
     </property>
@@ -126,13 +125,13 @@
         <property name="simpleRecordAccessor">
           <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
         </property>
-        <property name="attributeName" value="/booklist/book/info"/>
+        <property name="attributeName" value="/book/info"/>
         <property name="expressionString" value="'few'"/>
       </bean>
     </property>
   </bean>
 
-  <bean id="AttributeRemoveExample" class="org.oa3.core.processor.ProcessorGroup">
+  <bean id="RemoveRedundantAttributes" class="org.oa3.core.processor.ProcessorGroup">
     <description>
       This example removes 2 named attributes.
       Attributes can be removed either by name (attributeName) or using the
@@ -144,19 +143,19 @@
           <property name="simpleRecordAccessor">
             <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
           </property>
-          <property name="expressionString" value="'/booklist/book/price'"/>
+          <property name="expressionString" value="'/book/price'"/>
         </bean>
         <bean class="org.oa3.auxil.processor.simplerecord.AttributeRemoveProcessor">
           <property name="simpleRecordAccessor">
             <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
           </property>
-          <property name="attributeName" value="/booklist/book/quantity"/>
+          <property name="attributeName" value="/book/quantity"/>
         </bean>
       </list>
     </property>
   </bean>
 
-  <bean id="toXML" class="org.oa3.thirdparty.dom4j.Dom4jToXmlConvertor">
+  <bean id="ConvertToXMLText" class="org.oa3.thirdparty.dom4j.Dom4jToXmlConvertor">
     <property name="prettyPrint" value="true"/> 
   </bean>
 
