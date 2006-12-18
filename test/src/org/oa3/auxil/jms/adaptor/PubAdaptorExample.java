@@ -1,4 +1,4 @@
-package org.oa3.auxil.jms;
+package org.oa3.auxil.jms.adaptor;
 
 import java.util.HashMap;
 import java.util.Map;

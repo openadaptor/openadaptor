@@ -1,4 +1,4 @@
-package org.oa3.auxil.connector.servlet;
+package org.oa3.auxil.connector.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;

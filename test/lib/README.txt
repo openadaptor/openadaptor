@@ -1,6 +1,10 @@
 JAR VERSIONS
 
-jbossall-client.jar     4.0.5
+jboss-client.jar        4.0.5
+jboss-common-client.jar 4.0.5
+jbossmq-client.jar      4.0.5
+concurrent.jar          ? (jboss 4.0.5)
+jnp-client.jar          jboss 4.0.5
 jotm.jar                ?
 junit.jar               ?
 log4j.jar               1.2.9

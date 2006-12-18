@@ -68,6 +68,12 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     }
   }
   
+  protected boolean queueIsEmpty() {
+    synchronized (LOCK) {
+      return queue.isEmpty();
+    }
+  }
+  
   public Object getReaderContext() {
     return null;
   }
@@ -78,7 +84,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
 
   public Object[] next(long timeoutMs) {
     synchronized (LOCK) {
-      while (queue.size() == 0) {
+      if (queue.size() == 0) {
         try {
           LOCK.wait(timeoutMs);
         } catch (InterruptedException e) {
@@ -88,18 +94,14 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
       for (int i = 0; i < data.length; i++) {
         data[i] = queue.remove(0);
       }
-      return data;
+      if (data.length > 0) {
+        return data;
+      } else {
+        return null;
+      }
     }
   }
 
-  private boolean waitForCommit() {
-    if (isTransacted) {
-      return true;
-    } else {
-      return true;
-    }
-  }
-  
   public Object getResource() {
     if (isTransacted) {
       return new MyTransactionalResource();
@@ -147,10 +149,14 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     }
     synchronized void setCommit() {
       status = COMMIT;
+      log.info("committed");
+      this.notify();
     }
+
     boolean isCommit() {
       return status == COMMIT;
     }
+    
     boolean isRollback() {
       return status == ROLLBACK;
     }
