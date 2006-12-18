@@ -57,5 +57,8 @@
 	<classpathentry kind="lib" path="lib/XmlSchema.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec.jar"/>
+	<classpathentry kind="lib" path="test/lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

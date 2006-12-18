@@ -25,6 +25,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     // create connector and connect (this starts jetty)
     ReadConnectorServlet servlet = new ReadConnectorServlet();
     servlet.setParameterName("data");
+    servlet.setLocalJettyPort(9999);
     servlet.connect();
     
     // to http get
@@ -60,6 +61,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     ReadConnectorServlet servlet = new ReadConnectorServlet();
     servlet.setParameterName("data");
     servlet.setAcceptGet(true);
+    servlet.setLocalJettyPort(9999);
     servlet.connect();
     
     // to http get
