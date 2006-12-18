@@ -21,4 +21,4 @@ servlet-api.jar         2.5-6.0.1
 xfire-all.jar           1.2.3
 wstx-asl.jar            3.0.1
 stax-api.jar            1.0.1
-
+jaxen.jar               1.1-beta-9
