@@ -42,6 +42,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IDataProcessor;
+import org.oa3.core.Component;
 
 /**
  * Utility processor which allows multiple processors to be grouped and treated as one.
@@ -49,14 +50,14 @@ import org.oa3.core.IDataProcessor;
  *
  * Supported properties:
  * <pre>
- * processorList       Array of IRecordProcessor entries. Order is significant.
+ * processors       Array of IDataProcessor entries. Order is significant.
  * </pre>
  * <p/>
  *
  *
  * @author Eddy Higgins
  */
-public class ProcessorGroup implements IDataProcessor {
+public class ProcessorGroup extends Component implements IDataProcessor {
 
   private static Log log = LogFactory.getLog(ProcessorGroup.class);
 
@@ -89,7 +90,6 @@ public class ProcessorGroup implements IDataProcessor {
 
   /**
    * Invoke validation of the component properties provided by each of the processors in this group.
-   * @return Exception list.
    */
   public void validate(List exceptions) {
     if (processors != null) {
@@ -122,7 +122,7 @@ public class ProcessorGroup implements IDataProcessor {
    *
    * @param record - Object containing the record
    *
-   * @return record, untouched or null if the record is to be skipped.
+   * @return record array, empty if the record is to be skipped.
    */
   public Object[] process(Object record) {
     Object[] input; //This will get set immediately in the loop
