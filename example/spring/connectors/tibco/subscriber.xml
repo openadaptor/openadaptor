@@ -20,7 +20,6 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
-      lib/3rdparty/activation.jar
      
       tibrvj.jar (this is not distributed with openadaptor)
     

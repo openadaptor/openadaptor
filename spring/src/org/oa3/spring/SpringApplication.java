@@ -176,7 +176,12 @@ public class SpringApplication {
         IComponent component = (IComponent) bean;
         if (component.getId() == null) {
           component.setId(beanNames[i]);
+          log.debug("setting IComponent id for " + beanNames[i]);
+        } else {
+          log.debug("IComponent id is already set for " + beanNames[i]);
         }
+      } else {
+        log.debug("bean " + beanNames[i] + " is not an IComponent");
       }
     }
   }
