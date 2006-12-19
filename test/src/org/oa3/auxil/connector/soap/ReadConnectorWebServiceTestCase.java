@@ -50,6 +50,7 @@ public class ReadConnectorWebServiceTestCase extends TestCase {
     try {
       // connect (this starts jetty)
       service.setLocalJettyPort(9999);
+      service.setTransacted(false);
       service.connect();
 
       // invoke webservice (using axis)

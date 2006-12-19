@@ -134,6 +134,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public void start() {
+    exitCode = 0;
     try {
       validate();
       started = true;

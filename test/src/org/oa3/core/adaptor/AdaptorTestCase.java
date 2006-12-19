@@ -330,11 +330,8 @@ public class AdaptorTestCase extends TestCase {
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor
-    try {
-      adaptor.run();
-      fail("should not be allow to run multiple inpoint from calling thread");
-    } catch (Exception e) {
-    }
+    adaptor.run();
+    assertTrue(adaptor.getExitCode() == 1);
     
     adaptor.setRunInpointsInCallingThread(false);
     adaptor.run();
@@ -375,11 +372,8 @@ public class AdaptorTestCase extends TestCase {
     adaptor.setRunInpointsInCallingThread(true);
     
     // run adaptor
-    try {
-      adaptor.run();
-      fail("should not be allow to run multiple inpoint from calling thread");
-    } catch (Exception e) {
-    }
+    adaptor.run();
+    assertTrue(adaptor.getExitCode() == 1);
     
     adaptor.setRunInpointsInCallingThread(false);
     adaptor.run();

@@ -128,20 +128,25 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
     }
     try {
       log.info(getId() + " running");
+      ITransaction transaction = null;
       while (isState(State.RUNNING) && !connector.isDry()) {
-        ITransaction transaction = null;
         try {
-          transaction = transactionManager.getTransaction();
-          enlistConnector(transaction);
-          getDataAndProcess(transaction);
-          log.debug(getId() + " committing transaction");
-          transaction.commit();
+          if (transaction == null) {
+            transaction = transactionManager.getTransaction();
+            enlistConnector(transaction);
+          }
+          if (getDataAndProcess(transaction)) {
+            log.debug(getId() + " committing transaction");
+            transaction.commit();
+            transaction = null;
+          }
         } catch (Throwable e) {
           log.error(getId() + " stopping, uncaught exception", e);
           exitCode = 1;
           stop();
           log.info(" rolling back transaction");
           transaction.rollback();
+          transaction = null;
         }
       }
     } finally {
@@ -155,7 +160,7 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
    * extracted so that frameworks can plug in their own transaction management
    * @param transaction
    */
-  public void getDataAndProcess(ITransaction transaction) {
+  public boolean getDataAndProcess(ITransaction transaction) {
     Object[] data = connector.next(timeoutMs);
     if (data != null) {
       if (connector.getReaderContext() == prevReaderContext) {
@@ -165,6 +170,7 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
       Message msg = new Message(data, this, transaction);
       process(msg);
     }
+    return data != null;
   }
 
   public void setAdaptor(Adaptor adaptor) {

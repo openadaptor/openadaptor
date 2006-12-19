@@ -59,6 +59,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     ReadConnectorServlet servlet = new ReadConnectorServlet();
     servlet.setParameterName("data");
     servlet.setLocalJettyPort(9999);
+    servlet.setTransacted(false);
     servlet.connect();
     
     // to http get
@@ -95,6 +96,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     servlet.setParameterName("data");
     servlet.setAcceptGet(true);
     servlet.setLocalJettyPort(9999);
+    servlet.setTransacted(false);
     servlet.connect();
     
     // to http get
