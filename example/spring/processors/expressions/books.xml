@@ -4,12 +4,12 @@
     <title>Cosmic Banditos</title>
     <author>A.C. Weisbecker</author>
     <price>3.54</price>
-    <quantity type="Long">3</quantity>
+    <quantity>3</quantity>
   </book>
   <book>
     <title>Fall From a Cliff</title>
     <author>Eileen Dover</author>
-    <price type="Double">6.00</price>
-    <quantity type="Long">4</quantity>
+    <price>6.00</price>
+    <quantity>4</quantity>
   </book>
 </booklist>  

@@ -9,7 +9,8 @@
     <description>
         This example illustrates the use of oa3 Expressions (using Ordered Maps)
         Simple example to illustrate using an expression to set value of a field
-        based on the values of two others.
+        based on the values of two others. This example also illustrates the use
+        of attribute type maps.
 
         Data originates: File
         Data processed : XML Records (with typed attributes) converted to Ordered Maps
@@ -90,6 +91,7 @@
         <property name="attributeTypeMap">
           <map>
             <entry key="price" value="Double"/>
+            <entry key="quantity" value="Long"/>
           </map>
         </property>
         <property name="expression" value="{price} * {quantity}"/>

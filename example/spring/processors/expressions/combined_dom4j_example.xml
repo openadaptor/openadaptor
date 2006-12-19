@@ -8,9 +8,12 @@
 <beans>
   <description>
     This example illustrates the use of oa3 Expressions (using XML/dom4j)
-    Simple example to illustrate use of Typed XML and Expressions
+    Simple example to illustrate use of Typed XML and Expressions. This example
+    manipulates xml directly (using dom4j) and represents a single adaptor that applies
+    all the transforms defined in the individual orderedmap examples.
+
     Data originates: File
-    Data processed : Single XML Record (with typed attributes) converted to dom4j document
+    Data processed : Single XML Record converted to dom4j document
     Data processed : Various expressions are applied to the document
     Data terminates: stdout
   </description>
@@ -27,11 +30,13 @@
     <property name="processMap">
       <map>
         <entry key-ref="XmlInpoint" value-ref="dom4j_convertor"/>
-        <entry key-ref="dom4j_convertor" value-ref="SetTotalValue"/>
+        <entry key-ref="dom4j_convertor" value-ref="AccessorWrapper"/>
+        <entry key-ref="AccessorWrapper" value-ref="SetTotalValue"/>
         <entry key-ref="SetTotalValue" value-ref="AddAuthorTitle"/>
         <entry key-ref="AddAuthorTitle" value-ref="ConditionalQuantify"/>
         <entry key-ref="ConditionalQuantify" value-ref="RemoveRedundantAttributes"/>
-        <entry key-ref="RemoveRedundantAttributes" value-ref="ConvertToXMLText"/>
+        <entry key-ref="RemoveRedundantAttributes" value-ref="Unwrapper"/>
+        <entry key-ref="Unwrapper" value-ref="ConvertToXMLText"/>
         <entry key-ref="ConvertToXMLText" value-ref="Outpoint"/>
       </map>
     </property>
@@ -51,14 +56,17 @@
 
   <bean id="dom4j_convertor" class="org.oa3.thirdparty.dom4j.XmlToDom4jConvertor"/>
 
+  <bean id="AccessorWrapper" class="org.oa3.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <property name="simpleRecordAccessor">
+      <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
+    </property>
+  </bean>
+
   <bean id="SetTotalValue" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
     <description>
       This example sets a record value as the result of an expression.
       It calculates price * quantity and stores it as totalValue
     </description>
-    <property name="simpleRecordAccessor">
-      <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-    </property>
     <property name="expression">
       <bean class="org.oa3.auxil.expression.Expression">
         <description>
@@ -85,9 +93,6 @@
       As no type mapping is required, the expression can just be provided
       as a string (expressionString instead of expression)
     </description>
-    <property name="simpleRecordAccessor">
-      <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-    </property>
     <property name="expressionString" value="'Hon. '+{/book/author}+' the second'"/>
     <property name="attributeName" value="/book/copiedAuthor"/>
   </bean>
@@ -98,9 +103,6 @@
       on the result of a boolean expression, e.g. the info attribute
       will get 'lots' when quantity is more than 4, or 'few' otherwise.
     </description>
-    <property name="simpleRecordAccessor">
-      <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-    </property>
     <property name="ifExpression">
       <bean class="org.oa3.auxil.expression.Expression">
         <property name="attributeTypeMap">
@@ -113,18 +115,12 @@
     </property>
     <property name="thenProcessor">
       <bean class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
-        <property name="simpleRecordAccessor">
-          <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-        </property>
         <property name="attributeName" value="/book/info"/>
         <property name="expressionString" value="'many'"/>
       </bean>
     </property>
     <property name="elseProcessor">
       <bean class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
-        <property name="simpleRecordAccessor">
-          <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-        </property>
         <property name="attributeName" value="/book/info"/>
         <property name="expressionString" value="'few'"/>
       </bean>
@@ -140,20 +136,16 @@
     <property name="processors">
       <list>
         <bean class="org.oa3.auxil.processor.simplerecord.AttributeRemoveProcessor">
-          <property name="simpleRecordAccessor">
-            <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-          </property>
           <property name="expressionString" value="'/book/price'"/>
         </bean>
         <bean class="org.oa3.auxil.processor.simplerecord.AttributeRemoveProcessor">
-          <property name="simpleRecordAccessor">
-            <bean class="org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
-          </property>
           <property name="attributeName" value="/book/quantity"/>
         </bean>
       </list>
     </property>
   </bean>
+
+  <bean id="Unwrapper" class="org.oa3.auxil.convertor.simplerecord.FromSimpleRecordConvertor"/>
 
   <bean id="ConvertToXMLText" class="org.oa3.thirdparty.dom4j.Dom4jToXmlConvertor">
     <property name="prettyPrint" value="true"/> 
