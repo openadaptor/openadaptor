@@ -4,11 +4,10 @@
 <!--
     This adaptor does the following...
     
-      * subscribes to a subject
+      * polls a jms queue
       * writes data to stdout
     
-    It is designed to illustrate the basic structure of an adaptor that subscribes
-    to rendezvous.
+    It is designed to illustrate the basic structure of an adaptor that subscribes to jms
 
     Run it like this...
     
@@ -20,15 +19,13 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
-      lib/3rdparty/activation.jar
-     
-      tibrvj.jar (this is not distributed with openadaptor)
+      jbossall-client.jar (this is not distributed with openadaptor)
     
-    tibrvj calls the native rendezvous installation, so this needs to be installed
-    and the libraries need to be in your PATH / LD_LIBRARY_PATH.
+    This example relies on a default instance of jboss running (http://www.jboss.org) on the
+    same machine that the example is being run.
      
-    Once it is running you need to publish a message, either by running the
-    corresponding publisher example or using tibrvsend.
+    To verify that this is working you need put some data on the queue, the corresponding
+    publisher example should do this.
 -->
 
 <beans>
@@ -56,14 +53,24 @@
     <property name="daemon" value=""/>  
   </bean>
   
-  <!-- This is a read connector, that subscribes to rendezvous -->
-  <bean id="Reader" class="org.oa3.thirdparty.tibco.TibrvReadConnector">
-    <property name="connection" ref="TibrvConnection"/>
-    <property name="topics">
-      <list>
-        <value>test</value>
-      </list>
-    </property>
+  <!-- This defines jndi connection, from which we get jms connection -->
+  <bean id="JndiConnection" class="org.oa3.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <!-- jms connection for queue we wish to subscribe to -->
+  <bean id="JmsConnection" class="org.oa3.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="queue" value="true"/>
+    <property name="durable" value="true"/>
+  </bean>
+
+  <!-- Reader that polls a jms queue -->
+  <bean id="Reader" class="org.oa3.auxil.connector.jms.JMSReadConnector">
+    <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
   
   <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">

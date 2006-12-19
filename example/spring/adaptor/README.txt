@@ -14,6 +14,7 @@ This contrived example reads input from stdin, capitalizes it and writes it to s
 
 Try it out by typing some input into the console.
 
-You can adjust the logging by tweaking example/lo4j.properties.
+You can adjust the logging by tweaking example/log4j.properties 
+(http://logging.apache.org/log4j/docs/manual.html)
 
 The other config files show core adaptor functionality that you may want to take advantage of.
