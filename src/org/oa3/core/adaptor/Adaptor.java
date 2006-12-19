@@ -70,6 +70,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private ITransactionManager transactionManager;
 
   private boolean started = false;
+  
+  private int exitCode = 0;
 
   public Adaptor() {
     super();
@@ -132,21 +134,27 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public void start() {
-    validate();
-    started = true;
-    startNonInpoints();
-    startInpoints();
-
-    if (runInpointsInCallingThread) {
-      runInpoint();
-    } else {
-      runInpointThreads();
+    try {
+      validate();
+      started = true;
+      startNonInpoints();
+      startInpoints();
+  
+      if (runInpointsInCallingThread) {
+        runInpoint();
+      } else {
+        runInpointThreads();
+      }
+  
+      log.info("waiting for inpoints to stop");
+      waitForInpointsToStop();
+      log.info("all inpoints are stopped");
+      stopNonInpoints();
+    } catch (Throwable ex) {
+      log.error("failed to start adaptor", ex);
+      exitCode = 1;
     }
-
-    log.info("waiting for inpoints to stop");
-    waitForInpointsToStop();
-    log.info("all inpoints are stopped");
-    stopNonInpoints();
+    
     if (getExitCode() != 0) {
       log.fatal("adaptor exited with " + getExitCode());
     }
@@ -199,7 +207,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public int getExitCode() {
-    int exitCode = 0;
+    int exitCode = this.exitCode;
     for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
       IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
       exitCode += inpoint.getExitCode();

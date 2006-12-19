@@ -130,7 +130,7 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
         Message msg = new Message(messageException, node, transaction);
         process(msg, destinations);
       } else {
-        //throw new RuntimeException(((MessageException)exceptions[0]).getException());
+        log.error("uncaught exception from " + node.toString(), messageException.getException());
         throw new RuntimeException("No route defined for Exception "+messageException.getException());
       }
     }

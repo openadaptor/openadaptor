@@ -154,6 +154,7 @@
           <include name="**/*TestCase.java"/>
           <exclude name="**/JBoss*.java"/>          
           <exclude name="**/MQ*.java"/>
+          <exclude name="**/TIBCO*.java"/>
         </fileset>
       </batchtest>
     </junit>

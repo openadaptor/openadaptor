@@ -98,7 +98,12 @@ public class SpringApplication {
     }
     System.setProperty(Application.PROPERTY_COMPONENT_ID, beanName);
 
-    runXml(configUrl, propsUrl, beanName, jmxPort);
+    try {
+      runXml(configUrl, propsUrl, beanName, jmxPort);
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
   }
 
   public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {

@@ -30,7 +30,7 @@ public class TransactionTestCase extends TestCase {
 
     TestWriteConnector outpoint = new TestWriteConnector("o");
     outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
-    outpoint.setTransactional(true);
+    outpoint.setTransacted(true);
     outpoint.setExpectedCommitCount(5);
    
     // create router
@@ -71,7 +71,7 @@ public class TransactionTestCase extends TestCase {
 
     TestWriteConnector outpoint = new TestWriteConnector("o");
     outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
-    outpoint.setTransactional(true);
+    outpoint.setTransacted(true);
     outpoint.setExpectedCommitCount(5);
    
     // create router
@@ -112,7 +112,7 @@ public class TransactionTestCase extends TestCase {
     TestWriteConnector outpoint = new TestWriteConnector("o");
     outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
     outpoint.setExceptionFrequency(2);
-    outpoint.setTransactional(true);
+    outpoint.setTransacted(true);
     outpoint.setExpectedCommitCount(3);
 
     TestWriteConnector errorOutpoint = new TestWriteConnector("e");

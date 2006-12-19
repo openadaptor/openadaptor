@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IComponent;
 import org.oa3.core.IReadConnector;
 import org.oa3.core.Message;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.lifecycle.State;
 import org.oa3.core.node.Node;
 import org.oa3.core.transaction.ITransaction;
@@ -100,13 +101,26 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
   public void start() {
     if (enabled) {
-      connector.connect();
+      try {
+        connector.connect();
+      } catch (RuntimeException ex) {
+        log.error(getId() + " failed to connect", ex);
+        disconnectNoThrow();
+        throw new ComponentException("failed to connect", ex, this);
+      }
       super.start();
     } else {
       log.info(getId() + " is not enabled");
     }
   }
 
+  private void disconnectNoThrow() {
+    try {
+      connector.disconnect();
+    } catch (Exception ex) {
+    }
+  }
+  
   public void run() {
     if (!isState(State.RUNNING)) {
       log.warn(getId() + " has not been started");

@@ -40,12 +40,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
 import org.oa3.core.IWriteConnector;
+import org.oa3.core.lifecycle.LifecycleComponent;
 import org.oa3.core.transaction.ITransactional;
 import org.oa3.core.transaction.TestTransactionalResource;
 
-public class TestWriteConnector extends Component implements IWriteConnector, ITransactional {
+public class TestWriteConnector extends LifecycleComponent implements IWriteConnector, ITransactional {
 
   private static final Log log = LogFactory.getLog(TestWriteConnector.class);
 
@@ -134,6 +134,11 @@ public class TestWriteConnector extends Component implements IWriteConnector, IT
     }
   }
 
+  public int getCommitCount() {
+    return transactionalResource.getCommittedCount();
+  }
+
+
   private void record(String line) {
     log.debug("received [" + line + "]");
     output.add(line);
@@ -150,7 +155,7 @@ public class TestWriteConnector extends Component implements IWriteConnector, IT
     this.expectedCommitCount = expectedCommitCount;
   }
 
-  public void setTransactional(boolean transactional) {
+  public void setTransacted(boolean transactional) {
     if (transactional) {
       transactionalResource = new TestTransactionalResource();
     } else {
