@@ -39,6 +39,10 @@ package org.oa3.auxil.connector.iostream.reader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Very basic String Record Reader.
@@ -48,11 +52,14 @@ import java.io.StreamTokenizer;
  * @author Eddy Higgins
  */
 public class StringRecordReader extends AbstractRecordReader {
-  
+
   //private static final Log log = LogFactory.getLog(StringRecordReader.class);
 
   private StreamTokenizer st;
 
+  private List includes = new ArrayList();
+  private List excludes = new ArrayList();
+  
   private boolean eof = false;
 
   // BEGIN Bean getters/setters
@@ -64,6 +71,30 @@ public class StringRecordReader extends AbstractRecordReader {
   public StringRecordReader() {
   }
 
+  public void setIncludePatterns(String[] regexPatterns) {
+    includes.clear();
+    for (int i = 0; i < regexPatterns.length; i++) {
+      includes.add(Pattern.compile(regexPatterns[i]));
+    }
+  }
+  
+  public void setIncludePattern(String regexPattern) {
+    includes.clear();
+    includes.add(Pattern.compile(regexPattern));
+  }
+  
+  public void setExcludePatterns(String[] regexPatterns) {
+    excludes.clear();
+    for (int i = 0; i < regexPatterns.length; i++) {
+      excludes.add(Pattern.compile(regexPatterns[i]));
+    }
+  }
+  
+  public void setExcludePattern(String regexPattern) {
+    excludes.clear();
+    excludes.add(Pattern.compile(regexPattern));
+  }
+  
   /**
    * Prepares this reader for use.
    * 
@@ -105,12 +136,12 @@ public class StringRecordReader extends AbstractRecordReader {
         eof = true;
         break;
       case StreamTokenizer.TT_NUMBER:
-        reading = false;
         result = st.toString();
+        reading = !match(result);
         break;
       case StreamTokenizer.TT_WORD:
-        reading = false;
         result = st.sval;
+        reading = !match(result);
         break;
       case StreamTokenizer.TT_EOL: // ignore for now.
         break;
@@ -123,5 +154,21 @@ public class StringRecordReader extends AbstractRecordReader {
 
   public boolean isDry() {
     return eof;
+  }
+  
+  public boolean match(String s) {
+    // if include patterns have been specified then string must match one
+    boolean match = includes.size() == 0;
+    for (Iterator iter = includes.iterator(); !match && iter.hasNext();) {
+      Pattern pattern = (Pattern) iter.next();
+      match = pattern.matcher(s).matches();
+    }
+    
+    // if excludes patterns have been specified then string must not match all
+    for (Iterator iter = excludes.iterator(); iter.hasNext();) {
+      Pattern pattern = (Pattern) iter.next();
+      match &= !(pattern.matcher(s).matches());
+    }
+    return match;
   }
 }

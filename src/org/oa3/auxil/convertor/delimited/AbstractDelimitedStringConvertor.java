@@ -330,8 +330,9 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    *           if the number of expected fields is greater than the number received.
    */
   private static void validateStructure(int expected, int received) throws RecordException {
-    if (expected > received)
+    if (expected > received) {
       throw new RecordFormatException("Expected " + expected + " fields, but received only " + received);
+    }
 
     else if (received > expected)
       log.warn(received + " fields, received, but " + expected + " expected. Remainder will have automatic names");

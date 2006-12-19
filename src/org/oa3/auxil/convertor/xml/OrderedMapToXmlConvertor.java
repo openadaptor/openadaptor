@@ -208,6 +208,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
         OrderedMapToXmlConvertor.log.info("Output Format encoding as " + encoding);
         outputFormat.setEncoding(encoding); // This definitely sets it in the header!
       }
+//      outputFormat.setOmitEncoding(true);
+//      outputFormat.setSuppressDeclaration(true);
       XMLWriter writer = new XMLWriter(sw, outputFormat);
       try {
         writer.write(doc);

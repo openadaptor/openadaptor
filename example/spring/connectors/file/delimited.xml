@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads delimited records from file
+      * converts delmited input into a map
+      * converts map to xml
+      * writes to file
+    
+    It is designed to illustrate the basic structure of a file reader adaptor
+
+    Run it like this...
+    
+      java org.oa3.spring.SpringApplication -config delimited.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+    
+    writes a file called output.xml
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.oa3.core.router.Router">
+    <property name="routingMap" ref="RoutingMap"/>
+  </bean>
+  
+  <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="MapConverter"/>
+        <entry key-ref="MapConverter" value-ref="XmlConverter"/>
+        <entry key-ref="XmlConverter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- This read connector, it reads lines from a file -->
+  <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+    <property name="streamReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.FileReader">
+        <property name="path" value="delimited.txt"/>
+      </bean>
+    </property>
+    <property name="recordReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.StringRecordReader">
+        <property name="excludePattern" value="^#.*"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <!-- This processor converts the delimited string to an ordered map -->
+  <bean id="MapConverter" class="org.oa3.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <property name="delimiter" value=","/>
+    <property name="fieldNames">
+      <list>
+        <value>Side</value>
+        <value>Qty</value>
+        <value>SecurityId</value>
+        <value>Counterparty</value>
+        <value>Price</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.oa3.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+    <property name="streamWriter">
+      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter">
+        <property name="path" value="output.xml"/>
+        <property name="append" value="false"/>
+      </bean>
+    </property>
+  </bean>
+  
+</beans>
