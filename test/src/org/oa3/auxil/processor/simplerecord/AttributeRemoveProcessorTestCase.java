@@ -59,27 +59,13 @@ public class AttributeRemoveProcessorTestCase extends AbstractTestAttributeModif
     return processor;
   }
 
-  /** Remove the record attribute matching the attributeName set for the processor */
-  public void testProcessRecord() {
-    // Set Expectations
-    getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
-    getAttributeModifyProcessor().setExpression(null);
-    recordMock.expects(once()).method("clone").will(returnValue(record));
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
-    recordMock.expects(once()).method("remove").with(eq(getAttributeModifyProcessor().getAttributeName()));
-    // Do the test
-    try {
-      testProcessor.process(record);
-    } catch (RecordException e) {
-      fail("Unexpected Exception [" + e + "]");
-    }
-  }
-
   /** Remove the record attribute matching the result of evaluating the expression set for the processor */
-  public void testProcessRecordWithExpression() {
+  public void testProcessAccessorSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
     getAttributeModifyProcessor().setAttributeName(null);
     getAttributeModifyProcessor().setExpression(expression);
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(EXPRESSION_EVAL_RESULT));
     recordMock.expects(once()).method("clone").will(returnValue(record));
     recordMock.expects(once()).method("getRecord").will(returnValue(record));
@@ -92,8 +78,67 @@ public class AttributeRemoveProcessorTestCase extends AbstractTestAttributeModif
     }
   }
 
+  public void testProcessNoAccessorSet() {
+    // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    getAttributeModifyProcessor().setAttributeName(null);
+    getAttributeModifyProcessor().setExpression(expression);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(EXPRESSION_EVAL_RESULT));
+    recordMock.expects(once()).method("clone").will(returnValue(record));
+    recordMock.expects(never()).method("getRecord");
+    recordMock.expects(once()).method("remove").with(eq(EXPRESSION_EVAL_RESULT));
+    // Do the test
+    try {
+      testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception [" + e + "]");
+    }
+  }
+
+  /**
+   * Test that process works as expected when the SimpleRecordAccessor is set.
+   * <p>
+   * This is the absolute minimum testing needed to show that SimpleRecordAccessors are being handled correctly by this
+   * Processor.
+   */
+  public void testProcessRecordWithoutAccessor() {
+    // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    getAttributeModifyProcessor().setAttributeName(null);
+    getAttributeModifyProcessor().setExpression(expression);
+    simpleRecordAccessorMock.expects(never()).method("asSimpleRecord");
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(EXPRESSION_EVAL_RESULT));
+    recordMock.expects(once()).method("clone").will(returnValue(record));
+    recordMock.expects(never()).method("getRecord");
+    recordMock.expects(once()).method("remove").with(eq(EXPRESSION_EVAL_RESULT));
+    // Do the test
+    try {
+      testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception [" + e + "]");
+    }
+  }
+
+  /** Remove the record attribute matching the attributeName set for the processor */
+  public void testProcessRecordWithoutExpression() {
+    // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
+    getAttributeModifyProcessor().setExpression(null);
+    recordMock.expects(once()).method("clone").will(returnValue(record));
+    recordMock.expects(never()).method("getRecord");
+    recordMock.expects(once()).method("remove").with(eq(getAttributeModifyProcessor().getAttributeName()));
+    // Do the test
+    try {
+      testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception [" + e + "]");
+    }
+  }
+
   public void testValidateAttributeSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
     getAttributeModifyProcessor().setExpression(null);
     // test
@@ -105,6 +150,7 @@ public class AttributeRemoveProcessorTestCase extends AbstractTestAttributeModif
 
   public void testValidateExpressionSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(null);
     getAttributeModifyProcessor().setExpression(expression);
     // test
@@ -116,6 +162,7 @@ public class AttributeRemoveProcessorTestCase extends AbstractTestAttributeModif
 
   public void testValidateNothingSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(null);
     getAttributeModifyProcessor().setExpression(null);
     // test

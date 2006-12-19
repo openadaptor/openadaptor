@@ -79,10 +79,35 @@ public class KeepNamedAttributesProcessorTestCase extends AbstractTestAbstractSi
    * <P>
    * Test that the configured attributes (and no others) are transferred between records.
    */
-  public void testProcessRecord() {
+  public void testProcessAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
+
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
     recordMock.expects(once()).method("clone").will(returnValue(clonedRecord));
     clonedRecordMock.expects(once()).method("clear");
     clonedRecordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(clonedRecord));
+
+    recordMock.expects(once()).method("get").with(eq(X)).will(returnValue(VALUE_OF_X));
+    recordMock.expects(once()).method("get").with(eq(Y)).will(returnValue(VALUE_OF_Y));
+    recordMock.expects(once()).method("get").with(eq(Z)).will(returnValue(VALUE_OF_Z));
+
+    clonedRecordMock.expects(once()).method("put").with(eq(X), eq(VALUE_OF_X));
+    clonedRecordMock.expects(once()).method("put").with(eq(Y), eq(VALUE_OF_Y));
+    clonedRecordMock.expects(once()).method("put").with(eq(Z), eq(VALUE_OF_Z));
+
+    try {
+      testProcessor.process(record);
+    } catch (Exception e) {
+      fail("Unexpected Exception: [" + e + "]");
+    }
+  }
+
+  public void testProcessNoAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+
+    recordMock.expects(once()).method("clone").will(returnValue(clonedRecord));
+    clonedRecordMock.expects(once()).method("clear");
+    clonedRecordMock.expects(never()).method("getRecord");
 
     recordMock.expects(once()).method("get").with(eq(X)).will(returnValue(VALUE_OF_X));
     recordMock.expects(once()).method("get").with(eq(Y)).will(returnValue(VALUE_OF_Y));

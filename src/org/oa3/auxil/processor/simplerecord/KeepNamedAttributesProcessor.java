@@ -68,14 +68,16 @@ public class KeepNamedAttributesProcessor extends AbstractSimpleRecordProcessor 
   // End Bean Properties
 
   /**
-   * Process the incoming SimpleRecord.
+   * Process a simpleRecord, noting if it has already been cloned. NB This processor will always return a (heavily)
+   * modified copy.
    * 
    * @param simpleRecord
-   *          Incoming Record.
-   * @return Modified Record.
-   * @throws RecordException
+   * @param alreadyCloned
+   * @return record with only the named attributes remaining.
+   * @throws org.oa3.processor.RecordException
+   * 
    */
-  public Object[] processSimpleRecord(ISimpleRecord simpleRecord) throws RecordException {
+  public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
     ISimpleRecord outgoing = (ISimpleRecord) simpleRecord.clone();
     outgoing.clear();
     Iterator attributeIter = getAttributesToKeep().iterator();
@@ -88,21 +90,8 @@ public class KeepNamedAttributesProcessor extends AbstractSimpleRecordProcessor 
         throw new RecordFormatException("Requested attribute[" + nextkey + "] did not exist in original SimpleRecord");
       }
     }
-    return new Object[] { outgoing.getRecord() };
-  }
+    return new Object[]{outgoing} ;
 
-  /**
-   * Process a simpleRecord, noting if it has already been cloned. NB This processor will always return a (heavily)
-   * modified copy.
-   * 
-   * @param simpleRecord
-   * @param alreadyCloned
-   * @return record with only the named attributes remaining.
-   * @throws org.oa3.processor.RecordException
-   * 
-   */
-  public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
-    return processSimpleRecord(simpleRecord);
   }
 
   public void validate(List exceptions) {

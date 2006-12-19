@@ -381,4 +381,12 @@ public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimple
     sra.setValueTypeAttributeName(getValueTypeAttributeName());
     return sra;
   }
+
+  /**
+   * Return the type of the record being presented as an ISimpleRecord.
+   * @return  Class
+   */
+  public Class getUnderlyingType() {
+    return document.getClass();
+  }
 }

@@ -105,10 +105,17 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
   }
 
   /**
-   * Test the basic process record functionality. In this case the 'then' functionality.
+   * Test the basic process record functionality. In this case the 'then' functionality. This is the only test which
+   * tests with an accessor set and tests that the accessor is used and that the corresponding getRecord() call is made.
+   * All other tests use a mock ISimpleRecord as data and don't assume anything about accessors.
    */
-  public void testProcessRecord() {
-    setProcessRecordExpectations();
+  public void testProcessAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
+    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
+    thenProcessorMock.expects(once()).method("process").with(eq(record)).will(returnValue(new Object[] { record }));
+    elseProcessorMock.expects(never()).method("process");
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
@@ -116,34 +123,32 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
     }
   }
 
-  protected void setProcessRecordExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
+  public void testProcessNoAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    recordMock.expects(never()).method("getRecord");
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
     thenProcessorMock.expects(once()).method("process").with(eq(record)).will(returnValue(new Object[] { record }));
     elseProcessorMock.expects(never()).method("process");
+    try {
+      testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception: [" + e + "]");
+    }
   }
 
   /**
    * Ensure that the else processor is exercised if the condition evaluates to false.
    */
   public void testProcessElsePath() {
-    setTestProcessElsePathExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
+    thenProcessorMock.expects(never()).method("process");
+    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(returnValue(new Object[] { record }));
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
       fail("Unexpected Exception: [" + e + "]");
     }
-  }
-
-  protected void setTestProcessElsePathExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
-    thenProcessorMock.expects(never()).method("process");
-    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(returnValue(new Object[] { record }));
   }
 
   /**
@@ -151,10 +156,8 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * ConditionProcessor to throw an ExpressionException.
    */
   public void testConditionEvaluatesToNull() {
-    recordMock.expects(once()).method("getRecord");
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(null)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // null
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(null));
     thenProcessorMock.expects(never()).method("process");
     elseProcessorMock.expects(never()).method("process");
     try {
@@ -173,12 +176,8 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * <p/> We expect the ConditionProcessor to throw an ExpressionException.
    */
   public void testConditionEvaluatesToNonBooleanObject() {
-    recordMock.expects(once()).method("getRecord");
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(new Object())); // Expect
-                                                                                                        // evaluating
-                                                                                                        // the condition
-                                                                                                        // to return an
-                                                                                                        // Object
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(new Object()));
     thenProcessorMock.expects(never()).method("process");
     elseProcessorMock.expects(never()).method("process");
     try {
@@ -197,7 +196,7 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * ConditionProcessor to pass on the ExpressionException.
    */
   public void testConditionThrowsExpressionException() {
-    recordMock.expects(once()).method("getRecord");
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(
         throwException(new ExpressionException("Thrown by Mock Expression")));
     thenProcessorMock.expects(never()).method("process");
@@ -218,7 +217,7 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * ConditionProcessor to pass on the NullPointerException.
    */
   public void testConditionThrowsNullPointerException() {
-    recordMock.expects(once()).method("getRecord");
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(
         throwException(new NullPointerException("Thrown by Mock Expression")));
     thenProcessorMock.expects(never()).method("process");
@@ -240,7 +239,11 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * ConditionProcessor to pass on the RecordException.
    */
   public void testThenProcessorThowsRecordException() {
-    setTestThenProcessorThowsRecordExceptionExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
+    thenProcessorMock.expects(once()).method("process").with(eq(record)).will(
+        throwException(new RecordException("Exception thrown by Then Processor")));
+    elseProcessorMock.expects(never()).method("process").with(eq(record));
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
@@ -248,16 +251,6 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
       return; // This is what we expected.
     }
     fail("Expected a RecordException");
-  }
-
-  protected void setTestThenProcessorThowsRecordExceptionExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
-    thenProcessorMock.expects(once()).method("process").with(eq(record)).will(
-        throwException(new RecordException("Exception thrown by Then Processor")));
-    elseProcessorMock.expects(never()).method("process").with(eq(record));
   }
 
   /**
@@ -265,7 +258,11 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * ConditionProcessor to pass on the RecordException.
    */
   public void testElseProcessorThrowsRecordException() {
-    setTestElseProcessorThrowsRecordExceptionExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
+    thenProcessorMock.expects(never()).method("process").with(eq(record));
+    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(
+        throwException(new RecordException("Exception thrown by Else Processor")));
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
@@ -275,22 +272,16 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
     fail("Expected a RecordException");
   }
 
-  protected void setTestElseProcessorThrowsRecordExceptionExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
-    thenProcessorMock.expects(never()).method("process").with(eq(record));
-    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(
-        throwException(new RecordException("Exception thrown by Else Processor")));
-  }
-
   /**
    * Test that what happens when the Then Processor throws a NullPointerException is as expected. <p/> We expect the
    * ConditionProcessor to pass on the NullPointerException.
    */
   public void testThenProcessorThrowsNullPointerException() {
-    setTestThenProcessorThrowsNullPointerExceptionExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
+    thenProcessorMock.expects(once()).method("process").with(eq(record)).will(
+        throwException(new NullPointerException("NullPointerException thrown by Then Processor")));
+    elseProcessorMock.expects(never()).method("process").with(eq(record));
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
@@ -302,22 +293,16 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
     fail("Expected a RecordException");
   }
 
-  protected void setTestThenProcessorThrowsNullPointerExceptionExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
-    thenProcessorMock.expects(once()).method("process").with(eq(record)).will(
-        throwException(new NullPointerException("NullPointerException thrown by Then Processor")));
-    elseProcessorMock.expects(never()).method("process").with(eq(record));
-  }
-
   /**
    * Test that what happens when the Then Processor throws a NullPointerException is as expected. <p/> We expect the
    * ConditionProcessor to pass on the NullPointerException.
    */
   public void testElseProcessorThrowsNullPointerException() {
-    setTestElseProcessorThrowsNullPointerExceptionExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
+    thenProcessorMock.expects(never()).method("process").with(eq(record));
+    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(
+        throwException(new NullPointerException("NullPointerException thrown by Else Processor")));
     try {
       testProcessor.process(record);
     } catch (RecordException e) {
@@ -329,20 +314,11 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
     fail("Expected a NullPointerException");
   }
 
-  protected void setTestElseProcessorThrowsNullPointerExceptionExpectations() {
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
-    thenProcessorMock.expects(never()).method("process").with(eq(record));
-    elseProcessorMock.expects(once()).method("process").with(eq(record)).will(
-        throwException(new NullPointerException("NullPointerException thrown by Else Processor")));
-  }
-
   /**
    * Check if setIfExpressionString produces the expression expected.
    */
   public void testSetIfExpressionString() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     String expressionString = REFERENCE_EXPRESSION_STRING;
     IExpression referenceExpression = new Expression();
     try {
@@ -369,12 +345,10 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Check that record is passed through if expression is false and else processor null.
    */
   public void testPassThruOnNullElseProcessor() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setElseProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
     thenProcessorMock.expects(never()).method("process");
 
     Object[] processedRecords = new Object[] {};
@@ -392,12 +366,10 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Check that record is processed if expression is true and else processor null.
    */
   public void testProcessViaThenOnNullElseProcessor() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setElseProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
     thenProcessorMock.expects(once()).method("process").with(eq(record)).will(
         returnValue(new Object[] { clonedRecord })); // Proves pprocess record was called
 
@@ -416,9 +388,9 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Check that record is passed through if expression is true and then processor null.
    */
   public void testPassThruOnNullThenProcessor() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setThenProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
     elseProcessorMock.expects(never()).method("process");
 
@@ -437,9 +409,9 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Check that record is processed via else if expression is false and then processor null.
    */
   public void testProcessViaElseOnNullThenProcessor() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setThenProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
     // Proves process record was called
     elseProcessorMock.expects(once()).method("process").with(eq(record)).will(
@@ -460,10 +432,10 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Test what happens to processing if both procesors are null and expression true.
    */
   public void testProcessIfBothProcessorsNullExpressionTrue() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setThenProcessor(null);
     processor.setElseProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
 
     Object[] processedRecords = new Object[] {};
@@ -480,10 +452,10 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
    * Test what happens to processing if both processors are null and expression false.
    */
   public void testProcessIfBothProcessorsNullExpressionFalse() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     processor.setThenProcessor(null);
     processor.setElseProcessor(null);
-    recordMock.expects(atLeastOnce()).method("getRecord").will(returnValue(record));
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
 
     Object[] processedRecords = new Object[] {};

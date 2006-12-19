@@ -171,11 +171,10 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
    * @throws RecordException
    */
   public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
-    Object realRecord = simpleRecord.getRecord();
     if (testCondition(simpleRecord)) {
-      return thenProcessor == null ? new Object[] { realRecord } : thenProcessor.process(realRecord);
+      return thenProcessor == null ? new Object[] { simpleRecord } : thenProcessor.process(simpleRecord);
     } else {
-      return elseProcessor == null ? new Object[] { realRecord } : elseProcessor.process(realRecord);
+      return elseProcessor == null ? new Object[] { simpleRecord } : elseProcessor.process(simpleRecord);
     }
   }
 

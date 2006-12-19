@@ -47,7 +47,7 @@ import org.oa3.core.exception.RecordFormatException;
  * <p>
  * This Processor is a bit of a one off as it can behave as a Filter or as a Processor. It is intended to cover a gap
  * in the expression handling where it is not possible (yet) to refernce attributes that don't exist in a record. This
- * sometimes occurs. This processor is likely to be deorecated once this is no longer an issue. Any function it still
+ * sometimes occurs. This processor is (very) likely to be deprecated once this is no longer an issue. Any function it still
  * serves at that point is likely to be factored into a single function processor or filter.
  * <p>
  * Default behaviour is to discard any records for which attributes on the <code>mandatoryIncomingRecordAttributes</code> list are missing.
@@ -155,21 +155,27 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
   // End of bean stuff
 
   /**
-   * Process a simpleRecord noting if it has already been cloned.
+   * Process a SimpleRecord noting if it has already been cloned.
    * <p>
-   * If any mandatory records are missing then discard the record. Alternatively if <b>throwExceptionOnMissingAttribute</b>
-   * is set to true then throw a RecordFormatException.
+   * If any mandatory records are missing then:
+   * <ol>
+   * <li>If CreateOnMissingAttribute set then create the missing attributes with null values and return the resulting SimpleRecord.</li>
+   * <li>if ThrowExceptionOnMissingAttribute set then throw a RecordFormatException.</li>
+   * <li>Otherwise based on value of DiscardMatches discard teh record (or don't).</li>
+   * </ol>
    * <p>
-   * Note as this is a filter we never clone or alter the incoming record.
+   * This is all a bit of a bodge. This processor will probably be superceeded by better expression handling and/or dedicated
+   * processors in the near future.
    *
    * @param simpleRecord
    * @param alreadyCloned
    * @return Object[] containing the results of processing the record.
-   * @throws org.oa3.processor.RecordException
+   * @throws RecordException
    *
    */
   public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
     ISimpleRecord outgoingRecord = simpleRecord;
+    Object[] outgoingArray = new Object[] {};
     if (!alreadyCloned && isCreateOnMissingAttribute()) { // Only clone if the intention is to modify the incoming record.
       outgoingRecord = (ISimpleRecord) simpleRecord.clone(); //We are to act as a processor so we clone if it hasn't neen done already.
     }
@@ -187,11 +193,13 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
       }
     }
     // Behave as a processor. Ignore discardMatches.
+    // Outgoing record has already been updated with missing attributes
+    // So we just return it.
     if (isCreateOnMissingAttribute()) {
-      return new Object[] { outgoingRecord.getRecord() };
+      outgoingArray = new Object[] { outgoingRecord };
     }
     //Always throw  exception if there are missing attributes. Ignore discardMatches
-    if (isThrowExceptionOnMissingAttribute()) {
+    else if (isThrowExceptionOnMissingAttribute()) {
       if (!missingAttributes.isEmpty()) {
         if (missingAttributes.size() == 1) {
           throw new RecordFormatException("Attribute " + missingAttributes + " is missing.");
@@ -199,25 +207,25 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
           throw new RecordFormatException("Attributes " + missingAttributes + " are missing.");
         }
       } else {
-        return new Object[] { simpleRecord.getRecord() }; // Return the original record because we haven't changed it.
+        outgoingArray = new Object[] { simpleRecord };
       }
     }
-
     // Here we can act as a filter. Our default mode. NB This is the only time we heed the value of discardMatches.
     // Note: The filter tests as true if the missingAttributes is NOT empty.
-    if (!missingAttributes.isEmpty()) {
+    else if (!missingAttributes.isEmpty()) {
       if (discardMatches) {
-        return new Object[] {};
+        outgoingArray = new Object[] {};
       } else {
-        return new Object[] { simpleRecord.getRecord() }; // Return the original record because we haven't changed it.
+        outgoingArray = new Object[] { simpleRecord };
       }
     } else {
       if (discardMatches) {
-        return new Object[] { simpleRecord.getRecord() }; // Return the original record because we haven't changed it.
+        outgoingArray = new Object[]{simpleRecord};
       } else {
-        return new Object[] {};
+        outgoingArray = new Object[]{};
       }
     }
+    return outgoingArray;
 
   }
 

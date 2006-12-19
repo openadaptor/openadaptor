@@ -229,11 +229,19 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param record
    *          The object to be represented as an ISimpleRecord. Must be an XMLString or a Dom4J <code>Document</code>
    * @return ISimpleRecord view on the underlying XML Document.
-   * @throws org.oa3.core.processor.RecordException
+   * @throws RecordException
    *           if the record cannot be represented as an ISimpleRecord
    */
   public ISimpleRecord asSimpleRecord(Object record) throws RecordException {
     return new StringSimpleRecordAccessor(record);
+  }
+
+  /**
+   * Return the type of the record being presented as an ISimpleRecord.
+   * @return  Class
+   */
+  public Class getUnderlyingType() {
+    return record.getClass();
   }
 
   /**

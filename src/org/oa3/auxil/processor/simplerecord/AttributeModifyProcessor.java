@@ -143,18 +143,13 @@ public abstract class AttributeModifyProcessor extends AbstractSimpleRecordProce
    * @param alreadyCloned
    *          Flag to indicate if the record has already been cloned. If not, we'll have to.
    * @return An Object[] containing the modified record.
-   * @throws org.oa3.processor.RecordException
+   * @throws RecordException
    *           if the modification failed.
    */
   public final Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
     // Clone it if it hasn't already been done - we're DEFINITELY going to modify it.
     ISimpleRecord outgoing = modifySimpleRecord(alreadyCloned ? simpleRecord : (ISimpleRecord) simpleRecord.clone());
-
-    // Note the call to outgoing.getRecord() This is to allow
-    // unwrapping of Objects which have been wrapped with an ISimpleRecord interface
-    // as in the case of Dom4JSimpleRecordAccessor.
-    // For OrderedMaps, it will just return itself anyway.
-    return new Object[] { outgoing.getRecord() };
+    return new Object[] { outgoing };
   }
 
   /**

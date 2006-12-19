@@ -107,20 +107,24 @@ public abstract class AbstractTestAbstractSimpleRecordProcessor extends Abstract
     } catch (RecordFormatException e) {
       return;
     } catch (RecordException e) {
-      fail("Unexpected RecordExecption [" + e + "]");
+      fail("Unexpected RecordException [" + e + "]");
     }
     fail("Did not catch expected RecordFormatException");
   }
 
+  // Needs to be renamed testProcess further up the hierarchy.
+  public  void testProcessRecord() {}
+
   /**
-   * Test that processRecord works as expected when the SimpleRecordAccessor is set.
-   * <p>
-   * This is the absolute minimum testing needed to show that SimpleRecordAccessors are being handled correctly by this
-   * Processor.
+   * Test the basic process record functionality. This is the only test which tests with an accessor set and tests that
+   * the accessor is used and that the corresponding getRecord() call is made. All other tests use a mock ISimpleRecord
+   * as data and don't assume anything about accessors.
    */
-  public void testProcessRecordWithISimpleRecordAccessor() {
-    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
-    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
-    testProcessRecord();
-  }
+  public abstract void testProcessAccessorSet();
+
+  /**
+   * Test the basic process record functionality. This test should be identical to testProcessAccessorSet but with no
+   * accessor and ISimpleRecord data. It should test that getRecord is never used.
+   */
+  public abstract void testProcessNoAccessorSet();
 }

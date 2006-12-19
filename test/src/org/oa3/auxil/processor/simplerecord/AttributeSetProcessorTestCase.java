@@ -68,15 +68,34 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
   }
 
   /** Test setting an attribute named "target" with the value "id". */
-  public void testProcessRecord() {
+  public void testProcessAccessorSet() {
     // Set expectations
+
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
+    getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
+    getAttributeModifyProcessor().setExpression(expression);
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(EXPRESSION_EVAL_RESULT));
+    recordMock.expects(once()).method("clone").will(returnValue(record));
+    recordMock.expects(once()).method("getRecord").will(returnValue(record));
+    recordMock.expects(once()).method("put").with(eq(getAttributeModifyProcessor().getAttributeName()),eq(EXPRESSION_EVAL_RESULT));
+    // test
+    try {
+      testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception [" + e + "]");
+    }
+  }
+
+  public void testProcessNoAccessorSet() {
+    // Set expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
     getAttributeModifyProcessor().setExpression(expression);
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(EXPRESSION_EVAL_RESULT));
     recordMock.expects(once()).method("clone").will(returnValue(record));
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
-    recordMock.expects(once()).method("put").with(eq(getAttributeModifyProcessor().getAttributeName()),
-        eq(EXPRESSION_EVAL_RESULT));
+    recordMock.expects(never()).method("getRecord");
+    recordMock.expects(once()).method("put").with(eq(getAttributeModifyProcessor().getAttributeName()),eq(EXPRESSION_EVAL_RESULT));
     // test
     try {
       testProcessor.process(record);
@@ -88,12 +107,13 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
   /** See what happens when the expression throws an exception. We expect an ExpressionException thrown by the processor. */
   public void testExpressionThrowsException() {
     // Set expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
     getAttributeModifyProcessor().setExpression(expression);
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(
         throwException(new ExpressionException("Deliberately thrown by the mock expression.")));
     recordMock.expects(once()).method("clone").will(returnValue(record));
-    recordMock.expects(never()).method("getRecord").will(returnValue(record));
+    recordMock.expects(never()).method("getRecord");
     recordMock.expects(never()).method("put").with(eq(getAttributeModifyProcessor().getAttributeName()),
         eq(EXPRESSION_EVAL_RESULT));
     // test
@@ -109,6 +129,7 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
 
   public void testValidateAllSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
     getAttributeModifyProcessor().setExpression(expression);
     // test
@@ -119,6 +140,7 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
 
   public void testValidateAttributeSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(TARGET_ATTRIBUTE_NAME);
     getAttributeModifyProcessor().setExpression(null);
     // test
@@ -129,6 +151,7 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
 
   public void testValidateExpressionSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(null);
     getAttributeModifyProcessor().setExpression(expression);
     // test
@@ -139,6 +162,7 @@ public class AttributeSetProcessorTestCase extends AbstractTestAttributeModifyPr
 
   public void testValidateNothingSet() {
     // Set Expectations
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     getAttributeModifyProcessor().setAttributeName(null);
     getAttributeModifyProcessor().setExpression(null);
     // test

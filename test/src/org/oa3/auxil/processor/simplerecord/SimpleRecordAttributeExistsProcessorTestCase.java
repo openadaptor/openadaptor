@@ -74,11 +74,29 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
    * <p>
    * In this case the processed record is set up to contain all the named attributes configured in the processor.
    */
-  public void testProcessRecord() {
+  public void testProcessAccessorSet() {
+    ((SimpleRecordAttributeExistsProcessor)testProcessor).setSimpleRecordAccessor(simpleRecordAccessor);
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
     recordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
     recordMock.expects(once()).method("getRecord").will(returnValue(record));
+    Object[] returnedRecords = null;
+    try {
+      returnedRecords = testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Shouldn't throw an exception. Got exception: [" + e + "]");
+    }
+    assertTrue("Should be one record.", returnedRecords.length == 1);
+    assertEquals("Should be the same as the incoming record", record, returnedRecords[0]);
+  }
+
+  public void testProcessNoAccessorSet() {
+    ((SimpleRecordAttributeExistsProcessor)testProcessor).setSimpleRecordAccessor(null);
+    recordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
+    recordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
+    recordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
+    //recordMock.expects(once()).method("getRecord").will(returnValue(record));
     Object[] returnedRecords = null;
     try {
       returnedRecords = testProcessor.process(record);
@@ -120,7 +138,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     recordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
     ((SimpleRecordAttributeExistsProcessor) testProcessor).setThrowExceptionOnMissingAttribute(true);
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
+    //recordMock.expects(once()).method("getRecord").will(returnValue(record));
     Object[] returnedRecords = null;
     try {
       returnedRecords = testProcessor.process(record);
@@ -144,7 +162,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     recordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
+    //recordMock.expects(once()).method("getRecord").will(returnValue(record));
     Object[] returnedRecords = null;
     try {
       returnedRecords = testProcessor.process(record);
@@ -169,7 +187,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     clonedRecordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
-    clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
+    //clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
     Object[] returnedRecords = null;
     try {
       returnedRecords = testProcessor.process(record);
@@ -195,7 +213,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     clonedRecordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
-    clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
+    //clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
     Object[] returnedRecords = null;
     try {
       returnedRecords = testProcessor.process(record);
@@ -242,7 +260,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     recordMock.expects(once()).method("containsKey").with(eq(X)).will(returnValue(true));
     recordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(false));
     recordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
+    //recordMock.expects(once()).method("getRecord").will(returnValue(record));
 
     Object[] returnedRecords = null;
     try {
@@ -331,7 +349,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(false));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("put").with(eq(Y), NULL);
-    clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
+    //clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
     ((SimpleRecordAttributeExistsProcessor) testProcessor).setCreateOnMissingAttribute(true);
 
     Object[] returnedRecordArray = null;
@@ -365,7 +383,7 @@ public class SimpleRecordAttributeExistsProcessorTestCase extends AbstractTestAb
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Y)).will(returnValue(false));
     clonedRecordMock.expects(once()).method("containsKey").with(eq(Z)).will(returnValue(true));
     clonedRecordMock.expects(once()).method("put").with(eq(Y), NULL);
-    clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
+    //clonedRecordMock.expects(once()).method("getRecord").will(returnValue(clonedRecord));
     ((SimpleRecordAttributeExistsProcessor) testProcessor).setCreateOnMissingAttribute(true);
     ((SimpleRecordAttributeExistsProcessor) testProcessor).setDiscardMatches(false);
 

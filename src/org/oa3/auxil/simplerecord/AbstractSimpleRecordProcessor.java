@@ -61,6 +61,7 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
 
   protected ISimpleRecordAccessor simpleRecordAccessor = null;
 
+
   /**
    * @return a method that will cobvert the record into and instance of ISimpleRecord
    */
@@ -89,7 +90,7 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
    * because this is where the ISimpleRecord checking is done. If you don't want
    * this, implement IRecordProcessor directly instead.
    *
-   * @param record the record to be processed
+   * @param data the record to be processed
    *
    * @return the array of records which result from processing the incoming record.
    *
@@ -98,6 +99,9 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
    * @throws RecordException if the processing fails
    */
   public final Object[] process(Object data) {
+
+    boolean wrappedLocally = true; // Current default behaviour is to always wrap and unwrap.
+
     if (data == null) {
       throw new NullRecordException("Null record not permitted.");
     }
@@ -108,13 +112,20 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
     } else {
       if (data instanceof ISimpleRecord) { //Easy. We're done.
         simpleRecord = (ISimpleRecord) data;
+        wrappedLocally = false; // We don't want to unwrap 'cos we received the data already wrapped.
       } else {
         log.warn("Incoming record is not an ISimpleRecord - perhaps a SimpleRecordAccessor must be specified?");
         throw new RecordFormatException("Expected ISimpleRecord . Got [" + data.getClass().getName() + "]");
       }
     }
 
-    return processSimpleRecord(simpleRecord, false);//Don't clone unless we need to
+    Object[] outputArray = processSimpleRecord(simpleRecord, false); //Don't clone unless we need to
+    if (wrappedLocally) {
+      for (int i = 0; i < outputArray.length; i ++ ) {
+        outputArray[i] = ((ISimpleRecord)outputArray[i]).getRecord();
+      }
+    }
+    return outputArray;
   }
 
   /**

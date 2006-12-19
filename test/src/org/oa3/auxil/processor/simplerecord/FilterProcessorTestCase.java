@@ -100,8 +100,11 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
    * <p>
    * Condition is configured to return true and everything else set as default. Record should be discarded.
    */
-  public void testProcessRecord() {
-    setTestProcessRecordExpectations();
+  public void testProcessAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(simpleRecordAccessor);
+    recordMock.expects(never()).method("getRecord"); // Matches are discarded
+    simpleRecordAccessorMock.expects(once()).method("asSimpleRecord").with(eq(record)).will(returnValue(record));
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
     Object[] returnedArray = null;
     try {
       returnedArray = testProcessor.process(record);
@@ -113,10 +116,19 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     assertTrue("Expected an array with one record", (returnedArray.length == 0));
   }
 
-  protected void setTestProcessRecordExpectations() {
+  public void testProcessNoAccessorSet() {
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
     expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
+    Object[] returnedArray = null;
+    try {
+      returnedArray = testProcessor.process(record);
+    } catch (RecordException e) {
+      fail("Unexpected Exception: [" + e + "]");
+    } catch (NullPointerException npe) {
+      fail("Unexpected NullPointerException: [" + npe + "]");
+    }
+    assertTrue("Expected an array with one record", (returnedArray.length == 0));
+
   }
 
   /**
@@ -126,7 +138,9 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
    * should be passed.
    */
   public void testConditionTrueDiscardMatchesFalse() {
-    setTestConditionTrueExpectationsDiscardMatchesFalse();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    ((FilterProcessor) testProcessor).setDiscardMatches(false); // true is the default.
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true));
     Object[] returnedArray = null;
     try {
       returnedArray = testProcessor.process(record);
@@ -137,14 +151,6 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     }
     assertTrue("Expected an array with one record", (returnedArray.length == 1));
     assertTrue("Expected outgoing record to be identical to incoming record", (record == returnedArray[0]));
-  }
-
-  protected void setTestConditionTrueExpectationsDiscardMatchesFalse() {
-    ((FilterProcessor) testProcessor).setDiscardMatches(false); // true is the default.
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
   }
 
   /**
@@ -153,7 +159,9 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
    * Expect the record to be discarded.
    */
   public void testConditionTrueDiscardMatchesTrue() {
-    setTestConditionTrueDiscardMatchesTrueExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
+    recordMock.expects(never()).method("getRecord");
     Object[] returnedArray = null;
     try {
       returnedArray = testProcessor.process(record);
@@ -164,13 +172,6 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     }
     assertTrue("Return value from processor should be either null or an empty array.", (returnedArray == null)
         || (returnedArray.length == 0));
-  }
-
-  protected void setTestConditionTrueDiscardMatchesTrueExpectations() {
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(true)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // true
-    recordMock.expects(never()).method("getRecord");
   }
 
   /**
@@ -179,7 +180,9 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
    * Expect the record to be discarded.
    */
   public void testConditionFalseDiscardMatchesFalse() {
-    setTestConditionFalseDiscardMatchesFalseExpectations();
+    ((FilterProcessor) testProcessor).setDiscardMatches(false); // true is the default
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
+    recordMock.expects(never()).method("getRecord");
     Object[] returnedArray = null;
     try {
       returnedArray = testProcessor.process(record);
@@ -192,21 +195,15 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
         || (returnedArray.length == 0));
   }
 
-  protected void setTestConditionFalseDiscardMatchesFalseExpectations() {
-    ((FilterProcessor) testProcessor).setDiscardMatches(false); // true is the default
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
-    recordMock.expects(never()).method("getRecord").will(returnValue(record));
-  }
-
   /**
    * Test set to return false, discardMatches to true.
    * <p>
    * Expect the record to be passed.
    */
   public void testConditionFalseDiscardMatchesTrue() {
-    setTestConditionFalseDiscardMatchesTrueExpectations();
+    getAbstractSimpleRecordProcessor().setSimpleRecordAccessor(null);
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false));
+    recordMock.expects(never()).method("getRecord");
     Object[] returnedArray = null;
     try {
       returnedArray = testProcessor.process(record);
@@ -219,20 +216,13 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     assertTrue("Expected outgoing record to be identical to incoming record", (record == returnedArray[0]));
   }
 
-  protected void setTestConditionFalseDiscardMatchesTrueExpectations() {
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(false)); // Expect evaluating
-                                                                                                  // the condition to
-                                                                                                  // return false
-    recordMock.expects(once()).method("getRecord").will(returnValue(record));
-  }
-
   /**
    * Test behaviour when condition expression evaluates to null.
    * <p>
    * Expect an ExpressionException.
    */
   public void testConditionEvaluatesToNull() {
-    setTestConditionEvaluatesToNullExpectations();
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(null));
     try {
       testProcessor.process(record);
     } catch (ExpressionException ee) {
@@ -244,23 +234,13 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     fail("Didn't get expected ExpressionException.");
   }
 
-  protected void setTestConditionEvaluatesToNullExpectations() {
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(null)); // Expect evaluating the
-                                                                                                // condition to return
-                                                                                                // null
-  }
-
   /**
    * Test behaviour when condition expression evaluates to object not a boolean.
    * <p>
    * Expect an ExpressionException.
    */
   public void testConditionEvaluatesToObject() {
-    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(new Object())); // Expect
-                                                                                                        // evaluating
-                                                                                                        // the condition
-                                                                                                        // to return an
-                                                                                                        // Object.
+    expressionMock.expects(once()).method("evaluate").with(eq(record)).will(returnValue(new Object()));
     try {
       testProcessor.process(record);
     } catch (ExpressionException ee) {

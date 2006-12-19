@@ -149,7 +149,7 @@ public class FilterProcessor extends AbstractSimpleRecordProcessor {
   public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {
     if (discardMatches != testCondition(simpleRecord)) {
       log.debug("Passing record");
-      return new Object[] { simpleRecord.getRecord() };
+      return new Object[] { simpleRecord };
     } else {
       log.debug("Discarding record");
       return new Object[] {};

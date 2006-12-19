@@ -57,4 +57,10 @@ public interface ISimpleRecordAccessor {
    *           if the supplied record cannot be viewed as an <code>ISimpleRecord</code>
    */
   public ISimpleRecord asSimpleRecord(Object record) throws RecordException;
+
+  /**
+   * Return the type of the record being presented as an ISimpleRecord.
+   * @return  Class
+   */
+  public Class getUnderlyingType();
 }
