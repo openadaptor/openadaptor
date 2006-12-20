@@ -13,7 +13,7 @@
 
     Run it like this...
     
-      java org.oa3.spring.SpringApplication -config delimited.xml -bean Adaptor
+      java org.oa3.spring.SpringApplication -config file.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -49,7 +49,7 @@
   <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
     <property name="streamReader">
       <bean class="org.oa3.auxil.connector.iostream.reader.FileReader">
-        <property name="path" value="delimited.txt"/>
+        <property name="path" value="input.txt"/>
       </bean>
     </property>
     <property name="recordReader">

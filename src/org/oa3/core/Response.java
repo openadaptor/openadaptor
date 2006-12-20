@@ -51,30 +51,23 @@ public class Response {
 
   private Set types=new HashSet();
 
-  /**
-   * Effectively a convenience wrapper around addData(Object data,OutputBatch.class)
-   * @param data
-   */
-  public void addData(List data) {
-    addData(data,OutputBatch.class,true); //bypass unnecessary method call
+  private void addData(List data) {
+    addData(data,OutputBatch.class,true);
   }
-  public void addData(List data,Class type) {
+
+  private void addData(List data,Class type) {
     addData(data,type,true);
   }
 
-  /**
-   * Effectively a convenience wrapper around addDatum(Object datum,OutputBatch.class).
-   * @param data
-   */
-  public void addDatum(Object datum) {
-    addData(datum,OutputBatch.class,false); //bypass unnecessary method call
+  private void addDatum(Object datum) {
+    addData(datum,OutputBatch.class,false);
   }
 
-  public void addDatum(Object datum,Class type) {
+  private void addDatum(Object datum,Class type) {
     addData(datum,type,false);
   }
 
-  public boolean containsType(Class type) {
+  private boolean containsType(Class type) {
     return types.contains(type);
   }
 
@@ -82,7 +75,7 @@ public class Response {
     return Collections.unmodifiableList(batches);
   }
 
-  public Object[] getCollatedBatches(Class c) {
+  private Object[] getCollatedBatches(Class c) {
     ArrayList output = new ArrayList();
     for (Iterator iter = batches.iterator(); iter.hasNext();) {
       List batch = (List) iter.next();
@@ -137,80 +130,47 @@ public class Response {
     }
   }
 
-  /**
-   * @deprecated - use addDatum(datum,OutputBatch.class) instead
-   */
   public void addOutput(Object datum) {
     addDatum(datum);
   }
 
-  /**
-   * @deprecated - use addDatum(datum,DiscardBatch.class) instead
-   */
   public void addDiscardedInput(Object datum) {
     addDatum(datum,DiscardBatch.class);
   }
 
-  /**
-   * @deprecated - use addDatum(datum,ExceptionBatch.class) instead
-   */
   public void addException(MessageException exception) {
     addDatum(exception,ExceptionBatch.class);
   }
 
-  /**
-   * @deprecated - use addData(batch,OutputBatch.class) instead
-   */
-  public void addoutputs(List batch) {
+  public void addOutputs(List batch) {
     addData(batch);
   }
 
-  /**
-   * @deprecated - use addData(batch,DiscardBatch.class) instead
-   */
   public void addDiscardedInputs(List batch) {
     addData(batch,DiscardBatch.class);
   }
 
-  /**
-   * @deprecated - use addData(batch,ExceptionBatch.class) instead
-   */
   public void addExceptions(List batch) {
     addData(batch,ExceptionBatch.class);
   }
 
 
-  /**
-   * @deprecated - use getCollatedBatches(OutputBatch.class) instead
-   */
   public Object[] getCollatedOutput() {
     return getCollatedBatches(OutputBatch.class);
   }
 
-  /**
-   * @deprecated - use getCollatedBatches(DiscardBatch.class) instead
-   */
   public Object[] getCollatedDiscards() {
     return getCollatedBatches(DiscardBatch.class);
   }
 
-  /**
-   * @deprecated - use getCollatedBatches(ExceptionBatch.class) instead
-   */
   public Object[] getCollatedExceptions() {
     return getCollatedBatches(ExceptionBatch.class);
   }
 
-  /**
-   * @deprecated - use containsType(DiscardBatch.class) instead
-   */
   public boolean containsDiscards() {
     return containsType(DiscardBatch.class);
   }
 
-  /**
-   * @deprecated - use containsType(ExceptionBatch.class) instead
-   */
   public boolean containsExceptions() {
     return types.contains(ExceptionBatch.class);
   }

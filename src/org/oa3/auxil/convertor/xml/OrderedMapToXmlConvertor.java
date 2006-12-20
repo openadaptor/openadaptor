@@ -160,35 +160,34 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
     if (encoding != null) {
       // Doesn't seem to have any effect here, so output formatter also sets it
       doc.setXMLEncoding(encoding);
-      OrderedMapToXmlConvertor.log.info("Document encoding now " + doc.getXMLEncoding());
+      log.debug("Document encoding now " + doc.getXMLEncoding());
     }
 
     String rootTag = rootElementTag;
 
     if (rootTag != null) {
-      OrderedMapToXmlConvertor.log.info("Using Supplied root tag - unset rootElementTag property to disable");
+      log.debug("Using Supplied root tag - unset rootElementTag property to disable");
     } else { // Try and derive it. Must have a single entry, whose value is itself an OM.
-      OrderedMapToXmlConvertor.log.info("rootElementTag property is not set. Deriving root tag from data.");
+      log.debug("rootElementTag property is not set. Deriving root tag from data.");
       if (map.size() == 1) { // Might be able to derive root tag.
         rootTag = (String) map.keys().get(0);
         Object value = map.get(rootTag);
         if (value instanceof IOrderedMap) { // Bingo we're in.
-          OrderedMapToXmlConvertor.log
-              .info("Deriving rootElementTag property from map (set rootElementTag property explicitly to prevent this");
+          log.debug("Deriving rootElementTag property from map (set rootElementTag property explicitly to prevent this");
           map = (IOrderedMap) value; // Move down a level as we're adding it here.
         } else {// No go -be safe and add our own root.
-          OrderedMapToXmlConvertor.log.warn("Failed to derive root tag. Using default of "
+          log.warn("Failed to derive root tag. Using default of "
               + OrderedMapToXmlConvertor.DEFAULT_ROOT_ELEMENT_TAG);
           rootTag = OrderedMapToXmlConvertor.DEFAULT_ROOT_ELEMENT_TAG;
         }
       } else {// More than one top level entry. Give up and default.
-        OrderedMapToXmlConvertor.log.warn("Top level has more than one entry. Using default of "
+        log.warn("Top level has more than one entry. Using default of "
             + OrderedMapToXmlConvertor.DEFAULT_ROOT_ELEMENT_TAG);
         rootTag = OrderedMapToXmlConvertor.DEFAULT_ROOT_ELEMENT_TAG;
       }
     }
 
-    OrderedMapToXmlConvertor.log.info("Document root tag will be: " + rootTag);
+    log.debug("Document root tag will be: " + rootTag);
 
     // Prime the root tag.
     Element root = doc.addElement(rootTag);
@@ -205,7 +204,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
       StringWriter sw = new StringWriter();
       OutputFormat outputFormat = OutputFormat.createCompactFormat();
       if (encoding != null) {
-        OrderedMapToXmlConvertor.log.info("Output Format encoding as " + encoding);
+        log.debug("Output Format encoding as " + encoding);
         outputFormat.setEncoding(encoding); // This definitely sets it in the header!
       }
 //      outputFormat.setOmitEncoding(true);
@@ -214,7 +213,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
       try {
         writer.write(doc);
       } catch (IOException ioe) {
-        OrderedMapToXmlConvertor.log.warn("Failed to write the XML as a String");
+        log.warn("Failed to write the XML as a String");
         throw new RecordFormatException("Failed to write the XML as a String. Reason: " + ioe.toString(), ioe);
       }
       result = sw.toString();

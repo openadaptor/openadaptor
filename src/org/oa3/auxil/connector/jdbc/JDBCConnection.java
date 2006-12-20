@@ -180,6 +180,19 @@ public class JDBCConnection extends Component {
    */
   public void connect() throws SQLException {
 
+    if (driver == null) {
+      throw new RuntimeException("driver not set");
+    }
+    if (url == null) {
+      throw new RuntimeException("url not set");
+    }
+    if (username == null) {
+      throw new RuntimeException("username not set");
+    }
+    if (password == null) {
+      throw new RuntimeException("password not set");
+    }
+    
     //Attempt to load jdbc driver class
     try {
       Class.forName(driver);
