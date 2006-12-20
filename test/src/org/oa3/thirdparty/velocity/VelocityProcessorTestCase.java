@@ -6,19 +6,19 @@ import junit.framework.TestCase;
 
 public class VelocityProcessorTestCase extends TestCase {
 
-//  public void xtest() {
-//    VelocityProcessor processor = new VelocityProcessor();
-//    processor.setTemplate("foobar");
-//    Object[] data = processor.process("test");
-//    System.err.println(data[0]);
-//  }
-  
-  public void test2() {
+  public void testEmbeddedTemplate() {
     VelocityProcessor processor = new VelocityProcessor();
-    processor.setTemplate(ResourceUtil.getResourcePath(this, "test.vm"));
+    processor.setTemplate("foo${data}bar");
     Object[] data = processor.process("test");
     assertTrue(data.length == 1);
-    System.err.println(data[0]);
+    assertTrue(data[0].equals("footestbar"));
+  }
+  
+  public void testTemplateFile() {
+    VelocityProcessor processor = new VelocityProcessor();
+    processor.setTemplateFile(ResourceUtil.getResourcePath(this, "test.vm"));
+    Object[] data = processor.process("test");
+    assertTrue(data.length == 1);
     assertTrue(data[0].equals("test"));
   }
 }

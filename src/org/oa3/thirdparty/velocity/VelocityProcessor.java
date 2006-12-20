@@ -1,11 +1,12 @@
 package org.oa3.thirdparty.velocity;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.List;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.oa3.core.Component;
 import org.oa3.core.IDataProcessor;
@@ -35,7 +36,20 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     }
   }
   
-  public void setTemplate(String fileName) {
+  public void setTemplate(String s) {
+    try {
+      File temp = File.createTempFile("xyz", ".vm", new File(System.getProperty("user.dir")));
+      temp.deleteOnExit();
+      FileWriter writer = new FileWriter(temp);
+      writer.write(s);
+      writer.close();
+      template = engine.getTemplate(temp.getName());
+    } catch (Exception e) {
+      throw new ComponentException("failed to create Template", e, this);
+    }
+  }
+  
+  public void setTemplateFile(String fileName) {
     try {
       template = engine.getTemplate(fileName);
     } catch (Exception e) {

@@ -70,7 +70,7 @@
   
   <!-- This is a processor that converts an ordered map into an xml string -->
   <bean id="VelocityProcessor" class="org.oa3.thirdparty.velocity.VelocityProcessor">
-    <property name="template" value="velocity.vm"/>
+    <property name="templateFile" value="velocity.vm"/>
   </bean>
   
   <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
