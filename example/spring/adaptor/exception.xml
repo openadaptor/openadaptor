@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads xml from stdin
+      * validates the xml
+      * writes to stdout
+    
+    Validation failures are trapped and send to a discard file
+    
+    Run it like this...
+    
+      java org.oa3.spring.SpringApplication -config exception.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      <data>hello</data>
+    
+    ...and you should see it echo-ed
+  
+    type something which is not an xml doc with a element called data and the validation
+    exception will be caught and sent to the discards.txt
+  
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.oa3.core.router.Router">
+    <property name="routingMap" ref="RoutingMap"/>
+  </bean>
+  
+  <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="Validator"/>
+        <entry key-ref="Validator" value-ref="Writer"/>
+      </map>
+    </property>
+    <!-- exception map -->
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+    <property name="streamReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.FileReader"/>
+    </property>
+    <property name="recordReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.StringRecordReader"/>
+    </property>
+  </bean>
+  
+  <!-- This processor validates the data as an xml string -->
+  <bean id="Validator" class="org.oa3.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+  
+  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+    <property name="streamWriter">
+      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+    </property>
+  </bean>
+  
+  <bean id="DiscardWriter" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+    <property name="streamWriter">
+      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter">
+        <property name="path" value="discards.txt"/>
+        <property name="append" value="false"/>
+      </bean>
+    </property>
+  </bean>
+  
+</beans>
