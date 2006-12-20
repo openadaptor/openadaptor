@@ -26,3 +26,6 @@ XmlSchema.jar           1.1
 commons-httpclient.jar  3.0.1
 commons-codec.jar       1.3
 jaxen.jar               1.1-beta-9
+commons-collections.jar 3.2
+velocity.jar            1.4
+     

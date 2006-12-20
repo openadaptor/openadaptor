@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads lines from stdin
+      * converts delmited input into a map
+      * converts map to xml
+      * writes to stdout
+    
+    It is designed to illustrate the use of velocity
+
+    Run it like this...
+    
+      java org.oa3.spring.SpringApplication -config velocity.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      foo,bar
+    
+    ...and you should see it converted to something like this...
+  
+    <record created="2006/12/20 16:11:40">
+      <field1>foo</field1>
+      <field2>bar</field2>
+    </record>
+    
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.oa3.core.router.Router">
+    <property name="routingMap" ref="RoutingMap"/>
+  </bean>
+  
+  <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="MapConverter"/>
+        <entry key-ref="MapConverter" value-ref="VelocityProcessor"/>
+        <entry key-ref="VelocityProcessor" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+    <property name="streamReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.FileReader"/>
+    </property>
+    <property name="recordReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.StringRecordReader"/>
+    </property>
+  </bean>
+  
+  <bean id="MapConverter" class="org.oa3.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor"/>
+  
+  <!-- This is a processor that converts an ordered map into an xml string -->
+  <bean id="VelocityProcessor" class="org.oa3.thirdparty.velocity.VelocityProcessor">
+    <property name="template" value="velocity.vm"/>
+  </bean>
+  
+  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+    <property name="streamWriter">
+      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+    </property>
+  </bean>
+  
+</beans>

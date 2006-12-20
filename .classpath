@@ -60,5 +60,7 @@
 	<classpathentry kind="lib" path="test/lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/velocity.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

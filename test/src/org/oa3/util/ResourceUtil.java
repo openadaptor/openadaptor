@@ -40,6 +40,13 @@ public class ResourceUtil {
     }
   }
 
+  public static String getResourcePath(Object caller) {
+    String s = caller.getClass().getPackage().getName();
+    s = s.replaceAll("\\.", "/");
+    s = "test/src/" + s;
+    return s;
+  }
+
   public static String getResourcePath(Object caller, String filename) {
     String s = caller.getClass().getPackage().getName();
     s = s.replaceAll("\\.", "/");
