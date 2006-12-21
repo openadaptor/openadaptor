@@ -476,13 +476,14 @@ public class MqConnection extends Component {
    * 
    * @return String
    */
-  public String nextRecord()  {
+  public String nextRecord(long timeoutMs)  {
     String messageString = null;
     try {
       //
       // get a message from MQ
       //
       MQMessage message = new MQMessage();
+      getMessageOptions.waitInterval = (int)timeoutMs;
       queue.get(message, getMessageOptions);
       //
       // print debug string

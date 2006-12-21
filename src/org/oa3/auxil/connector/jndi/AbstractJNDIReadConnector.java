@@ -37,12 +37,13 @@ package org.oa3.auxil.connector.jndi;
  * Rev: $Revision: 1.2 $ Created Oct 20, 2005 by Eddy Higgins
  */
 
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 
 /**
  * Abstract base class for connectors which use JNDI searches.
  */
-public abstract class AbstractJNDIReadConnector extends AbstractReadConnector {
+public abstract class AbstractJNDIReadConnector extends Component implements IReadConnector {
 
   protected AbstractJNDIReadConnector() {
   }

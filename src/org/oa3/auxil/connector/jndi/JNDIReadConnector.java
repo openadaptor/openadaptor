@@ -136,7 +136,6 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    *           if an AuthenticationException or NamingException occurs
    */
   public void connect() {
-    log.debug("Connector: [" + getId() + "] connecting ....");
     try {
       _ctxt = jndiConnection.connect();
     } catch (AuthenticationException ae) {
@@ -146,8 +145,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
       log.warn(ne.getMessage());
       throw new ComponentException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
     }
-    connected = true;
-    log.info("Connector: [" + getId() + "] successfully connected.");
+    log.info(getId() + " connected");
   }
 
   /**
@@ -167,8 +165,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
         log.warn(ne.getMessage());
       }
     }
-    connected = false;
-    log.info("Connector: [" + getId() + "] disconnected");
+    log.info(getId() + " disconnected");
   }
 
   /**
@@ -181,7 +178,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * @return Object[] containing an IOrderedMap of results, or <tt>null</tt>
    * @throws ComponentException
    */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws ComponentException {
     Object[] result = null;
     try {
       if (!_searchHasExecuted) {

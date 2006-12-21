@@ -37,24 +37,25 @@ package org.oa3.thirdparty.rss;
  * Created Dec 13, 2006 by oa3 Core Team
  */
 
-import org.oa3.core.connector.AbstractReadConnector;
-import org.oa3.core.exception.ComponentException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
+import org.oa3.core.exception.ComponentException;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.util.*;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.StringWriter;
-
+import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
 
 /**
@@ -63,17 +64,12 @@ import com.sun.syndication.io.XmlReader;
  *
  * @author <a href="mailto:sugath.mudali@gmail.com">Sugath Mudali</a>
  */
-public class RSSReadConnector extends AbstractReadConnector {
+public class RSSReadConnector extends Component implements IReadConnector {
 
   /**
    * Logger
    */
   private static final Log log = LogFactory.getLog(RSSReadConnector.class);
-
-  /**
-   * The formatter to parse the start poll time
-   */
-  private static final DateFormat DATE_FORMATTER = new SimpleDateFormat("H:mm");
 
   /**
    * Holds a collection of URLs as strings
@@ -86,21 +82,11 @@ public class RSSReadConnector extends AbstractReadConnector {
   private List urls = new ArrayList();
 
   /**
-   * The last polled date, default to now
-   */
-  private Calendar lastPolledDate = new GregorianCalendar();
-
-  /**
-   * The poll start time in HH:mm format. Eg, 05:30
-   */
-  private String pollStartTime;
-
-  /**
    * The output type for RSS. Set it to 2.0 as the default.
    */
   private String outputType = "rss_2.0";
 
-  // Bean Getter/Setter methods
+  private Date lastTime = new Date();
 
   public List getUrlStrings() {
     return urlStrings;
@@ -119,27 +105,11 @@ public class RSSReadConnector extends AbstractReadConnector {
   }
 
   /**
-   * Sets the start time for polling. Mainly used for testing as it can be
-   * used for polling for past entries.
-   *
-   * @param time takes the form of HH:mm, where HH is hours in 24-hour clock
-   *             format and mm stands for minutes. Invalid value for this entry would
-   *             cause the poll time to set to the current time (equivalent to not setting
-   *             this property).
-   */
-  public void setPollStartTime(String time) {
-    this.pollStartTime = time;
-  }
-
-  // END Bean getters/setters
-
-  /**
    * Establish a connection to external message transport. If already
    * connected then do nothing.
    */
   public void connect() {
-    log.debug("Connector: [" + getId() + "] connecting ....");
-    urls.clear();
+    log.debug(getId() + " connecting ....");
     if (urlStrings != null) {
       for (int i = 0; i < urlStrings.size(); i++) {
         try {
@@ -150,18 +120,17 @@ public class RSSReadConnector extends AbstractReadConnector {
         }
       }
     }
-    // Set the polled date.
-    setLastPolledDate();
-    log.info("The poll scheduled to start at: "
-        + this.lastPolledDate.getTime());
-    this.connected = true;
-    log.info("Connector: [" + getId() + "] successfully connected.");
+    log.info(getId() + " connected");
   }
 
+  public void disconnect() {
+    log.info(getId() + " disconnected");
+  }
+  
   /**
    * Poll for updates
    */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws ComponentException {
     Object[] result = null;
     List list = getLatestEntries();
     if (!list.isEmpty()) {
@@ -186,10 +155,6 @@ public class RSSReadConnector extends AbstractReadConnector {
         log.error("Failed to write feed to output string");
         throw new ComponentException("Failed to write feed to output string", ex, this);
       }
-      finally {
-        // Set the current stamp
-        this.lastPolledDate = new GregorianCalendar();
-      }
       log.info("Record is: " + result[0]);
     } else {
       log.debug("No data returned.");
@@ -202,7 +167,7 @@ public class RSSReadConnector extends AbstractReadConnector {
   }
 
   public boolean isDry() {
-    return !getPollingConfiguration().isActive();
+    return urls.isEmpty();
   }
 
   protected List getLatestEntries() {
@@ -217,8 +182,7 @@ public class RSSReadConnector extends AbstractReadConnector {
         List entries = inFeed.getEntries();
         for (Iterator iter1 = entries.iterator(); iter1.hasNext();) {
           SyndEntry entry = (SyndEntry) iter1.next();
-          if (entry.getPublishedDate().after(
-              this.lastPolledDate.getTime())) {
+          if (entry.getPublishedDate().after(lastTime)) {
             log.info("Adding entry: " + entry);
             result.add(entry);
           }
@@ -227,31 +191,8 @@ public class RSSReadConnector extends AbstractReadConnector {
         log.warn("Failed to process feed from: " + inputUrl, ex);
       }
     }
+    urls.clear();
+    lastTime = new Date();
     return result;
   }
-
-  private void setLastPolledDate() {
-    if (this.pollStartTime == null) {
-      // Haven't set the start time
-      return;
-    }
-    Date tempdate = null;
-    try {
-      tempdate = DATE_FORMATTER.parse(this.pollStartTime);
-    } catch (ParseException pe) {
-      log.error("Parse error with the start poll time, "
-          + " defaulting to current time" + this.pollStartTime);
-    }
-    // tempdate is not null if we have parsed the pollStartTime
-    // successfully.
-    if (tempdate != null) {
-      // Create a temp calendar object to extract hours and minutes
-      GregorianCalendar tempCal = new GregorianCalendar();
-      tempCal.setTime(tempdate);
-      //The current time.
-      this.lastPolledDate.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
-      this.lastPolledDate.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
-    }
-  }
-
 }

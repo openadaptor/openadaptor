@@ -39,29 +39,23 @@ package org.oa3.auxil.connector.jms;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 import org.oa3.core.exception.ComponentException;
 import org.oa3.core.transaction.ITransactional;
 
 /**
- * Read Connector class that implements listening to JMS.
+ * Read Connector class that implements listening to JMS. Delegates to <code>JMSConnector</code> 
+ * to perform the actual interaction with JMS.
  * 
- * Uses an instance of <code>JMSConnector</code> to perform the actual interaction with JMS.
- * 
+ * @see JMSConnection
  * @author OA3 Core Team
  */
-public class JMSReadConnector extends AbstractReadConnector implements ITransactional {
+public class JMSReadConnector extends Component implements IReadConnector, ITransactional {
 
   private static final Log log = LogFactory.getLog(JMSReadConnector.class);
 
-  /** JMS Connetion component that does all the real work. */
   private JMSConnection jmsConnection;
-
-  /** Total number of polls before listener shuts down. Default = 0 which implies unlimited. */
-  private int pollLimit = 0;
-
-  /** Current poll count. */
-  private int pollsCompleted = 0;
 
   public JMSReadConnector() {
   }
@@ -70,61 +64,10 @@ public class JMSReadConnector extends AbstractReadConnector implements ITransact
     super(id);
   }
   
-  // BEGIN bean getters/setters
-
-  /**
-   * Set default receive timeout.
-   * 
-   * @param timeout
-   */
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
-  }
-
-  /**
-   * Underlying <code>JMSConnection</code> component.
-   * 
-   * @return The JMS Connection.
-   */
-  public JMSConnection getJmsConnection() {
-    return jmsConnection;
-  }
-
-  /**
-   * Set underlying <code>JMSConnection</code> component.
-   * 
-   * @param jmsConnection
-   *          The JMSConenction implementation.
-   */
   public void setJmsConnection(JMSConnection jmsConnection) {
     this.jmsConnection = jmsConnection;
   }
 
-  /**
-   * Total number of polls before listener shuts down. Default = 0 which implies unlimited.
-   * 
-   * @return int Maximum number of polls.
-   */
-  public int getPollLimit() {
-    return pollLimit;
-  }
-
-  /**
-   * Set tootal number of polls before listener shuts down. Default = 0 which implies unlimited.
-   * 
-   * @param pollLimit
-   *          Maximum number of polls.
-   */
-  public void setPollLimit(int pollLimit) {
-    this.pollLimit = pollLimit;
-  }
-
-  // END bean getters/setters
-
-  /**
-   * Establish a connection to external message transport without starting the externalconnector. If already connected
-   * then do nothing.
-   */
   public void connect() {
     if (!isConnected()) {
       jmsConnection.connect();
@@ -133,59 +76,22 @@ public class JMSReadConnector extends AbstractReadConnector implements ITransact
     }
   }
 
-  /**
-   * Disconnect from the external message transport. If already disconnected then do nothing.
-   * 
-   * @throws org.oa3.control.ComponentException
-   */
   public void disconnect() {
     if (isConnected()) {
-      getJmsConnection().disconnect();
+      jmsConnection.disconnect();
     }
   }
 
-  /**
-   * True if connected.
-   * 
-   * @return Whether connected or not.
-   */
   public boolean isConnected() {
-    return getJmsConnection().isConnected();
+    return jmsConnection.isConnected();
   }
 
-  /**
-   * Use jms connection to listen for JMS Messages.
-   * 
-   * @return Received external message.
-   */
-  private Object receiveMessages(long timeoutMs) {
-    return getJmsConnection().receive(timeoutMs);
-  }
-
-  /**
-   * Return the next array of received records.
-   * 
-   * @return Object[] Array of record objects.
-   * @throws org.oa3.control.ComponentException
-   */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
-    if (!isConnected()) {
-      throw new ComponentException("Calling next on a disconnected Connector", this);
+  public Object[] next(long timeoutMs) throws ComponentException {
+    Object data = jmsConnection.receive(timeoutMs);
+    if (data != null) {
+      log.debug(getId() + " got jms message");
     }
-    Object[] records = null;
-    if ((getPollLimit() <= 0) || (pollsCompleted < getPollLimit())) {
-      pollsCompleted++;
-      Object rawRecord = receiveMessages(timeoutMs);
-      if (rawRecord != null)
-        records = new Object[] { rawRecord };
-
-    } else {
-      log.info("Total of " + pollLimit + " polls completed.");
-      disconnect(); // JMSListener always disconnects when it reaches the poll limit.
-      return null;
-    }
-
-    return records;
+    return data != null ? new Object[] {data} : null;
   }
 
   public boolean isDry() {
@@ -199,6 +105,4 @@ public class JMSReadConnector extends AbstractReadConnector implements ITransact
   public Object getReaderContext() {
     return null;
   }
-
-  // Property Access Stuff
 }

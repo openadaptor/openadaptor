@@ -422,12 +422,10 @@ public class JMSConnection extends Component {
           log.debug("Handling ObjectMessage");
           msgContents = ((ObjectMessage) msg).getObject();
         } else {
-          // Todo This needs to be a fatal error
           throw new ComponentException("Unsupported JMS Message Type.", this);
         }
       }
     } catch (JMSException e) {
-      //log.error("Error processing JMS Message text [" + e + "]");
       throw new ComponentException("Error processing JMS Message text.", e, this);
     }
     return msgContents;

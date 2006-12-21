@@ -62,5 +62,6 @@
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/velocity.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections.jar"/>
+	<classpathentry kind="lib" path="lib/quartz.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.QueuingReadConnector;
 import org.oa3.core.IDataProcessor;
 import org.oa3.core.adaptor.Adaptor;
 import org.oa3.core.processor.TestProcessor;

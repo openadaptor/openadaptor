@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector;
+package org.oa3.core.connector;
 
 import java.util.ArrayList;
 import java.util.List;

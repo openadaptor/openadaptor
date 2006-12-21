@@ -22,28 +22,28 @@
  * hardware. ]]
  */
 package org.oa3.thirdparty.mq;
+
 /*
- * File: $Header$ 
- * Rev:  $Revision$
+ * File: $Header$ Rev: $Revision$
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 import org.oa3.core.exception.ComponentException;
 import org.oa3.core.transaction.ITransactional;
 
 /**
  * ReadConnector that use MqConnection to read messages from an IBM MQ Queue.
  */
-public class MqReadConnector extends AbstractReadConnector implements ITransactional {
+public class MqReadConnector extends Component implements IReadConnector, ITransactional {
 
   private static final Log log = LogFactory.getLog(MqReadConnector.class);
 
   /**
-   * MQ character set switch. If true, and message character set is 285 UK
-   * EBCDIC, then switch to character set 37 US EBCDIC. This allows workaround
-   * if mq libraries do not support UK EBCDIC since numbers, letters, space, +, -
-   * and fullstop are all the same
+   * MQ character set switch. If true, and message character set is 285 UK EBCDIC, then switch to character set 37 US
+   * EBCDIC. This allows workaround if mq libraries do not support UK EBCDIC since numbers, letters, space, +, - and
+   * fullstop are all the same
    */
   protected boolean _UK_US_EBCDIC_Switch = true;
 
@@ -56,96 +56,44 @@ public class MqReadConnector extends AbstractReadConnector implements ITransacti
     super(id);
   }
 
-  // Bean Properties
-
-  /**
-   * Returns MQ connection
-   * 
-   * @return MqConnection
-   */
   public MqConnection getConnection() {
     return connection;
   }
 
-  /**
-   * Set MQ Connection
-   */
   public void setConnection(MqConnection connection) {
     this.connection = connection;
   }
 
-  // End Bean Properties
-
-  /**
-   * Establish a connection to external message transport. If already connected
-   * then do nothing.
-   * 
-   * @throws org.oa3.core.exception.ComponentException
-   */
   public void connect() {
-    if (getConnection() == null) throw new ComponentException("No MqConnection configured", this);
-    getConnection().setId(getId()+"_Connection");
+    if (getConnection() == null)
+      throw new ComponentException("No MqConnection configured", this);
+    getConnection().setId(getId() + "_Connection");
     getConnection().connectToMQ(true);
-    connected = true;
-    log.debug("MqReadConnector successfully connected");
+    log.debug(getId() + " connected");
   }
 
-  /**
-   * Disconnect from the external message transport. If already disconnected
-   * then do nothing.
-   * 
-   * @throws org.oa3.core.exception.ComponentException
-   */
   public void disconnect() {
-    try {
-      getConnection().close();
-    }    
-    finally {
-      connected = false;
-      log.debug("MqReadConnector disconnected");
-    }
+    getConnection().close();
+    log.debug(getId() + " disconnected");
   }
 
-  /**
-   * All connectors must be able to return a Transaction Resource. A null value
-   * is perfectly legal.
-   * 
-   * @return transaction spec
-   */
   public Object getResource() {
     return getConnection().getResource();
   }
 
-  //
-
-  /**
-   * @param timeoutMs
-   *        Maximum read timeout in milliseconds
-   * @return Object array containing read records or null if no data read.
-   */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
-    return nextRecord();
-  }
-
-  /**
-   * @return Object[] containing the next batch of records from this connector.
-   */
-  protected Object[] nextRecord() throws ComponentException {
-    
-    Object message = getConnection().nextRecord();   
-    
-    if (message != null) return new Object[] { message };
-    else return null;
-
+  public Object[] next(long timeoutMs) throws ComponentException {
+    Object data = getConnection().nextRecord(timeoutMs);
+    if (data != null) {
+      log.debug(getId() + " got jms message");
+    }
+    return data != null ? new Object[] {data} : null;
   }
 
   public Object getReaderContext() {
-    // not relevant
     return null;
   }
 
   public boolean isDry() {
-    // TODO Not sure what this means in this context (at least not yet)
     return false;
   }
 }

@@ -41,7 +41,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.QueuingReadConnector;
+import org.oa3.core.connector.QueuingReadConnector;
 import org.oa3.core.exception.ComponentException;
 
 import com.tibco.tibrv.Tibrv;

@@ -28,4 +28,4 @@ commons-codec.jar       1.3
 jaxen.jar               1.1-beta-9
 commons-collections.jar 3.2
 velocity.jar            1.4
-     
+quartz.jar              1.5.2     

@@ -44,7 +44,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 import org.oa3.core.exception.ComponentException;
 import org.oa3.thirdparty.apache.AbstractFTPLibrary;
 
@@ -89,7 +90,7 @@ import org.oa3.thirdparty.apache.AbstractFTPLibrary;
  * @see IFTPLibrary
  * @see AbstractFTPLibrary
  */
-public class FTPReadConnector extends AbstractReadConnector {
+public class FTPReadConnector extends Component implements IReadConnector {
   
   private static final Log log = LogFactory.getLog(FTPReadConnector.class);
 
@@ -206,7 +207,7 @@ public class FTPReadConnector extends AbstractReadConnector {
    * @throws ComponentException -
    *           if there are any problems transferring the file
    */
-  public Object[] nextRecord(long timeoutMs) {
+  public Object[] next(long timeoutMs) {
     Object[] result = null;
 
     // if there are no records to process, we retrieve the next file from the
@@ -323,21 +324,14 @@ public class FTPReadConnector extends AbstractReadConnector {
     for (int i = 0; i < _fileNames.size(); i++)
       log.debug("\t " + sourceDir + File.separator + _fileNames.get(i));
 
-    // set flag to indicate that we are connected
-    connected = true;
   }
 
   /**
    * Calls disconnect() on the super class and closes the FTP connection
    */
   public void disconnect() {
-    super.disconnect();
-
     ftp.close();
-    log.info("Connection closed");
-
-    // reset the connected flag to indicate to the adaptor to stop
-    connected = false;
+    log.info(getId() + " Connection closed");
   }
 
   public Object getReaderContext() {

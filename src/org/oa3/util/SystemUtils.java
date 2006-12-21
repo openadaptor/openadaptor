@@ -61,38 +61,4 @@ public class SystemUtils {
     System.setProperty("com.apple.mrj.application.apple.menu.about.name", name);
   }
 
-  /**
-   * Returns the total amount of memory installed in the system as a string. We use "G" to denote Gibabytes and "M" to
-   * denote Megabytes
-   */
-  public static String getTotalMemory() {
-    return memAsString(Runtime.getRuntime().totalMemory());
-  }
-
-  /**
-   * Returns the total amount of free memory in the system as a string. We use "G" to denote Gibabytes and "M" to denote
-   * Megabytes
-   */
-  public static String getFreeMemory() {
-    System.gc();
-    return memAsString(Runtime.getRuntime().freeMemory());
-  }
-
-  /**
-   * Just converts a memory size into its nearest mnemonic ("G", M" or "K")
-   * 
-   * //todo: check that the RunTime does return the number of bytes as we seem to be out by a factor of 100
-   */
-  private static String memAsString(long m) {
-    if (m > 1000000000)
-      return (m / 1000000000) + "G";
-
-    if (m > 1000000)
-      return (m / 1000000) + "M";
-
-    if (m > 1000)
-      return (m / 1000) + "K";
-
-    return "" + m + "B";
-  }
 }

@@ -141,7 +141,6 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     JMSReadConnector inpoint = new JMSReadConnector();
     inpoint.setJmsConnection(connection);
     inpoint.setId("JmsIn");
-    inpoint.setTimeout(1000);
     
     // create outpoint
     TestWriteConnector outpoint = new TestWriteConnector("OutPoint");

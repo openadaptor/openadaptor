@@ -41,7 +41,8 @@ import java.io.Reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 import org.oa3.core.exception.ComponentException;
 
 /**
@@ -55,7 +56,7 @@ import org.oa3.core.exception.ComponentException;
  * 
  * @author Eddy Higgins
  */
-public class StreamReadConnector extends AbstractReadConnector {
+public class StreamReadConnector extends Component implements IReadConnector {
 
   private static Log log = LogFactory.getLog(StreamReadConnector.class);
 
@@ -145,8 +146,7 @@ public class StreamReadConnector extends AbstractReadConnector {
       log.error("Failed to set the reader for this connector" + ioe.toString());
       throw new ComponentException("Failed to set the reader on the recordReader - " + ioe.toString(), ioe, this);
     }
-    connected = true;
-    log.info("Connector: [" + getId() + "] successfully connected.");
+    log.info(getId() + " connected.");
   }
 
   /**
@@ -158,14 +158,10 @@ public class StreamReadConnector extends AbstractReadConnector {
    *           if the stream reader disconnect throws one.
    */
   public void disconnect() {
-    log.debug("Connector: [" + getId() + "] disconnecting ....");
     if (streamReader != null) {
       streamReader.disconnect();
-      connected = false;
-      log.info("Connector: [" + getId() + "] disconnected");
-    } else {
-      log.warn("Connector: [" + getId() + "] ignoring disconnect attempt, as the StreamReader is null");
     }
+    log.debug(getId() + " disconnected");
   }
 
   /**
@@ -199,17 +195,14 @@ public class StreamReadConnector extends AbstractReadConnector {
    * @throws ComponentException
    *           if the underlying recordReader throws an IOException.
    */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
-    Object[] records = null;
+  public Object[] next(long timeoutMs) throws ComponentException {
+    Object data = null;
     try {
-      Object record = recordReader.next();
-      if (record != null) {
-        records = new Object[] { record };
-      }
+      data = recordReader.next();
     } catch (IOException ioe) {
       throw new ComponentException(ioe.getMessage(), ioe, this);
     }
-    return records;
+    return data != null ? new Object[] {data} : null;
   }
 
   public boolean isDry() {

@@ -84,7 +84,7 @@ public abstract class AbstractStreamWriter extends Component implements IStreamW
     }
     try {
       writer = new OutputStreamWriter(outputStream, encoding);
-    } catch (UnsupportedEncodingException uee) { // Todo - perhaps let this fall out as an IOException
+    } catch (UnsupportedEncodingException uee) {
       throw new ComponentException("Unsupported Encoding - " + encoding, this);
     }
     log.info("Connected (reader created)");

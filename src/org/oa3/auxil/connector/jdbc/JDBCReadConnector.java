@@ -36,11 +36,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.connector.AbstractReadConnector;
+import org.oa3.core.Component;
+import org.oa3.core.IReadConnector;
 import org.oa3.core.exception.ComponentException;
 
 
@@ -49,7 +51,7 @@ import org.oa3.core.exception.ComponentException;
  * provide records to the node to which it is attached.
  * @author Eddy Higgins
  */
-public class JDBCReadConnector extends AbstractReadConnector {
+public class JDBCReadConnector extends Component implements IReadConnector {
 
   private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
@@ -105,15 +107,13 @@ public class JDBCReadConnector extends AbstractReadConnector {
    * @throws ComponentException
    */
   public void connect() {
-    log.debug("Connector: [" + getId() + "] connecting ....");
     try {
       jdbcConnection.connect();
     }
     catch (SQLException sqle) {
       throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
     }
-    connected = true;
-    log.info("Connector: [" + getId() + "] successfully connected.");
+    log.debug(getId() + " connected");
   }
 
   /**
@@ -122,7 +122,6 @@ public class JDBCReadConnector extends AbstractReadConnector {
    * @throws ComponentException
    */
   public void disconnect() throws ComponentException {
-    log.debug("Connector: [" + getId() + "] disconnecting ....");
     if (rs != null) {
       try {
         rs.close();
@@ -132,18 +131,15 @@ public class JDBCReadConnector extends AbstractReadConnector {
         throw new ComponentException("Failed to disconnect JDBC connection - " + sqle.toString(), sqle, this);
       }
     }
-    connected = false;
-    log.info("Connector: [" + getId() + "] disconnected");
+    log.info(getId() + " disconnected");
   }
 
-  //TODO: Implement
   public boolean isDry() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
-  //TODO: Implement
   public Object getReaderContext() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
   /**
@@ -154,7 +150,7 @@ public class JDBCReadConnector extends AbstractReadConnector {
    * @return  an array containing the next record to be processed.
    * @throws ComponentException
    */
-  public Object[] nextRecord(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws ComponentException {
     Object[] result=null;
     try {
       //Guarantee that query has executed at least once
@@ -194,7 +190,6 @@ public class JDBCReadConnector extends AbstractReadConnector {
     catch (SQLException sqle) {
       throw new ComponentException(sqle.getMessage(), sqle, this);
     }
-
   }
 
   /**
@@ -207,7 +202,7 @@ public class JDBCReadConnector extends AbstractReadConnector {
     rsmd= rs.getMetaData();
 
     debugDumpInfo(rsmd);
-    rowAvailable=rs.next();//Have we got data?
+    rowAvailable=rs.next();
   }
 
   /**
@@ -216,18 +211,19 @@ public class JDBCReadConnector extends AbstractReadConnector {
    * @param rsmd
    */
   protected void debugDumpInfo(ResultSetMetaData rsmd) {
-    try {
-      int cols = rsmd.getColumnCount();
-      StringBuffer sb = new StringBuffer();
-      for (int i = 1; i <= cols; i++) {
-        sb.append(rsmd.getColumnClassName(i)).append(",");
+    if (log.isDebugEnabled()) {
+      try {
+        int cols = rsmd.getColumnCount();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 1; i <= cols; i++) {
+          sb.append(rsmd.getColumnClassName(i)).append(",");
+        }
+        log.debug(sb.deleteCharAt(sb.length() - 1).toString());
       }
-      log.debug(sb.deleteCharAt(sb.length() - 1).toString());
+      catch (SQLException sqle) {
+        sqle.printStackTrace();
+      }
     }
-    catch (SQLException sqle) {
-      sqle.printStackTrace();
-    }
-
   }
 
   /**

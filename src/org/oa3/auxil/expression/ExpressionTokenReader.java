@@ -36,14 +36,11 @@ package org.oa3.auxil.expression;
  * File: $Header: /cvs/oa3/src/org/oa3/expression/ExpressionTokenReader.java,v 1.5 2006/10/19 11:11:17 higginse Exp $
  * Rev: $Revision: 1.5 $ Created Sep 22 2006 by Eddy Higgins
  */
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -483,38 +480,5 @@ public class ExpressionTokenReader {
     setTableChars(table, 0, table.length - 1, false);
   }
 
-  // Debug only
-  private static void process(String line) {
-    System.out.println("Processing : " + line);
-    try {
-      Iterator it = ExpressionTokenReader.getTokenList(line, true).iterator();
-      while (it.hasNext()) {
-        System.out.print("^" + it.next());
-      }
-      System.out.println("^");
-    } catch (ExpressionException ee) {
-      System.err.println("Failed: " + ee.toString());
-    }
-  }
-
-  /**
-   * Included purely for debug purposes. All functionality will eventually move to an appropriate test area. //Todo:
-   * Actually move it!
-   * 
-   * @param args
-   *          command line args.
-   * @throws IOException
-   *           if anything goes wrong!
-   */
-  public static void main(String args[]) throws IOException {
-    // command args ignored
-
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    String line = "(5+5)*5-7";
-    ExpressionTokenReader.process("3+4");
-    while ((line = br.readLine()) != null) {
-      ExpressionTokenReader.process(line);
-    }
-  }
 
 }
