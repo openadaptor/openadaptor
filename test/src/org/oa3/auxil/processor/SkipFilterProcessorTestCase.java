@@ -48,7 +48,7 @@ import org.oa3.core.exception.RecordException;
  * 
  * @author Russ Fennell
  */
-public class TestSkipFilterProcessor extends TestCase {
+public class SkipFilterProcessorTestCase extends TestCase {
   private SkipFilterProcessor cp = new SkipFilterProcessor();
 
   /**
