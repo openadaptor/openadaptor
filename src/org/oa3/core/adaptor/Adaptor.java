@@ -40,12 +40,14 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IMessageProcessor;
+import org.oa3.core.IWriteConnector;
 import org.oa3.core.Message;
 import org.oa3.core.Response;
 import org.oa3.core.lifecycle.ILifecycleComponent;
 import org.oa3.core.lifecycle.ILifecycleComponentContainer;
 import org.oa3.core.lifecycle.ILifecycleComponentManager;
 import org.oa3.core.lifecycle.State;
+import org.oa3.core.router.Pipeline;
 import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.TransactionManager;
 import org.oa3.util.Application;
@@ -72,6 +74,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private boolean started = false;
   
   private int exitCode = 0;
+
+  private IMessageProcessor exceptionProcessor;
 
   public Adaptor() {
     super();
@@ -222,7 +226,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     if (exceptions.size() > 0) {
       for (Iterator iter = exceptions.iterator(); iter.hasNext();) {
         Exception exception = (Exception) iter.next();
-        log.error(exception);
+        log.error("validation exception", exception);
       }
       throw new RuntimeException("adaptor validation failed");
     }
@@ -293,4 +297,15 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
+  public void setExceptionProcessor(final IWriteConnector exceptionProcessor) {
+    this.exceptionProcessor = new AdaptorOutpoint("exceptionProcessor", exceptionProcessor);
+  }
+  
+  public void setPipeline(final List pipeline) {
+    if (exceptionProcessor != null) {
+      setMessageProcessor(new Pipeline(pipeline, exceptionProcessor));
+    } else {
+      setMessageProcessor(new Pipeline(pipeline));
+    }
+  }
 }

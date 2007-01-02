@@ -31,23 +31,16 @@
 <beans>
   
   <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Router"/>
-  </bean>
-  
-  <bean id="Router" class="org.oa3.core.router.Router">
-    <property name="routingMap" ref="RoutingMap"/>
-  </bean>
-  
-  <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
-    <property name="processMap">
-      <map>
-        <entry key-ref="Reader" value-ref="Writer"/>
-      </map>
+    <property name="pipeline">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="Writer"/>
+      </list>
     </property>
   </bean>
-
+  
   <!-- This is a read connector, that exposes a servlet -->
-  <bean id="Reader" class="org.oa3.auxil.connector.http.ReadConnectorServlet">
+  <bean id="Servlet" class="org.oa3.auxil.connector.http.ReadConnectorServlet">
     <property name="localJettyPort" value="9999"/>
     <property name="acceptGet" value="true"/>
     <property name="parameterNames">

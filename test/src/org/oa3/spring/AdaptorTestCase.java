@@ -40,23 +40,39 @@ import junit.framework.TestCase;
 
 public class AdaptorTestCase extends TestCase {
 
-	public void test1() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "Adaptor");
-	}
-	
-	public void test2() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "Adaptor");
-	}
-	
-	public void test3() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "Adaptor");
-	}
-	
-	public void test4() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "Adaptor");
-	}
+  public void testAdaptor1() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor1a() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1a.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor2() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor2a() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2a.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor3() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor3a() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3a.xml"), null, "Adaptor");
+  }
+  
+  public void testAdaptor4() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "Adaptor");
+  }
 
-	public void test5() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "Adaptor");
-	}
+  public void testAdaptor4a() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4a.xml"), null, "Adaptor");
+  }
+
+  public void testAdaptor5() {
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "Adaptor");
+  }
 }

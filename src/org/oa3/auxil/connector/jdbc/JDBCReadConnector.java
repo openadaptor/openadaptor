@@ -109,6 +109,7 @@ public class JDBCReadConnector extends Component implements IReadConnector {
   public void connect() {
     try {
       jdbcConnection.connect();
+      queryHasExecuted = false;
     }
     catch (SQLException sqle) {
       throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
@@ -135,7 +136,7 @@ public class JDBCReadConnector extends Component implements IReadConnector {
   }
 
   public boolean isDry() {
-    return false;
+    return queryHasExecuted && !rowAvailable;
   }
 
   public Object getReaderContext() {

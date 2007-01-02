@@ -9,11 +9,19 @@
       * converts map to xml
       * writes to stdout
     
-    It is designed to illustrate the basic structure of an adaptor in spring.
-
+    It is designed to illustrate the basic structure of an adaptor router configuration.
+    The previous example sets an adaptor pipeline property, to the ordered list of components
+    that make up the adaptor. In this example we show an equivalent adaptor that that defines
+    the linkage between the component using a RoutingMap and a Router. Explicitly using the
+    RoutingMap and Router allows more sophisticated configurations such as
+  
+    Branching - the output of a component is routed to multiple processors
+    Exception Management - specific exceptions can be trapped at any point in the processing
+                           (see exceptions2 example).
+  
     Run it like this...
     
-      java org.oa3.spring.SpringApplication -config simple.xml -bean Adaptor
+      java org.oa3.spring.SpringApplication -config router.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -33,28 +41,31 @@
       <?xml version="1.0" encoding="ISO-8859-1"?>
       <record><field>hello world</field></record>
     
-    In a realistic implementation the connectors could be reading/writing from/to
-    enterprise middleware (jms, mqseries, tibco...etc), databases, webservices, filesystems, 
-    ftp sites, tcp/ip sockets or specific system APIs. The processors could be converting this 
-    data to a cannonical form, normalising and enriching it, validating it against enterprise 
-    information models.
-      
 -->
 
 <beans>
   
   <!-- This is the bean that actually gets run -->
   <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
-    <property name="pipeline">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="MapConverter"/>
-        <ref bean="XmlConverter"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
+    <property name="messageProcessor" ref="Router"/>
   </bean>
   
+  <!-- The adaptor delegates it's message processing to a router -->
+  <bean id="Router" class="org.oa3.core.router.Router">
+    <property name="routingMap" ref="RoutingMap"/>
+  </bean>
+  
+  <!-- The router uses this mapping to define the "processing pipeline" -->
+  <bean id="RoutingMap" class="org.oa3.core.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="MapConverter"/>
+        <entry key-ref="MapConverter" value-ref="XmlConverter"/>
+        <entry key-ref="XmlConverter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+
   <!-- This is a read connector, it reads records from a stream (stdin) -->
   <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
     <property name="streamReader">

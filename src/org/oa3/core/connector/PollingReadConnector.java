@@ -114,6 +114,7 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     } catch (ParseException e) {
       throw new RuntimeException("cron parse exception", e);
     }
+    limit = 0;
   }
 
   public void setForceInitialPoll(final boolean force) {

@@ -4,7 +4,7 @@
 <!--
     This adaptor does the following...
     
-      * selects data from a db using a query
+      * polls data from a db using a query at a configured interval
       * writes data to stdout
     
     It is designed to illustrate the basic structure of an adaptor that polls a database
@@ -33,7 +33,7 @@
   <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="Reader"/>
+        <ref bean="Poller"/>
         <ref bean="XmlConverter"/>
         <ref bean="Writer"/>
       </list>
@@ -48,6 +48,13 @@
     <property name="password" value=""/>
   </bean>
 
+  <!-- Poller which wraps JDBC Reader below, polls immediately and then every fifth second -->
+  <bean id="Poller" class="org.oa3.core.connector.PollingReadConnector">
+    <property name="delegate" ref="Reader"/>
+    <property name="forceInitialPoll" value="true"/>
+    <property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>
+  </bean>
+  
   <!-- Reader which polls database using configured SQL -->
   <bean id="Reader" class="org.oa3.auxil.connector.jdbc.JDBCReadConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>

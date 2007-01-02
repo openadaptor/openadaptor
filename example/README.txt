@@ -33,7 +33,7 @@ unix (bash)
 SPRING EXAMPLES
 ===============
 
-openadaptor provide a spring helper class for running adaptors as standalone processes.
+openadaptor provides a spring helper class for running adaptors as a standalone process.
 
   org.oa3.spring.SpringApplication
   
