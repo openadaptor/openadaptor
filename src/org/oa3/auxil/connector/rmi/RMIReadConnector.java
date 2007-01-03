@@ -33,10 +33,9 @@
 
 package org.oa3.auxil.connector.rmi;
 
-import java.rmi.Naming;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
@@ -58,20 +57,28 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
 
   private static final Log log = LogFactory.getLog(RMIReadConnector.class);
 
+  public static final int DEFAULT_PORT = 1099;
+
+  public static final String DEFAULT_NAME = "RMIReadConnector";
+
   private IRemoteDataProcessor rmiServer;
 
   private String rmiHost;
 
-  private int rmiPort = 1099;
+  private int rmiPort = DEFAULT_PORT;
 
-  private String rmiName;
-
-  private String url;
-  
-  protected Registry registry;
+  private String rmiName = DEFAULT_NAME;
 
   private boolean createRegistry = false;
 
+  public RMIReadConnector() {
+    super();
+  }
+  
+  public RMIReadConnector(String id) {
+    super(id);
+  }
+  
   public void setRmiHost(String rmiHost) {
     this.rmiHost = rmiHost;
   }
@@ -96,16 +103,11 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
   
   public void connect() {
     
-    if (rmiHost != null) {
-      url = "rmi://" + rmiHost + ":" + rmiPort + "/" + rmiName;
-    } else {
-      url = "rmi://" + ResourceUtils.getLocalHostname() + ":" + rmiPort + "/" + rmiName;
-    }
-
     if (createRegistry) {
       try {
-        log.info("starting rmi registry");
-        registry = LocateRegistry.createRegistry(rmiPort);
+        log.info("starting rmi registry on port " + rmiPort);
+        LocateRegistry.createRegistry(rmiPort);
+        rmiHost = ResourceUtils.getLocalHostname();
       } catch (RemoteException e) {
         throw new ComponentException("failed to create rmi registry", e, this);
       }
@@ -118,18 +120,21 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
     }
 
     try {
-      log.info("binding rmi server to " + url);
-      Naming.bind(url, rmiServer);
+      log.info("binding rmi server " + rmiName + " on " + rmiHost + ":" + rmiPort);
+      LocateRegistry.getRegistry(rmiHost, rmiPort).rebind(rmiName, rmiServer);
     } catch (Exception e) {
-      throw new ComponentException("failed to bind " + url, e, this);
+      rmiServer = null;
+      throw new ComponentException("failed to bind ", e, this);
     }
   }
 
   public void disconnect() {
     try {
-      Naming.unbind(url);
+      LocateRegistry.getRegistry(rmiHost, rmiPort).unbind(rmiName);
     } catch (Exception e) {
-      throw new ComponentException("failed to unbind " + url, e, this);
+      throw new ComponentException("failed to unbind", e, this);
+    } finally {
+      rmiServer = null;
     }
   }
 
@@ -149,16 +154,8 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
       super();
     }
 
-    public Object[] process(Object data) {
+    public void process(Serializable data) {
       enqueue(data);
-      return null;
     }
-
-    public void reset(Object context) {
-    }
-
-    public void validate(List exceptions) {
-    }
-    
   }
 }

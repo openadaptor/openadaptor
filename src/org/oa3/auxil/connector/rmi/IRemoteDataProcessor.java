@@ -33,10 +33,10 @@
 
 package org.oa3.auxil.connector.rmi;
 
+import java.io.Serializable;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-import org.oa3.core.IDataProcessor;
-
-public interface IRemoteDataProcessor extends IDataProcessor, Remote {
-
+public interface IRemoteDataProcessor extends Remote {
+  void process(Serializable data) throws RemoteException;
 }

@@ -36,8 +36,8 @@ public class PollingReadConnectorTestCase extends TestCase {
     reader.setDataString("foobar");
     PollingReadConnector poller = new PollingReadConnector("poller");
     poller.setDelegate(reader);
-    poller.setPollLimit(6);
     poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
+    poller.setPollLimit(6);
     poller.setForceInitialPoll(true);
     assertTrue(runPoller(poller, reader.getDataString()) == 6);
   }
@@ -47,10 +47,9 @@ public class PollingReadConnectorTestCase extends TestCase {
     reader.setDataString("foobar");
     PollingReadConnector poller = new PollingReadConnector("poller");
     poller.setDelegate(reader);
-    poller.setPollLimit(2);
-    poller.setForceInitialPoll(true);
     poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
     poller.setForceInitialPoll(true);
+    poller.setPollLimit(2);
     assertTrue(runPoller(poller, reader.getDataString()) == 2);
   }
 

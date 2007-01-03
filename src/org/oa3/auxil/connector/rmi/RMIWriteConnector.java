@@ -33,21 +33,34 @@
 
 package org.oa3.auxil.connector.rmi;
 
-import java.rmi.Naming;
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.core.IWriteConnector;
 import org.oa3.core.exception.ComponentException;
 import org.oa3.core.lifecycle.LifecycleComponent;
 
 public class RMIWriteConnector extends LifecycleComponent implements IWriteConnector {
 
+  private static final Log log = LogFactory.getLog(RMIWriteConnector.class);
+  
   private IRemoteDataProcessor rmiServer;
   
   private String rmiHost;
-  private int rmiPort;
-  private String rmiName;
-  private String url;
+  private int rmiPort = RMIReadConnector.DEFAULT_PORT;
+  private String rmiName = RMIReadConnector.DEFAULT_NAME;
 
+  public RMIWriteConnector() {
+    super();
+  }
+  
+  public RMIWriteConnector(String id) {
+    super(id);
+  }
+  
   public void setRmiHost(String rmiHost) {
     this.rmiHost = rmiHost;
   }
@@ -60,21 +73,27 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
     this.rmiPort = rmiPort;
   }
   
-
   public void connect() {
-    url = "rmi://" + rmiHost + ":" + rmiPort + "/" + rmiName;
     try {
-      rmiServer = (IRemoteDataProcessor) Naming.lookup(url);
+      log.info(getId() + " looking up " + rmiName + " on " + rmiHost + ":" + rmiPort);
+      rmiServer = (IRemoteDataProcessor) LocateRegistry.getRegistry(rmiHost, rmiPort).lookup(rmiName);
     } catch (Exception e) {
-      throw new ComponentException("failed to lookup rmi object " + url, e, this);
+      throw new ComponentException("failed to lookup rmi server", e, this);
     }
   }
 
   public Object deliver(Object[] data) {
-    rmiServer.process(data);
+    try {
+      for (int i = 0; i < data.length; i++) {
+        rmiServer.process((Serializable)data[i]);
+      }
+    } catch (RemoteException e) {
+      throw new ComponentException("remote exception", e, this);
+    }
     return null;
   }
 
   public void disconnect() {
+    rmiServer = null;
   }
 }
