@@ -13,7 +13,7 @@
         of attribute type maps.
 
         Data originates: File
-        Data processed : XML Records (with typed attributes) converted to Ordered Maps
+        Data processed : XML Records converted to Ordered Maps
         Data processed : Various expressions are applied to the maps
         Data terminates: Delimited Text to stdout
     </description>
@@ -32,9 +32,7 @@
 
   <bean id="XmlInpoint" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
-      Read in an xml document consisting of multiple (child) records.
-      Then convert each record into an ordered map.
-      (See XML examples for more information on this process)
+      Read in an entire xml document consisting of multiple (child) records.
     </description>
     <property name="streamReader">
       <bean class="org.oa3.auxil.connector.iostream.reader.FileReader">
@@ -46,25 +44,15 @@
   <bean id="OMConvertor" class="org.oa3.auxil.convertor.xml.XmlToOrderedMapConvertor">
     <property name="expression" value="*/*">
       <description>
-        (Default is to include the root node.)
-        This expression will select all nodes under the root node, excluding the
-        root note itself. Useful for our multi-element structure:
-        &lt;root&gt;
-        &lt;record1&gt;&lt;/record1&gt;
-        &lt;record2&gt;&lt;/record2&gt;
-        &lt;/root&gt;
+        Convert each child record in the xml document into an ordered map. Batch the ordered maps.
+        One ordered map is created for each child record and added to the batch.
       </description>
     </property>
     <property name="omitTopLevelElementTag" value="true">
       <description>
         As we don't want each record to retain it's parent tag,
-        to set omitTopLevelElementTag to true.
-      </description>
-    </property>
-    <property name="valueTypeAttributeName" value="type">
-      <description>
-        If available, this will hint at the attribute type
-        Currently supported values are Double, Long, Date and String.
+        to set omitTopLevelElementTag to true. This allows each
+        child to be treated as an independent ordered map.
       </description>
     </property>
   </bean>
@@ -98,7 +86,7 @@
   <bean id="DelimitedTextConvertor" class="org.oa3.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
 
   <bean id="Outpoint" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
-    <description>Dump the results to a file</description>
+    <description>Dump the results to stdout</description>
     <property name="streamWriter">
       <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
     </property>

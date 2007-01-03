@@ -7,10 +7,10 @@
 
 <beans>
   <description>
-    This example illustrates the use of oa3 Expressions (using XML/dom4j)
-    Simple example to illustrate use of Typed XML and Expressions. This example
-    manipulates xml directly (using dom4j) and represents a single adaptor that applies
-    all the transforms defined in the individual orderedmap examples.
+    This example illustrates the use of oa3 Expressions (using XML/dom4j). This example
+    manipulates xml directly (using dom4j) referencing the attributes with xpath expressions.
+    It represents a single adaptor that applies all the transforms defined in the individual
+    orderedmap examples.
 
     Data originates: File
     Data processed : Single XML Record converted to dom4j document
@@ -45,7 +45,6 @@
   <bean id="XmlInpoint" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Read in an xml document consisting of a single record.
-      This record is converted into a dom4j document.
     </description>
     <property name="streamReader">
       <bean class="org.oa3.auxil.connector.iostream.reader.FileReader">
@@ -54,7 +53,11 @@
     </property>
   </bean>
 
-  <bean id="dom4j_convertor" class="org.oa3.thirdparty.dom4j.XmlToDom4jConvertor"/>
+  <bean id="dom4j_convertor" class="org.oa3.thirdparty.dom4j.XmlToDom4jConvertor">
+    <description>
+      The xml record is converted into a dom4j document.
+    </description>
+  </bean>
 
   <bean id="AccessorWrapper" class="org.oa3.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
     <property name="simpleRecordAccessor">
@@ -65,7 +68,8 @@
   <bean id="SetTotalValue" class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
     <description>
       This example sets a record value as the result of an expression.
-      It calculates price * quantity and stores it as totalValue
+      It calculates price * quantity and stores it as totalValue. Both
+      attributes are referenced using xpath expressions.
     </description>
     <property name="expression">
       <bean class="org.oa3.auxil.expression.Expression">
@@ -116,7 +120,7 @@
     <property name="thenProcessor">
       <bean class="org.oa3.auxil.processor.simplerecord.AttributeSetProcessor">
         <property name="attributeName" value="/book/info"/>
-        <property name="expressionString" value="'many'"/>
+        <property name="expressionString" value="'lots'"/>
       </bean>
     </property>
     <property name="elseProcessor">
