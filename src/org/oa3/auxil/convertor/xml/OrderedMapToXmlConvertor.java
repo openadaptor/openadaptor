@@ -68,6 +68,14 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
 
   protected String encoding = ISO_8859_1; // UTF_8; //ToDo: Decide if this is, in fact the best default.
 
+  public OrderedMapToXmlConvertor() {
+    super();
+  }
+  
+  public OrderedMapToXmlConvertor(String id) {
+    super(id);
+  }
+  
   /**
    * @return the name of the root element or null. Default to null
    */

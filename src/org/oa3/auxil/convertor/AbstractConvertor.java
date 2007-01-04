@@ -47,6 +47,14 @@ public abstract class AbstractConvertor extends Component implements IDataProces
 
   // private static final Log log = LogFactory.getLog(AbstractRecordConvertorProcessor.class);
 
+  protected AbstractConvertor() {
+    super();
+  }
+  
+  protected AbstractConvertor(String id) {
+    super(id);
+  }
+  
   protected boolean boxReturnedArrays = true;
 
   // IRecordPrcessor implementation

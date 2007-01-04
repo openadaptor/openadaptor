@@ -4,6 +4,12 @@ import java.util.List;
 
 import org.oa3.core.IDataProcessor;
 
+/**
+ * This is a custom Processor
+ *  
+ * @author perryj
+ *
+ */
 public class Capitalizer implements IDataProcessor {
 
   public Object[] process(Object data) {
@@ -15,5 +21,4 @@ public class Capitalizer implements IDataProcessor {
 
   public void validate(List exceptions) {
   }
-
 }

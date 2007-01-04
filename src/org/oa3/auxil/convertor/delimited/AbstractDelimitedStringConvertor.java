@@ -73,8 +73,12 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected boolean firstRecordContainsFieldNames = false;
 
   protected AbstractDelimitedStringConvertor() {
-  } // Can't be directly instantiated;
+  }
 
+  protected AbstractDelimitedStringConvertor(String id) {
+    super(id);
+  }
+  
   // BEGIN Bean getters/setters
   // Todo: Mutability of _fieldNames array is not managed.
 

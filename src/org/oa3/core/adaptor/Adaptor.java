@@ -301,7 +301,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     this.exceptionProcessor = new AdaptorOutpoint("exceptionProcessor", exceptionProcessor);
   }
   
-  public void setPipeline(final List pipeline) {
+  public void setPipeline(final Object[] pipeline) {
     if (exceptionProcessor != null) {
       setMessageProcessor(new Pipeline(pipeline, exceptionProcessor));
     } else {

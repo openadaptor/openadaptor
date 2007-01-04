@@ -25,9 +25,7 @@ public class PipelineTestCase extends TestCase {
     outpoint.setConnector(outconnector);
 
     // create pipeline
-    List pipeline = new ArrayList();
-    pipeline.add(inpoint);
-    pipeline.add(outpoint);
+    Object[] pipeline = new Object[] {inpoint, outpoint};
 
     // create router
     Adaptor adaptor = new Adaptor();
@@ -56,9 +54,7 @@ public class PipelineTestCase extends TestCase {
     outpoint.setExpectedOutput(output);
     
     // create pipeline
-    List pipeline = new ArrayList();
-    pipeline.add(inpoint);
-    pipeline.add(outpoint);
+    Object[] pipeline = new Object[] {inpoint, outpoint};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
@@ -90,10 +86,7 @@ public class PipelineTestCase extends TestCase {
     outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
     
     // create pipeline
-    List pipeline = new ArrayList();
-    pipeline.add(inpoint);
-    pipeline.add(processor);
-    pipeline.add(outpoint);
+    Object[] pipeline = new Object[] {inpoint, processor, outpoint};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
@@ -129,14 +122,10 @@ public class PipelineTestCase extends TestCase {
     
     // create outpoint for MessageExceptions
     TestWriteConnector errOutpoint = new TestWriteConnector("Error1");
-    errOutpoint.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + inpoint.getDataString(), 3));
+    errOutpoint.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + processor.getId() + "(" + inpoint.getDataString() + ")", 3));
 
     // create pipeline
-    List pipeline = new ArrayList();
-    pipeline.add(inpoint);
-    pipeline.add(processor);
-    pipeline.add(exceptor);
-    pipeline.add(outpoint);
+    Object[] pipeline = new Object[] {inpoint, processor, exceptor, outpoint};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
@@ -157,11 +146,7 @@ public class PipelineTestCase extends TestCase {
     outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
     
     try {
-      List pipeline = new ArrayList();
-      pipeline.add(processor);
-      pipeline.add(inpoint);
-      pipeline.add(outpoint);
-      
+      Object[] pipeline = new Object[] {processor, inpoint, outpoint};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -169,10 +154,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      List pipeline = new ArrayList();
-      pipeline.add(inpoint);
-      pipeline.add(processor);
-      
+      Object[] pipeline = new Object[] {inpoint, processor};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -180,11 +162,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      List pipeline = new ArrayList();
-      pipeline.add(outpoint);
-      pipeline.add(processor);
-      pipeline.add(inpoint);
-      
+      Object[] pipeline = new Object[] {outpoint, processor, inpoint};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -192,9 +170,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      List pipeline = new ArrayList();
-      pipeline.add(inpoint);
-      
+      Object[] pipeline = new Object[] {inpoint};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");

@@ -1,8 +1,6 @@
 package org.oa3.core.router;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.oa3.core.IMessageProcessor;
@@ -20,11 +18,11 @@ public class Pipeline extends Router {
 
   private Autoboxer autoboxer = new Autoboxer();
   
-  public Pipeline(List processors) {
+  public Pipeline(Object[] processors) {
     this(processors, null);
   }
   
-  public Pipeline(List processors, IMessageProcessor exceptionProcessor) {
+  public Pipeline(Object[] processors, IMessageProcessor exceptionProcessor) {
     super();
 
     RoutingMap routingMap = new RoutingMap();
@@ -32,8 +30,8 @@ public class Pipeline extends Router {
     // create process map from list of processors
     Map processMap = new HashMap();
     IMessageProcessor previous = null;
-    for (Iterator iter = processors.iterator(); iter.hasNext();) {
-      IMessageProcessor processor = (IMessageProcessor) autoboxer.autobox(iter.next());
+    for (int i = 0; i < processors.length; i++) {
+      IMessageProcessor processor = (IMessageProcessor) autoboxer.autobox(processors[i]);
       if (previous != null) {
         processMap.put(previous, processor);
       } else {

@@ -42,6 +42,14 @@ import org.oa3.core.exception.RecordFormatException;
  */
 public class DelimitedStringToOrderedMapConvertor extends AbstractDelimitedStringConvertor {
 
+  public DelimitedStringToOrderedMapConvertor() {
+    super();
+  }
+  
+  public DelimitedStringToOrderedMapConvertor(String id) {
+    super(id);
+  }
+  
   /**
    * Set flag to remove enclosing quotes from fields where necessary. This is applied to all fields
    * 
