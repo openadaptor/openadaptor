@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads data from stdin
+      * calls an rmi servuice
+    
+    It is designed to illustrate the basic structure of an adaptor that processes
+    data by calling an rmi service.
+
+    Run it like this...
+    
+      java org.oa3.spring.SpringApplication -config client.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running you need to type some data into the command line, for the
+    processing to succeed, the rmi service it is connecting to needs to be running
+    (see the server.xml example).
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+    <property name="pipeline">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="RMIClient"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+    <property name="streamReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.FileReader"/>
+    </property>
+    <property name="recordReader">
+      <bean class="org.oa3.auxil.connector.iostream.reader.StringRecordReader"/>
+    </property>
+  </bean>
+  
+  <!-- this is a write connector that invokes an rmi service -->
+  <bean id="RMIClient" class="org.oa3.auxil.connector.rmi.RMIWriteConnector">
+    <property name="serviceName" value="TestService"/>
+    <property name="registryHost" value="localhost"/>
+    <!-- <property name="rmiPort" value="1099"/> -->
+  </bean>
+  
+</beans>

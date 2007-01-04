@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class RMIConnectorTestCase extends TestCase {
 
-  public void xtest() {
+  public void test() {
     RMIReadConnector reader = new RMIReadConnector("reader");
     reader.setCreateRegistry(true);
     reader.connect();

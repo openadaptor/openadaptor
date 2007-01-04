@@ -63,11 +63,11 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
 
   private IRemoteDataProcessor rmiServer;
 
-  private String rmiHost;
+  private String registryHost;
 
-  private int rmiPort = DEFAULT_PORT;
+  private int registryPort = DEFAULT_PORT;
 
-  private String rmiName = DEFAULT_NAME;
+  private String serviceName = DEFAULT_NAME;
 
   private boolean createRegistry = false;
 
@@ -79,16 +79,16 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
     super(id);
   }
   
-  public void setRmiHost(String rmiHost) {
-    this.rmiHost = rmiHost;
+  public void setRegistryHost(String registryHost) {
+    this.registryHost = registryHost;
   }
 
-  public void setRmiName(String rmiName) {
-    this.rmiName = rmiName;
+  public void setServiceName(String name) {
+    this.serviceName = name;
   }
 
-  public void setRmiPort(int rmiPort) {
-    this.rmiPort = rmiPort;
+  public void setRegistryPort(int registryPort) {
+    this.registryPort = registryPort;
   }
 
   public void setCreateRegistry(boolean createRegistry) {
@@ -96,7 +96,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
   }
   
   public void validate(List exceptions) {
-    if (rmiName == null) {
+    if (serviceName == null) {
       exceptions.add(new ComponentException("rmiName is not set", this));
     }
   }
@@ -105,9 +105,9 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
     
     if (createRegistry) {
       try {
-        log.info("starting rmi registry on port " + rmiPort);
-        LocateRegistry.createRegistry(rmiPort);
-        rmiHost = ResourceUtils.getLocalHostname();
+        log.info("starting rmi registry on port " + registryPort);
+        LocateRegistry.createRegistry(registryPort);
+        registryHost = ResourceUtils.getLocalHostname();
       } catch (RemoteException e) {
         throw new ComponentException("failed to create rmi registry", e, this);
       }
@@ -120,8 +120,8 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
     }
 
     try {
-      log.info("binding rmi server " + rmiName + " on " + rmiHost + ":" + rmiPort);
-      LocateRegistry.getRegistry(rmiHost, rmiPort).rebind(rmiName, rmiServer);
+      log.info("binding rmi server " + serviceName + " on " + registryHost + ":" + registryPort);
+      LocateRegistry.getRegistry(registryHost, registryPort).rebind(serviceName, rmiServer);
     } catch (Exception e) {
       rmiServer = null;
       throw new ComponentException("failed to bind ", e, this);
@@ -130,7 +130,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
 
   public void disconnect() {
     try {
-      LocateRegistry.getRegistry(rmiHost, rmiPort).unbind(rmiName);
+      LocateRegistry.getRegistry(registryHost, registryPort).unbind(serviceName);
     } catch (Exception e) {
       throw new ComponentException("failed to unbind", e, this);
     } finally {

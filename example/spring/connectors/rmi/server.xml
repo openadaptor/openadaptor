@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * exposes an rmi service that clients can send data to
+      * writes data to stdout
+    
+    It is designed to illustrate the basic structure of exposing an adaptor as a
+    an rmi service.
+
+    Run it like this...
+    
+      java org.oa3.spring.SpringApplication -config server.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    To test it fully you can run the other example which processes data by invoking
+    the service.
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+    <property name="pipeline">
+      <list>
+        <ref bean="RMIService"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+
+  <!-- This is a read connector, that exposes an rmi service -->
+  <bean id="RMIService" class="org.oa3.auxil.connector.rmi.RMIReadConnector">
+    <property name="serviceName" value="TestService"/>
+    <property name="createRegistry" value="true"/>
+  </bean>
+  
+  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+    <property name="streamWriter">
+      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+    </property>
+  </bean>
+  
+</beans>

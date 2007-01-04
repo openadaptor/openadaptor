@@ -49,9 +49,9 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
   
   private IRemoteDataProcessor rmiServer;
   
-  private String rmiHost;
-  private int rmiPort = RMIReadConnector.DEFAULT_PORT;
-  private String rmiName = RMIReadConnector.DEFAULT_NAME;
+  private String registryHost;
+  private int registryPort = RMIReadConnector.DEFAULT_PORT;
+  private String serviceName = RMIReadConnector.DEFAULT_NAME;
 
   public RMIWriteConnector() {
     super();
@@ -61,22 +61,22 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
     super(id);
   }
   
-  public void setRmiHost(String rmiHost) {
-    this.rmiHost = rmiHost;
+  public void setRegistryHost(String registryHost) {
+    this.registryHost = registryHost;
   }
 
-  public void setRmiName(String rmiName) {
-    this.rmiName = rmiName;
+  public void setServiceName(String name) {
+    this.serviceName = name;
   }
 
-  public void setRmiPort(int rmiPort) {
-    this.rmiPort = rmiPort;
+  public void setRegistryPort(int registryPort) {
+    this.registryPort = registryPort;
   }
   
   public void connect() {
     try {
-      log.info(getId() + " looking up " + rmiName + " on " + rmiHost + ":" + rmiPort);
-      rmiServer = (IRemoteDataProcessor) LocateRegistry.getRegistry(rmiHost, rmiPort).lookup(rmiName);
+      log.info(getId() + " looking up " + serviceName + " on " + registryHost + ":" + registryPort);
+      rmiServer = (IRemoteDataProcessor) LocateRegistry.getRegistry(registryHost, registryPort).lookup(serviceName);
     } catch (Exception e) {
       throw new ComponentException("failed to lookup rmi server", e, this);
     }
