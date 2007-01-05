@@ -8,7 +8,6 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.CronTrigger;
-import org.quartz.Trigger;
 
 /**
  * This component can be used to control running an adaptor, if support restart on fail
@@ -29,27 +28,22 @@ public class AdaptorRunConfiguration {
 
   private long restartAfterFailDelayMs = 5 * 1000;
 
-  private CronTrigger restartAfterFailTrigger;
-
   private Timer timer;
 
-  private CronTrigger stopTrigger;
+  private String restartAfterFailCronExpression;
 
-  private CronTrigger startTrigger;
+  private String stopCronExpression;
 
-  private CronTrigger restartTrigger;
+  private String startCronExpression;
+
+  private String restartCronExpression;
 
   private int failCount = 0;
 
   private boolean exit = false;
 
-  public void setRestartAfterFailCronExpression(String cronExpression) {
-    try {
-      restartAfterFailTrigger = new CronTrigger();
-      restartAfterFailTrigger.setCronExpression(cronExpression);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
+  public void setRestartAfterFailCronExpression(String expression) {
+    restartAfterFailCronExpression = checkCronExpression(expression);
   }
 
   public void setRestartAfterFailDelayMs(long restartDelayMs) {
@@ -60,38 +54,23 @@ public class AdaptorRunConfiguration {
     this.restartAfterFailLimit = restartLimit;
   }
 
-  public void setStartCronExpression(String cronExpression) {
-    try {
-      startTrigger = new CronTrigger();
-      startTrigger.setCronExpression(cronExpression);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
+  public void setStartCronExpression(String expression) {
+    startCronExpression = checkCronExpression(expression);
   }
 
-  public void setStopCronExpression(String cronExpression) {
-    try {
-      stopTrigger = new CronTrigger();
-      stopTrigger.setCronExpression(cronExpression);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
+  public void setStopCronExpression(String expression) {
+    stopCronExpression = checkCronExpression(expression);
   }
 
-  public void setRestartCronExpression(String cronExpression) {
-    try {
-      restartTrigger = new CronTrigger();
-      restartTrigger.setCronExpression(cronExpression);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
+  public void setRestartCronExpression(String expression) {
+    restartCronExpression = checkCronExpression(expression);
   }
 
   public void run(Adaptor adaptor) {
-    if (startTrigger == null) {
+    if (startCronExpression == null) {
       start(adaptor);
     } else {
-      scheduleTask(adaptor, startTrigger, new StartTask(adaptor));
+      scheduleTask(adaptor, startCronExpression, new StartTask(adaptor));
     }
     waitForExit();
   }
@@ -108,6 +87,16 @@ public class AdaptorRunConfiguration {
     log.info("AdaptorRunConfiguration exiting");
   }
 
+  private String checkCronExpression(String expression) {
+    try {
+      CronTrigger trigger = new CronTrigger();
+      trigger.setCronExpression(expression);
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
+    return expression;
+  }
+
   public void setExitFlag() {
     timer.cancel();
     exit = true;
@@ -121,12 +110,12 @@ public class AdaptorRunConfiguration {
 
       Date stopTime = null;
       
-      if (stopTrigger != null) {
-        stopTime = scheduleTask(adaptor, stopTrigger, new StopTask(adaptor));
+      if (stopCronExpression != null) {
+        stopTime = scheduleTask(adaptor, stopCronExpression, new StopTask(adaptor));
       } 
       
-      if (restartTrigger != null) {
-        scheduleTask(adaptor, restartTrigger, new RestartTask(adaptor), stopTime);
+      if (restartCronExpression != null) {
+        scheduleTask(adaptor, restartCronExpression, new RestartTask(adaptor), stopTime);
       }
 
       StartThread thread = new StartThread(adaptor);
@@ -138,7 +127,7 @@ public class AdaptorRunConfiguration {
     adaptor.stop();
   }
 
-  private void scheduleTask(Adaptor adaptor, long delayMs, StartTask task) {
+  private void scheduleTask(Adaptor adaptor, long delayMs, TimerTask task) {
     if (timer == null) {
       timer = new Timer();
     }
@@ -146,18 +135,24 @@ public class AdaptorRunConfiguration {
     timer.schedule(task, delayMs);
   }
 
-  private Date scheduleTask(Adaptor adaptor, Trigger trigger, TimerTask task) {
-    return scheduleTask(adaptor, trigger, task, new Date());
+  private Date scheduleTask(Adaptor adaptor, String cronExpression, TimerTask task) {
+    return scheduleTask(adaptor, cronExpression, task, new Date());
   }
   
-  private Date scheduleTask(Adaptor adaptor, Trigger trigger, TimerTask task, Date currentTime) {
-    if (timer == null) {
-      timer = new Timer();
+  private Date scheduleTask(Adaptor adaptor, String cronExpression, TimerTask task, Date currentTime) {
+    try {
+      if (timer == null) {
+        timer = new Timer();
+      }
+      CronTrigger trigger = new CronTrigger();
+      trigger.setCronExpression(cronExpression);
+      Date time = trigger.getFireTimeAfter(currentTime);
+      log.info("scheduled " + task.toString() + " for " + time);
+      timer.schedule(task, time);
+      return time;
+    } catch (Exception e) {
+      throw new RuntimeException("failed to schedule task", e);
     }
-    Date time = trigger.getFireTimeAfter(currentTime);
-    log.info("scheduled " + task.toString() + " for " + time);
-    timer.schedule(task, time);
-    return time;
   }
 
   public class StartThread extends Thread {
@@ -181,8 +176,8 @@ public class AdaptorRunConfiguration {
       if (adaptor.getExitCode() != 0) {
         failCount++;
         if (restartAfterFailLimit == 0 || failCount < restartAfterFailLimit) {
-          if (restartAfterFailTrigger != null) {
-            scheduleTask(adaptor, restartAfterFailTrigger, new StartTask(adaptor));
+          if (restartAfterFailCronExpression != null) {
+            scheduleTask(adaptor, restartAfterFailCronExpression, new StartTask(adaptor));
           } else {
             scheduleTask(adaptor, restartAfterFailDelayMs, new StartTask(adaptor));
           }
@@ -192,12 +187,12 @@ public class AdaptorRunConfiguration {
       }
 
       // this is a scheduled stop so register start
-      else if (startTrigger != null) {
-        scheduleTask(adaptor, startTrigger, new StartTask(adaptor));
+      else if (startCronExpression != null) {
+        scheduleTask(adaptor, startCronExpression, new StartTask(adaptor));
       }
 
       // there is no restart so set exit flag
-      else if (restartTrigger == null) {
+      else if (restartCronExpression == null) {
         setExitFlag();
       }
     }

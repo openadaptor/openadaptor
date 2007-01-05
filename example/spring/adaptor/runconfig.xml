@@ -86,13 +86,4 @@
     </property>
   </bean>
   
-  <bean id="DiscardWriter" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter">
-        <property name="path" value="discards.txt"/>
-        <property name="append" value="false"/>
-      </bean>
-    </property>
-  </bean>
-  
 </beans>

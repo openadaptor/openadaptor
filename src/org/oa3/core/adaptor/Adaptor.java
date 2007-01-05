@@ -328,4 +328,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       setMessageProcessor(new Pipeline(pipeline));
     }
   }
+  
+  public void exit() {
+    if (runConfiguration != null) {
+      runConfiguration.setExitFlag();
+    }
+    stop();
+  }
 }

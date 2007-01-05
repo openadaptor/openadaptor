@@ -118,7 +118,7 @@ public class SpringApplication {
       XmlBeanFactory factory = new XmlBeanFactory(new UrlResource(configUrl));
       preProcessFactory(propsUrl, factory);
       setComponentIds(factory);
-      configureMBeanServer(factory, jmxPort);
+      configureMBeanServer(factory, jmxPort, configUrl, propsUrl);
       return factory;
     } catch (BeansException e) {
       log.error("error", e);
@@ -186,12 +186,13 @@ public class SpringApplication {
     }
   }
 
-  private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort) {
+  private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort, String configUrl, String propsUrl) {
     MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
     if (mbeanServer == null && jmxPort != 0) {
       mbeanServer = new org.oa3.core.jmx.MBeanServer(jmxPort);
     }
     if (mbeanServer != null) {
+      attemptToRegisterBean(new FactoryConfig(configUrl, propsUrl), mbeanServer, "Config");
       String[] beanNames = factory.getBeanDefinitionNames();
       for (int i = 0; i < beanNames.length; i++) {
         Object bean = factory.getBean(beanNames[i]);

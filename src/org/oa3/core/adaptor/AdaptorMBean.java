@@ -37,6 +37,6 @@ import org.oa3.core.lifecycle.State;
 
 public interface AdaptorMBean {
 	State getState();
-	void stop();
+	void exit();
 	void interrupt();
 }
