@@ -14,6 +14,8 @@ import org.quartz.Trigger;
  * This component can be used to control running an adaptor, if support restart on fail
  * and scheduled stop, start and restart using cron expressions.
  * 
+ * See quartz documentation for cron expression format (http://www.opensymphony.com/quartz)
+ * 
  * @author perryj
  * @see Adaptor
  */
