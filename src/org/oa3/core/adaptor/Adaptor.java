@@ -76,6 +76,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private int exitCode = 0;
 
   private IMessageProcessor exceptionProcessor;
+  
+  private AdaptorRunConfiguration runConfiguration;
 
   public Adaptor() {
     super();
@@ -103,6 +105,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     this.transactionManager = transactionManager;
   }
 
+  public void setRunConfiguration(AdaptorRunConfiguration config) {
+    runConfiguration = config;
+  }
+  
   public ITransactionManager getTransactionManager() {
     return transactionManager;
   }
@@ -139,6 +145,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public void start() {
     exitCode = 0;
+    
+    if (started) {
+      throw new RuntimeException("adaptor is already started");
+    }
+    
     try {
       validate();
       started = true;
@@ -158,6 +169,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     } catch (Throwable ex) {
       log.error("failed to start adaptor", ex);
       exitCode = 1;
+    } finally {
+      started = false;
     }
     
     if (getExitCode() != 0) {
@@ -204,7 +217,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public void run() {
-    start();
+    if (runConfiguration != null) {
+      runConfiguration.run(this);
+    } else {
+      start();
+    }
   }
 
   public State getState() {
@@ -257,7 +274,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     int i = 0;
     for (Iterator iter = inpoints.iterator(); iter.hasNext(); i++) {
       IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      inpointThreads[i] = new Thread(inpoint, inpoint.getId());
+      inpointThreads[i] = new Thread(inpoint);
+      if (inpoint.getId() != null) {
+        inpointThreads[i].setName(inpoint.toString());
+      }
     }
     setState(State.RUNNING);
     for (int j = 0; j < inpointThreads.length; j++) {

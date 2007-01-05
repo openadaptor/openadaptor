@@ -33,9 +33,26 @@
 
 package org.oa3.core.node;
 
+import org.oa3.core.Message;
+import org.oa3.core.Response;
+import org.oa3.core.exception.MessageException;
 
 public final class ProcessorNode extends Node {
 
+  private boolean stripOutExceptions = false;
+  
+  public ProcessorNode(String id) {
+    super(id);
+  }
+  
+  public ProcessorNode() {
+    super();
+  }
+  
+  public void setStripOutExceptions(final boolean stripOut) {
+    this.stripOutExceptions = stripOut;
+  }
+  
   public String getId() {
     String id = super.getId();
     return id != null ? id : getProcessorId();
@@ -45,4 +62,19 @@ public final class ProcessorNode extends Node {
     return getId();
   }
 
+  public Response process(Message msg) {
+   if (stripOutExceptions) {
+     Object[] data = msg.getData();
+     Object[] newData = new Object[data.length];
+     for (int i = 0; i < data.length; i++) {
+       if (data[i] instanceof MessageException) {
+         newData[i] = ((MessageException)data[i]).getData();
+       } else {
+         newData[i] = data[i];
+       }
+     }
+     msg = new Message(newData, msg.getSender(), msg.getTransaction());
+   }
+   return super.process(msg);
+  }
 }

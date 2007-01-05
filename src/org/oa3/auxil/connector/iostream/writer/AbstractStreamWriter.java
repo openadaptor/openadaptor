@@ -92,7 +92,7 @@ public abstract class AbstractStreamWriter extends Component implements IStreamW
 
   public void disconnect() throws ComponentException {
     log.debug("Disconnecting (closing writer)");
-    if (writer != null) {
+    if (writer != null && outputStream != System.out) {
       try {
         writer.close();
         log.info("Writer closed");
@@ -100,7 +100,7 @@ public abstract class AbstractStreamWriter extends Component implements IStreamW
         log.warn(ioe.getMessage());
       }
     }
-    if (outputStream != null) {
+    if (outputStream != null && outputStream != System.out) {
       try {
         outputStream.close();
         log.info("OutputStream closed");

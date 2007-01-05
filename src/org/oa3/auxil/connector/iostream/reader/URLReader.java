@@ -51,7 +51,7 @@ import org.oa3.core.exception.ComponentException;
  * @author Eddy Higgins
  */
 public class URLReader extends AbstractStreamReader {
-  
+
   private static final Log log = LogFactory.getLog(URLReader.class);
 
   /**
@@ -111,15 +111,10 @@ public class URLReader extends AbstractStreamReader {
    */
   public void connect() throws ComponentException {
     try {
+      log.debug("Opening URL " + url);
+      urlConnection = url.openConnection();
+      _inputStream = urlConnection.getInputStream();
 
-      if (url != null) {
-        log.debug("Opening URL " + url);
-        urlConnection = url.openConnection();
-        _inputStream = urlConnection.getInputStream();
-      } else {
-        _inputStream = System.in;
-      }
-      
       /**
        * Flag the source of these records.
        */

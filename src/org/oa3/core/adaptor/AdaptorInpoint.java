@@ -143,19 +143,26 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
         } catch (Throwable e) {
           log.error(getId() + " stopping, uncaught exception", e);
           exitCode = 1;
-          stop();
-          log.info(" rolling back transaction");
+          log.info(getId() + " rolling back transaction");
           transaction.rollback();
           transaction = null;
+          stop();
         }
       }
     } finally {
       log.info(getId() + " no longer running");
-      stop();
       connector.disconnect();
+      super.stop();
     }
   }
 
+  public void stop() {
+    if (isState(State.RUNNING)) {
+      log.info(getId() + " is stopping");
+      setState(State.STOPPING);
+    }
+  }
+  
   /**
    * extracted so that frameworks can plug in their own transaction management
    * @param transaction

@@ -45,6 +45,25 @@ import java.util.Set;
 
 import org.oa3.core.IMessageProcessor;
 
+/**
+ * A RoutingMap describes how adaptor components (IMessageProcessors) are linked 
+ * together. It actually holds 3 different maps.
+ * 
+ * The processMap defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process it's output.
+ * 
+ * The discardsMap defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process it's discarded input.
+ * 
+ * The exceptionMap defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process it's MessageExceptions.
+ * 
+ * See comments for setProcessMap, setDiscardMap, setExceptionMap
+ * @author perryj
+ * @see IMessageProcessor
+ * @see MessageExpression
+ *
+ */
 public class RoutingMap implements IRoutingMap {
 
 	public static final String DEFAULT_KEY = "*";
@@ -67,16 +86,64 @@ public class RoutingMap implements IRoutingMap {
 		this(new Autoboxer());
 	}
 	
+  /**
+   * Sets the processMap which defines how to route output from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Lists of 
+   * IMessageProcessors. However this setter will do a fair amount
+   * of autoboxing to make the caller's life slightly easier. Non list
+   * values will automatically be boxed into a list. Key which are not
+   * actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. There is a default Autoboxer
+   * but this can be overriden.
+   * 
+   * @param map
+   * @see IMessageProcessor
+   * @see Node
+   */
 	public void setProcessMap(Map map) {
 		processMap.clear();
 		populateMap(map, processMap);
 	}
 
+  /**
+   * Sets the discardMap which defines how to route discarded input from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Lists of 
+   * IMessageProcessors. However this setter will do a fair amount
+   * of autoboxing to make the caller's life slightly easier. Non list
+   * values will automatically be boxed into a list. Key which are not
+   * actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. There is a default Autoboxer
+   * but this can be overriden.
+   * 
+   * @param map
+   * @see IMessageProcessor
+   * @see Node
+   */
 	public void setDiscardMap(Map map) {
 		discardMap.clear();
 		populateMap(map, discardMap);
 	}
 
+  /**
+   * Sets the exceptionMap which defines how to route MessageExceptions from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Maps of Maps. Where the keys
+   * are exception classnames and the values List of IMessageProcessors
+   * However this setter will do a fair amount of autoboxing to make the caller's life 
+   * slightly easier. Non list values will automatically be boxed into a list. 
+   * Values which are not actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. 
+   * If the parameters is not a map of maps then value is interpreted as the exceptin map
+   * for all components.
+   * There is a default Autoboxer but this can be overriden.
+   * 
+   * @param map
+   * @see MessageException
+   * @see IMessageProcessor
+   * @see Node
+   */
 	public void setExceptionMap(Map map) {
 		exceptionMap.clear();
 		map = autoboxer.autobox(map);

@@ -108,6 +108,7 @@ public class TestProcessor extends Component implements IDataProcessor {
   }
 
   public void validate(List exceptions) {
+    count = 0;
   }
 
 }

@@ -36,30 +36,43 @@ package org.oa3.auxil.connector.iostream.reader;
  * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/FileReader.java,v 1.3 2006/10/18 17:09:05 higginse Exp $
  * Rev: $Revision: 1.3 $ Created Nov 4, 2005 by Eddy Higgins
  */
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.oa3.core.exception.ComponentException;
-import org.oa3.util.FileUtils;
 
 /**
- * Convenience sub-class of <code>URLReader</code> for files. This converts a specified file path into a
- * <code>URL</code>, and lets the base class to do the work.
- * 
- * Note: Future versions may well allow additional file-specific behaviours, such as renaming or deleting a file when it
- * has been 'consumed' by the reader.
+ * reads from a file (or stdin if none specified)
  * 
  * @author Eddy Higgins
  */
-public class FileReader extends URLReader {
-  // private static final Log log = LogFactory.getLog(FileReader.class);
+public class FileReader extends AbstractStreamReader {
+
+  private static final Log log = LogFactory.getLog(FileReader.class);
 
   private String path;
 
-  /*
-   * Not yet completed private boolean deleteOriginal=false; private String movePath;
-   */
-  // BEGIN Bean getters/setters
   public void setPath(String path) throws ComponentException {
     this.path = path;
-    setUrl(FileUtils.toURL(this.path));
+  }
+
+  public void connect() throws ComponentException {
+    try {
+      if (path != null) {
+        log.debug("Opening " + path);
+        _inputStream = new FileInputStream(path);
+      } else {
+        _inputStream = System.in;
+      }
+
+      super.setReaderContext(path);
+      super.connect();
+    } catch (IOException ioe) { // Only catching exceptions that the super class doesn't
+      log.error("Failed to open - " + path + ". Exception - " + ioe.toString());
+      throw new ComponentException("Failed to open file " + path, ioe, this);
+    }
   }
 
   public String getPath() {

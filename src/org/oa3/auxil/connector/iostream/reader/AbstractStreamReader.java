@@ -152,7 +152,7 @@ public abstract class AbstractStreamReader extends Component implements IStreamR
    */
   public void disconnect() throws ComponentException {
     log.debug("Disconnecting (closing reader)");
-    if (_reader != null) {
+    if (_reader != null && _inputStream != System.in) {
       try {
         _reader.close();
         log.info("Reader closed");
@@ -160,7 +160,7 @@ public abstract class AbstractStreamReader extends Component implements IStreamR
         log.warn(ioe.getMessage());
       }
     }
-    if (_inputStream != null) {
+    if (_inputStream != null && _inputStream != System.in) {
       try {
         _inputStream.close();
         log.info("InputStream closed");
