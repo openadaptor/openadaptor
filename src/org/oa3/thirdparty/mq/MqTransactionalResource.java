@@ -64,7 +64,7 @@ public class MqTransactionalResource implements ITransactionalResource {
     mqConnection.commit();
   }
 
-  public void rollback() {
+  public void rollback(Throwable t) {
     log.debug("Rolling back MQ Transaction");
     mqConnection.rollback();
   }

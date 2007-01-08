@@ -37,7 +37,10 @@ import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.oa3.auxil.connector.soap.ReadConnectorWebService;
@@ -60,6 +63,7 @@ public abstract class JettyReadConnector extends QueuingReadConnector {
   private String context = "/";
   private String path = "/*";
   private Servlet servlet;
+  private Context root;
   
   protected JettyReadConnector() {
   }
@@ -96,9 +100,29 @@ public abstract class JettyReadConnector extends QueuingReadConnector {
     return server;
   }
   
-  // TODO read this from the server instance (since jetty server can be non local)
   protected int getJettyPort() {
+    Connector[] connectors = server.getConnectors();
+    for (int i = 0; i < connectors.length; i++) {
+      if (connectors[i] instanceof SocketConnector) {
+        return ((SocketConnector)connectors[i]).getLocalPort();
+      }
+    }
     return localJettyPort;
+  }
+  
+  public Context getRootContext() {
+    if (root == null) {
+      Handler[] handlers = getJettyServer().getHandlers();
+      for (int i = 0; handlers != null && i < handlers.length; i++) {
+        if (handlers[i] instanceof Context) {
+          return (Context) handlers[i];
+        }
+      }
+    }
+    if (root == null) {
+      root = new Context(getJettyServer(), context, Context.SESSIONS);
+    }
+    return root;
   }
   
   protected String getJettyHost() {
@@ -127,8 +151,7 @@ public abstract class JettyReadConnector extends QueuingReadConnector {
         throw new ComponentException("failed to start local jetty server", this);
       }
     }
-    Context root = new Context(getJettyServer(), context,Context.SESSIONS);
-    root.addServlet(new ServletHolder(servlet), path);
+    getRootContext().addServlet(new ServletHolder(servlet), path);
   }
 
   public void disconnect() {

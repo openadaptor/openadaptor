@@ -129,7 +129,7 @@ public class PipelineTestCase extends TestCase {
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setExceptionProcessor(errOutpoint);
+    adaptor.setExceptionWriteConnector(errOutpoint);
     adaptor.setPipeline(pipeline);
     adaptor.setRunInpointsInCallingThread(true);
     

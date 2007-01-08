@@ -16,7 +16,7 @@ public class TestTransactionalResource implements ITransactionalResource {
     pending = 0;
   }
 
-  public void rollback() {
+  public void rollback(Throwable t) {
     pending = 0;
   }
   

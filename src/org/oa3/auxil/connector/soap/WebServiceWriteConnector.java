@@ -35,6 +35,8 @@ package org.oa3.auxil.connector.soap;
 
 import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
 import org.oa3.core.connector.AbstractWriteConnector;
 import org.oa3.core.exception.ComponentException;
@@ -48,6 +50,8 @@ import org.oa3.core.exception.ComponentException;
  */
 public class WebServiceWriteConnector extends AbstractWriteConnector {
 
+  private static final Log log = LogFactory.getLog(WebServiceWriteConnector.class);
+  
   private Client client;
   private String methodName;
   private String endpoint;
@@ -71,15 +75,24 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
   public void connect() {
     try {
       client = new Client(new URL(endpoint));
+      log.info(getId() + " bound to endpoint " + endpoint);
     } catch (Exception e) {
       throw new ComponentException("failed to connect", e, this);
     }
   }
 
   public Object deliver(Object[] data) {
+    if (client == null) {
+      connect();
+    }
     try {
       for (int i = 0; i < data.length; i++) {
-        client.invoke(methodName, new Object[] {marshall(data[i])});
+        try {
+          client.invoke(methodName, new Object[] {marshall(data[i])});
+        } catch (RuntimeException e) {
+          client = null;
+          throw e;
+        }
       }
       return null;
     } catch (Exception e) {

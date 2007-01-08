@@ -36,5 +36,5 @@ package org.oa3.core.transaction;
 public interface ITransactionalResource {
   void begin();
   void commit();
-  void rollback();
+  void rollback(Throwable e);
 }

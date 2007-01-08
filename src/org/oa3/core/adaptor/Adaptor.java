@@ -187,6 +187,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
+  public void stopNoWait() {
+    stopInpoints();
+    stopNonInpoints();
+  }
+
   public void interrupt() {
     for (int i = 0; i < inpointThreads.length; i++) {
       inpointThreads[i].interrupt();
@@ -317,8 +322,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
-  public void setExceptionProcessor(final IWriteConnector exceptionProcessor) {
+  public void setExceptionWriteConnector(final IWriteConnector exceptionProcessor) {
     this.exceptionProcessor = new AdaptorOutpoint("exceptionProcessor", exceptionProcessor);
+  }
+  
+  public void setExceptionProcessor(final IMessageProcessor exceptionProcessor) {
+    this.exceptionProcessor = exceptionProcessor;
   }
   
   public void setPipeline(final Object[] pipeline) {

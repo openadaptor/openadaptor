@@ -47,13 +47,13 @@ import org.oa3.core.transaction.ITransaction;
 import org.oa3.core.transaction.ITransactionManager;
 import org.oa3.core.transaction.ITransactional;
 
-public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
+public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 
   private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
 
-  private IReadConnector connector;
+  private Adaptor adaptor;
 
-  private boolean enabled = true;
+  private IReadConnector connector;
 
   private long timeoutMs = 1000;
 
@@ -62,6 +62,8 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
   private ITransactionManager transactionManager;
 
   private Object prevReaderContext;
+  
+  private boolean stopAdaptorOnError = true;
 
   public AdaptorInpoint() {
     super();
@@ -80,14 +82,22 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
     this.connector = connector;
   }
 
-  public void setEnabled(final boolean enabled) {
-    this.enabled = enabled;
+  protected IReadConnector getConnector() {
+    return connector;
   }
 
   public void setTimeoutMs(long timeout) {
     this.timeoutMs = timeout;
   }
 
+  /**
+   * if set then this component will call stop on the adaptor
+   * if it terminates unexpectedly
+   */
+  public void setStopAdaptorOnError(boolean stopAdaptor) {
+    this.stopAdaptorOnError = stopAdaptor;
+  }
+  
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
@@ -100,18 +110,14 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
   }
 
   public void start() {
-    if (enabled) {
-      try {
-        connector.connect();
-      } catch (RuntimeException ex) {
-        log.error(getId() + " failed to connect", ex);
-        disconnectNoThrow();
-        throw new ComponentException("failed to connect", ex, this);
-      }
-      super.start();
-    } else {
-      log.info(getId() + " is not enabled");
+    try {
+      connector.connect();
+    } catch (RuntimeException ex) {
+      log.error(getId() + " failed to connect", ex);
+      disconnectNoThrow();
+      throw new ComponentException("failed to connect", ex, this);
     }
+    super.start();
   }
 
   private void disconnectNoThrow() {
@@ -120,7 +126,7 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
     } catch (Exception ex) {
     }
   }
-  
+
   public void run() {
     if (!isState(State.RUNNING)) {
       log.warn(getId() + " has not been started");
@@ -136,17 +142,25 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
             enlistConnector(transaction);
           }
           if (getDataAndProcess(transaction)) {
-            log.debug(getId() + " committing transaction");
-            transaction.commit();
+            if (transaction.getErrorOrException() == null) {
+              log.debug(getId() + " committing transaction");
+              transaction.commit();
+            } else {
+              log.info(getId() + " rolling back transaction");
+              transaction.rollback();
+            }
             transaction = null;
           }
         } catch (Throwable e) {
-          log.error(getId() + " stopping, uncaught exception", e);
+          transaction.setErrorOrException(e);
           exitCode = 1;
-          log.info(getId() + " rolling back transaction");
+          log.error(getId() + " uncaught exception, rolling back transaction and stopping", e);
           transaction.rollback();
           transaction = null;
           stop();
+          if (stopAdaptorOnError && adaptor != null) {
+            adaptor.stopNoWait();
+          }
         }
       }
     } finally {
@@ -162,13 +176,9 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
       setState(State.STOPPING);
     }
   }
-  
-  /**
-   * extracted so that frameworks can plug in their own transaction management
-   * @param transaction
-   */
-  public boolean getDataAndProcess(ITransaction transaction) {
-    Object[] data = connector.next(timeoutMs);
+
+  protected boolean getDataAndProcess(ITransaction transaction) {
+    Object[] data = getNext();
     if (data != null) {
       if (connector.getReaderContext() == prevReaderContext) {
         resetProcessor(connector.getReaderContext());
@@ -180,7 +190,13 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
     return data != null;
   }
 
-  public void setAdaptor(Adaptor adaptor) {
+  protected Object[] getNext() {
+    Object[] data = connector.next(timeoutMs);
+    return data;
+  }
+
+  public void setAdaptor(final Adaptor adaptor) {
+    this.adaptor = adaptor;
     setNext(adaptor);
     if (transactionManager == null) {
       transactionManager = adaptor.getTransactionManager();
@@ -204,11 +220,11 @@ public final class AdaptorInpoint extends Node implements IAdaptorInpoint {
   public String getId() {
     String id = super.getId();
     if (id == null && connector instanceof IComponent) {
-      return ((IComponent)connector).getId();
+      return ((IComponent) connector).getId();
     }
     return id;
   }
-  
+
   public String toString() {
     return getId();
   }

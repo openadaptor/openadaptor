@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Transaction implements ITransaction {
+public class Transaction extends AbstractTransaction {
 
   private boolean rollbackOnly = false;
   private List resources =  new ArrayList();
@@ -82,7 +82,7 @@ public class Transaction implements ITransaction {
     synchronized (LOCK) {
       for (Iterator iter = resources.iterator(); iter.hasNext();) {
         ITransactionalResource resource = (ITransactionalResource) iter.next();
-        resource.rollback();
+        resource.rollback(getErrorOrException());
       }
     }
   }

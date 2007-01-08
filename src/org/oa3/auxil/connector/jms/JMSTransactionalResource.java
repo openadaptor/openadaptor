@@ -40,7 +40,7 @@ public class JMSTransactionalResource implements ITransactionalResource {
     }
   }
 
-  public void rollback() {
+  public void rollback(Throwable t) {
     try {
       if (!connection.getSession().getTransacted()) {
         throw new RuntimeException("Attempt to rollback a transaction using an untransacted JMS Session");

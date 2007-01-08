@@ -62,5 +62,8 @@ public interface ITransaction {
 
     /** Use to mark a transaction so that rollback is the only valid operation that can be performed. */
     public void setRollbackOnly();
-
+    
+    public void setErrorOrException(Throwable t);
+    
+    public Throwable getErrorOrException();
 }

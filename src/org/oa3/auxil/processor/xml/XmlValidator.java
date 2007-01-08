@@ -38,7 +38,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.SAXParser;
+import org.oa3.core.Component;
 import org.oa3.core.IDataProcessor;
+import org.oa3.core.exception.ComponentException;
 import org.oa3.core.exception.RecordException;
 import org.oa3.util.URLUtils;
 import org.xml.sax.ErrorHandler;
@@ -61,7 +63,7 @@ import org.xml.sax.SAXParseException;
  *
  * @author Russ Fennell
  */
-public class XmlValidator implements IDataProcessor {
+public class XmlValidator extends Component implements IDataProcessor {
 
   public static final Log log = LogFactory.getLog(XmlValidator.class);
 
@@ -127,7 +129,7 @@ public class XmlValidator implements IDataProcessor {
       in.setCharacterStream(new StringReader((String)data));
       parser.parse(in);
     } catch (Exception e) {
-      throw new RuntimeException("xml is invalid : " + e.getMessage());
+      throw new ComponentException("xml is invalid", e, this);
     }
 
     log.debug("XML validated");

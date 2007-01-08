@@ -66,7 +66,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   private int queueLimit  = 0;
   private boolean blockOnQueue = true;
   private Object LOCK = new Object();
-  private TransactionStatus transactionStatus = new TransactionStatus();
+  private MyTransactionalResource resource = new MyTransactionalResource();
   
   protected QueuingReadConnector() {
   }
@@ -109,7 +109,11 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     this.blockOnQueue = block;
   }
   
-  protected void enqueue(Object data) {
+  /**
+   * currently synchronized because there is only one transactional resource
+   * @param data
+   */
+  protected synchronized void enqueue(Object data) {
     synchronized (LOCK) {
       while (queueLimit > 0 && queue.size() >= queueLimit) {
         if (blockOnQueue) {
@@ -132,16 +136,15 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     
     // if the controller is transacted then wait for transaction to complete
     if (isTransacted) {
-      synchronized (transactionStatus) {
+      synchronized (resource) {
         try {
-          transactionStatus.wait();
+          resource.wait();
         } catch (InterruptedException e) {
           throw new RuntimeException("thread interupted whilst waiting for transaction to complete");
         }
-        if (transactionStatus.isRollback()) {
-          throw new RuntimeException("transactioned rolledback, check server logs");
+        if (resource.rolledBack()) {
+          throw new RuntimeException(resource.getErrorOrException());
         }
-        transactionStatus.reset();
       }
     }
   }
@@ -183,7 +186,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
 
   public Object getResource() {
     if (isTransacted) {
-      return new MyTransactionalResource();
+      return resource;
     } else {
       return null;
     }
@@ -195,48 +198,27 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   
   class MyTransactionalResource implements ITransactionalResource {
 
+    Throwable errorOrException = null;
+    
     public void begin() {
-      transactionStatus.reset();
+      errorOrException = null;
     }
 
-    public void commit() {
-      transactionStatus.setCommit();
+    public synchronized void commit() {
+      notify();
     }
 
-    public void rollback() {
-      transactionStatus.setRollback();
-    }
-  }
-  
-  //
-  // inner class used as flag to wait for transation to complete
-  //
-  
-  private static final int COMMIT = 1;
-  private static final int ROLLBACK = 2;
-  
-  class TransactionStatus {
-    private int status = 0;
-    
-    synchronized void reset() {
-      status = 0;
+    public synchronized void rollback(Throwable t) {
+      errorOrException = t != null ? t : new RuntimeException("rolled back with no exception chek logs");
+      notify();
     }
     
-    synchronized void setRollback() {
-      status = ROLLBACK;
-      this.notify();
-    }
-    synchronized void setCommit() {
-      status = COMMIT;
-      this.notify();
-    }
-
-    boolean isCommit() {
-      return status == COMMIT;
+    public Throwable getErrorOrException() {
+      return errorOrException;
     }
     
-    boolean isRollback() {
-      return status == ROLLBACK;
+    public boolean rolledBack() {
+      return errorOrException != null;
     }
   }
 }

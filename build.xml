@@ -150,7 +150,7 @@
   <target name="test.clean" depends="recompile.all, test"/>
   
   <target name="test" depends="compile.all" description="run tests">
-    <junit>
+    <junit printsummary="true">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">

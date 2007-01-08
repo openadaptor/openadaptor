@@ -112,7 +112,8 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		
 		if (next != null) {
 			if (!response.containsExceptions()) {
-				response = next.process(new Message(response.getCollatedOutput(), this, msg.getTransaction()));
+        msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
+				response = callChainedMessageProcessor(msg);
 			} else {
 				MessageException[] exceptions = (MessageException[])response.getCollatedExceptions();
 				throw new RuntimeException(exceptions[0].getException());
@@ -122,6 +123,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		return response;
 	}
 
+  protected Response callChainedMessageProcessor(Message msg) {
+    return next.process(msg);
+  }
+  
 	public void validate(List exceptions) {
 		super.validate(exceptions);
 		processor.validate(exceptions);

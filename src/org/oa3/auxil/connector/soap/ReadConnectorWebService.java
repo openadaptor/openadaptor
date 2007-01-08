@@ -84,7 +84,7 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
     buffer.append(":");
     buffer.append(getJettyPort());
     buffer.append(getContext().equals("/") ? "" : getContext());
-    buffer.append("/");
+    buffer.append(getPath().replaceAll("\\*", ""));
     buffer.append(serviceName);
     buffer.append("?wsdl");
     return buffer.toString();

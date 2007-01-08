@@ -40,9 +40,9 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
-import org.oa3.core.transaction.ITransaction;
+import org.oa3.core.transaction.AbstractTransaction;
 
-public class JtaTransaction implements ITransaction {
+public class JtaTransaction extends AbstractTransaction {
 
   protected Transaction transaction = null;
 
@@ -110,8 +110,7 @@ public class JtaTransaction implements ITransaction {
     try {
       transaction.rollback();
     } catch (SystemException e) {
-      throw new RuntimeException("SystemException during transaction rollback",
-          e);
+      throw new RuntimeException("SystemException during transaction rollback", e);
     }
   }
 

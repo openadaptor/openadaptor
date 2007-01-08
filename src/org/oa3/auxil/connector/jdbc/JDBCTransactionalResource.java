@@ -88,7 +88,7 @@ public class JDBCTransactionalResource implements ITransactionalResource {
   /**
    * Rollback transaction if connection is transactional
    */
-  public void rollback() {
+  public void rollback(Throwable t) {
     try {
       if (!connection.isTransacted()) {
         throw new RuntimeException("Attempt to rollback a transaction using an untransacted JDBC connection");
