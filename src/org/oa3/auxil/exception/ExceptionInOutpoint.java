@@ -93,7 +93,7 @@ public class ExceptionInOutpoint extends AdaptorInpoint {
     if (localWebService == null) {
       localWebService = new ReadConnectorWebService();
       setConnector(localWebService);
-      replyTo = localWebService.getEndpoint();
+      localWebService.setServiceName("ExceptionProcessor");
     }
     return localWebService;
   }
@@ -114,6 +114,10 @@ public class ExceptionInOutpoint extends AdaptorInpoint {
     getReader().setLocalJettyPort(port);
   }
 
+  public void setServiceName(final String name) {
+    getReader().setServiceName(name);
+  }
+  
   public void setLogExceptions(final boolean log) {
     logExceptions = log;
   }
@@ -148,17 +152,22 @@ public class ExceptionInOutpoint extends AdaptorInpoint {
   }
   
   //
-  // override start to catch any exceptions and start webServiceWriter
+  // override start to catch any exceptions and connect webServiceWriter
   // 
 
   public void start() {
     try {
-      if (localWebService != null) {
-        super.start();
-       }
       if (webServiceWriter != null) {
         webServiceWriter.connect();
       }
+    } catch (RuntimeException ex) {
+      log.error(getId() + " failed to start, continuing anyway", ex);
+    }
+    try {
+      if (localWebService != null) {
+        super.start();
+        replyTo = localWebService.getEndpoint();
+       }
     } catch (RuntimeException ex) {
       log.error(getId() + " failed to start, continuing anyway", ex);
     }

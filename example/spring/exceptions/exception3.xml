@@ -8,7 +8,7 @@
       * validates the xml
       * writes to stdout
     
-    Validation failures are trapped and send to centralised exception manager
+    Validation failures are trapped and sent to centralised exception manager (via soap)
     
     Run it like this...
     
