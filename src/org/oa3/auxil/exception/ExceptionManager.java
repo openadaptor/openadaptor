@@ -36,20 +36,32 @@ package org.oa3.auxil.exception;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.oa3.auxil.connector.soap.ReadConnectorWebService;
 import org.oa3.auxil.connector.soap.WebServiceWriteConnector;
+import org.oa3.auxil.processor.xml.XsltProcessor;
 import org.oa3.util.ResourceUtils;
 
 public class ExceptionManager {
+
+  private static final String XSL_FILE = "exception.xsl";
 
   private static final Log log = LogFactory.getLog(ExceptionManager.class);
 
@@ -62,6 +74,8 @@ public class ExceptionManager {
   private ReadConnectorWebService webService;
 
   private Server server;
+
+  private Transformer transformer;
 
   public void setExceptionStore(final ExceptionStore exceptionStore) {
     this.exceptionStore = exceptionStore;
@@ -91,6 +105,14 @@ public class ExceptionManager {
   }
 
   public void run() {
+
+    try {
+      TransformerFactory factory = TransformerFactory.newInstance();
+      transformer = factory.newTransformer(new StreamSource(getClass().getResourceAsStream(XSL_FILE)));
+    } catch (Exception e) {
+      log.error("unable to create xslt transform with " + XSL_FILE, e);
+    }
+
     try {
       server.start();
     } catch (Exception e) {
@@ -202,8 +224,19 @@ public class ExceptionManager {
       }
       if (id != null) {
         String exception = exceptionStore.getExceptionForId(id);
-        response.setContentType("text/xml");
-        writer.write(exception);
+        if (transformer != null) {
+          try {
+            writer.write(XsltProcessor.transform(transformer, DocumentHelper.parseText(exception)));
+            writer.write("<a href=\"?action=list\">back</a>");
+            response.setContentType("text/html");
+          } catch (Exception e) {
+            writer.write(exception);
+            response.setContentType("text/xml");
+          }
+        } else {
+          writer.write(exception);
+          response.setContentType("text/xml");
+        }
       } else {
         writer.write("no id specified");
       }

@@ -176,20 +176,20 @@ public class XsltProcessor extends Component implements IDataProcessor {
    */
   private Object[] transform(Document d) {
     try {
-      DocumentSource source = new DocumentSource(d);
-      StringWriter sw = new StringWriter();
-      Result result = new StreamResult(sw);
-
-      transform.transform(source, result);
-
-      String output = sw.toString();
-
-      return new String[] { output };
+      return new String[] { transform(transform, d) };
     } catch (TransformerException e) {
       throw new ProcessorException("Transform failed: " + e.getMessage(), this);
     }
   }
 
+  public static String transform(Transformer transformer, Document d) throws TransformerException {
+    DocumentSource source = new DocumentSource(d);
+    StringWriter sw = new StringWriter();
+    Result result = new StreamResult(sw);
+    transformer.transform(source, result);
+    return sw.toString();
+  }
+  
   /**
    * Use the XML supplied to create a DOM document
    * 
