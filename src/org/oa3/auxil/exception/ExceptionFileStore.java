@@ -160,7 +160,7 @@ public class ExceptionFileStore implements ExceptionStore {
   public void delete(final String id) {
     String[] files = dir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        return name.endsWith(id + ".xml");
+        return name.startsWith(id) && name.endsWith(".xml");
       }
     });
     if (files.length == 0) {

@@ -47,6 +47,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.oa3.auxil.connector.soap.ReadConnectorWebService;
 import org.oa3.auxil.connector.soap.WebServiceWriteConnector;
+import org.oa3.util.ResourceUtils;
 
 public class ExceptionManager {
 
@@ -85,6 +86,7 @@ public class ExceptionManager {
     ExceptionManager mgr = new ExceptionManager();
     mgr.setExceptionStore(new ExceptionFileStore(dir));
     mgr.setJettyServer(new Server(port));
+    log.info("admin interface at http://" + ResourceUtils.getLocalHostname() + ":" + port + "/admin");
     mgr.run();
   }
 
@@ -105,7 +107,7 @@ public class ExceptionManager {
     webService.connect();
 
     // create servlet for browsing exceptions
-    webService.getRootContext().addServlet(new ServletHolder(new MyServlet()), "/*");
+    webService.getRootContext().addServlet(new ServletHolder(new MyServlet()), "/admin/*");
 
     while (!webService.isDry()) {
       Object[] data = webService.next(1000);
@@ -133,9 +135,11 @@ public class ExceptionManager {
         list(request, response);
       } else if (action.equals("browse")) {
         browse(request, response);
-      } else if (action.startsWith("delete")) {
+      } else if (action.equals("delete")) {
         delete(request, response);
-      }else if (action.startsWith("resend")) {
+      } else if (action.equals("deleteall")) {
+        deleteall(request, response);
+      } else if (action.equals("resend")) {
         resend(request, response);
       }
     }
@@ -172,6 +176,22 @@ public class ExceptionManager {
       writer.close();
     }
 
+    private void deleteall(HttpServletRequest request, HttpServletResponse response) {
+      String[] ids = request.getParameter("ids").split(",");
+      PrintWriter writer = null;
+      try {
+        writer = response.getWriter();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      for (int i = 0; i < ids.length; i++) {
+        exceptionStore.delete(ids[i]);
+      } 
+      response.setContentType("text/html");
+      writer.write("<a href=\"?action=list\">back</a>");
+      writer.close();
+    }
+
     private void browse(HttpServletRequest request, HttpServletResponse response) {
       String id = request.getParameter("id");
       PrintWriter writer = null;
@@ -192,7 +212,7 @@ public class ExceptionManager {
 
     private void list(HttpServletRequest request, HttpServletResponse response) {
       response.setContentType("text/html");
-      int max = getIntParameter(request, "show", 50);
+      int max = getIntParameter(request, "show", 10);
       String[] ids = exceptionStore.getAllIds();
       try {
         PrintWriter writer = response.getWriter();
@@ -200,38 +220,53 @@ public class ExceptionManager {
           writer.write("no exceptions");
         } else {
           String prevDate = null;
+          writer.write("<style type=\"text/css\">");
+          writer.write("p { font-weight: bold }");
+          writer.write(".even { background-color: EEEEEE }");
+          writer.write(".odd { background-color: CCCCCC }");
+          writer.write("</style>");
+          writer.write("<div>");
           writer.write("<table>");
           int i = 0;
-          for (; i < ids.length && i < max; i++) {
+          String idslist = "";
+          for (; i < ids.length && (max == 0 || i < max); i++) {
             try {
               ExceptionSummary summary = exceptionStore.getExceptionSummary(ids[i]);
               String date = DATE_FORMATTER.format(summary.getDate());
               if (!date.equals(prevDate)) {
                 writer.write("</table>");
-                writer.write("<p><b>" + date + "</b></d>");
-                writer.write("<table width=\"80%\">");
-                writer.write("<tr><td><u>ID</u></td><td><u>FROM</u></td><td><u>TIME</u></td><td><u>MESSAGE</u></td>");
-                writer.write("<td/>");
-                writer.write("<td><a href=\"?action=deleteall\">DELETE ALL</a></td>");
+                writer.write("<p>" + date + "</p>");
+                writer.write("<table><thead><tr><th>ID</th><th>FROM</th><th>TIME</th><th>MESSAGE</th><th/><th/><tr/></thead><tbody>");
               }
-              writer.write("<tr>");
+              writer.write("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
               writer.write("<td><a href=\"?action=browse&id=" + ids[i] + "\">" + ids[i] + "</a></td>");
               writer.write("<td>" + summary.getFrom() + "</td>");
               writer.write("<td>" + TIME_FORMATTER.format(summary.getDate()) + "</td>");
               writer.write("<td>" + summary.getMessage() + "</td>");
               if (summary.getReplyTo().length() > 0) {
-                writer.write("<td><a href=\"?action=resend&id=" + ids[i] + "\">resend</a></td>");
+                writer.write("<td><a href=\"?action=resend&id=" + ids[i] + "\">Resend</a></td>");
               } else {
                 writer.write("<td/>");
               }
-              writer.write("<td><a href=\"?action=delete&id=" + ids[i] + "\">delete</a></td></tr>");
+              writer.write("<td><a href=\"?action=delete&id=" + ids[i] + "\">Delete</a></td></tr>");
               prevDate = date;
+              idslist += idslist.length() > 0 ? "," + ids[i] : ids[i]; 
             } catch (RuntimeException e) {
               e.printStackTrace();
             }
           }
-          writer.write("</table>");
-          writer.write("<p>" + i + " of " + ids.length + "</p>");
+          writer.write("</tbody><tfoot><tr><td/><td/><td/><td/><td/>");
+          writer.write("<td><a href=\"?action=deleteall&ids=" + idslist + "\">Delete All</a></td></tr>");
+          writer.write("</tfoot></table></div>");
+          
+          writer.write("<div>");
+          writer.write("<p>Last " + i + " of " + ids.length + "</p");
+          writer.write("<table class=footer><tr>");
+          writer.write("<td><a href=\"?show=10\"> last 10 </a></td>");
+          writer.write("<td><a href=\"?show=25\"> last 50 </a></td>");
+          writer.write("<td><a href=\"?show=100\"> last 100 </a></td>");
+          writer.write("<td><a href=\"?show=0\"> All </a></td>");
+          writer.write("</tr></table></div>");
         }
         writer.close();
       } catch (IOException e) {
