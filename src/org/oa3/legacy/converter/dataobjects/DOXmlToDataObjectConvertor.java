@@ -52,22 +52,9 @@ import org.openadaptor.doconverter.XMLFormatter;
  * 
  * @author Eddy Higgins
  */
-public class DOXmlToDataObjectConvertor {
+public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
 
   private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
-
-  protected XMLFormatter formatter = new XMLFormatter();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        formatter.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
 
   protected Object convert(Object record) throws RecordException {
     Object[] result = null;

@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doxml.GenericXMLReader;
 
@@ -53,22 +54,10 @@ import org.openadaptor.doxml.GenericXMLReader;
  * 
  * @author Eddy Higgins
  */
-public class XmlToDataObjectConvertor {
+public class XmlToDataObjectConvertor extends AbstractConvertor {
 
   private static final Log log = LogFactory.getLog(XmlToDataObjectConvertor.class);
-
   protected GenericXMLReader reader = new GenericXMLReader();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        reader.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
 
   /**
    * This converts a supplied XML (String or dom4j Document) into a DataObject[] <B>Note</B>: Usage of this method
@@ -106,4 +95,14 @@ public class XmlToDataObjectConvertor {
   }
   // END Abstract Convertor Processor implementation
 
+  public void setAttributes(Map attributeMap) {
+    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      try {
+        reader.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
+      } catch (DataObjectException ex) {
+        throw new RuntimeException(ex.getMessage());
+      }
+    }
+  }
 }

@@ -54,22 +54,9 @@ import org.openadaptor.doconverter.XMLFormatter;
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToDOXmlConvertor {
+public class DataObjectToDOXmlConvertor extends AbstractDOXmlConvertor {
 
   private static final Log log = LogFactory.getLog(DataObjectToDOXmlConvertor.class);
-
-  protected XMLFormatter formatter = new XMLFormatter();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        formatter.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
 
   /**
    * This converts a supplied DataObjet[] into a DOXML String <B>Note</B>: Usage of this method depends on the

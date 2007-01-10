@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import org.oa3.auxil.orderedmap.OrderedHashMap;
+import org.oa3.auxil.convertor.AbstractConvertor;
 import org.oa3.core.exception.RecordException;
 import org.oa3.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
@@ -47,7 +48,7 @@ import org.openadaptor.dataobjects.DataObject;
 /**
  * @author Russ Fennell
  */
-public class DataObjectToOrderedMapConvertor {
+public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
   private static Log log = LogFactory.getLog(DataObjectToOrderedMapConvertor.class);
 
   /**
