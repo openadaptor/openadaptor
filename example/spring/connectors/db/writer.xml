@@ -69,7 +69,7 @@
   </bean>
 
   <!-- Writer which inserts data into test table -->
-  <bean id="Writer" class="org.oa3.auxil.connector.jdbc.JDBCWriteConnector">
+  <bean id="Writer" class="org.oa3.auxil.connector.jdbc.reader.JDBCWriteConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="sqlStatement">
       <value>

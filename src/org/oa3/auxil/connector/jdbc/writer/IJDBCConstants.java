@@ -30,44 +30,20 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc;
+package org.oa3.auxil.connector.jdbc.writer;
 /*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCStatementFactory.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
+ * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/IJDBCConstants.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
  * Rev:  $Revision: 1.2 $
  * Created Oct 22, 2006 by Kuldip Ottal
  */
 
-import org.oa3.core.exception.ComponentException;
-import java.sql.Connection;
-
 /**
- * This static method factory class returns the appropriate object required for
- * write mechanism set in the configuration file.
+ * A basic interface file which contains constants for use within the JDBC concrete classes
  */
-public class JDBCStatementFactory implements IJDBCConstants {
-
-  /**
-   * This method returns the appropriate database write mechanism object
-   *
-   * @param writeMechanism Constant indicating the database write mechanism configured
-   * @param objectName Write mechanism object in database, for example database table, stored procedure or sql statement
-   * @param delimiter The character to be used to delimit variables, which are to be replaced with values from oa3 data record
-   * @param connection JDBC Connection
-   * @return IJDBCStatement
-   * @throws ComponentException
-   */
-  public static IJDBCStatement createStatement(String writeMechanism, String objectName, String delimiter,Object mapping,Connection connection) throws ComponentException {
-    if (writeMechanism.equals(DATABASE_TABLE)) {
-      return new JDBCTableStatement(objectName,mapping,connection);
-    }
-    if (writeMechanism.equals(STORED_PROCEDURE)) {
-      return new JDBCStoredProcStatement(objectName,mapping,connection);
-    }
-    if (writeMechanism.equals(SQL_STATEMENT)) {
-      return new JDBCSqlStatement(objectName,delimiter,connection);
-    }
-    throw new RuntimeException ("Unrecognised JDBC write mechanism");
-  }
+public interface IJDBCConstants {
+  public static final String DATABASE_TABLE = "tableName";
+  public static final String STORED_PROCEDURE = "storedProcName";
+  public static final String SQL_STATEMENT = "sqlStatement";
+  public static final int DB_COLUMN_OFFSET=1;
+  public static final boolean APPLY_STOREDPROC_METADATA_FIX=true;
 }
-
-

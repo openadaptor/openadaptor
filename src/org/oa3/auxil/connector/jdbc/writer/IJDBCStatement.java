@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc;
+package org.oa3.auxil.connector.jdbc.writer;
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/IJDBCStatement.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
  * Rev:  $Revision: 1.2 $

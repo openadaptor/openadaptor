@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc;
+package org.oa3.auxil.connector.jdbc.writer;
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCStoredProcStatement.java,v 1.6 2006/11/30 15:38:05 ottalk Exp $
  * Rev:  $Revision: 1.6 $

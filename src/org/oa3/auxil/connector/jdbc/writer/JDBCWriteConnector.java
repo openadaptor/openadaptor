@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc;
+package org.oa3.auxil.connector.jdbc.writer;
 /*
  * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCWriteConnector.java,v 1.6 2006/11/16 17:01:51 ottalk Exp $
  * Rev:  $Revision: 1.6 $
@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.oa3.core.connector.AbstractWriteConnector;
 import org.oa3.core.exception.ComponentException;
+import org.oa3.auxil.connector.jdbc.JDBCConnection;
 import org.oa3.auxil.orderedmap.IOrderedMap;
 import java.sql.SQLException;
 import java.util.Map;

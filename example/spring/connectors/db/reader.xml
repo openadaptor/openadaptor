@@ -49,7 +49,7 @@
   </bean>
 
   <!-- Reader which polls database using configured SQL -->
-  <bean id="Reader" class="org.oa3.auxil.connector.jdbc.JDBCReadConnector">
+  <bean id="Reader" class="org.oa3.auxil.connector.jdbc.reader.JDBCReadConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="sql">
       <value>
