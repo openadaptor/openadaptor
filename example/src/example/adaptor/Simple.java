@@ -1,13 +1,13 @@
 package example.adaptor;
 
-import org.oa3.auxil.connector.iostream.reader.FileReader;
-import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
-import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
-import org.oa3.auxil.connector.iostream.writer.FileWriter;
-import org.oa3.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.oa3.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
-import org.oa3.auxil.convertor.xml.OrderedMapToXmlConvertor;
-import org.oa3.core.adaptor.Adaptor;
+import org.openadaptor.auxil.connector.iostream.reader.FileReader;
+import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
+import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
+import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
+import org.openadaptor.core.adaptor.Adaptor;
 
 /**
  * This code example corresponds to the basic spring example in simple.xml

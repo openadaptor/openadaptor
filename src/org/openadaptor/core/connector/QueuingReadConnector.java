@@ -31,17 +31,17 @@
  #* ]]
  */
 
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.transaction.ITransactional;
-import org.oa3.core.transaction.ITransactionalResource;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.transaction.ITransactional;
+import org.openadaptor.core.transaction.ITransactionalResource;
 
 /**
  * Base class for connectors that don't really poll. This provides core implementation
@@ -193,7 +193,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   }
 
   //
-  // inner class that integrates with oa3 transaction management
+  // inner class that integrates with openadaptor transaction management
   //
   
   class MyTransactionalResource implements ITransactionalResource {

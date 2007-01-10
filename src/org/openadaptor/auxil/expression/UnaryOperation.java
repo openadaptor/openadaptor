@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/UnaryOperation.java,v 1.6 2006/11/01 18:06:52 higginse Exp $ Rev:
- * $Revision: 1.6 $ Created Sep 22 2006 by Eddy Higgins
- */
 import java.util.Stack;
 
 import org.apache.commons.logging.Log;

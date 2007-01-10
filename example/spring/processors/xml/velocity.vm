@@ -1,4 +1,4 @@
-<record created="${SystemProperties.get("oa3.application.start")}">
+<record created="${SystemProperties.get("openadaptor.application.start")}">
 #set($i = 1)
 #foreach($fieldName in ${data.keys()})
   <field${i}>${data.get($fieldName)}</field${i}>

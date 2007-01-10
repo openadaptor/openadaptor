@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/AbstractRecordReader.java,v 1.4 2006/10/18 17:23:52
- * higginse Exp $ Rev: $Revision: 1.4 $ Created Oct 31, 2005 by Eddy Higgins
- */
+package org.openadaptor.auxil.connector.iostream.reader;
 
 import java.io.IOException;
 import java.io.Reader;

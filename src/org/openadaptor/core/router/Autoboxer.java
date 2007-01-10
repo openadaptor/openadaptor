@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.router;
+package org.openadaptor.core.router;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,13 +39,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.adaptor.AdaptorInpoint;
-import org.oa3.core.adaptor.AdaptorOutpoint;
-import org.oa3.core.node.Node;
-import org.oa3.core.node.ProcessorNode;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.adaptor.AdaptorInpoint;
+import org.openadaptor.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.node.Node;
+import org.openadaptor.core.node.ProcessorNode;
 
 public class Autoboxer implements IAutoboxer {
 

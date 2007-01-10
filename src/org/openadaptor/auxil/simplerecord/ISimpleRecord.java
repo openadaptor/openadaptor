@@ -30,14 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecord;
+package org.openadaptor.auxil.simplerecord;
 
-import org.oa3.core.exception.RecordException;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/ISimpleRecord.java,v 1.6 2006/10/17 16:26:28 higginse Exp $ Rev:
- * $Revision: 1.6 $ Created Sep 14 2006 by Eddy Higgins
- */
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Common accessor interface for records.

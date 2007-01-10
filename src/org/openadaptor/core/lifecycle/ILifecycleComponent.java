@@ -31,11 +31,11 @@
  * ]]
  */
 
-package org.oa3.core.lifecycle;
+package org.openadaptor.core.lifecycle;
 
 import java.util.List;
 
-import org.oa3.core.IComponent;
+import org.openadaptor.core.IComponent;
 
 public interface ILifecycleComponent extends IComponent {
 	void validate(List exceptions);

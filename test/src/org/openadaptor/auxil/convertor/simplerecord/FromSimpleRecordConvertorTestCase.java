@@ -30,16 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.simplerecord;
+package org.openadaptor.auxil.convertor.simplerecord;
 
 import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Dec 19, 2006 by oa3 Core Team
- */
+import org.openadaptor.auxil.convertor.simplerecord.FromSimpleRecordConvertor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 
 public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
 

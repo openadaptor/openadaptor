@@ -30,13 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.fixedwidth;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/FixedWidthFieldDetail.java,v 1.3 2006/11/30 15:10:45 fennelr Exp $
- * Rev:  $Revision: 1.3 $
- * Created Jun 22, 2006 by oa3 Core Team
- */
+package org.openadaptor.auxil.convertor.fixedwidth;
 
 /**
  * Defines a fixed width field. Allows you to set the various attributes required

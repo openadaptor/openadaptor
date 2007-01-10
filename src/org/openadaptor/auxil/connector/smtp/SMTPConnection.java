@@ -31,12 +31,12 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.smtp;
+package org.openadaptor.auxil.connector.smtp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.Component;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -48,11 +48,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 import java.util.Date;
-/*
-* File: $Header: $
-* Rev: $Revision: $
-* Created Dec 6, 2006 by oa3 Core Team
-*/
 
 public class SMTPConnection extends Component {
 

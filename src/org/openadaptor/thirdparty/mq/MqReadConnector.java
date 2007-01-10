@@ -21,17 +21,17 @@
  * Software, or for combinations of the Software with other software or
  * hardware. ]]
  */
-package org.oa3.thirdparty.mq;
+package org.openadaptor.thirdparty.mq;
 
 /*
  * File: $Header$ Rev: $Revision$
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * ReadConnector that use MqConnection to read messages from an IBM MQ Queue.

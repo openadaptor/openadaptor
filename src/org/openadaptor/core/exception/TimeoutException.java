@@ -30,9 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-import org.oa3.core.IComponent;
+import org.openadaptor.core.IComponent;
 
 /**
  * General purpose OAException used by Nodes when an operation times out.

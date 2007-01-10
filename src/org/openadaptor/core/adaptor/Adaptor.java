@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,18 +39,18 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.lifecycle.ILifecycleComponent;
-import org.oa3.core.lifecycle.ILifecycleComponentContainer;
-import org.oa3.core.lifecycle.ILifecycleComponentManager;
-import org.oa3.core.lifecycle.State;
-import org.oa3.core.router.Pipeline;
-import org.oa3.core.transaction.ITransactionManager;
-import org.oa3.core.transaction.TransactionManager;
-import org.oa3.util.Application;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
+import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.transaction.ITransactionManager;
+import org.openadaptor.core.transaction.TransactionManager;
+import org.openadaptor.util.Application;
 
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
     AdaptorMBean {

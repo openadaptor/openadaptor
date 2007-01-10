@@ -1,4 +1,8 @@
-package org.oa3.thirdparty.tibco;
+package org.openadaptor.thirdparty.tibco;
+
+import org.openadaptor.thirdparty.tibco.TibrvConnection;
+import org.openadaptor.thirdparty.tibco.TibrvReadConnector;
+import org.openadaptor.thirdparty.tibco.TibrvWriteConnector;
 
 import junit.framework.TestCase;
 

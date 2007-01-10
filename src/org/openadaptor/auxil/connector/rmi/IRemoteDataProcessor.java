@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.rmi;
+package org.openadaptor.auxil.connector.rmi;
 
 import java.io.Serializable;
 import java.rmi.Remote;

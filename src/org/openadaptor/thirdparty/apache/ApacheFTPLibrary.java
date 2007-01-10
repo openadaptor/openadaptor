@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.apache;
+package org.openadaptor.thirdparty.apache;
 
 /*
  * File: $Header$ Rev: $Revision$
@@ -47,8 +47,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.oa3.auxil.connector.ftp.IFTPLibrary;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.ftp.IFTPLibrary;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This component will provide basic File Transfer Protocol (FTP) connunication to allow the adaptor to GET a file from

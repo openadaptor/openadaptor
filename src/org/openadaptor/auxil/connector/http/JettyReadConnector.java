@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.http;
+package org.openadaptor.auxil.connector.http;
 
 import javax.servlet.Servlet;
 
@@ -43,10 +43,10 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.oa3.auxil.connector.soap.ReadConnectorWebService;
-import org.oa3.core.connector.QueuingReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.util.ResourceUtils;
+import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.util.ResourceUtils;
 
 /**
  * base class for read connectors that require an http server

@@ -1,15 +1,15 @@
-package org.oa3.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.oa3.auxil.connector.jdbc.JDBCConnection;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
 

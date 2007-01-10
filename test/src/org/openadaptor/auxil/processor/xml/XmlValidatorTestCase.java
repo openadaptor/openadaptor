@@ -1,12 +1,12 @@
-package org.oa3.auxil.processor.xml;
+package org.openadaptor.auxil.processor.xml;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.processor.xml.XmlValidator;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.auxil.processor.xml.XmlValidator;
+import org.openadaptor.util.ResourceUtil;
 
 public class XmlValidatorTestCase extends TestCase {
 

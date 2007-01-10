@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.rmi;
+package org.openadaptor.auxil.connector.rmi;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -41,10 +41,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.connector.QueuingReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.util.ResourceUtils;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.util.ResourceUtils;
 
 /**
  * exposes IDataProcessor interface as remote interface. Allowing rmi clients to send data for

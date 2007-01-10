@@ -30,14 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.dom4j;
+package org.openadaptor.thirdparty.dom4j;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/XmlToDom4jConvertorProcessor.java,v 1.4 2006/10/20 15:21:35
- * fennelr Exp $ Rev: $Revision: 1.4 $ Created Jun 30, 2006 by Eddy Higgins
- */
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Converts XML documents (as Strings) to Dom4j Documents

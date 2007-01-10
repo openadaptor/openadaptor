@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/NullRecordException.java,v 1.1 2006/06/05 15:39:55 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created June 05. 2006 by Eddy Higgins
- */
 /**
  * Exception class for Exceptions relating to null records.
  * 

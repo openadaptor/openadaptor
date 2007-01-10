@@ -2,7 +2,7 @@ package example.processor;
 
 import java.util.List;
 
-import org.oa3.core.IDataProcessor;
+import org.openadaptor.core.IDataProcessor;
 
 /**
  * This is a custom Processor

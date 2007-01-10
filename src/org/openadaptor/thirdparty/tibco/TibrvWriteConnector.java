@@ -31,10 +31,10 @@
  #* ]]
  */
 
-package org.oa3.thirdparty.tibco;
+package org.openadaptor.thirdparty.tibco;
 
-import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
 
 import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;

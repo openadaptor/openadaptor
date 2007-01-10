@@ -30,19 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/FormatFn.java,v 1.2 2006/11/02 17:23:54 higginse Exp $ Rev:
- * $Revision: 1.2 $ Created Oct 26 2006 by Eddy Higgins
- */
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Formatting functions.
@@ -82,7 +78,7 @@ public class FormatFn extends AbstractFunction {
    *          Object[] which should contain two arguments - the Object to be formatted, and the format to be applied
    *          (typically a <code>String</code>)
    * @return Object containing a <code>String</code> with the formatted value.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If arguments cannot be cast appropriately
    */
   protected Object operate(Object[] args) throws ExpressionException {

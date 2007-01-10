@@ -31,11 +31,11 @@
  * ]]
  */
 
-package org.oa3.core.node;
+package org.openadaptor.core.node;
 
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.exception.MessageException;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.exception.MessageException;
 
 public final class ProcessorNode extends Node {
 

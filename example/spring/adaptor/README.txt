@@ -8,7 +8,7 @@ To run this you first need to set your classpath correctly (see top level README
 
 Once you have done this you can run from the command line like this...
 
-  java org.oa3.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
 
 This contrived example reads input from stdin, capitalizes it and writes it to stdout.
 

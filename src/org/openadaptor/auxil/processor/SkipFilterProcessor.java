@@ -30,17 +30,17 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor;
+package org.openadaptor.auxil.processor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.RecordException;
 
 public class SkipFilterProcessor extends Component implements IDataProcessor {
 
@@ -97,7 +97,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * @param record -
    *          the input record to be processed.
    * @return Object[] with zero or more records, resulting from the processing operation.
-   * @throws org.oa3.processor.RecordException
+   * @throws org.openadaptor.processor.RecordException
    *           if the processing fails for any reason.
    */
   public Object[] process(Object data) {
@@ -194,7 +194,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * 
    * Check pre-condition of properties required to be set, and compile pattern.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if the preconditions are not met
    */
 

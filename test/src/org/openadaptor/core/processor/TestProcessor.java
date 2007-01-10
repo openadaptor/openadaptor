@@ -31,12 +31,12 @@
  * ]]
  */
 
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
 import java.util.List;
 
-import org.oa3.core.Component;
-import org.oa3.core.IDataProcessor;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
 
 public class TestProcessor extends Component implements IDataProcessor {
 

@@ -30,27 +30,22 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.legacy.converter.dataobjects;
+package org.openadaptor.legacy.converter.dataobjects;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/openadaptor/DataObjectToXmlConvertorProcessor.java,v 1.2
- * 2006/07/21 07:57:03 higginse Exp $ Rev: $Revision: 1.2 $ Created Jul 20, 2006 by Eddy Higgins
- */
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
-import org.oa3.auxil.convertor.AbstractConvertor;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doxml.GenericXMLWriter;
 
 /**
  * Convert Data Objects into XML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
- * the availability of a legacy openadaptor jar to do the conversions, as oa3 doesn't directly support dataobjects, or
+ * the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
  * DOXML.
  * <p>
  * Note that it extends DOXmlToDataObjectConvertorProcessor as it needs access to the DataObject 'class' to find the
@@ -58,7 +53,7 @@ import org.openadaptor.doxml.GenericXMLWriter;
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToXmlConvertor extends AbstractConvertor {
+public class DataObjectToXmlConvertor extends DOXmlToDataObjectConvertor {
 
   private static final Log log = LogFactory.getLog(DataObjectToXmlConvertor.class);
 
@@ -77,13 +72,13 @@ public class DataObjectToXmlConvertor extends AbstractConvertor {
 
   /**
    * This converts a supplied DataObject XML String into XML <B>Note</B>: Usage of this method depends on the
-   * availability of a legacy openadaptor jar to do the conversions, as oa3 doesn't directly support dataobjects, or
+   * availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
    * DOXML.
    * 
    * @param record
    *          containing DOXML
    * @return XMl representation of the data
-   * @throws org.oa3.processor.RecordException
+   * @throws org.openadaptor.processor.RecordException
    *           if conversion fails
    */
   protected Object convert(Object record) throws RecordException {

@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.soap;
+package org.openadaptor.auxil.connector.soap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,10 +50,11 @@ import org.codehaus.xfire.transport.http.XFireServlet;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.connector.TestReadConnector;
-import org.oa3.core.router.Router;
-import org.oa3.core.router.RoutingMap;
+import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.connector.TestReadConnector;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 public class WebServiceWriteConnectorTestCase extends TestCase {
 

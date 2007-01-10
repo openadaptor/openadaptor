@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.jndi;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/jndi/JNDIEnhancementProcessor.java,v 1.16 2006/11/08 10:41:43 shirea Exp $
- * Rev:  $Revision: 1.16 $
- * Created Nov 23, 2005 by Eddy Higgins
- */
+package org.openadaptor.auxil.processor.jndi;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,14 +41,14 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.jndi.AbstractJNDIReadConnector;
-import org.oa3.auxil.connector.jndi.JNDIReadConnector;
-import org.oa3.auxil.connector.jndi.JNDISearch;
-import org.oa3.auxil.connector.jndi.JNDIUtils;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.connector.jndi.AbstractJNDIReadConnector;
+import org.openadaptor.auxil.connector.jndi.JNDIReadConnector;
+import org.openadaptor.auxil.connector.jndi.JNDISearch;
+import org.openadaptor.auxil.connector.jndi.JNDIUtils;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Processor to update incoming records with data from a directory.

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/ExpressionTokenReader.java,v 1.5 2006/10/19 11:11:17 higginse Exp $
- * Rev: $Revision: 1.5 $ Created Sep 22 2006 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
@@ -76,7 +72,7 @@ import org.apache.commons.logging.LogFactory;
  * Parsed tokens: |3|+|4|*|(|7|-|5|)| <BR>
  * //ToDo: Add more examples.
  * 
- * @see org.oa3.expression.Expression for more detail on valid expressions.
+ * @see org.openadaptor.expression.Expression for more detail on valid expressions.
  */
 public class ExpressionTokenReader {
 
@@ -134,7 +130,7 @@ public class ExpressionTokenReader {
    * @param in
    *          a reader which should have the (pre-processed) expression.
    * @return list of tokens parsed from the supplied <code>Reader</code>
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    */
   private static List getTokenList(Reader in, boolean allowFunctions) throws ExpressionException {
     List tokens = null;
@@ -375,7 +371,7 @@ public class ExpressionTokenReader {
    * <LI>Unary operators + and - are detected here. //ToDo: Find a better way of handling unary stuff.
    * 
    * @return List containing all of the tokens from the Tokenizer.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           if it cannot read a token
    */
   public List generateTokens() throws ExpressionException {

@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.util;
+package org.openadaptor.util;
 
 /*
  * File: $Header$ Rev: $Revision$

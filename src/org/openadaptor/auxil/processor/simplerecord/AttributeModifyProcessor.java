@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/modify/AttributeModifyProcessor.java,v 1.8 2006/11/02 17:23:54 higginse
- * Exp $ Rev: $Revision: 1.8 $ Created Oct 03, 2006 by Eddy Higgins
- */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.expression.Expression;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IExpression;
-import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.expression.Expression;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IExpression;
+import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Abstract base class for any processor that modifies an attribute within an <code>ISimpleRecord</code>.

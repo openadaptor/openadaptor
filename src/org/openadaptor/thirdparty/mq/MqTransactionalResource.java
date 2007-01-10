@@ -30,14 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.mq;
+package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$ 
  * Rev: $Revision$
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.transaction.ITransactionalResource;
+import org.openadaptor.core.transaction.ITransactionalResource;
 
 public class MqTransactionalResource implements ITransactionalResource {
 

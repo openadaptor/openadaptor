@@ -31,25 +31,25 @@
  * ]]
  */
 
-package org.oa3.core.router;
+package org.openadaptor.core.router;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.Response.DataBatch;
-import org.oa3.core.Response.DiscardBatch;
-import org.oa3.core.Response.ExceptionBatch;
-import org.oa3.core.Response.OutputBatch;
-import org.oa3.core.exception.MessageException;
-import org.oa3.core.lifecycle.ILifecycleComponent;
-import org.oa3.core.lifecycle.ILifecycleComponentContainer;
-import org.oa3.core.lifecycle.ILifecycleComponentManager;
-import org.oa3.core.transaction.ITransaction;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.Response.DataBatch;
+import org.openadaptor.core.Response.DiscardBatch;
+import org.openadaptor.core.Response.ExceptionBatch;
+import org.openadaptor.core.Response.OutputBatch;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
+import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
+import org.openadaptor.core.transaction.ITransaction;
 
 public class Router implements IMessageProcessor,ILifecycleComponentContainer {
 

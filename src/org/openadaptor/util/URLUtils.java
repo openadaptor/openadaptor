@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.util;
+package org.openadaptor.util;
 
 import java.io.File;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ public class URLUtils {
    * 
    * Note that in the case of files you do not need to supply the "file:" protocol.
    * 
-   * @throws org.oa3.control.RuntimeException
+   * @throws org.openadaptor.control.RuntimeException
    *           if the url is null, or it does not exist, or it does not contain any data
    */
   public static void validateURLAsDataSource(String url) {

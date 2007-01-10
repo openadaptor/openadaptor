@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.http;
+package org.openadaptor.auxil.connector.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,8 +47,8 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.http.ReadConnectorServlet;
-import org.oa3.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.connector.http.ReadConnectorServlet;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
 
 
 public class ReadConnectorServletTestCase extends TestCase {

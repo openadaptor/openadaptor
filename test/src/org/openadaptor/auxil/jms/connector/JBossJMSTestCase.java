@@ -1,4 +1,4 @@
-package org.oa3.auxil.jms.connector;
+package org.openadaptor.auxil.jms.connector;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,10 +6,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSReadConnector;
-import org.oa3.auxil.connector.jms.JMSWriteConnector;
-import org.oa3.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
 /**
  * assumes standard JBOSS distro is runnning.

@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor;
+package org.openadaptor.auxil.convertor;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
-import org.oa3.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
+import org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * This tests the DelimitedStringConvertors implementation.

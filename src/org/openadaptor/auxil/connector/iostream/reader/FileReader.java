@@ -30,18 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/FileReader.java,v 1.3 2006/10/18 17:09:05 higginse Exp $
- * Rev: $Revision: 1.3 $ Created Nov 4, 2005 by Eddy Higgins
- */
 import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * reads from a file (or stdin if none specified)

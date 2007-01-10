@@ -31,19 +31,19 @@
  * ]]
  */
 
-package org.oa3.core.node;
+package org.openadaptor.core.node;
 
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IComponent;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.exception.MessageException;
-import org.oa3.core.lifecycle.LifecycleComponent;
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.LifecycleComponent;
 
 public class Node extends LifecycleComponent implements IMessageProcessor, NodeMBean {
 

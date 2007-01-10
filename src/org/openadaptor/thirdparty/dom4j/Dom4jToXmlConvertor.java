@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.dom4j;
+package org.openadaptor.thirdparty.dom4j;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/Dom4jToXmlConvertorProcessor.java,v 1.5 2006/10/20 15:21:35
- * fennelr Exp $ Rev: $Revision: 1.5 $ Created Jun 30, 2006 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -44,9 +40,9 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Converts XML documents (as Strings) to Dom4j Documents
@@ -86,7 +82,7 @@ public class Dom4jToXmlConvertor extends AbstractConvertor {
    * @param record
    *          dom4j Document objectcontaining an XML Document (dom4j) or a
    * @return Object (String) containing XML data
-   * @throws org.oa3.processor.RecordFormatException
+   * @throws org.openadaptor.processor.RecordFormatException
    *           if conversion fails
    */
   protected Object convert(Object record) throws RecordException {

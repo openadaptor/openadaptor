@@ -13,13 +13,13 @@
     Data terminates: stdout unless a file is specified.
 
     Run using
-      java org.oa3.spring.SpringApplication -config mq_reader.xml -bean Adaptor -props mq.properties
+      java org.openadaptor.spring.SpringApplication -config mq_reader.xml -bean Adaptor -props mq.properties
 
     mq.properties is a properties format file which should be edited to supply specific mq property
     values e.g. channel etc. Alternatively just edit MQSeries_Outpoint below directly.
   </description>
 
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="MQSeries_Inpoint"/>
@@ -28,18 +28,18 @@
     </property>
   </bean>
 
-  <bean id="MQSeries_Inpoint" class="org.oa3.thirdparty.mq.MqReadConnector">
+  <bean id="MQSeries_Inpoint" class="org.openadaptor.thirdparty.mq.MqReadConnector">
     <description>
       Define the MQ Connector used by the Inpoint.
     </description>
     <property name="pollingConfiguration">
-      <bean class="org.oa3.core.connector.PollingConfiguration">
+      <bean class="org.openadaptor.core.connector.PollingConfiguration">
         <property name="pollInterval" value="5000"/>
         <property name="maxPollLimit" value="3"/>
       </bean>
     </property>
     <property name="connection">
-      <bean class="org.oa3.thirdparty.mq.MqConnection">
+      <bean class="org.openadaptor.thirdparty.mq.MqConnection">
         <property name="channelName" value="${mq.channel}"/>
         <property name="hostName" value="${mq.host}"/>
         <property name="managerName" value="${mq.manager}"/>
@@ -57,9 +57,9 @@
     </property>
   </bean>
 
-  <bean id="Outpoint" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="Outpoint" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
-      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
     </property>
   </bean>
 

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jndi;
+package org.openadaptor.auxil.connector.jndi;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jndi/JNDIReader.java,v 1.18 2006/10/27 13:48:04 shirea Exp $ Rev:
- * $Revision: 1.18 $ Created Oct 20, 2005 by Eddy Higgins
- */
 import javax.naming.AuthenticationException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -44,8 +40,8 @@ import javax.naming.directory.SearchResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
@@ -132,7 +128,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p>
    * If already connected, do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if an AuthenticationException or NamingException occurs
    */
   public void connect() {
@@ -153,7 +149,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p>
    * If already disconnected, do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if a NamingException occurs.
    */
   public void disconnect() {

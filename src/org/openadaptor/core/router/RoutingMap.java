@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.router;
+package org.openadaptor.core.router;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.oa3.core.IMessageProcessor;
+import org.openadaptor.core.IMessageProcessor;
 
 /**
  * A RoutingMap describes how adaptor components (IMessageProcessors) are linked 

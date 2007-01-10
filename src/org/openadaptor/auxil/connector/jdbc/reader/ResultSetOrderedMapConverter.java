@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -40,9 +40,9 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.util.JDBCUtil;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.util.JDBCUtil;
 
 public class ResultSetOrderedMapConverter implements ResultSetConverter {
 

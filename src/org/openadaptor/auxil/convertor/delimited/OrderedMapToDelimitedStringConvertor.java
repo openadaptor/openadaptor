@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.delimited;
+package org.openadaptor.auxil.convertor.delimited;
 
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Convert OrderedMaps to DelimitedStrings

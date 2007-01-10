@@ -30,16 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/IExpression.java,v 1.4 2006/11/02 10:14:12 higginse Exp $ Rev:
- * $Revision: 1.4 $ Created Sep 26 2006 by Eddy Higgins
- */
 import java.util.Map;
 
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Common interface for openadaptor Expressions.
@@ -86,7 +82,7 @@ public interface IExpression {
    * Currently mapping supports "Long","Double","String","Date". Unknown types will be converted as Strings.
    * 
    * @return Map of attribute name to java type mappings.
-   * @see org.oa3.util.Dom4jUtils this is where the actual convertion takes place.
+   * @see org.openadaptor.util.Dom4jUtils this is where the actual convertion takes place.
    */
   public Map getAttributeTypeMap();
 
@@ -100,7 +96,7 @@ public interface IExpression {
    * Currently mapping supports "Long","Double","String","Date". Unknown types will be converted as Strings.
    * 
    * @param attributeTypeMap
-   * @see org.oa3.util.Dom4jUtils this is where the actual convertion takes place.
+   * @see org.openadaptor.util.Dom4jUtils this is where the actual convertion takes place.
    */
   public void setAttributeTypeMap(Map attributeTypeMap);
 

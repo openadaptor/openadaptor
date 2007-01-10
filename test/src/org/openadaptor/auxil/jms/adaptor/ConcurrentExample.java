@@ -1,4 +1,4 @@
-package org.oa3.auxil.jms.adaptor;
+package org.openadaptor.auxil.jms.adaptor;
 
 public class ConcurrentExample {
 

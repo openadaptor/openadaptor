@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.oa3.core.exception.ComponentException;
-import org.oa3.util.JDBCUtil;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.util.JDBCUtil;
 
 
 /**

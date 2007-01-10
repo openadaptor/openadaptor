@@ -30,16 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/IStreamReader.java,v 1.3 2006/10/18 17:09:05 higginse Exp $
- * Rev: $Revision: 1.3 $ Created Jan 27, 2006 by Eddy Higgins
- */
 import java.io.Reader;
 
-import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * Interface by which Listeners can extract individual records from a Reader.

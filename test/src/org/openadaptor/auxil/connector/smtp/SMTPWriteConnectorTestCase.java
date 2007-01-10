@@ -31,21 +31,17 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.smtp;
+package org.openadaptor.auxil.connector.smtp;
 
 import junit.framework.TestCase;
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
-import org.oa3.auxil.connector.smtp.SMTPWriteConnector;
-import org.oa3.auxil.connector.smtp.SMTPConnection;
+
+import org.openadaptor.auxil.connector.smtp.SMTPConnection;
+import org.openadaptor.auxil.connector.smtp.SMTPWriteConnector;
 
 import java.util.Iterator;
 
-/**
-* File: $Header: $
-* Rev: $Revision: $
-* Created Dec 7, 2006 by oa3 Core Team
-*/
 
 public class SMTPWriteConnectorTestCase extends TestCase {
   //Set an smtp port which will not interfere with a server running the smtp proccess

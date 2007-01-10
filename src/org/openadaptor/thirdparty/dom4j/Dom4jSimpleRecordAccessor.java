@@ -30,21 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.dom4j;
+package org.openadaptor.thirdparty.dom4j;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/Dom4jSimpleRecordAccessor.java,v 1.14 2006/11/29 15:16:24 fennelr Exp $
- * Rev:  $Revision: 1.14 $
- * Created Sep 18, 2006 by Eddy Higgins
- */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.auxil.simplerecord.ISimpleRecordAccessor;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Utility class to represent Dom4j <code>Document</code> instances as <code>ISimpleRecord</code> instances.

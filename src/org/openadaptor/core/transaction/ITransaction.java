@@ -30,15 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.transaction;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/transaction/ITransaction.java,v 1.8 2006/08/11 15:13:24 kscully Exp $
- * Rev:  $Revision: 1.8 $
- * Created Jun 10, 2005 by Kevin Scully
- */
+package org.openadaptor.core.transaction;
 
 /**
- * Interface which describes a simple oa3 Transaction. The register/deregister methods require
+ * Interface which describes a simple openadaptor Transaction. The register/deregister methods require
  * a suitable Transaction Resource. This MAY vary depending on the underlying transaction mechanism
  * used. (E.g. for JTA this would be an XAResource)
  */

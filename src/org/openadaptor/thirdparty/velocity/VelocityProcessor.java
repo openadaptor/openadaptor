@@ -1,4 +1,4 @@
-package org.oa3.thirdparty.velocity;
+package org.openadaptor.thirdparty.velocity;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -8,9 +8,9 @@ import java.util.List;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.oa3.core.Component;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
 
 public class VelocityProcessor extends Component implements IDataProcessor {
 

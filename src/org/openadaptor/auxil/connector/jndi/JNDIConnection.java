@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jndi;
+package org.openadaptor.auxil.connector.jndi;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jndi/JNDIConnection.java,v 1.7 2006/10/18 10:59:00 higginse Exp $ Rev:
- * $Revision: 1.7 $ Created Oct 25, 2005 by Eddy Higgins
- */
 import java.util.Properties;
 
 import javax.naming.Context;

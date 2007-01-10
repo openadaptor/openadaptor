@@ -1,4 +1,4 @@
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,11 +7,12 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.processor.TestProcessor;
-import org.oa3.core.router.Router;
-import org.oa3.core.router.RoutingMap;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.processor.TestProcessor;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 public class QueuedReadConnectorTestCase extends TestCase {
 

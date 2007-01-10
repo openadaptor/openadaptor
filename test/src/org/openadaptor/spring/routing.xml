@@ -3,7 +3,7 @@
 
 <beans>
   
-  <bean id="test1" class="org.oa3.core.router.RoutingMap">
+  <bean id="test1" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="InPoint" value-ref="OutPoint"/>
@@ -22,7 +22,7 @@
     </property>
   </bean>
   
-  <bean id="test2" class="org.oa3.core.router.RoutingMap">
+  <bean id="test2" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="InPoint" value-ref="Processor1"/>
@@ -69,31 +69,31 @@
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="InPoint" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="InPoint"/>
   </bean>
   
-  <bean id="OutPoint" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="OutPoint" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="OutPoint"/>
   </bean>
   
-  <bean id="Processor1" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="Processor1" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="Processor1"/>
   </bean>
   
-  <bean id="Processor2" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="Processor2" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="Processor2"/>
   </bean>
   
-  <bean id="Processor3" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="Processor3" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="Processor3"/>
   </bean>
   
-  <bean id="Error" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="Error" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="Error"/>
   </bean>
   
-  <bean id="Discard" class="org.oa3.spring.RoutingMapTestCase$DummyNode">
+  <bean id="Discard" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="Discard"/>
   </bean>
   

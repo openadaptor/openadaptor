@@ -30,13 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/SubstringFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $
- * Rev: $Revision: 1.1 $ Created Sep 28 2006 by Eddy Higgins
- */
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * implements a String.substring() function.
@@ -61,7 +57,7 @@ public class SubstringFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a String, and two int arguments
    * @return String containing result of applying the substring function.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If arguments cannot be cast appropriately
    */
   protected Object operate(Object[] args) throws ExpressionException {

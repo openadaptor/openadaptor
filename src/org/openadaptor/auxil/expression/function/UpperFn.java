@@ -30,9 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Implementation of String.toUpperCase()

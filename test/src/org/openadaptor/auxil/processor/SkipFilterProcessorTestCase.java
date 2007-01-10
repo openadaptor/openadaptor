@@ -30,14 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor;
+package org.openadaptor.auxil.processor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.processor.SkipFilterProcessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Provides some tests for the SkipFilterProcessor.

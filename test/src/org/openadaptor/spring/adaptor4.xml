@@ -3,7 +3,7 @@
 
 <beans>
   
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="InPoint"/>
@@ -15,26 +15,26 @@
     <property name="exceptionProcessor" ref="Error"/>
   </bean>
   
-  <bean id="InPoint" class="org.oa3.core.connector.TestReadConnector">
+  <bean id="InPoint" class="org.openadaptor.core.connector.TestReadConnector">
     <property name="id" value="InPoint"/>
     <property name="maxSend" value="2"/>
   </bean>
 
-  <bean id="Processor" class="org.oa3.core.processor.TestProcessor">
+  <bean id="Processor" class="org.openadaptor.core.processor.TestProcessor">
     <property name="id" value="Processor"/>
   </bean>
 
-  <bean id="OutPoint" class="org.oa3.core.connector.TestWriteConnector">
+  <bean id="OutPoint" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="OutPoint"/>
     <property name="expectedOutput" value="Exceptor(Processor(test data 1))"/>
   </bean>
   
-  <bean id="Exceptor" class="org.oa3.core.processor.TestProcessor">
+  <bean id="Exceptor" class="org.openadaptor.core.processor.TestProcessor">
     <property name="id" value="Exceptor"/>
     <property name="exceptionFrequency" value="2"/>
   </bean>
   
-  <bean id="Error" class="org.oa3.core.connector.TestWriteConnector">
+  <bean id="Error" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="Error"/>
     <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
   </bean>

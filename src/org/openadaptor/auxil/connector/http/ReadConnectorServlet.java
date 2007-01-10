@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.http;
+package org.openadaptor.auxil.connector.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;

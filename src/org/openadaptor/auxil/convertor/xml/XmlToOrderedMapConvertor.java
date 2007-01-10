@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.xml;
+package org.openadaptor.auxil.convertor.xml;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/XmlToOrderedMapConvertorProcessor.java,v 1.17 2006/10/30
- * 15:53:57 fennelr Exp $ Rev: $Revision: 1.17 $ Created Jul 18, 2006 by Eddy Higgins
- */
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,12 +41,12 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
-import org.oa3.thirdparty.dom4j.Dom4jUtils;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
 
 /**
  * This class may be used to convert XML Documents (dom4j/XML Strings) into OrderedMaps. <p/>

@@ -30,23 +30,18 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecord;
+package org.openadaptor.auxil.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/AbstractSimpleRecordProcessor.java,v 1.9 2006/10/30 13:45:20 kscully Exp $
- * Rev:  $Revision: 1.9 $
- * Created Sep 18, 2006 by Eddy Higgins
- */
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.Component;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Common functionality for processors which deal with ISimpleRecords.

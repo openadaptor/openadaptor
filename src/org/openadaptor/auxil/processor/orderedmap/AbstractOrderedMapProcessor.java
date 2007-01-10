@@ -30,21 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.orderedmap;
+package org.openadaptor.auxil.processor.orderedmap;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/AbstractOrderedMapProcessor.java,v 1.10 2006/10/20 15:21:36 fennelr Exp $
- * Rev:  $Revision: 1.10 $
- * Created Nov 22, 2005 by Kevin Scully
- */
 import java.util.List;
 
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.Component;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Common functionality for processors which deal with IOrderedMaps.

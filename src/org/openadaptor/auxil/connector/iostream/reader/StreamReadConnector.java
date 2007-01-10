@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/StreamReadConnector.java,v 1.8 2006/10/18 17:09:05
- * higginse Exp $ Rev: $Revision: 1.8 $ Created Nov 4, 2005 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This is the main connector implementation for reading streams of records.

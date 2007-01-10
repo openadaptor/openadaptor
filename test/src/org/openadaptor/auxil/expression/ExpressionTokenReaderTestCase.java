@@ -1,6 +1,9 @@
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
 import java.util.Iterator;
+
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionTokenReader;
 
 import junit.framework.TestCase;
 

@@ -3,13 +3,13 @@
 
 <beans>
   
-	<bean id="MBeanServer" class="org.oa3.core.jmx.MBeanServer">
+	<bean id="MBeanServer" class="org.openadaptor.core.jmx.MBeanServer">
     <constructor-arg value="8082"/>
   </bean>
   
-  <bean id="SystemUtil" class="org.oa3.util.SystemUtil"/>
+  <bean id="SystemUtil" class="org.openadaptor.util.SystemUtil"/>
   
-  <bean id="Test" class="org.oa3.spring.JmxTestCase$Test">
+  <bean id="Test" class="org.openadaptor.spring.JmxTestCase$Test">
     <constructor-arg value="hello world"/>
 	</bean>
   

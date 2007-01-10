@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/RFC2279.java,v 1.3 2006/10/18 17:09:05 higginse Exp $ Rev:
- * $Revision: 1.3 $ Created Nov 28, 2005 by Eddy Higgins
- */
+package org.openadaptor.auxil.connector.iostream;
 
 /**
  * Selected RFC2279 Character set encodings, and aliases.

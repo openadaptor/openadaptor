@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.text.ParseException;
 import java.util.Date;

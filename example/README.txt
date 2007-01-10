@@ -35,7 +35,7 @@ SPRING EXAMPLES
 
 openadaptor provides a spring helper class for running adaptors as a standalone process.
 
-  org.oa3.spring.SpringApplication
+  org.openadaptor.spring.SpringApplication
   
 this expects the following arguments
 
@@ -46,7 +46,7 @@ this expects the following arguments
   
 Here is how to run your first adaptor
   
-  java org.oa3.spring.SpringApplication -config example/spring/adaptor/simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringApplication -config example/spring/adaptor/simple.xml -bean Adaptor
 
 (assumes your current working directory is openadaptor root dir).
     

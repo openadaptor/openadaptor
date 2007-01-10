@@ -1,13 +1,16 @@
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.connector.TestReadConnector;
-import org.oa3.core.connector.TestWriteConnector;
-import org.oa3.core.processor.TestProcessor;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.adaptor.AdaptorInpoint;
+import org.openadaptor.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.connector.TestReadConnector;
+import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.processor.TestProcessor;
 
 public class PipelineTestCase extends TestCase {
 

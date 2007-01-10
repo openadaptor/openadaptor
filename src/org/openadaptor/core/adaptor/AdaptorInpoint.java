@@ -31,21 +31,21 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IComponent;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.Message;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.lifecycle.State;
-import org.oa3.core.node.Node;
-import org.oa3.core.transaction.ITransaction;
-import org.oa3.core.transaction.ITransactionManager;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.node.Node;
+import org.openadaptor.core.transaction.ITransaction;
+import org.openadaptor.core.transaction.ITransactionManager;
+import org.openadaptor.core.transaction.ITransactional;
 
 public class AdaptorInpoint extends Node implements IAdaptorInpoint {
 

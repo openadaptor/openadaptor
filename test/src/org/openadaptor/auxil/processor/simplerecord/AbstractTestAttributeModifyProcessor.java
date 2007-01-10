@@ -30,12 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
 import org.jmock.Mock;
-import org.oa3.auxil.expression.Expression;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IExpression;
+import org.openadaptor.auxil.expression.Expression;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IExpression;
+import org.openadaptor.auxil.processor.simplerecord.AttributeModifyProcessor;
 
 /**
  * Abstract tests and test utilities common to AttributeModifyProcessors.

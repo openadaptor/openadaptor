@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor;
+package org.openadaptor.auxil.convertor;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -42,13 +42,13 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.oa3.auxil.convertor.xml.OrderedMapToXmlConvertor;
-import org.oa3.auxil.convertor.xml.XmlToOrderedMapConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
+import org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.util.ResourceUtil;
 
 /**
  * This tests the XmlConvertors implementation.

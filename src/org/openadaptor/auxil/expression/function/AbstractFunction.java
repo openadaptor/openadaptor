@@ -30,16 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/AbstractFunction.java,v 1.2 2006/11/02 17:23:54 higginse Exp $
- * Rev: $Revision: 1.2 $ Created Sep 28 2006 by Eddy Higgins
- */
 import java.util.Stack;
 
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IPostfixFunction;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IPostfixFunction;
 
 /**
  * Abstract base class for function implementations.
@@ -82,7 +78,7 @@ public abstract class AbstractFunction implements IPostfixFunction {
    * 
    * @param stack
    *          <code>Stack</code> containing at least the required number of input arguments (in reverse order).
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           if incorrect number of arguments are supplied on the stack.
    */
   public void execute(Stack stack) throws ExpressionException {

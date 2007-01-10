@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jndi;
+package org.openadaptor.auxil.connector.jndi;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jndi/JNDISearch.java,v 1.14 2006/10/27 13:48:05 shirea Exp $ Rev:
- * $Revision: 1.14 $ Created Oct 25, 2005 by Eddy Higgins
- */
 import java.util.NoSuchElementException;
 
 import javax.naming.NamingEnumeration;
@@ -63,32 +59,6 @@ import org.apache.commons.logging.LogFactory;
  * <code>treatMultiValuedAttributesAsArray</code> property.
  * </UL>
  * <p>
- * Spring configuration example:
- * 
- * <blockquote>
- * 
- * <pre>
- *    &lt;bean id=&quot;jndiSearch&quot; class=&quot;org.oa3.connector.jndi.JNDISearch&quot;&gt;
- *      &lt;property name=&quot;searchBases&quot;&gt;
- *        &lt;list&gt;&lt;value&gt;ou=People,o=myCompany.com&lt;/value&gt;&lt;/list&gt;
- *      &lt;/property&gt;
- *    &lt;property name=&quot;filter&quot; value=&quot;(groupcode=0610*)&quot;/&gt;
- *    &lt;!-- Add SearchControls here if needed --&gt;
- *    &lt;/bean&gt;
- * </pre>
- * 
- * </blockquote>
- * <p>
- * Java configuration example: <blockquote>
- * 
- * <pre>
- *   JNDISearch search=new JNDISearch();
- *   search.setSearchBases(new String[] {&quot;ou=People,o=myCompany.com&quot;});
- *   search.setFilter(&quot;groupcode=0610*&quot;);
- *      :    :    :
- * </pre>
- * 
- * </blockquote>
  * 
  * @author Eddy Higgins
  */

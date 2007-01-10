@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.thirdparty.log4j;
+package org.openadaptor.thirdparty.log4j;
 
 public interface LogAdminMBean {
   String[] getLoggers();

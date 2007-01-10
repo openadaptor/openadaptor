@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.transaction;
+package org.openadaptor.core.transaction;
 
 import java.util.ArrayList;
 import java.util.Iterator;

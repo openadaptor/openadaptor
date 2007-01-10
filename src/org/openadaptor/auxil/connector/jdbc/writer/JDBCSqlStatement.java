@@ -30,16 +30,11 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCSqlStatement.java,v 1.3 2006/11/04 23:32:44 ottalk Exp $
- * Rev:  $Revision: 1.3 $
- * Created Oct 22, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.Component;
-import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,7 +73,7 @@ public class JDBCSqlStatement extends Component implements IJDBCStatement {
    * @param delimiter Delimiter character used to indicate placeholder variables
    * @param mapping Not used
    * @param connection Not used
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public void initialiseStatement(String sqlStatement, String delimiter,Object mapping, Connection connection) throws ComponentException {
     this.sql=sqlStatement;

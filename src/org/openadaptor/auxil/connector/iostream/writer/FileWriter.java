@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.writer;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/writer/FileWriter.java,v 1.2 2006/07/25 09:06:03 fennelr Exp $
- * Rev: $Revision: 1.2 $ Created Feb 23, 2006 by Eddy Higgins
- */
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.util.FileUtils;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.util.FileUtils;
 
 /**
  * Simple writer that writes data to the specified file

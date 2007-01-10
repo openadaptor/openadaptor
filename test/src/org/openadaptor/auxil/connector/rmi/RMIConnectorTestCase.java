@@ -1,4 +1,6 @@
-package org.oa3.auxil.connector.rmi;
+package org.openadaptor.auxil.connector.rmi;
+
+import org.openadaptor.auxil.connector.rmi.RMIReadConnector;
 
 import junit.framework.TestCase;
 

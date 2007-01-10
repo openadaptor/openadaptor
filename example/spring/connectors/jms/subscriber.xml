@@ -11,7 +11,7 @@
 
     Run it like this...
     
-      java org.oa3.spring.SpringApplication -config subscriber.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config subscriber.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -30,7 +30,7 @@
 
 <beans>
   
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="Reader"/>
@@ -40,20 +40,20 @@
   </bean>
 
   <!-- This defines rv connection -->
-  <bean id="TibrvConnection" class="org.oa3.thirdparty.tibco.TibrvConnection">
+  <bean id="TibrvConnection" class="org.openadaptor.thirdparty.tibco.TibrvConnection">
     <property name="service" value=""/>  
     <property name="network" value=""/>  
     <property name="daemon" value=""/>  
   </bean>
   
   <!-- This defines jndi connection, from which we get jms connection -->
-  <bean id="JndiConnection" class="org.oa3.auxil.connector.jndi.JNDIConnection">
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
     <property name="providerUrl" value="jnp://localhost:1099"/>
   </bean>
   
   <!-- jms connection for queue we wish to subscribe to -->
-  <bean id="JmsConnection" class="org.oa3.auxil.connector.jms.JMSConnection">
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="connectionFactoryName" value="ConnectionFactory"/>
     <property name="destinationName" value="queue/testQueue"/>
@@ -62,13 +62,13 @@
   </bean>
 
   <!-- Reader that polls a jms queue -->
-  <bean id="Reader" class="org.oa3.auxil.connector.jms.JMSReadConnector">
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
   
-  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
-      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
     </property>
   </bean>
   

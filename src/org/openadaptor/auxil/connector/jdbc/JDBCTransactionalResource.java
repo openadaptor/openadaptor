@@ -31,17 +31,12 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.jdbc;
+package org.openadaptor.auxil.connector.jdbc;
 
-import org.oa3.core.transaction.ITransactionalResource;
+import org.openadaptor.core.transaction.ITransactionalResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/*
-* File: $Header: $
-* Rev: $Revision: $
-* Created Dec 12, 2006 by oa3 Core Team
-*/
 
 public class JDBCTransactionalResource implements ITransactionalResource {
 

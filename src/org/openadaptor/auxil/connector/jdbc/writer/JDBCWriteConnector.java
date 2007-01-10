@@ -30,19 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCWriteConnector.java,v 1.6 2006/11/16 17:01:51 ottalk Exp $
- * Rev:  $Revision: 1.6 $
- * Created Oct 22, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.auxil.connector.jdbc.JDBCConnection;
-import org.oa3.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
+
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.List;
@@ -180,7 +176,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
    *
    * @param records Ordered map
    * @return Object String with number of rows updated hopefully.
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public Object deliver(Object[] records) throws ComponentException {
     String result=null;

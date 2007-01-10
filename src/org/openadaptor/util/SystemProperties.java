@@ -1,4 +1,4 @@
-package org.oa3.util;
+package org.openadaptor.util;
 
 import java.util.Iterator;
 import java.util.Map;

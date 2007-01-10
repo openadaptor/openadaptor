@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
 public class MessageException extends Throwable {
 

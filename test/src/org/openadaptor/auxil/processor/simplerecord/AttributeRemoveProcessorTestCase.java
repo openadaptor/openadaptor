@@ -30,13 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.processor.simplerecord.AttributeRemoveProcessor;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Basic tests for AttributeRemoveProcessor.

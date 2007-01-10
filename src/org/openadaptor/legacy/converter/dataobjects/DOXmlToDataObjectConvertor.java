@@ -30,31 +30,40 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.legacy.converter.dataobjects;
+package org.openadaptor.legacy.converter.dataobjects;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/openadaptor/DOXmlToDataObjectConvertorProcessor.java,v 1.3
- * 2006/07/21 09:38:19 higginse Exp $ Rev: $Revision: 1.3 $ Created Jul 13, 2006 by Eddy Higgins
- */
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doconverter.XMLFormatter;
 
 /**
  * Convert DataObject XML (DOXML) into DataObjects <B>Note</B>: Usage of this class depends on the availability of a
- * legacy openadaptor jar to do the conversions, as oa3 doesn't directly support dataobjects, or DOXML.
+ * legacy openadaptor jar to do the conversions, as openadaptor doesn't directly support dataobjects, or DOXML.
  * 
  * @author Eddy Higgins
  */
-public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
+public class DOXmlToDataObjectConvertor {
 
   private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
+
+  protected XMLFormatter formatter = new XMLFormatter();
+
+  public void setAttributes(Map attributeMap) {
+    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      try {
+        formatter.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
+      } catch (DataObjectException ex) {
+        throw new RuntimeException(ex.getMessage());
+      }
+    }
+  }
 
   protected Object convert(Object record) throws RecordException {
     Object[] result = null;

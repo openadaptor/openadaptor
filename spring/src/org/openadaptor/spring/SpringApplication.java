@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.spring;
+package org.openadaptor.spring;
 
 import java.net.MalformedURLException;
 import java.util.Iterator;
@@ -43,9 +43,9 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IComponent;
-import org.oa3.core.jmx.MBeanProvider;
-import org.oa3.util.Application;
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.jmx.MBeanProvider;
+import org.openadaptor.util.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -189,7 +189,7 @@ public class SpringApplication {
   private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort, String configUrl, String propsUrl) {
     MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
     if (mbeanServer == null && jmxPort != 0) {
-      mbeanServer = new org.oa3.core.jmx.MBeanServer(jmxPort);
+      mbeanServer = new org.openadaptor.core.jmx.MBeanServer(jmxPort);
     }
     if (mbeanServer != null) {
       attemptToRegisterBean(new FactoryConfig(configUrl, propsUrl), mbeanServer, "Config");

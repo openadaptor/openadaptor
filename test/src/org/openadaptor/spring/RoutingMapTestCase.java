@@ -31,19 +31,20 @@
  * ]]
  */
 
-package org.oa3.spring;
+package org.openadaptor.spring;
 
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.lifecycle.ILifecycleListener;
-import org.oa3.core.lifecycle.State;
-import org.oa3.core.router.IRoutingMap;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.router.IRoutingMap;
+import org.openadaptor.spring.SpringApplication;
+import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 

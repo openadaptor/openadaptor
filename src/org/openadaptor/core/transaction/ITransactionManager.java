@@ -30,15 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.transaction;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/transaction/ITransactionManager.java,v 1.9 2006/10/20 15:08:29 kscully Exp $
- * Rev:  $Revision: 1.9 $
- * Created Sep 28, 2005 by Kevin Scully
- */
+package org.openadaptor.core.transaction;
 
 /**
- *  Interface implemented by TransactionManagers used by oa3 Nodes.
+ *  Interface implemented by TransactionManagers used by openadaptor Nodes.
  *
  * @author Kevin Scully
  */

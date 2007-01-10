@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.transaction.jta;
+package org.openadaptor.core.transaction.jta;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
@@ -40,7 +40,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
-import org.oa3.core.transaction.AbstractTransaction;
+import org.openadaptor.core.transaction.AbstractTransaction;
 
 public class JtaTransaction extends AbstractTransaction {
 

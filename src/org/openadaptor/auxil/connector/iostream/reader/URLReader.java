@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/URLReader.java,v 1.3 2006/10/18 17:09:05 higginse Exp $
- * Rev: $Revision: 1.3 $ Created Nov 4, 2005 by Eddy Higgins
- */
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,7 +39,7 @@ import java.net.URLConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * StreamReader which connects to, and reads from, the supplied URL.
@@ -107,7 +103,7 @@ public class URLReader extends AbstractStreamReader {
    * This will connect to a configured URL and obtain an <code>InputStream</code> from the connection. This will in
    * turn be used by the base class to get an appropriate <code>Reader</code>.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public void connect() throws ComponentException {
     try {
@@ -129,7 +125,7 @@ public class URLReader extends AbstractStreamReader {
   /**
    * Disconnect this <code>Reader</code>.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if there's a problem with the disconnect.
    */
   public void disconnect() {

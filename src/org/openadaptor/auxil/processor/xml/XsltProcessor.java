@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.xml;
+package org.openadaptor.auxil.processor.xml;
 
 import java.io.StringWriter;
 import java.net.URL;
@@ -50,10 +50,10 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.DocumentSource;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.ProcessorException;
-import org.oa3.util.FileUtils;
-import org.oa3.core.Component;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ProcessorException;
+import org.openadaptor.util.FileUtils;
 
 /**
  * Applies the XSLT defined in the properties to the record and returns the result as an String.

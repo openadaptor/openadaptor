@@ -31,16 +31,12 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.smtp;
+package org.openadaptor.auxil.connector.smtp;
 
 import junit.framework.TestCase;
 import com.dumbster.smtp.SimpleSmtpServer;
-import org.oa3.auxil.connector.smtp.SMTPConnection;
-/*
-* File: $Header: $
-* Rev: $Revision: $
-* Created Dec 6, 2006 by oa3 Core Team
-*/
+
+import org.openadaptor.auxil.connector.smtp.SMTPConnection;
 
 public class SMTPConnectionTestCase extends TestCase {
   //Set an smtp port which will not interfere with a server running the smtp proccess

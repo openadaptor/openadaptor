@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.orderedmap;
+package org.openadaptor.auxil.orderedmap;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/OrderedHashMap.java,v 1.7 2006/10/17 15:49:18 higginse Exp $ Rev:
- * $Revision: 1.7 $ Created Oct 20, 2005 by Eddy Higgins
- */
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * HashMap based implementation of <code>IOrderedMap</code>.

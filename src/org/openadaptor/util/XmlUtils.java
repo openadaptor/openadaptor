@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.util;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/util/XmlUtils.java,v 1.6 2006/10/19 16:08:23 fennelr Exp $ Rev: $Revision: 1.6 $
- * Created Feb 14, 2006 by Eddy Higgins
- */
+package org.openadaptor.util;
 
 import java.io.IOException;
 import java.io.Reader;

@@ -30,16 +30,11 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/IJDBCStatement.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
- * Rev:  $Revision: 1.2 $
- * Created Oct 30, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.ComponentException;
 
-import org.oa3.core.exception.ComponentException;
-import org.oa3.auxil.orderedmap.IOrderedMap;
 import java.sql.Connection;
 
 /**
@@ -55,7 +50,7 @@ public interface IJDBCStatement {
    * @param objectName Name of the database object to be used to write data
    * @param delimiter If applicable, this wraps variables which are to be replaced with fieldnames
    * @param connection JDBC connection
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public void initialiseStatement(String objectName, String delimiter, Object mapping, Connection connection) throws ComponentException;
 

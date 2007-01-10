@@ -30,23 +30,18 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/modify/ConditionProcessor.java,v 1.10 2006/11/23 14:50:49 kscully Exp $
- * Rev: $Revision: 1.10 $ Created Sep 29, 2006 by Eddy Higgins
- */
+package org.openadaptor.auxil.processor.simplerecord;
 
 import java.util.List;
 
-import org.oa3.auxil.expression.Expression;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IExpression;
-import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.expression.Expression;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IExpression;
+import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Modifies a SimpleRecord based on the result of evaluating a conditional expression. <p/> The three main parts of a
@@ -106,7 +101,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
    * 
    * @param ifExpressionString
    *          String containing the expression to be evaluated.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           if an <code>IExpression</code> cannot be created from the expression String.
    */
   public void setifExpressionString(String ifExpressionString) throws ExpressionException {

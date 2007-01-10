@@ -21,7 +21,7 @@
  * Software, or for combinations of the Software with other software or
  * hardware. ]]
  */
-package org.oa3.thirdparty.mq;
+package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$ 
  * Rev: $Revision$
@@ -29,6 +29,11 @@ package org.oa3.thirdparty.mq;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.openadaptor.thirdparty.mq.MqConnection;
+import org.openadaptor.thirdparty.mq.MqReadConnector;
+import org.openadaptor.thirdparty.mq.MqTransactionalResource;
+import org.openadaptor.thirdparty.mq.MqWriteConnector;
 
 import junit.framework.TestCase;
 

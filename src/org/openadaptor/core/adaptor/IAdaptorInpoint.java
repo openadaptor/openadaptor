@@ -31,9 +31,9 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
-import org.oa3.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 public interface IAdaptorInpoint extends ILifecycleComponent, Runnable {
 	void setAdaptor(Adaptor adaptor);

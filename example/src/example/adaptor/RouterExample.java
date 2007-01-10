@@ -3,16 +3,16 @@ package example.adaptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.oa3.auxil.connector.iostream.reader.FileReader;
-import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
-import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
-import org.oa3.auxil.connector.iostream.writer.FileWriter;
-import org.oa3.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.oa3.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
-import org.oa3.auxil.convertor.xml.OrderedMapToXmlConvertor;
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.router.RoutingMap;
-import org.oa3.core.router.Router;
+import org.openadaptor.auxil.connector.iostream.reader.FileReader;
+import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
+import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
+import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 /**
  * This example code is equivalent to the router.xml spring example

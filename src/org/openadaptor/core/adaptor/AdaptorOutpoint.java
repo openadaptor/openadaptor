@@ -31,23 +31,23 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IComponent;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.Response.DiscardBatch;
-import org.oa3.core.Response.ExceptionBatch;
-import org.oa3.core.exception.MessageException;
-import org.oa3.core.lifecycle.State;
-import org.oa3.core.node.Node;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.Response.DiscardBatch;
+import org.openadaptor.core.Response.ExceptionBatch;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.node.Node;
+import org.openadaptor.core.transaction.ITransactional;
 
 public class AdaptorOutpoint extends Node {
 

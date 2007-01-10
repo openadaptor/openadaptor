@@ -30,19 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.writer;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/writer/StreamWriteConnector.java,v 1.2 2006/10/16 17:51:18
- * higginse Exp $ Rev: $Revision: 1.2 $ Created Feb 23, 2006 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This is the main Connector for Stream based record writers. It requires: IStreamWriter- Writer to do the actual
@@ -92,7 +88,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
   /**
    * Establish a connection to external message transport. If already connected then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public void connect() {
     log.debug("Connector: [" + getId() + "] connecting ....");
@@ -110,7 +106,7 @@ public class StreamWriteConnector extends AbstractWriteConnector {
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public void disconnect() {
     log.debug("Connector: [" + getId() + "] disconnecting ....");

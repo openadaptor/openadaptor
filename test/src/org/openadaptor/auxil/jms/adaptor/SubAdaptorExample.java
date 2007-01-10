@@ -1,16 +1,16 @@
-package org.oa3.auxil.jms.adaptor;
+package org.openadaptor.auxil.jms.adaptor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.oa3.auxil.connector.iostream.writer.FileWriter;
-import org.oa3.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSReadConnector;
-import org.oa3.auxil.connector.jndi.JNDIConnection;
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.router.Router;
-import org.oa3.core.router.RoutingMap;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
+import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 public class SubAdaptorExample {
 

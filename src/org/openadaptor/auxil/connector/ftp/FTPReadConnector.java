@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.ftp;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/ftp/FTPReader.java,v 1.3 2006/10/17 14:42:41 fennelr Exp $ Rev:
- * $Revision: 1.3 $
- */
+package org.openadaptor.auxil.connector.ftp;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -44,10 +39,10 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.thirdparty.apache.AbstractFTPLibrary;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 /**
  * This component will provide basic File Transfer Protocol connunication to allow the adaptor to GET a file from a
@@ -61,27 +56,6 @@ import org.oa3.thirdparty.apache.AbstractFTPLibrary;
  * class but it must implement the FTP interface. <p/>
  * 
  * Based on the original ideas by Mike Day <p/>
- * 
- * Sample config example: <blockquote>
- * 
- * <pre>
- *   &lt;bean id=&quot;FTPInput&quot; class=&quot;org.oa3.node.AdaptorInpoint&quot;&gt;
- *       &lt;property name=&quot;connector&quot;&gt;
- *           &lt;bean class=&quot;org.oa3.connector.ftp.FTPListener&quot;&gt;
- *               &lt;property name=&quot;ftpLibrary&quot;&gt;
- *                   &lt;bean class=&quot;org.oa3.connector.ftp.ApacheFTPLibrary&quot;&gt;
- *                       &lt;property name=&quot;hostName&quot; value=&quot;localhost&quot;/&gt;
- *                       &lt;property name=&quot;userName&quot; value=&quot;user&quot;/&gt;
- *                       &lt;property name=&quot;password&quot; value=&quot;pass&quot;/&gt;
- *                   &lt;/bean&gt;
- *               &lt;/property&gt;
- *               &lt;property name=&quot;sourceFile&quot; value=&quot;sample_delimited.csv&quot;/&gt;
- *               &lt;property name=&quot;sourceDir&quot; value=&quot;tmp&quot;/&gt;
- *           &lt;/bean&gt;
- *       &lt;/property&gt;
- *   &lt;/bean&gt;
- *  &lt;p/&gt;
- * </pre>
  * 
  * </blockquote>
  * 

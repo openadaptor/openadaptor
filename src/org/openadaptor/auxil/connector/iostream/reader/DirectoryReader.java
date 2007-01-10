@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/DirectoryReader.java,v 1.4 2006/10/19 14:24:26 higginse
- * Exp $ Rev: $Revision: 1.4 $ Created Jul 07, 2006 by Eddy Higgins
- */
+package org.openadaptor.auxil.connector.iostream.reader;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,7 +43,7 @@ import java.util.Collections;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * StreamReader which will read files from a directory.
@@ -142,7 +137,7 @@ public class DirectoryReader extends AbstractStreamReader {
   /**
    * Read all matching files from the configured directory, and create a SequenceInputStream from the matching files.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if there is a problem accessing the directory.
    */
   public void connect() throws ComponentException {
@@ -165,7 +160,7 @@ public class DirectoryReader extends AbstractStreamReader {
   /**
    * Disconnect this StreamReader.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public void disconnect() {
     log.debug("Disconnecting from directory" + path);

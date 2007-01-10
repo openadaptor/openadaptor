@@ -30,9 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Function to implement Math.floor().
@@ -54,7 +54,7 @@ public class FloorFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single numeric argument
    * @return Double containing result of applying Math.floor() to argument.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If argument is null or non-numeric.
    */
   protected Object operate(Object[] args) throws ExpressionException {

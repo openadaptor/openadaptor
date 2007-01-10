@@ -30,16 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Create a modified copy of a SimpleRecord containing only attributes named in a list.
@@ -74,7 +74,7 @@ public class KeepNamedAttributesProcessor extends AbstractSimpleRecordProcessor 
    * @param simpleRecord
    * @param alreadyCloned
    * @return record with only the named attributes remaining.
-   * @throws org.oa3.processor.RecordException
+   * @throws org.openadaptor.processor.RecordException
    * 
    */
   public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {

@@ -30,19 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jms;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jms/JMSListener.java,v 1.7 2006/10/18 13:50:30 kscully Exp $ Rev:
- * $Revision: 1.7 $ Created Sep 28, 2005 by Kevin Scully
- */
+package org.openadaptor.auxil.connector.jms;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * Read Connector class that implements listening to JMS. Delegates to <code>JMSConnector</code> 

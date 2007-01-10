@@ -30,17 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jms;
+package org.openadaptor.auxil.connector.jms;
 
-import org.oa3.core.Component;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jms/JMSPublisher.java,v 1.4 2006/10/18 13:50:30 kscully Exp $ Rev:
- * $Revision: 1.4 $ Created Feb 2, 2006 by Kevin Scully
- */
 /**
  * Write Connector class that implements publiching to JMS.
  * 
@@ -70,7 +66,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @param records -
    *          an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public Object deliver(Object[] records) throws ComponentException {
     if (!isConnected())

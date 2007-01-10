@@ -3,7 +3,7 @@
 
 <beans>
   
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="InPoint"/>
@@ -12,13 +12,13 @@
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.oa3.core.connector.TestReadConnector">
+  <bean id="InPoint" class="org.openadaptor.core.connector.TestReadConnector">
     <property name="id" value="InPoint"/>
     <property name="batchSize" value="3"/>
     <property name="maxSend" value="10"/>
   </bean>
   
-  <bean id="OutPoint" class="org.oa3.core.connector.TestWriteConnector">
+  <bean id="OutPoint" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="OutPoint"/>
     <property name="expectedOutput">
       <list>

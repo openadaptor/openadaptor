@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/BinaryOp.java,v 1.8 2006/11/10 16:31:16 higginse Exp $ Rev: $Revision:
- * 1.8 $ Created Sep 25 2006 by Eddy Higgins
- */
+package org.openadaptor.auxil.expression;
 
 import java.util.Date;
 import java.util.Stack;
@@ -122,7 +117,7 @@ public class BinaryOp implements IPostfixFunction {
    * @param arg2
    *          Number
    * @return Object with result (one of Double or Long)
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    */
 
   protected Object operate(Object arg1, Object arg2) throws ExpressionException {

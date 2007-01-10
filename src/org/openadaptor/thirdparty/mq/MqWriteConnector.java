@@ -30,16 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.mq;
+package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$ 
  * Rev: $Revision$
  */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * WriteConnector that use MqConnection to write messages to an IBM MQ Queue.
@@ -99,7 +99,7 @@ public class MqWriteConnector extends AbstractWriteConnector implements ITransac
    * Establish a connection to external message transport without starting the
    * externalconnector. If already connected then do nothing.
    * 
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public void connect() {
     if (!connected) {

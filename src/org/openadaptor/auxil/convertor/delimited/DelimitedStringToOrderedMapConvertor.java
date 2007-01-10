@@ -30,10 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.delimited;
+package org.openadaptor.auxil.convertor.delimited;
 
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Convert DelimitedStrings to OrderedMaps

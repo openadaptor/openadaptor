@@ -1,14 +1,16 @@
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.Component;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.processor.TestProcessor;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.adaptor.AdaptorRunConfiguration;
+import org.openadaptor.core.processor.TestProcessor;
 
 public class AdaptorRunConfigurationTestCase extends TestCase {
 

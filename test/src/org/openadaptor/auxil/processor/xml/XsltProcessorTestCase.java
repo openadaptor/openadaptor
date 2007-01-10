@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.xml;
+package org.openadaptor.auxil.processor.xml;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -41,8 +41,8 @@ import junit.framework.TestCase;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-import org.oa3.auxil.processor.xml.XsltProcessor;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.auxil.processor.xml.XsltProcessor;
+import org.openadaptor.util.ResourceUtil;
 import org.xml.sax.InputSource;
 
 /**

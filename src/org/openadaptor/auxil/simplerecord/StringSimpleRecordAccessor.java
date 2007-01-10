@@ -30,19 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecord;
+package org.openadaptor.auxil.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/StringSimpleRecordAccessor.java,v 1.1 2006/11/10 12:14:45 higginse
- * Exp $ Rev: $Revision: 1.1 $ Created Nov 09, 2006 by Eddy Higgins
- */
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 // TODO: This should really be a general purpose Object wrapper - not just Strings.
 /**
@@ -126,7 +122,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          Ignored as it is not needed.
    * @return The object associated with the supplied key
-   * @throws org.oa3.core.processor.RecordFormatException
+   * @throws org.openadaptor.core.processor.RecordFormatException
    *           if strict is false, and the record is not <tt>null</tt> and not a <code>String</code>.
    */
   public Object get(Object key) throws RecordFormatException {
@@ -146,7 +142,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param value
    *          Object to be stored. Must be a <code>String</code> if strict is set.
    * @return The Object which has just been stored.
-   * @throws org.oa3.core.processor.RecordFormatException
+   * @throws org.openadaptor.core.processor.RecordFormatException
    *           if supplied value is not <tt>null</tt> and not a <code>String</code>, and <code>strictM/code>
    *                                                  is set.
    */
@@ -163,7 +159,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          ignored
    * @return Object containing the previously stored record value.
-   * @throws org.oa3.core.processor.RecordException
+   * @throws org.openadaptor.core.processor.RecordException
    *           if the operation cannot be completed.
    */
   public Object remove(Object key) throws RecordException {

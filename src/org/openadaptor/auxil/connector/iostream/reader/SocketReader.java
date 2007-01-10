@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/SocketReader.java,v 1.3 2006/10/19 14:24:26 higginse Exp $
- * Rev: $Revision: 1.3 $ Created Nov 4, 2005 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -43,7 +39,7 @@ import java.net.Socket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * Simple StreamReader to listen on a socket, and provide a StreamReader based on the first connection that receives.
@@ -80,7 +76,7 @@ public class SocketReader extends AbstractStreamReader {
    * Simple singleThreaded first pass. connect() method name is slightly misleading as it's really the adaptor which is
    * connecting to it.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if an IOException occurs
    */
   public void connect() throws ComponentException {
@@ -101,7 +97,7 @@ public class SocketReader extends AbstractStreamReader {
   /**
    * Disconnect this StreamReader.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    *           if an IOException occurs.
    */
   public void disconnect() {

@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,10 +40,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.lifecycle.LifecycleComponent;
-import org.oa3.core.transaction.ITransactional;
-import org.oa3.core.transaction.TestTransactionalResource;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.lifecycle.LifecycleComponent;
+import org.openadaptor.core.transaction.ITransactional;
+import org.openadaptor.core.transaction.TestTransactionalResource;
 
 public class TestWriteConnector extends LifecycleComponent implements IWriteConnector, ITransactional {
 

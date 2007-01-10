@@ -30,19 +30,19 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.json;
+package org.openadaptor.thirdparty.json;
 
 import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.auxil.orderedmap.OrderedMapUtils;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.auxil.orderedmap.OrderedMapUtils;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Represent an OrderedMap as a valid JSON String. Always convert an OrderedMap to a JSON Object. Makes no attempt to

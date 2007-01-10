@@ -30,13 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/MatchesFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created Oct 30 2006 by Eddy Higgins
- */
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Function to implement String.matches().
@@ -65,7 +61,7 @@ public class MatchesFn extends AbstractFunction {
    *          Object[] which should contain a <code>String</code> argument, followed by a <code>String</code>
    *          Regular expression.
    * @return <code>Boolean</code> indicating if the String matches the supplied expression.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If argument is <tt>null</tt> or not a <code>String</code>.
    */
   protected Object operate(Object[] args) throws ExpressionException {

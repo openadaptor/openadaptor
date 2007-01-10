@@ -1,4 +1,4 @@
-package org.oa3.util;
+package org.openadaptor.util;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;

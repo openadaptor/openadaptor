@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/MultiLineStringRecordReader.java,v 1.5 2006/10/18
- * 17:09:05 higginse Exp $ Rev: $Revision: 1.5 $ Created Jun 23, 2006 by Eddy Higgins
- */
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;

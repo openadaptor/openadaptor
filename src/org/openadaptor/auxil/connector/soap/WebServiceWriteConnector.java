@@ -31,15 +31,15 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.soap;
+package org.openadaptor.auxil.connector.soap;
 
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
-import org.oa3.core.connector.AbstractWriteConnector;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * binds to a webservice endpoint and delivers data by calling a method

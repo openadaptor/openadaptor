@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.orderedmap;
+package org.openadaptor.auxil.processor.orderedmap;
 
 import java.util.List;
 
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedMapUtils;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.Component;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedMapUtils;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * An Abstract Processor which applies a transform to an IOrderedMap record.

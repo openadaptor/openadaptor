@@ -15,7 +15,7 @@
  -D http.proxyHost=<proxy-host> -D http.proxyPort=<proxy-port>
 
  Run using
-  java org.oa3.spring.SpringApplication -config rss.xml -bean Adaptor
+  java org.openadaptor.spring.SpringApplication -config rss.xml -bean Adaptor
  -->
 <beans>
   <description>
@@ -29,10 +29,10 @@
     -D http.proxyHost= {proxy-host} -D http.proxyPort={proxy-port}
 
     Run using
-      java org.oa3.spring.SpringApplication -config rss.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config rss.xml -bean Adaptor
   </description>
 
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="RSS_Reader"/>
@@ -42,7 +42,7 @@
     </property>
   </bean>
 
-  <bean id="RSS_Reader" class="org.oa3.thirdparty.rss.RSSReadConnector">
+  <bean id="RSS_Reader" class="org.openadaptor.thirdparty.rss.RSSReadConnector">
     <description>
       This is the RSS Reader. Example polls twice with a five minute interval.
     </description>
@@ -50,7 +50,7 @@
        This configures polling for this connector.
     -->
     <property name="pollingConfiguration">
-      <bean class="org.oa3.core.connector.PollingConfiguration">
+      <bean class="org.openadaptor.core.connector.PollingConfiguration">
         <!-- Poll every 5 minutes -->
         <property name="pollInterval" value="300000"/>
         <!-- Poll twice. Note negative numbers mean poll forever. -->
@@ -77,15 +77,15 @@
   <!--
       process the XML string using the XLST defined in the xsl directory
   -->
-  <bean id="Xslt_Processor" class="org.oa3.auxil.processor.xml.XsltProcessor">
+  <bean id="Xslt_Processor" class="org.openadaptor.auxil.processor.xml.XsltProcessor">
     <!-- Substitute with your favourite XSLT -->
     <!-- <property name="xsltFile" value="xsl/rss10.xsl"/>-->
     <property name="xsltFile" value="xsl/rss.xsl"/>
   </bean>
 
-  <bean id="File_Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="File_Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
-      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter">
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter">
         <property name="path" value="rss_out.html"/>
         <property name="append" value="false"/>
       </bean>

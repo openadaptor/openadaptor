@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
-/*
- * File: $Header: /cvs/oa3/test/src/org/oa3/processor/mock/MockProcessor.java,v 1.8 2006/10/16 18:01:38 higginse Exp $
- * Rev: $Revision: 1.8 $ Created May 15, 2006 by Eddy higgins
- */
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Simple Mock class for IRecordProcessor testing

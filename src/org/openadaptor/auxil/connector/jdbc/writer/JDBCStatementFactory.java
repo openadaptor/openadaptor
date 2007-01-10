@@ -30,14 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCStatementFactory.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
- * Rev:  $Revision: 1.2 $
- * Created Oct 22, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
+
 import java.sql.Connection;
 
 /**
@@ -51,7 +47,7 @@ public class JDBCStatementFactory implements IJDBCConstants {
    *
    * @param writeMechanism Constant indicating the database write mechanism configured
    * @param objectName Write mechanism object in database, for example database table, stored procedure or sql statement
-   * @param delimiter The character to be used to delimit variables, which are to be replaced with values from oa3 data record
+   * @param delimiter The character to be used to delimit variables, which are to be replaced with values from openadaptor data record
    * @param connection JDBC Connection
    * @return IJDBCStatement
    * @throws ComponentException

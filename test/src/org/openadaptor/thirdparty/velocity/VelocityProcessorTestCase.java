@@ -1,6 +1,7 @@
-package org.oa3.thirdparty.velocity;
+package org.openadaptor.thirdparty.velocity;
 
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.thirdparty.velocity.VelocityProcessor;
+import org.openadaptor.util.ResourceUtil;
 
 import junit.framework.TestCase;
 

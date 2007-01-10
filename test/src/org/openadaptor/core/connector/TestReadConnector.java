@@ -31,12 +31,12 @@
  * ]]
  */
 
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.transaction.ITransactional;
-import org.oa3.core.transaction.TestTransactionalResource;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.transaction.ITransactional;
+import org.openadaptor.core.transaction.TestTransactionalResource;
 
 public class TestReadConnector extends Component implements IReadConnector, ITransactional {
 

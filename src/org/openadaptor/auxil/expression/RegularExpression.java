@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/RegularExpression.java,v 1.1 2006/10/27 16:04:48 shirea Exp $ Rev:
- * $Revision: 1.1 $ Created Oct 27 2006 by Andrew Shire
- */
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * This class builds upon the Expression class by allowing regular expressions with substitution groups to be applied to
@@ -54,7 +50,7 @@ import org.oa3.core.exception.RecordException;
  * 
  * For example the following is extracting a date string from within a value:
  * 
- * <bean class="org.oa3.expression.RegularExpression"> <property name="expression" value="{somefield}"/> <property
+ * <bean class="org.openadaptor.auxil.expression.RegularExpression"> <property name="expression" value="{somefield}"/> <property
  * name="match" value="^.*;date=([0-9]{4})([0-1][0-9])([0-3][0-9])([0-9]{6});.*$"/> <property name="value"
  * value="$1$2$3$4"/> </bean>
  * 

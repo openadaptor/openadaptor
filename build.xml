@@ -94,7 +94,7 @@
   </target>
 
   <target name="compile.rmi">
-    <rmic classname="org.oa3.auxil.connector.rmi.RMIReadConnector$$RMIDataProcessor" base="${dir.classes}" sourcebase="${dir.classes}" debug="${debug}"/>
+    <rmic classname="org.openadaptor.auxil.connector.rmi.RMIReadConnector$$RMIDataProcessor" base="${dir.classes}" sourcebase="${dir.classes}" debug="${debug}"/>
   </target>
   
   <target name="compile.spring">
@@ -172,7 +172,7 @@
   </target>
 
   <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean to be defined">
-    <java classname="org.oa3.spring.SpringApplication" classpathref="classpath.example">
+    <java classname="org.openadaptor.spring.SpringApplication" classpathref="classpath.example">
       <arg value="-config"/>
       <arg value="${config}"/>
       <arg value="-bean"/>

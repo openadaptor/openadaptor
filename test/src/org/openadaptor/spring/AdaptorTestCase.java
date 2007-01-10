@@ -31,10 +31,10 @@
  * ]]
  */
 
-package org.oa3.spring;
+package org.openadaptor.spring;
 
-import org.oa3.spring.SpringApplication;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.spring.SpringApplication;
+import org.openadaptor.util.ResourceUtil;
 
 import junit.framework.TestCase;
 

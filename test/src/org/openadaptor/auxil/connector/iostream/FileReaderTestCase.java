@@ -1,4 +1,4 @@
-package org.oa3.auxil.connector.iostream;
+package org.openadaptor.auxil.connector.iostream;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,9 +10,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.iostream.reader.FileReader;
-import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
-import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
+import org.openadaptor.auxil.connector.iostream.reader.FileReader;
+import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
 
 public class FileReaderTestCase extends TestCase {
 

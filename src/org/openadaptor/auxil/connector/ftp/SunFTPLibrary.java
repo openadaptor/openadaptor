@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.ftp;
+package org.openadaptor.auxil.connector.ftp;
 
 /*
  * File: $Header$ Rev: $Revision$
@@ -45,8 +45,8 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.thirdparty.apache.AbstractFTPLibrary;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 import sun.net.TelnetInputStream;
 import sun.net.ftp.FtpClient;
@@ -315,7 +315,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws org.oa3.control.ComponentException -
+   * @throws org.openadaptor.control.ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName) {

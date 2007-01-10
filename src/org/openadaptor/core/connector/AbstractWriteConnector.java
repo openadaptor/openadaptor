@@ -30,15 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
-import org.oa3.core.Component;
-import org.oa3.core.IWriteConnector;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/AbstractWriteConnector.java,v 1.8 2006/10/18 14:32:51 kscully Exp $
- * Rev: $Revision: 1.8 $ Created Nov 4, 2005 by fennelr
- */
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IWriteConnector;
 
 /**
  * Abstract superclass that implements common functionality for Write Connectors.

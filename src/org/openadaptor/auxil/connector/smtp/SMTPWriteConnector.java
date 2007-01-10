@@ -31,17 +31,13 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.smtp;
-/*
-* File: $Header: /cvs/oa3/src/org/oa3/connector/smtp/SMTPWriteConnector.java,v 1.5 2006/11/01 09:10:11 fennelr Exp $
-* Rev: $Revision: 1.5 $
-* Created Oct 5, 2006 by oa3 Core Team
-*/
+package org.openadaptor.auxil.connector.smtp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
+
 import javax.mail.MessagingException;
 
 /**
@@ -79,7 +75,7 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
    *
    * @param records - an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public Object deliver(Object[] records) throws ComponentException {
     String result=null;

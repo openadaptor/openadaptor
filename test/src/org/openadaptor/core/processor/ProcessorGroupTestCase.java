@@ -30,15 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.processor.ProcessorGroup;
 
 public class ProcessorGroupTestCase extends TestCase {
 

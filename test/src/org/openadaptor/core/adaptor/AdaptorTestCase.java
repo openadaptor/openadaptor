@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,14 +40,14 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.adaptor.AdaptorInpoint;
-import org.oa3.core.adaptor.AdaptorOutpoint;
-import org.oa3.core.connector.TestReadConnector;
-import org.oa3.core.connector.TestWriteConnector;
-import org.oa3.core.processor.TestProcessor;
-import org.oa3.core.router.Router;
-import org.oa3.core.router.RoutingMap;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.adaptor.AdaptorInpoint;
+import org.openadaptor.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.connector.TestReadConnector;
+import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.processor.TestProcessor;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 public class AdaptorTestCase extends TestCase {
 

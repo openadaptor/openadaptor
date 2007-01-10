@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.soap;
+package org.openadaptor.auxil.connector.soap;
 
 import javax.xml.namespace.QName;
 
@@ -39,7 +39,7 @@ import junit.framework.TestCase;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
-import org.oa3.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
 
 public class ReadConnectorWebServiceTestCase extends TestCase {
 
@@ -93,7 +93,7 @@ public class ReadConnectorWebServiceTestCase extends TestCase {
         Call call = (Call) webService.createCall();
         endpoint = endpoint.substring(0, endpoint.indexOf("?wsdl"));
         call.setTargetEndpointAddress(new java.net.URL(endpoint));
-        call.setOperationName(new QName("http://soap.connector.auxil.oa3.org/", "process"));
+        call.setOperationName(new QName("http://soap.connector.auxil.openadaptor.org/", "process"));
         for (int i = 0; i < data.length; i++) {
           call.invoke(new Object[] { data[i] });
         }

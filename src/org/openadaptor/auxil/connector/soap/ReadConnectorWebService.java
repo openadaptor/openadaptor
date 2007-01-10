@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.soap;
+package org.openadaptor.auxil.connector.soap;
 
 import javax.servlet.ServletException;
 
@@ -41,7 +41,7 @@ import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
 import org.codehaus.xfire.transport.http.XFireServlet;
-import org.oa3.auxil.connector.http.JettyReadConnector;
+import org.openadaptor.auxil.connector.http.JettyReadConnector;
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data

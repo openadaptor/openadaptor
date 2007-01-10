@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.exception;
+package org.openadaptor.auxil.exception;
 
 import java.io.File;
 import java.io.FileWriter;

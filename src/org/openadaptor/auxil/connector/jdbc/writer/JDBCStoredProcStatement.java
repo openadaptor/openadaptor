@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCStoredProcStatement.java,v 1.6 2006/11/30 15:38:05 ottalk Exp $
- * Rev:  $Revision: 1.6 $
- * Created Oct 30, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -47,10 +42,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.Component;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This class implements the <code>IJDBCStatement</code> interface.

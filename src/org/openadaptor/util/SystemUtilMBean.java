@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.util;
+package org.openadaptor.util;
 
 public interface SystemUtilMBean {
   public void exit();

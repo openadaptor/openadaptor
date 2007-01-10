@@ -1,6 +1,6 @@
-package org.oa3.core.transaction;
+package org.openadaptor.core.transaction;
 
-import org.oa3.core.transaction.ITransactionalResource;
+import org.openadaptor.core.transaction.ITransactionalResource;
 
 
 public class TestTransactionalResource implements ITransactionalResource {

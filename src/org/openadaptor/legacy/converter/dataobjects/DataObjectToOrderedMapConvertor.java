@@ -30,25 +30,20 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.legacy.converter.dataobjects;
+package org.openadaptor.legacy.converter.dataobjects;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/openadaptor/DataObjectToOrderedMapConvertorProcessor.java,v
- * 1.1 2006/07/19 15:16:20 higginse Exp $ Rev: $Revision: 1.1 $ Created Jul 13, 2006 by oa3 Core Team
- */
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 
 /**
  * @author Russ Fennell
  */
-public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
+public class DataObjectToOrderedMapConvertor {
   private static Log log = LogFactory.getLog(DataObjectToOrderedMapConvertor.class);
 
   /**

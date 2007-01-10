@@ -30,14 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.fixedwidth;
+package org.openadaptor.auxil.convertor.fixedwidth;
 
 import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * Defines the common elements of a fixed width converter. <p/>
@@ -51,7 +51,7 @@ import org.oa3.core.exception.ComponentException;
  * 
  * @author Russ Fennell
  * 
- * @see org.oa3.processor.IRecordProcessor
+ * @see org.openadaptor.processor.IRecordProcessor
  * @see FixedWidthFieldDetail
  * @see AbstractFixedWidthStringConvertor
  * @see FixedWidthStringToOrderedMapConvertor

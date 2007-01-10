@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.ftp;
+package org.openadaptor.auxil.connector.ftp;
 
 /*
  * File: $Header$ Rev: $Revision$
@@ -39,7 +39,7 @@ package org.oa3.auxil.connector.ftp;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * Defines the actions a FTP library must be able to perform

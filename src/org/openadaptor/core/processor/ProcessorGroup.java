@@ -30,19 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/ProcessorGroup.java,v 1.7 2006/10/27 10:57:16 shirea Exp $
- * Rev:  $Revision: 1.7 $
- * Created Jun 05, 2006 by Eddy Higgins
- */
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.Component;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
 
 /**
  * Utility processor which allows multiple processors to be grouped and treated as one.

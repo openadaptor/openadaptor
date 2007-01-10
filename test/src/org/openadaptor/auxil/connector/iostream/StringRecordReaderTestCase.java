@@ -1,6 +1,6 @@
-package org.oa3.auxil.connector.iostream;
+package org.openadaptor.auxil.connector.iostream;
 
-import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
+import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
 
 import junit.framework.TestCase;
 

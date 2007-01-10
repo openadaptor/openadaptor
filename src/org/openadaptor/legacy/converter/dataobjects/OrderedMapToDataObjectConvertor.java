@@ -30,21 +30,17 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.legacy.converter.dataobjects;
+package org.openadaptor.legacy.converter.dataobjects;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/convertor/openadaptor/OrderedMapToDataObjectConvertorProcessor.java,v
- * 1.1 2006/07/21 16:43:01 higginse Exp $ Rev: $Revision: 1.1 $ Created Jul 21, 2006 by Eddy Higgins
- */
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.InvalidParameterException;
 import org.openadaptor.dataobjects.SimpleDataObject;
@@ -79,7 +75,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractConvertor implement
    * 
    * @return DataObject representation of the OrderedMap
    * 
-   * @throws org.oa3.processor.RecordException
+   * @throws org.openadaptor.processor.RecordException
    *           if the conversion fails
    */
   protected Object convert(Object record) throws RecordException {

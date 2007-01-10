@@ -30,14 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/node/ResourceException.java,v 1.5 2006/10/20 15:08:28 kscully Exp $
- * Rev:  $Revision: 1.5 $
- * Created Sep 30, 2005 by Kevin Scully
- */
-import org.oa3.core.IComponent;
+import org.openadaptor.core.IComponent;
 
 /**
  * OAException type intended for use when exceptions occur using external resources.

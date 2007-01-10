@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.rmi;
+package org.openadaptor.auxil.connector.rmi;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -39,9 +39,9 @@ import java.rmi.registry.LocateRegistry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.IWriteConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.lifecycle.LifecycleComponent;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.lifecycle.LifecycleComponent;
 
 public class RMIWriteConnector extends LifecycleComponent implements IWriteConnector {
 

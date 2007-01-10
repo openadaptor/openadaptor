@@ -31,13 +31,13 @@
  * ]]
  */
 
-package org.oa3.core.transaction.jta;
+package org.openadaptor.core.transaction.jta;
 
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.oa3.core.transaction.ITransaction;
-import org.oa3.core.transaction.ITransactionManager;
+import org.openadaptor.core.transaction.ITransaction;
+import org.openadaptor.core.transaction.ITransactionManager;
 
 
 public class JtaTransactionManager implements ITransactionManager {

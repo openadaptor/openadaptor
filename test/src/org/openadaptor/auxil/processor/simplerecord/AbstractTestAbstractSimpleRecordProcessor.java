@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
 import org.jmock.Mock;
-import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.auxil.simplerecord.ISimpleRecordAccessor;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
-import org.oa3.core.processor.AbstractTestIDataProcessor;
+import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.processor.AbstractTestIDataProcessor;
 
 /**
  * Abstracts what's common to testing SimpleRecordProcessors.

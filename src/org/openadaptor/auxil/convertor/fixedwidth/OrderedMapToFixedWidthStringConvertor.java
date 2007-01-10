@@ -30,14 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.fixedwidth;
+package org.openadaptor.auxil.convertor.fixedwidth;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Converts an ordered map to a fixed width string. <p/>
@@ -58,7 +58,7 @@ import org.oa3.core.exception.RecordFormatException;
  * In both cases, the string output will be trimmed/padded to the appropriate width.
  * 
  * @author Russ Fennell
- * @see org.oa3.collections.IOrderedMap
+ * @see org.openadaptor.collections.IOrderedMap
  */
 public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStringConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToFixedWidthStringConvertor.class);

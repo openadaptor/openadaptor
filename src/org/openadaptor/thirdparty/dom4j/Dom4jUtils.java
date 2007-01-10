@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.dom4j;
+package org.openadaptor.thirdparty.dom4j;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/util/Dom4jUtils.java,v 1.9 2006/10/19 11:19:24 higginse Exp $ Rev: $Revision: 1.9 $
- * Created Jun 30, 2006 by Eddy Higgins
- */
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,7 +43,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Common Dom4j Utilities for OA3
@@ -87,7 +83,7 @@ public class Dom4jUtils {
   /**
    * Get a dom4j Document from a record. Valid records may contain an XML String,a Dom4j Document, or null If not, a
    * RecordFormatException will be thrown. Note that if a null input record is supplied, null will be returned. //ToDo:
-   * Agreee null behaviour with rest of oa3 team
+   * Agreee null behaviour with rest of openadaptor team
    * 
    * @param record
    * @return Document possibly having generated it from an XML String

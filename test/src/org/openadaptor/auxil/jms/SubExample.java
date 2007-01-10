@@ -1,8 +1,8 @@
-package org.oa3.auxil.jms;
+package org.openadaptor.auxil.jms;
 
-import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSReadConnector;
-import org.oa3.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
 public class SubExample {
 

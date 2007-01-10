@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.jmx;
+package org.openadaptor.core.jmx;
 
 import java.io.ObjectInputStream;
 import java.util.Set;

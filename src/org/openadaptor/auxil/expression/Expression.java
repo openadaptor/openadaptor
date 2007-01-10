@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/Expression.java,v 1.20 2006/11/06 11:18:06 shirea Exp $ Rev:
- * $Revision: 1.20 $ Created Sep 26 2006 by Eddy Higgins
- */
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,9 +40,9 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
-import org.oa3.thirdparty.dom4j.Dom4jUtils;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
 
 /**
  * This class extracts values from records (<code>ISimpleRecord</code> instances) and uses them to evaluate an
@@ -391,7 +387,7 @@ public class Expression implements IExpression {
    * 
    * @param attributeReference
    * @return the value of the attribute that is referred to
-   * @throws org.oa3.core.processor.RecordException
+   * @throws org.openadaptor.core.processor.RecordException
    */
   private Object getValue(ISimpleRecord record, String attributeReference) throws RecordException {
     // Expression.log.debug("Resolving attributeReference:"+attributeReference);

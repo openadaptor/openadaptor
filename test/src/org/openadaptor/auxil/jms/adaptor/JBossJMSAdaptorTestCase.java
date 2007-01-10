@@ -1,4 +1,4 @@
-package org.oa3.auxil.jms.adaptor;
+package org.openadaptor.auxil.jms.adaptor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,25 +14,25 @@ import javax.management.ObjectName;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.connector.iostream.FileReaderTestCase;
-import org.oa3.auxil.connector.iostream.reader.FileReader;
-import org.oa3.auxil.connector.iostream.reader.StreamReadConnector;
-import org.oa3.auxil.connector.iostream.reader.StringRecordReader;
-import org.oa3.auxil.connector.iostream.writer.FileWriter;
-import org.oa3.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.oa3.auxil.connector.jms.JMSConnection;
-import org.oa3.auxil.connector.jms.JMSReadConnector;
-import org.oa3.auxil.connector.jms.JMSWriteConnector;
-import org.oa3.auxil.jms.connector.JBossJMSTestCase;
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.core.connector.TestWriteConnector;
-import org.oa3.core.jmx.MBeanServer;
-import org.oa3.core.lifecycle.LifecycleComponent;
-import org.oa3.core.router.Router;
-import org.oa3.core.router.RoutingMap;
+import org.openadaptor.auxil.connector.iostream.FileReaderTestCase;
+import org.openadaptor.auxil.connector.iostream.reader.FileReader;
+import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
+import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
+import org.openadaptor.auxil.jms.connector.JBossJMSTestCase;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.jmx.MBeanServer;
+import org.openadaptor.core.lifecycle.LifecycleComponent;
+import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.RoutingMap;
 
 public class JBossJMSAdaptorTestCase extends TestCase {
 

@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.xml;
+package org.openadaptor.auxil.convertor.xml;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -43,11 +43,11 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.oa3.auxil.connector.iostream.RFC2279;
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Convert OrderedMaps to Xml (either Documents or Strings)

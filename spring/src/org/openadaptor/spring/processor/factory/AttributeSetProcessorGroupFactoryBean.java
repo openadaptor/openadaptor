@@ -30,20 +30,20 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.spring.processor.factory;
+package org.openadaptor.spring.processor.factory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.oa3.auxil.expression.Expression;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IExpression;
-import org.oa3.auxil.processor.simplerecord.AttributeSetProcessor;
-import org.oa3.auxil.processor.simplerecord.KeepNamedAttributesProcessor;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.processor.ProcessorGroup;
+import org.openadaptor.auxil.expression.Expression;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IExpression;
+import org.openadaptor.auxil.processor.simplerecord.AttributeSetProcessor;
+import org.openadaptor.auxil.processor.simplerecord.KeepNamedAttributesProcessor;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.processor.ProcessorGroup;
 
 /**
  * Concrete implementation of a Factorybean that instantiates a ProcessorGroups of AttributeSetProcessors.

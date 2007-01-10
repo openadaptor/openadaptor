@@ -30,21 +30,17 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/AbstractReadConnector.java,v 1.24 2006/10/18 14:32:51 kscully Exp $
- * Rev: $Revision: 1.24 $ Created Jul 26, 2005 by Kevin Scully
- */
 import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.transaction.ITransactional;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 

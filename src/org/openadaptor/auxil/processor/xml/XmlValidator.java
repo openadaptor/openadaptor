@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.xml;
+package org.openadaptor.auxil.processor.xml;
 
 import java.io.StringReader;
 import java.util.List;
@@ -38,11 +38,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.SAXParser;
-import org.oa3.core.Component;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.util.URLUtils;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.util.URLUtils;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

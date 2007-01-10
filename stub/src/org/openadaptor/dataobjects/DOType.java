@@ -31,12 +31,6 @@
  **
  */
 
-/*
- ** File: $Header: /cvs/oa3/src/org/openadaptor/dataobjects/DOType.java,v 1.1 2006/07/19 12:40:17 higginse Exp $
- **  Rev: $Revision: 1.1 $
- **
- */
-
 package org.openadaptor.dataobjects;
 
 /**

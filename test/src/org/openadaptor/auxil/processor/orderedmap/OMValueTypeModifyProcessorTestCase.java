@@ -30,11 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.orderedmap;
+package org.openadaptor.auxil.processor.orderedmap;
 
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.auxil.processor.orderedmap.OMValueTypeModifyProcessor;
+import org.openadaptor.auxil.processor.orderedmap.OrderedMapModifyProcessor;
+import org.openadaptor.core.exception.RecordFormatException;
 
 public class OMValueTypeModifyProcessorTestCase extends AbstractTestOrderedMapModifyProcessor {
 

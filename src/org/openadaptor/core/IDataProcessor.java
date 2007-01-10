@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core;
+package org.openadaptor.core;
 
 import java.util.List;
 

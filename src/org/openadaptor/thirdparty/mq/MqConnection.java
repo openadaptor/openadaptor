@@ -21,7 +21,7 @@
  * Software, or for combinations of the Software with other software or
  * hardware. ]]
  */
-package org.oa3.thirdparty.mq;
+package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$
  * Rev:  $Revision$
@@ -32,8 +32,8 @@ import javax.transaction.xa.XAException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 
 import com.ibm.mq.*;
 
@@ -45,7 +45,7 @@ import com.ibm.mq.*;
  * is not shareable between Connectors.
  * <br><br> 
  * Since IBMS's mq.jar is freely downloadable but not distributable direct access to the mq
- * a non-functional stub-api has been mocked up. This allows oa3 to build even in the absence 
+ * a non-functional stub-api has been mocked up. This allows openadaptor to build even in the absence 
  * of mq.jar. This is not ideal but avoids thenecessity for conditional compilition being built 
  * into the build script.
  */

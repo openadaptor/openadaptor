@@ -11,7 +11,7 @@
 
     Run it like this...
     
-      java org.oa3.spring.SpringApplication -config reader.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config reader.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -30,7 +30,7 @@
 
 <beans>
   
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="Reader"/>
@@ -41,7 +41,7 @@
   </bean>
   
   <!-- This defines jdbc connection -->
-  <bean id="JdbcConnection" class="org.oa3.auxil.connector.jdbc.JDBCConnection">
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
@@ -49,7 +49,7 @@
   </bean>
 
   <!-- Reader which polls database using configured SQL -->
-  <bean id="Reader" class="org.oa3.auxil.connector.jdbc.reader.JDBCReadConnector">
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="sql">
       <value>
@@ -61,13 +61,13 @@
     </property>
   </bean>
 
-  <bean id="XmlConverter" class="org.oa3.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
     <property name="rootElementTag" value="TRADE"/>
   </bean>
   
-  <bean id="Writer" class="org.oa3.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
-      <bean class="org.oa3.auxil.connector.iostream.writer.FileWriter"/>
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
     </property>
   </bean>
 

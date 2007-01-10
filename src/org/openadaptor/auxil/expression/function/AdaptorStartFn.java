@@ -30,20 +30,16 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/AdaptorStartFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $
- * Rev: $Revision: 1.1 $ Created Oct 31 2006 by Eddy Higgins
- */
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.util.Application;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.util.Application;
 
 /**
  * Function to provide access to the Adaptor start timestamp as a <code>Date</code>.

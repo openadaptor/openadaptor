@@ -1,4 +1,6 @@
-package org.oa3.core.connector;
+package org.openadaptor.core.connector;
+
+import org.openadaptor.core.connector.PollingReadConnector;
 
 import junit.framework.TestCase;
 

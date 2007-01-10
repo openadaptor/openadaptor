@@ -30,15 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-import org.oa3.core.IComponent;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/ProcessorException.java,v 1.2 2005/12/01 16:06:30 higginse Exp $
- * Rev:  $Revision: 1.2 $
- * Created Jul 26, 2005 by Kevin Scully
- */
+import org.openadaptor.core.IComponent;
 
 /**
  * General Exception class for Processor Related exceptions.

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/IPostfixFunction.java,v 1.4 2006/11/01 18:06:52 higginse Exp $ Rev:
- * $Revision: 1.4 $ Created Sep 15 2006 by Eddy Higgins
- */
 import java.util.Stack;
 
 /**

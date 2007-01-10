@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
-
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/RecordException.java,v 1.1 2006/05/10 16:07:19 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created May 09. 2006 by Eddy Higgins
- */
+package org.openadaptor.core.exception;
 
 /**
  * Exception class for exceptions related to processing Records

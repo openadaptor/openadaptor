@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.lifecycle;
+package org.openadaptor.core.lifecycle;
 
 import java.util.ArrayList;
 import java.util.Iterator;

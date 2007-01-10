@@ -30,19 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor.simplerecord;
+package org.openadaptor.auxil.convertor.simplerecord;
 
-import org.oa3.auxil.convertor.AbstractConvertor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Dec 18, 2006 by oa3 Core Team
- */
-
 /**
  * Unwrap an ISimpleRecord returning the underlying data that it is a view on.
  */
@@ -55,7 +49,7 @@ public class FromSimpleRecordConvertor extends AbstractConvertor {
    *
    * @param data
    * @return Converted Record
-   * @throws org.oa3.core.exception.RecordException
+   * @throws org.openadaptor.core.exception.RecordException
    *          if there was a problem converting the record
    */
   protected Object convert(Object data) {

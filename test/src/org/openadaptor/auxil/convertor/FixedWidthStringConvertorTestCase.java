@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor;
+package org.openadaptor.auxil.convertor;
 
 import java.util.List;
 
@@ -38,15 +38,15 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.convertor.fixedwidth.AbstractFixedWidthStringConvertor;
-import org.oa3.auxil.convertor.fixedwidth.FixedWidthFieldDetail;
-import org.oa3.auxil.convertor.fixedwidth.FixedWidthStringToOrderedMapConvertor;
-import org.oa3.auxil.convertor.fixedwidth.OrderedMapToFixedWidthStringConvertor;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.convertor.fixedwidth.AbstractFixedWidthStringConvertor;
+import org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail;
+import org.openadaptor.auxil.convertor.fixedwidth.FixedWidthStringToOrderedMapConvertor;
+import org.openadaptor.auxil.convertor.fixedwidth.OrderedMapToFixedWidthStringConvertor;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Suite of tests for the classes that handle fixed width string conversions.

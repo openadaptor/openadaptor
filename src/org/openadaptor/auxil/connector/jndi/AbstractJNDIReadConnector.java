@@ -30,15 +30,10 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jndi;
+package org.openadaptor.auxil.connector.jndi;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jndi/AbstractJNDIReader.java,v 1.2 2006/10/17 17:58:33 higginse Exp $
- * Rev: $Revision: 1.2 $ Created Oct 20, 2005 by Eddy Higgins
- */
-
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
 
 /**
  * Abstract base class for connectors which use JNDI searches.

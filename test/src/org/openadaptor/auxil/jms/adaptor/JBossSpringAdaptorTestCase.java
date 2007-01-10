@@ -1,10 +1,10 @@
-package org.oa3.auxil.jms.adaptor;
+package org.openadaptor.auxil.jms.adaptor;
 
 import junit.framework.TestCase;
 
-import org.oa3.core.adaptor.Adaptor;
-import org.oa3.spring.SpringApplication;
-import org.oa3.util.ResourceUtil;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.spring.SpringApplication;
+import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 public class JBossSpringAdaptorTestCase extends TestCase {

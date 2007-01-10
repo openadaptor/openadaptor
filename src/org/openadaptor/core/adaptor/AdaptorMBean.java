@@ -31,9 +31,9 @@
  * ]]
  */
 
-package org.oa3.core.adaptor;
+package org.openadaptor.core.adaptor;
 
-import org.oa3.core.lifecycle.State;
+import org.openadaptor.core.lifecycle.State;
 
 public interface AdaptorMBean {
 	State getState();

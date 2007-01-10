@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/IJDBCConstants.java,v 1.2 2006/11/04 23:32:44 ottalk Exp $
- * Rev:  $Revision: 1.2 $
- * Created Oct 22, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
 /**
  * A basic interface file which contains constants for use within the JDBC concrete classes

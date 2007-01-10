@@ -30,13 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.convertor;
+package org.openadaptor.auxil.convertor;
 
 import java.util.List;
 
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.Component;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Abstract implementation of IDataProcessor that converts from one data representation to another

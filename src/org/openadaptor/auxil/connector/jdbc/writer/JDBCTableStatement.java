@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc.writer;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCTableStatement.java,v 1.3 2006/11/04 23:32:44 ottalk Exp $
- * Rev:  $Revision: 1.3 $
- * Created Oct 30, 2006 by Kuldip Ottal
- */
+package org.openadaptor.auxil.connector.jdbc.writer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,10 +44,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.auxil.orderedmap.OrderedHashMap;
-import org.oa3.core.Component;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * This class implements the <code>IJDBCStatement</code> interface.
@@ -83,7 +78,7 @@ public class JDBCTableStatement extends Component implements IJDBCStatement, IJD
    * @param tableName
    * @param delimiter Not currently used
    * @param connection JDBC connection
-   * @throws org.oa3.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ComponentException
    */
   public void initialiseStatement(String tableName, String delimiter,Object mapping,Connection connection) throws ComponentException {
     this.tableName = tableName;

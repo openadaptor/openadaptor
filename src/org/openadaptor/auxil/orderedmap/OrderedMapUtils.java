@@ -30,15 +30,11 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.orderedmap;
+package org.openadaptor.auxil.orderedmap;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/util/OrderedMapUtils.java,v 1.4 2006/10/19 11:19:24 higginse Exp $ Rev:
- * $Revision: 1.4 $ Created May 31, 2006 by Eddy Higgins
- */
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Utility methods for Ordered Maps

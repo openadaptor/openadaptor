@@ -1,11 +1,11 @@
-package org.oa3.core.router;
+package org.openadaptor.core.router;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.oa3.core.IMessageProcessor;
-import org.oa3.core.adaptor.AdaptorInpoint;
-import org.oa3.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.adaptor.AdaptorInpoint;
+import org.openadaptor.core.adaptor.AdaptorOutpoint;
 
 /**
  * simplified router for when there is a single sequence of IMessageProcessors

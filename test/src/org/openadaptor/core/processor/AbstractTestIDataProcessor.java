@@ -30,12 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
 import org.jmock.MockObjectTestCase;
-import org.oa3.core.IDataProcessor;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Abstracts whats common to testing IDataProcessor implementations.

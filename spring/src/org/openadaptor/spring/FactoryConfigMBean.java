@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.spring;
+package org.openadaptor.spring;
 
 public interface FactoryConfigMBean {
 

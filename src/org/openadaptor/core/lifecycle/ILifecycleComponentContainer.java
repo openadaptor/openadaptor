@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core.lifecycle;
+package org.openadaptor.core.lifecycle;
 
 public interface ILifecycleComponentContainer  {
 	void setComponentManager(ILifecycleComponentManager manager); 

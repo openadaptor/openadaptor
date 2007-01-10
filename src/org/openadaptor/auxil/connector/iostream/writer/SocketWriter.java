@@ -30,19 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.writer;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/writer/SocketWriter.java,v 1.1 2006/02/24 09:34:52 higginse Exp $
- * Rev: $Revision: 1.1 $ Created Feb 23, 2006 by Eddy Higgins
- */
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.exception.ComponentException;
 
 /**
  * @author OA3 Core Team
@@ -80,7 +76,7 @@ public class SocketWriter extends AbstractStreamWriter {
   /**
    * Establish a Socket Connection
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
 
   public void connect() throws ComponentException {
@@ -104,7 +100,7 @@ public class SocketWriter extends AbstractStreamWriter {
   /**
    * Disconnect from the external message transport. If already disconnected then do nothing.
    * 
-   * @throws org.oa3.control.ComponentException
+   * @throws org.openadaptor.control.ComponentException
    */
   public void disconnect() {
     log.debug("Disconnecting from host:port " + hostname + ":" + port);

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.writer;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/writer/StringRecordWriter.java,v 1.3 2006/08/31 10:01:37 shirea
- * Exp $ Rev: $Revision: 1.3 $ Created Feb 24, 2005 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.Writer;
 

@@ -30,16 +30,12 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/modify/AttributeSetProcessor.java,v 1.7 2006/10/23 09:31:26 kscully Exp $
- * Rev: $Revision: 1.7 $ Created Sep 29, 2006 by Eddy Higgins
- */
 import java.util.List;
 
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Processor which sets an attribute value to the result of an evaluated Expression.
@@ -62,7 +58,7 @@ public class AttributeSetProcessor extends AttributeModifyProcessor {
    * @param simpleRecord
    *          record to be modified.
    * @return Modified ISimpleRecord record after modification
-   * @throws org.oa3.processor.RecordException
+   * @throws org.openadaptor.processor.RecordException
    *           if the modification fails.
    */
   public ISimpleRecord modifySimpleRecord(ISimpleRecord simpleRecord) throws RecordException {

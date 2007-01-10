@@ -30,13 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.simplerecord;
+package org.openadaptor.auxil.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/collections/ISimpleRecordAccessor.java,v 1.5 2006/10/17 16:26:28 higginse Exp $
- * Rev: $Revision: 1.5 $ Created Sep 18, 2006 by Eddy Higgins
- */
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * General Interface for helper (facade) classes which provide access to (<code>Object</code>) Records, as

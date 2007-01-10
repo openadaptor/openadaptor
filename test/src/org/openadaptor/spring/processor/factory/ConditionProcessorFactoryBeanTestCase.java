@@ -30,22 +30,20 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.spring.processor.factory;
+package org.openadaptor.spring.processor.factory;
 
 import junit.framework.TestCase;
-import org.oa3.auxil.processor.simplerecord.ConditionProcessor;
-import org.oa3.auxil.processor.simplerecord.AttributeSetProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecordAccessor;
-import org.oa3.thirdparty.dom4j.Dom4jSimpleRecordAccessor;
-import org.oa3.core.exception.ComponentException;
+
+import org.openadaptor.auxil.processor.simplerecord.AttributeSetProcessor;
+import org.openadaptor.auxil.processor.simplerecord.ConditionProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.spring.processor.factory.ConditionProcessorFactoryBean;
+import org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor;
 
 import java.util.List;
 import java.util.ArrayList;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Jan 8, 2007 by oa3 Core Team
- */
+
 public class ConditionProcessorFactoryBeanTestCase extends TestCase {
   protected final static String IF_EXPRESSION = "{quantity} gt 3";
   protected final static String THEN_EXPRESSION = "'many'";
@@ -69,8 +67,8 @@ public class ConditionProcessorFactoryBeanTestCase extends TestCase {
     }
     assertNotNull(testProcessor);
     assertEquals("IF Expression of created ConditionProcessor not set as expected.", testProcessor.getIfExpression().getExpression(), IF_EXPRESSION);
-    assertEquals("Then Processor not an AttributeSetProcessor.", testProcessor.getThenProcessor().getClass().getName(), "org.oa3.auxil.processor.simplerecord.AttributeSetProcessor");
-    assertEquals("Else Processor not an AttributeSetProcessor.", testProcessor.getElseProcessor().getClass().getName(), "org.oa3.auxil.processor.simplerecord.AttributeSetProcessor");
+    assertEquals("Then Processor not an AttributeSetProcessor.", testProcessor.getThenProcessor().getClass().getName(), AttributeSetProcessor.class.getName());
+    assertEquals("Else Processor not an AttributeSetProcessor.", testProcessor.getElseProcessor().getClass().getName(), AttributeSetProcessor.class.getName());
     assertEquals("Then Expression of created ConditionProcessor not set as expected.", ((AttributeSetProcessor)testProcessor.getThenProcessor()).getExpression().getExpression(), THEN_EXPRESSION);
     assertEquals("Else Expression of created ConditionProcessor not set as expected.", ((AttributeSetProcessor)testProcessor.getElseProcessor()).getExpression().getExpression(), ELSE_EXPRESSION);
     // Should validate ok.
@@ -122,7 +120,7 @@ public class ConditionProcessorFactoryBeanTestCase extends TestCase {
     }
     assertNotNull(testProcessor);
     assertEquals("IF Expression of created ConditionProcessor not set as expected.", testProcessor.getIfExpression().getExpression(), IF_EXPRESSION);
-    assertEquals("Then Processor not an AttributeSetProcessor.", testProcessor.getThenProcessor().getClass().getName(), "org.oa3.auxil.processor.simplerecord.AttributeSetProcessor");
+    assertEquals("Then Processor not an AttributeSetProcessor.", testProcessor.getThenProcessor().getClass().getName(), AttributeSetProcessor.class.getName());
     assertEquals("Then Expression of created ConditionProcessor not set as expected.", ((AttributeSetProcessor)testProcessor.getThenProcessor()).getExpression().getExpression(), THEN_EXPRESSION);
 
     assertTrue("Should be no ElseProcessor", testProcessor.getElseProcessor() == null);
@@ -148,7 +146,7 @@ public class ConditionProcessorFactoryBeanTestCase extends TestCase {
     }
     assertNotNull(testProcessor);
     assertEquals("IF Expression of created ConditionProcessor not set as expected.", testProcessor.getIfExpression().getExpression(), IF_EXPRESSION);
-    assertEquals("Else Processor not an AttributeSetProcessor.", testProcessor.getElseProcessor().getClass().getName(), "org.oa3.auxil.processor.simplerecord.AttributeSetProcessor");
+    assertEquals("Else Processor not an AttributeSetProcessor.", testProcessor.getElseProcessor().getClass().getName(), AttributeSetProcessor.class.getName());
     assertEquals("Else Expression of created ConditionProcessor not set as expected.", ((AttributeSetProcessor)testProcessor.getElseProcessor()).getExpression().getExpression(), ELSE_EXPRESSION);
 
     assertTrue("Should be no ThenProcessor", testProcessor.getThenProcessor() == null);

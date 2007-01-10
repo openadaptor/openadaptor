@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.util;
+package org.openadaptor.util;
 
 /*
  * File: $Headers$ Rev: $Revision: 1.4 $ Created Feb 19, 2006 by Eddy Higgins
@@ -52,7 +52,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
 
 /**
  * Adaptor registration is a process for collecting active adaptor information in a central location. If the property

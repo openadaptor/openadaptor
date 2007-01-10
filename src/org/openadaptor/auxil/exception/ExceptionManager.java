@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.exception;
+package org.openadaptor.auxil.exception;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,10 +49,10 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.DocumentHelper;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.oa3.auxil.connector.soap.ReadConnectorWebService;
-import org.oa3.auxil.connector.soap.WebServiceWriteConnector;
-import org.oa3.auxil.processor.xml.XsltProcessor;
-import org.oa3.util.ResourceUtils;
+import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
+import org.openadaptor.auxil.processor.xml.XsltProcessor;
+import org.openadaptor.util.ResourceUtils;
 
 public class ExceptionManager {
 

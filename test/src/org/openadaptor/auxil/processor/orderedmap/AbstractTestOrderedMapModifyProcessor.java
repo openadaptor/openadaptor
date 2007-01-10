@@ -30,13 +30,14 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.orderedmap;
+package org.openadaptor.auxil.processor.orderedmap;
 
 import junit.framework.TestCase;
 
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.NullRecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.processor.orderedmap.OrderedMapModifyProcessor;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 public abstract class AbstractTestOrderedMapModifyProcessor extends TestCase {
   protected OrderedMapModifyProcessor testInstance;

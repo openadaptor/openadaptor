@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/RecordFormatException.java,v 1.1 2006/06/22 10:06:25 higginse Exp $
- * Rev: $Revision: 1.1 $ Created June 22. 2006 by Eddy Higgins
- */
 /**
  * Exception to indicate that there is a problem with the format of a Record. This should be thrown, for example if an
  * IRecordProcessor is used to process a record which it cannot deal with (e.g. if it's expecting a String but gets an

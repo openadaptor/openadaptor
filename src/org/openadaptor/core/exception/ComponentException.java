@@ -30,15 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.exception;
+package org.openadaptor.core.exception;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/control/OAException.java,v 1.4 2006/10/19 11:45:45 fennelr Exp $
- * Rev:  $Revision: 1.4 $
- * Created Sep 28, 2005 by Kevin Scully
- */
-
-import org.oa3.core.IComponent;
+import org.openadaptor.core.IComponent;
 
 /**
  * General purpose openadptor exception implementation.

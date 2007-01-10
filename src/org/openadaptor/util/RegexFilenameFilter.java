@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.util;
+package org.openadaptor.util;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/util/RegexFilenameFilter.java,v 1.1 2006/07/09 22:53:26 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created Jul 07, 2006 by Eddy Higgins
- */
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.regex.Matcher;

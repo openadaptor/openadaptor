@@ -31,14 +31,14 @@
  #* ]]
  */
 
-package org.oa3.auxil.exception;
+package org.openadaptor.auxil.exception;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.MessageException;
-import org.oa3.util.ResourceUtils;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.util.ResourceUtils;
 
 public class MessageExceptionXmlConverter {
 

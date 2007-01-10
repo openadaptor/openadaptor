@@ -30,15 +30,11 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jdbc;
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jdbc/JDBCConnection.java,v 1.11 2006/10/18 14:31:02 ottalk Exp $
- * Rev:  $Revision: 1.11 $
- * Created Oct 20, 2005 by Eddy Higgins
- */
+package org.openadaptor.auxil.connector.jdbc;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
+import org.openadaptor.core.Component;
 
 import javax.sql.XAConnection;
 import java.sql.Connection;

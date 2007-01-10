@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.exception;
+package org.openadaptor.auxil.exception;
 
 import java.util.Date;
 import java.util.List;
@@ -39,15 +39,15 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
-import org.oa3.auxil.connector.soap.ReadConnectorWebService;
-import org.oa3.auxil.connector.soap.WebServiceWriteConnector;
-import org.oa3.core.Message;
-import org.oa3.core.Response;
-import org.oa3.core.adaptor.AdaptorInpoint;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.exception.MessageException;
-import org.oa3.core.lifecycle.State;
-import org.oa3.core.transaction.ITransaction;
+import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.adaptor.AdaptorInpoint;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.transaction.ITransaction;
 
 /**
  * An adaptor component which allows adaptor to use a centralised ExceptionManagement

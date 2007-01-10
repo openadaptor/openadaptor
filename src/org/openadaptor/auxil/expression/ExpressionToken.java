@@ -30,34 +30,30 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/ExpressionToken.java,v 1.16 2006/11/02 14:19:58 higginse Exp $ Rev:
- * $Revision: 1.16 $ Created Sep 22 2006 by Eddy Higgins
- */
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.expression.function.AdaptorStartFn;
-import org.oa3.auxil.expression.function.DateFn;
-import org.oa3.auxil.expression.function.DateParseFn;
-import org.oa3.auxil.expression.function.EndsWithFn;
-import org.oa3.auxil.expression.function.FloorFn;
-import org.oa3.auxil.expression.function.FormatFn;
-import org.oa3.auxil.expression.function.IsNullFn;
-import org.oa3.auxil.expression.function.LengthFn;
-import org.oa3.auxil.expression.function.LowerFn;
-import org.oa3.auxil.expression.function.MatchesFn;
-import org.oa3.auxil.expression.function.NowFn;
-import org.oa3.auxil.expression.function.RoundFn;
-import org.oa3.auxil.expression.function.StartsWithFn;
-import org.oa3.auxil.expression.function.SubstringFn;
-import org.oa3.auxil.expression.function.SystemPropertyFn;
-import org.oa3.auxil.expression.function.TrimFn;
-import org.oa3.auxil.expression.function.UpperFn;
+import org.openadaptor.auxil.expression.function.AdaptorStartFn;
+import org.openadaptor.auxil.expression.function.DateFn;
+import org.openadaptor.auxil.expression.function.DateParseFn;
+import org.openadaptor.auxil.expression.function.EndsWithFn;
+import org.openadaptor.auxil.expression.function.FloorFn;
+import org.openadaptor.auxil.expression.function.FormatFn;
+import org.openadaptor.auxil.expression.function.IsNullFn;
+import org.openadaptor.auxil.expression.function.LengthFn;
+import org.openadaptor.auxil.expression.function.LowerFn;
+import org.openadaptor.auxil.expression.function.MatchesFn;
+import org.openadaptor.auxil.expression.function.NowFn;
+import org.openadaptor.auxil.expression.function.RoundFn;
+import org.openadaptor.auxil.expression.function.StartsWithFn;
+import org.openadaptor.auxil.expression.function.SubstringFn;
+import org.openadaptor.auxil.expression.function.SystemPropertyFn;
+import org.openadaptor.auxil.expression.function.TrimFn;
+import org.openadaptor.auxil.expression.function.UpperFn;
 
 /**
  * Expression support class to represent parsed tokens from expressions.

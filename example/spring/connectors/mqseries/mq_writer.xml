@@ -12,13 +12,13 @@
     Data terminates: MQ.
 
     Run using
-      java org.oa3.spring.SpringApplication -config mq_writer.xml -bean Adaptor -props mq.properties
+      java org.openadaptor.spring.SpringApplication -config mq_writer.xml -bean Adaptor -props mq.properties
 
     mq.properties is a properties format file which should be edited to supply specific mq property
     values e.g. channel etc. Alternatively just edit MQSeries_Outpoint below directly.
   </description>
 
-  <bean id="Adaptor" class="org.oa3.core.adaptor.Adaptor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
         <ref bean="Inpoint"/>
@@ -27,25 +27,25 @@
     </property>
   </bean>
 
-  <bean id="Inpoint" class="org.oa3.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="Inpoint" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Configured to read from stdin.
     </description>
     <property name="streamReader">
-      <bean class="org.oa3.auxil.connector.iostream.reader.FileReader"/>
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
     </property>
     <property name="recordReader">
-      <bean class="org.oa3.auxil.connector.iostream.reader.StringRecordReader"/>
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
     </property>
   </bean>
 
   <!-- Outpoint: MqWriteConnector -->
-  <bean id="MQSeries_Outpoint" class="org.oa3.thirdparty.mq.MqWriteConnector">
+  <bean id="MQSeries_Outpoint" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
     <description>
       Configured to write directly to MQ Series.
     </description>
     <property name="connection">
-      <bean class="org.oa3.thirdparty.mq.MqConnection">
+      <bean class="org.openadaptor.thirdparty.mq.MqConnection">
         <property name="channelName" value="${mq.channel}"/>
         <property name="hostName" value="${mq.host}"/>
         <property name="managerName" value="${mq.manager}"/>

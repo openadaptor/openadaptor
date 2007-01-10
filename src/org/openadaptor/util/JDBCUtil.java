@@ -1,4 +1,4 @@
-package org.oa3.util;
+package org.openadaptor.util;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

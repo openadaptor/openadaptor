@@ -30,12 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.rss;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Dec 13, 2006 by oa3 Core Team
- */
+package org.openadaptor.thirdparty.rss;
 
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -47,9 +42,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.Component;
-import org.oa3.core.IReadConnector;
-import org.oa3.core.exception.ComponentException;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -139,8 +134,8 @@ public class RSSReadConnector extends Component implements IReadConnector {
       feed.setFeedType(outputType);
       feed.setTitle("OA3 RSS Listener");
       feed.setDescription("OA3 RSS Aggregated Feed");
-      feed.setAuthor("oa3");
-      feed.setLink("http://www.oa3.org");
+      feed.setAuthor("openadaptor");
+      feed.setLink("http://www.openadaptor.org");
       feed.setEntries(list);
 
       SyndFeedOutput output = new SyndFeedOutput();

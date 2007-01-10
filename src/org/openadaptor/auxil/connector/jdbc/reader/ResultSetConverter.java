@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

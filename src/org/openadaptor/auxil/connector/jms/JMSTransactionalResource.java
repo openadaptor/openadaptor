@@ -1,10 +1,10 @@
-package org.oa3.auxil.connector.jms;
+package org.openadaptor.auxil.connector.jms;
 
 import javax.jms.JMSException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.core.transaction.ITransactionalResource;
+import org.openadaptor.core.transaction.ITransactionalResource;
 
 public class JMSTransactionalResource implements ITransactionalResource {
 

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/NowFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created Oct 31 2006 by Eddy Higgins
- */
 import java.util.Date;
 
 /**

@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.oa3.util;
+package org.openadaptor.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,23 +56,23 @@ public class Application {
 
   private static final Log log = LogFactory.getLog(Application.class);
 
-  private static final String PROPERTY_HOSTADDRESS      = "oa3.hostaddress";
+  private static final String PROPERTY_HOSTADDRESS      = "openadaptor.hostaddress";
 
-  private static final String PROPERTY_HOSTNAME         = "oa3.hostname";
+  private static final String PROPERTY_HOSTNAME         = "openadaptor.hostname";
 
-  private static final String PROPERTY_REGISTRATION_URL = "oa3.registration.url";
+  private static final String PROPERTY_REGISTRATION_URL = "openadaptor.registration.url";
 
-  public static final String PROPERTY_CONFIG_URL        = "oa3.config.url";
+  public static final String PROPERTY_CONFIG_URL        = "openadaptor.config.url";
 
-  public static final String PROPERTY_PROPS_URL         = "oa3.props.url";
+  public static final String PROPERTY_PROPS_URL         = "openadaptor.props.url";
 
-  public static final String PROPERTY_COMPONENT_ID      = "oa3.component.id";
+  public static final String PROPERTY_COMPONENT_ID      = "openadaptor.component.id";
 
-  public static final String PROPERTY_START_TIMESTAMP   = "oa3.application.start";
+  public static final String PROPERTY_START_TIMESTAMP   = "openadaptor.application.start";
 
   public static final String START_TIMESTAMP_FORMAT     = "yyyy/MM/dd HH:mm:ss";
 
-  private static final String BUILD_PROPERTIES_NAME     = ".oa3.properties";
+  private static final String BUILD_PROPERTIES_NAME     = ".openadaptor.properties";
 
   private static final String LICENCE_TEXT = "\n"
       + " [[                                                                                  \n"

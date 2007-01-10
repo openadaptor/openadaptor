@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.oa3.core;
+package org.openadaptor.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.oa3.core.exception.MessageException;
+import org.openadaptor.core.exception.MessageException;
 
 public class Response {
 

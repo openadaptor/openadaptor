@@ -31,12 +31,12 @@
  * ]]
  */
 
-package org.oa3.core.router;
+package org.openadaptor.core.router;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.oa3.core.IMessageProcessor;
+import org.openadaptor.core.IMessageProcessor;
 
 public interface IRoutingMap {
 	public Collection getMessageProcessors();

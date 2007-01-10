@@ -30,22 +30,18 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.simplerecord;
+package org.openadaptor.auxil.processor.simplerecord;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/processor/modify/FilterProcessor.java,v 1.1 2006/11/03 17:02:27 higginse Exp $
- * Rev: $Revision: 1.1 $ Created Oct 04, 2006 by Eddy Higgins
- */
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.expression.Expression;
-import org.oa3.auxil.expression.ExpressionException;
-import org.oa3.auxil.expression.IExpression;
-import org.oa3.auxil.simplerecord.AbstractSimpleRecordProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecord;
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.auxil.expression.Expression;
+import org.openadaptor.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.IExpression;
+import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Pass or discard records depending on the evaluation of a boolean Expression.
@@ -103,7 +99,7 @@ public class FilterProcessor extends AbstractSimpleRecordProcessor {
    * 
    * @param filterExpressionString
    *          String containing the expression to be evaluated.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           if an <code>IExpression</code> cannot be created from the expression String.
    */
   public void setFilterExpressionString(String filterExpressionString) throws ExpressionException {

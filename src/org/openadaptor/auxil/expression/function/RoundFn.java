@@ -30,13 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/RoundFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created Oct 10 2006 by Eddy Higgins
- */
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Function to implement Math.round().
@@ -56,7 +52,7 @@ public class RoundFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single numeric argument
    * @return Double containing result of applying Math.floor() to argument.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If argument is null or non-numeric.
    */
   protected Object operate(Object[] args) throws ExpressionException {

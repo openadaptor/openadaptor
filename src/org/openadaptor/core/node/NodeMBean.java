@@ -31,11 +31,11 @@
  * ]]
  */
 
-package org.oa3.core.node;
+package org.openadaptor.core.node;
 
 import java.util.List;
 
-import org.oa3.core.lifecycle.State;
+import org.openadaptor.core.lifecycle.State;
 
 public interface NodeMBean {
 	State getState();

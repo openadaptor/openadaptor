@@ -30,13 +30,13 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.spring.processor.factory;
+package org.openadaptor.spring.processor.factory;
 
 import java.util.List;
 import java.util.Map;
 
-import org.oa3.auxil.processor.simplerecord.SimpleRecordAttributeExistsProcessor;
-import org.oa3.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.auxil.processor.simplerecord.SimpleRecordAttributeExistsProcessor;
+import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
 
 /**
  * Abstract superclass for FactoryBeans that instantiate ProcessorGroups of AbstractSimpleRecordProcessor subclasses.

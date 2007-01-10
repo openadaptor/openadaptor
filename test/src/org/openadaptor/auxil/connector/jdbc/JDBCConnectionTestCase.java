@@ -31,15 +31,12 @@
  * ]]
  */
 
-package org.oa3.auxil.connector.jdbc;
+package org.openadaptor.auxil.connector.jdbc;
 
 import junit.framework.TestCase;
 import java.sql.SQLException;
-/*
-* File: $Header: $
-* Rev: $Revision: $
-* Created Dec 12, 2006 by oa3 Core Team
-*/
+
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 
 /**
  * This test case uses the Hypersonic database. The database is created in memory when a jdbc connection is established.
@@ -47,7 +44,7 @@ import java.sql.SQLException;
  */
 public class JDBCConnectionTestCase extends TestCase {
     private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
-    private static final String DB_URL="jdbc:hsqldb:mem:oa3test";
+    private static final String DB_URL="jdbc:hsqldb:mem:test";
     private static final String DB_USER="sa";
     private static final String DB_PASSWORD="";
 

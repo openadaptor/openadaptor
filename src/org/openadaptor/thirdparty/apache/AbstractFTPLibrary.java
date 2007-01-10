@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.thirdparty.apache;
+package org.openadaptor.thirdparty.apache;
 
 /*
  * File: $Header$ Rev: $Revision$
  */
 
-import org.oa3.auxil.connector.ftp.IFTPLibrary;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.Component;
+import org.openadaptor.auxil.connector.ftp.IFTPLibrary;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
 
 
 /**

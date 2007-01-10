@@ -30,15 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.processor.orderedmap;
+package org.openadaptor.auxil.processor.orderedmap;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.oa3.auxil.orderedmap.IOrderedMap;
-import org.oa3.core.exception.ProcessorException;
-import org.oa3.core.exception.RecordException;
-import org.oa3.core.exception.RecordFormatException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.ProcessorException;
+import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Do a type conversion of a value in an OrderedMap. This processor can only convert to or from Strings.

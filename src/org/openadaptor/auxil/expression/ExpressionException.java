@@ -30,9 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression;
+package org.openadaptor.auxil.expression;
 
-import org.oa3.core.exception.RecordException;
+import org.openadaptor.core.exception.RecordException;
 
 /**
  * Exception class for exceptions related to handling expression exceptions.

@@ -30,12 +30,8 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/connector/stream/reader/TaggedInputStream.java,v 1.2 2006/10/19 14:24:26 higginse
- * Exp $ Rev: $Revision: 1.2 $ Created Apr 12, 2006 by Eddy Higgins
- */
 import java.io.IOException;
 import java.io.InputStream;
 

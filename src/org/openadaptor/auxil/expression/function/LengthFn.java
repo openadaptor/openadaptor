@@ -30,13 +30,9 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.expression.function;
+package org.openadaptor.auxil.expression.function;
 
-/*
- * File: $Header: /cvs/oa3/src/org/oa3/expression/function/LengthFn.java,v 1.1 2006/11/02 14:19:58 higginse Exp $ Rev:
- * $Revision: 1.1 $ Created Oct 31 2006 by Eddy Higgins
- */
-import org.oa3.auxil.expression.ExpressionException;
+import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Function to implement String.length().
@@ -62,7 +58,7 @@ public class LengthFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single <code>String</code> argument
    * @return <code>Long</code> containing the length of the string.
-   * @throws org.oa3.expression.ExpressionException
+   * @throws org.openadaptor.expression.ExpressionException
    *           If argument is <tt>null</tt>.
    */
   protected Object operate(Object[] args) throws ExpressionException {

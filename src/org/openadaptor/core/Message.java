@@ -31,11 +31,11 @@
  * ]]
  */
 
-package org.oa3.core;
+package org.openadaptor.core;
 
 import java.util.List;
 
-import org.oa3.core.transaction.ITransaction;
+import org.openadaptor.core.transaction.ITransaction;
 
 
 public class Message {

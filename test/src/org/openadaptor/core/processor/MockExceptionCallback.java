@@ -30,15 +30,11 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.core.processor;
+package org.openadaptor.core.processor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * File: $Header: /cvs/oa3/test/src/org/oa3/processor/mock/MockExceptionCallback.java,v 1.2 2006/10/20 15:25:24 higginse
- * Exp $ Rev: $Revision: 1.2 $ Created Dec 9, 2005 by Kevin Scully
- */
 public class MockExceptionCallback {
 
   private List payloadExceptionList = new ArrayList();
@@ -46,26 +42,4 @@ public class MockExceptionCallback {
   public List getPayloadExceptionList() {
     return payloadExceptionList;
   }
-
-  /*
-  private class PayloadExceptionEntry {
-    Object payload;
-
-    ProcessorException exception;
-
-    PayloadExceptionEntry(Object payload, ProcessorException exception) {
-      this.payload = payload;
-      this.exception = exception;
-    }
-
-    Object getPayload() {
-      return payload;
-    }
-
-    ProcessorException getException() {
-      return exception;
-    }
-  }
-  */
-
 }

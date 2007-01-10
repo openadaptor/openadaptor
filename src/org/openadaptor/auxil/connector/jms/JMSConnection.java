@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.oa3.auxil.connector.jms;
+package org.openadaptor.auxil.connector.jms;
 
 import java.io.Serializable;
 
@@ -67,16 +67,11 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.oa3.auxil.connector.jndi.JNDIConnection;
-import org.oa3.core.exception.ComponentException;
-import org.oa3.core.Component;
-import org.oa3.core.exception.ResourceException;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ResourceException;
 
-/* 
- * File: $Header: /cvs/oa3/src/org/oa3/connector/jms/JMSConnection.java,v 1.17 2006/10/20 10:15:04 kscully Exp $
- * Rev:  $Revision: 1.17 $
- * Created Dec 20, 2005 by Kevin Scully
- */
 /**
  * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.0.2 compliant code.
  * <p/>
@@ -453,7 +448,7 @@ public class JMSConnection extends Component {
         } else {
           session = createQueueSession();
         }
-        // We have a session and oa3 takes responsibility for being ready for messages so we can start
+        // We have a session and openadaptor takes responsibility for being ready for messages so we can start
         connection.start(); 
       } catch (JMSException jmse) {
         throw new ComponentException("Unable to create session from connection", jmse, this);
