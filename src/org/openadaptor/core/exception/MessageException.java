@@ -53,6 +53,6 @@ public class MessageException extends Throwable {
 	}
 	
 	public String toString() {
-		return exception.getClass().getName() + ":" + exception.getMessage();
+		return exception.getClass().getName() + ":" + exception.getMessage() + ":" + data.toString();
   }
 }
