@@ -215,7 +215,7 @@ public class MultiLineStringRecordReader extends AbstractRecordReader {
   protected String readLine() throws IOException {
     String line = bufferedReader.readLine();
     setIsDry(line == null);
-    return null;
+    return line;
   }
 
   /**
