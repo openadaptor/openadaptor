@@ -175,38 +175,42 @@ public class JDBCConnection extends Component {
    * @throws SQLException
    */
   public void connect() throws SQLException {
+    if (connection == null) {
 
-    if (driver == null) {
-      throw new RuntimeException("driver not set");
-    }
-    if (url == null) {
-      throw new RuntimeException("url not set");
-    }
-    if (username == null) {
-      throw new RuntimeException("username not set");
-    }
-    if (password == null) {
-      throw new RuntimeException("password not set");
-    }
-    
-    //Attempt to load jdbc driver class
-    try {
-      Class.forName(driver);
-    }
-    catch (ClassNotFoundException cnfe) { //Rebrand error as an SQL one.
-      throw new SQLException("Unable to instantiate JDBC driver: " + driver);
-    }
+      if (driver == null) {
+        throw new RuntimeException("driver not set");
+      }
+      if (url == null) {
+        throw new RuntimeException("url not set");
+      }
+      if (username == null) {
+        throw new RuntimeException("username not set");
+      }
+      if (password == null) {
+        throw new RuntimeException("password not set");
+      }
 
-    //Set up properties for use with DriverManager
-    Properties props = new Properties();
-    props.put("user", username);
-    props.put("password", password);
+      //Attempt to load jdbc driver class
+      try {
+        Class.forName(driver);
+      }
+      catch (ClassNotFoundException cnfe) { //Rebrand error as an SQL one.
+        throw new SQLException("Unable to instantiate JDBC driver: " + driver);
+      }
 
-    log.info("Connecting to " + url + " as " + username);
-    connection = DriverManager.getConnection(url, props);
+      //Set up properties for use with DriverManager
+      Properties props = new Properties();
+      props.put("user", username);
+      props.put("password", password);
 
-    if (connection instanceof XAConnection) {
-      transactionalResource = ((XAConnection)connection).getXAResource();
+      log.info("Connecting to " + url + " as " + username);
+      setConnection( DriverManager.getConnection(url, props) );
+
+      if (connection instanceof XAConnection) {
+        transactionalResource = ((XAConnection) connection).getXAResource();
+      } else if (isTransacted()) {
+        transactionalResource = new JDBCTransactionalResource(this);
+      }
     }
   }
 
@@ -216,7 +220,7 @@ public class JDBCConnection extends Component {
   public void disconnect() throws SQLException{
     if (connection != null) {
       connection.close();
-      connection=null;
+      setConnection( null );
     }
   }
 

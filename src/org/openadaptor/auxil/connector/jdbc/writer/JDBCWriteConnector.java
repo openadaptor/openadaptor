@@ -38,6 +38,7 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -54,7 +55,7 @@ import java.util.List;
  * The class then uses a factory to provide the appropriate object and passes it the Ordered Map
  * containing the data to be written to the database.
  */
-public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCConstants {
+public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional, IJDBCConstants {
 
   private static final Log log = LogFactory.getLog(JDBCWriteConnector.class.getName());
 
@@ -257,4 +258,12 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements IJDBCC
   }
   //END Implement methods of AbstractWriteConnector
 
+  // ITransactional
+  public Object getResource() {        
+    if (getJdbcConnection().isTransacted()) {
+      return getJdbcConnection().getTransactionalResource();
+    } else {
+      return null;
+    }
+  }
 }
