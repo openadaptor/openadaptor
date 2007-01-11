@@ -75,7 +75,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractConvertor implement
    * 
    * @return DataObject representation of the OrderedMap
    * 
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *           if the conversion fails
    */
   protected Object convert(Object record) throws RecordException {

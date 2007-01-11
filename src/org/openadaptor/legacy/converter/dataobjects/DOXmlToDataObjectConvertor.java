@@ -32,15 +32,10 @@
  */
 package org.openadaptor.legacy.converter.dataobjects;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
-import org.openadaptor.dataobjects.DataObjectException;
-import org.openadaptor.doconverter.XMLFormatter;
 
 /**
  * Convert DataObject XML (DOXML) into DataObjects <B>Note</B>: Usage of this class depends on the availability of a
@@ -48,22 +43,9 @@ import org.openadaptor.doconverter.XMLFormatter;
  * 
  * @author Eddy Higgins
  */
-public class DOXmlToDataObjectConvertor {
+public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
 
   private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
-
-  protected XMLFormatter formatter = new XMLFormatter();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        formatter.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
 
   protected Object convert(Object record) throws RecordException {
     Object[] result = null;

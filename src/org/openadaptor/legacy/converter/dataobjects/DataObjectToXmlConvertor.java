@@ -32,9 +32,6 @@
  */
 package org.openadaptor.legacy.converter.dataobjects;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
@@ -42,6 +39,10 @@ import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doxml.GenericXMLWriter;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Convert Data Objects into XML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
@@ -53,7 +54,7 @@ import org.openadaptor.doxml.GenericXMLWriter;
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToXmlConvertor extends DOXmlToDataObjectConvertor {
+public class DataObjectToXmlConvertor extends AbstractConvertor {
 
   private static final Log log = LogFactory.getLog(DataObjectToXmlConvertor.class);
 
@@ -78,7 +79,7 @@ public class DataObjectToXmlConvertor extends DOXmlToDataObjectConvertor {
    * @param record
    *          containing DOXML
    * @return XMl representation of the data
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *           if conversion fails
    */
   protected Object convert(Object record) throws RecordException {
