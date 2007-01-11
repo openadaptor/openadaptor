@@ -40,7 +40,7 @@ import org.openadaptor.core.exception.RecordException;
 /**
  * Common interface for openadaptor Expressions.
  * <p>
- * In general, openadaptor3 expressions look like normal algebraic expressions, the difference being that the variables
+ * In general, openadaptor expressions look like normal algebraic expressions, the difference being that the variables
  * used within the expressions are taken as placeholders for attribute values within a supplied record. Expressions
  * operate on ISimpleRecord objects, which in turn provide implementation neutral access to underlying record attributes
  * for use within expressions.
@@ -49,7 +49,7 @@ import org.openadaptor.core.exception.RecordException;
  * achieved by providing an attribute type map, which provides hints as to how an attribute from a record should be
  * treated if it being referenced in the expression
  * 
- * For examples of expressions in use, see the Cookbook examples include with openadaptor3
+ * For examples of expressions in use, see the examples included with openadaptor
  * 
  * @author Eddy Higgins
  */

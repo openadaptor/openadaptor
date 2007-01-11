@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor3-autobuild" default="autobuild">
+<project name="openadaptor-autobuild" default="autobuild">
 
+  <property name="svn.root" value="https://openadaptor3.openadaptor.org/svn/openadaptor3"/>
+  
   <taskdef resource="svntask.properties"/>
 
   <property name="dir.checkout" value="checkout"/>
   
-  <condition property="url" value="https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/${tag}">
+  <condition property="url" value="${svn.root}/tags/${tag}">
     <isset property="tag"/>
   </condition>
   
@@ -13,7 +15,7 @@
     <isset property="tag"/>
   </condition>
   
-  <condition property="url" value="https://openadaptor3.openadaptor.org/svn/openadaptor3/branches/${branch}">
+  <condition property="url" value="${svn.root}/branches/${branch}">
     <isset property="branch"/>
   </condition>
   
@@ -21,7 +23,7 @@
     <isset property="branch"/>
   </condition>
   
-  <property name="url" value="https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk"/>
+  <property name="url" value="${svn.root}/trunk"/>
   <property name="checkout.tag" value="trunk"/>
   
   <echo message="url          = ${url}"/>

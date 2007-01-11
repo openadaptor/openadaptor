@@ -57,28 +57,65 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
+  /**
+   * IMessageProcessor that this adaptor delegate message processing to
+   * typically a Router
+   */
   private IMessageProcessor processor;
 
+  /**
+   * ordered list of adaptor inpoints
+   */
   private List inpoints;
 
+  /**
+   * ordered list of all the lifecycle components that it manages
+   * this includes adaptor inpoints too
+   */
   private List components;
 
+  /**
+   * control whether adaptor creates a new thread to run the inpoints
+   * if false can only work for an adaptor with a single inpoint
+   */
   private boolean runInpointsInCallingThread = false;
 
+  /**
+   * threads uses to run the inpoints
+   */
   private Thread[] inpointThreads = new Thread[0];
 
-  private State state = State.CREATED;
+  /**
+   * current state of the adaptor
+   */
+  private State state = State.STOPPED;
 
+  /**
+   * transaction manager, this is passed to the adaptor inpopints
+   */
   private ITransactionManager transactionManager;
 
-  private boolean started = false;
-  
+  /**
+   * exit code, this is an aggregated of the adaptor inpoint exit codes
+   * 0 denotes that adaptor exited naturally
+   */
   private int exitCode = 0;
 
+  /**
+   * TODO: remove this
+   */
   private IMessageProcessor exceptionProcessor;
   
+  /**
+   * controls adaptor retry and start, stop, restart functionality
+   */
   private AdaptorRunConfiguration runConfiguration;
 
+  /**
+   * shutdown hook
+   */
+  private Thread shutdownHook = new ShutdownHook();
+  
   public Adaptor() {
     super();
     transactionManager = new TransactionManager();
@@ -114,7 +151,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public void register(ILifecycleComponent component) {
-    if (started) {
+    if (state != State.STOPPED) {
       throw new RuntimeException("Cannot register component with running adaptor");
     }
     components.add(component);
@@ -129,7 +166,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public ILifecycleComponent unregister(ILifecycleComponent component) {
     ILifecycleComponent match = null;
-    if (started) {
+    if (state != State.STOPPED) {
       throw new RuntimeException("Cannot unregister component from running adaptor");
     }
     if (components.remove(component)) {
@@ -146,13 +183,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public void start() {
     exitCode = 0;
     
-    if (started) {
-      throw new RuntimeException("adaptor is already started");
+    if (state != State.STOPPED) {
+      throw new RuntimeException("adaptor is currently " + state.toString());
     }
     
     try {
+      Runtime.getRuntime().addShutdownHook(shutdownHook);
+      state = State.STARTED;
       validate();
-      started = true;
       startNonInpoints();
       startInpoints();
   
@@ -170,7 +208,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       log.error("failed to start adaptor", ex);
       exitCode = 1;
     } finally {
-      started = false;
+      if (state != State.STOPPING) {
+        Runtime.getRuntime().removeShutdownHook(shutdownHook);
+      }
+      state = State.STOPPED;
     }
     
     if (getExitCode() != 0) {
@@ -180,16 +221,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public void stop() {
     stopInpoints();
+    waitForInpointsToStop();
     stopNonInpoints();
-    for (Iterator iter = components.iterator(); iter.hasNext();) {
-      ILifecycleComponent component = (ILifecycleComponent) iter.next();
-      component.waitForState(State.STOPPED);
-    }
   }
 
   public void stopNoWait() {
     stopInpoints();
-    stopNonInpoints();
   }
 
   public void interrupt() {
@@ -259,12 +296,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       throw new RuntimeException("cannot run inpoint directly as there are " + inpoints.size() + " inpoints");
     }
     IAdaptorInpoint inpoint = (IAdaptorInpoint) inpoints.get(0);
-    setState(State.RUNNING);
     inpoint.run();
-  }
-
-  private void setState(final State state) {
-    this.state = state;
   }
 
   private void waitForInpointsToStop() {
@@ -284,7 +316,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         inpointThreads[i].setName(inpoint.toString());
       }
     }
-    setState(State.RUNNING);
     for (int j = 0; j < inpointThreads.length; j++) {
       inpointThreads[j].start();
     }
@@ -299,11 +330,18 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   private void stopInpoints() {
     for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      inpoint.stop();
+      stopLifecycleComponent((IAdaptorInpoint) iter.next());
     }
   }
 
+  private void stopLifecycleComponent(ILifecycleComponent c) {
+    synchronized (c) {
+      if (!c.isState(State.STOPPED)) {
+        c.stop();
+      }
+    }
+  }
+  
   private void startNonInpoints() {
     for (Iterator iter = components.iterator(); iter.hasNext();) {
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
@@ -316,8 +354,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private void stopNonInpoints() {
     for (Iterator iter = components.iterator(); iter.hasNext();) {
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
-      if (!inpoints.contains(component) && component.isState(State.RUNNING)) {
-        component.stop();
+      if (!inpoints.contains(component)) {
+        stopLifecycleComponent(component);
       }
     }
   }
@@ -339,9 +377,21 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
   
   public void exit() {
+    state = State.STOPPING;
     if (runConfiguration != null) {
       runConfiguration.setExitFlag();
     }
     stop();
+  }
+  
+  public class ShutdownHook extends Thread {
+    public void run() {
+      log.info("shutdownhook invoked, calling exit()");
+      try {
+        Adaptor.this.exit();
+      } catch (Throwable t) {
+        log.error("uncaught error or exception", t);
+      }
+    }
   }
 }

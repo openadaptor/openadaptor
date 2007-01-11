@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor3-package" default="zippedpackage">
+<project name="openadaptor-package" default="zippedpackage">
   
   <import file="build.xml"/>
   

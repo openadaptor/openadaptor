@@ -46,12 +46,12 @@ public class LifecycleComponent extends Component implements ILifecycleComponent
 	private LifecycleDelegate lifecycleDelegate;
 
 	public LifecycleComponent() {
-		lifecycleDelegate = new LifecycleDelegate(this, State.CREATED);
+		lifecycleDelegate = new LifecycleDelegate(this, State.STOPPED);
 	}
 	
 	public LifecycleComponent(String id) {
 		super(id);
-		lifecycleDelegate = new LifecycleDelegate(this, State.CREATED);
+		lifecycleDelegate = new LifecycleDelegate(this, State.STOPPED);
 	}
 	
 	public void addListener(ILifecycleListener listener) {
@@ -71,7 +71,7 @@ public class LifecycleComponent extends Component implements ILifecycleComponent
 	}
 
 	public void start() {
-		lifecycleDelegate.setState(State.RUNNING);
+		lifecycleDelegate.setState(State.STARTED);
 		log.info(getId() + " started");
 	}
 

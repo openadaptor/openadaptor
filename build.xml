@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor3" default="recompile.all">
+<project name="openadaptor" default="recompile.all">
   
   <tstamp/>
   <property file="checkout.properties"/>
@@ -171,7 +171,8 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean to be defined">
+  <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean (defaults to Adaptor) to be defined">
+    <property name="bean" value="Adaptor"/>
     <java classname="org.openadaptor.spring.SpringApplication" classpathref="classpath.example">
       <arg value="-config"/>
       <arg value="${config}"/>
@@ -180,4 +181,6 @@
     </java>
   </target>
 
+  <target name="cruise" depends="test.clean" description="target for cruise control to call"/>
+  
 </project>

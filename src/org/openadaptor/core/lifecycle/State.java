@@ -35,9 +35,7 @@ package org.openadaptor.core.lifecycle;
 
 public class State {
 	
-  public static final State CREATED = new State("CREATED");
-  public static final State READY = new State("READY");
-  public static final State RUNNING = new State("RUNNING");
+  public static final State STARTED = new State("STARTED");
   public static final State STOPPED = new State("STOPPED");
   public static final State STOPPING = new State("STOPPING");
 

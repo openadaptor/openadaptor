@@ -54,7 +54,7 @@ public class SMTPConnection extends Component {
   private static final Log log = LogFactory.getLog(SMTPConnection.class.getName());
 
   private static final String DEFAULT_SMTP_PORT="25";
-  private static final String DEFAULT_MAILER="openadaptor3";
+  private static final String DEFAULT_MAILER="mailhost";
   private String mailHost;
   private String mailHostPort=DEFAULT_SMTP_PORT;
   private String mailer=DEFAULT_MAILER;
@@ -94,7 +94,7 @@ public class SMTPConnection extends Component {
   }
 
   /**
-   * Returns mailer identifier, default is "openadaptor3"
+   * Returns mailer identifier, default is "openadaptor"
    *
    * @return mailer identifier
    */
