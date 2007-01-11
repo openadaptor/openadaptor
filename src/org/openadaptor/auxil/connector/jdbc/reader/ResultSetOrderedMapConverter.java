@@ -36,38 +36,13 @@ package org.openadaptor.auxil.connector.jdbc.reader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-import org.openadaptor.util.JDBCUtil;
 
-public class ResultSetOrderedMapConverter implements ResultSetConverter {
+public class ResultSetOrderedMapConverter extends ResultSetConverter {
 
-  private static final Log log = LogFactory.getLog(ResultSetOrderedMapConverter.class);
-
-  public Object convertNext(ResultSet rs) throws SQLException {
-    ResultSetMetaData rsmd = rs.getMetaData();
-    if (rs.next()) {
-      return convertNext(rs, rsmd);
-    } else {
-      return null;
-    }
-  }
-
-  public Object[] convertAll(ResultSet rs) throws SQLException {
-    ArrayList rows = new ArrayList();
-    ResultSetMetaData rsmd = rs.getMetaData();
-    while (rs.next()) {
-      rows.add(convertNext(rs, rsmd));
-    }
-    return rows.toArray(new Object[rows.size()]);
-  }
-
-  private Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
-    JDBCUtil.logResultSet(log, "converting ResultSet", rs);
+  protected Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
     int columnCount = rsmd.getColumnCount();
     IOrderedMap map = new OrderedHashMap(columnCount);
     for (int i = 1; i <= columnCount; i++) {

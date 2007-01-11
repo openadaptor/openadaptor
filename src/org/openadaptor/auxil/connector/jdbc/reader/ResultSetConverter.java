@@ -34,9 +34,37 @@
 package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-public interface ResultSetConverter {
-  Object convertNext(ResultSet rs) throws SQLException;
-  Object[] convertAll(ResultSet rs) throws SQLException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.util.JDBCUtil;
+
+public abstract class ResultSetConverter {
+  private static final Log log = LogFactory.getLog(ResultSetOrderedMapConverter.class);
+
+  public Object convertNext(ResultSet rs) throws SQLException {
+    ResultSetMetaData rsmd = rs.getMetaData();
+    if (rs.next()) {
+      JDBCUtil.logResultSet(log, "converting ResultSet", rs);
+      return convertNext(rs, rsmd);
+    } else {
+      return null;
+    }
+  }
+
+  public Object[] convertAll(ResultSet rs) throws SQLException {
+    ArrayList rows = new ArrayList();
+    ResultSetMetaData rsmd = rs.getMetaData();
+    while (rs.next()) {
+      JDBCUtil.logResultSet(log, "converting ResultSet", rs);
+      rows.add(convertNext(rs, rsmd));
+    }
+    return rows.toArray(new Object[rows.size()]);
+  }
+
+  protected abstract Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException;
+
 }
