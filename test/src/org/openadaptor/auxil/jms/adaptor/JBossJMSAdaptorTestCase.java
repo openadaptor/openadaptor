@@ -192,7 +192,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
       Object[] data = msg.getData();
       for (int i = 0; i < data.length; i++) {
         if (data[i].equals(stopRecord)) {
-          adaptor.stop();
+          adaptor.stopNoWait();
         } else {
           count++;
         }
@@ -217,7 +217,7 @@ public class JBossJMSAdaptorTestCase extends TestCase {
       } catch (InterruptedException e) {
       }
       try {
-        URL url = new URL("http://localhost:8082/InvokeAction//beans%3Aid%3Dadaptor/action=stop?action=stop");
+        URL url = new URL("http://localhost:8082/InvokeAction//beans%3Aid%3Dadaptor/action=exit?action=exit");
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
         while (in.readLine() != null);
         in.close();
