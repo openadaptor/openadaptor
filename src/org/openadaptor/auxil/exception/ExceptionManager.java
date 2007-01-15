@@ -35,6 +35,7 @@ package org.openadaptor.auxil.exception;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.http.HttpServlet;
@@ -46,11 +47,11 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.xfire.client.Client;
 import org.dom4j.DocumentHelper;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.openadaptor.auxil.connector.http.ServletContainer;
 import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
-import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
 import org.openadaptor.auxil.processor.xml.XsltProcessor;
 import org.openadaptor.util.ResourceUtils;
 
@@ -116,15 +117,16 @@ public class ExceptionManager {
     }
 
     // create web service to receive exceptions and store
+    ServletContainer servletContainer = new ServletContainer(server);
     webService = new ReadConnectorWebService("WebService");
-    webService.setJettyServer(server);
+    webService.setServletContainer(servletContainer);
     webService.setServiceName("ExceptionManager");
     webService.setPath("/soap/*");
     webService.setTransacted(false);
     webService.connect();
 
     // create servlet for browsing exceptions
-    webService.getRootContext().addServlet(new ServletHolder(new MyServlet()), "/admin/*");
+    webService.addServlet(new MyServlet(), "/admin/*");
 
     while (!webService.isDry()) {
       Object[] data = webService.next(1000);
@@ -156,23 +158,26 @@ public class ExceptionManager {
         delete(request, response);
       } else if (action.equals("deleteall")) {
         deleteall(request, response);
-      } else if (action.equals("resend")) {
-        resend(request, response);
+      } else if (action.equals("retry")) {
+        retry(request, response);
       }
     }
 
-    private void resend(HttpServletRequest request, HttpServletResponse response) {
+    private void retry(HttpServletRequest request, HttpServletResponse response) {
       String id = request.getParameter("id");
       if (id != null) {
         ExceptionSummary summary = exceptionStore.getExceptionSummary(id);
         String data = exceptionStore.getDataForId(id);
-        WebServiceWriteConnector writer = new WebServiceWriteConnector("Resend");
-        writer.setEndpoint(summary.getReplyTo());
-        writer.setMethodName("process");
-        writer.connect();
-        writer.deliver(new String[] {data});
-        delete(request, response);
+        try {
+          Client client = new Client(new URL(summary.getRetryAddress()));
+          client.invoke("retry", new Object[] {summary.getComponentId(), data});
+          delete(request, response); 
+        } catch (Exception e) {
+          exceptionStore.incrementRetry(id);
+          exceptionStore.store(MessageExceptionXmlConverter.toXml(e, id));
+        }
       }
+      list(request, response);
     }
 
     private void delete(HttpServletRequest request, HttpServletResponse response) {
@@ -271,8 +276,8 @@ public class ExceptionManager {
               writer.write("<td>" + summary.getFrom() + "</td>");
               writer.write("<td>" + TIME_FORMATTER.format(summary.getDate()) + "</td>");
               writer.write("<td>" + summary.getMessage() + "</td>");
-              if (summary.getReplyTo().length() > 0) {
-                writer.write("<td><a href=\"?action=resend&id=" + ids[i] + "\">Resend</a></td>");
+              if (summary.getRetryAddress().length() > 0 && summary.getComponentId().length() > 0) {
+                writer.write("<td><a href=\"?action=retry&id=" + ids[i] + "\">Retry</a>(" + summary.getRetries() + ")</td>");
               } else {
                 writer.write("<td/>");
               }

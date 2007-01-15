@@ -11,8 +11,11 @@
   <body>
     <table>
       <tr><td class="title">Message:</td><td><xsl:value-of select="Exception/Message"/></td></tr>
-      <tr><td class="title">Exception:</td><td><xsl:value-of select="Exception/@class"/></td></tr>
+      <tr><td class="title">Exception:</td><td><xsl:value-of select="Exception/Class"/></td></tr>
+      <tr><td class="title">Component:</td><td><xsl:value-of select="Exception/Component"/></td></tr>
       <tr><td class="title">From:</td><td><xsl:value-of select="From"/>(<xsl:value-of select="HostName"/>)</td></tr>
+      <tr><td class="title">Retry Address:</td><td><xsl:value-of select="RetryAddress"/></td></tr>
+      <tr><td class="title">Retries:</td><td><xsl:value-of select="Retries"/></td></tr>
       <tr><td class="title">Trace:</td>
         <td>
           <xsl:for-each select="Exception/StackTrace/Line">
@@ -21,7 +24,6 @@
         </td>
       </tr>
       <tr><td class="title">Data:</td><td><xsl:value-of select="Data"/></td></tr>
-      <tr><td class="title">Reply:</td><td><xsl:value-of select="ReplyTo"/></td></tr>
     </table>
   </body>
   </html>

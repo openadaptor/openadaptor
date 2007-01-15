@@ -212,6 +212,9 @@ public class QueuedReadConnectorTestCase extends TestCase {
       } catch (InterruptedException e) {
       }
     }
+
+    public void validate(List exceptions) {
+    }
     
   }
   

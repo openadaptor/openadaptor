@@ -44,10 +44,11 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.node.Node;
 import org.openadaptor.core.transaction.ITransaction;
+import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.ITransactional;
 
-public class AdaptorInpoint extends Node implements IAdaptorInpoint {
+public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactionInitiator {
 
   private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
 
@@ -106,6 +107,8 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     super.validate(exceptions);
     if (connector == null) {
       exceptions.add(new RuntimeException(toString() + " does not have a connector"));
+    } else {
+      connector.validate(exceptions);
     }
   }
 
@@ -141,7 +144,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
             transaction = transactionManager.getTransaction();
             enlistConnector(transaction);
           }
-          if (getDataAndProcess(transaction)) {
+          if (getNextAndProcess(transaction)) {
             if (transaction.getErrorOrException() == null) {
               log.debug(getId() + " committing transaction");
               transaction.commit();
@@ -177,7 +180,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     }
   }
 
-  protected boolean getDataAndProcess(ITransaction transaction) {
+  private boolean getNextAndProcess(ITransaction transaction) {
     Object[] data = getNext();
     if (data != null) {
       if (connector.getReaderContext() == prevReaderContext) {
@@ -190,7 +193,7 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
     return data != null;
   }
 
-  protected Object[] getNext() {
+  private Object[] getNext() {
     Object[] data = connector.next(timeoutMs);
     return data;
   }
@@ -198,9 +201,6 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint {
   public void setAdaptor(final Adaptor adaptor) {
     this.adaptor = adaptor;
     setNext(adaptor);
-    if (transactionManager == null) {
-      transactionManager = adaptor.getTransactionManager();
-    }
   }
 
   public int getExitCode() {

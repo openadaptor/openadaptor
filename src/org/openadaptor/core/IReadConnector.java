@@ -33,7 +33,12 @@
 
 package org.openadaptor.core;
 
+import java.util.List;
+
 public interface IReadConnector {
+  
+  void validate(List exceptions);
+  
   void connect();
 
   void disconnect();

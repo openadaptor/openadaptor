@@ -33,8 +33,12 @@
 
 package org.openadaptor.core;
 
+import java.util.List;
+
 public interface IWriteConnector {
 
+  void validate(List exceptions);
+  
   void connect();
 
   void disconnect();

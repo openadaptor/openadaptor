@@ -32,6 +32,8 @@
  */
 package org.openadaptor.auxil.connector.jms;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
@@ -77,6 +79,9 @@ public class JMSReadConnector extends Component implements IReadConnector, ITran
     }
   }
 
+  public void validate(List exceptions) {
+  }
+  
   public boolean isConnected() {
     return jmsConnection.isConnected();
   }

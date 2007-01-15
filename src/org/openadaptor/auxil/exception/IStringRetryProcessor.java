@@ -31,69 +31,8 @@
  #* ]]
  */
 
-package org.openadaptor.auxil.connector.http;
+package org.openadaptor.auxil.exception;
 
-import javax.servlet.Servlet;
-
-import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
-import org.openadaptor.core.connector.QueuingReadConnector;
-
-/**
- * base class for read connectors that require an http server
- * @see ReadConnectorWebService
- * @author perryj
- *
- */
-public abstract class JettyReadConnector extends QueuingReadConnector {
-
-  //private static final Log log = LogFactory.getLog(JettyReadConnector.class);
-  
-  private ServletContainer servletContainer = new ServletContainer();
-  private String path = "/*";
-  private Servlet servlet;
-  
-  protected JettyReadConnector() {
-  }
-
-  protected JettyReadConnector(String id) {
-    super(id);
-  }
-  
-  public void setServletContainer(final ServletContainer servletContainer) {
-    this.servletContainer = servletContainer;
-  }
-
-  public ServletContainer getServletContainer() {
-    return servletContainer;
-  }
-  
-  public void setPort(final int port) {
-    servletContainer.setPort(port);
-  }
-
-  public void setServlet(final Servlet servlet) {
-    this.servlet = servlet;
-  }
-  
-  public void setPath(final String path) {
-    this.path = path;
-  }
-  
-  protected String getPath() {
-    return path;
-  }
-  
-  public void connect() {
-    servletContainer.start();
-    addServlet(servlet, path);
-  }
-  
-  public void disconnect() {
-    servletContainer.stop();
-  }
-  
-  public void addServlet(Servlet servlet, String path) {
-    servletContainer.addServlet(servlet, path);
-  }
-  
+public interface IStringRetryProcessor {
+  void retry(String componentId, String data);
 }

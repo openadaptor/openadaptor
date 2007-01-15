@@ -32,6 +32,8 @@
  */
 package org.openadaptor.auxil.connector.jms;
 
+import java.util.List;
+
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
@@ -110,6 +112,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     }
   }
 
+  public void validate(List exceptions) {
+  }
+  
   /**
    * True if connected.
    * 

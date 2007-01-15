@@ -35,6 +35,7 @@ package org.openadaptor.auxil.exception;
 
 public interface ExceptionStore {
   String store(String exception);
+  void incrementRetry(String id);
   String[] getAllIds();
   String getExceptionForId(String id);
   ExceptionSummary getExceptionSummary(String id);

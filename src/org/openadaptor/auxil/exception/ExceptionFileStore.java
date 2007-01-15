@@ -57,6 +57,7 @@ public class ExceptionFileStore implements ExceptionStore {
   
   private static final String LAST_ID_XML = "lastId.xml";
   
+  
   File dir;
   File idfile;
   long lastId;
@@ -122,6 +123,15 @@ public class ExceptionFileStore implements ExceptionStore {
   }
 
   private Document getExceptionDocument(final String id) {
+    try {
+      SAXReader reader = new SAXReader();
+      return reader.read(new File(dir, getFilename(id)));
+    } catch (DocumentException e) {
+      throw new RuntimeException("failed to exception " + e.getMessage(), e);
+    }
+  }
+
+  private String getFilename(final String id) {
     String[] files = dir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         return name.startsWith(id) && name.endsWith(".xml");
@@ -130,26 +140,18 @@ public class ExceptionFileStore implements ExceptionStore {
     if (files.length == 0) {
       throw new RuntimeException("id " + id + " not found");
     }
-    try {
-      SAXReader reader = new SAXReader();
-      return reader.read(new File(dir, files[0]));
-    } catch (DocumentException e) {
-      throw new RuntimeException("failed to exception " + e.getMessage(), e);
-    }
+    return files[0];
   }
 
   public String store(String exception) {
     String id = getNextId();
     try {
       Document doc = DocumentHelper.parseText(exception);
-      String from  = doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.FROM).getText();
+      String from  = getText(doc, MessageExceptionXmlConverter.FROM_PATH, "retry");
       String time  = doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
           + "/" + MessageExceptionXmlConverter.TIME).getText();
       String filename = id + "-" + from + "-" + time + ".xml";
-      XMLWriter writer = new XMLWriter(new FileWriter(new File(dir, filename)));
-      writer.write(doc);
-      writer.close();
+      save(doc, filename);
     } catch (Exception e) {
       log.error("failed to store exception " + exception);
       throw new RuntimeException("failed to store exception", e);
@@ -157,16 +159,27 @@ public class ExceptionFileStore implements ExceptionStore {
     return id;
   }
 
-  public void delete(final String id) {
-    String[] files = dir.list(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.startsWith(id) && name.endsWith(".xml");
-      }
-    });
-    if (files.length == 0) {
-      throw new RuntimeException("id " + id + " not found");
+  private void save(Document doc, String filename) {
+    try {
+      XMLWriter writer = new XMLWriter(new FileWriter(new File(dir, filename)));
+      writer.write(doc);
+      writer.close();
+    } catch (IOException e) {
+      throw new RuntimeException("failed to save file, " + e.getMessage(), e);
     }
-    File file = new File(dir, files[0]);
+  }
+
+  public void incrementRetry(String id) {
+    String filename = getFilename(id);
+    Document doc = getExceptionDocument(id);
+    Node node = doc.selectSingleNode(MessageExceptionXmlConverter.RETRIES_PATH);
+    int retries = Integer.parseInt(node.getText());
+    node.setText(String.valueOf(retries+1));
+    save(doc, filename);
+  }
+
+  public void delete(final String id) {
+    File file = new File(dir, getFilename(id));
     file.delete();
   }
 
@@ -185,20 +198,43 @@ public class ExceptionFileStore implements ExceptionStore {
   public ExceptionSummary getExceptionSummary(String id) {
     Document doc = getExceptionDocument(id);
     ExceptionSummary summary = new ExceptionSummary();
-    summary.setMessage(doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.EXCEPTION + 
-          "/" + MessageExceptionXmlConverter.MESSAGE).getText());
     summary.setId(id);
-    summary.setFrom(doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.FROM).getText());
-    long time = Long.parseLong(doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.TIME).getText());
-    summary.setDate(new Date(time));
-    summary.setReplyTo(doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.REPLY_TO).getText());
+    summary.setMessage(getText(doc, MessageExceptionXmlConverter.MESSAGE_PATH, ""));
+    summary.setFrom(getText(doc, MessageExceptionXmlConverter.FROM_PATH, ""));
+    summary.setDate(new Date(getLong(doc, MessageExceptionXmlConverter.TIME_PATH, 0)));
+    summary.setRetryAddress(getText(doc, MessageExceptionXmlConverter.RETRY_ADDRESS_PATH, ""));
+    summary.setComponentId(getText(doc, MessageExceptionXmlConverter.COMPONENT_PATH, ""));
+    summary.setRetries(getInt(doc, MessageExceptionXmlConverter.RETRIES_PATH, 0));
     return summary;
   }
 
+  private String getText(Document doc, String path, String defaultValue) {
+    try {
+      Node n = doc.selectSingleNode(path);
+      return n.getText();
+    } catch (RuntimeException e) {
+      return defaultValue;
+    }
+  }
+  
+  private long getLong(Document doc, String path, long defaultValue) {
+    try {
+      Node n = doc.selectSingleNode(path);
+      return Long.parseLong(n.getText());
+    } catch (RuntimeException e) {
+      return defaultValue;
+    }
+  }
+  
+  private int getInt(Document doc, String path, int defaultValue) {
+    try {
+      Node n = doc.selectSingleNode(path);
+      return Integer.parseInt(n.getText());
+    } catch (RuntimeException e) {
+      return defaultValue;
+    }
+  }
+  
   public String getDataForId(String id) {
     Document doc = getExceptionDocument(id);
     return doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 

@@ -121,6 +121,9 @@ public class RSSReadConnector extends Component implements IReadConnector {
   public void disconnect() {
     log.info(getId() + " disconnected");
   }
+
+  public void validate(List exceptions) {
+  }
   
   /**
    * Poll for updates

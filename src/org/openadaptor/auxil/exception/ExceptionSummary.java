@@ -37,10 +37,12 @@ import java.util.Date;
 
 public class ExceptionSummary {
   private String id;
+  private String componentId;
   private String from;
   private Date date;
   private String message;
-  private String replyTo;
+  private String retryAddress;
+  private int retries;
   
   public Date getDate() {
     return date;
@@ -66,10 +68,22 @@ public class ExceptionSummary {
   public void setMessage(String message) {
     this.message = message;
   }
-  public String getReplyTo() {
-    return replyTo;
+  public String getRetryAddress() {
+    return retryAddress;
   }
-  public void setReplyTo(String replyTo) {
-    this.replyTo = replyTo;
+  public void setRetryAddress(String replyTo) {
+    this.retryAddress = replyTo;
+  }
+  public String getComponentId() {
+    return componentId;
+  }
+  public void setComponentId(String componentId) {
+    this.componentId = componentId;
+  }
+  public int getRetries() {
+    return retries;
+  }
+  public void setRetries(int retries) {
+    this.retries = retries;
   }
 }

@@ -33,6 +33,7 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -51,31 +52,35 @@ import org.openadaptor.core.exception.ComponentException;
 public class WebServiceWriteConnector extends AbstractWriteConnector {
 
   private static final Log log = LogFactory.getLog(WebServiceWriteConnector.class);
-  
+
   private Client client;
+
   private String methodName;
+
   private String endpoint;
 
   public WebServiceWriteConnector() {
     super();
   }
-  
+
   public WebServiceWriteConnector(String id) {
     super(id);
   }
-  
+
   public void setEndpoint(final String endpoint) {
     this.endpoint = endpoint;
   }
-  
+
   public void setMethodName(final String methodName) {
     this.methodName = methodName;
   }
-  
+
   public void connect() {
     try {
       client = new Client(new URL(endpoint));
       log.info(getId() + " bound to endpoint " + endpoint);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("Malformed Url exception ", e);
     } catch (Exception e) {
       throw new ComponentException("failed to connect", e, this);
     }
@@ -88,7 +93,7 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
     try {
       for (int i = 0; i < data.length; i++) {
         try {
-          client.invoke(methodName, new Object[] {marshall(data[i])});
+          client.invoke(methodName, new Object[] { marshall(data[i]) });
         } catch (RuntimeException e) {
           client = null;
           throw e;

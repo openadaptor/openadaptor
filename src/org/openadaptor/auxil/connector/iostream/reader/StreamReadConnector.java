@@ -34,6 +34,7 @@ package org.openadaptor.auxil.connector.iostream.reader;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -160,6 +161,9 @@ public class StreamReadConnector extends Component implements IReadConnector {
     log.debug(getId() + " disconnected");
   }
 
+  public void validate(List exceptions) {
+  }
+  
   /**
    * Attempt to refresh input data (after a poll).
    * <p>

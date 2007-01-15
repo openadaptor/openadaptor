@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
@@ -60,6 +61,9 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
     return null;
   }
 
+  public void validate(List exceptions) {
+  }
+  
   public Object getResource() {
     if (jdbcConnection.isTransacted()) {
       return jdbcConnection.getTransactionalResource();

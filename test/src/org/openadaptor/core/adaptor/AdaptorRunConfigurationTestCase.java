@@ -205,6 +205,11 @@ public class AdaptorRunConfigurationTestCase extends TestCase {
       disconnected = true;
       runCount++;
     }
+
+    public void validate(List exceptions) {
+      // TODO Auto-generated method stub
+      
+    }
     
   }
   
@@ -249,6 +254,11 @@ public class AdaptorRunConfigurationTestCase extends TestCase {
       } catch (InterruptedException e) {
       }
       return new Object[] {DATA};
+    }
+
+    public void validate(List exceptions) {
+      // TODO Auto-generated method stub
+      
     }
   }
   

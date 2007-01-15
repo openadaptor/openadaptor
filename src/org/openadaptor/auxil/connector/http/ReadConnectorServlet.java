@@ -95,25 +95,23 @@ public class ReadConnectorServlet extends JettyReadConnector {
    * triggers jetty to be started if required registers servlet
    */
   public void connect() {
-    if (getServlet() == null) {
-      Servlet servlet = new HttpServlet() {
+    Servlet servlet = new HttpServlet() {
 
-        private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-        protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-          if (acceptGet) {
-            process(request, response);
-          } else {
-            log.info("httpGet ignored");
-          }
-        }
-
-        protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+      protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+        if (acceptGet) {
           process(request, response);
+        } else {
+          log.info("httpGet ignored");
         }
-      };
-      setServlet(servlet);
-    }
+      }
+
+      protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        process(request, response);
+      }
+    };
+    setServlet(servlet);
     super.connect();
     log.info(getId() + " added servlet " + getServletUrl());
   }
@@ -121,10 +119,10 @@ public class ReadConnectorServlet extends JettyReadConnector {
   public String getServletUrl() {
     StringBuffer buffer = new StringBuffer();
     buffer.append("http://");
-    buffer.append(getJettyHost());
+    buffer.append(getServletContainer().getHost());
     buffer.append(":");
-    buffer.append(getJettyPort());
-    buffer.append(getContext().equals("/") ? "" : getContext());
+    buffer.append(getServletContainer().getPort());
+    buffer.append(getServletContainer().getContext().equals("/") ? "" : getServletContainer().getContext());
     buffer.append(getPath());
     return buffer.toString();
   }

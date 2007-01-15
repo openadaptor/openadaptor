@@ -48,6 +48,7 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
@@ -96,7 +97,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private ITransactionManager transactionManager;
 
   /**
-   * exit code, this is an aggregated of the adaptor inpoint exit codes
+   * exit code, this is an aggregation of the adaptor inpoint exit codes
    * 0 denotes that adaptor exited naturally
    */
   private int exitCode = 0;
@@ -128,7 +129,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       throw new RuntimeException("message processor has already been set");
     }
     this.processor = processor;
-    if (processor instanceof ILifecycleComponentContainer) {
+  }
+
+  private void registerComponents() {
+    if (processor != null && processor instanceof ILifecycleComponentContainer) {
       log.debug("MessageProcessor is also a component container. Registering with processor.");
       ((ILifecycleComponentContainer) processor).setComponentManager(this);
     }
@@ -146,10 +150,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     runConfiguration = config;
   }
   
-  public ITransactionManager getTransactionManager() {
-    return transactionManager;
-  }
-
   public void register(ILifecycleComponent component) {
     if (state != State.STOPPED) {
       throw new RuntimeException("Cannot register component with running adaptor");
@@ -161,6 +161,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       ((IAdaptorInpoint) component).setAdaptor(this);
     } else {
       log.debug("component " + component.getId() + " registered with adaptor");
+    }
+    if (component instanceof ITransactionInitiator) {
+      ((ITransactionInitiator)component).setTransactionManager(transactionManager);
     }
   }
 
@@ -182,6 +185,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public void start() {
     exitCode = 0;
+    registerComponents();
     
     if (state != State.STOPPED) {
       throw new RuntimeException("adaptor is currently " + state.toString());

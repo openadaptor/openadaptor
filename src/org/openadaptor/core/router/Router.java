@@ -33,11 +33,15 @@
 
 package org.openadaptor.core.router;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -51,17 +55,24 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.transaction.ITransaction;
 
-public class Router implements IMessageProcessor,ILifecycleComponentContainer {
+public class Router extends Component implements IMessageProcessor,ILifecycleComponentContainer {
 
   private static Log log = LogFactory.getLog(Router.class);
 
   private IRoutingMap routingMap;
+  
   private ILifecycleComponentManager componentManager;
 
+  private Map componentMap = new HashMap();
+  
   public Router() {
     super();
   }
 
+  public Router(String id) {
+    super(id);
+  }
+  
   public Router(final IRoutingMap routingMap) {
     this();
     this.routingMap = routingMap;
@@ -72,9 +83,6 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
   }
 
   public void setComponentManager(ILifecycleComponentManager manager) {
-    if (componentManager!=null){
-      throw new RuntimeException("ComponentManager has already been set for this router");
-    }
     this.componentManager=manager;
     registerComponents();
   }
@@ -83,13 +91,32 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
     return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
   }
 
+  public Response process(Message msg, String destinationId) throws MessageException {
+    IMessageProcessor processor = (IMessageProcessor) componentMap.get(destinationId);
+    if (processor != null) {
+      return process(msg, processor);
+    } else {
+      throw new RuntimeException("no processor with id " + destinationId);
+    }
+  }
+  
   private void registerComponents() {
+    componentMap.clear();
     for (Iterator it=routingMap.getMessageProcessors().iterator();it.hasNext();){
       Object processor=it.next();
       if (processor instanceof ILifecycleComponent){
         componentManager.register((ILifecycleComponent)processor);
       } else {
         log.info("Not registering (non-ILifecycleComponent) processor "+processor);
+      }
+      if (processor instanceof IComponent) {
+        String id = ((IComponent)processor).getId();
+        if (id != null) {
+          log.info(id + " registered with " + getId());
+          componentMap.put(id, processor);
+        } else {
+          log.info(processor.toString() + " has no id");
+        }
       }
     }
   }
@@ -104,6 +131,17 @@ public class Router implements IMessageProcessor,ILifecycleComponentContainer {
       processResponse(node, response, msg.getTransaction());
     }
     return new Response();
+  }
+
+  private Response process(Message msg, IMessageProcessor processor) throws MessageException {
+    Response response = processor.process(msg);
+    if (response.containsExceptions()) {
+      MessageException[] exceptions = (MessageException[]) response.getCollatedExceptions();
+      throw exceptions[0];
+    } else {
+      processResponse(processor, response, msg.getTransaction());
+      return new Response();
+    }
   }
 
   private void processResponse(IMessageProcessor node, Response response, ITransaction transaction) {

@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -314,5 +315,8 @@ public class FTPReadConnector extends Component implements IReadConnector {
 
   public boolean isDry() {
     return _fileNames.isEmpty();
+  }
+
+  public void validate(List exceptions) {
   }
 }

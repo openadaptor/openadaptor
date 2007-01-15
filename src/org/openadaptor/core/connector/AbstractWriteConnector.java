@@ -32,6 +32,8 @@
  */
 package org.openadaptor.core.connector;
 
+import java.util.List;
+
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IWriteConnector;
 
@@ -60,6 +62,9 @@ public abstract class AbstractWriteConnector extends Component implements IWrite
    */
   public boolean isConnected() {
     return connected;
+  }
+
+  public void validate(List exceptions) {
   }
 
 }

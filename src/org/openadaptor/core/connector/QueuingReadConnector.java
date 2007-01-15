@@ -74,6 +74,9 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   protected QueuingReadConnector(String id) {
     super(id);
   }
+
+  public void validate(List exceptions) {
+  }
   
   /**
    * The max number of data elements to dequeue in a single call to next(), defaults to 1

@@ -33,6 +33,8 @@
 
 package org.openadaptor.core.connector;
 
+import java.util.List;
+
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.transaction.ITransactional;
@@ -157,6 +159,9 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
 
   public Object getReaderContext() {
     return null;
+  }
+
+  public void validate(List exceptions) {
   }
 
 

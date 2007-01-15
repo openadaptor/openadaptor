@@ -26,6 +26,8 @@ package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$ Rev: $Revision$
  */
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
@@ -77,6 +79,9 @@ public class MqReadConnector extends Component implements IReadConnector, ITrans
     log.debug(getId() + " disconnected");
   }
 
+  public void validate(List exceptions) {
+  }
+  
   public Object getResource() {
     return getConnection().getResource();
   }

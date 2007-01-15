@@ -42,7 +42,6 @@ public class Message {
 	private Object sender;
 	private Object[] data;
   private ITransaction transaction;
-  private boolean disableExceptionCapture;
 	
   public Message(final Object[] data, final Object sender, final ITransaction transaction) {
     this.data = data;
@@ -72,13 +71,5 @@ public class Message {
 
   public ITransaction getTransaction() {
     return transaction;
-  }
-	
-  public void setDisableExceptionCapture(boolean disable) {
-    disableExceptionCapture = disable;
-  }
-  
-  public boolean isDisableExceptionCapture() {
-    return disableExceptionCapture;
   }
 }

@@ -33,6 +33,8 @@
 
 package org.openadaptor.auxil.exception;
 
+import java.util.Date;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -47,29 +49,44 @@ public class MessageExceptionXmlConverter {
   public static final String DATA = "Data";
   public static final String COMPONENT = "Component";
   public static final String MESSAGE = "Message";
-  public static final String CLASS = "class";
+  public static final String CLASS = "Class";
   public static final String EXCEPTION = "Exception";
   public static final String MESSAGE_EXCEPTION = "MessageException";
   public static final String FROM = "From";
-  public static final String REPLY_TO = "ReplyTo";
+  public static final String RETRY_ADDRESS = "RetryAddress";
   public static final String TIME = "Time";
-  private static final String HOST = "HostName";
+  public static final String HOST = "HostName";
+  public static final String RETRIES = "Retries";
+  public static final String ORIGINAL_ID = "OriginalId";
+  
+  public static final String EXCEPTION_PATH = "//" + MESSAGE_EXCEPTION  + "/" + EXCEPTION;
+  public static final String MESSAGE_PATH =   EXCEPTION_PATH + "/" + MESSAGE;
+  public static final String FROM_PATH = "//" + MESSAGE_EXCEPTION + "/" + FROM;
+  public static final String HOST_PATH = "//" + MESSAGE_EXCEPTION + "/" + HOST;
+  public static final String COMPONENT_PATH = EXCEPTION_PATH + "/" + COMPONENT;
+  public static final String TIME_PATH = "//" + MESSAGE_EXCEPTION + "/" + TIME;
+  public static final String RETRIES_PATH = "//" + MESSAGE_EXCEPTION + "/" + RETRIES;
+  public static final String RETRY_ADDRESS_PATH = "//" + MESSAGE_EXCEPTION + "/" + RETRY_ADDRESS;
+  public static final String ORIGINAL_ID_PATH = "//" + MESSAGE_EXCEPTION + "/" + ORIGINAL_ID;
 
   public static String toXml(MessageException exception, String from, String replyTo, long time) {
-    Exception ebeddedException  = exception.getException();
+    Exception embeddedException  = exception.getException();
     Document doc = DocumentHelper.createDocument();
     Element root = doc.addElement(MESSAGE_EXCEPTION);
     Element exceptionElement = root.addElement(EXCEPTION);
-    exceptionElement.addAttribute(CLASS, ebeddedException.getClass().getName());
-    exceptionElement.addElement(MESSAGE).setText(ebeddedException.getMessage());
-    addStackTrace(exceptionElement, ebeddedException);
-    if (ebeddedException instanceof ComponentException) {
-      exceptionElement.addElement(COMPONENT).setText(((ComponentException)ebeddedException).getComponent().getId());
+    exceptionElement.addElement(CLASS).setText(embeddedException.getClass().getName());
+    exceptionElement.addElement(MESSAGE).setText(embeddedException.getMessage());
+    addStackTrace(exceptionElement, embeddedException);
+    String componentId = "";
+    if (embeddedException instanceof ComponentException) {
+      componentId = ((ComponentException)embeddedException).getComponent().getId();
     }
+    exceptionElement.addElement(COMPONENT).setText(componentId);
     root.addElement(DATA).add(DocumentHelper.createCDATA(exception.getData().toString()));
     root.addElement(FROM).setText(from);
-    root.addElement(REPLY_TO).setText(replyTo);
+    root.addElement(RETRY_ADDRESS).setText(replyTo);
     root.addElement(TIME).setText(String.valueOf(time));
+    root.addElement(RETRIES).setText("0");
     root.addElement(HOST).setText(ResourceUtils.getLocalHostname());
     return doc.asXML();
   }
@@ -82,4 +99,15 @@ public class MessageExceptionXmlConverter {
     }
   }
 
+  public static String toXml(Exception e, String originalId) {
+    Document doc = DocumentHelper.createDocument();
+    Element root = doc.addElement(MESSAGE_EXCEPTION);
+    Element exceptionElement = root.addElement(EXCEPTION);
+    exceptionElement.addElement(CLASS).setText(e.getClass().getName());
+    exceptionElement.addElement(MESSAGE).setText(e.getMessage());
+    addStackTrace(exceptionElement, e);
+    root.addElement(TIME).setText(String.valueOf((new Date()).getTime()));
+    root.addElement(ORIGINAL_ID).setText(originalId);
+    return doc.asXML();
+  }
 }

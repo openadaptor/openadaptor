@@ -34,6 +34,7 @@ package org.openadaptor.core.connector;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -188,5 +189,8 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     } else {
       return null;
     }
+  }
+
+  public void validate(List exceptions) {
   }
 }

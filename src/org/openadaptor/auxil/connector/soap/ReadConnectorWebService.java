@@ -67,9 +67,7 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
   }
   
   public void connect() {
-    if (getServlet() == null) {
-      setServlet(new StringDataProcessorServlet());
-    }
+    setServlet(new StringDataProcessorServlet());
     super.connect();
   }
 
@@ -80,10 +78,10 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
   public String getEndpoint() {
     StringBuffer buffer = new StringBuffer();
     buffer.append("http://");
-    buffer.append(getJettyHost());
+    buffer.append(getServletContainer().getHost());
     buffer.append(":");
-    buffer.append(getJettyPort());
-    buffer.append(getContext().equals("/") ? "" : getContext());
+    buffer.append(getServletContainer().getPort());
+    buffer.append(getServletContainer().getContext().equals("/") ? "" : getServletContainer().getContext());
     buffer.append(getPath().replaceAll("\\*", ""));
     buffer.append(serviceName);
     buffer.append("?wsdl");

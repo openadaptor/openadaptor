@@ -32,6 +32,8 @@
  */
 package org.openadaptor.auxil.connector.jndi;
 
+import java.util.List;
+
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 
@@ -45,6 +47,9 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
 
   protected AbstractJNDIReadConnector(String id) {
     super(id);
+  }
+ 
+  public void validate(List exceptions) {
   }
   
   //private static final Log log = LogFactory.getLog(AbstractJNDIReader.class);

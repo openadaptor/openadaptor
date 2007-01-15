@@ -47,14 +47,24 @@
 <beans>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <!-- this routes any exception to an Exception Manager -->
-    <property name="exceptionProcessor" ref="ExceptionProcessor"/>
-    <property name="pipeline">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="Validator"/>
-        <ref bean="Writer"/>
-      </list>
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="routingMap" ref="RoutingMap"/>
+  </bean>
+  
+  <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="Validator"/>
+        <entry key-ref="Validator" value-ref="Writer"/>
+      </map>
+    </property>
+    <property name="exceptionMap">
+      <map>
+        <entry key="org.openadaptor.core.exception.ComponentException" value-ref="ExceptionProcessor"/>
+      </map>
     </property>
   </bean>
 
@@ -84,6 +94,10 @@
     <!-- these define the webservice that exceptions will be routed to -->
     <property name="endpoint" value="http://localhost:9999/soap/ExceptionManager?wsdl"/>
     <property name="remoteMethodName" value="process"/>
+    <!-- exposes a retry service -->
+    <property name="retryServiceName" value="retry"/>
+    <property name="retryPort" value="8999"/>
+    <property name="router" ref="Router"/>
   </bean>
   
 </beans>

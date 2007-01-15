@@ -65,6 +65,12 @@ public class JDBCMessageReadConnector extends AbstractJDBCReadConnector {
 
   private int messageServiceID = -1;
 
+  private CallableStatement pollStatement;
+
+  private int deadlockCount;
+
+  private int deadlockLimit = 0;
+
   public JDBCMessageReadConnector() {
     super();
   }
@@ -93,21 +99,22 @@ public class JDBCMessageReadConnector extends AbstractJDBCReadConnector {
    * null if there are no outstanding events to process.
    */
   public Object[] next(long timeoutMs) throws ComponentException {
+    Object[] data = null;
     CallableStatement s = null;
     try {
       s = getNextStatement();
       if (s != null) {
         ResultSet rs = s.executeQuery();
-        return convertAll(rs);
+        data = convertAll(rs);
       } else {
         ThreadUtil.sleepNoThrow(timeoutMs);
-        return null;
       }
-    } catch (SQLException sqle) {
-      throw new ComponentException(sqle.getMessage(), sqle, this);
+    } catch (SQLException e) {
+      handleSQLException(e);
     } finally {
       JDBCUtil.closeNoThrow(s);
     }
+    return data;
   }
 
   /**
@@ -118,6 +125,21 @@ public class JDBCMessageReadConnector extends AbstractJDBCReadConnector {
       throw new ComponentException("messageServiceID has not been set", this);
     }
     super.connect();
+    try {
+      pollStatement = prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
+      pollStatement.registerOutParameter(1, java.sql.Types.INTEGER);
+      pollStatement.setInt(2, messageServiceID);
+      pollStatement.setString(3, "Y");
+    } catch (SQLException e) {
+      throw new RuntimeException("failed to create poll callable statement, " + e.getMessage(), e);
+    }
+    deadlockCount = 0;
+  }
+  
+  public void disconnect() {
+    JDBCUtil.closeNoThrow(pollStatement);
+    pollStatement = null;
+    super.disconnect();
   }
   
   /**
@@ -125,23 +147,42 @@ public class JDBCMessageReadConnector extends AbstractJDBCReadConnector {
    * the eventPollSP and converting it's ResultSet to a CallableStatement
    */
   private CallableStatement getNextStatement() {
-    CallableStatement s = null;
+    CallableStatement cs = null;
+    ResultSet rs = null;
     try {
-      s = prepareCall("{ call " + eventPollSP + "(?,?) }");
-      s.setInt(1, messageServiceID);
-      s.setString(2, "Y");
-      ResultSet rs = s.executeQuery();
+      rs = pollStatement.executeQuery();
       if (rs.next()) {
         JDBCUtil.logResultSet(log, "event ResultSet", rs);
-        return convertEventToStatement(rs);
-      } else {
-        return null;
+        cs = convertEventToStatement(rs);
       }
+      deadlockCount = 0;
+      return cs;
     } catch (SQLException e) {
-      return null;
+      handleSQLException(e);
     } finally {
-      JDBCUtil.closeNoThrow(s);
+      JDBCUtil.closeNoThrow(rs);
     }
+    return cs;
+  }
+
+  private void handleSQLException(SQLException e) {
+    if (ignoreException(e)) {
+      return;
+    } else if (isDeadlockException(e) && deadlockCount < deadlockLimit) {
+      log.warn("deadlock detected, " + e.getMessage());
+      deadlockCount++;
+    } else {
+      throw new ComponentException("SQLException, " + e.getMessage(), e, this);
+    }
+  }
+  
+
+  protected boolean isDeadlockException(SQLException e) {
+    return false;
+  }
+
+  protected boolean ignoreException(SQLException e) {
+    return false;
   }
 
   /**

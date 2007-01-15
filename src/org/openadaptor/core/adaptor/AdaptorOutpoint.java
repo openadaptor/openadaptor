@@ -81,7 +81,9 @@ public class AdaptorOutpoint extends Node {
 		super.validate(exceptions);
 		if (connector == null) {
 			exceptions.add(new RuntimeException(toString() + " does not have a connector"));
-		}
+		} else {
+		  connector.validate(exceptions);
+    }
 	}
 	
 	public void start() {
