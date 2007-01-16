@@ -6,9 +6,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jms.JMSReadConnector;
 import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
 /**
@@ -31,7 +31,7 @@ public class JBossJMSTestCase extends TestCase {
     try {
       JMSConnection connection = getConnection();
       connection.setDestinationName("queue/testQueue");
-      connection.setQueue(true);
+      //connection.setQueue(true);
       connection.setDurable(true);
       connection.setClientID("push");
 
@@ -54,7 +54,7 @@ public class JBossJMSTestCase extends TestCase {
     try {
       JMSConnection connection = getConnection();
       connection.setDestinationName("queue/testQueue");
-      connection.setQueue(true);
+      //connection.setQueue(true);
       connection.setDurable(true);
       connection.setClientID("pop");
 

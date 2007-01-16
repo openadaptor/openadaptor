@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
 import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
@@ -26,7 +26,7 @@ public class SubAdaptorExample {
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
     connection.setDestinationName("topic/testTopic");
-    connection.setTopic(true);
+    //connection.setTopic(true);
 
     // create read connector
     JMSReadConnector in = new JMSReadConnector("in");

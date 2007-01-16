@@ -3,8 +3,8 @@ package org.openadaptor.auxil.jms.adaptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.TestReadConnector;
@@ -25,7 +25,7 @@ public class PubAdaptorExample {
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
     connection.setDestinationName("topic/testTopic");
-    connection.setTopic(true);
+    //connection.setTopic(true);
 
     // create test data generator
     TestReadConnector in = new TestReadConnector("in");

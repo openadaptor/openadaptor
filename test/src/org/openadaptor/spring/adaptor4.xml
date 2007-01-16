@@ -12,7 +12,7 @@
         <ref bean="OutPoint"/>
       </list>
     </property>
-    <property name="exceptionProcessor" ref="Error"/>
+    <property name="exceptionProcessor" ref="ErrorNode"/>
   </bean>
   
   <bean id="InPoint" class="org.openadaptor.core.connector.TestReadConnector">
@@ -33,7 +33,13 @@
     <property name="id" value="Exceptor"/>
     <property name="exceptionFrequency" value="2"/>
   </bean>
-  
+
+  <bean id="ErrorNode" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+    <property name="connector">
+      <ref bean="Error"/>
+    </property>
+  </bean>
+
   <bean id="Error" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="Error"/>
     <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>

@@ -61,7 +61,7 @@
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="connectionFactoryName" value="ConnectionFactory"/>
     <property name="destinationName" value="queue/testQueue"/>
-    <property name="queue" value="true"/>
+    <!-- property name="queue" value="true"/ -->
     <property name="durable" value="true"/>
   </bean>
   

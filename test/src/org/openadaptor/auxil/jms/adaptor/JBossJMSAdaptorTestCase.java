@@ -64,7 +64,6 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     
     JMSConnection connection = JBossJMSTestCase.getConnection();
     connection.setDestinationName("queue/testQueue");
-    connection.setQueue(true);
     connection.setDurable(true);
     connection.setClientID("push");
     connection.setTransacted(true);
@@ -94,8 +93,6 @@ public class JBossJMSAdaptorTestCase extends TestCase {
   public void testJMS2File() {
     JMSConnection connection = JBossJMSTestCase.getConnection();
     connection.setDestinationName("queue/testQueue");
-    connection.setQueue(true);
-    connection.setDurable(true);
     connection.setClientID("pop");
     connection.setTransacted(true);
 
@@ -133,8 +130,6 @@ public class JBossJMSAdaptorTestCase extends TestCase {
   public void testJmxStop() {
     JMSConnection connection = JBossJMSTestCase.getConnection();
     connection.setDestinationName("queue/testQueue");
-    connection.setQueue(true);
-    connection.setDurable(true);
     connection.setClientID("pop");
     connection.setTransacted(true);
 

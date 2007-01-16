@@ -67,9 +67,7 @@ public class JMSReadConnector extends Component implements IReadConnector, ITran
 
   public void connect() {
     if (!isConnected()) {
-      jmsConnection.connect();
-      jmsConnection.getSession();
-      jmsConnection.getConsumer();
+      jmsConnection.connectForReader();
     }
   }
 

@@ -1,7 +1,7 @@
 package org.openadaptor.auxil.jms;
 
-import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
 public class PubExample {
@@ -15,7 +15,7 @@ public class PubExample {
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
     connection.setDestinationName("topic/testTopic");
-    connection.setTopic(true);
+    //connection.setTopic(true);
 
     JMSWriteConnector outpoint = new JMSWriteConnector();
     outpoint.setJmsConnection(connection);
