@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -21,7 +21,7 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  * Nothing in this notice shall be deemed to grant any rights to
  * trademarks, copyrights, patents, trade secrets or any other intellectual
  * property of the licensor or any contributor except as expressly stated
@@ -32,243 +32,171 @@
  */
 package org.openadaptor.auxil.connector.jms;
 
-import java.io.Serializable;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.IllegalStateException;
-import javax.jms.InvalidClientIDException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
-import javax.jms.XAQueueConnection;
-import javax.jms.XAQueueConnectionFactory;
-import javax.jms.XASession;
-import javax.jms.XATopicConnection;
-import javax.jms.XATopicConnectionFactory;
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ResourceException;
+
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.jms.*;
+import javax.jms.IllegalStateException;
+import java.io.Serializable;
+/*
+ * File: $Header: $
+ * Rev:  $Revision: $
+ * Created Jan 15, 2007 by oa3 Core Team
+ */
 
 /**
- * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.0.2 compliant code.
+ * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.1 compliant code.
  * <p/>
  * Provides following:
  * <p/>
  * Receive from and Publish to both Queues and Topics.
  * Provide access to Underlying Transactional resources.
- * Will register with JtaTransactionManagers if configured that way.
  * <p/>
  * Main Properties
  * <ul>
- * <li><b>connectionFactoryName</b>    Name used to look up connectionfactory in JNDI
- * <li><b>destinationName</b>          Name used to look up destination (queue/topic) in JNDI
- * <li><b>username</b>                 Username to authenticate the JMS Connection (optional)
- * <li><b>password</b>                 Password to authenticate the JMS Connection (optional)
- * <li><b>topic</b>                    True if connecting to topic (see note 1 below)
- * <li><b>queue</b>                    True if connecting to queue (see note 1 below)
- * <li><b>durable</b>                  Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
- * <li><b>durableSubscriptionName</b>  Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
- * <li><b>acknowledgeMode</b>          Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
- * <li><b>messageSelector</b>          Not set by default.
- * <li><b>noLocal</b>                  Default is <i>false</i>
- * <li><b>clientID</b>                 Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
- * <li><b>jndiConnection</b>           JndiConnection used for lookups
- * See Note 2.
- * <li><b>connectionFactory</b>        Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored.
+ * <li><b>connectionFactoryName</b>     Name used to look up connectionfactory in JNDI
+ * <li><b>connectionFactory</b>         Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored.
+ * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
+ * <li><b>username</b>                  Username to authenticate the JMS Connection (optional)
+ * <li><b>password</b>                  Password to authenticate the JMS Connection (optional)
+ * <li><b>durable</b>                   Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
+ * <li><b>durableSubscriptionName</b>   Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
+ * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
+ * <li><b>messageSelector</b>           Not set by default.
+ * <li><b>noLocal</b>                   Default is <i>false</i>
+ * <li><b>clientID</b>                  Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
+ * <li><b>jndiConnection</b>            JndiConnection used for lookups
+ * <li><b>transacted</b>                Set true if a transacted session is required. Default is false and ignored if an XAConnection is made.
+ * <li><b>deliveryMode<b>               Set the delivery mode for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_DELIVERY_MODE</code>.
+ * <li><b>priority<b>                   Set the priority for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_PRIORITY</code>.
+ * <li><b>timeToLive<b>                 Set the time to live for messages published by the message messageProducer. Defaults to <code>Message.DEFAULT_TIME_TO_LIVE</code>.
  * </ul>
  * <p/>
  * Notes:
  * <ol>
- * <li><b>topic</b> and <b>queue</b> are optional properties. If either is set to true then we assume we are connecting to the appropriate destination type.
- * If neither (or both!) are set to true then they are ignored and we try to determine whether we are talking to a queue or topic from the ConnectionFactory.
- * If we still can't work it out then we give up and throw a ResourceException. The advantage of this approach is for most reasonably
- * implemented JMS Servers all we need is the ConnectionFactory to work out what we are talking to and topic/queue configuration is unnecessary.
- * <li>The whole transaction <b>timeout</b> area is unsatisfactory at present. At a minimum the transaction timeout must be longer than any receive
- * timeouts plus time taken to process any messages through the pipeline. If this isn't true then the transaction manager will countermand any commits and
- * force a rollback.
+ * <li>
  * </ol>
  */
 public class JMSConnection extends Component {
 
   private static final Log log = LogFactory.getLog(JMSConnection.class);
 
-  /** Name used to look up connectionfactory in JNDI. */
+  /**
+   * Name used to look up connectionfactory in JNDI.
+   */
   private String connectionFactoryName = null;
 
-  /** Name used to look up destination (queue/topic) in JNDI. */
+  /**
+   * Name used to look up destination (queue/topic) in JNDI.
+   */
   private String destinationName = null;
 
-  /** Password to authenticate the JMS Connection (optional). */
+  /**
+   * Password to authenticate the JMS Connection (optional).
+   */
   private String password = null;
 
-  /** Username to authenticate the JMS Connection (optional). */
+  /**
+   * Username to authenticate the JMS Connection (optional).
+   */
   private String username = null;
 
-  /** True if connecting to topic. */
-  private boolean isTopic = false;
-
-  /** True if connecting to queue. */
-  private boolean isQueue = false;
-
-  /** JndiConnection used for lookups. */
+  /**
+   * JndiConnection used for lookups.
+   */
   private JNDIConnection jndiConnection;
 
-  /** True if expected to make a transacted connection to jms. NB this is used for local rather than xa transactions. */
+  /**
+   * True if expected to make a transacted connection to jms. NB this is used for local rather than xa transactions.
+   */
   private boolean isTransacted = false;
 
-  /** True for setting up durable subscriptions to topics. */
+  /**
+   * True for setting up durable subscriptions to topics.
+   */
   private boolean durable = false;
 
-  /** The name used to create the durable topic subscription. Defaults to the <code>destinationName</code>. */
+  /**
+   * The name used to create the durable topic subscription. Defaults to the <code>destinationName</code>.
+   */
   private String durableSubscriptionName = null;
 
-  /** JMS acknowledge mode to use. Defaults to <code>Session.AUTO_ACKNOWLEDGE</code> */
+  /**
+   * JMS acknowledge mode to use. Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
+   */
   private int acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
 
-  /** Message Selctor to use when receiving messages. Not set by default. */
+  /**
+   * Message Selctor to use when receiving messages. Not set by default.
+   */
   private String messageSelector = null;
 
-  /** Default is <i>false</i> */
+  /**
+   * Default is <i>false</i>
+   */
   private boolean noLocal = false;
 
-  /** ID for client. Default is not set as can be set by ConnectionFactory. Use with caution. ConnectionFactory must be configured to allow the clientID to be set. */
+  /**
+   * Default DeliveryMode value specified for this Connection's Message Producer.
+   */
+  private int deliveryMode = Message.DEFAULT_DELIVERY_MODE;
+
+  /**
+   * Default Priority value specified for this Connection's Message Producer.
+   */
+  private int priority = Message.DEFAULT_PRIORITY;
+
+  /**
+   * Default time to live value specified for this Connection's Message Producer.
+   */
+  private long timeToLive = Message.DEFAULT_TIME_TO_LIVE;
+
+  /**
+   * ID for client. Default is not set as can be set by ConnectionFactory. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
+   */
   private String clientID = null;
 
-  /** Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored. */
-  protected ConnectionFactory connectionFactory = null;
+  /**
+   * Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored.
+   */
+  private ConnectionFactory connectionFactory = null;
 
   private Context ctx;
 
-  protected Session session = null;
+  private Session session = null;
 
   private Connection connection = null;
 
-  private MessageConsumer consumer = null;
+  private MessageConsumer messageConsumer = null;
 
-  private MessageProducer producer = null;
+  private MessageProducer messageProducer = null;
 
-  /** transactional resource, can either be XAResource or ITransactionalResource */
+  /**
+   * transactional resource, can either be XAResource or ITransactionalResource
+   */
   private Object transactionalResource = null;
 
-  // Bean Properties
-
-  /** Name used to look up connectionfactory in JNDI. */
-  public void setConnectionFactoryName(String connectionFactoryName) {
-    this.connectionFactoryName = connectionFactoryName;
-  }
-
-  /** Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored. */
-  public void setConnectionFactory(ConnectionFactory connectionFactory) {
-    this.connectionFactory = connectionFactory;
-  }
-
-  /** Name used to look up destination (queue/topic) in JNDI. */
-  public void setDestinationName(String destinationName) {
-    this.destinationName = destinationName;
-  }
-
-  /** Password to authenticate the JMS Connection (optional). */
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  /** Username to authenticate the JMS Connection (optional). */
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  /** Set the JNDIConnection used to look up jndi managed resources. */
-  public void setJndiConnection(JNDIConnection jndiConnection) {
-    this.jndiConnection = jndiConnection;
-  }
-
-  /** true if a transacted connection is to be made. */
-  public void setTransacted(boolean transacted) {
-    this.isTransacted = transacted;
-  }
-
-  /** True if connecting to topic (see note 1 in class comment) */
-  public void setTopic(boolean topic) {
-    this.isTopic = topic;
-  }
-
-  /** True if connecting to queue (see note 1 in class comment) */
-  public void setQueue(boolean queue) {
-    this.isQueue = queue;
-  }
-
-  /** Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription. */
-  public void setDurable(boolean durable) {
-    this.durable = durable;
-  }
-
-  /** Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription. */
-  protected String getDurableSubscriptionName() {
-    if (durableSubscriptionName == null)
-      // Since we must have a name to set up a Durable Subscription we default to the destinationName.
-      return destinationName;
-    else
-      return durableSubscriptionName;
-  }
-
-  /** Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription. */
-  public void setDurableSubscriptionName(String durableSubscriptionName) {
-    this.durableSubscriptionName = durableSubscriptionName;
-  }
-
-  /** Defaults to <code>Session.AUTO_ACKNOWLEDGE</code> */
-  public void setAcknowledgeMode(int acknowledgeMode) {
-    this.acknowledgeMode = acknowledgeMode;
-  }
-
-  /** Not set by default. */
-  public void setMessageSelector(String messageSelector) {
-    this.messageSelector = messageSelector;
-  }
-
-  /** Default is <i>false</i>. */
-  public void setNoLocal(boolean noLocal) {
-    this.noLocal = noLocal;
-  }
-
-  /** Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set. */
-  public void setClientID(String clientID) {
-    this.clientID = clientID;
-  }
-
-  // End Bean Properties
 
   // Connection Support
 
-  /**
-   * Create a connection and session.
-   */
-  public void connect() {
+  public void connectForReader() {
     if (connection == null) {
       createConnection();
+      createAndStartSession();
+      createMessageConsumer();
+    }
+  }
+
+  public void connectForWriter() {
+    if (connection == null) {
+      createConnection();
+      createAndStartSession();
+      createMessageProducer();
     }
   }
 
@@ -301,52 +229,20 @@ public class JMSConnection extends Component {
    * @return String The JMS Message ID.
    */
   public String deliver(Object message) {
-    if (isTopic) {
-      return deliverToTopic(message);
-    } else {
-      return deliverToQueue(message);
-    }
-  }
-
-  protected String deliverToTopic(Object messageBody) {
-    String msgId = null;
-
+    String msgId;
     try {
-      Message msg = createMessage(messageBody);
+      Message msg = createMessage(message);
       // send the record
       if (log.isDebugEnabled())
-        log.debug("JmsPublisher sending [" + messageBody + "]");
-      ((TopicPublisher) getProducer()).publish(msg); // todo JMS102
-      //todo more properties
-      //((TopicPublisher)getProducer()).publish( textMessage, getDeliveryMode(), getJMSPriority(), getTimeToLive() );
+        log.debug("JmsPublisher sending [" + message + "]");
+        messageProducer.send(msg, getDeliveryMode(), getPriority(), getTimeToLive());
       msgId = msg.getJMSMessageID();
+    } catch (MessageFormatException e) {
+      throw new ComponentException("MessageFormatException during publish.", e, this);
+    } catch (InvalidDestinationException e) {
+      throw new ComponentException("InvalidDestinationException during publish.", e, this);
     } catch (JMSException jmse) {
       throw new ComponentException("JMSException during publish.", jmse, this);
-    } catch (ComponentException oae) {
-      throw oae; // Make sure it isn't swallowed !
-    } catch (Exception e) {
-      throw new ComponentException("Exception during publish.", e, this);
-    }
-    return msgId;
-  }
-
-  protected String deliverToQueue(Object messageBody) {
-    String msgId = null;
-    try {
-      Message msg = createMessage(messageBody);
-      // send the record
-      if (log.isDebugEnabled())
-        log.debug("JmsPublisher sending [" + messageBody + "]");
-      ((QueueSender) getProducer()).send(msg); // todo JMS102
-      //todo more properties
-      //((QueueSender) getProducer()).send( textMessage, getDeliveryMode(), getJMSPriority(), getTimeToLive() );
-      msgId = msg.getJMSMessageID();
-    } catch (JMSException jmse) {
-      throw new ComponentException("JMSException during publish.", jmse, this);
-    } catch (ComponentException oae) {
-      throw oae; // Make sure it isn't swallowed !
-    } catch (Exception e) {
-      throw new ComponentException("Exception during publish.", e, this);
     }
     return msgId;
   }
@@ -356,7 +252,7 @@ public class JMSConnection extends Component {
    *
    * @param messageBody
    * @return Message created from the supplied messageBody
-   * @throws JMSException
+   * @throws javax.jms.JMSException
    */
   protected Message createMessage(Object messageBody) throws JMSException {
     Message msg;
@@ -369,7 +265,7 @@ public class JMSConnection extends Component {
       objectMsg.setObject((Serializable) messageBody);
       msg = objectMsg;
     } else {
-      // We have never needed more message types in practice.
+      // We have not needed more message types in practice.
       // If we do need them in future this is where they go.
       throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
     }
@@ -390,9 +286,9 @@ public class JMSConnection extends Component {
     Message msg;
     try {
       if (timeoutMs < 0) {
-        msg = getConsumer().receive();
+        msg = getMessageConsumer().receive();
       } else {
-        msg = getConsumer().receive(timeoutMs);
+        msg = getMessageConsumer().receive(timeoutMs);
       }
     } catch (JMSException jmse) {
       log.error("receiveMessages - could not receive message [JMSException: " + jmse + "]");
@@ -406,8 +302,7 @@ public class JMSConnection extends Component {
   }
 
   protected Object unpackJMSMessage(Message msg) throws ComponentException {
-
-    Object msgContents = null;
+    Object msgContents;
     try {
       if (msg instanceof TextMessage) {
         log.debug("Handling TextMessage");
@@ -430,26 +325,25 @@ public class JMSConnection extends Component {
 
   // Session Stuff
 
+  protected Session getSession() {
+    return session;
+  }
+
   /**
    * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
    * transacted then register a TransactionSpec with that TransactionManager.
    *
    * @return Session A JMS Session
    */
-  public Session getSession() {
+  protected Session createAndStartSession() {
     if (!isConnected()) {
       throw new ComponentException("Attempt to get a session without calling connect() first", this);
     }
-    //  TODO: review the assumption that we do nothing if the session is already set
     if (session == null) {
       try {
-        if (isTopic) {
-          session = createTopicSession();
-        } else {
-          session = createQueueSession();
-        }
+        session = createSession();
         // We have a session and openadaptor takes responsibility for being ready for messages so we can start
-        connection.start(); 
+        connection.start();
       } catch (JMSException jmse) {
         throw new ComponentException("Unable to create session from connection", jmse, this);
       }
@@ -457,17 +351,13 @@ public class JMSConnection extends Component {
     return session;
   }
 
-  public Object getTransactionalResource() {
-    return transactionalResource;
-  }
-  
-  protected TopicSession createTopicSession() throws JMSException {
-    TopicSession newSession;
-    if (connection instanceof XATopicConnection) {
-      newSession = (TopicSession) (((XATopicConnection) connection).createXATopicSession());
+  protected Session createSession() throws JMSException {
+    Session newSession;
+    if (connection instanceof XAConnection) {
+      newSession = ((XAConnection) connection).createXASession();
       transactionalResource = ((XASession) newSession).getXAResource();
     } else {
-      newSession = (((TopicConnection) connection).createTopicSession(isTransacted, acknowledgeMode));
+      newSession = (connection.createSession(isTransacted, acknowledgeMode));
       if (isTransacted) {
         transactionalResource =  new JMSTransactionalResource(this);
       }
@@ -475,24 +365,23 @@ public class JMSConnection extends Component {
     return newSession;
   }
 
-  protected QueueSession createQueueSession() throws JMSException {
-    QueueSession newSession;
-    if (connection instanceof XAQueueConnection) {
-      newSession = (QueueSession) (((XAQueueConnection)connection).createXAQueueSession());
-      transactionalResource = ((XASession) newSession).getXAResource();
-    } else {
-      newSession = (((QueueConnection) connection).createQueueSession(isTransacted, acknowledgeMode));
-      if (isTransacted) {
-        transactionalResource = new JMSTransactionalResource(this);
-      }
-    }
-    return newSession;
+
+  public Object getTransactionalResource() {
+    return transactionalResource;
+  }
+
+  protected void setTransactionalResource(Object transactionalResource) {
+    this.transactionalResource = transactionalResource;
   }
 
   // End Session Stuff
 
   protected void setConnection(Connection connection) {
     this.connection = connection;
+  }
+
+  protected Connection getConnection() {
+    return connection;
   }
 
   protected void createConnection() {
@@ -516,36 +405,8 @@ public class JMSConnection extends Component {
         }
       }
 
-      boolean factoriesUnified = ((connectionFactory instanceof TopicConnectionFactory) && (connectionFactory instanceof QueueConnectionFactory));
-      boolean topicQueueDefined = (isTopic != isQueue);
+      setConnection(createConnection(connectionFactory));
 
-      if (!topicQueueDefined && factoriesUnified) {
-        // We haven't a prayer of guessing so bail out
-        throw new ResourceException(
-            "Using JMS 1.0.2 and cannot determine whether using Queue or Topic. Please set one of Properties 'queue' or 'topic' on JMSConnection to true", this);
-      }
-
-      if (topicQueueDefined) { // Follow the properties
-        if (isTopic) {
-          setConnection(createTopicConnection((TopicConnectionFactory) connectionFactory));
-        } else {
-          setConnection(createQueueConnection((QueueConnectionFactory) connectionFactory));
-        }
-      } else { // Follow the ConnectionFactory classes
-        if ((connectionFactory instanceof TopicConnectionFactory)) {
-          setConnection(createTopicConnection((TopicConnectionFactory) connectionFactory));
-          // Make sure the property settings reflect what we've done
-          setTopic(true);
-          setQueue(false);
-        } else {
-          if (connectionFactory instanceof QueueConnectionFactory) {
-            setConnection(createQueueConnection((QueueConnectionFactory) connectionFactory));
-            // Make sure the property settings reflect what we've done
-            setTopic(false);
-            setQueue(true);
-          }
-        }
-      }
       if (clientID != null) {
         // A clientID has been configured so attempt to set it.
         try {
@@ -571,53 +432,25 @@ public class JMSConnection extends Component {
 
   }
 
-  protected TopicConnection createTopicConnection(TopicConnectionFactory factory) throws JMSException, NamingException {
-    TopicConnection newConnection;
-
-    // Look up the TopicConnectionFactory
-    TopicConnectionFactory tconFactory = (TopicConnectionFactory) factory;
-
-    // Get a TopicConnection from the TopicConnectionFactory
+  protected Connection createConnection(ConnectionFactory factory) throws JMSException {
+    Connection newConnection;
     boolean useUsername = true;
     if (username == null || username.compareTo("") == 0) {
       useUsername = false;
     }
 
-    // Do things diferently based on whether or not the ConnectionFactory is XA Enabled.
-    if (tconFactory instanceof XATopicConnectionFactory) {
-      if (useUsername) {
-        newConnection = ((XATopicConnectionFactory) tconFactory).createXATopicConnection(username, password);
-      } else {
-        newConnection = ((XATopicConnectionFactory) tconFactory).createXATopicConnection();
-      }
-    } else {
-      if (useUsername) {
-        newConnection = tconFactory.createTopicConnection(username, password);
-      } else {
-        newConnection = tconFactory.createTopicConnection();
-      }
-    }
-    return newConnection;
-  }
+    if (factory instanceof XAConnectionFactory) {
 
-  protected QueueConnection createQueueConnection(QueueConnectionFactory qconFactory) throws JMSException,
-      NamingException {
-    QueueConnection newConnection;
-    boolean useUsername = true;
-    if (username == null || username.compareTo("") == 0) {
-      useUsername = false;
-    }
-    if (qconFactory instanceof XAQueueConnectionFactory) {
       if (useUsername) {
-        newConnection = ((XAQueueConnectionFactory) qconFactory).createXAQueueConnection(username, password);
+        newConnection = ((XAConnectionFactory) factory).createXAConnection(username, password);
       } else {
-        newConnection = ((XAQueueConnectionFactory) qconFactory).createXAQueueConnection();
+        newConnection = ((XAConnectionFactory) factory).createXAConnection();
       }
     } else {
       if (useUsername) {
-        newConnection = qconFactory.createQueueConnection(username, password);
+        newConnection = factory.createConnection(username, password);
       } else {
-        newConnection = qconFactory.createQueueConnection();
+        newConnection = factory.createConnection();
       }
     }
     return newConnection;
@@ -625,137 +458,99 @@ public class JMSConnection extends Component {
 
   // Consumer Support
 
-  protected MessageConsumer getConsumer() {
-    if (consumer == null) {
-      if (isTopic) { // isTopic will have been set correctly when the original connection was made
-        consumer = createTopicSubscriber(destinationName);
-      } else {
-        consumer = createQueueReceiver(destinationName);
-      }
+  protected MessageConsumer getMessageConsumer() {
+    return messageConsumer;
+  }
+
+  protected MessageConsumer createMessageConsumer() {
+    if (messageConsumer == null) {
+      messageConsumer = createMessageConsumer(destinationName);
     }
-    return consumer;
+    return messageConsumer;
   }
 
   protected void closeConsumer() throws JMSException {
-    if (consumer != null) {
+    if (messageConsumer != null) {
       try {
-        consumer.close();
+        messageConsumer.close();
       } catch (JMSException e) {
-        throw new ComponentException("Unable close consumer for  [" + destinationName + "]", e, this);
+        throw new ComponentException("Unable close messageConsumer for  [" + destinationName + "]", e, this);
       } finally {
-        consumer = null;
+        messageConsumer = null;
       }
     }
   }
 
-  protected TopicSubscriber createTopicSubscriber(String destination) {
-    Topic topic = null;
-    TopicSubscriber subscriber = null;
+  protected MessageConsumer createMessageConsumer(String destinationName) {
+    Destination destination;
+    MessageConsumer newConsumer;
+
     try {
-      topic = (Topic) getCtx().lookup(destination);
+      destination = (Destination) getCtx().lookup(destinationName);
     } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Topic for [" + destination + "]", e, this);
+      throw new ComponentException("Unable to resolve Destination for [" + destinationName + "]", e, this);
     }
     try {
       if (durable) {
-        subscriber = (((TopicSession) getSession()).createDurableSubscriber(topic, durableSubscriptionName,
-            messageSelector, noLocal));
+        newConsumer = getSession().createDurableSubscriber((Topic) destination, destinationName, messageSelector, noLocal);
       } else {
-        subscriber = (((TopicSession) getSession()).createSubscriber(topic, messageSelector, noLocal));
+        newConsumer = getSession().createConsumer(destination, messageSelector, noLocal);
       }
     } catch (JMSException e) {
-      throw new ComponentException("Unable to subscribe for Topic [" + destination + "]", e, this);
+      throw new ComponentException("Unable to subscribe to Destination: [" + destination + "]", e, this);
     }
-    log.info("Consumer initialized for JMSDestination=" + topic);
 
-    return subscriber;
-  }
+    return newConsumer;
 
-  protected QueueReceiver createQueueReceiver(String aDestination) {
-    Queue queue;
-    QueueReceiver aReceiver;
-    QueueSession queueSession = (QueueSession) getSession();
-    try {
-      queue = (Queue) getCtx().lookup(aDestination);
-    } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Queue for [" + aDestination + "]", e, this);
-    }
-    // Create a Queue Receiver
-    try {
-      aReceiver = queueSession.createReceiver(queue, messageSelector);
-    } catch (JMSException e) {
-      throw new ComponentException("Exception creating JMS QueueReceiver ", e, this);
-    }
-    return aReceiver;
   }
 
   // End Consumer Support
 
   // Producer Support
 
-  protected MessageProducer getProducer() {
-    if (producer == null) {
-      if (isTopic) {
-        producer = createTopicPublisher(destinationName);
-      } else {
-        producer = createQueueSender(destinationName);
-      }
+  protected MessageProducer getMessageProducer() {
+    return messageProducer;
+  }
+
+  protected MessageProducer createMessageProducer() {
+    if (messageProducer == null) {
+      messageProducer = createMessageProducer(destinationName);
     }
-    return producer;
+    return messageProducer;
   }
 
   protected void closeProducer() throws JMSException {
-    if (producer != null) {
+    if (messageProducer != null) {
       try {
-        producer.close();
+        messageProducer.close();
       } catch (JMSException e) {
         throw new ComponentException("Unable close producer for  [" + destinationName + "]", e, this);
       } finally {
-        producer = null;
+        messageProducer = null;
       }
     }
   }
 
-  protected MessageProducer createTopicPublisher(String subject) {
-    Topic topic = null;
-    TopicPublisher aPublisher;
-    TopicSession topicSession = (TopicSession) getSession();
+  protected MessageProducer createMessageProducer(String subject) {
+    MessageProducer newProducer;
+    Destination destination;
     try {
-      topic = (Topic) getCtx().lookup(subject);
+      destination = (Destination) getCtx().lookup(subject);
     } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Topic for [" + subject + "]", e, this);
+      throw new ComponentException("Unable to resolve Destination for [" + subject + "]", e, this);
     }
-    // Create a message producer (TopicPublisher)
     try {
-      aPublisher = topicSession.createPublisher((Topic) topic);
+      newProducer = session.createProducer(destination);
     } catch (JMSException e) {
       throw new ComponentException("Exception creating JMS Producer ", e, this);
     }
-
-    log.info(" Producer initialised for JMSDestination=" + topic);
-    return aPublisher;
-  }
-
-  protected QueueSender createQueueSender(String aDestination) {
-    Queue queue;
-    QueueSender aSender;
-    QueueSession queueSession = (QueueSession) getSession();
-    try {
-      queue = (Queue) getCtx().lookup(aDestination);
-    } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Queue for [" + aDestination + "]", e, this);
-    }
-    // Create a Queue Sender
-    try {
-      aSender = queueSession.createSender(queue);
-    } catch (JMSException e) {
-      throw new ComponentException("Exception creating JMS QueueSender ", e, this);
-    }
-    return aSender;
+    log.info(" Producer initialised for JMS Destination=" + newProducer);
+    return newProducer;
   }
 
   // End Producer Support
 
+  /** Close everything */
   protected void close() {
     try {
       closeConsumer();
@@ -764,13 +559,15 @@ public class JMSConnection extends Component {
         session.close();
       }
       if (connection != null) {
-          connection.close();
+        connection.close();
       }
       setConnection(null);
     } catch (JMSException e) {
       throw new ComponentException("Unable close connection for  [" + destinationName + "]", e, this);
     }
   }
+
+  // JNDI Support
 
   protected Context getCtx() throws NamingException {
     if (ctx == null) {
@@ -782,5 +579,181 @@ public class JMSConnection extends Component {
   protected void setCtx(Context ctx) {
     this.ctx = ctx;
   }
+
+  // End JNDI support
+
+  // Bean Properties
+
+  /**
+   * Name used to look up connectionfactory in JNDI.
+   */
+  public void setConnectionFactoryName(String connectionFactoryName) {
+    this.connectionFactoryName = connectionFactoryName;
+  }
+
+  protected String getConnectionFactoryName() { return connectionFactoryName; }
+
+  /**
+   * Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored.
+   */
+  public void setConnectionFactory(ConnectionFactory connectionFactory) {
+    this.connectionFactory = connectionFactory;
+  }
+
+  protected ConnectionFactory getConnectionFactory() { return connectionFactory; }
+
+  /**
+   * Name used to look up destination (queue/topic) in JNDI.
+   */
+  public void setDestinationName(String destinationName) {
+    this.destinationName = destinationName;
+  }
+
+  protected String getDestinationName() { return destinationName; }
+
+  /**
+   * Password to authenticate the JMS Connection (optional).
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  protected String getPassword() { return password; }
+
+  /**
+   * Username to authenticate the JMS Connection (optional).
+   */
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  protected String getUsername() { return username; }
+
+  /**
+   * Set the JNDIConnection used to look up jndi managed resources.
+   */
+  public void setJndiConnection(JNDIConnection jndiConnection) {
+    this.jndiConnection = jndiConnection;
+  }
+
+  /**
+   * true if a transacted connection is to be made.
+   */
+  public void setTransacted(boolean transacted) {
+    this.isTransacted = transacted;
+  }
+
+  /**
+   * true if a transacted connection is to be made.
+   */
+  protected boolean isTransacted() {
+    return isTransacted;
+  }
+
+  /**
+   * Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
+   */
+  public void setDurable(boolean durable) {
+    this.durable = durable;
+  }
+
+  protected boolean isDurable() {
+    return durable;
+  }
+
+  /**
+   * Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
+   */
+  protected String getDurableSubscriptionName() {
+    if (durableSubscriptionName == null)
+      // Since we must have a name to set up a Durable Subscription we default to the destinationName.
+      return destinationName;
+    else
+      return durableSubscriptionName;
+  }
+
+  /**
+   * Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
+   */
+  public void setDurableSubscriptionName(String durableSubscriptionName) {
+    this.durableSubscriptionName = durableSubscriptionName;
+  }
+
+  /**
+   * Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
+   */
+  public void setAcknowledgeMode(int acknowledgeMode) {
+    this.acknowledgeMode = acknowledgeMode;
+  }
+
+  /** Defaults to <code>Session.AUTO_ACKNOWLEDGE</code> */
+  protected int getAcknowledgeMode() {
+    return acknowledgeMode;
+  }
+
+  /**
+   * Not set by default.
+   */
+  public void setMessageSelector(String messageSelector) {
+    this.messageSelector = messageSelector;
+  }
+
+  protected String getMessageSelector() {
+    return messageSelector;
+  }
+
+  /**
+   * Default is <i>false</i>.
+   */
+  public void setNoLocal(boolean noLocal) {
+    this.noLocal = noLocal;
+  }
+
+  protected boolean isNoLocal() {
+    return noLocal;
+  }
+
+  /**
+   * Default DeliveryMode value specified for this Connection's Message Producer.
+   */
+  protected int getDeliveryMode() { return deliveryMode; }
+
+  /**
+   * Default DeliveryMode value specified for this Connection's Message Producer.
+   */
+  public void setDeliveryMode(int deliveryMode) { this.deliveryMode = deliveryMode; }
+
+  /**
+   * Default Priority value specified for this Connection's Message Producer.
+   */
+  protected int getPriority() { return priority; }
+
+  /**
+   * Default Priority value specified for this Connection's Message Producer.
+   */
+  public void setPriority(int priority) { this.priority = priority; }
+
+  /**
+   * Default time to live value specified for this Connection's Message Producer.
+   */
+  protected long getTimeToLive() { return timeToLive; }
+
+  /**
+   * Default time to live value specified for this Connection's Message Producer.
+   */
+  public void setTimeToLive(long timeToLive) { this.timeToLive = timeToLive; }
+
+  /**
+   * Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
+   */
+  public void setClientID(String clientID) {
+    this.clientID = clientID;
+  }
+
+  protected String getClientID() {
+    return clientID;
+  }
+  // End Bean Properties
+
 
 }
