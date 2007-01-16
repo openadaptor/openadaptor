@@ -17,7 +17,7 @@ public class VelocityProcessorTestCase extends TestCase {
   
   public void testTemplateFile() {
     VelocityProcessor processor = new VelocityProcessor();
-    processor.setTemplateFile(ResourceUtil.getResourcePath(this, "test.vm"));
+    processor.setTemplateFile(ResourceUtil.getResourcePath(this, "test/src/", "test.vm"));
     Object[] data = processor.process("test");
     assertTrue(data.length == 1);
     assertTrue(data[0].equals("test"));

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 public class JBossSpringAdaptorTestCase extends TestCase {
 
   public void xtest() {
-    String configFile = ResourceUtil.getResourcePath(this, "spring.xml");
+    String configFile = ResourceUtil.getResourcePath(this, "test/src/", "spring.xml");
 
     // run publisher
     SpringApplication.runXml(configFile, null, "Publisher");
@@ -34,7 +34,7 @@ public class JBossSpringAdaptorTestCase extends TestCase {
   }
 
   public void test2() {
-    String configFile = ResourceUtil.getResourcePath(this, "spring2.xml");
+    String configFile = ResourceUtil.getResourcePath(this, "test/src/", "spring2.xml");
     
     ListableBeanFactory publisherFactory = SpringApplication.getBeanFactory(configFile, null);
     final Adaptor publisher = (Adaptor) publisherFactory.getBean("Publisher");

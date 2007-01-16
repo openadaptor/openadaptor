@@ -178,7 +178,7 @@ public class ExceptionMessageProcessor extends AdaptorOutpoint implements ITrans
     try {
       router.process(msg, componentId);
     } catch (MessageException e) {
-      throw new RuntimeException("retry failed again, " + e.getMessage(), e);
+      throw new RuntimeException("retry failed again, " + e.getException().getMessage(), e.getException());
     }
   }
   

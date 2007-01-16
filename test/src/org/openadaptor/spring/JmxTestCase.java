@@ -40,7 +40,7 @@ import junit.framework.TestCase;
 
 public class JmxTestCase extends TestCase {
 	public void test() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "jmx.xml"), null, "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "jmx.xml"), null, "Test");
 	}
 	
 	public static final class Test implements Runnable, TestMBean {

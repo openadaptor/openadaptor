@@ -28,8 +28,8 @@ public class ResourceUtil {
     return sb.toString();
   }
 
-  public static void writeFileContents(Object caller, String filename, String contents) {
-    String s = getResourcePath(caller, filename);
+  public static void writeFileContents(Object caller, String prefix, String filename, String contents) {
+    String s = getResourcePath(caller, prefix, filename);
     try {
       FileWriter writer = new FileWriter(s);
       writer.write(contents);
@@ -40,17 +40,17 @@ public class ResourceUtil {
     }
   }
 
-  public static String getResourcePath(Object caller) {
-    String s = caller.getClass().getPackage().getName();
-    s = s.replaceAll("\\.", "/");
-    s = "test/src/" + s;
-    return s;
-  }
+//  public static String getResourcePath(Object caller, String prefix) {
+//    String s = caller.getClass().getPackage().getName();
+//    s = s.replaceAll("\\.", "/");
+//    s = prefix + s;
+//    return s;
+//  }
 
-  public static String getResourcePath(Object caller, String filename) {
+  public static String getResourcePath(Object caller, String prefix, String filename) {
     String s = caller.getClass().getPackage().getName();
     s = s.replaceAll("\\.", "/");
-    s = "test/src/" + s + "/" + filename;
+    s = prefix + s + "/" + filename;
     return s;
   }
 

@@ -100,7 +100,7 @@ public class XsltProcessorTestCase extends TestCase {
   }
 
   private void validateTransformFile() {
-    String s = ResourceUtil.getResourcePath(this, "transform.xsl");
+    String s = ResourceUtil.getResourcePath(this, "test/src/", "transform.xsl");
     processor.setXsltFile(s);
     List exceptions = new ArrayList();
     processor.validate(exceptions);

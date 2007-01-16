@@ -48,33 +48,33 @@ public class SpringApplicationTestCase extends TestCase {
 	
 	public void testNoProps() {
 		try {
-			SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), null, "Test");
+			SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "test.xml"), null, "Test");
 			fail();
 		} catch (RuntimeException e) {
 		}
 	}
 	
 	public void testPropsFile() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), 
-        ResourceUtil.getResourcePath(this, "test.properties"), "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "test.xml"), 
+        ResourceUtil.getResourcePath(this, "test/src/", "test.properties"), "Test");
 		assertTrue(result.equals("foo"));
 	}
 	
 	public void testSystemProps() {
 		System.setProperty("message", "foobar");
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), null, "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "test.xml"), null, "Test");
 		assertTrue(result.equals("foobar"));
 	}
 	
 	public void testSystemPropsOverride() {
 		System.setProperty("message", "foobar");
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), ResourceUtil.getResourcePath(this, "test.properties"), "Test");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "test.xml"), ResourceUtil.getResourcePath(this, "test/src/", "test.properties"), "Test");
 		assertTrue(result.equals("foo"));
 	}
 	
 	public void testRunner() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test.xml"), 
-        ResourceUtil.getResourcePath(this, "test.properties"), "Runnables");
+		SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "test.xml"), 
+        ResourceUtil.getResourcePath(this, "test/src/", "test.properties"), "Runnables");
 		assertTrue(result.equals("run1run2") || result.equals("run2run1"));
 	}
 	

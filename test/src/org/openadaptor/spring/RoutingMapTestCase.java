@@ -50,7 +50,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 
 public class RoutingMapTestCase extends TestCase {
 
-	ListableBeanFactory factory = SpringApplication.getBeanFactory(ResourceUtil.getResourcePath(this, "routing.xml"), null);
+	ListableBeanFactory factory = SpringApplication.getBeanFactory(ResourceUtil.getResourcePath(this, "test/src/", "routing.xml"), null);
 
 	private IRoutingMap getRoutingMap(String testName) {
 		return (IRoutingMap) factory.getBean(testName);

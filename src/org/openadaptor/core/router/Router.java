@@ -136,8 +136,7 @@ public class Router extends Component implements IMessageProcessor,ILifecycleCom
   private Response process(Message msg, IMessageProcessor processor) throws MessageException {
     Response response = processor.process(msg);
     if (response.containsExceptions()) {
-      MessageException[] exceptions = (MessageException[]) response.getCollatedExceptions();
-      throw exceptions[0];
+      throw (MessageException) response.getCollatedExceptions()[0];
     } else {
       processResponse(processor, response, msg.getTransaction());
       return new Response();

@@ -57,17 +57,20 @@ public class MessageExceptionXmlConverter {
   public static final String TIME = "Time";
   public static final String HOST = "HostName";
   public static final String RETRIES = "Retries";
-  public static final String ORIGINAL_ID = "OriginalId";
+  public static final String PARENT_ID = "ParentId";
   
   public static final String EXCEPTION_PATH = "//" + MESSAGE_EXCEPTION  + "/" + EXCEPTION;
   public static final String MESSAGE_PATH =   EXCEPTION_PATH + "/" + MESSAGE;
+  public static final String CLASS_PATH =   EXCEPTION_PATH + "/" + CLASS;
   public static final String FROM_PATH = "//" + MESSAGE_EXCEPTION + "/" + FROM;
   public static final String HOST_PATH = "//" + MESSAGE_EXCEPTION + "/" + HOST;
   public static final String COMPONENT_PATH = EXCEPTION_PATH + "/" + COMPONENT;
   public static final String TIME_PATH = "//" + MESSAGE_EXCEPTION + "/" + TIME;
   public static final String RETRIES_PATH = "//" + MESSAGE_EXCEPTION + "/" + RETRIES;
   public static final String RETRY_ADDRESS_PATH = "//" + MESSAGE_EXCEPTION + "/" + RETRY_ADDRESS;
-  public static final String ORIGINAL_ID_PATH = "//" + MESSAGE_EXCEPTION + "/" + ORIGINAL_ID;
+  public static final String PARENT_ID_PATH = "//" + MESSAGE_EXCEPTION + "/" + PARENT_ID;
+  public static final String DATA_PATH = "//" + MESSAGE_EXCEPTION  + "/" + DATA;
+  public static final String TRACE_PATH = EXCEPTION_PATH + "/" + STACK_TRACE;
 
   public static String toXml(MessageException exception, String from, String replyTo, long time) {
     Exception embeddedException  = exception.getException();
@@ -99,15 +102,16 @@ public class MessageExceptionXmlConverter {
     }
   }
 
-  public static String toXml(Exception e, String originalId) {
+  public static String toXml(Exception e, String parentId) {
     Document doc = DocumentHelper.createDocument();
     Element root = doc.addElement(MESSAGE_EXCEPTION);
     Element exceptionElement = root.addElement(EXCEPTION);
+    root.addElement(FROM).setText("retry");
     exceptionElement.addElement(CLASS).setText(e.getClass().getName());
     exceptionElement.addElement(MESSAGE).setText(e.getMessage());
     addStackTrace(exceptionElement, e);
     root.addElement(TIME).setText(String.valueOf((new Date()).getTime()));
-    root.addElement(ORIGINAL_ID).setText(originalId);
+    root.addElement(PARENT_ID).setText(parentId);
     return doc.asXML();
   }
 }

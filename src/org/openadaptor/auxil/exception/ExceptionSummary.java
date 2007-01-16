@@ -43,7 +43,35 @@ public class ExceptionSummary {
   private String message;
   private String retryAddress;
   private int retries;
+  private String parentId;
+  private String host;
+  private String trace;
+  private String exception;
   
+  public String getException() {
+    return exception;
+  }
+  public void setException(String exception) {
+    this.exception = exception;
+  }
+  public String getHost() {
+    return host;
+  }
+  public void setHost(String host) {
+    this.host = host;
+  }
+  public String getTrace() {
+    return trace;
+  }
+  public void setTrace(String trace) {
+    this.trace = trace;
+  }
+  public String getParentId() {
+    return parentId;
+  }
+  public void setParentId(String parentId) {
+    this.parentId = parentId;
+  }
   public Date getDate() {
     return date;
   }
@@ -85,5 +113,12 @@ public class ExceptionSummary {
   }
   public void setRetries(int retries) {
     this.retries = retries;
+  }
+  public String getOrderKey() {
+    double n = Integer.parseInt(id);
+    if (parentId != null && parentId.length() > 0) {
+      n = Integer.parseInt(parentId) - (1 / n);
+    }
+    return String.valueOf(n);
   }
 }

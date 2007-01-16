@@ -132,6 +132,9 @@ public class ExceptionFileStore implements ExceptionStore {
   }
 
   private String getFilename(final String id) {
+    if (id == null || id.length() == 0) {
+      throw new RuntimeException("id is null or empty");
+    }
     String[] files = dir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
         return name.startsWith(id) && name.endsWith(".xml");
@@ -180,6 +183,7 @@ public class ExceptionFileStore implements ExceptionStore {
 
   public void delete(final String id) {
     File file = new File(dir, getFilename(id));
+    log.info("deleted " + file.getName());
     file.delete();
   }
 
@@ -205,6 +209,11 @@ public class ExceptionFileStore implements ExceptionStore {
     summary.setRetryAddress(getText(doc, MessageExceptionXmlConverter.RETRY_ADDRESS_PATH, ""));
     summary.setComponentId(getText(doc, MessageExceptionXmlConverter.COMPONENT_PATH, ""));
     summary.setRetries(getInt(doc, MessageExceptionXmlConverter.RETRIES_PATH, 0));
+    summary.setParentId(getText(doc, MessageExceptionXmlConverter.PARENT_ID_PATH, ""));
+    summary.setHost(getText(doc, MessageExceptionXmlConverter.HOST_PATH, ""));
+    summary.setException(getText(doc, MessageExceptionXmlConverter.CLASS_PATH, ""));
+    Node traceNode = doc.selectSingleNode(MessageExceptionXmlConverter.TRACE_PATH);
+    summary.setTrace(traceNode.asXML());
     return summary;
   }
 
@@ -237,8 +246,7 @@ public class ExceptionFileStore implements ExceptionStore {
   
   public String getDataForId(String id) {
     Document doc = getExceptionDocument(id);
-    return doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-        + "/" + MessageExceptionXmlConverter.DATA).getText();
+    return getText(doc, MessageExceptionXmlConverter.DATA_PATH, "");
   }
 
 }

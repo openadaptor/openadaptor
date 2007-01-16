@@ -41,38 +41,38 @@ import junit.framework.TestCase;
 public class AdaptorTestCase extends TestCase {
 
   public void testAdaptor1() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor1.xml"), null, "Adaptor");
   }
   
   public void testAdaptor1a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor1a.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor1a.xml"), null, "Adaptor");
   }
   
   public void testAdaptor2() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor2.xml"), null, "Adaptor");
   }
   
   public void testAdaptor2a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor2a.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor2a.xml"), null, "Adaptor");
   }
   
   public void testAdaptor3() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor3.xml"), null, "Adaptor");
   }
   
   public void testAdaptor3a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor3a.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor3a.xml"), null, "Adaptor");
   }
   
   public void testAdaptor4() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor4.xml"), null, "Adaptor");
   }
 
   public void testAdaptor4a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor4a.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor4a.xml"), null, "Adaptor");
   }
 
   public void testAdaptor5() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "adaptor5.xml"), null, "Adaptor");
+    SpringApplication.runXml(ResourceUtil.getResourcePath(this, "test/src/", "adaptor5.xml"), null, "Adaptor");
   }
 }

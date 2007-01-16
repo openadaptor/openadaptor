@@ -1,0 +1,48 @@
+<style type="text/css">
+  p          { font-weight: bold }
+  li         { list-style-type: none}
+  .title     { background-color: CCCCCC; vertical-align: top}
+</style>
+
+<!--
+#set ( $trace = $summary.Trace.replaceAll("<Line>", "<li>") )
+#set ( $trace = $trace.replaceAll("</Line>", "") )
+#set ( $trace = $trace.replaceAll("<*StackTrace>", "") )
+-->
+
+<html>
+  <title>Exception : $summary.Id</title>
+  <body>
+      #if ( $summary.ParentId != "" )
+        <p>Retry Exception</p>
+      #end
+    <table>
+      <tr><td class="title">Message:</td><td>$summary.Message</td></tr>
+      <tr><td class="title">Exception:</td><td>$summary.Exception</td></tr>
+      <tr><td class="title">From:</td><td>$summary.From ($summary.Host)</td></tr>
+      <tr><td class="title">Trace:</td><td>$trace</td></tr>
+      #if ( $summary.ParentId == "" )
+        <tr><td class="title">Data:</td><td><TEXTAREA readonly="true" rows="50" cols="80">$data</TEXTAREA></td></tr>
+      #end
+    </table>
+    
+    #if ( $summary.ParentId != "" )
+<!--
+#set ( $trace = $parentSummary.Trace.replaceAll("<Line>", "<li>") )
+#set ( $trace = $trace.replaceAll("</Line>", "") )
+#set ( $trace = $trace.replaceAll("<*StackTrace>", "") )
+-->
+    <p>Original Exception</p>
+    <table>
+      <tr><td class="title">Message:</td><td>$parentSummary.Message</td></tr>
+      <tr><td class="title">Exception:</td><td>$parentSummary.Exception</td></tr>
+      <tr><td class="title">From:</td><td>$parentSummary.From ($parentSummary.Host)</td></tr>
+      <tr><td class="title">Trace:</td><td>$trace</td></tr>
+      <tr><td class="title">Data:</td><td><TEXTAREA readonly="true" rows="50" cols="80">$data</TEXTAREA></td></tr>
+    </table>
+    #end
+    
+    <a href="?action=list">Back</a>
+    <a href="?action=delete&id=${summary.Id}">Delete</a>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+<!-- style sheet -->
+<style type="text/css">
+  tabls       { width: 100%; text-align: center; }
+  p            { font-weight: bold; text-align: center; }
+  th           { text-align: left; }
+  .highlight   { background-color: FFFFCC; }  
+  .retry       { background-color: EEEEEE; }  
+  .original    { background-color: CCCCCC; }
+  .idretry     { background-color: EEEEEE; text-align: center; }  
+  .idoriginal  { background-color: CCCCCC; }  
+</style>
+
+<script language="JavaScript">
+<!--
+  function refresh() {
+    window.location.reload(false);
+  }
+//-->    
+</script>
+<html>
+<title> Exception Manager (this page refreshes every minute)</title>
+<body onload="setTimeout('refresh()', 60 * 1000)">
+
+<table>
+  <tbody>
+#set ( $prevDate = "" )
+#set ( $prevParentId = "" )
+#set ( $retryIds = "" )
+#set ( $todayIds = "" )
+#set ( $allIds = "" )
+#foreach ( $summary in $summaries )
+  #if ( $summary.ParentId == "" ) #set ( $prevParentId = $summary.Id ) #end
+  #if ( $summary.ParentId == $prevParentId ) 
+    #set ($rowClass = "retry") 
+    #set ($idClass = "idretry")
+    #set ( $retryIds = "$retryIds,$summary.Id") 
+    #if ( $allIds != "" )
+      <td/></tr>
+    #end
+  #else 
+    #set ($rowClass = "original") 
+    #set ($idClass = "idoriginal")
+    #if ($retryIds != "")
+      <td><a href="?action=deleteall&ids=${retryIds}">Delete All</a></td></tr>
+    #elseif ( $allIds != "" )
+      <td></tr>
+    #end
+    #set ( $retryIds = "" )
+    #set ( $date = $DATE_FORMATTER.format($summary.Date) )
+  #end
+  #if ( $summary.Id == $id ) #set ( $rowClass = "highlight" ) #end
+
+  #set ( $allIds = "$allIds,$summary.Id")
+    
+  #if ( $date != $prevDate)
+    #if ( $todayIds != "")
+      <tr><td/><td/><td/><td/><td/><td/><td/><td><a href="?action=deleteall&ids=${todayIds}">Delete All</a></td></tr>
+    #end
+    #set ( $todayIds = "" )
+    </tbody>
+    <thead>
+      <tr>
+        <th>$date</th>
+        <th/>
+        <th/>
+        <th/>
+        <th/>
+        <th/>
+        <th/>
+        <th/>
+      <tr/>
+    </thead>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>FROM</th>
+        <th>DATE</th>
+        <th>TIME</th>
+        <th>MESSAGE</th>
+        <th/>
+        <th/>
+        <th/>
+      <tr/>
+    </thead>
+    <tbody>
+  #end
+  #set ( $todayIds = "$todayIds,$summary.Id")  
+  <tr class="${rowClass}">
+    <td class="${idClass}"><a href="?action=browse&id=${summary.Id}">$summary.Id</a></td>
+    <td>$summary.From</td>
+    <td>$date</td>
+    <td>$TIME_FORMATTER.format($summary.Date)</td>
+    <td>$summary.Message</td>
+    <td>
+      #if ($summary.RetryAddress != "")
+        <a href="?action=retry&id=${summary.Id}">Retry</a> [$summary.Retries]
+      #end
+    </td>
+    <td><a href="?action=delete&id=${summary.Id}">Delete</a></td>
+  #set ( $prevDate = $date )
+#end
+#if ($retryIds != "")
+  <td><a href="?action=deleteall&ids=${retryIds}">Delete All</a></td></tr>
+#elseif ( $allIds != "" )
+  <td/></tr>
+#end
+#if ( $todayIds != "" )
+  <tr><td/><td/><td/><td/><td/><td/><td/><td><a href="?action=deleteall&ids=${todayIds}">Delete All</a></td></tr>
+#end
+
+  </tbody>
+</table>
+
+<!-- footer -->
+<p>Most Recent ${summaries.size()} of ${totalCount}</p>
+<form>
+<table>
+  <tr>
+    <td><a href="?action=list">Refresh</a></td>
+    <td><a href="?action=deleteall&ids=$allIds">Delete All</a></td>
+    <td>Show Last <input type="textbox" cols="10" name="show" value="$show"/> Entries</td>
+  </tr>
+</table> 
+</form>
+</div>
+
+</body>
+</html>
+
