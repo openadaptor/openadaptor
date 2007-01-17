@@ -33,11 +33,13 @@
 
 package org.openadaptor.auxil.connector.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.util.NetUtil;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -45,88 +47,111 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
-import org.openadaptor.auxil.connector.http.ReadConnectorServlet;
-import org.openadaptor.auxil.connector.iostream.RFC2279;
-
 
 public class ReadConnectorServletTestCase extends TestCase {
 
+  private static final Log log = LogFactory.getLog(ReadConnectorServletTestCase.class);
+
   static final int PORT = 8087;
-  static final String TEST_URL = "http://localhost:" + PORT + "/*";
+  private ReadConnectorServlet servlet;
+  private String testUrl;
+  protected static final int CONNECTOR_TIMEOUT_MS = 1000;
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    // create connector and connect (this starts jetty)
+    servlet = new ReadConnectorServlet();
+    try {
+      servlet.setParameterName("data");
+      servlet.setAcceptGet(false);
+      servlet.setPort(PORT);
+      servlet.setTransacted(false);
+      servlet.connect();
+      testUrl = servlet.getServletUrl().replace(NetUtil.getLocalHostname(), "localhost");
+    }
+    catch (Exception e) {
+      // Attempt to disconnect if anything has gone wrong during setup.
+      // Doing so as tearDown is not called if setUp breaks.
+      log.error("Exception setting up servlet. " + e);
+      servlet.disconnect();
+      throw e;
+    }
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    servlet.disconnect();
+    servlet = null;
+    testUrl= null;
+  }
 
   public void testPost() {
-    
-    // create connector and connect (this starts jetty)
-    ReadConnectorServlet servlet = new ReadConnectorServlet();
-    servlet.setParameterName("data");
-    servlet.setPort(PORT);
-    servlet.setTransacted(false);
-    servlet.connect();
-    
-    // to http get
-    postData(TEST_URL, "data", "foo");
-    postData(TEST_URL, "data", "bar");
+      // to http get
+      postData(testUrl, "data", "foo");
+      postData(testUrl, "data", "bar");
 
-    // poll service and check results
-    Object[] data = servlet.next(0);
-    assertTrue(data.length == 1);
-    assertTrue(data[0].equals("foo"));
+      // poll service and check results
+      Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      assertTrue(data.length == 1);
+      assertTrue(data[0].equals("foo"));
 
-    data = servlet.next(0);
-    assertTrue(data.length == 1);
-    assertTrue(data[0].equals("bar"));
+      data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      assertTrue(data.length == 1);
+      assertTrue(data[0].equals("bar"));
 
-    servlet.setParameterNames(new String[] {"field1", "field2", "field3"});
-    Map map = new HashMap();
-    map.put("field1", "foo");
-    map.put("field2", "bar");
-    map.put("field3", "foobar");
-    postData(TEST_URL, map);
-    
-    data = servlet.next(0);
-    assertTrue(data.length == 1);
-    assertTrue(data[0].equals(map));
-   
-    servlet.disconnect();
+      servlet.setParameterNames(new String[]{"field1", "field2", "field3"});
+      Map map = new HashMap();
+      map.put("field1", "foo");
+      map.put("field2", "bar");
+      map.put("field3", "foobar");
+      postData(testUrl, map);
+
+      data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      assertTrue(data.length == 1);
+      assertTrue(data[0].equals(map));
   }
 
   public void testGet() {
-    
-    // create connector and connect (this starts jetty)
-    ReadConnectorServlet servlet = new ReadConnectorServlet();
-    servlet.setParameterName("data");
+
     servlet.setAcceptGet(true);
-    servlet.setPort(PORT);
-    servlet.setTransacted(false);
-    servlet.connect();
 
     // to http get
-    getData(TEST_URL, "data", "foo");
-    getData(TEST_URL, "data", "bar");
+    getData(testUrl, "data", "foo");
+    getData(testUrl, "data", "bar");
 
     // poll service and check results
-    Object[] data = servlet.next(0);
+    Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+    assertTrue("Expected non-null data", data != null);
     assertTrue(data.length == 1);
     assertTrue(data[0].equals("foo"));
 
-    data = servlet.next(0);
+    data = servlet.next(CONNECTOR_TIMEOUT_MS);
     assertTrue(data.length == 1);
     assertTrue(data[0].equals("bar"));
 
-    servlet.setParameterNames(new String[] {"field1", "field2", "field3"});
+    servlet.setParameterNames(new String[]{"field1", "field2", "field3"});
     Map map = new HashMap();
     map.put("field1", "foo");
     map.put("field2", "bar");
     map.put("field3", "foobar");
-    getData(TEST_URL, map);
-    
-    data = servlet.next(0);
+    getData(testUrl, map);
+
+    data = servlet.next(CONNECTOR_TIMEOUT_MS);
     assertTrue(data.length == 1);
     assertTrue(data[0].equals(map));
-   
-    servlet.disconnect();
+  }
+
+  /** Congfigured this way Get should be ignored and next timeout with no data returned */
+  public void testGetAcceptGetFalse() {
+    servlet.setAcceptGet(false);
+
+    // to http get
+    getData(testUrl, "data", "foo");
+    getData(testUrl, "data", "bar");
+
+    // poll service and check results
+    Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+    assertTrue("Expected null or zero-length data", (data == null) || (data.length == 0));
   }
 
   private void postData(String urlString, String paramName, String data) {
@@ -146,7 +171,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     } catch (Exception e) {
     }
   }
-  
+
   private void getData(String urlString, String paramName, String data) {
     try {
       String s = urlString.replaceAll("\\*", "?" + paramName + "=" + data);
@@ -157,7 +182,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       throw new RuntimeException(e.getMessage());
     }
   }
-  
+
   private void postData(String urlString, Map data) {
     try {
       URL url = new URL(urlString.replaceAll("\\*", ""));
@@ -201,7 +226,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     }
     return buffer.toString();
   }
-  
+
   private void getData(String urlString, Map data) {
     try {
       URL url = new URL(urlString.replaceAll("\\*", "?" + createtParamString(data)));
