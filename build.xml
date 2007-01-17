@@ -12,6 +12,7 @@
   <property name="dir.classes" value="classes"/>
   <property name="dir.lib" value="lib"/>
   <property name="dir.src" value="src"/>
+  <property name="dir.sql" value="sql"/>
 
   <property name="dir.spring.classes" value="spring/classes"/>
   <property name="dir.spring.lib" value="spring/lib"/>

@@ -6,6 +6,7 @@
   <property name="dir.package" value="package"/>
   <property name="dir.package.lib" value="${dir.package}/lib"/>
   <property name="dir.package.example" value="${dir.package}/example"/>
+  <property name="dir.package.sql" value="${dir.package}/sql"/>
   <property name="dir.package.doc" value="${dir.package}/doc"/>
   
   <target name="clean">
@@ -14,7 +15,7 @@
   
   <target name="zippedpackage" depends="package, zip" description="create zipped package"/>
   
-  <target name="package" depends="clean, lib, example, doc"/>
+  <target name="package" depends="clean, lib, sql, example, doc"/>
   
   <target name="zip">
     <zip destfile="openadaptor-${tag}-bin.zip">
@@ -72,6 +73,12 @@
         <include name="spring/**"/>
         <include name="src/**"/>
       </fileset>
+    </copy>
+  </target>
+  
+  <target name="sql">
+    <copy todir="${dir.package.sql}">
+      <fileset dir="${dir.sql}"/>
     </copy>
   </target>
   
