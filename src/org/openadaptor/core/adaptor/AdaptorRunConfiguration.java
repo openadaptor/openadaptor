@@ -74,7 +74,7 @@ public class AdaptorRunConfiguration {
   private int failCount = 0;
 
   private boolean exit = false;
-
+  
   public void setRestartAfterFailCronExpression(String expression) {
     restartAfterFailCronExpression = checkCronExpression(expression);
   }

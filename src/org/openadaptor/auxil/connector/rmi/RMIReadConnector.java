@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.QueuingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.util.ResourceUtils;
+import org.openadaptor.util.NetUtil;
 
 /**
  * exposes IDataProcessor interface as remote interface. Allowing rmi clients to send data for
@@ -107,7 +107,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
       try {
         log.info("starting rmi registry on port " + registryPort);
         LocateRegistry.createRegistry(registryPort);
-        registryHost = ResourceUtils.getLocalHostname();
+        registryHost = NetUtil.getLocalHostname();
       } catch (RemoteException e) {
         throw new ComponentException("failed to create rmi registry", e, this);
       }

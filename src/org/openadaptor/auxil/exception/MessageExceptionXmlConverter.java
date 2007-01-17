@@ -40,7 +40,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.MessageException;
-import org.openadaptor.util.ResourceUtils;
+import org.openadaptor.util.NetUtil;
 
 public class MessageExceptionXmlConverter {
 
@@ -90,7 +90,7 @@ public class MessageExceptionXmlConverter {
     root.addElement(RETRY_ADDRESS).setText(replyTo);
     root.addElement(TIME).setText(String.valueOf(time));
     root.addElement(RETRIES).setText("0");
-    root.addElement(HOST).setText(ResourceUtils.getLocalHostname());
+    root.addElement(HOST).setText(NetUtil.getLocalHostname());
     return doc.asXML();
   }
   

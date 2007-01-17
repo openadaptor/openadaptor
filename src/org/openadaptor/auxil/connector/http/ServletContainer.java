@@ -43,7 +43,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.openadaptor.util.ResourceUtils;
+import org.openadaptor.util.NetUtil;
 
 public class ServletContainer {
 
@@ -120,7 +120,7 @@ public class ServletContainer {
   }
 
   public String getHost() {
-    return ResourceUtils.getLocalHostname();  
+    return NetUtil.getLocalHostname();  
   }
   
   public void addServlet(Servlet servlet, String path) {

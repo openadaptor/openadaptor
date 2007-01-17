@@ -40,6 +40,5 @@ public interface ExceptionStore {
   String getExceptionForId(String id);
   ExceptionSummary getExceptionSummary(String id);
   void delete(String id);
-  void deleteAll();
   String getDataForId(String id);
 }

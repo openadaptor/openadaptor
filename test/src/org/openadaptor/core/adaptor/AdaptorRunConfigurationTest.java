@@ -12,7 +12,7 @@ import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.adaptor.AdaptorRunConfiguration;
 import org.openadaptor.core.processor.TestProcessor;
 
-public class AdaptorRunConfigurationTestCase extends TestCase {
+public class AdaptorRunConfigurationTest extends TestCase {
 
   private static final Object DATA = "foobar";
 
@@ -67,8 +67,8 @@ public class AdaptorRunConfigurationTestCase extends TestCase {
     Adaptor adaptor = new Adaptor();
     adaptor.setPipeline(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
-    config.setStartCronExpression("0 * * * * ?");
-    config.setStopCronExpression("30 * * * * ?");
+    config.setStartCronExpression("0,15,30,45 * * * * ?");
+    config.setStopCronExpression("5,20,35,50 * * * * ?");
     adaptor.setRunConfiguration(config);
     reader.setRestartLimit(config, 2);
     adaptor.run();
@@ -91,15 +91,15 @@ public class AdaptorRunConfigurationTestCase extends TestCase {
     Adaptor adaptor = new Adaptor();
     adaptor.setPipeline(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
-    config.setRestartAfterFailLimit(5);
+    config.setRestartAfterFailLimit(3);
     config.setRestartAfterFailDelayMs(2 * 1000);
     adaptor.setRunConfiguration(config);
     adaptor.run();
     
-    assertTrue(adaptor.getExitCode() == 1);
+    assertTrue(adaptor.getExitCode() != 0);
     assertTrue(reader.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
-    assertTrue(reader.getRunCount() == 5);
+    assertTrue(reader.getRunCount() == 3);
     
   }
 
@@ -118,7 +118,7 @@ public class AdaptorRunConfigurationTestCase extends TestCase {
     adaptor.setRunConfiguration(config);
     adaptor.run();
     
-    assertTrue(adaptor.getExitCode() == 1);
+    assertTrue(adaptor.getExitCode() != 0);
     assertTrue(reader.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 2);

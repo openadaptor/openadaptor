@@ -35,6 +35,14 @@ package org.openadaptor.auxil.exception;
 
 import java.util.Date;
 
+/**
+ * Holds exception details (but not the actual data that relates to the exception)
+ * Used to communicate with the ExceptionStore.
+ * 
+ * @author perryj
+ *
+ */
+
 public class ExceptionSummary {
   private String id;
   private String componentId;

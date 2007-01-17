@@ -131,8 +131,8 @@ public class Application {
 
     // set start time and host properties
     props.put(PROPERTY_START_TIMESTAMP, (new SimpleDateFormat(START_TIMESTAMP_FORMAT)).format(new Date()));
-    props.put(PROPERTY_HOSTNAME, ResourceUtils.getLocalHostname());
-    props.put(PROPERTY_HOSTADDRESS, ResourceUtils.getLocalHostAddress());
+    props.put(PROPERTY_HOSTNAME, NetUtil.getLocalHostname());
+    props.put(PROPERTY_HOSTADDRESS, NetUtil.getLocalHostAddress());
 
     for (Iterator iter = buildProps.entrySet().iterator(); iter.hasNext();) {
       Map.Entry entry = (Map.Entry) iter.next();

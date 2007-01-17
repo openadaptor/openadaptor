@@ -134,6 +134,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private void registerComponents() {
     if (processor != null && processor instanceof ILifecycleComponentContainer) {
       log.debug("MessageProcessor is also a component container. Registering with processor.");
+      inpoints.clear();
+      components.clear();
       ((ILifecycleComponentContainer) processor).setComponentManager(this);
     }
   }

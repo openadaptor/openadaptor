@@ -43,13 +43,10 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Eddy Higgins
  */
-public class ResourceUtils {
+public class NetUtil {
 
-  private static final Log log = LogFactory.getLog(ResourceUtils.class.getName());
+  private static final Log log = LogFactory.getLog(NetUtil.class.getName());
 
-  private ResourceUtils() {
-  }
-  
   private static InetAddress getLocalInetAddress() {
     InetAddress result = null;
     try {
