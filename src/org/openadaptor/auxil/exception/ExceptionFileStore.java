@@ -39,7 +39,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -56,7 +55,6 @@ public class ExceptionFileStore implements ExceptionStore {
   private static final Log log = LogFactory.getLog(ExceptionFileStore.class);
   
   private static final String LAST_ID_XML = "lastId.xml";
-  
   
   File dir;
   File idfile;
@@ -103,19 +101,34 @@ public class ExceptionFileStore implements ExceptionStore {
     return id;
   }
 
-  public String[] getAllIds() {
+  public List getIds(final ExceptionSummary filter) {
     String[] files = dir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        return name.endsWith(".xml") && !name.equals(idfile.getName());
+        boolean accept = name.endsWith(".xml") && !name.equals(idfile.getName());
+        if (accept && filter.getId() != null) {
+          accept &= name.startsWith(filter.getId());
+        }
+        if (accept && filter.getFrom() != null) {
+          accept &= name.indexOf(filter.getFrom()) > 0;
+        }
+        if (accept && filter.getDate() != null) {
+          long lower = filter.getTime();
+          long upper = lower + (24 * 60 * 60 * 1000);
+          String timeString = name.split("-")[2].replaceFirst("\\.xml", "");
+          long time = Long.parseLong(timeString);
+          accept &=  time >= lower && time < upper;
+        }
+        return accept;
       }
     });
+    
     List ids = new ArrayList();
     for (int i = 0; i < files.length; i++) {
       ids.add(files[i].split("-")[0]);
     }
     Collections.sort(ids);
     Collections.reverse(ids);
-    return (String[]) ids.toArray(new String[ids.size()]);
+    return ids;
   }
 
   public String getExceptionForId(final String id) {
@@ -150,10 +163,9 @@ public class ExceptionFileStore implements ExceptionStore {
     String id = getNextId();
     try {
       Document doc = DocumentHelper.parseText(exception);
-      String from  = getText(doc, MessageExceptionXmlConverter.FROM_PATH, "retry");
-      String time  = doc.selectSingleNode("//" + MessageExceptionXmlConverter.MESSAGE_EXCEPTION 
-          + "/" + MessageExceptionXmlConverter.TIME).getText();
-      String filename = id + "-" + from + "-" + time + ".xml";
+      ExceptionSummary summary = new ExceptionSummary();
+      XMLUtil.populateSummary(doc, summary);
+      String filename = id + "-" + summary.getFrom() + "-" + summary.getTime() + ".xml";
       save(doc, filename);
     } catch (Exception e) {
       log.error("failed to store exception " + exception);
@@ -172,12 +184,10 @@ public class ExceptionFileStore implements ExceptionStore {
     }
   }
 
-  public void incrementRetry(String id) {
+  public void incrementRetryCount(String id) {
     String filename = getFilename(id);
     Document doc = getExceptionDocument(id);
-    Node node = doc.selectSingleNode(MessageExceptionXmlConverter.RETRIES_PATH);
-    int retries = Integer.parseInt(node.getText());
-    node.setText(String.valueOf(retries+1));
+    XMLUtil.incrementRetryCount(doc);
     save(doc, filename);
   }
 
@@ -187,66 +197,22 @@ public class ExceptionFileStore implements ExceptionStore {
     file.delete();
   }
 
-  public void deleteAll() {
-    String[] files = dir.list(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.endsWith(".xml") && !name.equals(idfile.getName());
-      }
-    });
-    for (int i = 0; i < files.length; i++) {
-      File file = new File(dir, files[i]);
-      file.delete();
-    }
-  }
-
   public ExceptionSummary getExceptionSummary(String id) {
     Document doc = getExceptionDocument(id);
     ExceptionSummary summary = new ExceptionSummary();
     summary.setId(id);
-    summary.setMessage(getText(doc, MessageExceptionXmlConverter.MESSAGE_PATH, ""));
-    summary.setFrom(getText(doc, MessageExceptionXmlConverter.FROM_PATH, ""));
-    summary.setDate(new Date(getLong(doc, MessageExceptionXmlConverter.TIME_PATH, 0)));
-    summary.setRetryAddress(getText(doc, MessageExceptionXmlConverter.RETRY_ADDRESS_PATH, ""));
-    summary.setComponentId(getText(doc, MessageExceptionXmlConverter.COMPONENT_PATH, ""));
-    summary.setRetries(getInt(doc, MessageExceptionXmlConverter.RETRIES_PATH, 0));
-    summary.setParentId(getText(doc, MessageExceptionXmlConverter.PARENT_ID_PATH, ""));
-    summary.setHost(getText(doc, MessageExceptionXmlConverter.HOST_PATH, ""));
-    summary.setException(getText(doc, MessageExceptionXmlConverter.CLASS_PATH, ""));
-    Node traceNode = doc.selectSingleNode(MessageExceptionXmlConverter.TRACE_PATH);
-    summary.setTrace(traceNode.asXML());
+    XMLUtil.populateSummary(doc, summary);
     return summary;
   }
 
-  private String getText(Document doc, String path, String defaultValue) {
-    try {
-      Node n = doc.selectSingleNode(path);
-      return n.getText();
-    } catch (RuntimeException e) {
-      return defaultValue;
-    }
-  }
-  
-  private long getLong(Document doc, String path, long defaultValue) {
-    try {
-      Node n = doc.selectSingleNode(path);
-      return Long.parseLong(n.getText());
-    } catch (RuntimeException e) {
-      return defaultValue;
-    }
-  }
-  
-  private int getInt(Document doc, String path, int defaultValue) {
-    try {
-      Node n = doc.selectSingleNode(path);
-      return Integer.parseInt(n.getText());
-    } catch (RuntimeException e) {
-      return defaultValue;
-    }
+  public String[] getStackTrace(String id) {
+    Document doc = getExceptionDocument(id);
+    return XMLUtil.getStackTrace(doc);
   }
   
   public String getDataForId(String id) {
     Document doc = getExceptionDocument(id);
-    return getText(doc, MessageExceptionXmlConverter.DATA_PATH, "");
+    return XMLUtil.getData(doc);
   }
 
 }

@@ -51,7 +51,6 @@ public class NetUtil {
     InetAddress result = null;
     try {
       result = InetAddress.getLocalHost();
-
     } catch (UnknownHostException e) {
       log.warn("Failed to determine local host address");
     }

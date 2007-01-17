@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
 import org.openadaptor.auxil.connector.http.ServletContainer;
 import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.core.transaction.ITransactionalResource;
 import org.openadaptor.util.NetUtil;
 
 public class ExceptionManager {
@@ -48,38 +49,37 @@ public class ExceptionManager {
 
   private ReadConnectorWebService webService;
 
-  private Server server;
+  private int port = 8080;
+  
+  public void setPort(int port) {
+    this.port = port;
+  }
 
   public void setExceptionStore(final ExceptionStore exceptionStore) {
     this.exceptionStore = exceptionStore;
   }
 
-  public void setJettyServer(final Server server) {
-    this.server = server;
-  }
-
   public static void main(String[] args) {
-    String dir = null;
-    int port = 8080;
+
+    ExceptionManager mgr = new ExceptionManager();
 
     for (int i = 0; i < args.length; i++) {
       if (args[i].equalsIgnoreCase("-dir")) {
-        dir = args[++i];
+        mgr.setExceptionStore(new ExceptionFileStore(args[++i]));
       } else if (args[i].equalsIgnoreCase("-port")) {
-        port = Integer.parseInt(args[++i]);
+        mgr.setPort(Integer.parseInt(args[++i]));
       }
     }
 
-    ExceptionManager mgr = new ExceptionManager();
-    mgr.setExceptionStore(new ExceptionFileStore(dir));
-    mgr.setJettyServer(new Server(port));
-    log.info("admin interface at http://" + NetUtil.getLocalHostname() + ":" + port + "/admin");
     mgr.run();
   }
 
   public void run() {
 
+    Server server;
+    
     try {
+      server = new Server(port);
       server.start();
     } catch (Exception e) {
       log.error("failed to start jetty server", e);
@@ -92,26 +92,26 @@ public class ExceptionManager {
     webService.setServletContainer(servletContainer);
     webService.setServiceName("ExceptionManager");
     webService.setPath("/soap/*");
-    webService.setTransacted(false);
     webService.connect();
 
     // create servlet for browsing exceptions
     webService.addServlet(new ExceptionManagerServlet(exceptionStore), "/admin/*");
+    log.info("admin interface at http://" + NetUtil.getLocalHostAddress() + ":" + port + "/admin");
 
+    // poll webservice read connector for new data
     while (!webService.isDry()) {
-      Object[] data = webService.next(1000);
-      if (data != null) {
-        storeData(data);
+      ITransactionalResource txnResource = (ITransactionalResource) webService.getResource();
+      try {
+        Object[] data = webService.next(1000);
+        for (int i = 0; data != null && i < data.length; i++) {
+          String id = exceptionStore.store(data[i].toString());
+          log.debug("stored new exception " + id);
+        }
+        txnResource.commit();
+      } catch (RuntimeException e) {
+        txnResource.rollback(e);
       }
     }
 
   }
-
-  private void storeData(Object[] data) {
-    for (int i = 0; i < data.length; i++) {
-      String id = exceptionStore.store(data[i].toString());
-      log.debug("stored new exception " + id);
-    }
-  }
-
 }

@@ -155,7 +155,7 @@ public class ExceptionMessageProcessor extends AdaptorOutpoint implements ITrans
     Object[] exceptionData = new Object[data.length];
     for (int i = 0; i < data.length; i++) {
       MessageException exception = (MessageException) data[i];
-      exceptionData[i] = MessageExceptionXmlConverter.toXml(exception, from, getRetryEndpoint(), time);
+      exceptionData[i] = XMLUtil.toXml(exception, from, getRetryEndpoint(), time);
       if (logExceptions) {
         log.error(exception.getMessage(), exception.getException());
       }

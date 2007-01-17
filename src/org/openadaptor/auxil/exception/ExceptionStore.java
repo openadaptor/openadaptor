@@ -33,12 +33,51 @@
 
 package org.openadaptor.auxil.exception;
 
+import java.util.List;
+
 public interface ExceptionStore {
-  String store(String exception);
-  void incrementRetry(String id);
-  String[] getAllIds();
-  String getExceptionForId(String id);
-  ExceptionSummary getExceptionSummary(String id);
+  /**
+   * store a new exception, represented in XML
+   * @return exception id
+   */
+  String store(String messageExceptionXML);
+
+  /**
+   * delete exception
+   * @param id
+   */
   void delete(String id);
+  
+  /**
+   * increment retry count for exception
+   * @param id
+   */
+  void incrementRetryCount(String id);
+  
+  /**
+   * get all exception ids
+   * @return
+   */
+  List getIds(ExceptionSummary filter);
+  
+  /**
+   * get exception summary for exception id
+   * @param id
+   * @return
+   */
+  ExceptionSummary getExceptionSummary(String id);
+
+  /**
+   * get stack trace for exception id
+   * @param id
+   * @return
+   */
+  public String[] getStackTrace(String id);
+
+  /**
+   * get data that relates to exception
+   * @param id
+   * @return
+   */
   String getDataForId(String id);
 }

@@ -20,21 +20,33 @@
 <html>
 <title> Exception Manager (this page refreshes every minute)</title>
 <body onload="setTimeout('refresh()', 60 * 1000)">
-
+<p>Exceptions</p>
+<form>  
 <table>
+  <thead>
+    <tr>
+      <th><input type="textbox" name='idFilter' size='6' value='$!SESSION.getAttribute("idFilter")'/></th>
+      <th><input type="textbox" name='fromFilter' value='$!SESSION.getAttribute("fromFilter")'/></th>
+      <th><input type="textbox" name='dateFilter' size='8' value='$!SESSION.getAttribute("dateFilter")'/></th>
+      <th><input type="submit" value='Filter'/></th>
+      <th/>
+      <th/>
+      <th/>
+    </tr>
+  </thead>
   <tbody>
 #set ( $prevDate = "" )
 #set ( $prevParentId = "" )
 #set ( $retryIds = "" )
 #set ( $todayIds = "" )
-#set ( $allIds = "" )
+#set ( $pageIds = "" )
 #foreach ( $summary in $summaries )
   #if ( $summary.ParentId == "" ) #set ( $prevParentId = $summary.Id ) #end
   #if ( $summary.ParentId == $prevParentId ) 
     #set ($rowClass = "retry") 
     #set ($idClass = "idretry")
     #set ( $retryIds = "$retryIds,$summary.Id") 
-    #if ( $allIds != "" )
+    #if ( $pageIds != "" )
       <td/></tr>
     #end
   #else 
@@ -42,7 +54,7 @@
     #set ($idClass = "idoriginal")
     #if ($retryIds != "")
       <td><a href="?action=deleteall&ids=${retryIds}">Delete All</a></td></tr>
-    #elseif ( $allIds != "" )
+    #elseif ( $pageIds != "" )
       <td></tr>
     #end
     #set ( $retryIds = "" )
@@ -50,7 +62,7 @@
   #end
   #if ( $summary.Id == $id ) #set ( $rowClass = "highlight" ) #end
 
-  #set ( $allIds = "$allIds,$summary.Id")
+  #set ( $pageIds = "$pageIds,$summary.Id")
     
   #if ( $date != $prevDate)
     #if ( $todayIds != "")
@@ -101,7 +113,7 @@
 #end
 #if ($retryIds != "")
   <td><a href="?action=deleteall&ids=${retryIds}">Delete All</a></td></tr>
-#elseif ( $allIds != "" )
+#elseif ( $pageIds != "" )
   <td/></tr>
 #end
 #if ( $todayIds != "" )
@@ -110,18 +122,22 @@
 
   </tbody>
 </table>
-
+</form>
+        
 <!-- footer -->
-<p>Most Recent ${summaries.size()} of ${totalCount}</p>
+<p>Most Recent ${summaries.size()} of $allIds.size()</p>
 <form>
 <table>
   <tr>
     <td><a href="?action=list">Refresh</a></td>
-    <td><a href="?action=deleteall&ids=$allIds">Delete All</a></td>
-    <td>Show Last <input type="textbox" cols="10" name="show" value="$show"/> Entries</td>
+    <td><a href="?action=deleteall&ids=$pageIds">Delete All</a></td>
+    <td>Show Last <input type='textbox' maxlength='3' size='3' name='show' value='$!SESSION.getAttribute("show")'/> Entries</td>
   </tr>
 </table> 
 </form>
+#if ($messages != "")
+<textarea readonly="true" cols="80">$messages</textarea>
+#end
 </div>
 
 </body>
