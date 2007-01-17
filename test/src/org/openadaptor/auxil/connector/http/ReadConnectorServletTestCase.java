@@ -67,7 +67,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       servlet.setPort(PORT);
       servlet.setTransacted(false);
       servlet.connect();
-      testUrl = servlet.getServletUrl().replace(NetUtil.getLocalHostname(), "localhost");
+      testUrl = servlet.getServletUrl().replaceFirst(NetUtil.getLocalHostname(), "localhost");
     }
     catch (Exception e) {
       // Attempt to disconnect if anything has gone wrong during setup.
