@@ -53,18 +53,21 @@ import org.openadaptor.auxil.connector.iostream.RFC2279;
 
 public class ReadConnectorServletTestCase extends TestCase {
 
+  static final int PORT = 8087;
+  static final String TEST_URL = "http://localhost:" + PORT + "/*";
+
   public void testPost() {
     
     // create connector and connect (this starts jetty)
     ReadConnectorServlet servlet = new ReadConnectorServlet();
     servlet.setParameterName("data");
-    servlet.setPort(9999);
+    servlet.setPort(PORT);
     servlet.setTransacted(false);
     servlet.connect();
     
     // to http get
-    postData(servlet.getServletUrl(), "data", "foo");
-    postData(servlet.getServletUrl(), "data", "bar");
+    postData(TEST_URL, "data", "foo");
+    postData(TEST_URL, "data", "bar");
 
     // poll service and check results
     Object[] data = servlet.next(0);
@@ -80,7 +83,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     map.put("field1", "foo");
     map.put("field2", "bar");
     map.put("field3", "foobar");
-    postData(servlet.getServletUrl(), map);
+    postData(TEST_URL, map);
     
     data = servlet.next(0);
     assertTrue(data.length == 1);
@@ -95,13 +98,13 @@ public class ReadConnectorServletTestCase extends TestCase {
     ReadConnectorServlet servlet = new ReadConnectorServlet();
     servlet.setParameterName("data");
     servlet.setAcceptGet(true);
-    servlet.setPort(9999);
+    servlet.setPort(PORT);
     servlet.setTransacted(false);
     servlet.connect();
-    
+
     // to http get
-    getData(servlet.getServletUrl(), "data", "foo");
-    getData(servlet.getServletUrl(), "data", "bar");
+    getData(TEST_URL, "data", "foo");
+    getData(TEST_URL, "data", "bar");
 
     // poll service and check results
     Object[] data = servlet.next(0);
@@ -117,7 +120,7 @@ public class ReadConnectorServletTestCase extends TestCase {
     map.put("field1", "foo");
     map.put("field2", "bar");
     map.put("field3", "foobar");
-    getData(servlet.getServletUrl(), map);
+    getData(TEST_URL, map);
     
     data = servlet.next(0);
     assertTrue(data.length == 1);
@@ -136,7 +139,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       writer.flush();
       int responseCode = connection.getResponseCode();
       if (HttpURLConnection.HTTP_OK != responseCode) {
-        fail("post failed");
+        fail("post failed with:" + responseCode);
       }
       writer.close();
       readResponse(connection);
@@ -165,7 +168,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       writer.flush();
       int responseCode = connection.getResponseCode();
       if (HttpURLConnection.HTTP_OK != responseCode) {
-        fail("post failed");
+        fail("post failed with: " + responseCode);
       }
       writer.close();
       readResponse(connection);
