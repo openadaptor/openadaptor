@@ -417,7 +417,7 @@ BEGIN -- OA_GetNextQueuedEvent
       and EventServiceId = @EventServiceId
       and EventTypeId = @EventTypeId
 
-    if @EventId != NULL
+    if @EventId is not NULL
       BEGIN
         -- Update event
         update OA_Event
