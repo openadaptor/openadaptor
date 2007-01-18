@@ -83,7 +83,7 @@
     <property name="filterExpressionString" value="{data} = 'discard'"/>
   </bean>
   
-  <bean id="Writer" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+  <bean id="Writer" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
         <property name="streamWriter">
@@ -96,7 +96,7 @@
     </property>
   </bean>
   
-  <bean id="DiscardWriter" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+  <bean id="DiscardWriter" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
         <property name="streamWriter">

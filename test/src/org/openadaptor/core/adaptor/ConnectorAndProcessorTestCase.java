@@ -37,10 +37,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.adaptor.AdaptorInpoint;
-import org.openadaptor.core.adaptor.AdaptorOutpoint;
 import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.TestProcessor;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
@@ -50,143 +50,143 @@ import junit.framework.TestCase;
 public class ConnectorAndProcessorTestCase extends TestCase {
 
 	/**
-	 * test that processors can be configured with a inpoint
+	 * test that processors can be configured with a readNode
 	 *
 	 */
-	public void testInpointProcessor() {
-		runInpointProcessor(1, 1);
-		runInpointProcessor(3, 10);
+	public void testReadNodeProcessor() {
+		runReadNodeProcessor(1, 1);
+		runReadNodeProcessor(3, 10);
 	}
 	
 	/**
-	 * test that processors can be configured with a outpoint
+	 * test that processors can be configured with a writeNode
 	 *
 	 */
-	public void testOutpointProcessor() {
-		runOutpointProcessor(1, 1);
-		runOutpointProcessor(3, 10);
+	public void testWriteNodeProcessor() {
+		runWriteNodeProcessor(1, 1);
+		runWriteNodeProcessor(3, 10);
 	}
 	
 	/**
-	 * test that discards and exception routing works with outpoint
+	 * test that discards and exception routing works with writeNode
 	 * processors
 	 *
 	 */
-	public void testOutpointProcessorExceptionAndDiscards() {
-		// create inpoint
-		AdaptorInpoint inpoint = new AdaptorInpoint("i");
+	public void testWriteNodeProcessorExceptionAndDiscards() {
+		// create readNode
+		ReadNode readNode = new ReadNode("i");
 		TestReadConnector inconnector = new TestReadConnector();
 		inconnector.setDataString("x");
 		inconnector.setMaxSend(5);
-		inpoint.setConnector(inconnector);
+		readNode.setConnector(inconnector);
 		
-		// create outpoint
-		AdaptorOutpoint outpoint = new AdaptorOutpoint("o");
+		// create writeNode
+		WriteNode writeNode = new WriteNode("o");
 		TestWriteConnector outconnector = new TestWriteConnector();
 		outconnector.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
-		outpoint.setConnector(outconnector);
+		writeNode.setConnector(outconnector);
 		TestProcessor processor = new TestProcessor("p");
 		processor.setExceptionClassName("java.lang.NullPointerException");
 		processor.setExceptionFrequency(3);
 		processor.setDiscardFrequency(4);
-		outpoint.setProcessor(processor);
+		writeNode.setProcessor(processor);
 
-		// error outpoint
-		TestWriteConnector errorOutpoint = new TestWriteConnector("e");
-		errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.NullPointerException:null:x", 1));
+		// error writeNode
+		TestWriteConnector errorWriteNode = new TestWriteConnector("e");
+		errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.NullPointerException:null:x", 1));
 
-		// discard outpoint
-		TestWriteConnector discardOutpoint = new TestWriteConnector("d");
-		discardOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("x", 1));
+		// discard writeNode
+		TestWriteConnector discardWriteNode = new TestWriteConnector("d");
+		discardWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("x", 1));
 
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
-		processMap.put(inpoint, outpoint);
+		processMap.put(readNode, writeNode);
 		routingMap.setProcessMap(processMap);
 		
 		Map exceptionMap = new HashMap();
-		exceptionMap.put("java.lang.Exception", errorOutpoint);
+		exceptionMap.put("java.lang.Exception", errorWriteNode);
 		routingMap.setExceptionMap(exceptionMap);
 
 		Map discardMap = new HashMap();
-		discardMap.put(outpoint, discardOutpoint);
+		discardMap.put(writeNode, discardWriteNode);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 		
 		// run adaptor
 		adaptor.run();
 		assertTrue(adaptor.getExitCode() == 0);
 	}
 	
-	public void runInpointProcessor(int batchSize, int maxSend) {
+	public void runReadNodeProcessor(int batchSize, int maxSend) {
 		
-		// create inpoint
-		AdaptorInpoint inpoint = new AdaptorInpoint("i");
+		// create readNode
+		ReadNode readNode = new ReadNode("i");
 		TestReadConnector inconnector = new TestReadConnector();
 		inconnector.setDataString("x");
 		inconnector.setBatchSize(batchSize);
 		inconnector.setMaxSend(maxSend);
 		TestProcessor processor = new TestProcessor("p");
-		inpoint.setConnector(inconnector);
-		inpoint.setProcessor(processor);
+		readNode.setConnector(inconnector);
+		readNode.setProcessor(processor);
 		
-		// create outpoint
-		AdaptorOutpoint outpoint = new AdaptorOutpoint("o");
+		// create writeNode
+		WriteNode writeNode = new WriteNode("o");
 		TestWriteConnector outconnector = new TestWriteConnector();
 		outconnector.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", maxSend));
-		outpoint.setConnector(outconnector);
+		writeNode.setConnector(outconnector);
 		
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
-		processMap.put(inpoint, outpoint);
+		processMap.put(readNode, writeNode);
 		routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 		
 		// run adaptor
 		adaptor.run();
 		assertTrue(adaptor.getExitCode() == 0);
 	}
 	
-	public void runOutpointProcessor(int batchSize, int maxSend) {
+	public void runWriteNodeProcessor(int batchSize, int maxSend) {
 		
-		// create inpoint
-		AdaptorInpoint inpoint = new AdaptorInpoint("i");
+		// create readNode
+		ReadNode readNode = new ReadNode("i");
 		TestReadConnector inconnector = new TestReadConnector();
 		inconnector.setDataString("x");
 		inconnector.setBatchSize(batchSize);
 		inconnector.setMaxSend(maxSend);
-		inpoint.setConnector(inconnector);
+		readNode.setConnector(inconnector);
 		
-		// create outpoint
-		AdaptorOutpoint outpoint = new AdaptorOutpoint("o");
+		// create writeNode
+		WriteNode writeNode = new WriteNode("o");
 		TestWriteConnector outconnector = new TestWriteConnector();
 		outconnector.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", maxSend));
-		outpoint.setConnector(outconnector);
+		writeNode.setConnector(outconnector);
 		TestProcessor processor = new TestProcessor("p");
-		outpoint.setProcessor(processor);
+		writeNode.setProcessor(processor);
 		
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		Map processMap = new HashMap();
-		processMap.put(inpoint, outpoint);
+		processMap.put(readNode, writeNode);
 		routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 		
 		// run adaptor
 		adaptor.run();

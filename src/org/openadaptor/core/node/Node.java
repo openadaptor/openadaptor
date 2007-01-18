@@ -49,14 +49,14 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 
 	private static final Log log = LogFactory.getLog(Node.class);
 	
-	private IMessageProcessor next;
+	private IMessageProcessor messageProcessor;
 
 	private IDataProcessor processor;
 
 	public Node(final String id, final IDataProcessor processor, final IMessageProcessor next) {
 		super(id);
 		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
-		this.next = next;
+		this.messageProcessor = next;
 	}
 
 	public Node(final String id, final IDataProcessor processor) {
@@ -71,8 +71,8 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		this(null, null, null);
 	}
 	
-	public void setNext(IMessageProcessor next) {
-		this.next = next;
+	public void setMessageProcessor(IMessageProcessor processor) {
+		this.messageProcessor = processor;
 	}
 
 	public void setProcessor(IDataProcessor processor) {
@@ -110,7 +110,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 		// if node is chained and there are no exceptions then
 		// delegate to next IMessageProcessor in the chain
 		
-		if (next != null) {
+		if (messageProcessor != null) {
 			if (!response.containsExceptions()) {
         msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
 				response = callChainedMessageProcessor(msg);
@@ -124,7 +124,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
 	}
 
   protected Response callChainedMessageProcessor(Message msg) {
-    return next.process(msg);
+    return messageProcessor.process(msg);
   }
   
 	public void validate(List exceptions) {

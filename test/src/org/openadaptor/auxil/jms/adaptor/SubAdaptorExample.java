@@ -46,7 +46,7 @@ public class SubAdaptorExample {
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();

@@ -14,19 +14,19 @@
   <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="InPoint" value-ref="OutPoint"/>
+        <entry key-ref="ReadConnector" value-ref="WriteConnector"/>
       </map>
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.openadaptor.core.connector.TestReadConnector">
-    <property name="id" value="InPoint"/>
+  <bean id="ReadConnector" class="org.openadaptor.core.connector.TestReadConnector">
+    <property name="id" value="ReadConnector"/>
     <property name="batchSize" value="3"/>
     <property name="maxSend" value="10"/>
   </bean>
   
-  <bean id="OutPoint" class="org.openadaptor.core.connector.TestWriteConnector">
-    <property name="id" value="OutPoint"/>
+  <bean id="WriteConnector" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="WriteConnector"/>
     <property name="expectedOutput">
       <list>
         <value>test data 1</value>

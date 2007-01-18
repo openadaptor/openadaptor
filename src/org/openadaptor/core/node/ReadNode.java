@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.openadaptor.core.adaptor;
+package org.openadaptor.core.node;
 
 import java.util.List;
 
@@ -41,18 +41,16 @@ import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.node.Node;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.ITransactional;
 
-public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactionInitiator {
+public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
-  private static final Log log = LogFactory.getLog(AdaptorInpoint.class);
-
-  private Adaptor adaptor;
+  private static final Log log = LogFactory.getLog(ReadNode.class);
 
   private IReadConnector connector;
 
@@ -64,17 +62,15 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactio
 
   private Object prevReaderContext;
   
-  private boolean stopAdaptorOnError = true;
-
-  public AdaptorInpoint() {
+  public ReadNode() {
     super();
   }
 
-  public AdaptorInpoint(String id) {
+  public ReadNode(String id) {
     super(id);
   }
 
-  public AdaptorInpoint(final String id, final IReadConnector connector) {
+  public ReadNode(final String id, final IReadConnector connector) {
     this(id);
     this.connector = connector;
   }
@@ -95,10 +91,10 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactio
    * if set then this component will call stop on the adaptor
    * if it terminates unexpectedly
    */
-  public void setStopAdaptorOnError(boolean stopAdaptor) {
-    this.stopAdaptorOnError = stopAdaptor;
-  }
-  
+//  public void setStopAdaptorOnError(boolean stopAdaptor) {
+//    this.stopAdaptorOnError = stopAdaptor;
+//  }
+//  
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
@@ -161,9 +157,9 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactio
           transaction.rollback();
           transaction = null;
           stop();
-          if (stopAdaptorOnError && adaptor != null) {
-            adaptor.stopNoWait();
-          }
+//          if (stopAdaptorOnError && adaptor != null) {
+//            adaptor.stopNoWait();
+//          }
         }
       }
     } finally {
@@ -198,11 +194,6 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactio
     return data;
   }
 
-  public void setAdaptor(final Adaptor adaptor) {
-    this.adaptor = adaptor;
-    setNext(adaptor);
-  }
-
   public int getExitCode() {
     return exitCode;
   }
@@ -228,4 +219,5 @@ public class AdaptorInpoint extends Node implements IAdaptorInpoint, ITransactio
   public String toString() {
     return getId();
   }
+
 }

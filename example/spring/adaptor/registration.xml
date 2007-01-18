@@ -29,13 +29,13 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor" depends-on="SystemProperties">
     <property name="pipeline">
       <list>
-        <ref bean="InPoint"/>
-        <ref bean="OutPoint"/>
+        <ref bean="ReadConnector"/>
+        <ref bean="WriteConnector"/>
       </list>
     </property>
   </bean>
 
-  <bean id="InPoint" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <property name="streamReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
     </property>
@@ -44,7 +44,7 @@
     </property>
   </bean>
   
-  <bean id="OutPoint" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
     </property>

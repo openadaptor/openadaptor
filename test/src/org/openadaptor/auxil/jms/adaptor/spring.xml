@@ -23,7 +23,7 @@
           <bean class="org.openadaptor.core.router.RoutingMap">
             <property name="processMap">
               <map>
-                <entry key-ref="TestInpoint" value-ref="JmsPublisher"/>
+                <entry key-ref="TestReader" value-ref="JmsPublisher"/>
               </map>
             </property>
           </bean>
@@ -32,7 +32,7 @@
     </property>
   </bean>
   
-  <bean id="TestInpoint" class="org.openadaptor.core.connector.TestReadConnector">
+  <bean id="TestReader" class="org.openadaptor.core.connector.TestReadConnector">
     <property name="dataString" value="foobar"/>
   </bean>
   
@@ -47,7 +47,7 @@
           <bean class="org.openadaptor.core.router.RoutingMap">
             <property name="processMap">
               <map>
-                <entry key-ref="JmsSubscriber" value-ref="TestOutpoint"/>
+                <entry key-ref="JmsSubscriber" value-ref="TestWriteConnector"/>
               </map>
             </property>
           </bean>
@@ -60,7 +60,7 @@
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
   
-  <bean id="TestOutpoint" class="org.openadaptor.core.connector.TestWriteConnector">
+  <bean id="TestWriteConnector" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="expectedOutput" value="foobar"/>
   </bean>
   

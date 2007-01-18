@@ -15,19 +15,19 @@
       java org.openadaptor.spring.SpringApplication -config mq_writer.xml -bean Adaptor -props mq.properties
 
     mq.properties is a properties format file which should be edited to supply specific mq property
-    values e.g. channel etc. Alternatively just edit MQSeries_Outpoint below directly.
+    values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
   </description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="Inpoint"/>
-        <ref bean="MQSeries_Outpoint"/>
+        <ref bean="ReadConnector"/>
+        <ref bean="MQSeries_WriteConnector"/>
       </list>
     </property>
   </bean>
 
-  <bean id="Inpoint" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Configured to read from stdin.
     </description>
@@ -39,8 +39,8 @@
     </property>
   </bean>
 
-  <!-- Outpoint: MqWriteConnector -->
-  <bean id="MQSeries_Outpoint" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
+  <!-- WriteConnector: MqWriteConnector -->
+  <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
     <description>
       Configured to write directly to MQ Series.
     </description>

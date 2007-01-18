@@ -31,11 +31,12 @@
  * ]]
  */
 
-package org.openadaptor.core.adaptor;
+package org.openadaptor.core.lifecycle;
 
-import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.IMessageProcessor;
 
-public interface IAdaptorInpoint extends ILifecycleComponent, Runnable {
-	void setAdaptor(Adaptor adaptor);
+public interface IRunnable extends ILifecycleComponent, Runnable {
+//	void setAdaptor(Adaptor adaptor);
+  void setMessageProcessor(IMessageProcessor processor);
 	int getExitCode();
 }

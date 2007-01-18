@@ -6,13 +6,13 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="InPoint"/>
-        <ref bean="OutPoint"/>
+        <ref bean="ReadNode"/>
+        <ref bean="WriteNode"/>
       </list>
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.openadaptor.core.adaptor.AdaptorInpoint">
+  <bean id="ReadNode" class="org.openadaptor.core.node.ReadNode">
     <property name="connector">
       <bean class="org.openadaptor.core.connector.TestReadConnector">
         <property name="dataString" value="foobar"/>
@@ -20,7 +20,7 @@
     </property>
   </bean>
   
-  <bean id="OutPoint" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+  <bean id="WriteNode" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <bean class="org.openadaptor.core.connector.TestWriteConnector">
         <property name="expectedOutput" value="foobar"/>

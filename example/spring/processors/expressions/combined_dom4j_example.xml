@@ -29,7 +29,7 @@
   <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="XmlInpoint" value-ref="dom4j_convertor"/>
+        <entry key-ref="XmlReadConnector" value-ref="dom4j_convertor"/>
         <entry key-ref="dom4j_convertor" value-ref="AccessorWrapper"/>
         <entry key-ref="AccessorWrapper" value-ref="SetTotalValue"/>
         <entry key-ref="SetTotalValue" value-ref="AddAuthorTitle"/>
@@ -37,12 +37,12 @@
         <entry key-ref="ConditionalQuantify" value-ref="RemoveRedundantAttributes"/>
         <entry key-ref="RemoveRedundantAttributes" value-ref="Unwrapper"/>
         <entry key-ref="Unwrapper" value-ref="ConvertToXMLText"/>
-        <entry key-ref="ConvertToXMLText" value-ref="Outpoint"/>
+        <entry key-ref="ConvertToXMLText" value-ref="WriteConnector"/>
       </map>
     </property>
   </bean>
 
-  <bean id="XmlInpoint" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Read in an xml document consisting of a single record.
     </description>
@@ -155,7 +155,7 @@
     <property name="prettyPrint" value="true"/> 
   </bean>
 
-  <bean id="Outpoint" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <description>Dump the results to stdout</description>
     <property name="streamWriter">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>

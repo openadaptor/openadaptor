@@ -73,15 +73,15 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
     }
     
     // create adaptor to invoke webservice
-    TestReadConnector inpoint = new TestReadConnector("in");
-    inpoint.setDataString("foobar");
+    TestReadConnector readNode = new TestReadConnector("in");
+    readNode.setDataString("foobar");
     
-    WebServiceWriteConnector outpoint = new WebServiceWriteConnector("out");
-    outpoint.setEndpoint("http://localhost:8191/MyService?wsdl");
-    outpoint.setMethodName("process");
+    WebServiceWriteConnector writeNode = new WebServiceWriteConnector("out");
+    writeNode.setEndpoint("http://localhost:8191/MyService?wsdl");
+    writeNode.setMethodName("process");
     
     Map map = new HashMap();
-    map.put(inpoint, outpoint);
+    map.put(readNode, writeNode);
     RoutingMap routingMap = new RoutingMap();
     routingMap.setProcessMap(map);
     

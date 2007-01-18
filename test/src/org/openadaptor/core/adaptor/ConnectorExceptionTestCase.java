@@ -51,38 +51,38 @@ public class ConnectorExceptionTestCase extends TestCase {
 	 * test that write connector exceptions are trapped and routed correctly
 	 *
 	 */
-	public void testOutpointException() {
+	public void testWriteNodeException() {
 
-		TestReadConnector inpoint = new TestReadConnector("i");
-		inpoint.setDataString("x");
-		inpoint.setMaxSend(5);
+		TestReadConnector readNode = new TestReadConnector("i");
+		readNode.setDataString("x");
+		readNode.setMaxSend(5);
 
 		TestProcessor processor = new TestProcessor("p");
 
-		TestWriteConnector outpoint = new TestWriteConnector("o");
-		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
-		outpoint.setExceptionFrequency(2);
+		TestWriteConnector writeNode = new TestWriteConnector("o");
+		writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
+		writeNode.setExceptionFrequency(2);
 
-		TestWriteConnector errorOutpoint = new TestWriteConnector("e");
-		errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
+		TestWriteConnector errorWriteNode = new TestWriteConnector("e");
+		errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
 
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
-		processMap.put(inpoint, processor);
-		processMap.put(processor, outpoint);
+		processMap.put(readNode, processor);
+		processMap.put(processor, writeNode);
 		routingMap.setProcessMap(processMap);
 		
 		Map exceptionMap = new HashMap();
-		exceptionMap.put("java.lang.Exception", errorOutpoint);
+		exceptionMap.put("java.lang.Exception", errorWriteNode);
 		routingMap.setExceptionMap(exceptionMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 
 		// run adaptor
 		adaptor.run();
@@ -96,24 +96,24 @@ public class ConnectorExceptionTestCase extends TestCase {
 	 * is no exception mapping
 	 *
 	 */
-	public void testOutpointException2() {
+	public void testWriteNodeException2() {
 
-		TestReadConnector inpoint = new TestReadConnector("i");
-		inpoint.setDataString("x");
-		inpoint.setMaxSend(5);
+		TestReadConnector readNode = new TestReadConnector("i");
+		readNode.setDataString("x");
+		readNode.setMaxSend(5);
 
 		TestProcessor processor = new TestProcessor("p");
 
-		TestWriteConnector outpoint = new TestWriteConnector("o");
-		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 1));
-		outpoint.setExceptionFrequency(2);
+		TestWriteConnector writeNode = new TestWriteConnector("o");
+		writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 1));
+		writeNode.setExceptionFrequency(2);
 
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
-		processMap.put(inpoint, processor);
-		processMap.put(processor, outpoint);
+		processMap.put(readNode, processor);
+		processMap.put(processor, writeNode);
 		routingMap.setProcessMap(processMap);
 		
 		Map exceptionMap = new HashMap();
@@ -123,7 +123,7 @@ public class ConnectorExceptionTestCase extends TestCase {
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 
 		// run adaptor
 		adaptor.run();
@@ -136,39 +136,39 @@ public class ConnectorExceptionTestCase extends TestCase {
 	 * is > 1.
 	 *
 	 */
-	public void testOutpointException3() {
+	public void testWriteNodeException3() {
 
-		TestReadConnector inpoint = new TestReadConnector("i");
-		inpoint.setDataString("x");
-		inpoint.setMaxSend(5);
-		inpoint.setBatchSize(2);
+		TestReadConnector readNode = new TestReadConnector("i");
+		readNode.setDataString("x");
+		readNode.setMaxSend(5);
+		readNode.setBatchSize(2);
 
 		TestProcessor processor = new TestProcessor("p");
 
-		TestWriteConnector outpoint = new TestWriteConnector("o");
-		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 1));
-		outpoint.setExceptionFrequency(2);
+		TestWriteConnector writeNode = new TestWriteConnector("o");
+		writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 1));
+		writeNode.setExceptionFrequency(2);
 
-		TestWriteConnector errorOutpoint = new TestWriteConnector("e");
-		errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 0));
+		TestWriteConnector errorWriteNode = new TestWriteConnector("e");
+		errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 0));
 
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
-		processMap.put(inpoint, processor);
-		processMap.put(processor, outpoint);
+		processMap.put(readNode, processor);
+		processMap.put(processor, writeNode);
 		routingMap.setProcessMap(processMap);
 		
 		Map exceptionMap = new HashMap();
-		exceptionMap.put("java.lang.Exception", errorOutpoint);
+		exceptionMap.put("java.lang.Exception", errorWriteNode);
 		routingMap.setExceptionMap(exceptionMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 
 		// run adaptor
 		adaptor.run();
@@ -180,24 +180,24 @@ public class ConnectorExceptionTestCase extends TestCase {
 	 * test that read connector exceptions cause the adaptor to fail
 	 *
 	 */
-	public void testInpointException() {
+	public void testReadNodeException() {
 
-		TestReadConnector inpoint = new TestReadConnector("i");
-		inpoint.setDataString("x");
-		inpoint.setMaxSend(5);
-		inpoint.setExceptionFrequency(5);
+		TestReadConnector readNode = new TestReadConnector("i");
+		readNode.setDataString("x");
+		readNode.setMaxSend(5);
+		readNode.setExceptionFrequency(5);
 
 		TestProcessor processor = new TestProcessor("p");
 
-		TestWriteConnector outpoint = new TestWriteConnector("o");
-		outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 4));
+		TestWriteConnector writeNode = new TestWriteConnector("o");
+		writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 4));
 
 		// create router
 		RoutingMap routingMap = new RoutingMap();
 		
 		Map processMap = new HashMap();
-		processMap.put(inpoint, processor);
-		processMap.put(processor, outpoint);
+		processMap.put(readNode, processor);
+		processMap.put(processor, writeNode);
 		routingMap.setProcessMap(processMap);
 		
 		Map exceptionMap = new HashMap();
@@ -207,7 +207,7 @@ public class ConnectorExceptionTestCase extends TestCase {
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-		adaptor.setRunInpointsInCallingThread(true);
+		adaptor.setRunInCallingThread(true);
 
 		// run adaptor
 		adaptor.run();

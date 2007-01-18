@@ -18,16 +18,16 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="XmlInpoint"/>
+        <ref bean="XmlReadConnector"/>
         <ref bean="OMConvertor"/>
         <ref bean="SetConditionally"/>
         <ref bean="DelimitedTextConvertor"/>
-        <ref bean="Outpoint"/>
+        <ref bean="WriteConnector"/>
       </list>
     </property>
   </bean>
 
-  <bean id="XmlInpoint" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
+  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <description>
       Read in an entire xml document consisting of multiple (child) records.
     </description>
@@ -77,7 +77,7 @@
 
   <bean id="DelimitedTextConvertor" class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
 
-  <bean id="Outpoint" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <description>Dump the results to stdout</description>
     <property name="streamWriter">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>

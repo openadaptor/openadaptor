@@ -17,9 +17,9 @@ public class PubExample {
     connection.setDestinationName("topic/testTopic");
     //connection.setTopic(true);
 
-    JMSWriteConnector outpoint = new JMSWriteConnector();
-    outpoint.setJmsConnection(connection);
-    outpoint.connect();
-    outpoint.deliver(new Object[] {"one", "two", "three"});
+    JMSWriteConnector writeNode = new JMSWriteConnector();
+    writeNode.setJmsConnection(connection);
+    writeNode.connect();
+    writeNode.deliver(new Object[] {"one", "two", "three"});
   }
 }

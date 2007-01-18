@@ -34,7 +34,6 @@
 package org.openadaptor.core.lifecycle;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -72,25 +71,33 @@ public class LifecycleDelegate {
 	}
 
 	public void notifyListeners(State newState) {
-		synchronized (LOCK) {
-			for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-				ILifecycleListener listener = (ILifecycleListener) iter.next();
-				try {
-					listener.stateChanged(component, newState);
-				} catch (RuntimeException e) {
-					log.error("unexpected exception", e);
-				}
-			}
-		}
-	}
+    // copy listeners to avoid concurrent modification during notification!!!
+    ILifecycleListener[] listeners = getListeners();
+    for (int i = 0; i < listeners.length; i++) {
+      try {
+        listeners[i].stateChanged(component, newState);
+      } catch (RuntimeException e) {
+        log.error("unexpected exception", e);
+      }
+    }
+  }
 	
+  private ILifecycleListener[] getListeners() {
+    synchronized (LOCK) {
+      return (ILifecycleListener[]) listeners.toArray(new ILifecycleListener[listeners.size()]);
+    }
+  }
+  
 	public boolean isState(State state) {
 		return currentState.equals(state);
 	}
 
 	public void setState(State state) {
 		synchronized (WAIT) {
-			currentState = state;
+			if (currentState != state) {
+			  currentState = state;
+        notifyListeners(currentState);
+      }
 			WAIT.notifyAll();
 		}
 	}

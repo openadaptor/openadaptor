@@ -6,34 +6,34 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.adaptor.AdaptorInpoint;
-import org.openadaptor.core.adaptor.AdaptorOutpoint;
 import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.TestProcessor;
 
 public class PipelineTestCase extends TestCase {
 
   public void test() {
-    // create inpoint
-    AdaptorInpoint inpoint = new AdaptorInpoint();
+    // create readNode
+    ReadNode readNode = new ReadNode();
     TestReadConnector inconnector = new TestReadConnector();
     inconnector.setDataString("foobar");
-    inpoint.setConnector(inconnector);
+    readNode.setConnector(inconnector);
 
-    // create outpoint
-    AdaptorOutpoint outpoint = new AdaptorOutpoint();
+    // create writeNode
+    WriteNode writeNode = new WriteNode();
     TestWriteConnector outconnector = new TestWriteConnector();
     outconnector.setExpectedOutput(inconnector.getDataString());
-    outpoint.setConnector(outconnector);
+    writeNode.setConnector(outconnector);
 
     // create pipeline
-    Object[] pipeline = new Object[] {inpoint, outpoint};
+    Object[] pipeline = new Object[] {readNode, writeNode};
 
     // create router
     Adaptor adaptor = new Adaptor();
     adaptor.setPipeline(pipeline);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // run adaptor
     adaptor.run();
@@ -42,27 +42,27 @@ public class PipelineTestCase extends TestCase {
   
   public void test2() {
     
-    // create inpoint
-    TestReadConnector inpoint = new TestReadConnector("InPoint");
-    inpoint.setDataString("foobar");
-    inpoint.setBatchSize(3);
-    inpoint.setMaxSend(10);
+    // create readNode
+    TestReadConnector readNode = new TestReadConnector("ReadConnector");
+    readNode.setDataString("foobar");
+    readNode.setBatchSize(3);
+    readNode.setMaxSend(10);
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
     List output = new ArrayList();
     for (int i = 0; i < 10; i++) {
-      output.add(inpoint.getDataString().replaceAll("%n", String.valueOf(i+1)));
+      output.add(readNode.getDataString().replaceAll("%n", String.valueOf(i+1)));
     }
-    outpoint.setExpectedOutput(output);
+    writeNode.setExpectedOutput(output);
     
     // create pipeline
-    Object[] pipeline = new Object[] {inpoint, outpoint};
+    Object[] pipeline = new Object[] {readNode, writeNode};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setPipeline(pipeline);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -71,30 +71,30 @@ public class PipelineTestCase extends TestCase {
   
   /**
    * IReadConnector -> IDataProcessor -> IWriteConnector
-   * uses "autoboxing" so no need to construct AdaptorInPoint, Node & AdaptorOutPoint
+   * uses "autoboxing" so no need to construct ReadNode, Node & WriteNode
    * ReadConnector sends one message and then "closes", causing adaptor to stop and 
    * WriteConnector to check it has received it's expected output.
    */
   public void test3() {
     
-    // create inpoint
-    TestReadConnector inpoint = new TestReadConnector("InPoint");
-    inpoint.setDataString("foobar");
+    // create readNode
+    TestReadConnector readNode = new TestReadConnector("ReadConnector");
+    readNode.setDataString("foobar");
     
     // create processor
     TestProcessor processor = new TestProcessor("Processor1");
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
-    outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
+    writeNode.setExpectedOutput(processor.getId() + "(" + readNode.getDataString() + ")");
     
     // create pipeline
-    Object[] pipeline = new Object[] {inpoint, processor, outpoint};
+    Object[] pipeline = new Object[] {readNode, processor, writeNode};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setPipeline(pipeline);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -106,11 +106,11 @@ public class PipelineTestCase extends TestCase {
    */
   public void test4() {
     
-    // create inpoint
-    TestReadConnector inpoint = new TestReadConnector("InPoint");
-    inpoint.setDataString("foobar");
-    inpoint.setBatchSize(3);
-    inpoint.setMaxSend(10);
+    // create readNode
+    TestReadConnector readNode = new TestReadConnector("ReadConnector");
+    readNode.setDataString("foobar");
+    readNode.setBatchSize(3);
+    readNode.setMaxSend(10);
     
     // create processor
     TestProcessor processor = new TestProcessor("Processor1");
@@ -119,22 +119,22 @@ public class PipelineTestCase extends TestCase {
     TestProcessor exceptor = new TestProcessor("Exceptor");
     exceptor.setExceptionFrequency(3);
     
-    // create outpoint for processed data
-    TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
-    outpoint.setExpectedOutput(createStringList(exceptor.getId() + "(" + processor.getId() + "(" + inpoint.getDataString() + "))", 7));
+    // create writeNode for processed data
+    TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
+    writeNode.setExpectedOutput(createStringList(exceptor.getId() + "(" + processor.getId() + "(" + readNode.getDataString() + "))", 7));
     
-    // create outpoint for MessageExceptions
-    TestWriteConnector errOutpoint = new TestWriteConnector("Error1");
-    errOutpoint.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + processor.getId() + "(" + inpoint.getDataString() + ")", 3));
+    // create writeNode for MessageExceptions
+    TestWriteConnector errWriteConnector = new TestWriteConnector("Error1");
+    errWriteConnector.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + processor.getId() + "(" + readNode.getDataString() + ")", 3));
 
     // create pipeline
-    Object[] pipeline = new Object[] {inpoint, processor, exceptor, outpoint};
+    Object[] pipeline = new Object[] {readNode, processor, exceptor, writeNode};
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
-    adaptor.setExceptionWriteConnector(errOutpoint);
+    adaptor.setExceptionWriteConnector(errWriteConnector);
     adaptor.setPipeline(pipeline);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -142,14 +142,14 @@ public class PipelineTestCase extends TestCase {
   }
 
   public void testConstraints() {
-    TestReadConnector inpoint = new TestReadConnector("InPoint");
-    inpoint.setDataString("foobar");
+    TestReadConnector readNode = new TestReadConnector("ReadConnector");
+    readNode.setDataString("foobar");
     TestProcessor processor = new TestProcessor("Processor1");
-    TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
-    outpoint.setExpectedOutput(processor.getId() + "(" + inpoint.getDataString() + ")");
+    TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
+    writeNode.setExpectedOutput(processor.getId() + "(" + readNode.getDataString() + ")");
     
     try {
-      Object[] pipeline = new Object[] {processor, inpoint, outpoint};
+      Object[] pipeline = new Object[] {processor, readNode, writeNode};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -157,7 +157,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      Object[] pipeline = new Object[] {inpoint, processor};
+      Object[] pipeline = new Object[] {readNode, processor};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -165,7 +165,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      Object[] pipeline = new Object[] {outpoint, processor, inpoint};
+      Object[] pipeline = new Object[] {writeNode, processor, readNode};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");
@@ -173,7 +173,7 @@ public class PipelineTestCase extends TestCase {
     }
     
     try {
-      Object[] pipeline = new Object[] {inpoint};
+      Object[] pipeline = new Object[] {readNode};
       Adaptor adaptor =  new Adaptor();
       adaptor.setPipeline(pipeline);
       fail("expected an exception");

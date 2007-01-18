@@ -19,28 +19,28 @@ public class QueuedReadConnectorTestCase extends TestCase {
   public void testQueuing() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
     
-    // create inpoint
-    MyTestReadConnector inpoint = new MyTestReadConnector("in", testData);
+    // create readNode
+    MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("out");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("out");
     ArrayList list = new ArrayList();
     for (int i = 0; i < testData.length; i++) {
       list.add(testData[i]);
     }
-    outpoint.setExpectedOutput(list);
+    writeNode.setExpectedOutput(list);
     
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, outpoint);
+    processMap.put(readNode, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -50,26 +50,26 @@ public class QueuedReadConnectorTestCase extends TestCase {
   public void testQueueLimit() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
     
-    // create inpoint
-    MyTestReadConnector inpoint = new MyTestReadConnector("in", testData);
-    inpoint.setQueueLimit(1);
+    // create readNode
+    MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
+    readNode.setQueueLimit(1);
     
     // create processor that introduces delay
     MySlowProcessor processor = new MySlowProcessor();
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("out");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("out");
     ArrayList list = new ArrayList();
     for (int i = 0; i < testData.length; i++) {
       list.add(testData[i]);
     }
-    outpoint.setExpectedOutput(list);
+    writeNode.setExpectedOutput(list);
     
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
@@ -85,10 +85,10 @@ public class QueuedReadConnectorTestCase extends TestCase {
   public void testQueueLimitNonBlocking() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
     
-    // create inpoint
-    MyTestReadConnector inpoint = new MyTestReadConnector("in", testData);
-    inpoint.setQueueLimit(1);
-    inpoint.setBlockOnQueue(false);
+    // create readNode
+    MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
+    readNode.setQueueLimit(1);
+    readNode.setBlockOnQueue(false);
     
     // create processor that introduces delay
     MySlowProcessor processor = new MySlowProcessor();
@@ -96,7 +96,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
+    processMap.put(readNode, processor);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
@@ -112,22 +112,22 @@ public class QueuedReadConnectorTestCase extends TestCase {
   public void testTransactedNoProblems() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
     
-    // create inpoint
-    MyTestReadConnector inpoint = new MyTestReadConnector("in", testData);
-    inpoint.setTransacted(true);
+    // create readNode
+    MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
+    readNode.setTransacted(true);
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("out");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("out");
     ArrayList list = new ArrayList();
     for (int i = 0; i < testData.length; i++) {
       list.add(testData[i]);
     }
-    outpoint.setExpectedOutput(list);
+    writeNode.setExpectedOutput(list);
     
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, outpoint);
+    processMap.put(readNode, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
@@ -143,31 +143,31 @@ public class QueuedReadConnectorTestCase extends TestCase {
   public void testTransactedWithProblems() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
     
-    // create inpoint
-    MyTestReadConnector inpoint = new MyTestReadConnector("i", testData);
-    inpoint.setTransacted(true);
+    // create readNode
+    MyTestReadConnector readNode = new MyTestReadConnector("i", testData);
+    readNode.setTransacted(true);
     
     // create processor that throws exception
     TestProcessor processor = new TestProcessor("p");
     processor.setExceptionFrequency(3);
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("o");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("o");
     ArrayList list = new ArrayList();
     for (int i = 0; i < testData.length; i++) {
       if (((i+1) % 3) != 0) {
         list.add("p(" + testData[i] + ")");
       }
     }
-    outpoint.setExpectedOutput(list);
-    outpoint.setTransacted(true);
-    outpoint.setExpectedCommitCount(2);
+    writeNode.setExpectedOutput(list);
+    writeNode.setTransacted(true);
+    writeNode.setExpectedCommitCount(2);
     
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     

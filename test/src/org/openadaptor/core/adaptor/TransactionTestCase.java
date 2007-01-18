@@ -20,32 +20,32 @@ public class TransactionTestCase extends TestCase {
    */
   public void testCommitAll() {
 
-    TestReadConnector inpoint = new TestReadConnector("i");
-    inpoint.setDataString("x");
-    inpoint.setMaxSend(5);
-    inpoint.setTransactional(true);
-    inpoint.setExpectedCommitCount(5);
+    TestReadConnector readNode = new TestReadConnector("i");
+    readNode.setDataString("x");
+    readNode.setMaxSend(5);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(5);
     
     TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector outpoint = new TestWriteConnector("o");
-    outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
-    outpoint.setTransacted(true);
-    outpoint.setExpectedCommitCount(5);
+    TestWriteConnector writeNode = new TestWriteConnector("o");
+    writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
+    writeNode.setTransacted(true);
+    writeNode.setExpectedCommitCount(5);
    
     // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // run adaptor
     adaptor.run();
@@ -60,33 +60,33 @@ public class TransactionTestCase extends TestCase {
    */
   public void testCommitAllWithBatch() {
 
-    TestReadConnector inpoint = new TestReadConnector("i");
-    inpoint.setDataString("x");
-    inpoint.setMaxSend(5);
-    inpoint.setBatchSize(2);
-    inpoint.setTransactional(true);
-    inpoint.setExpectedCommitCount(5);
+    TestReadConnector readNode = new TestReadConnector("i");
+    readNode.setDataString("x");
+    readNode.setMaxSend(5);
+    readNode.setBatchSize(2);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(5);
     
     TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector outpoint = new TestWriteConnector("o");
-    outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
-    outpoint.setTransacted(true);
-    outpoint.setExpectedCommitCount(5);
+    TestWriteConnector writeNode = new TestWriteConnector("o");
+    writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
+    writeNode.setTransacted(true);
+    writeNode.setExpectedCommitCount(5);
    
     // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // run adaptor
     adaptor.run();
@@ -99,42 +99,42 @@ public class TransactionTestCase extends TestCase {
    * test that write connector exceptions are trapped and routed correctly
    *
    */
-  public void testCaughtOutpointException() {
+  public void testCaughtWriteNodeException() {
 
-    TestReadConnector inpoint = new TestReadConnector("i");
-    inpoint.setDataString("x");
-    inpoint.setMaxSend(5);
-    inpoint.setTransactional(true);
-    inpoint.setExpectedCommitCount(5);
+    TestReadConnector readNode = new TestReadConnector("i");
+    readNode.setDataString("x");
+    readNode.setMaxSend(5);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(5);
 
     TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector outpoint = new TestWriteConnector("o");
-    outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
-    outpoint.setExceptionFrequency(2);
-    outpoint.setTransacted(true);
-    outpoint.setExpectedCommitCount(3);
+    TestWriteConnector writeNode = new TestWriteConnector("o");
+    writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
+    writeNode.setExceptionFrequency(2);
+    writeNode.setTransacted(true);
+    writeNode.setExpectedCommitCount(3);
 
-    TestWriteConnector errorOutpoint = new TestWriteConnector("e");
-    errorOutpoint.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
+    TestWriteConnector errorWriteNode = new TestWriteConnector("e");
+    errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
 
     // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     
     Map exceptionMap = new HashMap();
-    exceptionMap.put("java.lang.Exception", errorOutpoint);
+    exceptionMap.put("java.lang.Exception", errorWriteNode);
     routingMap.setExceptionMap(exceptionMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // run adaptor
     adaptor.run();
@@ -148,29 +148,29 @@ public class TransactionTestCase extends TestCase {
    * is no exception mapping
    *
    */
-  public void testUncaughtOutpointException() {
+  public void testUncaughtWriteNodeException() {
 
-    TestReadConnector inpoint = new TestReadConnector("i");
-    inpoint.setDataString("x");
-    inpoint.setMaxSend(5);
-    inpoint.setBatchSize(2);
-    inpoint.setTransactional(true);
-    inpoint.setExpectedCommitCount(5);
+    TestReadConnector readNode = new TestReadConnector("i");
+    readNode.setDataString("x");
+    readNode.setMaxSend(5);
+    readNode.setBatchSize(2);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(5);
 
     TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector outpoint = new TestWriteConnector("o");
-    outpoint.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
-    outpoint.setExceptionFrequency(4);
-    inpoint.setTransactional(true);
-    inpoint.setExpectedCommitCount(2);
+    TestWriteConnector writeNode = new TestWriteConnector("o");
+    writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
+    writeNode.setExceptionFrequency(4);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(2);
 
     // create router
     RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
-    processMap.put(inpoint, processor);
-    processMap.put(processor, outpoint);
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
     routingMap.setProcessMap(processMap);
     
     Map exceptionMap = new HashMap();
@@ -180,7 +180,7 @@ public class TransactionTestCase extends TestCase {
     // create adaptor
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // run adaptor
     adaptor.run();

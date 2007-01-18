@@ -17,12 +17,12 @@ public class SubExample {
     connection.setDestinationName("topic/testTopic");
     //connection.setTopic(true);
 
-    JMSReadConnector inpoint = new JMSReadConnector();
-    inpoint.setJmsConnection(connection);
-    inpoint.connect();
+    JMSReadConnector readNode = new JMSReadConnector();
+    readNode.setJmsConnection(connection);
+    readNode.connect();
     
-    while (inpoint.isConnected()) {
-      Object[] data = inpoint.next(1000);
+    while (readNode.isConnected()) {
+      Object[] data = readNode.next(1000);
       for (int i = 0; data != null && i < data.length; i++) {
         System.err.println(data[i]);
       }

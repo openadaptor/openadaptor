@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.adaptor.AdaptorInpoint;
-import org.openadaptor.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 
 /**
  * simplified router for when there is a single sequence of IMessageProcessors
@@ -35,14 +35,14 @@ public class Pipeline extends Router {
       if (previous != null) {
         processMap.put(previous, processor);
       } else {
-        if (!(processor instanceof AdaptorInpoint)) {
-          throw new RuntimeException("first element of pipeline is not an adaptor inpoint");
+        if (!(processor instanceof ReadNode)) {
+          throw new RuntimeException("first element of pipeline is not a ReadNode/IReadConnector");
         }
       }
       previous = processor;
     }
-    if (!(previous instanceof AdaptorOutpoint)) {
-      throw new RuntimeException("last element of pipeline is not an adaptor outpoint");
+    if (!(previous instanceof WriteNode)) {
+      throw new RuntimeException("last element of pipeline is not an WriteNode/IWriteConnector");
     }
     
     routingMap.setProcessMap(processMap);

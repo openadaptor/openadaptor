@@ -14,12 +14,12 @@
   <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="InPoint" value-ref="OutPoint"/>
+        <entry key-ref="ReadConnector" value-ref="WriteConnector"/>
       </map>
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.openadaptor.core.adaptor.AdaptorInpoint">
+  <bean id="ReadConnector" class="org.openadaptor.core.node.ReadNode">
     <property name="connector">
       <bean class="org.openadaptor.core.connector.TestReadConnector">
         <property name="dataString" value="foobar"/>
@@ -27,7 +27,7 @@
     </property>
   </bean>
   
-  <bean id="OutPoint" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+  <bean id="WriteConnector" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <bean class="org.openadaptor.core.connector.TestWriteConnector">
         <property name="expectedOutput" value="foobar"/>

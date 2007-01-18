@@ -54,13 +54,13 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     String filename = FileReaderTestCase.createTempFile(inputs, null, "\n");
 
     
-    StreamReadConnector inpoint = new StreamReadConnector();
-    inpoint.setId("FileIn");
+    StreamReadConnector readNode = new StreamReadConnector();
+    readNode.setId("FileIn");
 
     FileReader fileReader = new FileReader();
     fileReader.setPath(filename);
-    inpoint.setStreamReader(fileReader);
-    inpoint.setRecordReader(new StringRecordReader());
+    readNode.setStreamReader(fileReader);
+    readNode.setRecordReader(new StringRecordReader());
     
     JMSConnection connection = JBossJMSTestCase.getConnection();
     connection.setDestinationName("queue/testQueue");
@@ -68,21 +68,21 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("push");
     connection.setTransacted(true);
 
-    JMSWriteConnector outpoint = new JMSWriteConnector();
-    outpoint.setId("JmsOut");
-    outpoint.setJmsConnection(connection);
+    JMSWriteConnector writeNode = new JMSWriteConnector();
+    writeNode.setId("JmsOut");
+    writeNode.setJmsConnection(connection);
 
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, outpoint);
+    processMap.put(readNode, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -96,14 +96,14 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("pop");
     connection.setTransacted(true);
 
-    JMSReadConnector inpoint = new JMSReadConnector();
-    inpoint.setJmsConnection(connection);
-    inpoint.setId("JmsIn");
+    JMSReadConnector readNode = new JMSReadConnector();
+    readNode.setJmsConnection(connection);
+    readNode.setId("JmsIn");
 
-    StreamWriteConnector outpoint = new StreamWriteConnector();
-    outpoint.setId("FileOut");
+    StreamWriteConnector writeNode = new StreamWriteConnector();
+    writeNode.setId("FileOut");
     FileWriter fileWriter = new FileWriter();
-    outpoint.setStreamWriter(fileWriter);
+    writeNode.setStreamWriter(fileWriter);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
@@ -112,15 +112,15 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
     List recipients = new ArrayList();
-    recipients.add(outpoint);
+    recipients.add(writeNode);
     recipients.add(new Stopper(adaptor, stopRecord, 2));
-    processMap.put(inpoint, recipients);
+    processMap.put(readNode, recipients);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
     
     // run adaptor
     adaptor.run();
@@ -133,24 +133,24 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("pop");
     connection.setTransacted(true);
 
-    JMSReadConnector inpoint = new JMSReadConnector();
-    inpoint.setJmsConnection(connection);
-    inpoint.setId("JmsIn");
+    JMSReadConnector readNode = new JMSReadConnector();
+    readNode.setJmsConnection(connection);
+    readNode.setId("JmsIn");
     
-    // create outpoint
-    TestWriteConnector outpoint = new TestWriteConnector("OutPoint");
+    // create writeNode
+    TestWriteConnector writeNode = new TestWriteConnector("writeNode");
     
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(inpoint, outpoint);
+    processMap.put(readNode, writeNode);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();
     adaptor.setMessageProcessor(router);
-    adaptor.setRunInpointsInCallingThread(true);
+    adaptor.setRunInCallingThread(true);
 
     // create mbean server and register adaptor
     try {

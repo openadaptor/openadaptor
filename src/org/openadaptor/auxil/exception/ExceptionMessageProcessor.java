@@ -48,9 +48,9 @@ import org.openadaptor.auxil.connector.http.ServletContainer;
 import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
-import org.openadaptor.core.adaptor.AdaptorOutpoint;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
@@ -64,7 +64,7 @@ import org.openadaptor.core.transaction.ITransactionManager;
  * @author perryj
  *
  */
-public class ExceptionMessageProcessor extends AdaptorOutpoint implements ITransactionInitiator, IStringRetryProcessor {
+public class ExceptionMessageProcessor extends WriteNode implements ITransactionInitiator, IStringRetryProcessor {
 
   private static final Log log = LogFactory.getLog(ExceptionMessageProcessor.class);
 

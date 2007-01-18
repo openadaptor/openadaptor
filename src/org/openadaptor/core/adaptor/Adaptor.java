@@ -46,7 +46,11 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
+import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
@@ -54,7 +58,7 @@ import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
 
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
-    AdaptorMBean {
+    AdaptorMBean, ILifecycleListener {
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
@@ -65,26 +69,26 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private IMessageProcessor processor;
 
   /**
-   * ordered list of adaptor inpoints
+   * ordered list of adaptor runnables
    */
-  private List inpoints;
+  private List runnables;
 
   /**
    * ordered list of all the lifecycle components that it manages
-   * this includes adaptor inpoints too
+   * this includes adaptor runnables too
    */
   private List components;
 
   /**
-   * control whether adaptor creates a new thread to run the inpoints
-   * if false can only work for an adaptor with a single inpoint
+   * control whether adaptor creates a new thread to run the runnables
+   * if false can only work for an adaptor with a single runnable
    */
-  private boolean runInpointsInCallingThread = false;
+  private boolean runRunnablesInCallingThread = false;
 
   /**
-   * threads uses to run the inpoints
+   * threads uses to run the runnables
    */
-  private Thread[] inpointThreads = new Thread[0];
+  private Thread[] runnableThreads = new Thread[0];
 
   /**
    * current state of the adaptor
@@ -97,7 +101,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private ITransactionManager transactionManager;
 
   /**
-   * exit code, this is an aggregation of the adaptor inpoint exit codes
+   * exit code, this is an aggregation of the adaptor runnable exit codes
    * 0 denotes that adaptor exited naturally
    */
   private int exitCode = 0;
@@ -120,7 +124,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public Adaptor() {
     super();
     transactionManager = new TransactionManager();
-    inpoints = new ArrayList();
+    runnables = new ArrayList();
     components = new ArrayList();
   }
 
@@ -134,14 +138,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private void registerComponents() {
     if (processor != null && processor instanceof ILifecycleComponentContainer) {
       log.debug("MessageProcessor is also a component container. Registering with processor.");
-      inpoints.clear();
+      runnables.clear();
       components.clear();
       ((ILifecycleComponentContainer) processor).setComponentManager(this);
     }
   }
 
-  public void setRunInpointsInCallingThread(final boolean runInpointsInCallingThread) {
-    this.runInpointsInCallingThread = runInpointsInCallingThread;
+  public void setRunInCallingThread(final boolean runRunnablesInCallingThread) {
+    this.runRunnablesInCallingThread = runRunnablesInCallingThread;
   }
 
   public void setTransactionManager(final ITransactionManager transactionManager) {
@@ -157,10 +161,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       throw new RuntimeException("Cannot register component with running adaptor");
     }
     components.add(component);
-    if (component instanceof IAdaptorInpoint) {
-      log.debug("inpoint " + component.getId() + " registered with adaptor");
-      inpoints.add(component);
-      ((IAdaptorInpoint) component).setAdaptor(this);
+    if (component instanceof IRunnable) {
+      log.debug("runnable " + component.getId() + " registered with adaptor");
+      runnables.add(component);
+      ((IRunnable) component).setMessageProcessor(this);
     } else {
       log.debug("component " + component.getId() + " registered with adaptor");
     }
@@ -176,7 +180,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
     if (components.remove(component)) {
       match = component;
-      inpoints.remove(component);
+      runnables.remove(component);
     }
     return match;
   }
@@ -197,19 +201,19 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       Runtime.getRuntime().addShutdownHook(shutdownHook);
       state = State.STARTED;
       validate();
-      startNonInpoints();
-      startInpoints();
+      startNonRunnables();
+      startRunnables();
   
-      if (runInpointsInCallingThread) {
-        runInpoint();
+      if (runRunnablesInCallingThread) {
+        runRunnable();
       } else {
-        runInpointThreads();
+        runRunnableThreads();
       }
   
-      log.info("waiting for inpoints to stop");
-      waitForInpointsToStop();
-      log.info("all inpoints are stopped");
-      stopNonInpoints();
+      log.info("waiting for runnables to stop");
+      waitForRunnablesToStop();
+      log.info("all runnables are stopped");
+      stopNonRunnables();
     } catch (Throwable ex) {
       log.error("failed to start adaptor", ex);
       exitCode = 1;
@@ -226,29 +230,29 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
 
   public void stop() {
-    stopInpoints();
-    waitForInpointsToStop();
-    stopNonInpoints();
+    stopRunnables();
+    waitForRunnablesToStop();
+    stopNonRunnables();
   }
 
   public void stopNoWait() {
-    stopInpoints();
+    stopRunnables();
   }
 
   public void interrupt() {
-    for (int i = 0; i < inpointThreads.length; i++) {
-      inpointThreads[i].interrupt();
+    for (int i = 0; i < runnableThreads.length; i++) {
+      runnableThreads[i].interrupt();
     }
   }
 
   public void validate(List exceptions) {
 
-    if (inpoints.isEmpty()) {
-      exceptions.add(new Exception("no inpoints"));
+    if (runnables.isEmpty()) {
+      exceptions.add(new Exception("no runnables"));
     }
 
-    if (runInpointsInCallingThread && inpoints.size() > 1) {
-      exceptions.add(new Exception("runInpointsInCallingThread == true but multiple inpoints"));
+    if (runRunnablesInCallingThread && runnables.size() > 1) {
+      exceptions.add(new Exception("runRunnablesInCallingThread == true but multiple runnables"));
     }
 
     for (Iterator iter = components.iterator(); iter.hasNext();) {
@@ -278,9 +282,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public int getExitCode() {
     int exitCode = this.exitCode;
-    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      exitCode += inpoint.getExitCode();
+    for (Iterator iter = runnables.iterator(); iter.hasNext();) {
+      IRunnable runnable = (IRunnable) iter.next();
+      exitCode += runnable.getExitCode();
     }
     return exitCode;
   }
@@ -297,46 +301,49 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
-  private void runInpoint() {
-    if (inpoints.size() != 1) {
-      throw new RuntimeException("cannot run inpoint directly as there are " + inpoints.size() + " inpoints");
+  private void runRunnable() {
+    if (runnables.size() != 1) {
+      throw new RuntimeException("cannot run runnable directly as there are " + runnables.size() + " runnables");
     }
-    IAdaptorInpoint inpoint = (IAdaptorInpoint) inpoints.get(0);
-    inpoint.run();
+    IRunnable runnable = (IRunnable) runnables.get(0);
+    runnable.run();
   }
 
-  private void waitForInpointsToStop() {
-    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      inpoint.waitForState(State.STOPPED);
+  private void waitForRunnablesToStop() {
+    for (Iterator iter = runnables.iterator(); iter.hasNext();) {
+      IRunnable runnable = (IRunnable) iter.next();
+      runnable.waitForState(State.STOPPED);
     }
   }
 
-  private void runInpointThreads() {
-    inpointThreads = new Thread[inpoints.size()];
+  private void runRunnableThreads() {
+    runnableThreads = new Thread[runnables.size()];
     int i = 0;
-    for (Iterator iter = inpoints.iterator(); iter.hasNext(); i++) {
-      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      inpointThreads[i] = new Thread(inpoint);
-      if (inpoint.getId() != null) {
-        inpointThreads[i].setName(inpoint.toString());
+    for (Iterator iter = runnables.iterator(); iter.hasNext(); i++) {
+      IRunnable runnable = (IRunnable) iter.next();
+      runnableThreads[i] = new Thread(runnable);
+      if (runnable.getId() != null) {
+        runnableThreads[i].setName(runnable.toString());
       }
     }
-    for (int j = 0; j < inpointThreads.length; j++) {
-      inpointThreads[j].start();
+    for (int j = 0; j < runnableThreads.length; j++) {
+      runnableThreads[j].start();
     }
   }
 
-  private void startInpoints() {
-    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-      IAdaptorInpoint inpoint = (IAdaptorInpoint) iter.next();
-      inpoint.start();
+  private void startRunnables() {
+    for (Iterator iter = runnables.iterator(); iter.hasNext();) {
+      IRunnable runnable = (IRunnable) iter.next();
+      runnable.addListener(this);
+      startLifecycleComponent(runnable);
     }
   }
 
-  private void stopInpoints() {
-    for (Iterator iter = inpoints.iterator(); iter.hasNext();) {
-      stopLifecycleComponent((IAdaptorInpoint) iter.next());
+  private void stopRunnables() {
+    for (Iterator iter = runnables.iterator(); iter.hasNext();) {
+      IRunnable runnable = (IRunnable) iter.next();
+      runnable.removeListener(this);
+      stopLifecycleComponent(runnable);
     }
   }
 
@@ -348,26 +355,34 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
   
-  private void startNonInpoints() {
+  private void startLifecycleComponent(ILifecycleComponent c) {
+    synchronized (c) {
+      if (c.isState(State.STOPPED)) {
+        c.start();
+      }
+    }
+  }
+  
+  private void startNonRunnables() {
     for (Iterator iter = components.iterator(); iter.hasNext();) {
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
-      if (!inpoints.contains(component)) {
-        component.start();
+      if (!runnables.contains(component)) {
+        startLifecycleComponent(component);
       }
     }
   }
 
-  private void stopNonInpoints() {
+  private void stopNonRunnables() {
     for (Iterator iter = components.iterator(); iter.hasNext();) {
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
-      if (!inpoints.contains(component)) {
+      if (!runnables.contains(component)) {
         stopLifecycleComponent(component);
       }
     }
   }
 
   public void setExceptionWriteConnector(final IWriteConnector exceptionProcessor) {
-    this.exceptionProcessor = new AdaptorOutpoint("exceptionProcessor", exceptionProcessor);
+    this.exceptionProcessor = new WriteNode("exceptionProcessor", exceptionProcessor);
   }
   
   public void setExceptionProcessor(final IMessageProcessor exceptionProcessor) {
@@ -397,6 +412,15 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         Adaptor.this.exit();
       } catch (Throwable t) {
         log.error("uncaught error or exception", t);
+      }
+    }
+  }
+
+  public void stateChanged(ILifecycleComponent component, State newState) {
+    if (state == State.STARTED && runnables.contains(component) && newState == State.STOPPED) {
+      if (((ReadNode)component).getExitCode() != 0) {
+        log.warn(component.getId() + " has exited with non zero exit code, stopping adaptor");
+        stopNoWait();
       }
     }
   }

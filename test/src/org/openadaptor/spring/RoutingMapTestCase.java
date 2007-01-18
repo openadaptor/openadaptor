@@ -63,26 +63,26 @@ public class RoutingMapTestCase extends TestCase {
 	public void test1() {
 		IRoutingMap map = getRoutingMap("test1");
 		
-		List destinations = map.getProcessDestinations(getNode("InPoint"));
+		List destinations = map.getProcessDestinations(getNode("ReadNode"));
 		assertTrue(destinations.size() == 1);
-		assertTrue(destinations.get(0).toString().equals("OutPoint"));
+		assertTrue(destinations.get(0).toString().equals("WriteNode"));
 		
-		destinations = map.getProcessDestinations(getNode("OutPoint"));
+		destinations = map.getProcessDestinations(getNode("WriteNode"));
 		assertTrue(destinations.size() == 0);
 		
-		destinations = map.getDiscardDestinations(getNode("InPoint"));
+		destinations = map.getDiscardDestinations(getNode("ReadNode"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Discard"));
 		
-		destinations = map.getExceptionDestinations(getNode("InPoint"), new Exception("foo"));
+		destinations = map.getExceptionDestinations(getNode("ReadNode"), new Exception("foo"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Error"));
 		
-		destinations = map.getExceptionDestinations(getNode("OutPoint"), new Exception("foo"));
+		destinations = map.getExceptionDestinations(getNode("WriteNode"), new Exception("foo"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Error"));
 		
-		destinations = map.getExceptionDestinations(getNode("OutPoint"), new NullPointerException("foo"));
+		destinations = map.getExceptionDestinations(getNode("WriteNode"), new NullPointerException("foo"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Error"));
 	}
@@ -90,7 +90,7 @@ public class RoutingMapTestCase extends TestCase {
 	public void test2() {
 		IRoutingMap map = getRoutingMap("test2");
 		
-		List destinations = map.getProcessDestinations(getNode("InPoint"));
+		List destinations = map.getProcessDestinations(getNode("ReadNode"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Processor1"));
 		
@@ -101,12 +101,12 @@ public class RoutingMapTestCase extends TestCase {
 		
 		destinations = map.getProcessDestinations(getNode("Processor2"));
 		assertTrue(destinations.size() == 1);
-		assertTrue(destinations.get(0).toString().equals("OutPoint"));
+		assertTrue(destinations.get(0).toString().equals("WriteNode"));
 		
 		destinations = map.getProcessDestinations(getNode("Processor3"));
 		assertTrue(destinations.size() == 0);
 		
-		destinations = map.getDiscardDestinations(getNode("InPoint"));
+		destinations = map.getDiscardDestinations(getNode("ReadNode"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Discard"));
 
@@ -119,11 +119,11 @@ public class RoutingMapTestCase extends TestCase {
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Error"));
 
-		destinations = map.getExceptionDestinations(getNode("InPoint"), new Exception("foo"));
+		destinations = map.getExceptionDestinations(getNode("ReadNode"), new Exception("foo"));
 		assertTrue(destinations.size() == 1);
 		assertTrue(destinations.get(0).toString().equals("Error"));
 		
-		destinations = map.getExceptionDestinations(getNode("InPoint"), new NullPointerException("foo"));
+		destinations = map.getExceptionDestinations(getNode("ReadNode"), new NullPointerException("foo"));
 		assertTrue(destinations.size() == 2);
 		assertTrue(destinations.get(0).toString().equals("Discard"));
 		assertTrue(destinations.get(1).toString().equals("Error"));

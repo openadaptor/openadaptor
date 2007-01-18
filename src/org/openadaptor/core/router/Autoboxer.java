@@ -42,9 +42,9 @@ import java.util.Map;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
-import org.openadaptor.core.adaptor.AdaptorInpoint;
-import org.openadaptor.core.adaptor.AdaptorOutpoint;
+import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.Node;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.node.ProcessorNode;
 
 public class Autoboxer implements IAutoboxer {
@@ -94,9 +94,9 @@ public class Autoboxer implements IAutoboxer {
 	}
 
 	public Node autobox(IReadConnector connector) {
-		AdaptorInpoint node = (AdaptorInpoint) nodeMap.get(connector);
+		ReadNode node = (ReadNode) nodeMap.get(connector);
 		if (node == null) {
-			node = new AdaptorInpoint();
+			node = new ReadNode();
 			node.setConnector(connector);
 			nodeMap.put(connector, node);
 		}
@@ -104,9 +104,9 @@ public class Autoboxer implements IAutoboxer {
 	}
 
 	public Node autobox(IWriteConnector connector) {
-		AdaptorOutpoint node = (AdaptorOutpoint) nodeMap.get(connector);
+		WriteNode node = (WriteNode) nodeMap.get(connector);
 		if (node == null) {
-			node = new AdaptorOutpoint();
+			node = new WriteNode();
 			node.setConnector(connector);
 			nodeMap.put(connector, node);
 		}

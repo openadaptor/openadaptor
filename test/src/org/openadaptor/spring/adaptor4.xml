@@ -6,17 +6,17 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="InPoint"/>
+        <ref bean="ReadConnector"/>
         <ref bean="Processor"/>
         <ref bean="Exceptor"/>
-        <ref bean="OutPoint"/>
+        <ref bean="WriteConnector"/>
       </list>
     </property>
     <property name="exceptionProcessor" ref="ErrorNode"/>
   </bean>
   
-  <bean id="InPoint" class="org.openadaptor.core.connector.TestReadConnector">
-    <property name="id" value="InPoint"/>
+  <bean id="ReadConnector" class="org.openadaptor.core.connector.TestReadConnector">
+    <property name="id" value="ReadConnector"/>
     <property name="maxSend" value="2"/>
   </bean>
 
@@ -24,8 +24,8 @@
     <property name="id" value="Processor"/>
   </bean>
 
-  <bean id="OutPoint" class="org.openadaptor.core.connector.TestWriteConnector">
-    <property name="id" value="OutPoint"/>
+  <bean id="WriteConnector" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="WriteConnector"/>
     <property name="expectedOutput" value="Exceptor(Processor(test data 1))"/>
   </bean>
   
@@ -34,7 +34,7 @@
     <property name="exceptionFrequency" value="2"/>
   </bean>
 
-  <bean id="ErrorNode" class="org.openadaptor.core.adaptor.AdaptorOutpoint">
+  <bean id="ErrorNode" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <ref bean="Error"/>
     </property>

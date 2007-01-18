@@ -6,13 +6,13 @@
   <bean id="test1" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="InPoint" value-ref="OutPoint"/>
+        <entry key-ref="ReadNode" value-ref="WriteNode"/>
       </map>
     </property>
     <property name="discardMap">
       <map>
-        <entry key-ref="InPoint" value-ref="Discard"/>
-        <entry key-ref="OutPoint" value-ref="Discard"/>
+        <entry key-ref="ReadNode" value-ref="Discard"/>
+        <entry key-ref="WriteNode" value-ref="Discard"/>
       </map>
     </property>
     <property name="exceptionMap">
@@ -25,20 +25,20 @@
   <bean id="test2" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
-        <entry key-ref="InPoint" value-ref="Processor1"/>
+        <entry key-ref="ReadNode" value-ref="Processor1"/>
         <entry key-ref="Processor1">
           <list>
             <ref bean="Processor2"/>
             <ref bean="Processor3"/>
           </list>
         </entry>
-        <entry key-ref="Processor2" value-ref="OutPoint"/>
+        <entry key-ref="Processor2" value-ref="WriteNode"/>
       </map>
     </property>
     <property name="discardMap">
       <map>
-        <entry key-ref="InPoint" value-ref="Discard"/>
-        <entry key-ref="OutPoint" value-ref="Discard"/>
+        <entry key-ref="ReadNode" value-ref="Discard"/>
+        <entry key-ref="WriteNode" value-ref="Discard"/>
         <entry key-ref="Processor1">
           <list>
             <ref bean="Discard"/>
@@ -54,7 +54,7 @@
             <entry key="java.lang.Exception" value-ref="Error"/>
           </map>
         </entry>
-        <entry key-ref="InPoint">
+        <entry key-ref="ReadNode">
           <map>
             <entry key="java.lang.NullPointerException">
               <list>
@@ -69,12 +69,12 @@
     </property>
   </bean>
   
-  <bean id="InPoint" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
-    <constructor-arg value="InPoint"/>
+  <bean id="ReadNode" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
+    <constructor-arg value="ReadNode"/>
   </bean>
   
-  <bean id="OutPoint" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
-    <constructor-arg value="OutPoint"/>
+  <bean id="WriteNode" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
+    <constructor-arg value="WriteNode"/>
   </bean>
   
   <bean id="Processor1" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">

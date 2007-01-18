@@ -7,7 +7,7 @@
 <beans>
   <description>
     Demonstrates an adaptor which reads from IBM MQ directly and writes to stdout. The data read
-    off the queue is passed directly to the Outpoint.
+    off the queue is passed directly to the WriteConnector.
 
     Data originates: IBM MQ Series.
     Data terminates: stdout unless a file is specified.
@@ -16,21 +16,21 @@
       java org.openadaptor.spring.SpringApplication -config mq_reader.xml -bean Adaptor -props mq.properties
 
     mq.properties is a properties format file which should be edited to supply specific mq property
-    values e.g. channel etc. Alternatively just edit MQSeries_Outpoint below directly.
+    values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
   </description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="pipeline">
       <list>
-        <ref bean="MQSeries_Inpoint"/>
-        <ref bean="Outpoint"/>
+        <ref bean="MQSeries_ReadConnector"/>
+        <ref bean="WriteConnector"/>
       </list>
     </property>
   </bean>
 
-  <bean id="MQSeries_Inpoint" class="org.openadaptor.thirdparty.mq.MqReadConnector">
+  <bean id="MQSeries_ReadConnector" class="org.openadaptor.thirdparty.mq.MqReadConnector">
     <description>
-      Define the MQ Connector used by the Inpoint.
+      Define the MQ Connector used by the ReadConnector.
     </description>
     <property name="pollingConfiguration">
       <bean class="org.openadaptor.core.connector.PollingConfiguration">
@@ -57,7 +57,7 @@
     </property>
   </bean>
 
-  <bean id="Outpoint" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
     </property>

@@ -31,7 +31,7 @@
  * ]]
  */
 
-package org.openadaptor.core.adaptor;
+package org.openadaptor.core.node;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,25 +46,24 @@ import org.openadaptor.core.Response.DiscardBatch;
 import org.openadaptor.core.Response.ExceptionBatch;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.node.Node;
 import org.openadaptor.core.transaction.ITransactional;
 
-public class AdaptorOutpoint extends Node {
+public class WriteNode extends Node {
 
-	private static final Log log = LogFactory.getLog(AdaptorOutpoint.class);
+	private static final Log log = LogFactory.getLog(WriteNode.class);
 	
 	private IWriteConnector connector;
 	private boolean unbatch = false;
 	
-	public AdaptorOutpoint() {
+	public WriteNode() {
 		super();
 	}
 	
-	public AdaptorOutpoint(String id) {
+	public WriteNode(String id) {
 		super(id);
 	}
 
-	public AdaptorOutpoint(String id, final IWriteConnector connector) {
+	public WriteNode(String id, final IWriteConnector connector) {
 		super(id);
 		this.connector = connector;
 	}
