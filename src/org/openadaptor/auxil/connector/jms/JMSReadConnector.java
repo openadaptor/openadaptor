@@ -78,6 +78,12 @@ public class JMSReadConnector extends Component implements IReadConnector, ITran
   }
 
   public void validate(List exceptions) {
+    if(jmsConnection == null) {
+      exceptions.add(new ComponentException("Property jmsConnection is mandatory", this));
+    }
+    else {
+      jmsConnection.validate(exceptions);
+    }
   }
   
   public boolean isConnected() {
@@ -85,6 +91,7 @@ public class JMSReadConnector extends Component implements IReadConnector, ITran
   }
 
   public Object[] next(long timeoutMs) throws ComponentException {
+    if (!isConnected()) throw new ComponentException("Attempt to read from disconnected JMSReadConnector", this);
     Object data = jmsConnection.receive(timeoutMs);
     if (data != null) {
       log.debug(getId() + " got jms message");

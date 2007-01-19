@@ -68,7 +68,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @param records -
    *          an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws org.openadaptor.control.ComponentException
+   * @throws ComponentException
    */
   public Object deliver(Object[] records) throws ComponentException {
     if (!isConnected())
@@ -111,8 +111,13 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public void validate(List exceptions) {
+    if (jmsConnection == null) {
+      exceptions.add(new ComponentException("Property jmsConnection is mandatory", this));
+    } else {
+      jmsConnection.validate(exceptions);
+    }
   }
-  
+
   /**
    * True if connected.
    * 

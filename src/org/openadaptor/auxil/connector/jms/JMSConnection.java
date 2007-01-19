@@ -43,6 +43,7 @@ import javax.naming.NamingException;
 import javax.jms.*;
 import javax.jms.IllegalStateException;
 import java.io.Serializable;
+import java.util.List;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -322,6 +323,22 @@ public class JMSConnection extends Component {
   }
 
   // End Receive
+
+  // Validate
+
+  public void validate(List exceptions) {
+    if ((getConnectionFactory() == null) && (connectionFactoryName == null)) {
+      exceptions.add( new ComponentException("One of properties connectionFactory or connectionFactoryName must be set.", this));
+    }
+    if(jndiConnection == null) {
+      exceptions.add(new ComponentException("Property jndiConnection is mandatory", this));
+    }
+    if(getDestinationName() == null) {
+      exceptions.add( new ComponentException("Property destinationName is mandatory", this)); 
+    }
+  }
+
+  // End passValidate
 
   // Session Stuff
 
