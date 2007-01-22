@@ -156,7 +156,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     testWriteConnector.connect();
     mockJMSConnection.clearLastDelivery();
     Object testMessage = new Object();
-    Object id = testWriteConnector.deliver(new Object[] { testMessage } );
+    testWriteConnector.deliver(new Object[] { testMessage } );
     assertEquals("Expected delivered message to match test message", mockJMSConnection.getLastDelivery(), testMessage);
 
   }
@@ -165,7 +165,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     try {
       mockJMSConnection.clearLastDelivery();
       Object testMessage = new Object();
-      Object id = testWriteConnector.deliver(new Object[] { testMessage } );
+      testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected a ComponentException to be thrown");
     }
     catch (ComponentException ce) { /* Expected */ }
@@ -178,7 +178,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     Object testMessage = new Object();
     mockJMSConnection.setThrowComponentExceptionOnDeliver(true);
     try {
-      Object id = testWriteConnector.deliver(new Object[] { testMessage } );
+      testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected ComponentException");
     } catch (ComponentException e) {
       // expected this to be thrown.
@@ -192,7 +192,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     Object testMessage = new Object();
     mockJMSConnection.setThrowNPEOnDeliver(true);
     try {
-      Object id = testWriteConnector.deliver(new Object[] { testMessage } );
+      testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected NullPointerException");
     } catch (NullPointerException e) {
       // expected this to be thrown.

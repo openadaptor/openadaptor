@@ -137,11 +137,11 @@ public class ExceptionSummary {
     this.retries = retries;
   }
   
-  public String getOrderKey() {
+  public double getOrderKey() {
     double n = Integer.parseInt(id);
     if (parentId != null && parentId.length() > 0) {
       n = Integer.parseInt(parentId) - (1 / n);
     }
-    return String.valueOf(n);
+    return n;
   }
 }

@@ -6,11 +6,11 @@
 	<classpathentry kind="src" output="test/classes" path="test/src"/>
 	<classpathentry kind="src" output="spring/classes" path="spring/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="test/lib"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="spring/lib/spring.jar"/>
 	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib"/>
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/jotm.jar"/>

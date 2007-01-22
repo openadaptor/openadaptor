@@ -33,9 +33,22 @@
 
 package org.openadaptor.auxil.exception;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.bio.SocketConnector;
+import org.mortbay.jetty.handler.DefaultHandler;
+import org.mortbay.jetty.security.Constraint;
+import org.mortbay.jetty.security.ConstraintMapping;
+import org.mortbay.jetty.security.HashUserRealm;
+import org.mortbay.jetty.security.SecurityHandler;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.SessionHandler;
 import org.openadaptor.auxil.connector.http.ServletContainer;
 import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
 import org.openadaptor.core.transaction.ITransactionalResource;
@@ -45,45 +58,110 @@ public class ExceptionManager {
 
   private static final Log log = LogFactory.getLog(ExceptionManager.class);
 
+  private Server server;
+  
   private ExceptionStore exceptionStore;
 
   private ReadConnectorWebService webService;
 
-  private int port = 8080;
+  public ExceptionManager() {
+  }
   
-  public void setPort(int port) {
-    this.port = port;
+  protected String[] processArgs(String[] args) {
+
+    int port = 8080;
+    String realmFile = null;
+    boolean unsecured = false;
+    
+    HashUserRealm realm = createDefaultRealm();
+    
+    ArrayList unprocessedArgs = new ArrayList();
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equalsIgnoreCase("-port")) {
+        port = Integer.parseInt(args[++i]);
+      } else if (args[i].equalsIgnoreCase("-unsecured")) {
+        unsecured = true;
+      } else if (args[i].equalsIgnoreCase("-realm")) {
+        realmFile = args[++i];
+      } else {
+        unprocessedArgs.add(args[i]);
+      }
+    }
+
+    if (!unsecured) {
+      if (realmFile == null) {
+        realm = createDefaultRealm();
+      } else {
+        try {
+          realm = new HashUserRealm("Realm", realmFile);
+        } catch (IOException e) {
+          throw new RuntimeException("failed to create user realm, " + e.getMessage(), e);
+        }
+      }
+    }
+    setServer(createDefaultServer(port, realm));
+    return (String[]) unprocessedArgs.toArray(new String[unprocessedArgs.size()]);
   }
 
   public void setExceptionStore(final ExceptionStore exceptionStore) {
     this.exceptionStore = exceptionStore;
   }
 
-  public static void main(String[] args) {
-
-    ExceptionManager mgr = new ExceptionManager();
-
-    for (int i = 0; i < args.length; i++) {
-      if (args[i].equalsIgnoreCase("-dir")) {
-        mgr.setExceptionStore(new ExceptionFileStore(args[++i]));
-      } else if (args[i].equalsIgnoreCase("-port")) {
-        mgr.setPort(Integer.parseInt(args[++i]));
-      }
-    }
-
-    mgr.run();
+  public void setServer(final Server server) {
+    this.server = server;
   }
-
+  
+  protected static HashUserRealm createDefaultRealm() {
+    HashUserRealm realm = new HashUserRealm();
+    realm.put("test", "password");
+    realm.addUserToRole("test", "view");
+    realm.put("testadmin", "password");
+    realm.addUserToRole("testadmin", "view");
+    realm.addUserToRole("testadmin", "admin");
+    return realm;
+  }
+  
+  protected static Server createDefaultServer(int port, HashUserRealm realm) {
+    SecurityHandler securityHandler = null;
+    
+    if (realm != null) {
+      Constraint viewConstraint = new Constraint();
+      viewConstraint.setName(Constraint.__BASIC_AUTH);
+      viewConstraint.setRoles(new String[] {"view"});
+      viewConstraint.setAuthenticate(true);
+      
+      ConstraintMapping viewMapping = new ConstraintMapping();
+      viewMapping.setConstraint(viewConstraint);
+      viewMapping.setPathSpec("/admin/*");
+      
+      securityHandler = new SecurityHandler();
+      securityHandler.setUserRealm(realm);
+      securityHandler.setConstraintMappings(new ConstraintMapping[] {viewMapping});
+    }
+    
+    Context context = new Context();
+    context.setContextPath("/");
+    if (securityHandler != null) {
+      context.addHandler(new SessionHandler());
+    }
+    context.addHandler(securityHandler);
+    
+    Server server = new Server(port);
+    server.setHandlers(new Handler[] {context, new DefaultHandler()});
+    
+    return server;
+  }
+  
   public void run() {
 
-    Server server;
-    
-    try {
-      server = new Server(port);
-      server.start();
-    } catch (Exception e) {
-      log.error("failed to start jetty server", e);
-      throw new RuntimeException("failed to start local jetty server", e);
+    // start jetty
+    if (!server.isStarted() && !server.isStarting()) {
+      try {
+        server.start();
+      } catch (Exception e) {
+        log.error("failed to start jetty server", e);
+        throw new RuntimeException("failed to start local jetty server", e);
+      }
     }
 
     // create web service to receive exceptions and store
@@ -94,18 +172,18 @@ public class ExceptionManager {
     webService.setPath("/soap/*");
     webService.connect();
 
-    // create servlet for browsing exceptions
+    // create servlet for browsing and managing exceptions
     webService.addServlet(new ExceptionManagerServlet(exceptionStore), "/admin/*");
-    log.info("admin interface at http://" + NetUtil.getLocalHostAddress() + ":" + port + "/admin");
+    log.info("admin interface at http://" + NetUtil.getLocalHostAddress() + ":" + getServerPort(server) + "/admin");
 
-    // poll webservice read connector for new data
+    // receive incoming exceptions and store them
     while (!webService.isDry()) {
       ITransactionalResource txnResource = (ITransactionalResource) webService.getResource();
       try {
         Object[] data = webService.next(1000);
         for (int i = 0; data != null && i < data.length; i++) {
-          String id = exceptionStore.store(data[i].toString());
-          log.debug("stored new exception " + id);
+          exceptionStore.store(data[i].toString());
+          log.debug("stored new exception");
         }
         txnResource.commit();
       } catch (RuntimeException e) {
@@ -113,5 +191,15 @@ public class ExceptionManager {
       }
     }
 
+  }
+
+  private int getServerPort(Server server) {
+    Connector[] connectors = server.getConnectors();
+    for (int i = 0; i < connectors.length; i++) {
+      if (connectors[i] instanceof SocketConnector) {
+        return ((SocketConnector)connectors[i]).getPort();
+      }
+    }
+    return 0;
   }
 }

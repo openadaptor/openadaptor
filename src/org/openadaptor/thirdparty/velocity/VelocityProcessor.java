@@ -1,7 +1,5 @@
 package org.openadaptor.thirdparty.velocity;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.List;
 
@@ -16,6 +14,7 @@ public class VelocityProcessor extends Component implements IDataProcessor {
 
   private VelocityEngine engine = new VelocityEngine();
   
+  private String templateString;
   private Template template;
   
   public VelocityProcessor() {
@@ -36,17 +35,8 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     }
   }
   
-  public void setTemplate(String s) {
-    try {
-      File temp = File.createTempFile("xyz", ".vm", new File(System.getProperty("user.dir")));
-      temp.deleteOnExit();
-      FileWriter writer = new FileWriter(temp);
-      writer.write(s);
-      writer.close();
-      template = engine.getTemplate(temp.getName());
-    } catch (Exception e) {
-      throw new ComponentException("failed to create Template", e, this);
-    }
+  public void setTemplateString(String s) {
+    templateString = s;
   }
   
   public void setTemplateFile(String fileName) {
@@ -63,7 +53,13 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     context.put("data", data);
     StringWriter sw = new StringWriter();
     try {
-      template.merge(context, sw);
+      if (template != null) {
+        template.merge(context, sw);
+      } else if (templateString != null) {
+        engine.evaluate(context, sw, "", templateString);
+      } else {
+        throw new Exception("neither template nor templateString have been set");
+      }
     } catch (Exception e) {
       throw new ComponentException("process exception", e, this);
     }
@@ -74,6 +70,9 @@ public class VelocityProcessor extends Component implements IDataProcessor {
   }
 
   public void validate(List exceptions) {
+    if (template == null && templateString == null) {
+      exceptions.add(new ComponentException("neither template nor templateString have been set", this));
+    }
   }
 
 }

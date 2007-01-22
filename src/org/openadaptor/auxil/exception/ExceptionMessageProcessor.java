@@ -149,6 +149,13 @@ public class ExceptionMessageProcessor extends WriteNode implements ITransaction
     }
   }
   
+  public void stop() {
+    super.stop();
+    if (retryServiceName != null) {
+      servletContainer.stop();
+    }
+  }
+  
   public Response process(Message msg) {
     long time = (new Date()).getTime();
     Object[] data = msg.getData();

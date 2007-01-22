@@ -48,9 +48,16 @@ public class ExceptionManagerServlet extends HttpServlet {
    */
   private static final Comparator COMPARATOR = new Comparator() {
     public int compare(Object o1, Object o2) {
-      ExceptionSummary s1 = (ExceptionSummary) o1;
-      ExceptionSummary s2 = (ExceptionSummary) o2;
-      return s2.getOrderKey().compareTo(s1.getOrderKey());
+      double key1 = ((ExceptionSummary) o1).getOrderKey();
+      double key2 = ((ExceptionSummary) o2).getOrderKey();
+      
+      if (key1 > key2) {
+        return -1;
+      } else if (key1 < key2) {
+        return +1;
+      } else {
+        return 0;
+      }
     }
   };
 
@@ -70,22 +77,33 @@ public class ExceptionManagerServlet extends HttpServlet {
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     response.setStatus(HttpServletResponse.SC_OK);
+    
     String action = request.getParameter("action");
     if (action == null || action.equals("list")) {
+      checkRole(request, "view");
       list(request, response);
     } else if (action.equals("browse")) {
+      checkRole(request, "view");
       browse(request, response);
     } else if (action.equals("delete")) {
+      checkRole(request, "admin");
       delete(request, response);
     } else if (action.equals("deleteall")) {
+      checkRole(request, "admin");
       deleteall(request, response);
     } else if (action.equals("retry")) {
+      checkRole(request, "admin");
       retry(request, response);
     } else {
       throw new RuntimeException("action " + action + " not recognized");
     }
   }
   
+  private void checkRole(HttpServletRequest request, String role) {
+    if (!request.isUserInRole(role)) {
+      throw new RuntimeException("user does not have " + role + " role");
+    }
+  }
   private void retry(HttpServletRequest request, HttpServletResponse response) {
     String id = request.getParameter("id");
     HttpSession session = request.getSession();
@@ -160,14 +178,15 @@ public class ExceptionManagerServlet extends HttpServlet {
     int max;
     
     // resolve maximum number of excepton to show a page
-    if (request.getParameter("show") != null) {
-      max = Integer.parseInt(request.getParameter("show"));
-      session.setAttribute("show", String.valueOf(max));
-    } else if (session.getAttribute("show") != null) {
-      max = Integer.parseInt((String)session.getAttribute("show"));
+    String show = resolveRequestParameterOrSessionAttribute(request, "show");
+    if (show != null) {
+      max = Integer.parseInt(show);
     } else {
       max = 50;
     }
+    
+    // resolve maximum number of excepton to show a page
+    resolveRequestParameterOrSessionAttribute(request, "refreshRate");
     
     // resolve filters
     ExceptionSummary exceptionFilter = new ExceptionSummary();
@@ -191,8 +210,11 @@ public class ExceptionManagerServlet extends HttpServlet {
     
     // get and reset last id, so we can highlight data that corresponds
     // to the previous operation
-    String lastId = (String) session.getAttribute("lastid");
-    session.setAttribute("lastid", "");
+    String lastId = null;
+    if (session != null) {
+      lastId = (String) session.getAttribute("lastid");
+      session.setAttribute("lastid", "");
+    }
     
     // get all the exception summaries
     List allIds = exceptionStore.getIds(exceptionFilter);
@@ -230,12 +252,16 @@ public class ExceptionManagerServlet extends HttpServlet {
     if (request.getParameter(name) != null) {
       value = request.getParameter(name);
       if (value.length() > 0) {
-        session.setAttribute(name, value);
+        if (session != null) {
+          session.setAttribute(name, value);
+        }
       } else {
-        session.removeAttribute(name);
+        if (session != null) {
+          session.removeAttribute(name);
+        }
         value = null;
       }
-    } else if (session.getAttribute(name) != null) {
+    } else if (session != null && session.getAttribute(name) != null) {
       value = (String)session.getAttribute(name);
     }
     return value;

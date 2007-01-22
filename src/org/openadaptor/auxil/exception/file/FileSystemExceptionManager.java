@@ -31,52 +31,35 @@
  #* ]]
  */
 
-package org.openadaptor.auxil.exception;
+package org.openadaptor.auxil.exception.file;
 
-import java.util.List;
+import org.openadaptor.auxil.exception.ExceptionManager;
 
-public interface ExceptionStore {
-  /**
-   * store a new exception
-   */
-  String store(String xml);
+public class FileSystemExceptionManager extends ExceptionManager {
 
-  /**
-   * delete exception
-   * @param id
-   */
-  void delete(String id);
-  
-  /**
-   * increment retry count for exception
-   * @param id
-   */
-  void incrementRetryCount(String id);
-  
-  /**
-   * get all exception ids
-   * @return
-   */
-  List getIds(ExceptionSummary filter);
-  
-  /**
-   * get exception summary for exception id
-   * @param id
-   * @return
-   */
-  ExceptionSummary getExceptionSummary(String id);
+  public static void main(String[] args) {
 
-  /**
-   * get stack trace for exception id
-   * @param id
-   * @return
-   */
-  public String[] getStackTrace(String id);
+    FileSystemExceptionManager mgr = new FileSystemExceptionManager();
 
-  /**
-   * get data that relates to exception
-   * @param id
-   * @return
-   */
-  String getDataForId(String id);
+    String dir = ".";
+    
+    args = mgr.processArgs(args);
+    
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equalsIgnoreCase("-dir")) {
+        dir = args[++i];
+      } else {
+        System.err.println("usage:");
+        System.err.println("  [-dir <directory>]  directory used to persist exceptions, defaults to current working dir");
+        System.err.println("  [-port <num>]       http port number (defaults to 8080)");
+        System.err.println("  [-realm <file>]     jetty realm file (defaults to test: password,view & testadmin: password,view,admin)");
+        System.err.println("  [-unsecured]        no security");
+        System.exit(0);
+      }
+    }
+
+    mgr.setExceptionStore(new FileSystemExceptionStore(dir));
+    mgr.run();
+  }
+
 }

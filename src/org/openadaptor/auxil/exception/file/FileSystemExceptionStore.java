@@ -31,7 +31,7 @@
  #* ]]
  */
 
-package org.openadaptor.auxil.exception;
+package org.openadaptor.auxil.exception.file;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,18 +51,23 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.openadaptor.auxil.exception.ExceptionStore;
+import org.openadaptor.auxil.exception.ExceptionSummary;
+import org.openadaptor.auxil.exception.XMLUtil;
 
-public class ExceptionFileStore implements ExceptionStore {
+public class FileSystemExceptionStore implements ExceptionStore {
 
-  private static final Log log = LogFactory.getLog(ExceptionFileStore.class);
+  private static final String FILE_PATTERN = "([^-]*)-([^-]*)-([^-]*).xml";
+
+  private static final Log log = LogFactory.getLog(FileSystemExceptionStore.class);
   
   private static final String LAST_ID_XML = "lastId.xml";
   
   File dir;
   File idfile;
   long lastId;
-  
-  public ExceptionFileStore(String dirname) {
+
+  public FileSystemExceptionStore(String dirname) {
     this.dir = new File(dirname);
     if (dir.exists() && ! dir.isDirectory()) {
       throw new RuntimeException(dirname + " is not a directory");
@@ -102,29 +109,14 @@ public class ExceptionFileStore implements ExceptionStore {
   }
 
   public List getIds(final ExceptionSummary filter) {
-    String[] files = dir.list(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        boolean accept = name.endsWith(".xml") && !name.equals(idfile.getName());
-        if (accept && filter.getId() != null) {
-          accept &= name.startsWith(filter.getId());
-        }
-        if (accept && filter.getFrom() != null) {
-          accept &= name.indexOf(filter.getFrom()) > 0;
-        }
-        if (accept && filter.getDate() != null) {
-          long lower = filter.getTime();
-          long upper = lower + (24 * 60 * 60 * 1000);
-          String timeString = name.split("-")[2].replaceFirst("\\.xml", "");
-          long time = Long.parseLong(timeString);
-          accept &=  time >= lower && time < upper;
-        }
-        return accept;
-      }
-    });
-    
+    final Pattern pattern = Pattern.compile(FILE_PATTERN);
+    String[] files = dir.list(new ExceptionFileNameFilter(filter));
     List ids = new ArrayList();
     for (int i = 0; i < files.length; i++) {
-      ids.add(files[i].split("-")[0]);
+      Matcher matcher = pattern.matcher(files[i]);
+      if (matcher.matches()) {
+        ids.add(matcher.group(1));
+      }
     }
     Collections.sort(ids);
     Collections.reverse(ids);
@@ -148,27 +140,23 @@ public class ExceptionFileStore implements ExceptionStore {
     if (id == null || id.length() == 0) {
       throw new RuntimeException("id is null or empty");
     }
-    String[] files = dir.list(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.startsWith(id) && name.endsWith(".xml");
-      }
-    });
+    String[] files = dir.list(new ExceptionFileNameFilter(id));
     if (files.length == 0) {
       throw new RuntimeException("id " + id + " not found");
     }
     return files[0];
   }
 
-  public String store(String exception) {
+  public String store(String xml) {
     String id = getNextId();
     try {
-      Document doc = DocumentHelper.parseText(exception);
+      Document doc = DocumentHelper.parseText(xml);
       ExceptionSummary summary = new ExceptionSummary();
       XMLUtil.populateSummary(doc, summary);
       String filename = id + "-" + summary.getFrom() + "-" + summary.getTime() + ".xml";
       save(doc, filename);
     } catch (Exception e) {
-      log.error("failed to store exception " + exception);
+      log.error("failed to store exception " + xml);
       throw new RuntimeException("failed to store exception", e);
     }
     return id;
@@ -215,4 +203,53 @@ public class ExceptionFileStore implements ExceptionStore {
     return XMLUtil.getData(doc);
   }
 
+  class ExceptionFileNameFilter implements FilenameFilter {
+    
+    Pattern pattern;
+    ExceptionSummary filter;
+    
+    ExceptionFileNameFilter(String id) {
+      pattern = Pattern.compile(FILE_PATTERN);
+      filter = new ExceptionSummary();
+      filter.setId(id);
+    }
+    
+    ExceptionFileNameFilter(ExceptionSummary filter) {
+      pattern = Pattern.compile(FILE_PATTERN);
+      this.filter = filter;
+    }
+    
+    public boolean accept(File dir, String name) {
+      Matcher matcher = pattern.matcher(name);
+      boolean accept = matcher.matches();
+      if (accept) {
+        String id = matcher.group(1);
+        String from = matcher.group(2);
+        String time = matcher.group(3);
+        if (accept && filter.getId() != null) {
+          if (filter.getId().indexOf('-') > 0) {
+            String[] idRange = filter.getId().split("-");
+            if (idRange.length > 0) {
+              accept &= id.compareTo(idRange[0]) >= 0;
+            }
+            if (idRange.length > 1) {
+              accept &= id.compareTo(idRange[1]) <= 0;
+            }
+          } else {
+            accept &= id.equals(filter.getId());
+          }
+        }
+        if (accept && filter.getFrom() != null) {
+          accept &= from.indexOf(filter.getFrom()) == 0;
+        }
+        if (accept && filter.getDate() != null) {
+          long lower = filter.getTime();
+          long upper = lower + (24 * 60 * 60 * 1000);
+          long timeMs = Long.parseLong(time);
+          accept &=  timeMs >= lower && timeMs < upper;
+        }
+      }
+      return accept;
+    }
+  }
 }

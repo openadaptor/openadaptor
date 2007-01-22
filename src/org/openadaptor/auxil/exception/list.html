@@ -1,6 +1,5 @@
 <!-- style sheet -->
 <style type="text/css">
-  tabls       { width: 100%; text-align: center; }
   p            { font-weight: bold; }
   th           { text-align: left; }
   .highlight   { background-color: FFFFCC; }  
@@ -15,31 +14,40 @@
   function refresh() {
     window.location.reload(false);
   }
+  function submitRefreshForm() {
+    document.refreshForm.submit();
+  }
 //-->    
 </script>
 <html>
-<title> Exception Manager (this page refreshes every minute)</title>
-<body onload="setTimeout('refresh()', 60 * 1000)">
-<p>Exceptions</p>
-<form>  
-<table>
-  <thead>
-    <tr>
-      <th><input type="textbox" name='idFilter' size='6' value='$!SESSION.getAttribute("idFilter")'/></th>
-      <th><input type="textbox" name='fromFilter' value='$!SESSION.getAttribute("fromFilter")'/></th>
-      <th><input type="textbox" name='dateFilter' size='8' value='$!SESSION.getAttribute("dateFilter")'/></th>
-      <th><input type="submit" value='Filter'/></th>
-      <th/>
-      <th/>
-      <th/>
-    </tr>
-  </thead>
-  <tbody>
+<title> Exception Manager</title>
+#set ( $refreshRate = "1" )
+#if ( $!SESSION.getAttribute("refreshRate") != "")
+  #set ( $refreshRate = $SESSION.getAttribute("refreshRate") )
+#end
+  
+<body onload="setTimeout('refresh()', $refreshRate * 60 * 1000)">
+#if ($messages != "")
+<textarea readonly="true" cols="80">$messages</textarea>
+#end
 #set ( $prevDate = "" )
 #set ( $prevParentId = "" )
 #set ( $retryIds = "" )
 #set ( $todayIds = "" )
 #set ( $pageIds = "" )
+  
+<form>  
+<table>
+  <thead>
+  <tr>
+    <td><input type="textbox" name='idFilter' size='6' value='$!SESSION.getAttribute("idFilter")'/></td>
+    <td><input type="textbox" name='fromFilter' value='$!SESSION.getAttribute("fromFilter")'/></td>
+    <td><input type="textbox" name='dateFilter' size='8' value='$!SESSION.getAttribute("dateFilter")'/></td>
+    <td><input type="submit" value='Filter'/></td>
+    <td/><td/><td/><td/>
+  </tr>
+    <tr><th>ID</th><th>FROM</th><th>DATE</th><th>TIME</th><th>MESSAGE</th><th/><th/><th/><tr/>
+  </thead>
 #foreach ( $summary in $summaries )
   #if ( $summary.ParentId == "" ) #set ( $prevParentId = $summary.Id ) #end
   #if ( $summary.ParentId == $prevParentId ) 
@@ -69,32 +77,6 @@
       <tr><td/><td/><td/><td/><td/><td/><td/><td><a href="?action=deleteall&ids=${todayIds}">Delete All</a></td></tr>
     #end
     #set ( $todayIds = "" )
-    </tbody>
-    <thead>
-      <tr>
-        <th>$date</th>
-        <th/>
-        <th/>
-        <th/>
-        <th/>
-        <th/>
-        <th/>
-        <th/>
-      <tr/>
-    </thead>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>FROM</th>
-        <th>DATE</th>
-        <th>TIME</th>
-        <th>MESSAGE</th>
-        <th/>
-        <th/>
-        <th/>
-      <tr/>
-    </thead>
-    <tbody>
   #end
   #set ( $todayIds = "$todayIds,$summary.Id")  
   <tr class="${rowClass}">
@@ -119,27 +101,41 @@
 #if ( $todayIds != "" )
   <tr><td/><td/><td/><td/><td/><td/><td/><td><a href="?action=deleteall&ids=${todayIds}">Delete All</a></td></tr>
 #end
-
-  </tbody>
 </table>
 </form>
         
-<!-- footer -->
-<p>Most Recent ${summaries.size()} of $allIds.size()</p>
-<form>
+<form name="refreshForm">
 <table>
   <tr>
-    <td><a href="?action=list">Refresh</a></td>
-    <td><a href="?action=deleteall&ids=$pageIds">Delete All</a></td>
-    <td>Show Last <input type='textbox' maxlength='3' size='3' name='show' value='$!SESSION.getAttribute("show")'/> Entries</td>
+    <td>Most Recent ${summaries.size()} of $allIds.size() </td>
+    <td>, show last <input type='text' maxlength='3' size='3' name='show' value='$!SESSION.getAttribute("show")'/> entries</td>
+    <td>, automatically refreshes every <input type='text' maxlength='3' size='3' name='refreshRate' value='$refreshRate'/>  minute(s) </td>
+    <td><a href="javascript:submitRefreshForm()">Refresh</a></td>
+    <td><a href="?action=deleteall&ids=${pageIds}">Delete All</a></td>
   </tr>
 </table> 
 </form>
-#if ($messages != "")
-<textarea readonly="true" cols="80">$messages</textarea>
-#end
-</div>
 
+#set ($count = 0)
+#set ($prevId = "")
+#set ($lastId = "")
+<table><tr>
+#foreach ( $id in $allIds )
+  #if ( $count % 50 == 0)
+    #if ($prevId != "")
+      <td><a href="?action=list&idFilter=${id}-${prevId}">${prevId}-${id}</a></td>
+    #end
+    #set ($prevId = $id)
+  #end
+  #set ($lastId = $id)
+  #set ($count = $count + 1)
+#end
+
+#if ( $lastId != "")
+<td><a href="?action=list&idFilter=${lastId}-${prevId}">${prevId}-${lastId}</a></td>
+#end
+</tr></table>
+                
 </body>
 </html>
 

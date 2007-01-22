@@ -9,7 +9,7 @@ public class VelocityProcessorTestCase extends TestCase {
 
   public void testEmbeddedTemplate() {
     VelocityProcessor processor = new VelocityProcessor();
-    processor.setTemplate("foo${data}bar");
+    processor.setTemplateString("foo${data}bar");
     Object[] data = processor.process("test");
     assertTrue(data.length == 1);
     assertTrue(data[0].equals("footestbar"));
