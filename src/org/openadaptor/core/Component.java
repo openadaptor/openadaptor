@@ -1,6 +1,6 @@
 package org.openadaptor.core;
 
-public class Component implements IComponent {
+public abstract class Component implements IComponent {
 
 	private String id;
 
