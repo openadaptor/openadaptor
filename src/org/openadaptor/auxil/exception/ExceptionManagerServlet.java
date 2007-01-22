@@ -197,6 +197,9 @@ public class ExceptionManagerServlet extends HttpServlet {
     String dateFilter = resolveRequestParameterOrSessionAttribute(request, "dateFilter");
     Date date = null;
     if (dateFilter != null) {
+      if (dateFilter.equalsIgnoreCase("today")) {
+        dateFilter = DATE_FORMATTER.format(new Date());
+      }
       try {
         date = DATE_FORMATTER.parse(dateFilter);
       } catch (ParseException e) {

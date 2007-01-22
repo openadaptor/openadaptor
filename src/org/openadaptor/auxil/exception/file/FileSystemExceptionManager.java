@@ -51,9 +51,7 @@ public class FileSystemExceptionManager extends ExceptionManager {
       } else {
         System.err.println("usage:");
         System.err.println("  [-dir <directory>]  directory used to persist exceptions, defaults to current working dir");
-        System.err.println("  [-port <num>]       http port number (defaults to 8080)");
-        System.err.println("  [-realm <file>]     jetty realm file (defaults to test: password,view & testadmin: password,view,admin)");
-        System.err.println("  [-unsecured]        no security");
+        System.err.println(getUsageString());
         System.exit(0);
       }
     }
@@ -61,5 +59,6 @@ public class FileSystemExceptionManager extends ExceptionManager {
     mgr.setExceptionStore(new FileSystemExceptionStore(dir));
     mgr.run();
   }
+
 
 }

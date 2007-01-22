@@ -68,9 +68,7 @@ public class JDBCExceptionManager extends ExceptionManager {
         System.err.println("  -user <login name>     database login name");
         System.err.println("  -password <password>   password");
         System.err.println("  [-driver <classname>]  class name for jdbc driver, defaults to sybase");
-        System.err.println("  [-port <num>]          http port number (defaults to 8080)");
-        System.err.println("  [-realm <file>]        jetty realm file (defaults to test: password,view & testadmin: password,view,admin)");
-        System.err.println("  [-unsecured]           no security");
+        System.err.println(getUsageString());
         System.exit(0);
       }
     }
