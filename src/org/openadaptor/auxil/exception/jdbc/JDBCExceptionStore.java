@@ -109,7 +109,7 @@ public class JDBCExceptionStore implements ExceptionStore {
       summary.setFrom(rs.getString(2));
       summary.setDate(new Date(rs.getTimestamp(3).getTime()));
       summary.setMessage(rs.getString(4));
-      summary.setRetryAddress(rs.getString(5));
+      summary.setRetryAddress(rs.getString(5).trim());
       summary.setRetries(rs.getInt(6));
       summary.setParentId(rs.getInt(7) > 0 ? rs.getString(7) : "");
       summary.setHost(rs.getString(8));
