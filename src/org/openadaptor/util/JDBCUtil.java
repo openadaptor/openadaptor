@@ -27,7 +27,7 @@ public class JDBCUtil {
     }
   }
 
-  public static void logResultSet(Log log, String msg, ResultSet rs) throws SQLException {
+  public static void logCurrentResultSetRow(Log log, String msg, ResultSet rs) throws SQLException {
     if (log.isDebugEnabled()) {
       ResultSetMetaData rsmd = rs.getMetaData();
       if (msg != null) {

@@ -31,40 +31,44 @@
  #* ]]
  */
 
-package org.openadaptor.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.writer.orderedmap;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.util.JDBCUtil;
+import org.openadaptor.auxil.connector.jdbc.writer.IStatementConverter;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
-public abstract class ResultSetConverter {
-  private static final Log log = LogFactory.getLog(ResultSetOrderedMapConverter.class);
+public abstract class AbstractStatementConverter implements IStatementConverter {
 
-  public Object convertNext(ResultSet rs) throws SQLException {
-    ResultSetMetaData rsmd = rs.getMetaData();
-    if (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
-      return convertNext(rs, rsmd);
+  protected static final int DB_COLUMN_OFFSET=1;
+  protected static final boolean APPLY_STOREDPROC_METADATA_FIX = true;
+
+  public PreparedStatement convert(Object data, Connection connection) {
+    if (data instanceof IOrderedMap) {
+      return convert((IOrderedMap)data, connection);
     } else {
-      return null;
+      throw new RuntimeException("data is " + data.getClass() + ", exepected an IOrderedMap");
     }
   }
 
-  public Object[] convertAll(ResultSet rs) throws SQLException {
-    ArrayList rows = new ArrayList();
-    ResultSetMetaData rsmd = rs.getMetaData();
-    while (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
-      rows.add(convertNext(rs, rsmd));
+  public abstract PreparedStatement convert(IOrderedMap map, Connection connection);
+  
+  protected String getDebugValueString(Object value, int colType) {
+    switch (colType) {
+      case java.sql.Types.BIGINT:
+      case java.sql.Types.DECIMAL:
+      case java.sql.Types.DOUBLE:
+      case java.sql.Types.FLOAT:
+      case java.sql.Types.INTEGER:
+      case java.sql.Types.REAL:
+      case java.sql.Types.NUMERIC:
+      case java.sql.Types.SMALLINT:
+      case java.sql.Types.TINYINT:
+        return value != null ? value.toString() : "null";
+      default:
+        return value != null ? ("'" + value.toString() + "'") : "null";
     }
-    return rows.toArray(new Object[rows.size()]);
   }
-
-  protected abstract Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException;
 
 }

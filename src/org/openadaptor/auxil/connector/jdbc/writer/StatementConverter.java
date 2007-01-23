@@ -31,40 +31,28 @@
  #* ]]
  */
 
-package org.openadaptor.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.writer;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.util.JDBCUtil;
+/**
+ * trivial implementation of IStatementConverter, calls toString() on data and
+ * creates a PreparedStatement with that String.
+ * @author perryj
+ *
+ */
+public class StatementConverter implements IStatementConverter {
 
-public abstract class ResultSetConverter {
-  private static final Log log = LogFactory.getLog(ResultSetOrderedMapConverter.class);
-
-  public Object convertNext(ResultSet rs) throws SQLException {
-    ResultSetMetaData rsmd = rs.getMetaData();
-    if (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
-      return convertNext(rs, rsmd);
-    } else {
-      return null;
+  public PreparedStatement convert(Object data, Connection connection) {
+    try {
+      return connection.prepareStatement(data.toString());
+    } catch (Exception e) {
+      throw new RuntimeException("failed to convert data to PreparedStatement, " + e.getMessage(), e);
     }
   }
 
-  public Object[] convertAll(ResultSet rs) throws SQLException {
-    ArrayList rows = new ArrayList();
-    ResultSetMetaData rsmd = rs.getMetaData();
-    while (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
-      rows.add(convertNext(rs, rsmd));
-    }
-    return rows.toArray(new Object[rows.size()]);
+  public void initialise(Connection connection) {
   }
-
-  protected abstract Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException;
 
 }

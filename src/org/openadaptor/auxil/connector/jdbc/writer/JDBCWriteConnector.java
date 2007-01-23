@@ -32,182 +32,65 @@
  */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.List;
-
 /**
- * This class has three methods of writing data
- * to a database:
- * 1 Directly to database table
- * 2 Using a stored procedure
- * 3 Using a custom sql statement
- *
- * The mechanism required is set as a property within the Spring bean configuration.
- * The class then uses a factory to provide the appropriate object and passes it the Ordered Map
- * containing the data to be written to the database.
+ * Processes data by executing PreparedStatements against a database. The conversion of
+ * the data to a prepared statement is delegate to an IStatementConverter, the default
+ * is a StatementConverter (which calls toString() on data, i.e. it assumes that an upstream
+ * component has converted the data to valid SQL.
+ * 
+ * @see IStatementConverter
  */
-public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional, IJDBCConstants {
+public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional {
 
   private static final Log log = LogFactory.getLog(JDBCWriteConnector.class.getName());
 
-  private String tableName = "";
-  private String storedProcName = "";
-  private String sqlStatement = "";
-  private String delimiter = "$";
-  private IJDBCStatement jdbcStatement;
+  private IStatementConverter statementConverter = new StatementConverter();
   private JDBCConnection jdbcConnection;
-  private Map omKeyToDBTableColumnMapping;
-  private List omKeyToStoredProcParameterMapping;
 
-  //BEGIN Bean getters/setters
-
-  /**
-   * @return database table name where data will be written
-   */
-  public String getTableName() {
-    return tableName;
+  public JDBCWriteConnector() {
+    super();
   }
-
-  /**
-   * Set database table name where data will be written
-   */
-  public void setTableName(String tableName) {
-    this.tableName = tableName;
+  
+  public JDBCWriteConnector(String id) {
+    super(id);
   }
-
-  /**
-   * @return stored procedure which will be used to write data to database
-   */
-  public String getStoredProcName() {
-    return storedProcName;
-  }
-
-  /**
-   * Set stored procedure which will be used to write data to database
-   */
-  public void setStoredProcName(String storedProcName) {
-    this.storedProcName = storedProcName;
-  }
-
-  /**
-   * @return Sql statement which will be used to write data to database
-   */
-  public String getSqlStatement() {
-    return sqlStatement;
-  }
-
-  /**
-   * Set Sql statement which will be used to write data to database
-   */
-  public void setSqlStatement(String sqlStatement) {
-    this.sqlStatement = sqlStatement;
-  }
-
-  /**
-   * @return JDBCConnection
-   */
-  public JDBCConnection getJdbcConnection() {
-    return jdbcConnection;
-  }
-
-  /**
-   * Set JDBCConnection
-   */
-  public void setJdbcConnection(JDBCConnection jdbcConnection) {
+  
+  public void setJdbcConnection(final JDBCConnection jdbcConnection) {
     this.jdbcConnection = jdbcConnection;
   }
 
-  /**
-   * @return Delimiter character for sql statement placeholder variables
-   */
-  public String getDelimiter() {
-    return delimiter;
+  public void setStatementConverter(final IStatementConverter statementConverter) {
+    this.statementConverter = statementConverter;
   }
 
-  /**
-   * Set delimiter character for sql statement placeholder variables
-   */
-  public void setDelimiter(String delimiter) {
-    this.delimiter = delimiter;
-  }
-
-  /**
-   * @return Map Ordered map keys to database table column mappings
-   */
-  public Map getOmKeyToDBTableColumnMapping() {
-    return omKeyToDBTableColumnMapping;
-  }
-
-  /**
-   * set ordered map keys to database table column mappings
-   */
-  public void setOmKeyToDBTableColumnMapping(Map omKeyToDBTableColumnMapping) {
-    this.omKeyToDBTableColumnMapping = omKeyToDBTableColumnMapping;
-  }
-
-  /**
-   * @return Map Ordered map keys to stored procedure parameters mappings
-   */
-  public List getOmKeyToStoredProcParameterMapping() {
-    return omKeyToStoredProcParameterMapping;
-  }
-
-  /**
-   * set ordered map keys to stored procedure parameters mappings
-   */
-  public void setOmKeyToStoredProcParameterMapping(List omKeyToStoredProcParameterMapping) {
-    this.omKeyToStoredProcParameterMapping = omKeyToStoredProcParameterMapping;
-  }
-
-  //END   Bean getters/setters
-
-  //BEGIN Implement methods of AbstractWriteConnector
-
-  /**
-   * Write ordered map record to database using IJDBCStatement instance
-   *
-   * @param records Ordered map
-   * @return Object String with number of rows updated hopefully.
-   * @throws org.openadaptor.core.exception.ComponentException
-   */
-  public Object deliver(Object[] records) throws ComponentException {
-    String result=null;
-    IOrderedMap om=null;
-    //Todo: Rectify massive inefficiencies of creating a SQL statement even when we don't need to.
-    int size=records.length;
-    int updateCount=0;
-    for (int recordIndex =0;recordIndex <size;recordIndex++) {
-      Object record =records[recordIndex];
-      if (record instanceof IOrderedMap) {
-        om = (IOrderedMap) record;
-        updateCount += jdbcStatement.executeStatement(om,jdbcConnection.getConnection());
-      }
-      else {
-        throw new ComponentException("Malformed data for writer - not IOrderedMap", this);
+  public Object deliver(Object[] data) throws ComponentException {
+    for (int i = 0; i < data.length; i++) {
+      try {
+        PreparedStatement s = statementConverter.convert(data[i], jdbcConnection.getConnection());
+        s.executeUpdate();
+        s.close();
+      } catch (SQLException e) {
+        throw new ComponentException("SQL Exception, " + e.getMessage(), e, this);
       }
     }
-    result= updateCount + " rows updated";
-    log.info(result);
-    return result;
+    return null;
   }
 
-  /**
-   * Set up JDBC connection
-   */
   public void connect() throws ComponentException{
     log.debug("Connector: [" + getId() + "] connecting ....");
     try {
       jdbcConnection.connect();
-      configureWriteMechanism();
+      statementConverter.initialise(jdbcConnection.getConnection());
     }
     catch (SQLException sqle) {
       throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
@@ -216,35 +99,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     log.info("Connector: [" + getId() + "] successfully connected.");
   }
 
-  /**
-   * This method ensures only one write mechanism is configure,
-   * it then requests a IJDBCStatement object from the JDBCStatement factory.
-   *
-   * @throws ComponentException
-   */
-  private void configureWriteMechanism() throws ComponentException {
-    String writeMechanism="";
-
-    if (!(tableName.equals("")) && storedProcName.equals("") && sqlStatement.equals("")) {
-      writeMechanism=DATABASE_TABLE;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, tableName, delimiter, omKeyToDBTableColumnMapping, jdbcConnection.getConnection());
-    } else if (tableName.equals("") && !(storedProcName.equals("")) && sqlStatement.equals("")) {
-      writeMechanism=STORED_PROCEDURE;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, storedProcName, delimiter, omKeyToStoredProcParameterMapping, jdbcConnection.getConnection());
-    } else if (tableName.equals("") && storedProcName.equals("") && !(sqlStatement.equals(""))) {
-      writeMechanism=SQL_STATEMENT;
-      jdbcStatement = JDBCStatementFactory.createStatement(writeMechanism, sqlStatement, delimiter, null, jdbcConnection.getConnection());
-    } else {
-      throw new ComponentException("No valid write mechanism, or more than one write mechanism configured", this);
-    }
-  }
-
-
-  /**
-   * Disconnect from the external message transport. If already disconnected then do nothing.
-   *
-   * @throws ComponentException
-   */
   public void disconnect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
 
@@ -256,12 +110,10 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     connected = false;
     log.info("Connector: [" + getId() + "] disconnected");
   }
-  //END Implement methods of AbstractWriteConnector
 
-  // ITransactional
   public Object getResource() {        
-    if (getJdbcConnection().isTransacted()) {
-      return getJdbcConnection().getTransactionalResource();
+    if (jdbcConnection.isTransacted()) {
+      return jdbcConnection.getTransactionalResource();
     } else {
       return null;
     }

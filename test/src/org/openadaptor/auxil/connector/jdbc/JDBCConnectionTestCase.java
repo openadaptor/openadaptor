@@ -33,10 +33,10 @@
 
 package org.openadaptor.auxil.connector.jdbc;
 
-import junit.framework.TestCase;
 import java.sql.SQLException;
+import java.util.Properties;
 
-import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import junit.framework.TestCase;
 
 /**
  * This test case uses the Hypersonic database. The database is created in memory when a jdbc connection is established.
@@ -48,7 +48,7 @@ public class JDBCConnectionTestCase extends TestCase {
     private static final String DB_USER="sa";
     private static final String DB_PASSWORD="";
 
-    private JDBCConnection jdbcConnection;
+    protected JDBCConnection jdbcConnection;
 
     protected void setUp() throws Exception {
       super.setUp();
@@ -58,6 +58,9 @@ public class JDBCConnectionTestCase extends TestCase {
       jdbcConnection.setUrl(DB_URL);
       jdbcConnection.setUsername(DB_USER);
       jdbcConnection.setPassword(DB_PASSWORD);
+      Properties props = new Properties();
+      props.setProperty("shutdown", "true");
+      jdbcConnection.setProperties(props);
 
     }
 

@@ -152,7 +152,7 @@ public class JDBCMessageReadConnector extends AbstractJDBCReadConnector {
     try {
       rs = pollStatement.executeQuery();
       if (rs.next()) {
-        JDBCUtil.logResultSet(log, "event ResultSet", rs);
+        JDBCUtil.logCurrentResultSetRow(log, "event ResultSet", rs);
         cs = convertEventToStatement(rs);
       }
       deadlockCount = 0;

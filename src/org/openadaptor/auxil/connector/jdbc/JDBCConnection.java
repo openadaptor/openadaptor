@@ -58,6 +58,8 @@ public class JDBCConnection extends Component {
   private String password;
   private Connection connection = null;
   private boolean isTransacted = false;
+  private Properties properties;
+  
   /** transactional resource, can either be XAResource or ITransactionalResource */
   private Object transactionalResource = null;
   /**
@@ -135,6 +137,14 @@ public class JDBCConnection extends Component {
    */
   public String getPassword() { return password; }
 
+  public Properties getProperties() {
+    return properties;
+  }
+
+  public void setProperties(Properties properties) {
+    this.properties = properties;
+  }
+
   /**
    * JDBC connection
    *
@@ -199,7 +209,7 @@ public class JDBCConnection extends Component {
       }
 
       //Set up properties for use with DriverManager
-      Properties props = new Properties();
+      Properties props = (Properties) properties.clone();
       props.put("user", username);
       props.put("password", password);
 
@@ -259,4 +269,5 @@ public class JDBCConnection extends Component {
   protected void rollbackTransaction() throws SQLException {
     connection.rollback();
   }
+
 }
