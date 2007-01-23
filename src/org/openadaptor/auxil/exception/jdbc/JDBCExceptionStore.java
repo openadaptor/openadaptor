@@ -93,9 +93,9 @@ public class JDBCExceptionStore implements ExceptionStore {
     sql.append(",Application");
     sql.append(",Date");
     sql.append(",Message");
-    sql.append(",RetryAddress");
+    sql.append(",ISNULL(RetryAddress, '')");
     sql.append(",Retries");
-    sql.append(",isnull(ParentId, 0)");
+    sql.append(",ISNULL(ParentId, 0)");
     sql.append(",Host");
     sql.append(",Class");
     sql.append(" FROM ExceptionSummary where ExceptionId = " + id);
@@ -302,6 +302,40 @@ public class JDBCExceptionStore implements ExceptionStore {
       }
     }
     return i;
+  }
+
+  public int purge(Date olderThan) {
+    int count = 0;
+    PreparedStatement s = null;
+    try {
+      String whereClause = " WHERE Date < '" + convertToDateString(olderThan) + "'";
+      s = connection.prepareStatement("SELECT COUNT(*) FROM ExceptionSummary" + whereClause );
+      ResultSet rs = s.executeQuery();
+      rs.next();
+      count = rs.getInt(1);
+      rs.close();
+      s.close();
+      
+      if (count > 0) {
+        s = connection.prepareStatement("DELETE ExceptionSummary " + whereClause);
+        s.executeUpdate();
+        s.close();
+        s = connection.prepareStatement("DELETE ExceptionDetail WHERE ExceptionId NOT IN (SELECT ExceptionId from ExceptionSummary");
+        s.executeUpdate();
+        s.close();
+      }
+      connection.commit();
+      return count;
+    } catch (SQLException e) {
+      try {
+        connection.rollback();
+      } catch (SQLException sqe) {
+        throw new RuntimeException("unexpected exception, " + e.getMessage(), sqe);
+      }
+      throw new RuntimeException("unexpected exception, " + e.getMessage(), e);
+    } finally {
+      JDBCUtil.closeNoThrow(s);
+    }
   }
 
 }

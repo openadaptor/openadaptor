@@ -36,6 +36,7 @@ package org.openadaptor.auxil.exception;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -90,6 +91,8 @@ public class ExceptionManager {
   
   private CronTrigger statusCronTrigger = new CronTrigger();
   
+  private int purgeLimitDays = 7;
+  
   public ExceptionManager() {
     setCronExpression(mailCronTrigger, DEFAULT_MAIL_CRON);
     setCronExpression(statusCronTrigger, DEFAULT_STATUS_CRON);
@@ -123,6 +126,8 @@ public class ExceptionManager {
         unsecured = true;
       } else if (args[i].equalsIgnoreCase("-realm")) {
         realmFile = args[++i];
+      } else if (args[i].equalsIgnoreCase("-purge")) {
+        setPurgeLimitDays(Integer.parseInt(args[++i]));
       } else if (args[i].equalsIgnoreCase("-mail.to")) {
         mailConnection.setTo(args[++i]);
       } else if (args[i].equalsIgnoreCase("-mail.from")) {
@@ -169,6 +174,7 @@ public class ExceptionManager {
   protected static String getUsageString() {
     String s = "";
     s += "  [-port <num>]       http port number (defaults to 8080)\n";
+    s += "  [-purge <num days>] number of days to store exceptions, defaults to 7, set zero for no purge\n";
     s += "  [-realm <file>]     jetty realm file (defaults to test: password,view & testadmin: password,view,admin)\n";
     s += "  [-unsecured]        no security\n";
     s += "  [-mail.to]          to list (comma separated smtp addresses) for mail notification\n";
@@ -235,7 +241,7 @@ public class ExceptionManager {
     if (mailer != null) {
       resetMailBody();
       mailer.connect();
-      sendStatusMail();
+      housekeeping();
     }
     
     // start jetty
@@ -342,7 +348,17 @@ public class ExceptionManager {
     this.mailer = mailer;
   }
   
-  public void sendStatusMail() {
+  public void housekeeping() {
+    if (purgeLimitDays > 0) {
+      Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.DAY_OF_YEAR, -1 * purgeLimitDays);
+      log.info("purging exceptions older than " + cal.getTime());
+      int count = exceptionStore.purge(cal.getTime());
+      if (count > 0) {
+        log.info("purged " + count + " exceptions");
+        mailer.deliver(new Object[] {"purged " + count + " exceptions in the exception manager, " + getAdminUrl()});
+      }
+    }
     List ids = exceptionStore.getIds(new ExceptionSummary());
     if (ids.size() > 0) {
       mailer.deliver(new Object[] {"There are " + ids.size() + " exceptions in the exception manager, " + getAdminUrl()});
@@ -350,8 +366,12 @@ public class ExceptionManager {
     Date nextTime = statusCronTrigger.getFireTimeAfter(new Date());
     timer.schedule(new TimerTask() {
       public void run() {
-        sendStatusMail();
+        housekeeping();
       }
     }, nextTime);
+  }
+
+  public void setPurgeLimitDays(int purgeLimitDays) {
+    this.purgeLimitDays = purgeLimitDays;
   }
 }

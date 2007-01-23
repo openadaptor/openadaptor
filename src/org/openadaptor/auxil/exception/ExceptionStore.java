@@ -33,6 +33,7 @@
 
 package org.openadaptor.auxil.exception;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ExceptionStore {
@@ -79,4 +80,11 @@ public interface ExceptionStore {
    * @return
    */
   String getDataForId(String id);
+  
+  /**
+   * purge data older than this date
+   * @param olderThan
+   * @return number of exceptions purged
+   */
+  int purge(Date olderThan);
 }

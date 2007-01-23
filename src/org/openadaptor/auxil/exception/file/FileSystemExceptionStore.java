@@ -39,6 +39,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -185,6 +186,16 @@ public class FileSystemExceptionStore implements ExceptionStore {
     file.delete();
   }
 
+
+  public int purge(Date olderThan) {
+    String[] files = dir.list(new ExceptionDateFilter(olderThan));
+    for (int i = 0; i < files.length; i++) {
+      File file = new File(dir, files[i]);
+      file.delete();
+    }
+    return files.length;
+  }
+
   public ExceptionSummary getExceptionSummary(String id) {
     Document doc = getExceptionDocument(id);
     ExceptionSummary summary = new ExceptionSummary();
@@ -247,6 +258,30 @@ public class FileSystemExceptionStore implements ExceptionStore {
           long upper = lower + (24 * 60 * 60 * 1000);
           long timeMs = Long.parseLong(time);
           accept &=  timeMs >= lower && timeMs < upper;
+        }
+      }
+      return accept;
+    }
+  }
+  
+  class ExceptionDateFilter implements FilenameFilter {
+    
+    Pattern pattern;
+    long dateInMs;
+    
+    ExceptionDateFilter(Date date) {
+      pattern = Pattern.compile(FILE_PATTERN);
+      dateInMs = date.getTime();
+    }
+    
+    public boolean accept(File dir, String name) {
+      Matcher matcher = pattern.matcher(name);
+      boolean accept = matcher.matches();
+      if (accept) {
+        String time = matcher.group(3);
+        if (accept) {
+          long timeMs = Long.parseLong(time);
+          accept &=  timeMs <= dateInMs;
         }
       }
       return accept;
