@@ -9,11 +9,11 @@
    
     This adaptor does the following...
     
-      * reads SQL from stdin
-      * executes SQL against a database
+      * reads data from stdin
+      * maps the data to a SQL statement based on a template
     
     It is designed to illustrate the basic structure of an adaptor that writes to a database
-  
+
     Run it like this...
     
       java org.openadaptor.spring.SpringApplication -config writer.xml -bean Adaptor
@@ -26,9 +26,8 @@
       lib/openadaptor-depends.jar
       hsqldb.jar (this is not distributed with openadaptor)
     
-    once running any data read from std input executed against the database, like this...
-  
-      insert into testoutput values ('hello mum')
+    once running any data that read from std input is written into the test table.
+    
 -->
 
 <beans>
@@ -37,6 +36,7 @@
     <property name="pipeline">
       <list>
         <ref bean="Reader"/>
+        <ref bean="MapConverter"/>
         <ref bean="Writer"/>
       </list>
     </property>
@@ -51,6 +51,15 @@
     </property>
   </bean>
 
+  <!-- converts intput into an ordered map with single field called data -->
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <property name="fieldNames">
+      <list>
+        <value>data</value>
+      </list>
+    </property>
+  </bean>
+
   <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
@@ -62,6 +71,12 @@
   <!-- Writer which inserts data into test table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+        <property name="sql" value="INSERT INTO TESTOUTPUT VALUES ('$data$')"/>
+      </bean>
+    </property>
+
   </bean>
 
 </beans>

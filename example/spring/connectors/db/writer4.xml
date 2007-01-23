@@ -2,18 +2,16 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <!--
-    This example relies on a hypersonic database running (http://www.hsqldb.org) to run
-    up the server make sure hsqldb.jar is in your class path and run the following...
+    This example is for information only, we couldn't get a working example that used
+    hypersonic
   
-      java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
-   
     This adaptor does the following...
     
-      * reads SQL from stdin
-      * executes SQL against a database
+      * reads data from stdin
+      * maps the data to a store procedure call
     
     It is designed to illustrate the basic structure of an adaptor that writes to a database
-  
+
     Run it like this...
     
       java org.openadaptor.spring.SpringApplication -config writer.xml -bean Adaptor
@@ -26,9 +24,8 @@
       lib/openadaptor-depends.jar
       hsqldb.jar (this is not distributed with openadaptor)
     
-    once running any data read from std input executed against the database, like this...
-  
-      insert into testoutput values ('hello mum')
+    once running any data that read from std input is written into the test table.
+    
 -->
 
 <beans>
@@ -37,6 +34,7 @@
     <property name="pipeline">
       <list>
         <ref bean="Reader"/>
+        <ref bean="MapConverter"/>
         <ref bean="Writer"/>
       </list>
     </property>
@@ -51,17 +49,39 @@
     </property>
   </bean>
 
-  <!-- This defines jdbc connection -->
-  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
-    <property name="driver" value="org.hsqldb.jdbcDriver"/>
-    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
-    <property name="username" value="sa"/>
-    <property name="password" value=""/>
+  <!-- converts intput into an ordered map with single field called data -->
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <property name="fieldNames">
+      <list>
+        <value>data</value>
+      </list>
+    </property>
   </bean>
 
+  <!-- This defines jdbc connection -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <property name="driver" value="TODO"/>
+    <property name="url" value="TODO"/>
+    <property name="username" value="TODO"/>
+    <property name="password" value="TODO"/>
+  </bean>
+  
   <!-- Writer which inserts data into test table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.CallableStatementConverter">
+        <!-- the stored proc to call -->
+        <property name="procName" value="INSERT_TEST"/>
+        <!-- ordered list ordered map attributes to call proc with -->
+        <property name="mapping">
+          <list>
+            <value>data</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+
   </bean>
 
 </beans>
