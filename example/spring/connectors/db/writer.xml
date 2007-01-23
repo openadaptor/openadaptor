@@ -69,13 +69,14 @@
   </bean>
 
   <!-- Writer which inserts data into test table -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCWriteConnector">
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
-    <property name="sqlStatement">
-      <value>
-        INSERT INTO TESTOUTPUT VALUES ('$data$')
-      </value>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+        <property name="sql" value="INSERT INTO TESTOUTPUT VALUES ('$data$')"/>
+      </bean>
     </property>
+
   </bean>
 
 </beans>

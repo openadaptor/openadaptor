@@ -209,7 +209,12 @@ public class JDBCConnection extends Component {
       }
 
       //Set up properties for use with DriverManager
-      Properties props = (Properties) properties.clone();
+      Properties props;
+      if (properties != null) {
+        props = (Properties) properties.clone();
+      } else {
+        props = new Properties();
+      }
       props.put("user", username);
       props.put("password", password);
 
