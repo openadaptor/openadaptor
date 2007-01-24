@@ -39,9 +39,9 @@ use DATABASE_NAME
 go
 
 /*********************************************************************************************
-#* Table Name    : 	OA_Event
+#* Table Name    :     OA_Event
 #*
-#* Description   : 	Contains the events to be processed
+#* Description   :     Contains the events to be processed
 #*********************************************************************************************
 */
 
@@ -50,7 +50,7 @@ go
 
 create table OA_Event (
 EventId                             numeric(32) Identity,
-EventSpid				                    int NULL,
+EventSpid                                    int NULL,
 EventServiceId                      int NOT NULL,
 EventTypeId                         int NOT NULL,
 EventQueuedAt                       datetime NOT NULL,
@@ -87,10 +87,10 @@ go
 
 
 /*********************************************************************************************
-#* Table Name    : 	OA_EventType
+#* Table Name    :     OA_EventType
 #*
-#* Description   : 	Lists types of events any individual system, or adaptor, knows about.
-#*			            So for an Equity Trading system this may be "Order" or "Execution" or or or...
+#* Description   :     Lists types of events any individual system, or adaptor, knows about.
+#*                        So for an Equity Trading system this may be "Order" or "Execution" or or or...
 #*********************************************************************************************
 */
 
@@ -115,10 +115,10 @@ grant select on OA_EventType to public
 go
 
 /*********************************************************************************************
-#* Table Name    : 	OA_EventService
+#* Table Name    :     OA_EventService
 #*
-#* Description   : 	Lists the queue-reading services which are using this system.
-#*			            Typically this will be at a project level.
+#* Description   :     Lists the queue-reading services which are using this system.
+#*                        Typically this will be at a project level.
 #*********************************************************************************************
 */
 
@@ -143,9 +143,9 @@ grant select on OA_EventService to public
 go
 
 /*********************************************************************************************
-#* Stored Procedure Name    : 	OA_AddEventService
+#* Stored Procedure Name    :     OA_AddEventService
 #*
-#* Description              : 	Adds new event service entry into OA_EventService table
+#* Description              :     Adds new event service entry into OA_EventService table
 #*********************************************************************************************
 */
 
@@ -157,9 +157,9 @@ print 'Creating OA_AddEventService procedure'
 go
 
 create proc OA_AddEventService
-	@EventServiceId int = NULL output,
-	@EventServiceName varchar(30),
-	@EventServiceDesc varchar(255) = NULL
+    @EventServiceId int = NULL output,
+    @EventServiceName varchar(30),
+    @EventServiceDesc varchar(255) = NULL
 as
 BEGIN
 
@@ -192,9 +192,9 @@ go
 
 
 /*********************************************************************************************
-#* Stored Procedure Name    : 	OA_AddEventType
+#* Stored Procedure Name    :     OA_AddEventType
 #*
-#* Description              : 	Adds new Event type entry into OA_EventType table
+#* Description              :     Adds new Event type entry into OA_EventType table
 #*********************************************************************************************
 */
 
@@ -242,16 +242,16 @@ go
 
 
 /*********************************************************************************************
-#* Stored Procedure Name    : 	OA_QueueEvent
+#* Stored Procedure Name    :     OA_QueueEvent
 #*
-#* Description              : 	Add event to OA_Event table
+#* Description              :     Add event to OA_Event table
 #*********************************************************************************************
 */
 
 if exists ( select 1 from sysobjects where name = 'OA_QueueEvent'
-	and type = 'P' and uid = user_id() )
+    and type = 'P' and uid = user_id() )
 begin
-	drop proc OA_QueueEvent
+    drop proc OA_QueueEvent
 end
 go
 
@@ -321,9 +321,9 @@ go
 
 
 /*********************************************************************************************
-#* Stored Procedure Name    : 	OA_SetEventStatus
+#* Stored Procedure Name    :     OA_SetEventStatus
 #*
-#* Description              : 	This proc sets the EventStatus flag
+#* Description              :     This proc sets the EventStatus flag
 #*********************************************************************************************
 */
 
@@ -335,37 +335,32 @@ print 'Creating OA_SetEventStatus procedure'
 go
 
 create proc OA_SetEventStatus
-	@EventId numeric(32),
-	@EventStatus varchar(10),
-	@EventFailedText varchar(255)
+    @EventId numeric(32),
+    @EventStatus varchar(10),
+    @EventFailedText varchar(255)
 as
 BEGIN -- OA_SetEventStatus
 
-	declare  @ErrorMessage varchar(255), @NumRows int
-	declare @RightNow datetime
-	declare @EventTypeId int
+    declare  @ErrorMessage varchar(255), @NumRows int
+    declare @RightNow datetime
+    declare @EventTypeId int
 
-	select @EventTypeId = EventTypeId from OA_Event where EventId = @EventId
+    select @EventTypeId = EventTypeId from OA_Event where EventId = @EventId
 
-	BEGIN TRAN
-	SAVE TRAN StatusUpdate
+    update OA_Event set EventStatus = @EventStatus, EventDeliveredAt = getdate(), EventFailedText= @EventFailedText
+    where EventId = @EventId
 
-	update OA_Event set EventStatus = @EventStatus, EventDeliveredAt = getdate(), EventFailedText= @EventFailedText
-	where EventId = @EventId
+    select @NumRows = @@rowcount
 
-	select @NumRows = @@rowcount
-
-	if (@NumRows != 1)
-	BEGIN -- Error, number of rows updated != 1
+    if (@NumRows != 1)
+    BEGIN -- Error, number of rows updated != 1
 
     Raiserror ('ERROR: OA_SetEventStatus EventId %d Status %s updated %d rows',16,1, @EventId, @EventStatus, @NumRows)
 
-		ROLLBACK TRAN StatusUpdate
-		COMMIT TRAN
+        ROLLBACK TRAN StatusUpdate
+        COMMIT TRAN
 
-	END -- Error, number of rows updated != 1
-
-	COMMIT TRAN StatusUpdate
+    END -- Error, number of rows updated != 1
 
 END -- OA_SetEventStatus
 go
@@ -375,28 +370,28 @@ go
 
 
 /*********************************************************************************************
-#* Stored Procedure Name    : 	OA_GetNextQueuedEvent
+#* Stored Procedure Name    :     OA_GetNextEvent
 #*
-#* Description              : 	Returns next event with status 'NEW'
+#* Description              :     Returns next event with status 'NEW'
 #*********************************************************************************************
 */
 
-if exists ( select 1 from sysobjects where name = 'OA_GetNextQueuedEvent'
-	and type = 'P' and uid = user_id() )
+if exists ( select 1 from sysobjects where name = 'OA_GetNextEvent'
+    and type = 'P' and uid = user_id() )
 begin
-	drop proc OA_GetNextQueuedEvent
+    drop proc OA_GetNextEvent
 end
 go
 
-print 'Creating OA_GetNextQueuedEvent procedure'
+print 'Creating OA_GetNextEvent procedure'
 go
 
-create proc OA_GetNextQueuedEvent
+create proc OA_GetNextEvent
   @EventServiceId     int,
   @EventTypeId        int,
   @EventStatus        varchar(10) = 'SENT'
 as
-BEGIN -- OA_GetNextQueuedEvent
+BEGIN -- OA_GetNextEvent
 
   declare @EventId        numeric(32)
   declare @ErrorCode      int
@@ -404,41 +399,38 @@ BEGIN -- OA_GetNextQueuedEvent
   declare @NumRows        int
   declare @EventQueuedAt  datetime
 
-  BEGIN TRAN
-  SAVE TRAN getEvent
+select @EventId = NULL
 
-    select @EventId = NULL
+  -- Get a new event
+  select @EventId = min(EventId)
+  from
+    OA_Event
+  where EventStatus = 'NEW'
+  and EventServiceId = @EventServiceId
+  and EventTypeId = @EventTypeId
 
-    -- Get a new event
-    select @EventId = min(EventId)
+  if @EventId is not NULL
+  BEGIN
+    -- Update event
+    update OA_Event
+    set EventStatus = @EventStatus, EventDeliveredAt = getdate()
+    where EventId = @EventId
+
+    -- Return data
+    select a.EventId, a.EventServiceId, a.EventTypeId, b.EventTypeName, b.EventSprocName,
+         EventParam1, EventParam2, EventParam3, EventParam4, EventParam5,
+         EventParam6, EventParam7, EventParam8, EventParam9, EventParam10
     from
-      OA_Event
-    where EventStatus = 'NEW'
-      and EventServiceId = @EventServiceId
-      and EventTypeId = @EventTypeId
+      OA_Event a, OA_EventType b
+    where @EventId = EventId
+    and a.EventTypeId = b.EventTypeId
+    
+  END
 
-    if @EventId is not NULL
-      BEGIN
-        -- Update event
-        update OA_Event
-        set EventStatus = @EventStatus, EventDeliveredAt = getdate()
-        where EventId = @EventId
-
-        -- Return data
-        select a.EventId, a.EventServiceId, a.EventTypeId, b.EventTypeName, b.EventSprocName,
-             EventParam1, EventParam2, EventParam3, EventParam4, EventParam5,
-             EventParam6, EventParam7, EventParam8, EventParam9, EventParam10
-       from
-          OA_Event a, OA_EventType b
-       where
-          @EventId = EventId
-      END
-
-  COMMIT TRAN getEvent
-
-END -- OA_GetNextQueuedEvent
+END -- OA_GetNextEvent
 go
 
-grant execute on OA_GetNextQueuedEvent to public
+grant execute on OA_GetNextEvent to public
 go
+
 
