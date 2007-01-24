@@ -81,7 +81,7 @@ public class FactoryConfig implements FactoryConfigMBean {
   }
 
   public String dumpConfig() {
-    return "<pre>" + config.replaceAll("&", "&amp").replaceAll(">", "&gt").replaceAll("<", "&lt") + "]]></pre>";
+    return "<textarea cols=\"120\" rows=\"40\" readonly=\"true\">" + config + "</textarea>";
   }
 
   public String dumpProperties() {

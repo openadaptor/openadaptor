@@ -33,62 +33,86 @@
 
 package org.openadaptor.util;
 
-public class SystemUtil implements SystemUtilMBean {
+import org.openadaptor.core.jmx.Administrable;
 
-  public void exit() {
-    System.exit(0);
+/**
+ * jmx component for accessing system info
+ * 
+ * @author perryj
+ *
+ */
+public class SystemUtil implements Administrable {
+
+  public Object getAdmin() {
+    return new Admin();
   }
 
-  public String getMemory() {
-    long mb = 1024 * 1024;
-    int max = (int) (Runtime.getRuntime().maxMemory() / mb);
-    int free = (int) (Runtime.getRuntime().freeMemory() / mb);
-    int total = (int) (Runtime.getRuntime().totalMemory() / mb);
-    int used = total - free;
+  public interface AdminMBean {
+    public void exit();
 
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("used=").append(used).append(",");
-    buffer.append("free=").append(free).append(",");
-    buffer.append("total=").append(total).append(",");
-    buffer.append("max=").append(max).append(" (Mb)");
-    return buffer.toString();
+    public String getMemory();
+
+    public String dumpThreads();
   }
 
-  public String dumpThreads() {
-    try {
+  public class Admin implements AdminMBean {
+
+    public void exit() {
+      System.exit(0);
+    }
+
+    public String getMemory() {
+      long mb = 1024 * 1024;
+      int max = (int) (Runtime.getRuntime().maxMemory() / mb);
+      int free = (int) (Runtime.getRuntime().freeMemory() / mb);
+      int total = (int) (Runtime.getRuntime().totalMemory() / mb);
+      int used = total - free;
+
       StringBuffer buffer = new StringBuffer();
-      buffer.append("<pre>");
-      ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-      while (threadGroup.getParent() != null) {
-        threadGroup = threadGroup.getParent();
-      }
-      dumpThreadGroup(buffer, "", threadGroup);
-      buffer.append("</pre>");
+      buffer.append("used=").append(used).append(",");
+      buffer.append("free=").append(free).append(",");
+      buffer.append("total=").append(total).append(",");
+      buffer.append("max=").append(max).append(" (Mb)");
       return buffer.toString();
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-      throw e;
+    }
+
+    public String dumpThreads() {
+      try {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<pre>");
+        ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+        while (threadGroup.getParent() != null) {
+          threadGroup = threadGroup.getParent();
+        }
+        dumpThreadGroup(buffer, "", threadGroup);
+        buffer.append("</pre>");
+        return buffer.toString();
+      } catch (RuntimeException e) {
+        e.printStackTrace();
+        throw e;
+      }
+    }
+
+    private void dumpThreadGroup(StringBuffer buffer, String indent, ThreadGroup threadGroup) {
+      buffer.append(indent).append("<b>").append(threadGroup.getName()).append("</b>\n");
+      indent += "  ";
+      Thread[] threads = new Thread[threadGroup.activeCount()];
+      threadGroup.enumerate(threads);
+      for (int i = 0; i < threads.length; i++) {
+        if (threads[i] != null && threads[i].getThreadGroup() == threadGroup) {
+          buffer.append(indent).append(threads[i].getName());
+          buffer.append("(").append(threads[i].getPriority()).append(")");
+          buffer.append('\n');
+        }
+      }
+      ThreadGroup[] threadGroups = new ThreadGroup[threadGroup.activeGroupCount()];
+      threadGroup.enumerate(threadGroups);
+      for (int i = 0; i < threadGroups.length; i++) {
+        if (threadGroups[i] != null) {
+          dumpThreadGroup(buffer, indent, threadGroups[i]);
+        }
+      }
     }
   }
 
-  private void dumpThreadGroup(StringBuffer buffer, String indent, ThreadGroup threadGroup) {
-    buffer.append(indent).append("<b>").append(threadGroup.getName()).append("</b>\n");
-    indent += "  ";
-    Thread[] threads = new Thread[threadGroup.activeCount()];
-    threadGroup.enumerate(threads);
-    for (int i = 0; i < threads.length; i++) {
-      if (threads[i] != null && threads[i].getThreadGroup() == threadGroup) {
-        buffer.append(indent).append(threads[i].getName());
-        buffer.append("(").append(threads[i].getPriority()).append(")");
-        buffer.append('\n');
-      }
-    }
-    ThreadGroup[] threadGroups = new ThreadGroup[threadGroup.activeGroupCount()];
-    threadGroup.enumerate(threadGroups);
-    for (int i = 0; i < threadGroups.length; i++) {
-      if (threadGroups[i] != null) {
-        dumpThreadGroup(buffer, indent, threadGroups[i]);
-      }
-    }
-  }
 }

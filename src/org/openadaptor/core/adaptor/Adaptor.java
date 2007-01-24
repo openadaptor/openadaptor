@@ -43,6 +43,7 @@ import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
@@ -58,7 +59,7 @@ import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
 
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
-    AdaptorMBean, ILifecycleListener {
+    Administrable, ILifecycleListener {
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
@@ -239,12 +240,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     stopRunnables();
   }
 
-  public void interrupt() {
-    for (int i = 0; i < runnableThreads.length; i++) {
-      runnableThreads[i].interrupt();
-    }
-  }
-
   public void validate(List exceptions) {
 
     if (runnables.isEmpty()) {
@@ -274,10 +269,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     } else {
       start();
     }
-  }
-
-  public State getState() {
-    return state;
   }
 
   public int getExitCode() {
@@ -344,6 +335,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       IRunnable runnable = (IRunnable) iter.next();
       runnable.removeListener(this);
       stopLifecycleComponent(runnable);
+    }
+  }
+
+  private void interruptRunnables() {
+    for (int i = 0; i < runnableThreads.length; i++) {
+      runnableThreads[i].interrupt();
     }
   }
 
@@ -423,5 +420,43 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         stopNoWait();
       }
     }
+  }
+
+  public Object getAdmin() {
+    return new Admin();
+  }
+  
+  public interface AdminMBean {
+    String dumpState();
+    void exit();
+    void interrupt();
+  }
+  
+  public class Admin implements AdminMBean {
+
+    public void exit() {
+      Adaptor.this.exit();
+    }
+
+    public String dumpState() {
+      StringBuffer buffer = new StringBuffer();
+      buffer.append("<table>");
+      buffer.append("<tr><td>Adaptor</td><td/>");
+      buffer.append("<td>").append(Adaptor.this.state.toString()).append("</td></tr>");
+      ArrayList components = new ArrayList();
+      components.addAll(Adaptor.this.components);
+      for (Iterator iter = components.iterator(); iter.hasNext();) {
+        ILifecycleComponent component = (ILifecycleComponent) iter.next();
+        buffer.append("<tr><td/>");
+        buffer.append("<td>").append(component.getId()).append("</td>");
+        buffer.append("<td>").append(component.getState().toString()).append("</td></tr>");
+      }
+      return buffer.toString();
+    }
+
+    public void interrupt() {
+      Adaptor.this.interruptRunnables();
+    }
+    
   }
 }

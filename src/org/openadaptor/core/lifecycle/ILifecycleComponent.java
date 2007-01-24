@@ -41,6 +41,7 @@ public interface ILifecycleComponent extends IComponent {
 	void validate(List exceptions);
 	void start();
 	void stop();
+  State getState();
 	boolean isState(State s);
 	void waitForState(State state);
 	void addListener(ILifecycleListener listener); 

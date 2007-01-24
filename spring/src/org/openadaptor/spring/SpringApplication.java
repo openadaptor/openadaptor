@@ -44,7 +44,7 @@ import javax.management.ObjectName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
-import org.openadaptor.core.jmx.MBeanProvider;
+import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.util.Application;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -196,8 +196,8 @@ public class SpringApplication {
       String[] beanNames = factory.getBeanDefinitionNames();
       for (int i = 0; i < beanNames.length; i++) {
         Object bean = factory.getBean(beanNames[i]);
-        if (bean instanceof MBeanProvider) {
-          bean = ((MBeanProvider)bean).getMBean();
+        if (bean instanceof Administrable) {
+          bean = ((Administrable)bean).getAdmin();
         }
         attemptToRegisterBean(bean, mbeanServer, beanNames[i]);
       }

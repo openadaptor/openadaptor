@@ -45,7 +45,7 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 
-public class Node extends LifecycleComponent implements IMessageProcessor, NodeMBean {
+public class Node extends LifecycleComponent implements IMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(Node.class);
 	
@@ -142,4 +142,5 @@ public class Node extends LifecycleComponent implements IMessageProcessor, NodeM
     }
     return null;
   }
+
 }

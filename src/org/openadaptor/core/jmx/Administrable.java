@@ -33,6 +33,34 @@
 
 package org.openadaptor.core.jmx;
 
-public interface MBeanProvider {
-  Object getMBean();
+/**
+ * Interface for hiding MBean implementations. Typically it works like this...
+ * 
+ * class Test implements Administrable {
+ *  
+ *  public void Object getAdmin() {
+ *    return new Admin();
+ *  }
+ *  
+ *  interface AdminMBean {
+ *    ...
+ *  }
+ *  
+ *  class Admin implements AdminMBean {
+ *    ...
+ *  }
+ *  
+ * }
+ * 
+ * This enables the following...
+ * 
+ * Hides MBean interface inside class that it relates too
+ * Prevents you from having to expose a the management API as a public API
+ * 
+ * @author perryj
+ *
+ */
+
+public interface Administrable {
+  Object getAdmin();
 }

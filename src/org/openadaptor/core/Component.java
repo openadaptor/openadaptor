@@ -1,6 +1,8 @@
 package org.openadaptor.core;
 
-public abstract class Component implements IComponent {
+import org.openadaptor.core.jmx.Administrable;
+
+public abstract class Component implements IComponent, Administrable {
 
 	private String id;
 
@@ -23,4 +25,19 @@ public abstract class Component implements IComponent {
 		return id != null ? id : super.toString();
 	}
 
+  public Object getAdmin() {
+    return new Admin();
+  }
+  
+  public interface AdminMBean {
+    String getId();
+  }
+  
+  public class Admin implements AdminMBean {
+
+    public String getId() {
+      return Component.this.getId();
+    }
+    
+  }
 }

@@ -38,8 +38,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.jmx.Administrable;
 
-public class LifecycleComponent extends Component implements ILifecycleComponent {
+public class LifecycleComponent extends Component implements ILifecycleComponent, Administrable {
 
 	private static final Log log = LogFactory.getLog(LifecycleComponent.class);
 	
@@ -93,5 +94,18 @@ public class LifecycleComponent extends Component implements ILifecycleComponent
 	public State getState() {
 		return lifecycleDelegate.getState();
 	}
-	
+
+  public Object getAdmin() {
+    return new Admin();
+  }
+  
+  interface AdminMBean extends Component.AdminMBean {
+    String getState();
+  }
+
+  class Admin extends Component.Admin implements AdminMBean {
+    public String getState() {
+      return LifecycleComponent.this.getState().toString();
+    }
+  }
 }
