@@ -5,6 +5,7 @@
     This adaptor does the following...
     
       * selects data from a db using a query
+      * converts the result set to XML
       * writes data to stdout
     
     It is designed to illustrate the basic structure of an adaptor that polls a database
@@ -34,7 +35,6 @@
     <property name="pipeline">
       <list>
         <ref bean="Reader"/>
-        <ref bean="XmlConverter"/>
         <ref bean="Writer"/>
       </list>
     </property>
@@ -51,6 +51,9 @@
   <!-- Reader which polls database using configured SQL -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="resultSetConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+    </property>
     <property name="sql">
       <value>
         SELECT t.BuySell as Side, t.Qty as Size, s.ShortCode as RIC,
@@ -61,10 +64,6 @@
     </property>
   </bean>
 
-  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="TRADE"/>
-  </bean>
-  
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
     <property name="streamWriter">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>

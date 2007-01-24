@@ -5,11 +5,11 @@ import java.sql.SQLException;
 public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCConnection {
 
   public boolean isDeadlockException(SQLException e) {
-    return e.toString().indexOf("deadlock victim") >= 0;
+    return e.getErrorCode() == 1205;
   }
 
   public boolean ignoreException(SQLException e) {
-    return "JZ0R2".equals(e.getSQLState());
+    return e.getSQLState().equals("JZ0R2");
   }
 
 }

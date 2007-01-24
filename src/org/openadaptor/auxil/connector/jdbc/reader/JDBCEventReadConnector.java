@@ -45,9 +45,9 @@ import org.openadaptor.util.ThreadUtil;
 /**
  * A JDBCReadConnector that uses a stored proc to poll for database events, these
  * events must be in a specific format and this component will convert that into
- * a stored procedure call that it then calls to query some data. By default it calls
- * a predefined stored procedure called OA3_GetNextQueuedEvent. Refer to openadaptor
- * resources for the schema it is associated with.
+ * a stored procedure call that it then calls to query the data that relates to the event. 
+ * By default it calls a predefined stored procedure called OA3_GetNextQueuedEvent. 
+ * Refer to openadaptor resources for the schema it is associated with.
  * 
  * @author Kuldip Ottal
  * @author perryj
@@ -56,20 +56,22 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
 
   private static final Log log = LogFactory.getLog(JDBCEventReadConnector.class);
 
-  private static final String DEFAULT_SP_NAME = "OA_GetNextQueuedEvent";
+  private static final String DEFAULT_SP_NAME = "OA_GetNextEvent";
 
   private static final int EVENT_RS_STORED_PROC = 4;
   private static final int EVENT_RS_PARAM1 = 6;
 
   private String eventPollSP = DEFAULT_SP_NAME;
 
-  private int eventServiceID = -1;
+  private String eventServiceID = null;
+  
+  private String eventTypeID = null;
 
   private CallableStatement pollStatement;
 
   private int deadlockCount;
 
-  private int deadlockLimit = 0;
+  private int deadlockLimit = 3;
 
   public JDBCEventReadConnector() {
     super();
@@ -89,9 +91,14 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
   /**
    * Set service id for data events we are polling for
    */
-  public void setEventServiceID(int eventServiceID) {
+  public void setEventServiceID(final String eventServiceID) {
     this.eventServiceID = eventServiceID;
   }
+
+  public void setEventTypeID(final String eventTypeID) {
+    this.eventTypeID = eventTypeID;
+  }
+
 
   /**
    * polls for the data that relates to the next event in the database
@@ -121,15 +128,17 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
    * ensures that eventServiceId has been set
    */
   public void connect() {
-    if (eventServiceID == -1) {
-      throw new ComponentException("eventServiceID has not been set", this);
-    }
     super.connect();
     try {
-      pollStatement = prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
+      pollStatement = prepareCall("{ ? = call " + eventPollSP + "(?,?,?) }");
       pollStatement.registerOutParameter(1, java.sql.Types.INTEGER);
-      pollStatement.setInt(2, eventServiceID);
-      pollStatement.setString(3, "Y");
+      pollStatement.setInt(2, Integer.parseInt(eventServiceID));
+      if (eventTypeID != null) {
+        pollStatement.setInt(3, Integer.parseInt(eventTypeID));
+      } else {
+        pollStatement.setNull(3, java.sql.Types.INTEGER);
+      }
+      pollStatement.setString(4, "SENT");
     } catch (SQLException e) {
       throw new RuntimeException("failed to create poll callable statement, " + e.getMessage(), e);
     }
@@ -168,11 +177,11 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
   private void handleSQLException(SQLException e) {
     if (ignoreException(e)) {
       return;
-    } else if (isDeadlockException(e) && deadlockCount < deadlockLimit) {
-      log.warn("deadlock detected, " + e.getMessage());
-      deadlockCount++;
+    } else if (isDeadlockException(e) & deadlockCount < deadlockLimit) {
+      log.warn("deadlock detected, " + (deadlockLimit - ++deadlockCount) + " retries remaining");
     } else {
-      throw new ComponentException("SQLException, " + e.getMessage(), e, this);
+      throw new ComponentException("SQLException, " + e.getMessage() 
+          + ", Error Code = " + e.getErrorCode() + ", State = " + e.getSQLState(), e, this);
     }
   }
   
