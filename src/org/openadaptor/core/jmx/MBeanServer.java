@@ -59,6 +59,7 @@ import javax.management.loading.ClassLoaderRepository;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.util.JVMNeutralMBeanServerFactory;
 
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 
@@ -70,11 +71,17 @@ public class MBeanServer implements javax.management.MBeanServer {
 
 	public MBeanServer() {
 		this(0);
+    
 	}
 	
 	public MBeanServer(int httpPort) {
-		mServer = javax.management.MBeanServerFactory.createMBeanServer();
-		if (httpPort > 0) {
+    //Use the jvm-neutral 'Factory' to get at the real mbean server.
+    //For 1.5+ it should yield the same as: 
+    //mServer = javax.management.MBeanServerFactory.createMBeanServer();
+    //
+    mServer=JVMNeutralMBeanServerFactory.getMBeanServer();
+
+    if (httpPort > 0) {
 			startHtmlConnectorServer(httpPort);
 		}
 	}
