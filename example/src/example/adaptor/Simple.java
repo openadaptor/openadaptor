@@ -10,7 +10,7 @@ import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.router.experimental.PipelineRouter;
+import org.openadaptor.core.router.Pipeline;
 
 /**
  * This code example corresponds to the basic spring example in simple.xml
@@ -60,7 +60,7 @@ public class Simple {
     // array of ordered components
     
     Adaptor adaptor = new Adaptor();
-    PipelineRouter router=new PipelineRouter();
+    Pipeline router=new Pipeline();
     router.setProcessors(Arrays.asList(new Object[] {reader, mapConverter, xmlConverter, writer}));
     adaptor.setMessageProcessor(router);
     
