@@ -31,9 +31,16 @@
 -->
 
 <beans>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
   
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline Reader-MapConverter-Writer
+    </description>
+    <property name="processors">
       <list>
         <ref bean="Reader"/>
         <ref bean="MapConverter"/>
