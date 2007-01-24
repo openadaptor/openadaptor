@@ -2,7 +2,7 @@ package org.openadaptor.core;
 
 import org.openadaptor.core.jmx.Administrable;
 
-public abstract class Component implements IComponent, Administrable {
+public class Component implements IComponent, Administrable {
 
 	private String id;
 
