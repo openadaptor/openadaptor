@@ -58,13 +58,18 @@
         <property name="restartCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri"/>
       </bean>
     </property>
-    <property name="pipeline">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="Validator"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
+    
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Validator"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
   </bean>
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">

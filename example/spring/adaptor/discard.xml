@@ -40,10 +40,6 @@
   </bean>
   
   <bean id="Router" class="org.openadaptor.core.router.Router">
-    <property name="routingMap" ref="RoutingMap"/>
-  </bean>
-  
-  <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="Reader" value-ref="MapConverter"/>

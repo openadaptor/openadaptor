@@ -45,14 +45,18 @@
   
   <!-- This is the bean that actually gets run -->
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="MapConverter"/>
-        <ref bean="XmlConverter"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="MapConverter"/>
+            <ref bean="XmlConverter"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
   </bean>
   
   <!-- This is a read connector, it reads records from a stream (stdin) -->

@@ -50,13 +50,9 @@
     <property name="messageProcessor" ref="Router"/>
   </bean>
   
-  <!-- The adaptor delegates it's message processing to a router -->
+  <!-- The adaptor delegates it's message processing to a router. 
+       The router uses this mapping to define the "processing pipeline" -->
   <bean id="Router" class="org.openadaptor.core.router.Router">
-    <property name="routingMap" ref="RoutingMap"/>
-  </bean>
-  
-  <!-- The router uses this mapping to define the "processing pipeline" -->
-  <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
     <property name="processMap">
       <map>
         <entry key-ref="Reader" value-ref="MapConverter"/>
