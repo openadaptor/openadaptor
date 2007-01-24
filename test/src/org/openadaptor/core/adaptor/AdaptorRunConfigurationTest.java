@@ -1,5 +1,6 @@
 package org.openadaptor.core.adaptor;
 
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -11,19 +12,33 @@ import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.adaptor.AdaptorRunConfiguration;
 import org.openadaptor.core.processor.TestProcessor;
+import org.openadaptor.core.router.Pipeline;
 
 public class AdaptorRunConfigurationTest extends TestCase {
 
   private static final Object DATA = "foobar";
 
+  private Adaptor createTestAdaptor(Object[] pipeline,Object exceptionHandler) {
+    Pipeline p=new Pipeline();
+    p.setProcessors(Arrays.asList(pipeline));
+    if (exceptionHandler!=null) {
+      p.setExceptionProcessor(exceptionHandler);
+    }
+    Adaptor adaptor=new Adaptor();
+    adaptor.setMessageProcessor(p);
+    return adaptor;
+  }
+  private Adaptor createTestAdaptor(Object[] pipeline) {
+    return createTestAdaptor(pipeline,null);
+  }
+  
   public void testStop() {
 
     MyTestReadConnector reader = new MyTestReadConnector();
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setStopCronExpression("0,10,20,30,40,50 * * * * ?");
     adaptor.setRunConfiguration(config);
@@ -42,8 +57,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setRestartCronExpression("0,10,20,30,40,50 * * * * ?");
     adaptor.setRunConfiguration(config);
@@ -64,8 +78,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setStartCronExpression("0,15,30,45 * * * * ?");
     config.setStopCronExpression("5,20,35,50 * * * * ?");
@@ -88,8 +101,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
     processor.setExceptionFrequency(2);
     TestComponent writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setRestartAfterFailLimit(3);
     config.setRestartAfterFailDelayMs(2 * 1000);
@@ -110,8 +122,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
     processor.setExceptionFrequency(2);
     TestComponent writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setRestartAfterFailLimit(2);
     config.setRestartAfterFailCronExpression("0,10,20,30,40,50 * * * * ?");
@@ -130,8 +141,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
     
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] { reader, processor, writer});
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
     AdaptorRunConfiguration config = new AdaptorRunConfiguration();
     config.setStopCronExpression("15,45 * * * * ?");
     config.setRestartCronExpression("0,30 * * * * ?");

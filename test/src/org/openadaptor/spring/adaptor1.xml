@@ -2,13 +2,17 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  
+
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
-      <list>
-        <ref bean="ReadNode"/>
-        <ref bean="WriteNode"/>
-      </list>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="ReadNode"/>
+            <ref bean="WriteNode"/>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
   

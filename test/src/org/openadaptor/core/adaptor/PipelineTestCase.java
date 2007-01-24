@@ -1,6 +1,7 @@
 package org.openadaptor.core.adaptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -11,8 +12,23 @@ import org.openadaptor.core.connector.TestWriteConnector;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.TestProcessor;
+import org.openadaptor.core.router.Pipeline;
 
 public class PipelineTestCase extends TestCase {
+
+  private Adaptor createTestAdaptor(Object[] pipeline,Object exceptionHandler) {
+    Pipeline p=new Pipeline();
+    p.setProcessors(Arrays.asList(pipeline));
+    if (exceptionHandler!=null) {
+      p.setExceptionProcessor(exceptionHandler);
+    }
+    Adaptor adaptor=new Adaptor();
+    adaptor.setMessageProcessor(p);
+    return adaptor;
+  }
+  private Adaptor createTestAdaptor(Object[] pipeline) {
+    return createTestAdaptor(pipeline,null);
+  }
 
   public void test() {
     // create readNode
@@ -27,12 +43,8 @@ public class PipelineTestCase extends TestCase {
     outconnector.setExpectedOutput(inconnector.getDataString());
     writeNode.setConnector(outconnector);
 
-    // create pipeline
-    Object[] pipeline = new Object[] {readNode, writeNode};
-
     // create router
-    Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(pipeline);
+    Adaptor adaptor = createTestAdaptor(new Object[] {readNode, writeNode});
     adaptor.setRunInCallingThread(true);
 
     // run adaptor
@@ -55,13 +67,9 @@ public class PipelineTestCase extends TestCase {
       output.add(readNode.getDataString().replaceAll("%n", String.valueOf(i+1)));
     }
     writeNode.setExpectedOutput(output);
-    
-    // create pipeline
-    Object[] pipeline = new Object[] {readNode, writeNode};
-    
+       
     // create adaptor
-    Adaptor adaptor =  new Adaptor();
-    adaptor.setPipeline(pipeline);
+    Adaptor adaptor = createTestAdaptor(new Object[] {readNode, writeNode});
     adaptor.setRunInCallingThread(true);
     
     // run adaptor
@@ -87,15 +95,11 @@ public class PipelineTestCase extends TestCase {
     // create writeNode
     TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
     writeNode.setExpectedOutput(processor.getId() + "(" + readNode.getDataString() + ")");
-    
-    // create pipeline
-    Object[] pipeline = new Object[] {readNode, processor, writeNode};
-    
+       
     // create adaptor
-    Adaptor adaptor =  new Adaptor();
-    adaptor.setPipeline(pipeline);
+    Adaptor adaptor = createTestAdaptor(new Object[] {readNode, processor,writeNode});
     adaptor.setRunInCallingThread(true);
-    
+   
     // run adaptor
     adaptor.run();
     assertTrue(adaptor.getExitCode() == 0);
@@ -126,21 +130,23 @@ public class PipelineTestCase extends TestCase {
     // create writeNode for MessageExceptions
     TestWriteConnector errWriteConnector = new TestWriteConnector("Error1");
     errWriteConnector.setExpectedOutput(createStringList("java.lang.RuntimeException:null:" + processor.getId() + "(" + readNode.getDataString() + ")", 3));
-
-    // create pipeline
-    Object[] pipeline = new Object[] {readNode, processor, exceptor, writeNode};
     
     // create adaptor
-    Adaptor adaptor =  new Adaptor();
-    adaptor.setExceptionWriteConnector(errWriteConnector);
-    adaptor.setPipeline(pipeline);
+    Adaptor adaptor = createTestAdaptor(new Object[] {readNode, processor, exceptor, writeNode},errWriteConnector);
     adaptor.setRunInCallingThread(true);
-    
+        
     // run adaptor
     adaptor.run();
     assertTrue(adaptor.getExitCode() == 0);
   }
 
+  private void expectRuntimeException(Object[] pipeline) {
+    try {
+      createTestAdaptor(pipeline);
+      fail("RuntimeException expected, but not generated");
+    }
+    catch (RuntimeException re) {}
+  }
   public void testConstraints() {
     TestReadConnector readNode = new TestReadConnector("ReadConnector");
     readNode.setDataString("foobar");
@@ -148,37 +154,12 @@ public class PipelineTestCase extends TestCase {
     TestWriteConnector writeNode = new TestWriteConnector("WriteNode");
     writeNode.setExpectedOutput(processor.getId() + "(" + readNode.getDataString() + ")");
     
-    try {
-      Object[] pipeline = new Object[] {processor, readNode, writeNode};
-      Adaptor adaptor =  new Adaptor();
-      adaptor.setPipeline(pipeline);
-      fail("expected an exception");
-    } catch (RuntimeException ex) {
-    }
+    expectRuntimeException(new Object[] {processor, readNode, writeNode});
     
-    try {
-      Object[] pipeline = new Object[] {readNode, processor};
-      Adaptor adaptor =  new Adaptor();
-      adaptor.setPipeline(pipeline);
-      fail("expected an exception");
-    } catch (RuntimeException ex) {
-    }
+    expectRuntimeException(new Object[] {readNode, processor});
     
-    try {
-      Object[] pipeline = new Object[] {writeNode, processor, readNode};
-      Adaptor adaptor =  new Adaptor();
-      adaptor.setPipeline(pipeline);
-      fail("expected an exception");
-    } catch (RuntimeException ex) {
-    }
-    
-    try {
-      Object[] pipeline = new Object[] {readNode};
-      Adaptor adaptor =  new Adaptor();
-      adaptor.setPipeline(pipeline);
-      fail("expected an exception");
-    } catch (RuntimeException ex) {
-    }
+      expectRuntimeException(new Object[] {writeNode, processor, readNode});
+      expectRuntimeException(new Object[] {readNode});
   }
   
   public static List createStringList(String s, int n) {

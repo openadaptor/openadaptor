@@ -386,14 +386,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     this.exceptionProcessor = exceptionProcessor;
   }
   
-  public void setPipeline(final Object[] pipeline) {
-    if (exceptionProcessor != null) {
-      setMessageProcessor(new Pipeline(pipeline, exceptionProcessor));
-    } else {
-      setMessageProcessor(new Pipeline(pipeline));
-    }
-  }
-  
   public void exit() {
     state = State.STOPPING;
     if (runConfiguration != null) {

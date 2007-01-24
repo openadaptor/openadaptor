@@ -33,38 +33,11 @@
 
 package org.openadaptor.core.router;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.Message;
-import org.openadaptor.core.Response;
-import org.openadaptor.core.Response.DataBatch;
-import org.openadaptor.core.Response.DiscardBatch;
-import org.openadaptor.core.Response.ExceptionBatch;
-import org.openadaptor.core.Response.OutputBatch;
 import org.openadaptor.core.exception.MessageException;
-import org.openadaptor.core.lifecycle.ILifecycleComponent;
-import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
-import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
-import org.openadaptor.core.transaction.ITransaction;
 
-public class Router extends Component implements IMessageProcessor,ILifecycleComponentContainer {
-
-  private static Log log = LogFactory.getLog(Router.class);
-
-  private IRoutingMap routingMap;
-  
-  private ILifecycleComponentManager componentManager;
-
-  private Map componentMap = new HashMap();
-  
+public class Router extends AbstractRouter { 
   public Router() {
     super();
   }
@@ -72,115 +45,73 @@ public class Router extends Component implements IMessageProcessor,ILifecycleCom
   public Router(String id) {
     super(id);
   }
-  
-  public Router(final IRoutingMap routingMap) {
-    this();
-    this.routingMap = routingMap;
+  /**
+   * Meant for unit test purposes only.
+   * @param routingMap
+   */
+  public Router(RoutingMap routingMap){
+    super();
+    this.routingMap=routingMap;
   }
 
-  public void setRoutingMap(final IRoutingMap routingMap) {
-    this.routingMap = routingMap;
+  /**
+   * Sets the processMap which defines how to route output from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Lists of 
+   * IMessageProcessors. However this setter will do a fair amount
+   * of autoboxing to make the caller's life slightly easier. Non list
+   * values will automatically be boxed into a list. Key which are not
+   * actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. There is a default Autoboxer
+   * but this can be overriden.
+   * 
+   * @param map
+   * @see IMessageProcessor
+   * @see Node
+   */
+  public void setProcessMap(Map map) {
+    routingMap.setProcessMap(map);
   }
 
-  public void setComponentManager(ILifecycleComponentManager manager) {
-    this.componentManager=manager;
-    registerComponents();
+  /**
+   * Sets the discardMap which defines how to route discarded input from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Lists of 
+   * IMessageProcessors. However this setter will do a fair amount
+   * of autoboxing to make the caller's life slightly easier. Non list
+   * values will automatically be boxed into a list. Key which are not
+   * actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. There is a default Autoboxer
+   * but this can be overriden.
+   * 
+   * @param map
+   * @see IMessageProcessor
+   * @see Node
+   */
+  public void setDiscardMap(Map map) {
+    routingMap.setDiscardMap(map);
   }
 
-  public Response process(Message msg) {
-    return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
-  }
-
-  public Response process(Message msg, String destinationId) throws MessageException {
-    IMessageProcessor processor = (IMessageProcessor) componentMap.get(destinationId);
-    if (processor != null) {
-      return process(msg, processor);
-    } else {
-      throw new RuntimeException("no processor with id " + destinationId);
-    }
-  }
-  
-  private void registerComponents() {
-    componentMap.clear();
-    for (Iterator it=routingMap.getMessageProcessors().iterator();it.hasNext();){
-      Object processor=it.next();
-      if (processor instanceof ILifecycleComponent){
-        componentManager.register((ILifecycleComponent)processor);
-      } else {
-        log.info("Not registering (non-ILifecycleComponent) processor "+processor);
-      }
-      if (processor instanceof IComponent) {
-        String id = ((IComponent)processor).getId();
-        if (id != null) {
-          log.info(id + " registered with " + getId());
-          componentMap.put(id, processor);
-        } else {
-          log.info(processor.toString() + " has no id");
-        }
-      }
-    }
-  }
-
-  private Response process(Message msg, List destinations) {
-    if (log.isDebugEnabled()) {
-      logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
-    }
-    for (Iterator iter = destinations.iterator(); iter.hasNext();) {
-      IMessageProcessor node = (IMessageProcessor) iter.next();
-      Response response = node.process(msg);
-      processResponse(node, response, msg.getTransaction());
-    }
-    return new Response();
-  }
-
-  private Response process(Message msg, IMessageProcessor processor) throws MessageException {
-    Response response = processor.process(msg);
-    if (response.containsExceptions()) {
-      throw (MessageException) response.getCollatedExceptions()[0];
-    } else {
-      processResponse(processor, response, msg.getTransaction());
-      return new Response();
-    }
-  }
-
-  private void processResponse(IMessageProcessor node, Response response, ITransaction transaction) {
-    List batches = response.getBatches();
-    for (Iterator iter = batches.iterator(); iter.hasNext();) {
-      DataBatch batch = (DataBatch) iter.next();
-      if (batch instanceof OutputBatch) {
-        process(new Message(batch.getData(),node,transaction),routingMap.getProcessDestinations(node));
-      } else if (batch instanceof DiscardBatch) {
-        log.info(node.toString() + " discarded " + batch.size() + " input(s)");
-        process(new Message(batch.getData(),node,transaction),routingMap.getDiscardDestinations(node));
-      } else if (batch instanceof ExceptionBatch) {
-        processExceptions(node, batch.getData(), transaction);
-      }
-    }
-  }
- 
-  private void processExceptions(IMessageProcessor node, Object[] exceptions, ITransaction transaction) {
-    log.warn(node.toString() + " caught " + exceptions.length + " exceptions");
-    for (int i = 0; i < exceptions.length; i++) {
-      MessageException messageException=(MessageException)exceptions[i];
-      List destinations = routingMap.getExceptionDestinations(node, messageException.getException());
-      if (destinations.size() > 0) {
-        Message msg = new Message(messageException, node, transaction);
-        process(msg, destinations);
-      } else {
-        log.error("uncaught exception from " + node.toString(), messageException.getException());
-        throw new RuntimeException("No route defined for Exception "+messageException.getException());
-      }
-    }
-  }
-
-  private void logRoutingDebug(IMessageProcessor sender, List destinations) {
-    StringBuffer buffer = new StringBuffer();
-    for (Iterator iter = destinations.iterator(); iter.hasNext();) {
-      IMessageProcessor node = (IMessageProcessor) iter.next();
-      buffer.append(buffer.length() > 0 ? "," : "");
-      buffer.append(node.toString());
-    }
-    log.debug("[" + sender.toString() + "]->[" + buffer.toString() + "]");
+  /**
+   * Sets the exceptionMap which defines how to route MessageExceptions from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Maps of Maps. Where the keys
+   * are exception classnames and the values List of IMessageProcessors
+   * However this setter will do a fair amount of autoboxing to make the caller's life 
+   * slightly easier. Non list values will automatically be boxed into a list. 
+   * Values which are not actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. 
+   * If the parameters is not a map of maps then value is interpreted as the exceptin map
+   * for all components.
+   * There is a default Autoboxer but this can be overriden.
+   * 
+   * @param map
+   * @see MessageException
+   * @see IMessageProcessor
+   * @see Node
+   */
+  public void setExceptionMap(Map map) {
+    routingMap.setExceptionMap(map);
   }
 
 }

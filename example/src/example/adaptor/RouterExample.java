@@ -55,16 +55,13 @@ public class RouterExample {
     StreamWriteConnector writer = new StreamWriteConnector("Writer");
     writer.setStreamWriter(new FileWriter());
     
-    // create a RoutingMap and Router
-    // see class comment for RoutingMap
-    RoutingMap routingMap = new RoutingMap();
+    // Router
     Map processMap = new HashMap();
     processMap.put(reader, mapConverter);
     processMap.put(mapConverter, xmlConverter);
     processMap.put(xmlConverter, writer);
-    routingMap.setProcessMap(processMap);
     Router router = new Router();
-    router.setRoutingMap(routingMap);
+    router.setProcessMap(processMap);
     
     // create Adaptor and set 
     Adaptor adaptor = new Adaptor();

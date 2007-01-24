@@ -2,22 +2,17 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Router"/>
-  </bean>
-  
-  <bean id="Router" class="org.openadaptor.core.router.Router">
-    <property name="routingMap" ref="RoutingMap"/>
-  </bean>
-  
-  <bean id="RoutingMap" class="org.openadaptor.core.router.RoutingMap">
-    <property name="processMap">
-      <map>
-        <entry key-ref="ReadConnector" value-ref="WriteConnector"/>
-      </map>
-    </property>
-  </bean>
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor">
+       <bean class="org.openadaptor.core.router.Router">
+         <property name="processMap">
+           <map>
+            <entry key-ref="ReadConnector" value-ref="WriteConnector"/>
+           </map>
+         </property>
+       </bean>
+     </property>
+   </bean>
   
   <bean id="ReadConnector" class="org.openadaptor.core.node.ReadNode">
     <property name="connector">

@@ -1,5 +1,7 @@
 package example.adaptor;
 
+import java.util.Arrays;
+
 import org.openadaptor.auxil.connector.iostream.reader.FileReader;
 import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
 import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
@@ -8,6 +10,7 @@ import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.router.experimental.PipelineRouter;
 
 /**
  * This code example corresponds to the basic spring example in simple.xml
@@ -57,7 +60,9 @@ public class Simple {
     // array of ordered components
     
     Adaptor adaptor = new Adaptor();
-    adaptor.setPipeline(new Object[] {reader, mapConverter, xmlConverter, writer});
+    PipelineRouter router=new PipelineRouter();
+    router.setProcessors(Arrays.asList(new Object[] {reader, mapConverter, xmlConverter, writer}));
+    adaptor.setMessageProcessor(router);
     
     // this starts the adaptor
     adaptor.run();

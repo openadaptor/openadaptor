@@ -1,6 +1,8 @@
 package org.openadaptor.core.router;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IMessageProcessor;
@@ -14,24 +16,23 @@ import org.openadaptor.core.node.WriteNode;
  * @author perryj
  *
  */
-public class Pipeline extends Router {
+public class Pipeline extends AbstractRouter {
+ 
+  public Pipeline() {super();}
 
-  private Autoboxer autoboxer = new Autoboxer();
-  
-  public Pipeline(Object[] processors) {
-    this(processors, null);
+  public Pipeline(String id) {
+    super(id);
   }
-  
-  public Pipeline(Object[] processors, IMessageProcessor exceptionProcessor) {
-    super();
 
-    RoutingMap routingMap = new RoutingMap();
+  //ToDo: Add-back ExceptionProcessor capability.
 
+  public void setProcessors(List processorList){
     // create process map from list of processors
     Map processMap = new HashMap();
     IMessageProcessor previous = null;
-    for (int i = 0; i < processors.length; i++) {
-      IMessageProcessor processor = (IMessageProcessor) autoboxer.autobox(processors[i]);
+    //for (int i = 0; i < processors.length; i++) {
+    for (Iterator it=processorList.iterator();it.hasNext();) { 
+      IMessageProcessor processor = (IMessageProcessor) autoboxer.autobox(it.next());
       if (previous != null) {
         processMap.put(previous, processor);
       } else {
@@ -43,17 +44,17 @@ public class Pipeline extends Router {
     }
     if (!(previous instanceof WriteNode)) {
       throw new RuntimeException("last element of pipeline is not an WriteNode/IWriteConnector");
-    }
-    
+    }   
     routingMap.setProcessMap(processMap);
-    
-    // create exception map from exceptionProcessor
-    if (exceptionProcessor != null) {
-      Map exceptionMap = new HashMap();
-      exceptionMap.put(java.lang.Exception.class.getName(), exceptionProcessor);
-      routingMap.setExceptionMap(exceptionMap);
+   
+  }
+  public void setExceptionProcessor(Object exceptionProcessor){
+    Object boxed=autoboxer.autobox(exceptionProcessor);
+    if (!(boxed instanceof IMessageProcessor)) {
+      throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
     }
-    
-    setRoutingMap(routingMap);
+    Map exceptionMap = new HashMap();
+    exceptionMap.put(java.lang.Exception.class.getName(), exceptionProcessor);
+    routingMap.setExceptionMap(exceptionMap);    
   }
 }
