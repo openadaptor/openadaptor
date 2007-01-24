@@ -20,8 +20,19 @@
 
   <property name="dir.test.classes" value="test/classes"/>
   <property name="dir.test.lib" value="test/lib"/>
+  <!--
   <property name="dir.test.src" value="test/src"/>
+  -->
   <property name="dir.test.output" value="test/output"/>
+
+  <property name="dir.test.unit.src" value="test/unit/src"/>
+  <property name="dir.test.unit.output" value="test/unit/output"/>
+
+  <property name="dir.test.integration.src" value="test/integration/src"/>
+  <property name="dir.test.integration.output" value="test/integration/output"/>
+
+  <property name="dir.test.system.src" value="test/system/src"/>
+  <property name="dir.test.system.output" value="test/system/output"/>
 
   <property name="dir.example" value="example"/>
   <property name="dir.example.classes" value="example/classes"/>
@@ -30,8 +41,13 @@
   <mkdir dir="${dir.stub.classes}"/>
   <mkdir dir="${dir.classes}"/>
   <mkdir dir="${dir.spring.classes}"/>
+
   <mkdir dir="${dir.test.classes}"/>
   <mkdir dir="${dir.test.output}"/>
+  <mkdir dir="${dir.test.unit.output}"/>
+  <mkdir dir="${dir.test.integration.output}"/>
+  <mkdir dir="${dir.test.system.output}"/>
+
   <mkdir dir="${dir.example.classes}"/>
 
   <path id="classpath.stub">
@@ -74,7 +90,7 @@
 
   <target name="recompile.all" depends="clean.all, compile.all" description="clean and compile all code and tests"/>
 
-  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test, compile.example" description="compile code and tests output"/>
+  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test.unit, compile.test.integration, compile.test.system, compile.example" description="compile code and tests output"/>
 
   <target name="compile.stub">
     <javac srcdir="${dir.stub.src}" destdir="${dir.stub.classes}" classpathref="classpath.stub"/>
@@ -102,10 +118,28 @@
     <javac srcdir="${dir.spring.src}" destdir="${dir.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
   </target>
 
-  <target name="compile.test">
-    <javac srcdir="${dir.test.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
+  <target name="compile.test.unit">
+    <javac srcdir="${dir.test.unit.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
     <copy todir="${dir.test.classes}" overwrite="true">
-      <fileset dir="${dir.test.src}">
+      <fileset dir="${dir.test.unit.src}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile.test.integration">
+    <javac srcdir="${dir.test.integration.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
+    <copy todir="${dir.test.classes}" overwrite="true">
+      <fileset dir="${dir.test.integration.src}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile.test.system">
+    <javac srcdir="${dir.test.system.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
+    <copy todir="${dir.test.classes}" overwrite="true">
+      <fileset dir="${dir.test.system.src}">
         <exclude name="**/*.java"/>
       </fileset>
     </copy>
@@ -139,6 +173,9 @@
     <delete>
       <fileset dir="${dir.test.classes}" includes="**/*"/>
       <fileset dir="${dir.test.output}" includes="**/*"/>
+      <fileset dir="${dir.test.unit.output}" includes="**/*"/>
+      <fileset dir="${dir.test.integration.output}" includes="**/*"/>
+      <fileset dir="${dir.test.system.output}" includes="**/*"/>
     </delete>
   </target>
 
@@ -148,26 +185,79 @@
     </delete>
   </target>
 
-  <target name="test.clean" depends="recompile.all, test"/>
-  
-  <target name="test" depends="compile.all" description="run tests">
+  <target name="test.unit" depends="compile.all" description="run unit tests only">
     <junit printsummary="true">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
-      <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
-        <fileset dir="${dir.test.src}">
+      <batchtest fork="yes" todir="${dir.test.unit.output}" errorProperty="test.failed" failureProperty="test.failed">
+        <fileset dir="${dir.test.unit.src}">
           <include name="**/*TestCase.java"/>
-          <exclude name="**/JBoss*.java"/>          
+        </fileset>
+      </batchtest>
+    </junit>
+    <junitreport todir="${dir.test.unit.output}">
+      <fileset dir="${dir.test.unit.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${dir.test.unit.output}"/>
+     </junitreport>
+     <fail message="Tests failed: check ${dir.test.unit.output}" if="test.failed"/>
+  </target>
+
+  <target name="test.integration" depends="compile.all" description="run integration tests only">
+    <junit printsummary="true">
+      <classpath refid="classpath.test"/>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${dir.test.integration.output}" errorProperty="test.failed" failureProperty="test.failed">
+        <fileset dir="${dir.test.integration.src}">
+          <include name="**/*TestCase.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <junitreport todir="${dir.test.integration.output}">
+      <fileset dir="${dir.test.integration.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${dir.test.integration.output}"/>
+     </junitreport>
+     <fail message="Tests failed: check ${dir.test.integration.output}" if="test.failed"/>
+  </target>
+
+  <target name="test.system" depends="compile.all" description="run system tests only">
+    <junit printsummary="true">
+      <classpath refid="classpath.test"/>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${dir.test.system.output}" errorProperty="test.failed" failureProperty="test.failed">
+        <fileset dir="${dir.test.system.src}">
+          <include name="**/*TestCase.java"/>
+          <exclude name="**/JBoss*.java"/>
           <exclude name="**/MQ*.java"/>
           <exclude name="**/TIBCO*.java"/>
-          <exclude name="**/ReadConnectorServlet*.java"/>
           <exclude name="**/WebService*.java"/>
           <exclude name="**/ReadConnectorWebService*.java"/>
         </fileset>
       </batchtest>
     </junit>
+    <junitreport todir="${dir.test.system.output}">
+      <fileset dir="${dir.test.system.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${dir.test.system.output}"/>
+     </junitreport>
+     <fail message="Tests failed: check ${dir.test.system.output}" if="test.failed"/>
+  </target>
+
+  <target name="test.clean" depends="recompile.all, test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+
+  <target name="test.report" depends="test.clean" description="Generate report for combined tests" >
     <junitreport todir="${dir.test.output}">
-      <fileset dir="${dir.test.output}">
+      <fileset dir="${dir.test.unit.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <fileset dir="${dir.test.integration.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <fileset dir="${dir.test.system.output}">
         <include name="TEST-*.xml"/>
       </fileset>
       <report format="frames" todir="${dir.test.output}"/>
@@ -185,6 +275,6 @@
     </java>
   </target>
 
-  <target name="cruise" depends="test.clean" description="target for cruise control to call"/>
+  <target name="cruise" depends="test.report" description="target for cruise control to call"/>
   
 </project>
