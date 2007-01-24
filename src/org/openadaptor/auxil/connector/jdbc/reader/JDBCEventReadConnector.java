@@ -46,7 +46,7 @@ import org.openadaptor.util.ThreadUtil;
  * A JDBCReadConnector that uses a stored proc to poll for database events, these
  * events must be in a specific format and this component will convert that into
  * a stored procedure call that it then calls to query some data. By default it calls
- * a predefined stored procedure called OA3_ProcessNextQueuedEvent. Refer to openadaptor
+ * a predefined stored procedure called OA3_GetNextQueuedEvent. Refer to openadaptor
  * resources for the schema it is associated with.
  * 
  * @author Kuldip Ottal
