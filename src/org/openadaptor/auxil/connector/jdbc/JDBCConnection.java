@@ -275,4 +275,13 @@ public class JDBCConnection extends Component {
     connection.rollback();
   }
 
+  public boolean isDeadlockException(SQLException e) {
+    return false;
+  }
+
+  public boolean ignoreException(SQLException e) {
+    return false;
+  }
+
+
 }

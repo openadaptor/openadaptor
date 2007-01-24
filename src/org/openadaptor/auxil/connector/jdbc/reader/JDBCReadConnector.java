@@ -46,7 +46,7 @@ import org.openadaptor.util.JDBCUtil;
  * returns a single row of the ResultSet converted by the ResultSetConverter.
  * Becomes "dry" when ResultSet is finished.
  * 
- * @see ResultSetConverter
+ * @see AbstractResultSetConverter
  * @author Eddy Higgins
  * @perryj
  */
@@ -92,7 +92,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   }
 
   public boolean isDry() {
-    return rs != null;
+    return rs == null;
   }
 
   public Object[] next(long timeoutMs) throws ComponentException {

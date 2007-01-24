@@ -176,15 +176,6 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
     }
   }
   
-
-  protected boolean isDeadlockException(SQLException e) {
-    return false;
-  }
-
-  protected boolean ignoreException(SQLException e) {
-    return false;
-  }
-
   /**
    * convert event ResultSet into a statement to actually get the data
    */

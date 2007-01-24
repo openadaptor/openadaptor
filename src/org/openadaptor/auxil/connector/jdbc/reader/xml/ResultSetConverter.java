@@ -1,4 +1,4 @@
-package org.openadaptor.auxil.connector.jdbc.reader;
+package org.openadaptor.auxil.connector.jdbc.reader.xml;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -7,8 +7,9 @@ import java.sql.SQLException;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 
-public class ResultSetXMLConverter extends ResultSetConverter {
+public class ResultSetConverter extends AbstractResultSetConverter {
 
   private boolean convertToString = true;
   private String rootElement = "row";

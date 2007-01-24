@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetConverter;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
@@ -16,10 +17,10 @@ import org.openadaptor.core.transaction.ITransactional;
 
 public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
 
-  private static ResultSetConverter DEFAULT_CONVERTER = new ResultSetOrderedMapConverter();
+  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetConverter();
   
   private JDBCConnection jdbcConnection;
-  private ResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
+  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
   public AbstractJDBCReadConnector() {
     super();
@@ -33,7 +34,7 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
     jdbcConnection = connection;
   }
 
-  public void setResultSetConverter(ResultSetConverter resultSetConverter) {
+  public void setResultSetConverter(AbstractResultSetConverter resultSetConverter) {
     this.resultSetConverter = resultSetConverter;
   }
 
@@ -109,5 +110,13 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
         + " Vendor error code: " + warning.getErrorCode());
       warning = warning.getNextWarning();
     }
+  }
+  
+  protected boolean isDeadlockException(SQLException e) {
+    return jdbcConnection.isDeadlockException(e);
+  }
+
+  protected boolean ignoreException(SQLException e) {
+    return jdbcConnection.ignoreException(e);
   }
 }
