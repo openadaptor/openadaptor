@@ -19,8 +19,15 @@
     values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
   </description>
 
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline MQSeries_ReadConnector-WriteConnector
+    </description>
+    <property name="processors">
       <list>
         <ref bean="MQSeries_ReadConnector"/>
         <ref bean="WriteConnector"/>
