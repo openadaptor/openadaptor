@@ -32,8 +32,15 @@
       java org.openadaptor.spring.SpringApplication -config rss.xml -bean Adaptor
   </description>
 
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline RSS_Reader-Xslt_Processor-File_Writer
+    </description>
+    <property name="processors">
       <list>
         <ref bean="RSS_Reader"/>
         <ref bean="Xslt_Processor"/>
