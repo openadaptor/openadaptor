@@ -37,7 +37,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-MapConverter-Writer
+      This creates the simple pipeline Reader-Writer
     </description>
     <property name="processors">
       <list>
