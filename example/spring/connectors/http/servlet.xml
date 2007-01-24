@@ -29,19 +29,25 @@
 -->
 
 <beans>
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
   
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline Servlet-Writer
+    </description>
+    <property name="processors">
       <list>
         <ref bean="Servlet"/>
         <ref bean="Writer"/>
       </list>
     </property>
   </bean>
-  
+   
   <!-- This is a read connector, that exposes a servlet -->
   <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="localJettyPort" value="9999"/>
+    <property name="port" value="9999"/>
     <property name="acceptGet" value="true"/>
     <property name="parameterNames">
       <list>
