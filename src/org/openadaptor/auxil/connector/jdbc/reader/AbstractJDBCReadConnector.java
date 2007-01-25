@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetConverter;
 import org.openadaptor.core.Component;
@@ -16,6 +17,8 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
 public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
+
+  private static final Log log = LogFactory.getLog(AbstractJDBCReadConnector.class);
 
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetConverter();
   
@@ -112,11 +115,20 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
     }
   }
   
-  protected boolean isDeadlockException(SQLException e) {
-    return jdbcConnection.isDeadlockException(e);
+  protected void resetDeadlockCount() {
+    jdbcConnection.resetDeadlockCount();
+  }
+  
+  protected void handleSQLException(SQLException e) {
+    if (jdbcConnection.ignoreException(e)) {
+      return;
+    } else if (jdbcConnection.isDeadlockException(e) & jdbcConnection.incrementDeadlockCount() > 0) {
+      log.warn("deadlock detected, " + jdbcConnection.getDeadlockRetriesRemaining() + " retries remaining");
+    } else {
+      throw new ComponentException("SQLException, " + e.getMessage() + ", Error Code = " + e.getErrorCode()
+          + ", State = " + e.getSQLState(), e, this);
+    }
   }
 
-  protected boolean ignoreException(SQLException e) {
-    return jdbcConnection.ignoreException(e);
-  }
+
 }

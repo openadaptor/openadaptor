@@ -69,10 +69,6 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
 
   private CallableStatement pollStatement;
 
-  private int deadlockCount;
-
-  private int deadlockLimit = 3;
-
   public JDBCEventReadConnector() {
     super();
   }
@@ -95,6 +91,11 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
     this.eventServiceID = eventServiceID;
   }
 
+  /**
+   * Set event type id for data events we are polling for, if unset
+   * then all event types will be polled
+   * @param eventTypeID
+   */
   public void setEventTypeID(final String eventTypeID) {
     this.eventTypeID = eventTypeID;
   }
@@ -130,7 +131,7 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
   public void connect() {
     super.connect();
     try {
-      pollStatement = prepareCall("{ ? = call " + eventPollSP + "(?,?,?) }");
+      pollStatement = prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
       pollStatement.registerOutParameter(1, java.sql.Types.INTEGER);
       pollStatement.setInt(2, Integer.parseInt(eventServiceID));
       if (eventTypeID != null) {
@@ -138,11 +139,10 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
       } else {
         pollStatement.setNull(3, java.sql.Types.INTEGER);
       }
-      pollStatement.setString(4, "SENT");
     } catch (SQLException e) {
       throw new RuntimeException("failed to create poll callable statement, " + e.getMessage(), e);
     }
-    deadlockCount = 0;
+    resetDeadlockCount();
   }
   
   public void disconnect() {
@@ -164,7 +164,7 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
         JDBCUtil.logCurrentResultSetRow(log, "event ResultSet", rs);
         cs = convertEventToStatement(rs);
       }
-      deadlockCount = 0;
+      resetDeadlockCount();
       return cs;
     } catch (SQLException e) {
       handleSQLException(e);
@@ -174,16 +174,6 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
     return cs;
   }
 
-  private void handleSQLException(SQLException e) {
-    if (ignoreException(e)) {
-      return;
-    } else if (isDeadlockException(e) & deadlockCount < deadlockLimit) {
-      log.warn("deadlock detected, " + (deadlockLimit - ++deadlockCount) + " retries remaining");
-    } else {
-      throw new ComponentException("SQLException, " + e.getMessage() 
-          + ", Error Code = " + e.getErrorCode() + ", State = " + e.getSQLState(), e, this);
-    }
-  }
   
   /**
    * convert event ResultSet into a statement to actually get the data

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="src" output="test/unit/classes" path="test/unit/src"/>
+	<classpathentry kind="src" output="test/system/classes" path="test/system/src"/>
+	<classpathentry kind="src" output="test/integration/classes" path="test/integration/src"/>
 	<classpathentry kind="src" output="example/classes" path="example/src"/>
 	<classpathentry kind="src" output="stub/classes" path="stub/src"/>
-	<classpathentry kind="src" output="test/classes" path="test/src"/>
 	<classpathentry kind="src" output="spring/classes" path="spring/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="test/lib"/>

@@ -59,7 +59,11 @@ public class JDBCConnection extends Component {
   private Connection connection = null;
   private boolean isTransacted = false;
   private Properties properties;
-  
+  private int deadlockCount;
+  private int deadlockLimit = 3;
+
+
+
   /** transactional resource, can either be XAResource or ITransactionalResource */
   private Object transactionalResource = null;
   /**
@@ -283,5 +287,24 @@ public class JDBCConnection extends Component {
     return false;
   }
 
+  public void setDeadlockLimit(int deadlockLimit) {
+    this.deadlockLimit = deadlockLimit;
+  }
 
+  public void resetDeadlockCount() {
+    deadlockCount = 0;
+  }
+
+  /**
+   * increments deadlock count
+   * @return remaining retries
+   */
+  public int incrementDeadlockCount() {
+    deadlockCount++;
+    return getDeadlockRetriesRemaining();
+  }
+
+  public int getDeadlockRetriesRemaining() {
+    return Math.max(deadlockLimit - deadlockCount, 0);
+  }
 }
