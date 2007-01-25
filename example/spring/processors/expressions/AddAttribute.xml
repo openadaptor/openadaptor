@@ -17,14 +17,18 @@
     </description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="pipeline">
-      <list>
-        <ref bean="XmlReadConnector"/>
-        <ref bean="OMConvertor"/>
-        <ref bean="AddAuthorTitle"/>
-        <ref bean="DelimitedTextConvertor"/>
-        <ref bean="WriteConnector"/>
-      </list>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="XmlReadConnector"/>
+            <ref bean="OMConvertor"/>
+            <ref bean="AddAuthorTitle"/>
+            <ref bean="DelimitedTextConvertor"/>
+            <ref bean="WriteConnector"/>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
 
