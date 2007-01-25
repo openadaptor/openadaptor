@@ -233,8 +233,10 @@
           <exclude name="**/JBoss*.java"/>
           <exclude name="**/MQ*.java"/>
           <exclude name="**/TIBCO*.java"/>
+          <!--
           <exclude name="**/WebService*.java"/>
           <exclude name="**/ReadConnectorWebService*.java"/>
+          -->
         </fileset>
       </batchtest>
     </junit>
