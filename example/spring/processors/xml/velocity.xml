@@ -53,7 +53,7 @@
       </bean>
     </property>
   </bean>
-foo,bar
+
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <property name="streamReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>

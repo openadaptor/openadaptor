@@ -277,6 +277,38 @@
     </java>
   </target>
 
-  <target name="cruise" depends="test.report" description="target for cruise control to call"/>
+  <target name="cruise" depends="test.report, copyright.check" description="target for cruise control to call"/>
+  
+    <target name="copyright.taskdef" depends="compile">
+     <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.classes}"/>
+  </target>
+
+  <target name="copyright.check" depends="copyright.taskdef">
+     <copyright update="false">
+      <fileset dir="${dir.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.spring.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.example.src}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copyright>
+  </target>
+  
+  <target name="copyright.update" depends="copyright.taskdef">
+     <copyright update="true">
+      <fileset dir="${dir.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.spring.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.example.src}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copyright>
+  </target>
   
 </project>
