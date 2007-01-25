@@ -45,17 +45,20 @@
 -->
 
 <beans>
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
   
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <!-- this routes any exception to an Exception Manager -->
-    <property name="exceptionProcessor" ref="ExceptionProcessor"/>
-    <property name="pipeline">
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
       <list>
         <ref bean="Reader"/>
         <ref bean="Validator"/>
         <ref bean="Writer"/>
       </list>
     </property>
+    <!-- this routes any exception to discard writer -->
+    <property name="exceptionProcessor" ref="ExceptionProcessor"/>
   </bean>
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">

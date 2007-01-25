@@ -35,20 +35,23 @@
 -->
 
 <beans>
-  
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <!-- this routes any exception to discard writer -->
-    <property name="exceptionWriteConnector" ref="DiscardWriter"/>
-    <property name="pipeline">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
       <list>
         <ref bean="Reader"/>
         <ref bean="Validator"/>
         <ref bean="Writer"/>
       </list>
     </property>
+    <!-- this routes any exception to discard writer -->
+    <property name="exceptionProcessor" ref="DiscardWriter"/>
   </bean>
-  
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
+ 
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
     <property name="streamReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
     </property>
