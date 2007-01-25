@@ -40,7 +40,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
@@ -51,8 +50,6 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.node.ReadNode;
-import org.openadaptor.core.node.WriteNode;
-import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.TransactionManager;
@@ -107,11 +104,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    */
   private int exitCode = 0;
 
-  /**
-   * TODO: remove this
-   */
-  private IMessageProcessor exceptionProcessor;
-  
   /**
    * controls adaptor retry and start, stop, restart functionality
    */
@@ -378,14 +370,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
-  public void setExceptionWriteConnector(final IWriteConnector exceptionProcessor) {
-    this.exceptionProcessor = new WriteNode("exceptionProcessor", exceptionProcessor);
-  }
-  
-  public void setExceptionProcessor(final IMessageProcessor exceptionProcessor) {
-    this.exceptionProcessor = exceptionProcessor;
-  }
-  
   public void exit() {
     state = State.STOPPING;
     if (runConfiguration != null) {

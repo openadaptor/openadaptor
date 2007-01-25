@@ -12,7 +12,6 @@ import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConv
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
-import org.openadaptor.core.router.RoutingMap;
 
 /**
  * This example code is equivalent to the router.xml spring example

@@ -33,13 +33,11 @@
 
 package org.openadaptor.auxil.connector.http;
 
-import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.connector.iostream.RFC2279;
-import org.openadaptor.util.NetUtil;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -47,10 +45,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
+import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.util.NetUtil;
+
 
 public class ReadConnectorServletTestCase extends TestCase {
 
-  private static final Log log = LogFactory.getLog(ReadConnectorServletTestCase.class);
+  //private static final Log log = LogFactory.getLog(ReadConnectorServletTestCase.class);
 
   static final int DEFAULT_PORT = 8087;
   private ReadConnectorServlet servlet;

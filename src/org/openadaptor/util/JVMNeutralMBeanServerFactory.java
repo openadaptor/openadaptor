@@ -1,18 +1,15 @@
 package org.openadaptor.util;
 
-import com.sun.jdmk.comm.HtmlAdaptorServer;
+import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
 
 /**
  * Utility class to shield fact that 1.4 cannot reference java.lang.management classes.
@@ -95,24 +92,6 @@ public class JVMNeutralMBeanServerFactory {
       }
     }
     return server;
-  }
-  /**
-   * Test code for Html JMX access. Not ready for production.
-   */
-  private static void startHtmlConnectorServer(){
-    log.debug("CREATE, REGISTER and START a new HTML adaptor:");
-    HtmlAdaptorServer html = new HtmlAdaptorServer();
-    ObjectName html_name = null;
-    try {
-      html_name = new ObjectName("Adaptor:name=html,port=8082");
-      log.debug("OBJECT NAME           = " + html_name);
-      server.registerMBean(html, html_name);
-    } catch(Exception e) {
-      log.debug("!!! Could not create the HTML adaptor !!!");
-      e.printStackTrace();
-      return;
-    }
-    html.start();
   }
 
   private static MBeanServer getMBeanServer(String className,String methodName) {
