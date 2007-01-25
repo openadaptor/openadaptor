@@ -249,7 +249,7 @@
      <fail message="Tests failed: check ${dir.test.system.output}" if="test.failed"/>
   </target>
 
-  <target name="test.clean" depends="recompile.all, test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+  <target name="test.clean" depends="recompile.all, test.unit, test.integration, test.system, copyright.check" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
 
   <target name="test.report" depends="test.clean" description="Generate report for combined tests" >
     <junitreport todir="${dir.test.output}">
