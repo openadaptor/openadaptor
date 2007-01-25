@@ -43,10 +43,9 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
- * Processes data by executing PreparedStatements against a database. The conversion of
- * the data to a prepared statement is delegate to an IStatementConverter, the default
- * is a StatementConverter (which calls toString() on data, i.e. it assumes that an upstream
- * component has converted the data to valid SQL.
+ * Processes data by executing PreparedStatements against a database. The conversion of the data to a prepared statement
+ * is delegate to an IStatementConverter, the default is a StatementConverter (which calls toString() on data, i.e. it
+ * assumes that an upstream component has converted the data to valid SQL.
  * 
  * @see IStatementConverter
  */
@@ -55,16 +54,17 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   private static final Log log = LogFactory.getLog(JDBCWriteConnector.class.getName());
 
   private IStatementConverter statementConverter = new StatementConverter();
+
   private JDBCConnection jdbcConnection;
 
   public JDBCWriteConnector() {
     super();
   }
-  
+
   public JDBCWriteConnector(String id) {
     super(id);
   }
-  
+
   public void setJdbcConnection(final JDBCConnection jdbcConnection) {
     this.jdbcConnection = jdbcConnection;
   }
@@ -74,25 +74,32 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   }
 
   public Object deliver(Object[] data) throws ComponentException {
-    for (int i = 0; i < data.length; i++) {
+    boolean sucess = false;
+    while (!sucess) {
       try {
-        PreparedStatement s = statementConverter.convert(data[i], jdbcConnection.getConnection());
-        s.executeUpdate();
-        s.close();
+        for (int i = 0; i < data.length; i++) {
+          PreparedStatement s = statementConverter.convert(data[i], jdbcConnection.getConnection());
+          s.executeUpdate();
+          s.close();
+        }
+        sucess = true;
       } catch (SQLException e) {
-        throw new ComponentException("SQL Exception, " + e.getMessage(), e, this);
+        if (jdbcConnection.isDeadlockException(e) && jdbcConnection.incrementDeadlockCount() > 0) {
+          log.warn("deadlock detected, " + jdbcConnection.getDeadlockRetriesRemaining() + " retries remaining");
+        }
+        throw new ComponentException("SQLException, " + e.getMessage() + ", Error Code = " + e.getErrorCode()
+            + ", State = " + e.getSQLState(), e, this);
       }
     }
     return null;
   }
 
-  public void connect() throws ComponentException{
+  public void connect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] connecting ....");
     try {
       jdbcConnection.connect();
       statementConverter.initialise(jdbcConnection.getConnection());
-    }
-    catch (SQLException sqle) {
+    } catch (SQLException sqle) {
       throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
     }
     connected = true;
@@ -111,7 +118,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     log.info("Connector: [" + getId() + "] disconnected");
   }
 
-  public Object getResource() {        
+  public Object getResource() {
     if (jdbcConnection.isTransacted()) {
       return jdbcConnection.getTransactionalResource();
     } else {

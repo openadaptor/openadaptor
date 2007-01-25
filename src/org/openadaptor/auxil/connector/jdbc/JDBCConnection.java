@@ -61,6 +61,7 @@ public class JDBCConnection extends Component {
   private Properties properties;
   private int deadlockCount;
   private int deadlockLimit = 3;
+  private int refCount = 0;
 
 
 
@@ -259,6 +260,7 @@ public class JDBCConnection extends Component {
    */
   protected void beginTransaction() throws SQLException {
     connection.setAutoCommit(false);
+    refCount++;
   }
 
   /**
@@ -268,6 +270,7 @@ public class JDBCConnection extends Component {
    */
   protected void commitTransaction() throws SQLException {
     connection.commit();
+    refCount--;
   }
 
   /**
@@ -277,6 +280,7 @@ public class JDBCConnection extends Component {
    */
   protected void rollbackTransaction() throws SQLException {
     connection.rollback();
+    refCount--;
   }
 
   public boolean isDeadlockException(SQLException e) {
@@ -304,7 +308,18 @@ public class JDBCConnection extends Component {
     return getDeadlockRetriesRemaining();
   }
 
+  /**
+   * get number of deadlock retries remaining, returns zero if no more retries are allowed
+   * also checks that it is safe to retry, returns zero if not.
+   * @return
+   */
   public int getDeadlockRetriesRemaining() {
-    return Math.max(deadlockLimit - deadlockCount, 0);
+    int retries = Math.max(deadlockLimit - deadlockCount, 0);
+    if (retries > 1 && refCount > 1) {
+      log.warn("JDBC Connection is referenced by more than one component, therefore retry is not possible");
+      return 0;
+    } else {
+      return retries;
+    }
   }
 }
