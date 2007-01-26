@@ -94,7 +94,7 @@
 
   <target name="recompile.all" depends="clean.all, compile.all" description="clean and compile all code and tests"/>
 
-  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test.unit, compile.test.integration, compile.test.system, compile.example" description="compile code and tests output"/>
+  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test.unit, compile.test.integration, compile.test.system, compile.example" description="compile code and tests"/>
 
   <target name="compile.stub">
     <javac srcdir="${dir.stub.src}" destdir="${dir.stub.classes}" classpathref="classpath.stub"/>
@@ -117,7 +117,7 @@
   <target name="compile.rmi">
     <rmic classname="org.openadaptor.auxil.connector.rmi.RMIReadConnector$$RMIDataProcessor" base="${dir.classes}" sourcebase="${dir.classes}" debug="${debug}"/>
   </target>
-  
+
   <target name="compile.spring">
     <javac srcdir="${dir.spring.src}" destdir="${dir.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
   </target>
@@ -189,49 +189,49 @@
     </delete>
   </target>
 
-  <target name="test.unit" depends="compile.all" description="run unit tests only">
+  <target name="test.unit" depends="clean.test, compile.all" description="run unit tests only">
     <junit printsummary="true">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
-      <batchtest fork="yes" todir="${dir.test.unit.output}" errorProperty="test.failed" failureProperty="test.failed">
+      <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.unit.src}">
           <include name="**/*TestCase.java"/>
         </fileset>
       </batchtest>
     </junit>
-    <junitreport todir="${dir.test.unit.output}">
-      <fileset dir="${dir.test.unit.output}">
+    <junitreport todir="${dir.test.output}">
+      <fileset dir="${dir.test.output}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${dir.test.unit.output}"/>
+      <report format="frames" todir="${dir.test.output}"/>
      </junitreport>
-     <fail message="Tests failed: check ${dir.test.unit.output}" if="test.failed"/>
+     <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.integration" depends="compile.all" description="run integration tests only">
+  <target name="test.integration" depends="clean.test, compile.all" description="run integration tests only">
     <junit printsummary="true">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
-      <batchtest fork="yes" todir="${dir.test.integration.output}" errorProperty="test.failed" failureProperty="test.failed">
+      <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.integration.src}">
           <include name="**/*TestCase.java"/>
         </fileset>
       </batchtest>
     </junit>
-    <junitreport todir="${dir.test.integration.output}">
-      <fileset dir="${dir.test.integration.output}">
+    <junitreport todir="${dir.test.output}">
+      <fileset dir="${dir.test.output}">
         <include name="TEST-*.xml"/>
       </fileset>
-      <report format="frames" todir="${dir.test.integration.output}"/>
+      <report format="frames" todir="${dir.test.output}"/>
      </junitreport>
-     <fail message="Tests failed: check ${dir.test.integration.output}" if="test.failed"/>
+     <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.system" depends="compile.all" description="run system tests only">
+  <target name="test.system" depends="clean.test, compile.all" description="run system tests only">
     <junit printsummary="true">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
-      <batchtest fork="yes" todir="${dir.test.system.output}" errorProperty="test.failed" failureProperty="test.failed">
+      <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.system.src}">
           <include name="**/*TestCase.java"/>
           <exclude name="**/JBoss*.java"/>
@@ -244,32 +244,16 @@
         </fileset>
       </batchtest>
     </junit>
-    <junitreport todir="${dir.test.system.output}">
-      <fileset dir="${dir.test.system.output}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${dir.test.system.output}"/>
-     </junitreport>
-     <fail message="Tests failed: check ${dir.test.system.output}" if="test.failed"/>
-  </target>
-
-  <target name="test.clean" depends="recompile.all, test.unit, test.integration, test.system, copyright.check" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
-
-  <target name="test.report" depends="test.clean" description="Generate report for combined tests" >
     <junitreport todir="${dir.test.output}">
-      <fileset dir="${dir.test.unit.output}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <fileset dir="${dir.test.integration.output}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <fileset dir="${dir.test.system.output}">
+      <fileset dir="${dir.test.output}">
         <include name="TEST-*.xml"/>
       </fileset>
       <report format="frames" todir="${dir.test.output}"/>
      </junitreport>
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
+
+  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
 
   <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean (defaults to Adaptor) to be defined">
     <property name="bean" value="Adaptor"/>
@@ -281,8 +265,8 @@
     </java>
   </target>
 
-  <target name="cruise" depends="test.report, copyright.check" description="target for cruise control to call"/>
-  
+  <target name="cruise" depends="copyright.check, test.all" description="target for cruise control to call"/>
+
   <target name="compile.buildtools">
      <mkdir dir="${dir.buildtools.classes}"/>
      <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/>
@@ -292,7 +276,7 @@
      <delete dir="${dir.buildtools.classes}"/>
   </target>
 
-  <target name="copyright.taskdef" depends="compile, compile.buildtools">
+  <target name="copyright.taskdef" depends="compile.buildtools">
      <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.buildtools.classes}:${dir.classes}"/>
   </target>
 
@@ -303,7 +287,7 @@
       <fileset dir="${dir.example.src}" includes="**/*.java"/>
     </copyright>
   </target>
-  
+
   <target name="copyright.update" depends="copyright.taskdef">
     <copyright update="true" backupdir="${dir.buildtools.backup}">
       <fileset dir="${dir.src}" includes="**/*.java"/>
