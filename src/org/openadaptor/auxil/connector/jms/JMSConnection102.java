@@ -252,12 +252,16 @@ public class JMSConnection102 extends JMSConnection {
   // Session Stuff
 
 
-  protected Session createSession() throws JMSException {
+  protected Session createSession() {
     Session newSession;
-    if (isTopic) {
-      newSession = createTopicSession();
-    } else {
-      newSession = createQueueSession();
+    try {
+      if (isTopic) {
+        newSession = createTopicSession();
+      } else {
+        newSession = createQueueSession();
+      }
+    } catch (JMSException jmse) {
+      throw new ComponentException("Unable to create session from connection", jmse, this);
     }
     return newSession;
   }

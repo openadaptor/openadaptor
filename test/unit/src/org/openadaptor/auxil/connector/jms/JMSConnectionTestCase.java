@@ -105,7 +105,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testValidate() {
-    log.info("Running Test: validate");
+    log.debug("Running Test: validate");
     // Test instance should be set up to pass Validate correctly
     List validateExceptions = new ArrayList();
     testConnection.validate(validateExceptions);
@@ -113,7 +113,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testValidateNoConnectionFactorySet() {
-    log.info("Running Test: ValidateNoConnectionFactorySet");
+    log.debug("Running Test: ValidateNoConnectionFactorySet");
     testConnection.setConnectionFactory(null);
     testConnection.setConnectionFactoryName(null);
     List validateExceptions = new ArrayList();
@@ -122,7 +122,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testValidateNoJndiConnectionSet() {
-    log.info("Running Test: ValidateNoJndiConnectionSet");
+    log.debug("Running Test: ValidateNoJndiConnectionSet");
     testConnection.setJndiConnection(null);
     List validateExceptions = new ArrayList();
     testConnection.validate(validateExceptions);
@@ -130,7 +130,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testValidateNoDestinationSet() {
-    log.info("Running Test: ValidateNoDestinationSet");
+    log.debug("Running Test: ValidateNoDestinationSet");
     testConnection.setDestinationName(null);
     List validateExceptions = new ArrayList();
     testConnection.validate(validateExceptions);
@@ -138,7 +138,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testValidateNothingSet() {
-    log.info("Running Test: ValidateNothingSet");
+    log.debug("Running Test: ValidateNothingSet");
     testConnection.setConnectionFactory(null);
     testConnection.setConnectionFactoryName(null);
     testConnection.setJndiConnection(null);
@@ -149,11 +149,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectReader() {
-    log.info("Running Test: ConnectReader");
+    log.debug("Running Test: ConnectReader");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
     connectionMock.expects(once()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(once()).method("createConsumer").will(returnValue(consumerMock.proxy()));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -168,7 +171,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectReaderException() {
-    log.info("Running Test: ConnectReaderException");
+    log.debug("Running Test: ConnectReaderException");
     connectionFactoryMock.expects(once()).method("createConnection").will(throwException(new JMSException("test")));
 
     connectionMock.expects(never()).method("createSession");
@@ -189,11 +192,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectReaderSessionException() {
-    log.info("Running Test: ConnectReaderSessionException");
+    log.debug("Running Test: ConnectReaderSessionException");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(throwException(new JMSException("test exception from create session")));
     connectionMock.expects(never()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(never()).method("createConsumer").will(returnValue(consumerMock.proxy()));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -210,11 +216,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectReaderConsumerException() {
-    log.info("Running Test: ConnectReaderConsumerException");
+    log.debug("Running Test: ConnectReaderConsumerException");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("start");
+    connectionMock.expects(never()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(once()).method("createConsumer").will(throwException(new JMSException("test exception from createConsumer")));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -231,11 +240,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectWriter() {
-    log.info("Running Test: ConnectWriter");
+    log.debug("Running Test: ConnectWriter");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("start");
+    connectionMock.expects(never()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(once()).method("createProducer").will(returnValue(producerMock.proxy()));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -250,7 +262,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectWriterException() {
-    log.info("Running Test: ConnectWriterException");
+    log.debug("Running Test: ConnectWriterException");
     connectionFactoryMock.expects(once()).method("createConnection").will(throwException(new JMSException("test")));
 
     connectionMock.expects(never()).method("createSession");
@@ -271,11 +283,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
    public void testConnectWriterSessionException() {
-    log.info("Running Test: ConnectWriterSessionException");
+    log.debug("Running Test: ConnectWriterSessionException");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(throwException(new JMSException("test exception from create session")));
     connectionMock.expects(never()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(never()).method("createProducer").will(returnValue(consumerMock.proxy()));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -292,11 +307,14 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testConnectWriterConsumerException() {
-    log.info("Running Test: ConnectWriterConsumerException");
+    log.debug("Running Test: ConnectWriterConsumerException");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("start");
+    connectionMock.expects(never()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+
     sessionMock.expects(once()).method("createProducer").will(throwException(new JMSException("test exception from createConsumer")));
 
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -313,21 +331,37 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnect() {
-    log.info("Running Test: Disconnect");
+    log.debug("Running Test: Disconnect");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
     connectionMock.expects(once()).method("start");
+    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
     sessionMock.expects(once()).method("createConsumer").will(returnValue(consumerMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
+
     testConnection.connectForReader();
 
     // Setup Connect expectations
     consumerMock.expects(once()).method("close");
     sessionMock.expects(once()).method("close");
     connectionMock.expects(once()).method("close");
+
     testConnection.disconnect();
+  }
+
+  public void testExceptionListener() {
+    log.debug("Running Test: ExceptionListener");
+    testConnectReader();
+    JMSException exception = new JMSException("This is a test");
+
+    // Setup Connect expectations
+    consumerMock.expects(once()).method("close");
+    sessionMock.expects(once()).method("close");
+    connectionMock.expects(once()).method("close");
+    
+    testConnection.onException(exception);
   }
 
   // My Inner Mocks

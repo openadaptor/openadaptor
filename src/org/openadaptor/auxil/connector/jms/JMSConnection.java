@@ -81,7 +81,7 @@ import java.util.List;
  * <li>
  * </ol>
  */
-public class JMSConnection extends Component {
+public class JMSConnection extends Component implements ExceptionListener {
 
   private static final Log log = LogFactory.getLog(JMSConnection.class);
 
@@ -179,22 +179,23 @@ public class JMSConnection extends Component {
    * transactional resource, can either be XAResource or ITransactionalResource
    */
   private Object transactionalResource = null;
-
+  private JMSException listenerException = null;
 
   // Connection Support
 
   public void connectForReader() {
     if (connection == null) {
       createConnection();
-      createAndStartSession();
+      createSession();
       createMessageConsumer();
+      startConnection();
     }
   }
 
   public void connectForWriter() {
     if (connection == null) {
       createConnection();
-      createAndStartSession();
+      createSession();
       createMessageProducer();
     }
   }
@@ -350,34 +351,28 @@ public class JMSConnection extends Component {
    *
    * @return Session A JMS Session
    */
-  protected Session createAndStartSession() {
+  protected Session createSession() {
     if (!isConnected()) {
       throw new ComponentException("Attempt to get a session without calling connect() first", this);
     }
     if (session == null) {
       try {
-        session = createSession();
-        // We have a session and openadaptor takes responsibility for being ready for messages so we can start
-        connection.start();
+        Session newSession;
+        if (connection instanceof XAConnection) {
+          newSession = ((XAConnection) connection).createXASession();
+          transactionalResource = ((XASession) newSession).getXAResource();
+        } else {
+          newSession = (connection.createSession(isTransacted, acknowledgeMode));
+          if (isTransacted) {
+            transactionalResource =  new JMSTransactionalResource(this);
+          }
+        }
+        session = newSession;
       } catch (JMSException jmse) {
         throw new ComponentException("Unable to create session from connection", jmse, this);
       }
     }
     return session;
-  }
-
-  protected Session createSession() throws JMSException {
-    Session newSession;
-    if (connection instanceof XAConnection) {
-      newSession = ((XAConnection) connection).createXASession();
-      transactionalResource = ((XASession) newSession).getXAResource();
-    } else {
-      newSession = (connection.createSession(isTransacted, acknowledgeMode));
-      if (isTransacted) {
-        transactionalResource =  new JMSTransactionalResource(this);
-      }
-    }
-    return newSession;
   }
 
 
@@ -437,6 +432,10 @@ public class JMSConnection extends Component {
         }
       }
 
+      // Set ExceptionListener
+
+      connection.setExceptionListener(this);
+
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
       throw new ComponentException(" JMSException during connect.", e, this);
@@ -469,6 +468,15 @@ public class JMSConnection extends Component {
       }
     }
     return newConnection;
+  }
+
+  protected void startConnection() {
+    try {
+      connection.start();
+    } catch (JMSException e) {
+      log.error("JMSException during connection start." + e);
+      throw new ComponentException(" JMSException during connection start.", e, this);
+    }
   }
 
   // Consumer Support
@@ -580,6 +588,22 @@ public class JMSConnection extends Component {
     } catch (JMSException e) {
       throw new ComponentException("Unable close connection for  [" + destinationName + "]", e, this);
     }
+  }
+
+  // ExceptionListener implementation
+
+  public void onException(JMSException jmsException) {
+    setListenerException(jmsException);
+    log.error("Exception Callback triggered. Exception: " + jmsException);
+    this.disconnect(); // ????
+  }
+
+  private void setListenerException(JMSException jmsException) {
+    this.listenerException = jmsException;
+  }
+
+  public Exception getListenerException() {
+    return listenerException;
   }
 
   // JNDI Support
