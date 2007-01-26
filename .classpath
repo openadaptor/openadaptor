@@ -65,6 +65,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
-	<classpathentry kind="lib" path="C:/installs/ant/lib/ant.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

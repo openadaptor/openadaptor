@@ -14,6 +14,10 @@
   <property name="dir.src" value="src"/>
   <property name="dir.sql" value="sql"/>
 
+  <property name="dir.buildtools.src" value="buildtools/src"/>
+  <property name="dir.buildtools.classes" value="buildtools/classes"/>
+  <property name="dir.buildtools.backup" value="buildtools/backup"/>
+
   <property name="dir.spring.classes" value="spring/classes"/>
   <property name="dir.spring.lib" value="spring/lib"/>
   <property name="dir.spring.src" value="spring/src"/>
@@ -149,7 +153,7 @@
     <javac srcdir="${dir.example.src}" destdir="${dir.example.classes}" classpathref="classpath.example" debug="${debug}"/>
   </target>
 
-  <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test, clean.example" description="clean all compile and test output"/>
+  <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test, clean.example, clean.buildtools" description="clean all compile and test output"/>
 
   <target name="clean.stub">
     <delete>
@@ -279,35 +283,32 @@
 
   <target name="cruise" depends="test.report, copyright.check" description="target for cruise control to call"/>
   
-    <target name="copyright.taskdef" depends="compile">
-     <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.classes}"/>
+  <target name="compile.buildtools">
+     <mkdir dir="${dir.buildtools.classes}"/>
+     <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/>
+  </target>
+
+  <target name="clean.buildtools">
+     <delete dir="${dir.buildtools.classes}"/>
+  </target>
+
+  <target name="copyright.taskdef" depends="compile, compile.buildtools">
+     <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.buildtools.classes}:${dir.classes}"/>
   </target>
 
   <target name="copyright.check" depends="copyright.taskdef">
-     <copyright update="false">
-      <fileset dir="${dir.src}">
-        <include name="**/*.java"/>
-      </fileset>
-      <fileset dir="${dir.spring.src}">
-        <include name="**/*.java"/>
-      </fileset>
-      <fileset dir="${dir.example.src}">
-        <include name="**/*.java"/>
-      </fileset>
+    <copyright update="false" backupdir="${dir.buildtools.backup}">
+      <fileset dir="${dir.src}" includes="**/*.java"/>
+      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
+      <fileset dir="${dir.example.src}" includes="**/*.java"/>
     </copyright>
   </target>
   
   <target name="copyright.update" depends="copyright.taskdef">
-     <copyright update="true">
-      <fileset dir="${dir.src}">
-        <include name="**/*.java"/>
-      </fileset>
-      <fileset dir="${dir.spring.src}">
-        <include name="**/*.java"/>
-      </fileset>
-      <fileset dir="${dir.example.src}">
-        <include name="**/*.java"/>
-      </fileset>
+    <copyright update="true" backupdir="${dir.buildtools.backup}">
+      <fileset dir="${dir.src}" includes="**/*.java"/>
+      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
+      <fileset dir="${dir.example.src}" includes="**/*.java"/>
     </copyright>
   </target>
   
