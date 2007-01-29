@@ -180,12 +180,14 @@ public class JMSConnection extends Component implements ExceptionListener {
    */
   private Object transactionalResource = null;
   private JMSException listenerException = null;
+  private Thread listeningThread;
 
   // Connection Support
 
   public void connectForReader() {
     if (connection == null) {
       createConnection();
+      installAsExceptionListener();
       createSession();
       createMessageConsumer();
       startConnection();
@@ -205,7 +207,12 @@ public class JMSConnection extends Component implements ExceptionListener {
    */
   public void disconnect() {
     if (connection != null) {
-      close();
+      try{
+        close();
+      }
+      finally{
+        listeningThread = null; // Always ensure that this reference is cleared.
+      }
     }
   }
 
@@ -236,7 +243,7 @@ public class JMSConnection extends Component implements ExceptionListener {
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + message + "]");
         messageProducer.send(msg, getDeliveryMode(), getPriority(), getTimeToLive());
-      msgId = msg.getJMSMessageID();
+        msgId = msg.getJMSMessageID();
     } catch (MessageFormatException e) {
       throw new ComponentException("MessageFormatException during publish.", e, this);
     } catch (InvalidDestinationException e) {
@@ -290,9 +297,16 @@ public class JMSConnection extends Component implements ExceptionListener {
       } else {
         msg = getMessageConsumer().receive(timeoutMs);
       }
+      // If we have been sent a JMSException via the ExceptionListener registration mechanism rather than
+      // having receive simply throw it then we treat the exception as if it had been thrown by the receive method.
+      if (listenerException != null) {
+        ComponentException ce = new ComponentException("onException called during receive.", listenerException, this);
+        listenerException = null;
+        throw ce;
+      }
     } catch (JMSException jmse) {
-      log.error("receiveMessages - could not receive message [JMSException: " + jmse + "]");
-      throw new ComponentException("receiveMessages - could not receive message.", jmse, this);
+      log.error("Exception during receive message [JMSException: " + jmse + "]");
+      throw new ComponentException("Exception during receive message.", jmse, this);
     }
     if (msg != null) {
       return unpackJMSMessage(msg);
@@ -375,6 +389,35 @@ public class JMSConnection extends Component implements ExceptionListener {
     return session;
   }
 
+  /**
+   * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
+   * transacted then register a TransactionSpec with that TransactionManager.
+   *
+   * @return Session A JMS Session
+   */
+  public Session createSessionFor(JMSReadConnector connector) {
+    if (!isConnected()) {
+      throw new ComponentException("Attempt to get a session without calling connect() first", this);
+    }
+      try {
+        Session newSession;
+        if (connection instanceof XAConnection) {
+          newSession = ((XAConnection) connection).createXASession();
+          transactionalResource = ((XASession) newSession).getXAResource();
+        } else {
+          newSession = (connection.createSession(isTransacted, acknowledgeMode));
+          if (isTransacted) {
+            transactionalResource =  new JMSTransactionalResource(this);
+          }
+        }
+        session = newSession;
+      } catch (JMSException jmse) {
+        throw new ComponentException("Unable to create session from connection", jmse, this);
+      }
+
+    return session;
+  }
+
 
   public Object getTransactionalResource() {
     return transactionalResource;
@@ -434,8 +477,6 @@ public class JMSConnection extends Component implements ExceptionListener {
 
       // Set ExceptionListener
 
-      connection.setExceptionListener(this);
-
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
       throw new ComponentException(" JMSException during connect.", e, this);
@@ -468,6 +509,15 @@ public class JMSConnection extends Component implements ExceptionListener {
       }
     }
     return newConnection;
+  }
+
+  protected void installAsExceptionListener() {
+    try {
+      connection.setExceptionListener(this);
+    } catch (JMSException e) {
+      throw new ComponentException("Unable to install JMSConnection as ExceptionListener. ", e, this);
+    }
+    listeningThread = Thread.currentThread();
   }
 
   protected void startConnection() {
@@ -595,14 +645,16 @@ public class JMSConnection extends Component implements ExceptionListener {
   public void onException(JMSException jmsException) {
     setListenerException(jmsException);
     log.error("Exception Callback triggered. Exception: " + jmsException);
-    this.disconnect(); // ????
+    if (listeningThread != null ) {
+      listeningThread.interrupt(); // ????
+    }
   }
 
   private void setListenerException(JMSException jmsException) {
     this.listenerException = jmsException;
   }
 
-  public Exception getListenerException() {
+  protected Exception getListenerException() {
     return listenerException;
   }
 

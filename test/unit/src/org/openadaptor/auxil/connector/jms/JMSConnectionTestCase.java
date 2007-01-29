@@ -58,6 +58,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   protected static String DESTINATION_NAME = "testTopic";
 
   private JMSConnection testConnection;
+
   private Mock connectionFactoryMock;
   private Mock connectionMock;
   private Mock sessionMock;
@@ -246,7 +247,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
 
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
     connectionMock.expects(never()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
 
     sessionMock.expects(once()).method("createProducer").will(returnValue(producerMock.proxy()));
 
@@ -289,7 +290,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
 
     connectionMock.expects(once()).method("createSession").will(throwException(new JMSException("test exception from create session")));
     connectionMock.expects(never()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
 
     sessionMock.expects(never()).method("createProducer").will(returnValue(consumerMock.proxy()));
 
@@ -313,7 +314,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
 
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
     connectionMock.expects(never()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
 
     sessionMock.expects(once()).method("createProducer").will(throwException(new JMSException("test exception from createConsumer")));
 
@@ -335,8 +336,9 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
     connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("start");
     connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
+    connectionMock.expects(once()).method("start");
+
     sessionMock.expects(once()).method("createConsumer").will(returnValue(consumerMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
@@ -351,17 +353,47 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     testConnection.disconnect();
   }
 
+  /**
+   * Very basic non-threaded ExceptionListener unit Test.
+   * Simply checks that the exception stored is the one notified by the onException message.
+   * Check integration tests for more extensive testing.
+   */
   public void testExceptionListener() {
     log.debug("Running Test: ExceptionListener");
-    testConnectReader();
     JMSException exception = new JMSException("This is a test");
 
-    // Setup Connect expectations
-    consumerMock.expects(once()).method("close");
-    sessionMock.expects(once()).method("close");
-    connectionMock.expects(once()).method("close");
-    
+    // Reuse the testConnectReader test to setup.
+    testConnectReader();
+
     testConnection.onException(exception);
+    assertEquals("JMSException notified wasn't as expected.", testConnection.getListenerException(), exception);
+  }
+
+
+  // Deliver tests
+
+  public void testDeliver() {
+    log.debug("Running Test: Deliver");
+    // Reuse the testConnectReader test to setup.
+    testConnectWriter();
+
+    String testStringMessage = "This is a test.";
+    String testMessageID = "This is a Test Message ID";
+
+    Mock testMessageMock = new Mock(TextMessage.class);
+    testMessageMock.expects(once()).method("setText").with(eq(testStringMessage));
+    testMessageMock.expects(once()).method("getJMSMessageID").will(returnValue(testMessageID));
+
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(testMessageMock.proxy()));
+
+    producerMock.expects(once()).method("send")
+      .with(eq(testMessageMock.proxy()),
+        eq(testConnection.getDeliveryMode()),
+        eq(testConnection.getPriority()),
+        eq(testConnection.getTimeToLive()));
+
+    String messageID = testConnection.deliver(testStringMessage);
+    assertEquals("Didn't get expected MessageID.", testMessageID, messageID );
   }
 
   // My Inner Mocks
@@ -379,6 +411,5 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     public void setContext(DirContext dirContext) {
       this.dirContext = dirContext;
     }
-
   }
 }
