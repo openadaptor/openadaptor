@@ -97,6 +97,7 @@ public class SpringApplication {
 
     try {
       runXml(configUrl, propsUrl, beanName, jmxPort);
+      System.exit(0);
     } catch (RuntimeException e) {
       e.printStackTrace();
       System.exit(1);

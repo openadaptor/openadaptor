@@ -32,8 +32,11 @@ package org.openadaptor.util;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXConnectorServer;
@@ -62,6 +65,7 @@ public class JVMNeutralMBeanServerFactory {
 
   private static MBeanServer server;  //Singleton instance of the server.
   private static JMXConnectorServer jmxConnectorServer_1_4;
+  private static Registry rmiRegistry;
 
   /**
    * Use reflection to get an MBeanServer. Avoids compile issue where 1.4 jdk doesn't
@@ -95,12 +99,15 @@ public class JVMNeutralMBeanServerFactory {
         String serviceURLString="service:jmx:rmi:///jndi/rmi://localhost:"+port+"/server";
         try {
           log.info("starting rmi registry on "+  port);
-          LocateRegistry.createRegistry(port);
+          rmiRegistry = LocateRegistry.createRegistry(port);
+          Runtime.getRuntime().addShutdownHook(new Thread () {
+            public void run() {
+            }
+          });
         } catch (RemoteException e) {
           log.warn(e);
         }
         JMXServiceURL url;
-        log.info("Creating an RMI connector server");
         try {
           url = new JMXServiceURL(serviceURLString);
           //url = new JMXServiceURL("jmxmp", null, 5555);
@@ -112,8 +119,7 @@ public class JVMNeutralMBeanServerFactory {
           //Add a shutdownHook to make sure it stops also.
           addJMXShutdownHook();
           //ToDo: Remember to shut this baby down also!
-          log.info("RMI connector server successfully started...");
-          log.info("RMI connector is ready for incoming connections");
+          log.info("RMI connector server successfully started.");
           log.info("JMX clients may use the serviceURL: "+serviceURLString);
 
           //Start a Html Connection server - disabled for now.
@@ -148,8 +154,12 @@ public class JVMNeutralMBeanServerFactory {
   public static void shutdown() {
     if (jmxConnectorServer_1_4!=null) {
       try {
-        log.info("Stopping JMXConnectionServer (jvm 1.4)");
+        log.info("stopping JMXConnectionServer (jvm 1.4)");
         jmxConnectorServer_1_4.stop();
+        if (rmiRegistry != null) {
+          log.info("stopping rmi registry");
+          UnicastRemoteObject.unexportObject(rmiRegistry, true);
+        }
       }
       catch (IOException ioe) {
         log.warn("Failed to cleanly stop JMXConnectorServer (jvm 1.4)");
