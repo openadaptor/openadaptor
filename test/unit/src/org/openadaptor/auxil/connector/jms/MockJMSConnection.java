@@ -48,8 +48,6 @@ public class MockJMSConnection extends JMSConnection {
   private boolean throwComponentExceptionOnDisconnect = false;
   private boolean throwNPEOnDisconnect = false;
 
-  private boolean isConnected = false;
-
   private Session mockSession;
   private ExceptionListener listener;
 
@@ -70,7 +68,7 @@ public class MockJMSConnection extends JMSConnection {
         throw new ConnectionException("Test disconnect ComponentException.", this);
       if (throwNPEOnDisconnect) throw new NullPointerException();
     }
-    finally { isConnected = false; }
+    finally { setConnection(null); }
   }
 
   public void validate(List exceptions) {
@@ -90,7 +88,6 @@ public class MockJMSConnection extends JMSConnection {
   public Session createSessionFor(JMSReadConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
     if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
-    isConnected = true;
     return mockSession;
   }
 
@@ -103,7 +100,6 @@ public class MockJMSConnection extends JMSConnection {
   public Session createSessionFor(JMSWriteConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
     if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
-    isConnected = true;
     return mockSession;
   }
 

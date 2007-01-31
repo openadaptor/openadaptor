@@ -32,12 +32,12 @@
  */
 package org.openadaptor.auxil.connector.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.exception.ComponentException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.jms.*;
 import javax.naming.NamingException;
@@ -63,11 +63,9 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   private Mock connectionMock;
   private Mock sessionMock;
   private Mock destinationMock;
-  private Mock consumerMock;
   private JNDIConnection jndiConnection;
   private Mock dirContextMock;
   private DirContext dirContext;
-  private Mock producerMock;
 
   protected void setUp() throws Exception {
     super.setUp();
@@ -79,8 +77,6 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     connectionMock = new Mock(Connection.class);
     sessionMock = new Mock(Session.class);
     destinationMock = new Mock(Topic.class);
-    consumerMock = new Mock(MessageConsumer.class);
-    producerMock = new Mock(MessageProducer.class);
 
     // Mock of openadaptor3's JNDIConnection
     jndiConnection = new MockJNDIConnection();
@@ -89,7 +85,6 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     testConnection = new JMSConnection();
     testConnection.setConnectionFactoryName(CONNECTION_FACTORY_LOOKUP_NAME);
     testConnection.setJndiConnection(jndiConnection);
-    //testConnection.setDestinationName(DESTINATION_NAME);
   }
 
   protected void tearDown() throws Exception {
@@ -101,7 +96,6 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     connectionMock = null;
     sessionMock = null;
     destinationMock = null;
-    consumerMock = null;
     jndiConnection = null;
   }
 
@@ -187,51 +181,6 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
 
     testConnection.disconnect();
   }
-
-  /**
-   * Very basic non-threaded ExceptionListener unit Test.
-   * Simply checks that the exception stored is the one notified by the onException message.
-   * Check integration tests for more extensive testing.
-   */
-  /*
-  public void testExceptionListener() {
-    log.debug("Running Test: ExceptionListener");
-    JMSException exception = new JMSException("This is a test");
-
-    // Reuse the testConnectReader test to setup.
-    testConnectReader();
-
-    testConnection.onException(exception);
-    assertEquals("JMSException notified wasn't as expected.", testConnection.getListenerException(), exception);
-  }
-
-
-  // Deliver tests
-
-  public void testDeliver() {
-    log.debug("Running Test: Deliver");
-    // Reuse the testConnectReader test to setup.
-    testConnectWriter();
-
-    String testStringMessage = "This is a test.";
-    String testMessageID = "This is a Test Message ID";
-
-    Mock testMessageMock = new Mock(TextMessage.class);
-    testMessageMock.expects(once()).method("setText").with(eq(testStringMessage));
-    testMessageMock.expects(once()).method("getJMSMessageID").will(returnValue(testMessageID));
-
-    sessionMock.expects(once()).method("createTextMessage").will(returnValue(testMessageMock.proxy()));
-
-    producerMock.expects(once()).method("send")
-      .with(eq(testMessageMock.proxy()),
-        eq(testConnection.getDeliveryMode()),
-        eq(testConnection.getPriority()),
-        eq(testConnection.getTimeToLive()));
-
-    String messageID = testConnection.deliver(testStringMessage);
-    assertEquals("Didn't get expected MessageID.", testMessageID, messageID );
-  }
-  */
 
   // My Inner Mocks
   class MockJNDIConnection extends JNDIConnection {

@@ -270,32 +270,36 @@ public class JMSConnection102 extends JMSConnection {
   }
 
   protected TopicSession createTopicSession() throws JMSException {
+    /*
     TopicSession newSession;
     if (getConnection() instanceof XATopicConnection) {
       newSession = (TopicSession) (((XATopicConnection) getConnection()).createXATopicSession());
-      //setTransactionalResource( ((XASession) newSession).getXAResource() );
+      setTransactionalResource( ((XASession) newSession).getXAResource() );
     } else {
-      //newSession = (((TopicConnection) getConnection()).createTopicSession( isTransacted(), getAcknowledgeMode() ));
-      //if (isTransacted()) {
-      //  setTransactionalResource( new JMSTransactionalResource(this) );
-      //}
+      newSession = (((TopicConnection) getConnection()).createTopicSession( isTransacted(), getAcknowledgeMode() ));
+      if (isTransacted()) {
+        setTransactionalResource( new JMSTransactionalResource(this) );
+      }
     }
-    //return newSession;
+    return newSession;
+    */
     return null;
   }
 
   protected QueueSession createQueueSession() throws JMSException {
+    /*
     QueueSession newSession;
     if (getConnection() instanceof XAQueueConnection) {
       newSession = (QueueSession) (((XAQueueConnection)getConnection()).createXAQueueSession());
-      //setTransactionalResource (((XASession) newSession).getXAResource() );
+      setTransactionalResource (((XASession) newSession).getXAResource() );
     } else {
-      //newSession = (((QueueConnection) getConnection()).createQueueSession( isTransacted(), getAcknowledgeMode() ));
-      //if (isTransacted()) {
-      //  setTransactionalResource( new JMSTransactionalResource(this) );
-      //}
+      newSession = (((QueueConnection) getConnection()).createQueueSession( isTransacted(), getAcknowledgeMode() ));
+      if (isTransacted()) {
+        setTransactionalResource( new JMSTransactionalResource(this) );
+      }
     }
-    //return newSession;
+    return newSession;
+    */
     return null;
   }
 

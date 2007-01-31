@@ -106,8 +106,6 @@ public class JMSConnection extends Component {
 
   private Context ctx;
 
-  private Session session = null;
-
   private Connection connection = null;
 
   // Connection Support
@@ -174,7 +172,6 @@ public class JMSConnection extends Component {
         } else {
           newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
         }
-        session = newSession;
       } catch (JMSException jmse) {
         throw new ConnectionException("Unable to create session from connection", jmse, this);
       }
@@ -199,7 +196,6 @@ public class JMSConnection extends Component {
         } else {
           newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
         }
-        session = newSession;
       } catch (JMSException jmse) {
         throw new ConnectionException("Unable to create session from connection", jmse, this);
       }
