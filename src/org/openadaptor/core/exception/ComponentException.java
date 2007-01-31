@@ -67,6 +67,6 @@ public class ComponentException extends RuntimeException {
   }
   
   public String getMessage() {
-    return (component != null ? component.getId() : "") + ":" + super.getMessage(); 
+    return (component != null ? component.getId() : "") + " : " + super.getMessage(); 
   }
 }

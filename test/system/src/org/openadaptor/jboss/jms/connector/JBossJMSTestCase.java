@@ -28,14 +28,15 @@ public class JBossJMSTestCase extends TestCase {
   }
   
   public void testQueuePush() {
+    JMSWriteConnector connector = new JMSWriteConnector();
     try {
       JMSConnection connection = getConnection();
-      connection.setDestinationName("queue/testQueue");
+      //connection.setDestinationName("queue/testQueue");
       //connection.setQueue(true);
-      connection.setDurable(true);
+      //connection.setDurable(true);
       connection.setClientID("push");
 
-      JMSWriteConnector connector = new JMSWriteConnector();
+      connector.setDestinationName("queue/testQueue");
       connector.setJmsConnection(connection);
       connector.connect();
       connector.deliver((Object[]) inputs.toArray()); 
@@ -47,31 +48,38 @@ public class JBossJMSTestCase extends TestCase {
       e.printStackTrace();
       fail();
     }
+    finally{connector.disconnect();}
   }
 
   public void testQueuePop() {
     List outputs = new ArrayList();
+    JMSReadConnector connector = new JMSReadConnector();
     try {
       JMSConnection connection = getConnection();
-      connection.setDestinationName("queue/testQueue");
+      //connection.setDestinationName("queue/testQueue");
       //connection.setQueue(true);
-      connection.setDurable(true);
+      //connection.setDurable(true);
       connection.setClientID("pop");
 
-      JMSReadConnector connector = new JMSReadConnector();
+      connector.setDestinationName("queue/testQueue");
       connector.setJmsConnection(connection);
       connector.connect();
 
-      while (!connector.isDry() && outputs.size() < inputs.size()) {
+      boolean noData = false;
+      while (!connector.isDry() && outputs.size() < inputs.size() && !noData) {
         Object[] data = connector.next(1000);
-        for (int i = 0; i < data.length; i++) {
-          outputs.add(data[i]);
+        if (data != null) {
+          for (int i = 0; i < data.length; i++) {
+            outputs.add(data[i]);
+          }
         }
+        else { noData = true; }
       }
     } catch (Exception e) {
       e.printStackTrace();
       fail();
     }
+    finally{ connector.disconnect();}
     if (!outputs.equals(inputs)) {
       System.err.println("expected output...");
       for (Iterator iter = inputs.iterator(); iter.hasNext();) {

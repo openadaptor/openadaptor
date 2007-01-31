@@ -30,11 +30,15 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.openadaptor.auxil.connector.jms.mock;
+package org.openadaptor.auxil.connector.jms;
 
 import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 
+import javax.jms.Session;
+import javax.jms.MessageConsumer;
+import javax.jms.ExceptionListener;
 import java.util.List;
 /*
  * File: $Header: $
@@ -49,29 +53,19 @@ public class MockJMSConnection extends JMSConnection {
   private boolean passValidate = true;
   private boolean throwComponentExceptionOnDisconnect = false;
   private boolean throwNPEOnDisconnect = false;
-  private boolean throwComponentExceptionOnNext = false;
-  private boolean throwNPEOnNext = false;
-  private boolean throwComponentExceptionOnDeliver = false;
-  private boolean throwNPEOnDeliver = false;
+
   private boolean isConnected = false;
 
-  private Object lastDelivery = null;
-  private Object nextMessage;
-  private int deliveryCount = 0;
+  private Session mockSession;
+  private ExceptionListener listener;
 
   // Mocked methods
 
-  public void connectForReader() {
-    if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
-    isConnected = true;
+
+  protected void installAsExceptionListener(ExceptionListener listener) {
+    this.listener = listener;
   }
 
-  public void connectForWriter() {
-    if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
-    isConnected = true;
-  }
 
   /**
    * Close the mockJMSConnection.
@@ -85,51 +79,45 @@ public class MockJMSConnection extends JMSConnection {
     finally { isConnected = false; }
   }
 
-  /**
-   * True if there is an existing session.
-   *
-   * @return boolean
-   */
-  public boolean isConnected() {
-    return isConnected;
-  }
-
-  /**
-   * Deliver the parameter to the confgured destination.
-   *
-   * @param message
-   * @return String The JMS Message ID.
-   */
-  public String deliver(Object message) {
-    if (throwNPEOnDeliver) throw new NullPointerException();
-    if (throwComponentExceptionOnDeliver) throw new ComponentException("Test Exception", this);
-    lastDelivery = message;
-    deliveryCount++;
-    return "MessageId: " + deliveryCount;
-  }
-
-  /**
-   * Receive a message from the configured destination. This is a blocking receive which will time out based
-   * on the value of the <b>timout</b> property.
-   *
-   * @return Object  The contents of the received message.
-   */
-  public Object receive(long timeoutMs) {
-    if (throwNPEOnNext) throw new NullPointerException();
-    if (throwComponentExceptionOnNext) throw new ComponentException("Test Exception", this);
-    if (nextMessage == null) {
-      try {
-        Thread.sleep(timeoutMs);
-      } catch (InterruptedException e) {}
-    }
-    return nextMessage;
-  }
-
   public void validate(List exceptions) {
     if (!passValidate) exceptions.add(new ComponentException("failing validate for test purposes", this));
   }
 
+  // Overridden Mocks
+
+  /**
+   * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
+   * transacted then register a TransactionSpec with that TransactionManager.
+   *
+   * This is mocked up as we are testing the connector not the connection
+   *
+   * @return Session A JMS Session
+   */
+  public Session createSessionFor(JMSReadConnector connector) {
+    if (throwNPEOnConnect) throw new NullPointerException();
+    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
+    isConnected = true;
+    return mockSession;
+  }
+
+  /**
+   * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
+   * transacted then register a TransactionSpec with that TransactionManager.
+   *
+   * @return Session A JMS Session
+   */
+  public Session createSessionFor(JMSWriteConnector connector) {
+    if (throwNPEOnConnect) throw new NullPointerException();
+    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
+    isConnected = true;
+    return mockSession;
+  }
+
   // Mock Support methods
+
+  public void setMockSession(Session session) {
+    mockSession = session;
+  }
 
   public void setThrowComponentExceptionOnConnect(boolean throwComponentExceptionOnConnect) {
     this.throwComponentExceptionOnConnect = throwComponentExceptionOnConnect;
@@ -151,32 +139,10 @@ public class MockJMSConnection extends JMSConnection {
     this.throwNPEOnDisconnect = throwNPEOnDisconnect;
   }
 
-  public void setThrowComponentExceptionOnNext(boolean throwComponentExceptionOnNext) {
-    this.throwComponentExceptionOnNext = throwComponentExceptionOnNext;
-  }
+  // Extra getters
 
-  public void setThrowNPEOnNext(boolean throwNPEOnNext) {
-    this.throwNPEOnNext = throwNPEOnNext;
-  }
-
-  public void setThrowComponentExceptionOnDeliver(boolean throwComponentExceptionOnDeliver) {
-    this.throwComponentExceptionOnDeliver = throwComponentExceptionOnDeliver;
-  }
-
-  public void setThrowNPEOnDeliver(boolean throwNPEOnDeliver) {
-    this.throwNPEOnDeliver = throwNPEOnDeliver;
-  }
-
-  public Object getLastDelivery() {
-    return lastDelivery;
-  }
-
-  public void clearLastDelivery() {
-    lastDelivery = null;
-  }
-
-  public void setNextMessage(Object nextMessage) {
-    this.nextMessage = nextMessage;
+  public ExceptionListener getListener() {
+    return listener;
   }
 
 }

@@ -24,16 +24,15 @@ public class SubAdaptorExample {
     JMSConnection connection = new JMSConnection();
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
-    connection.setDestinationName("topic/testTopic");
-    //connection.setTopic(true);
 
     // create read connector
     JMSReadConnector in = new JMSReadConnector("in");
+    in.setDestinationName("topic/testTopic");
     in.setJmsConnection(connection);
 
     // create test write connector
     FileWriteConnector out = new FileWriteConnector("out");
-    
+
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
@@ -48,6 +47,5 @@ public class SubAdaptorExample {
     
     // run adaptor
     adaptor.run();
-
   }
 }

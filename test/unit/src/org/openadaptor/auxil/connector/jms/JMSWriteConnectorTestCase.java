@@ -33,9 +33,13 @@
 package org.openadaptor.auxil.connector.jms;
 
 import org.jmock.MockObjectTestCase;
-import org.openadaptor.auxil.connector.jms.mock.MockJMSConnection;
+import org.jmock.Mock;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
+import javax.naming.directory.DirContext;
+import javax.naming.NamingException;
+import javax.jms.*;
 import java.util.List;
 import java.util.ArrayList;
 /*
@@ -45,14 +49,36 @@ import java.util.ArrayList;
  */
 
 public class JMSWriteConnectorTestCase extends MockObjectTestCase {
+  protected static String CONNECTION_FACTORY_LOOKUP_NAME = "TestTopicConnectionFactory";
+  protected static String DESTINATION_NAME = "testTopic";
+
   private JMSWriteConnector testWriteConnector;
   private MockJMSConnection mockJMSConnection;
+  private MockJNDIConnection jndiConnection;
+  private Mock dirContextMock;
+  private Mock sessionMock;
+  private Mock messageProducerMock;
+  private Mock destinationMock;
 
   protected void setUp() throws Exception {
     super.setUp();
+
+    dirContextMock = new Mock(DirContext.class);
+    sessionMock = new Mock(Session.class);
+    messageProducerMock = new Mock(MessageProducer.class);
+    destinationMock = new Mock(Topic.class);
+
+    // Mock of openadaptor3's JNDIConnection
+    jndiConnection = new MockJNDIConnection();
+    jndiConnection.setContext((DirContext)dirContextMock.proxy());
+
     mockJMSConnection = new MockJMSConnection();
+    mockJMSConnection.setJndiConnection(jndiConnection);
+
     testWriteConnector = new JMSWriteConnector();
     testWriteConnector.setJmsConnection(mockJMSConnection);
+    testWriteConnector.setJmsConnection(mockJMSConnection);
+    testWriteConnector.setDestinationName(DESTINATION_NAME);
   }
 
   protected void tearDown() throws Exception {
@@ -83,6 +109,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnect() {
+    setupConnectExpectations();
     try {
       testWriteConnector.connect();
       assertTrue("Should be connected.", testWriteConnector.isConnected());
@@ -117,6 +144,9 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnect() {
+    setupConnectExpectations();
+    sessionMock.expects(once()).method("close");
+    messageProducerMock.expects(once()).method("close");
     try {
       testWriteConnector.connect();
       testWriteConnector.disconnect();
@@ -127,7 +157,10 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnectFailureNPE() {
+    setupConnectExpectations();
     mockJMSConnection.setThrowNPEOnDisconnect(true);
+    sessionMock.expects(once()).method("close");
+    messageProducerMock.expects(once()).method("close");
     try {
       testWriteConnector.connect();
       testWriteConnector.disconnect();
@@ -140,7 +173,10 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnectFailureCE() {
+    setupConnectExpectations();
     mockJMSConnection.setThrowComponentExceptionOnDisconnect(true);
+    sessionMock.expects(once()).method("close");
+    messageProducerMock.expects(once()).method("close");
     try {
       testWriteConnector.connect();
       testWriteConnector.disconnect();
@@ -153,17 +189,29 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDeliver() {
+    setupConnectExpectations();
+
     testWriteConnector.connect();
-    mockJMSConnection.clearLastDelivery();
-    Object testMessage = new Object();
-    testWriteConnector.deliver(new Object[] { testMessage } );
-    assertEquals("Expected delivered message to match test message", mockJMSConnection.getLastDelivery(), testMessage);
+
+    Object testMessage = new ArrayList();
+    Mock objectMessageMock = new Mock(ObjectMessage.class);
+    String testMessageID = "Test ID";
+    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
+    objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
+    messageProducerMock.expects(once()).method("send")
+      .with(eq(objectMessageMock.proxy()),
+        eq(testWriteConnector.getDeliveryMode()),
+        eq(testWriteConnector.getPriority()),
+        eq(testWriteConnector.getTimeToLive()));
+    objectMessageMock.expects(once()).method("getJMSMessageID").will(returnValue(testMessageID));
+
+    Object[] returnedMessagedID = (Object[])testWriteConnector.deliver(new Object[] { testMessage } );
+    assertEquals("Expected returned messageID to match expected one", testMessageID, returnedMessagedID[0]);
 
   }
 
   public void testDeliverDisconnected() {
     try {
-      mockJMSConnection.clearLastDelivery();
       Object testMessage = new Object();
       testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected a ComponentException to be thrown");
@@ -172,11 +220,16 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     catch (Exception e) {fail("Unexpected Exception: " + e); }
   }
 
-  public void testDeliverCE() {
+  public void testDeliverWithJMSException() {
+    setupConnectExpectations();
     testWriteConnector.connect();
-    mockJMSConnection.clearLastDelivery();
-    Object testMessage = new Object();
-    mockJMSConnection.setThrowComponentExceptionOnDeliver(true);
+
+    Exception testException = new JMSException("This is a test");
+    Object testMessage = new ArrayList();
+    Mock objectMessageMock = new Mock(ObjectMessage.class);
+    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
+    objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
+    messageProducerMock.expects(once()).method("send").will(throwException(testException));
     try {
       testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected ComponentException");
@@ -186,18 +239,32 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     catch (Exception e) { fail("Unexpected exception: " + e); }
   }
 
-  public void testDeliverNPE() {
-    testWriteConnector.connect();
-    mockJMSConnection.clearLastDelivery();
-    Object testMessage = new Object();
-    mockJMSConnection.setThrowNPEOnDeliver(true);
-    try {
-      testWriteConnector.deliver(new Object[] { testMessage } );
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e) {
-      // expected this to be thrown.
-    }
-    catch (Exception e) { fail("Unexpected exception: " + e); }
+  // Support methods
+
+  protected void setupConnectExpectations() {
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
+    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
+    sessionMock.expects(once()).method("createProducer")
+      .with(eq(destinationMock.proxy()))
+      .will(returnValue(messageProducerMock.proxy()));
   }
 
+
+  // Inner Mocks
+
+  class MockJNDIConnection extends JNDIConnection {
+
+    private DirContext dirContext;
+
+    public DirContext connect() throws NamingException {
+      if (dirContext == null) {
+        throw new NamingException("No DirContext set");
+      }
+      return dirContext;
+    }
+
+    public void setContext(DirContext dirContext) {
+      this.dirContext = dirContext;
+    }
+  }
 }

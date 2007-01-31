@@ -14,10 +14,11 @@ public class SubExample {
     JMSConnection connection = new JMSConnection();
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
-    connection.setDestinationName("topic/testTopic");
+    //connection.setDestinationName("topic/testTopic");
     //connection.setTopic(true);
 
     JMSReadConnector readNode = new JMSReadConnector();
+    readNode.setDestinationName("topic/testTopic");
     readNode.setJmsConnection(connection);
     readNode.connect();
     

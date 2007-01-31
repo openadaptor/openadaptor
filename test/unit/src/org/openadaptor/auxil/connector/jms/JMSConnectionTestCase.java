@@ -89,7 +89,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     testConnection = new JMSConnection();
     testConnection.setConnectionFactoryName(CONNECTION_FACTORY_LOOKUP_NAME);
     testConnection.setJndiConnection(jndiConnection);
-    testConnection.setDestinationName(DESTINATION_NAME);
+    //testConnection.setDestinationName(DESTINATION_NAME);
   }
 
   protected void tearDown() throws Exception {
@@ -130,48 +130,30 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     assertTrue("Validated when it shouldn't have." + validateExceptions, validateExceptions.size() > 0);
   }
 
-  public void testValidateNoDestinationSet() {
-    log.debug("Running Test: ValidateNoDestinationSet");
-    testConnection.setDestinationName(null);
-    List validateExceptions = new ArrayList();
-    testConnection.validate(validateExceptions);
-    assertTrue("Validated when it shouldn't have." + validateExceptions, validateExceptions.size() > 0);
-  }
-
   public void testValidateNothingSet() {
     log.debug("Running Test: ValidateNothingSet");
     testConnection.setConnectionFactory(null);
     testConnection.setConnectionFactoryName(null);
     testConnection.setJndiConnection(null);
-    testConnection.setDestinationName(null);
     List validateExceptions = new ArrayList();
     testConnection.validate(validateExceptions);
-    assertTrue("Expected three validation exceptions." + validateExceptions, validateExceptions.size() == 3);
+    assertTrue("Expected three validation exceptions. Got " + validateExceptions.size() + "." + validateExceptions, validateExceptions.size() == 2);
   }
 
-  public void testConnectReader() {
+  public void testCreateConnection() {
     log.debug("Running Test: ConnectReader");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(once()).method("createConsumer").will(returnValue(consumerMock.proxy()));
-
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
     try {
-      testConnection.connectForReader();
+      testConnection.createConnection();
     }
     catch (Exception e) {
       fail("Unexpected Exception. " + e);
     }
   }
 
-  public void testConnectReaderException() {
+  public void testCreateConnectionException() {
     log.debug("Running Test: ConnectReaderException");
     connectionFactoryMock.expects(once()).method("createConnection").will(throwException(new JMSException("test")));
 
@@ -183,146 +165,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
 
     try {
-      testConnection.connectForReader();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
-      // expected
-    } catch (Exception e) {
-      fail("Unexpected exception: " + e);
-    }
-  }
-
-  public void testConnectReaderSessionException() {
-    log.debug("Running Test: ConnectReaderSessionException");
-    // Setup Connect expectations
-    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(throwException(new JMSException("test exception from create session")));
-    connectionMock.expects(never()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(never()).method("createConsumer").will(returnValue(consumerMock.proxy()));
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForReader();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
-      // expected
-    } catch (Exception e) {
-      fail("Unexpected exception: " + e);
-    }
-  }
-
-  public void testConnectReaderConsumerException() {
-    log.debug("Running Test: ConnectReaderConsumerException");
-    // Setup Connect expectations
-    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(never()).method("start");
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(once()).method("createConsumer").will(throwException(new JMSException("test exception from createConsumer")));
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForReader();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
-      // expected
-    } catch (Exception e) {
-      fail("Unexpected exception: " + e);
-    }
-  }
-
-  public void testConnectWriter() {
-    log.debug("Running Test: ConnectWriter");
-    // Setup Connect expectations
-    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(never()).method("start");
-    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(once()).method("createProducer").will(returnValue(producerMock.proxy()));
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForWriter();
-    }
-    catch (Exception e) {
-      fail("Unexpected Exception. " + e);
-    }
-  }
-
-  public void testConnectWriterException() {
-    log.debug("Running Test: ConnectWriterException");
-    connectionFactoryMock.expects(once()).method("createConnection").will(throwException(new JMSException("test")));
-
-    connectionMock.expects(never()).method("createSession");
-    connectionMock.expects(never()).method("start");
-    sessionMock.expects(never()).method("createProducer");
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForWriter();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
-      // expected
-    } catch (Exception e) {
-      fail("Unexpected exception: " + e);
-    }
-  }
-
-   public void testConnectWriterSessionException() {
-    log.debug("Running Test: ConnectWriterSessionException");
-    // Setup Connect expectations
-    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(throwException(new JMSException("test exception from create session")));
-    connectionMock.expects(never()).method("start");
-    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(never()).method("createProducer").will(returnValue(consumerMock.proxy()));
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForWriter();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
-      // expected
-    } catch (Exception e) {
-      fail("Unexpected exception: " + e);
-    }
-  }
-
-  public void testConnectWriterConsumerException() {
-    log.debug("Running Test: ConnectWriterConsumerException");
-    // Setup Connect expectations
-    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-
-    connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(never()).method("start");
-    connectionMock.expects(never()).method("setExceptionListener").with(eq(testConnection));
-
-    sessionMock.expects(once()).method("createProducer").will(throwException(new JMSException("test exception from createConsumer")));
-
-    dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
-
-    try {
-      testConnection.connectForWriter();
+      testConnection.createConnection();
       fail("Expected ComponentException not thrown.");
     } catch (ComponentException e) {
       // expected
@@ -335,19 +178,11 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     log.debug("Running Test: Disconnect");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
-    connectionMock.expects(once()).method("createSession").will(returnValue(sessionMock.proxy()));
-    connectionMock.expects(once()).method("setExceptionListener").with(eq(testConnection));
-    connectionMock.expects(once()).method("start");
-
-    sessionMock.expects(once()).method("createConsumer").will(returnValue(consumerMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
-    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
 
-    testConnection.connectForReader();
+    testConnection.createConnection();
 
-    // Setup Connect expectations
-    consumerMock.expects(once()).method("close");
-    sessionMock.expects(once()).method("close");
+    // Setup disconnect expectations
     connectionMock.expects(once()).method("close");
 
     testConnection.disconnect();
@@ -358,6 +193,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
    * Simply checks that the exception stored is the one notified by the onException message.
    * Check integration tests for more extensive testing.
    */
+  /*
   public void testExceptionListener() {
     log.debug("Running Test: ExceptionListener");
     JMSException exception = new JMSException("This is a test");
@@ -395,6 +231,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     String messageID = testConnection.deliver(testStringMessage);
     assertEquals("Didn't get expected MessageID.", testMessageID, messageID );
   }
+  */
 
   // My Inner Mocks
   class MockJNDIConnection extends JNDIConnection {

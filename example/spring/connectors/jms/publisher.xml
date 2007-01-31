@@ -48,7 +48,7 @@
   </bean>
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
-  
+
   <!-- This defines jndi connection, from which we get jms connection -->
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
@@ -59,13 +59,11 @@
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="connectionFactoryName" value="ConnectionFactory"/>
-    <property name="destinationName" value="queue/testQueue"/>
-    <!-- property name="queue" value="true"/ -->
-    <property name="durable" value="true"/>
   </bean>
   
   <!-- writer that publishes data onto a queue -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="queue/testQueue"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
 

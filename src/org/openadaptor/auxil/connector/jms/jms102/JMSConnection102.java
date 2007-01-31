@@ -28,7 +28,7 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.jms;
+package org.openadaptor.auxil.connector.jms.jms102;
 
 import java.io.Serializable;
 
@@ -40,7 +40,6 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
-import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.QueueReceiver;
@@ -51,12 +50,10 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
 import javax.jms.XAQueueConnection;
 import javax.jms.XAQueueConnectionFactory;
-import javax.jms.XASession;
 import javax.jms.XATopicConnection;
 import javax.jms.XATopicConnectionFactory;
 import javax.naming.NamingException;
@@ -65,6 +62,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ResourceException;
+import org.openadaptor.auxil.connector.jms.JMSConnection;
 
 /**
  * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.0.2 compliant code.
@@ -141,7 +139,7 @@ public class JMSConnection102 extends JMSConnection {
       // send the record
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + messageBody + "]");
-      ((TopicPublisher)getMessageProducer()).publish( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
+      //((TopicPublisher)getMessageProducer()).publish( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
       throw new ComponentException("JMSException during publish.", jmse, this);
@@ -160,7 +158,7 @@ public class JMSConnection102 extends JMSConnection {
       // send the record
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + messageBody + "]");
-      ((QueueSender) getMessageProducer()).send( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
+      //((QueueSender) getMessageProducer()).send( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
       throw new ComponentException("JMSException during publish.", jmse, this);
@@ -182,19 +180,20 @@ public class JMSConnection102 extends JMSConnection {
   protected Message createMessage(Object messageBody) throws JMSException {
     Message msg;
     if (messageBody instanceof String) {
-      TextMessage textMsg = getSession().createTextMessage();
-      textMsg.setText((String) messageBody);
-      msg = textMsg;
+      //TextMessage textMsg = getSession().createTextMessage();
+      //textMsg.setText((String) messageBody);
+      //msg = textMsg;
     } else if (messageBody instanceof Serializable) {
-      ObjectMessage objectMsg = getSession().createObjectMessage();
-      objectMsg.setObject((Serializable) messageBody);
-      msg = objectMsg;
+      //ObjectMessage objectMsg = getSession().createObjectMessage();
+      //objectMsg.setObject((Serializable) messageBody);
+      //msg = objectMsg;
     } else {
       // We have never needed more message types in practice.
       // If we do need them in future this is where they go.
       throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
     }
-    return msg;
+    //return msg;
+    return null;
   }
 
   // End Deliver
@@ -208,6 +207,7 @@ public class JMSConnection102 extends JMSConnection {
    * @return Object  The contents of the received message.
    */
   public Object receive(long timeoutMs) {
+    /*
     Message msg;
     try {
       if (timeoutMs < 0) {
@@ -224,6 +224,8 @@ public class JMSConnection102 extends JMSConnection {
     } else {
       return null;
     }
+    */
+    return null;
   }
 
   protected Object unpackJMSMessage(Message msg) throws ComponentException {
@@ -270,28 +272,30 @@ public class JMSConnection102 extends JMSConnection {
     TopicSession newSession;
     if (getConnection() instanceof XATopicConnection) {
       newSession = (TopicSession) (((XATopicConnection) getConnection()).createXATopicSession());
-      setTransactionalResource( ((XASession) newSession).getXAResource() );
+      //setTransactionalResource( ((XASession) newSession).getXAResource() );
     } else {
-      newSession = (((TopicConnection) getConnection()).createTopicSession( isTransacted(), getAcknowledgeMode() ));
-      if (isTransacted()) {
-        setTransactionalResource( new JMSTransactionalResource(this) );
-      }
+      //newSession = (((TopicConnection) getConnection()).createTopicSession( isTransacted(), getAcknowledgeMode() ));
+      //if (isTransacted()) {
+      //  setTransactionalResource( new JMSTransactionalResource(this) );
+      //}
     }
-    return newSession;
+    //return newSession;
+    return null;
   }
 
   protected QueueSession createQueueSession() throws JMSException {
     QueueSession newSession;
     if (getConnection() instanceof XAQueueConnection) {
       newSession = (QueueSession) (((XAQueueConnection)getConnection()).createXAQueueSession());
-      setTransactionalResource (((XASession) newSession).getXAResource() );
+      //setTransactionalResource (((XASession) newSession).getXAResource() );
     } else {
-      newSession = (((QueueConnection) getConnection()).createQueueSession( isTransacted(), getAcknowledgeMode() ));
-      if (isTransacted()) {
-        setTransactionalResource( new JMSTransactionalResource(this) );
-      }
+      //newSession = (((QueueConnection) getConnection()).createQueueSession( isTransacted(), getAcknowledgeMode() ));
+      //if (isTransacted()) {
+      //  setTransactionalResource( new JMSTransactionalResource(this) );
+      //}
     }
-    return newSession;
+    //return newSession;
+    return null;
   }
 
   // End Session Stuff
@@ -430,11 +434,12 @@ public class JMSConnection102 extends JMSConnection {
   protected MessageConsumer createMessageConsumer(String destinationName) {
     MessageConsumer newConsumer;
     if (isTopic) { // isTopic will have been set correctly when the original connection was made
-        newConsumer = createTopicSubscriber(getDestinationName());
+        //newConsumer = createTopicSubscriber(getDestinationName());
       } else {
-        newConsumer = createQueueReceiver(getDestinationName());
+        //newConsumer = createQueueReceiver(getDestinationName());
       }
-    return newConsumer;
+    //return newConsumer;
+    return null;
   }
 
   protected TopicSubscriber createTopicSubscriber(String destination) {
@@ -445,22 +450,27 @@ public class JMSConnection102 extends JMSConnection {
     } catch (NamingException e) {
       throw new ComponentException("Unable to resolve Topic for [" + destination + "]", e, this);
     }
+    /*
     try {
+
       if (isDurable()) {
         subscriber = (((TopicSession) getSession()).createDurableSubscriber(topic, getDurableSubscriptionName(),
             getMessageSelector(), isNoLocal()));
       } else {
         subscriber = (((TopicSession) getSession()).createSubscriber(topic, getMessageSelector(), isNoLocal()));
       }
+
     } catch (JMSException e) {
       throw new ComponentException("Unable to subscribe for Topic [" + destination + "]", e, this);
     }
+  */
     log.info("Consumer initialized for JMSDestination=" + topic);
 
     return subscriber;
   }
 
   protected QueueReceiver createQueueReceiver(String aDestination) {
+    /*
     Queue queue;
     QueueReceiver aReceiver;
     QueueSession queueSession = (QueueSession) getSession();
@@ -476,6 +486,8 @@ public class JMSConnection102 extends JMSConnection {
       throw new ComponentException("Exception creating JMS QueueReceiver ", e, this);
     }
     return aReceiver;
+    */
+    return null;
   }
 
   // End Consumer Support
@@ -483,6 +495,7 @@ public class JMSConnection102 extends JMSConnection {
   // Producer Support
 
   protected MessageProducer createMessageProducer(String subject) {
+    /*
     MessageProducer newProducer;
     if (isTopic) {
         newProducer = createTopicPublisher(getDestinationName());
@@ -490,9 +503,12 @@ public class JMSConnection102 extends JMSConnection {
         newProducer = createQueueSender(getDestinationName());
       }
     return newProducer;
+    */
+    return null;
   }
 
   protected MessageProducer createTopicPublisher(String subject) {
+    /*
     Topic topic = null;
     TopicPublisher aPublisher;
     TopicSession topicSession = (TopicSession) getSession();
@@ -510,9 +526,12 @@ public class JMSConnection102 extends JMSConnection {
 
     log.info(" Producer initialised for JMSDestination=" + topic);
     return aPublisher;
+    */
+    return null;
   }
 
   protected QueueSender createQueueSender(String aDestination) {
+    /*
     Queue queue;
     QueueSender aSender;
     QueueSession queueSession = (QueueSession) getSession();
@@ -528,6 +547,8 @@ public class JMSConnection102 extends JMSConnection {
       throw new ComponentException("Exception creating JMS QueueSender ", e, this);
     }
     return aSender;
+    */
+    return null;
   }
 
   // End Producer Support

@@ -31,6 +31,7 @@
 package org.openadaptor.auxil.connector.jms;
 
 import javax.jms.JMSException;
+import javax.jms.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,15 +41,16 @@ public class JMSTransactionalResource implements ITransactionalResource {
 
   private static final Log log = LogFactory.getLog(JMSTransactionalResource.class);
 
-  private JMSConnection connection;
+  //private JMSConnection connection;
+  private Session session;
 
-  public JMSTransactionalResource(final JMSConnection connection) {
-    this.connection = connection;
+  public JMSTransactionalResource(final Session session) {
+    this.session = session;
   }
 
   public void begin() {
     try {
-      if (!connection.getSession().getTransacted()) {
+      if (!session.getTransacted()) {
         throw new RuntimeException("Attempt to start transaction using an untransacted JMS Session");
       }
     } catch (JMSException e) {
@@ -59,10 +61,10 @@ public class JMSTransactionalResource implements ITransactionalResource {
 
   public void commit() {
     try {
-      if (!connection.getSession().getTransacted()) {
+      if (!session.getTransacted()) {
         throw new RuntimeException("Attempt to commit a transaction using an untransacted JMS Session");
       } else {
-        connection.getSession().commit();
+        session.commit();
         log.debug("JMSTransaction committed");
       }
     } catch (JMSException e) {
@@ -72,11 +74,11 @@ public class JMSTransactionalResource implements ITransactionalResource {
 
   public void rollback(Throwable t) {
     try {
-      if (!connection.getSession().getTransacted()) {
+      if (!session.getTransacted()) {
         throw new RuntimeException("Attempt to rollback a transaction using an untransacted JMS Session");
       } else {
         log.debug("JMSTransaction rolled back");
-        connection.getSession().rollback();
+        session.rollback();
       }
     } catch (JMSException e) {
       throw new RuntimeException("JMS Exception on attempt to rollback a transaction using a JMS Session", e);

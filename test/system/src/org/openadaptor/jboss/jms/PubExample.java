@@ -14,11 +14,12 @@ public class PubExample {
     JMSConnection connection = new JMSConnection();
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
-    connection.setDestinationName("topic/testTopic");
+    //connection.setDestinationName("topic/testTopic");
     //connection.setTopic(true);
 
     JMSWriteConnector writeNode = new JMSWriteConnector();
     writeNode.setJmsConnection(connection);
+    writeNode.setDestinationName("topic/testTopic");
     writeNode.connect();
     writeNode.deliver(new Object[] {"one", "two", "three"});
   }

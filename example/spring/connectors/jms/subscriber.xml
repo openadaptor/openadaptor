@@ -31,7 +31,7 @@
 <beans>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+   <property name="messageProcessor" ref="Pipeline"/>
   </bean>
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
@@ -45,13 +45,6 @@
       </list>
     </property>
   </bean>
-
-  <!-- This defines rv connection -->
-  <bean id="TibrvConnection" class="org.openadaptor.thirdparty.tibco.TibrvConnection">
-    <property name="service" value=""/>  
-    <property name="network" value=""/>  
-    <property name="daemon" value=""/>  
-  </bean>
   
   <!-- This defines jndi connection, from which we get jms connection -->
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
@@ -63,12 +56,11 @@
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="connectionFactoryName" value="ConnectionFactory"/>
-    <property name="destinationName" value="queue/testQueue"/>
-    <property name="durable" value="true"/>
   </bean>
 
   <!-- Reader that polls a jms queue -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="queue/testQueue"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
   

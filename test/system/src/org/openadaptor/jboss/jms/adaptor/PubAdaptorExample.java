@@ -24,7 +24,7 @@ public class PubAdaptorExample {
     JMSConnection connection = new JMSConnection();
     connection.setConnectionFactoryName("ConnectionFactory");
     connection.setJndiConnection(jndiConnection);
-    connection.setDestinationName("topic/testTopic");
+    //connection.setDestinationName("topic/testTopic");
     //connection.setTopic(true);
 
     // create test data generator
@@ -34,6 +34,7 @@ public class PubAdaptorExample {
     
     // create write connector
     JMSWriteConnector out = new JMSWriteConnector("out");
+    out.setDestinationName("topic/testTopic");
     out.setJmsConnection(connection);
 
     // create router

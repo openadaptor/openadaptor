@@ -49,39 +49,24 @@ import java.util.List;
  */
 
 /**
- * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.1 compliant code.
+ * Utility class providing JMS support to the JMSReadConnector and JMSWriteConnector classes. This class
+ * is written to use JMS 1.1 compliant code.
  * <p/>
- * Provides following:
- * <p/>
- * Receive from and Publish to both Queues and Topics.
- * Provide access to Underlying Transactional resources.
+ * Primary purpose is to manage a single JMS Connection. Also responsible for JNDI lookups for ConnectionFactories
+ * and Destinations. Delegates This to an instance of JNDOConnection
  * <p/>
  * Main Properties
  * <ul>
  * <li><b>connectionFactoryName</b>     Name used to look up connectionfactory in JNDI
  * <li><b>connectionFactory</b>         Real JMS ConnectionFactory. When this is set <code>connectionFactoryName</code> is ignored.
- * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
  * <li><b>username</b>                  Username to authenticate the JMS Connection (optional)
  * <li><b>password</b>                  Password to authenticate the JMS Connection (optional)
- * <li><b>durable</b>                   Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
- * <li><b>durableSubscriptionName</b>   Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
- * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
- * <li><b>messageSelector</b>           Not set by default.
- * <li><b>noLocal</b>                   Default is <i>false</i>
  * <li><b>clientID</b>                  Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
  * <li><b>jndiConnection</b>            JndiConnection used for lookups
- * <li><b>transacted</b>                Set true if a transacted session is required. Default is false and ignored if an XAConnection is made.
- * <li><b>deliveryMode<b>               Set the delivery mode for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_DELIVERY_MODE</code>.
- * <li><b>priority<b>                   Set the priority for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_PRIORITY</code>.
- * <li><b>timeToLive<b>                 Set the time to live for messages published by the message messageProducer. Defaults to <code>Message.DEFAULT_TIME_TO_LIVE</code>.
  * </ul>
  * <p/>
- * Notes:
- * <ol>
- * <li>
- * </ol>
  */
-public class JMSConnection extends Component implements ExceptionListener {
+public class JMSConnection extends Component {
 
   private static final Log log = LogFactory.getLog(JMSConnection.class);
 
@@ -89,11 +74,6 @@ public class JMSConnection extends Component implements ExceptionListener {
    * Name used to look up connectionfactory in JNDI.
    */
   private String connectionFactoryName = null;
-
-  /**
-   * Name used to look up destination (queue/topic) in JNDI.
-   */
-  private String destinationName = null;
 
   /**
    * Password to authenticate the JMS Connection (optional).
@@ -111,49 +91,9 @@ public class JMSConnection extends Component implements ExceptionListener {
   private JNDIConnection jndiConnection;
 
   /**
-   * True if expected to make a transacted connection to jms. NB this is used for local rather than xa transactions.
-   */
-  private boolean isTransacted = false;
-
-  /**
-   * True for setting up durable subscriptions to topics.
-   */
-  private boolean durable = false;
-
-  /**
    * The name used to create the durable topic subscription. Defaults to the <code>destinationName</code>.
    */
   private String durableSubscriptionName = null;
-
-  /**
-   * JMS acknowledge mode to use. Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
-   */
-  private int acknowledgeMode = Session.AUTO_ACKNOWLEDGE;
-
-  /**
-   * Message Selctor to use when receiving messages. Not set by default.
-   */
-  private String messageSelector = null;
-
-  /**
-   * Default is <i>false</i>
-   */
-  private boolean noLocal = false;
-
-  /**
-   * Default DeliveryMode value specified for this Connection's Message Producer.
-   */
-  private int deliveryMode = Message.DEFAULT_DELIVERY_MODE;
-
-  /**
-   * Default Priority value specified for this Connection's Message Producer.
-   */
-  private int priority = Message.DEFAULT_PRIORITY;
-
-  /**
-   * Default time to live value specified for this Connection's Message Producer.
-   */
-  private long timeToLive = Message.DEFAULT_TIME_TO_LIVE;
 
   /**
    * ID for client. Default is not set as can be set by ConnectionFactory. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
@@ -171,53 +111,27 @@ public class JMSConnection extends Component implements ExceptionListener {
 
   private Connection connection = null;
 
-  private MessageConsumer messageConsumer = null;
-
-  private MessageProducer messageProducer = null;
-
-  /**
-   * transactional resource, can either be XAResource or ITransactionalResource
-   */
-  private Object transactionalResource = null;
-  private JMSException listenerException = null;
-  private Thread listeningThread;
-
   // Connection Support
 
-  public void connectForReader() {
-    if (connection == null) {
-      createConnection();
-      installAsExceptionListener();
-      createSession();
-      createMessageConsumer();
-      startConnection();
-    }
-  }
-
-  public void connectForWriter() {
-    if (connection == null) {
-      createConnection();
-      createSession();
-      createMessageProducer();
-    }
-  }
-
   /**
-   * Close the connection.
+   * Close the connection. Ignores any current clients.
    */
   public void disconnect() {
     if (connection != null) {
-      try{
-        close();
-      }
-      finally{
-        listeningThread = null; // Always ensure that this reference is cleared.
-      }
+      close();
     }
   }
 
   /**
-   * True if there is an existing session.
+   * Close the connection connector is the last client.
+   */
+  public void disconnectFor(Component connector) {
+    // Todo Should keep track of Connector Clients and only close when all clients closed.
+    disconnect();
+  }
+
+  /**
+   * True if there is an existing connection.
    *
    * @return boolean
    */
@@ -227,115 +141,6 @@ public class JMSConnection extends Component implements ExceptionListener {
 
   // End Connection
 
-  // Deliver/ Receive
-
-  /**
-   * Deliver the parameter to the confgured destination.
-   *
-   * @param message
-   * @return String The JMS Message ID.
-   */
-  public String deliver(Object message) {
-    String msgId;
-    try {
-      Message msg = createMessage(message);
-      // send the record
-      if (log.isDebugEnabled())
-        log.debug("JmsPublisher sending [" + message + "]");
-        messageProducer.send(msg, getDeliveryMode(), getPriority(), getTimeToLive());
-        msgId = msg.getJMSMessageID();
-    } catch (MessageFormatException e) {
-      throw new ComponentException("MessageFormatException during publish.", e, this);
-    } catch (InvalidDestinationException e) {
-      throw new ComponentException("InvalidDestinationException during publish.", e, this);
-    } catch (JMSException jmse) {
-      throw new ComponentException("JMSException during publish.", jmse, this);
-    }
-    return msgId;
-  }
-
-  /**
-   * Create required message objects.
-   *
-   * @param messageBody
-   * @return Message created from the supplied messageBody
-   * @throws javax.jms.JMSException
-   */
-  protected Message createMessage(Object messageBody) throws JMSException {
-    Message msg;
-    if (messageBody instanceof String) {
-      TextMessage textMsg = getSession().createTextMessage();
-      textMsg.setText((String) messageBody);
-      msg = textMsg;
-    } else if (messageBody instanceof Serializable) {
-      ObjectMessage objectMsg = getSession().createObjectMessage();
-      objectMsg.setObject((Serializable) messageBody);
-      msg = objectMsg;
-    } else {
-      // We have not needed more message types in practice.
-      // If we do need them in future this is where they go.
-      throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
-    }
-    return msg;
-  }
-
-  // End Deliver
-
-  // Receive
-
-  /**
-   * Receive a message from the configured destination. This is a blocking receive which will time out based
-   * on the value of the <b>timout</b> property.
-   *
-   * @return Object  The contents of the received message.
-   */
-  public Object receive(long timeoutMs) {
-    Message msg;
-    try {
-      if (timeoutMs < 0) {
-        msg = getMessageConsumer().receive();
-      } else {
-        msg = getMessageConsumer().receive(timeoutMs);
-      }
-      // If we have been sent a JMSException via the ExceptionListener registration mechanism rather than
-      // having receive simply throw it then we treat the exception as if it had been thrown by the receive method.
-      if (listenerException != null) {
-        ComponentException ce = new ComponentException("onException called during receive.", listenerException, this);
-        listenerException = null;
-        throw ce;
-      }
-    } catch (JMSException jmse) {
-      log.error("Exception during receive message [JMSException: " + jmse + "]");
-      throw new ComponentException("Exception during receive message.", jmse, this);
-    }
-    if (msg != null) {
-      return unpackJMSMessage(msg);
-    } else {
-      return null;
-    }
-  }
-
-  protected Object unpackJMSMessage(Message msg) throws ComponentException {
-    Object msgContents;
-    try {
-      if (msg instanceof TextMessage) {
-        log.debug("Handling TextMessage");
-        msgContents = ((TextMessage) msg).getText();
-      } else {
-        if (msg instanceof ObjectMessage) {
-          log.debug("Handling ObjectMessage");
-          msgContents = ((ObjectMessage) msg).getObject();
-        } else {
-          throw new ComponentException("Unsupported JMS Message Type.", this);
-        }
-      }
-    } catch (JMSException e) {
-      throw new ComponentException("Error processing JMS Message text.", e, this);
-    }
-    return msgContents;
-  }
-
-  // End Receive
 
   // Validate
 
@@ -346,86 +151,62 @@ public class JMSConnection extends Component implements ExceptionListener {
     if(jndiConnection == null) {
       exceptions.add(new ComponentException("Property jndiConnection is mandatory", this));
     }
-    if(getDestinationName() == null) {
-      exceptions.add( new ComponentException("Property destinationName is mandatory", this)); 
-    }
   }
 
-  // End passValidate
+  // End Validate
 
   // Session Stuff
 
-  protected Session getSession() {
-    return session;
-  }
-
   /**
-   * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
-   * transacted then register a TransactionSpec with that TransactionManager.
+   * Create and return a JMS Session for a JMSReadConnector.
    *
-   * @return Session A JMS Session
-   */
-  protected Session createSession() {
-    if (!isConnected()) {
-      throw new ComponentException("Attempt to get a session without calling connect() first", this);
-    }
-    if (session == null) {
-      try {
-        Session newSession;
-        if (connection instanceof XAConnection) {
-          newSession = ((XAConnection) connection).createXASession();
-          transactionalResource = ((XASession) newSession).getXAResource();
-        } else {
-          newSession = (connection.createSession(isTransacted, acknowledgeMode));
-          if (isTransacted) {
-            transactionalResource =  new JMSTransactionalResource(this);
-          }
-        }
-        session = newSession;
-      } catch (JMSException jmse) {
-        throw new ComponentException("Unable to create session from connection", jmse, this);
-      }
-    }
-    return session;
-  }
-
-  /**
-   * Optionally create and return a JMS Session. If a TransactionManager is referenced and the session is
-   * transacted then register a TransactionSpec with that TransactionManager.
-   *
+   * @param connector The client JMSReadConnector
    * @return Session A JMS Session
    */
   public Session createSessionFor(JMSReadConnector connector) {
-    if (!isConnected()) {
-      throw new ComponentException("Attempt to get a session without calling connect() first", this);
+    if (!isConnected()) { // Connection created lazily.
+      createConnection();
+      startConnection();
     }
+    Session newSession;
       try {
-        Session newSession;
         if (connection instanceof XAConnection) {
           newSession = ((XAConnection) connection).createXASession();
-          transactionalResource = ((XASession) newSession).getXAResource();
         } else {
-          newSession = (connection.createSession(isTransacted, acknowledgeMode));
-          if (isTransacted) {
-            transactionalResource =  new JMSTransactionalResource(this);
-          }
+          newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
         }
         session = newSession;
       } catch (JMSException jmse) {
         throw new ComponentException("Unable to create session from connection", jmse, this);
       }
 
-    return session;
+    return newSession;
   }
 
-
-  public Object getTransactionalResource() {
-    return transactionalResource;
+  /**
+   * Create and return a JMS Session for a JMSWriteConnector.
+   *
+   * @return Session A JMS Session
+   */
+  public Session createSessionFor(JMSWriteConnector connector) {
+    if (!isConnected()) {
+      createConnection();
+      startConnection(); // Todo Do we really need to start the connection here?
+    }
+    Session newSession;
+      try {
+        if (connection instanceof XAConnection) {
+          newSession = ((XAConnection) connection).createXASession();
+        } else {
+          newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
+        }
+        session = newSession;
+      } catch (JMSException jmse) {
+        throw new ComponentException("Unable to create session from connection", jmse, this);
+      }
+    return newSession;
   }
 
-  protected void setTransactionalResource(Object transactionalResource) {
-    this.transactionalResource = transactionalResource;
-  }
 
   // End Session Stuff
 
@@ -474,9 +255,6 @@ public class JMSConnection extends Component implements ExceptionListener {
               ise, this);
         }
       }
-
-      // Set ExceptionListener
-
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
       throw new ComponentException(" JMSException during connect.", e, this);
@@ -484,7 +262,6 @@ public class JMSConnection extends Component implements ExceptionListener {
       log.error("NamingException during connect." + e);
       throw new ComponentException("NamingException during connect.", e, this);
     }
-
   }
 
   protected Connection createConnection(ConnectionFactory factory) throws JMSException {
@@ -493,9 +270,7 @@ public class JMSConnection extends Component implements ExceptionListener {
     if (username == null || username.compareTo("") == 0) {
       useUsername = false;
     }
-
     if (factory instanceof XAConnectionFactory) {
-
       if (useUsername) {
         newConnection = ((XAConnectionFactory) factory).createXAConnection(username, password);
       } else {
@@ -511,13 +286,12 @@ public class JMSConnection extends Component implements ExceptionListener {
     return newConnection;
   }
 
-  protected void installAsExceptionListener() {
+  protected void installAsExceptionListener(ExceptionListener listener) {
     try {
-      connection.setExceptionListener(this);
+      connection.setExceptionListener(listener);
     } catch (JMSException e) {
-      throw new ComponentException("Unable to install JMSConnection as ExceptionListener. ", e, this);
+      throw new ComponentException("Unable to install [" + listener + "] as ExceptionListener. ", e, this);
     }
-    listeningThread = Thread.currentThread();
   }
 
   protected void startConnection() {
@@ -529,136 +303,27 @@ public class JMSConnection extends Component implements ExceptionListener {
     }
   }
 
-  // Consumer Support
-
-  protected MessageConsumer getMessageConsumer() {
-    return messageConsumer;
-  }
-
-  protected MessageConsumer createMessageConsumer() {
-    if (messageConsumer == null) {
-      messageConsumer = createMessageConsumer(destinationName);
-    }
-    return messageConsumer;
-  }
-
-  protected void closeConsumer() throws JMSException {
-    if (messageConsumer != null) {
-      try {
-        messageConsumer.close();
-      } catch (JMSException e) {
-        throw new ComponentException("Unable close messageConsumer for  [" + destinationName + "]", e, this);
-      } finally {
-        messageConsumer = null;
-      }
-    }
-  }
-
-  protected MessageConsumer createMessageConsumer(String destinationName) {
-    Destination destination;
-    MessageConsumer newConsumer;
-
-    try {
-      destination = (Destination) getCtx().lookup(destinationName);
-    } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Destination for [" + destinationName + "]", e, this);
-    }
-    try {
-      if (durable) {
-        newConsumer = getSession().createDurableSubscriber((Topic) destination, destinationName, messageSelector, noLocal);
-      } else {
-        newConsumer = getSession().createConsumer(destination, messageSelector, noLocal);
-      }
-    } catch (JMSException e) {
-      throw new ComponentException("Unable to subscribe to Destination: [" + destination + "]", e, this);
-    }
-
-    return newConsumer;
-
-  }
-
-  // End Consumer Support
-
-  // Producer Support
-
-  protected MessageProducer getMessageProducer() {
-    return messageProducer;
-  }
-
-  protected MessageProducer createMessageProducer() {
-    if (messageProducer == null) {
-      messageProducer = createMessageProducer(destinationName);
-    }
-    return messageProducer;
-  }
-
-  protected void closeProducer() throws JMSException {
-    if (messageProducer != null) {
-      try {
-        messageProducer.close();
-      } catch (JMSException e) {
-        throw new ComponentException("Unable close producer for  [" + destinationName + "]", e, this);
-      } finally {
-        messageProducer = null;
-      }
-    }
-  }
-
-  protected MessageProducer createMessageProducer(String subject) {
-    MessageProducer newProducer;
-    Destination destination;
-    try {
-      destination = (Destination) getCtx().lookup(subject);
-    } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Destination for [" + subject + "]", e, this);
-    }
-    try {
-      newProducer = session.createProducer(destination);
-    } catch (JMSException e) {
-      throw new ComponentException("Exception creating JMS Producer ", e, this);
-    }
-    log.info(" Producer initialised for JMS Destination=" + newProducer);
-    return newProducer;
-  }
-
-  // End Producer Support
-
   /** Close everything */
   protected void close() {
     try {
-      closeConsumer();
-      closeProducer();
-      if (session != null) {
-        session.close();
-      }
       if (connection != null) {
         connection.close();
       }
       setConnection(null);
     } catch (JMSException e) {
-      throw new ComponentException("Unable close connection for  [" + destinationName + "]", e, this);
+      throw new ComponentException("Unable close jms connection for  [" + getId() + "]", e, this);
     }
-  }
-
-  // ExceptionListener implementation
-
-  public void onException(JMSException jmsException) {
-    setListenerException(jmsException);
-    log.error("Exception Callback triggered. Exception: " + jmsException);
-    if (listeningThread != null ) {
-      listeningThread.interrupt(); // ????
-    }
-  }
-
-  private void setListenerException(JMSException jmsException) {
-    this.listenerException = jmsException;
-  }
-
-  protected Exception getListenerException() {
-    return listenerException;
   }
 
   // JNDI Support
+
+  public Destination lookupDestination( String destinationName ) {
+    try {
+      return (Destination) getCtx().lookup(destinationName);
+    } catch (NamingException e) {
+      throw new ComponentException("Unable to resolve Destination for [" + destinationName + "]", e, this);
+    }
+  }
 
   protected Context getCtx() throws NamingException {
     if (ctx == null) {
@@ -694,15 +359,6 @@ public class JMSConnection extends Component implements ExceptionListener {
   protected ConnectionFactory getConnectionFactory() { return connectionFactory; }
 
   /**
-   * Name used to look up destination (queue/topic) in JNDI.
-   */
-  public void setDestinationName(String destinationName) {
-    this.destinationName = destinationName;
-  }
-
-  protected String getDestinationName() { return destinationName; }
-
-  /**
    * Password to authenticate the JMS Connection (optional).
    */
   public void setPassword(String password) {
@@ -726,113 +382,6 @@ public class JMSConnection extends Component implements ExceptionListener {
   public void setJndiConnection(JNDIConnection jndiConnection) {
     this.jndiConnection = jndiConnection;
   }
-
-  /**
-   * true if a transacted connection is to be made.
-   */
-  public void setTransacted(boolean transacted) {
-    this.isTransacted = transacted;
-  }
-
-  /**
-   * true if a transacted connection is to be made.
-   */
-  protected boolean isTransacted() {
-    return isTransacted;
-  }
-
-  /**
-   * Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
-   */
-  public void setDurable(boolean durable) {
-    this.durable = durable;
-  }
-
-  protected boolean isDurable() {
-    return durable;
-  }
-
-  /**
-   * Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
-   */
-  protected String getDurableSubscriptionName() {
-    if (durableSubscriptionName == null)
-      // Since we must have a name to set up a Durable Subscription we default to the destinationName.
-      return destinationName;
-    else
-      return durableSubscriptionName;
-  }
-
-  /**
-   * Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
-   */
-  public void setDurableSubscriptionName(String durableSubscriptionName) {
-    this.durableSubscriptionName = durableSubscriptionName;
-  }
-
-  /**
-   * Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
-   */
-  public void setAcknowledgeMode(int acknowledgeMode) {
-    this.acknowledgeMode = acknowledgeMode;
-  }
-
-  /** Defaults to <code>Session.AUTO_ACKNOWLEDGE</code> */
-  protected int getAcknowledgeMode() {
-    return acknowledgeMode;
-  }
-
-  /**
-   * Not set by default.
-   */
-  public void setMessageSelector(String messageSelector) {
-    this.messageSelector = messageSelector;
-  }
-
-  protected String getMessageSelector() {
-    return messageSelector;
-  }
-
-  /**
-   * Default is <i>false</i>.
-   */
-  public void setNoLocal(boolean noLocal) {
-    this.noLocal = noLocal;
-  }
-
-  protected boolean isNoLocal() {
-    return noLocal;
-  }
-
-  /**
-   * Default DeliveryMode value specified for this Connection's Message Producer.
-   */
-  protected int getDeliveryMode() { return deliveryMode; }
-
-  /**
-   * Default DeliveryMode value specified for this Connection's Message Producer.
-   */
-  public void setDeliveryMode(int deliveryMode) { this.deliveryMode = deliveryMode; }
-
-  /**
-   * Default Priority value specified for this Connection's Message Producer.
-   */
-  protected int getPriority() { return priority; }
-
-  /**
-   * Default Priority value specified for this Connection's Message Producer.
-   */
-  public void setPriority(int priority) { this.priority = priority; }
-
-  /**
-   * Default time to live value specified for this Connection's Message Producer.
-   */
-  protected long getTimeToLive() { return timeToLive; }
-
-  /**
-   * Default time to live value specified for this Connection's Message Producer.
-   */
-  public void setTimeToLive(long timeToLive) { this.timeToLive = timeToLive; }
 
   /**
    * Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.

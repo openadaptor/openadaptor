@@ -33,9 +33,15 @@
 package org.openadaptor.auxil.connector.jms;
 
 import org.jmock.MockObjectTestCase;
+import org.jmock.Mock;
 import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.auxil.connector.jms.mock.MockJMSConnection;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.naming.directory.DirContext;
+import javax.naming.NamingException;
+import javax.jms.*;
 import java.util.List;
 import java.util.ArrayList;
 /*
@@ -45,20 +51,53 @@ import java.util.ArrayList;
  */
 
 public class JMSReadConnectorTestCase extends MockObjectTestCase {
+
+  private static final Log log = LogFactory.getLog(JMSReadConnectorTestCase.class);
+
+  protected static String CONNECTION_FACTORY_LOOKUP_NAME = "TestTopicConnectionFactory";
+  protected static String DESTINATION_NAME = "testTopic";
+
   private JMSReadConnector testReadConnector;
   private MockJMSConnection mockJMSConnection;
+  private MockJNDIConnection jndiConnection;
+
+  //private DirContext dirContext;
+
+  // JMock mocks
+  private Mock dirContextMock;
+  private Mock sessionMock;
+  private Mock destinationMock;
+  private Mock messageConsumerMock;
 
   protected void setUp() throws Exception {
     super.setUp();
+
+    dirContextMock = new Mock(DirContext.class);
+    sessionMock = new Mock(Session.class);
+    messageConsumerMock = new Mock(MessageConsumer.class);
+    destinationMock = new Mock(Topic.class);
+
+    // Mock of openadaptor3's JNDIConnection
+    jndiConnection = new MockJNDIConnection();
+    jndiConnection.setContext((DirContext)dirContextMock.proxy());
+
     mockJMSConnection = new MockJMSConnection();
+    mockJMSConnection.setJndiConnection(jndiConnection);
+
     testReadConnector = new JMSReadConnector();
+    testReadConnector.setId("Test Read Connector");
     testReadConnector.setJmsConnection(mockJMSConnection);
+    testReadConnector.setDestinationName(DESTINATION_NAME);
   }
 
   protected void tearDown() throws Exception {
     super.tearDown();
     testReadConnector = null;
     mockJMSConnection = null;
+    jndiConnection = null;
+    sessionMock = null;
+    messageConsumerMock = null;
+    destinationMock = null;
   }
 
   public void testValidate() {
@@ -76,9 +115,12 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnect() {
+    setupConnectExpectations();
+    mockJMSConnection.installAsExceptionListener(testReadConnector);
     try {
       testReadConnector.connect();
       assertTrue("Should be connected.", testReadConnector.isConnected());
+      assertEquals("Test Connector hould have been installed as an Exception Listener ", testReadConnector, mockJMSConnection.getListener());
     }
     catch (Exception e) {
       fail("Unexpected exception." + e);
@@ -86,6 +128,7 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnectFailureComponentException() {
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
     mockJMSConnection.setThrowComponentExceptionOnConnect(true);
     try {
       testReadConnector.connect();
@@ -98,6 +141,7 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnectFailureNPE() {
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
     mockJMSConnection.setThrowNPEOnConnect(true);
     try {
       testReadConnector.connect();
@@ -110,6 +154,9 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnect() {
+    setupConnectExpectations();
+    sessionMock.expects(once()).method("close");
+    messageConsumerMock.expects(once()).method("close");
     try {
       testReadConnector.connect();
       testReadConnector.disconnect();
@@ -121,6 +168,11 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
   public void testDisconnectFailureNPE() {
     mockJMSConnection.setThrowNPEOnDisconnect(true);
+
+    setupConnectExpectations();
+
+    sessionMock.expects(once()).method("close");
+    messageConsumerMock.expects(once()).method("close");
     try {
       testReadConnector.connect();
       testReadConnector.disconnect();
@@ -134,6 +186,11 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
   public void testDisconnectFailureCE() {
     mockJMSConnection.setThrowComponentExceptionOnDisconnect(true);
+
+    setupConnectExpectations();
+
+    sessionMock.expects(once()).method("close");
+    messageConsumerMock.expects(once()).method("close");
     try {
       testReadConnector.connect();
       testReadConnector.disconnect();
@@ -146,54 +203,88 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testNext() {
+    Mock mockObjectMessage = new Mock(ObjectMessage.class);
+    Mock mockTextMessage = new Mock(TextMessage.class);
+
+    setupConnectExpectations();
     testReadConnector.connect();
-    mockJMSConnection.setNextMessage(null);
+
+    messageConsumerMock.expects(once()).method("receive").will(returnValue(mockObjectMessage.proxy()));
+    mockObjectMessage.expects(once()).method("getObject").will(returnValue(null));
     Object nullNext = testReadConnector.next(10);
     assertTrue("Expected null", nullNext == null);
-    Object testNextMessage = new Object();
-    mockJMSConnection.setNextMessage(testNextMessage);
-    Object[] nextObject = testReadConnector.next(10);
-    assertTrue("Expected test object", nextObject[0] == testNextMessage);
+
+    Object testNextMessage = new ArrayList();
+    messageConsumerMock.expects(once()).method("receive").will(returnValue(mockObjectMessage.proxy()));
+    mockObjectMessage.expects(once()).method("getObject").will(returnValue(testNextMessage));
+
+    Object[] nextObjectArray = testReadConnector.next(10);
+    assertTrue("Expected test object", nextObjectArray[0] == testNextMessage);
+
+    String testTextMessage = "hello World";
+    messageConsumerMock.expects(once()).method("receive").will(returnValue(mockTextMessage.proxy()));
+    mockTextMessage.expects(once()).method("getText").will(returnValue(testTextMessage));
+
+    nextObjectArray = testReadConnector.next(10);
+    assertTrue("Expected test object", nextObjectArray[0] == testTextMessage);
   }
 
   public void testNextDisconnected() {
     try {
-      Object testNextMessage = new Object();
-      mockJMSConnection.setNextMessage(testNextMessage);
       testReadConnector.next(10);
       fail("Expected a ComponentException to be thrown");
     }
-    catch (ComponentException ce) { /* Expected */ }
+    catch (ComponentException ce) {
+      log.debug("Expected ComponentException raised." + ce);
+    }
     catch (Exception e) {fail("Unexpected Exception: " + e); }
   }
 
-  public void testNextCE() {
+  public void testNextJMSException() {
+    setupConnectExpectations();
+
+    JMSException testJmsException = new JMSException("I am a test exception.");
+    messageConsumerMock.expects(once()).method("receive").will(throwException(testJmsException));
+
     testReadConnector.connect();
-    Object testNextMessage = new Object();
-    mockJMSConnection.setNextMessage(testNextMessage);
-    mockJMSConnection.setThrowComponentExceptionOnNext(true);
+
     try {
       testReadConnector.next(10);
       fail("Expected ComponentException");
     } catch (ComponentException e) {
-      // expected this to be thrown.
+      log.debug("Expected ComponentException raised." + e);
     }
-    catch (Exception e) { fail("Unexpected exception: " + e); }
+    catch (Exception e) {
+      fail("Unexpected exception: " + e);
+    }
   }
 
-  public void testNextNPE() {
-    testReadConnector.connect();
-    Object testNextMessage = new Object();
-    mockJMSConnection.setNextMessage(testNextMessage);
-    mockJMSConnection.setThrowNPEOnNext(true);
-    try {
-      testReadConnector.next(10);
-      fail("Expected NullPointerException");
-    } catch (NullPointerException e) {
-      // expected this to be thrown.
-    }
-    catch (Exception e) { fail("Unexpected exception: " + e); }
+
+  // Support methods
+
+  protected void setupConnectExpectations() {
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
+    dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
+    sessionMock.expects(once()).method("createConsumer")
+      .with(eq(destinationMock.proxy()), eq(testReadConnector.getMessageSelector()), eq(testReadConnector.isNoLocal()))
+      .will(returnValue(messageConsumerMock.proxy()));
   }
 
+    // My Inner Mocks
+  class MockJNDIConnection extends JNDIConnection {
+
+    private DirContext dirContext;
+
+    public DirContext connect() throws NamingException {
+      if (dirContext == null) {
+        throw new NamingException("No DirContext set");
+      }
+      return dirContext;
+    }
+
+    public void setContext(DirContext dirContext) {
+      this.dirContext = dirContext;
+    }
+  }
 
 }
