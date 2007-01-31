@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,6 +101,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
       throw new RuntimeException("dir " + dir.toString() + " does not exist or is not a directory");
     }
     files.addAll(Arrays.asList(dir.listFiles(filter)));
+    Collections.sort(files);
     super.connect();
   }
   
