@@ -37,7 +37,7 @@ import java.net.Socket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 
 /**
  * Simple StreamReader to listen on a socket, and provide a StreamReader based on the first connection that receives.
@@ -48,115 +48,81 @@ import org.openadaptor.core.exception.ComponentException;
  * 
  * @author OA3 Eddy Higgins
  */
-// ToDo: Add cleanup code - currently does NO cleanup of resources whatsoever.
-public class SocketReader extends AbstractStreamReader {
-  static Log log = LogFactory.getLog(SocketReader.class);
+
+public class SocketServerReadConnector extends AbstractStreamReadConnector {
+
+  protected SocketServerReadConnector() {
+    super();
+    setDataReader(new LineReader());
+  }
+
+  protected SocketServerReadConnector(String id) {
+    super(id);
+    setDataReader(new LineReader());
+  }
+
+  private static final Log log = LogFactory.getLog(SocketServerReadConnector.class);
 
   private int port;
 
   private ServerSocket serverSocket;
-
-  // BEGIN Bean getters/setters
+  
+  private String clientInfo;
 
   public void setPort(int port) {
     this.port = port;
   }
 
-  public int getPort() {
-    return port;
-  }
-
-  // END Bean getters/setters
-
-  /**
-   * Begin Listening on a ServerSocket.
-   * <p>
-   * Simple singleThreaded first pass. connect() method name is slightly misleading as it's really the adaptor which is
-   * connecting to it.
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   *           if an IOException occurs
-   */
-  public void connect() throws ComponentException {
-    log.debug("Connect: Listening for connections on port " + port);
-    try {
-      serverSocket = new ServerSocket(port);
-      DeferredInputStream dis = new DeferredInputStream(serverSocket);
-      dis.setStreamReader(this);
-      _inputStream = dis;
-      super.connect();
-      ;
-    } catch (IOException ioe) {
-      log.error("IOException - " + ioe.toString());
-      throw new ComponentException(ioe.toString(), ioe, this);
-    }
-  }
-
-  /**
-   * Disconnect this StreamReader.
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   *           if an IOException occurs.
-   */
   public void disconnect() {
-    log.debug("Disconnect: Shutting down server socket on port " + port);
     super.disconnect();
     if (serverSocket != null) {
       try {
+        log.info(getId() + " closing socket server on " + port);
         serverSocket.close();
-      } catch (IOException ioe) {
-        log.warn("Failed to close socket - " + ioe.toString());
+        serverSocket = null;
+        clientInfo = null;
+      } catch (IOException e) {
+        log.warn(getId() + " failed to close socket, " + e.getMessage());
       }
     }
   }
-}
 
-/**
- * Sneaky little convenience class to let us initialise before we really have an <code>InputStream</code>.
- * <p>
- * Connections is only obtained on first call to read the fake <code>InputStream</code>. Note: It's really basic -
- * only allows a single connection.
- */
-class DeferredInputStream extends InputStream {
-  private InputStream realInputStream;
-
-  private ServerSocket serverSocket;
-
-  // Need this only if we want to tell it the current origin of records...
-  private AbstractStreamReader streamReader;
-
-  public DeferredInputStream(ServerSocket serverSocket) {
-    this.serverSocket = serverSocket;
+  public Object getReaderContext() {
+    return clientInfo;
+  }
+  
+  protected InputStream getInputStream() throws IOException {
+    serverSocket = new ServerSocket(port);
+    return new DeferredInputStream(serverSocket);
   }
 
-  public void setStreamReader(AbstractStreamReader streamReader) {
-    this.streamReader = streamReader;
-  }
+  class DeferredInputStream extends InputStream {
+    private InputStream realInputStream;
 
-  public int read() throws IOException {
-    if (realInputStream == null) {
-      realInputStream = waitForRealConnection();
+    private ServerSocket serverSocket;
+
+    public DeferredInputStream(ServerSocket serverSocket) {
+      this.serverSocket = serverSocket;
     }
-    return realInputStream.read();
-  }
 
-  private InputStream waitForRealConnection() {
-    InputStream is = null;
-    try {
-      SocketReader.log.info("Listening for connections on port " + serverSocket.getLocalPort());
-      Socket socket = serverSocket.accept();
-      String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
-      SocketReader.log.warn("Got connection from " + clientInfo);
-      /**
-       * If we have a handle on an AbstractStreamReader, then tell it about the connection.
-       */
-      if (streamReader != null) {
-        streamReader.setReaderContext(clientInfo);
+    public int read() throws IOException {
+      if (realInputStream == null) {
+        realInputStream = waitForRealConnection();
       }
-      is = socket.getInputStream();
-    } catch (IOException ioe) {
-      SocketReader.log.warn("Exception accepting socket Connection: " + ioe.toString());
+      return realInputStream.read();
     }
-    return is;
+
+    private InputStream waitForRealConnection() {
+      try {
+        log.info(getId() + " waiting for connection on " + serverSocket.getLocalPort());
+        Socket socket = serverSocket.accept();
+        clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+        log.info(getId() + " Got connection from " + clientInfo);
+        return socket.getInputStream();
+      } catch (IOException e) {
+        log.error(getId() + " IOException accepting connection, " + e.getMessage());
+      }
+      return null;
+    }
   }
 }

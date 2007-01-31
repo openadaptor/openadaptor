@@ -33,11 +33,9 @@ package example.adaptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openadaptor.auxil.connector.iostream.reader.FileReader;
-import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
-import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
-import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
-import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.connector.iostream.reader.FileReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
@@ -63,9 +61,8 @@ public class RouterExample {
     
     // see Simple.java
     
-    StreamReadConnector reader = new StreamReadConnector("Reader");
-    reader.setStreamReader(new FileReader());
-    reader.setRecordReader(new StringRecordReader());
+    FileReadConnector reader = new FileReadConnector("Reader");
+    reader.setDataReader(new LineReader());
     
     // see Simple.java
     
@@ -74,17 +71,17 @@ public class RouterExample {
     mapConverter.setFieldNames(new String[] {"field"});
     
     // see Simple.java
-    
+
     OrderedMapToXmlConvertor xmlConverter;
     xmlConverter = new OrderedMapToXmlConvertor("XmlConverter");
     xmlConverter.setRootElementTag("data");
     
     // see Simple.java
-    
-    StreamWriteConnector writer = new StreamWriteConnector("Writer");
-    writer.setStreamWriter(new FileWriter());
+
+    FileWriteConnector writer = new FileWriteConnector("Writer");
     
     // Router
+    
     Map processMap = new HashMap();
     processMap.put(reader, mapConverter);
     processMap.put(mapConverter, xmlConverter);
@@ -93,10 +90,12 @@ public class RouterExample {
     router.setProcessMap(processMap);
     
     // create Adaptor and set 
+    
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
     
     // this starts the adaptor
+    
     adaptor.run();
   }
 

@@ -34,18 +34,8 @@
     </property>
   </bean>
 
-  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <description>
-      Configured to read from stdin.
-    </description>
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
-  </bean>
-
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
   <!-- WriteConnector: MqWriteConnector -->
   <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
     <description>

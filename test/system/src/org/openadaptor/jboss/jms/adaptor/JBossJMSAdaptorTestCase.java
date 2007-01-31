@@ -1,12 +1,23 @@
 package org.openadaptor.jboss.jms.adaptor;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.management.ObjectName;
+
 import junit.framework.TestCase;
-import org.openadaptor.auxil.connector.iostream.reader.FileReader;
-import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
-import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
-import org.openadaptor.auxil.connector.iostream.reader.FileReaderTestCase;
-import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
-import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+
+import org.openadaptor.auxil.connector.iostream.reader.FileReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.auxil.connector.jms.JMSReadConnector;
 import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
@@ -20,17 +31,7 @@ import org.openadaptor.core.lifecycle.LifecycleComponent;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
 import org.openadaptor.jboss.jms.connector.JBossJMSTestCase;
-
-import javax.management.ObjectName;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.openadaptor.util.Util;
 
 public class JBossJMSAdaptorTestCase extends TestCase {
 
@@ -49,16 +50,12 @@ public class JBossJMSAdaptorTestCase extends TestCase {
       inputs.add(s);
     }
     inputs.add(stopRecord);
-    String filename = FileReaderTestCase.createTempFile(inputs, null, "\n");
+    String filename = Util.createTempFile( new File("test/system/output"), inputs, null, "\n");
 
-    
-    StreamReadConnector readNode = new StreamReadConnector();
-    readNode.setId("FileIn");
-
-    FileReader fileReader = new FileReader();
-    fileReader.setPath(filename);
-    readNode.setStreamReader(fileReader);
-    readNode.setRecordReader(new StringRecordReader());
+    FileReadConnector reader = new FileReadConnector();
+    reader.setId("FileIn");
+    reader.setFilename(filename);
+    reader.setDataReader(new LineReader());
     
     JMSConnection connection = JBossJMSTestCase.getConnection();
     connection.setDestinationName("queue/testQueue");
@@ -66,14 +63,14 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     connection.setClientID("push");
     connection.setTransacted(true);
 
-    JMSWriteConnector writeNode = new JMSWriteConnector();
-    writeNode.setId("JmsOut");
-    writeNode.setJmsConnection(connection);
+    JMSWriteConnector writer = new JMSWriteConnector();
+    writer.setId("JmsOut");
+    writer.setJmsConnection(connection);
 
     // create router
     RoutingMap routingMap = new RoutingMap();
     Map processMap = new HashMap();
-    processMap.put(readNode, writeNode);
+    processMap.put(reader, writer);
     routingMap.setProcessMap(processMap);
     Router router = new Router(routingMap);
     
@@ -98,10 +95,8 @@ public class JBossJMSAdaptorTestCase extends TestCase {
     readNode.setJmsConnection(connection);
     readNode.setId("JmsIn");
 
-    StreamWriteConnector writeNode = new StreamWriteConnector();
+    FileWriteConnector writeNode = new FileWriteConnector();
     writeNode.setId("FileOut");
-    FileWriter fileWriter = new FileWriter();
-    writeNode.setStreamWriter(fileWriter);
     
     // create adaptor
     Adaptor adaptor =  new Adaptor();

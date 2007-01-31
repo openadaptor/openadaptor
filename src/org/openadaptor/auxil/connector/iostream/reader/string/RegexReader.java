@@ -28,57 +28,44 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.reader.string;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Interface for classes which extract individual records from a supplied <code>Reader</code>.
- * <p>
- * Implementations should be able to take a <code>Reader</code>, and supply record objects on repeated calls to
- * next(). When all records have been read, next() should then return <tt>null</tt>
- * 
- * @author Eddy Higgins
- */
-public interface IRecordReader {
-  /**
-   * Assign a <code>Reader</code> for use by this reader.
-   * <p>
-   * Currently setReader() also trigger a call to initialise() (hence an IOException can be thrown).
-   * 
-   * @param reader
-   *          <code>Reader</code> which is to be split into records.
-   * @throws IOException
-   *           if there is any problem.
-   */
-  public void setReader(Reader reader) throws IOException; // ToDo: decouple initialise() call from here.
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
+import org.openadaptor.auxil.connector.iostream.reader.IDataReader;
 
-  /**
-   * Return the underlying <code>Reader</code> that this record reader uses.
-   * 
-   * @return <code>Reader</code> which is used by the record reader
-   */
-  public Reader getReader();
+public class RegexReader extends EncodingAwareObject implements IDataReader {
 
-  /**
-   * Initialise this recordReader.
-   * 
-   * @throws IOException
-   *           if the <code>Reader</code> is <tt>null</tt>
-   */
-  public void initialise() throws IOException;
+  private InputStreamReader reader;
 
-  /**
-   * Fetch the next record from this reader.
-   * <p>
-   * If the reader has no more records, then it should return <tt>null</tt>
-   * 
-   * @return Object containing a record, or <tt>null</tt> if reader is exhausted.
-   * @throws IOException
-   *           if a problem occurs when reading a record.
-   */
-  public Object next() throws IOException;
+  private Matcher matcher;
 
-  public boolean isDry();
+  public void setRegex(String regex) {
+    matcher = Pattern.compile(regex, Pattern.DOTALL | Pattern.MULTILINE).matcher("");
+    if (matcher.groupCount() > 1) {
+      throw new RuntimeException("regex is invalid, can only have 0 or 1 groups");
+    }
+  }
+
+  public Object read() throws IOException {
+    StringBuffer buffer = null;
+    int c;
+    while ((c = reader.read()) != -1) {
+      buffer = buffer == null ? new StringBuffer() : buffer;
+      buffer.append((char) c);
+      if (matcher.reset(buffer.toString()).matches()) {
+        return matcher.group(matcher.groupCount());
+      }
+    }
+    return null;
+  }
+
+  public void setInputStream(final InputStream inputStream) {
+    reader = createInputStreamReader(inputStream);
+  }
 }

@@ -47,15 +47,11 @@
   </bean>
    
   <!-- This read connector reads lines from a file -->
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader">
-        <property name="path" value="input.txt"/>
-      </bean>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader">
-        <property name="excludePattern" value="^#.*"/>
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input.txt"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+        <property name="excludeRegex" value="^#.*"/>
       </bean>
     </property>
   </bean>
@@ -78,13 +74,9 @@
   </bean>
   
   <!-- This writer writes data to a file -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter">
-        <property name="path" value="output.xml"/>
-        <property name="append" value="false"/>
-      </bean>
-    </property>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output.xml"/>
+    <property name="append" value="false"/>
   </bean>
   
 </beans>

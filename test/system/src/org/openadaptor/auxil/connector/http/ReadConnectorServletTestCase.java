@@ -47,7 +47,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 import org.openadaptor.util.NetUtil;
 
 
@@ -229,9 +229,9 @@ public class ReadConnectorServletTestCase extends TestCase {
     for (Iterator iter = data.entrySet().iterator(); iter.hasNext();) {
       buffer.append(buffer.length() > 0 ? "&" : "");
       Map.Entry entry = (Map.Entry) iter.next();
-      buffer.append(URLEncoder.encode(entry.getKey().toString(), RFC2279.UTF_8));
+      buffer.append(URLEncoder.encode(entry.getKey().toString(), EncodingAwareObject.UTF_8));
       buffer.append("=");
-      buffer.append(URLEncoder.encode(entry.getValue().toString(), RFC2279.UTF_8));
+      buffer.append(URLEncoder.encode(entry.getValue().toString(), EncodingAwareObject.UTF_8));
     }
     return buffer.toString();
   }

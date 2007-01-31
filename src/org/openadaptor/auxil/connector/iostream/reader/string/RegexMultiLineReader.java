@@ -28,87 +28,76 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.reader.string;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
+import org.openadaptor.auxil.connector.iostream.reader.IDataReader;
 
-/**
- * @author OA3 Core Team
- */
-public class SocketWriter extends AbstractStreamWriter {
-  
-  private static final Log log = LogFactory.getLog(SocketWriter.class);
+public class RegexMultiLineReader extends EncodingAwareObject implements IDataReader {
 
-  private String hostname;
+  private static final Log log = LogFactory.getLog(RegexMultiLineReader.class);
 
-  private int port;
+  private BufferedReader reader;
 
-  private Socket socket;
+  private Matcher startLineMatcher;
 
-  // BEGIN Bean getters/setters
+  private Matcher endLineMatcher;
 
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
+  private boolean includeRecordDelimiters;
+
+  public void setStartLineRegex(String regex) {
+    startLineMatcher = Pattern.compile(regex).matcher("");
   }
 
-  public String getHostname() {
-    return hostname;
+  public void setEndLineRegex(String regex) {
+    endLineMatcher = Pattern.compile(regex).matcher("");
   }
 
-  public void setPort(int port) {
-    this.port = port;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  // END Bean getters/setters
-
-  /**
-   * Establish a Socket Connection
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   */
-
-  public void connect() throws ComponentException {
-    log.debug("Opening socket connection to host:port " + hostname + ":" + port);
-    try {
-      socket = new Socket(hostname, port);
-      outputStream = socket.getOutputStream();
-      super.connect();
-      ;
-    } catch (UnknownHostException uhe) {
-      log.error("Unknown host - " + hostname + "." + uhe.toString());
-      throw new ComponentException("Unknown host - " + hostname, uhe, this);
-    }
-
-    catch (IOException ioe) {
-      log.error("IOException - " + ioe.toString());
-      throw new ComponentException("IOException: " + hostname, ioe, this);
-    }
-  }
-
-  /**
-   * Disconnect from the external message transport. If already disconnected then do nothing.
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   */
-  public void disconnect() {
-    log.debug("Disconnecting from host:port " + hostname + ":" + port);
-    super.disconnect();
-    if (socket != null) {
-      try {
-        socket.close();
-      } catch (IOException ioe) {
-        log.warn("Failed to close socket - " + ioe.toString());
+  public Object read() throws IOException {
+    StringBuffer buffer = new StringBuffer();
+    String line;
+    boolean inRecord = false;
+    while ((line = reader.readLine()) != null) {
+      if (inRecord) {
+        if (endLineMatcher.reset(line).matches()) {
+          if (includeRecordDelimiters) {
+            buffer.append(buffer.length() > 0 ? "\n" + line : line);
+          }
+          return buffer.toString();
+        } else {
+          buffer.append(buffer.length() > 0 ? "\n" + line : line);
+        }
+      } else {
+        if (startLineMatcher.reset(line).matches()) {
+          if (includeRecordDelimiters) {
+            buffer.append(buffer.length() > 0 ? "\n" + line : line);
+          }
+          inRecord = true;
+        } else {
+          log.debug("discarding line " + line);
+        }
       }
     }
+    if (buffer.length() > 0) {
+      throw new RuntimeException("partial record, " + buffer.toString());
+    }
+    return null;
   }
+
+  public void setInputStream(InputStream inputStream) {
+    reader = new BufferedReader(createInputStreamReader(inputStream));
+  }
+
+  public void setIncludeRecordDelimiters(boolean include) {
+    this.includeRecordDelimiters = include;
+  }
+
 }

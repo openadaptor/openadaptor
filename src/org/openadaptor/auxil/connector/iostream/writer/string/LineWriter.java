@@ -28,34 +28,23 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream;
+package org.openadaptor.auxil.connector.iostream.writer.string;
 
-/**
- * Selected RFC2279 Character set encodings, and aliases.
- * <p>
- * This interface defines some of the well known and used RFC2279 CharacterSet Encodings & aliases Further information
- * at <a href=http://ietf.org/rfc/rfc2297.txt>IANA / RFC2297</a>
- * 
- * @author Eddy Higgins
- */
-public interface RFC2279 {
+import java.io.IOException;
 
-  public static final String US_ASCII = "US-ASCII"; // 7-bit ASCII,aka Basic Latin block of Unicode char set.
+import org.openadaptor.auxil.connector.iostream.writer.IDataWriter;
 
-  public static final String ASCII = US_ASCII; // Alias - ASCII
+public class LineWriter extends StringWriter implements IDataWriter {
 
-  public static final String ISO646_US = US_ASCII; // Alias - ISO646-US
+  private String lineSeparator = System.getProperty("line.separator", "\n");
+  
+  public void setLineSeparator(String delimiter) {
+    this.lineSeparator = delimiter;
+  }
 
-  public static final String ISO_8859_1 = "ISO-8859-1"; // ISO Latin Alphabet #1
+  public void write(Object data) throws IOException {
+    super.write(data);
+    writer.write(lineSeparator);
+  }
 
-  public static final String ISO_LATIN_1 = ISO_8859_1; // Alias - ISO-LATIN-1
-
-  public static final String UTF_8 = "UTF-8"; // Eight-bit UCS Transformation Format
-
-  public static final String UTF_16BE = "UTF-16BE"; // Sixteen-bit UCS Trans. Format, big-endian byte order
-
-  public static final String UTF_16LE = "UTF-16LE"; // Sixteen-bit UCS Trans. Format, little-endian byte order
-
-  public static final String UTF_16 = "UTF-16";// // Sixteen-bit UCS Trans. Format, byte order by optionial byte-order
-                                                // mark
 }

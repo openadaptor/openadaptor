@@ -1,20 +1,22 @@
 package org.openadaptor.auxil.connector.iostream.reader;
 
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+
 import junit.framework.TestCase;
 
-public class StringRecordReaderTestCase extends TestCase {
+public class LineDataReaderTestCase extends TestCase {
 
   public void testSingleExclude() {
-    StringRecordReader reader = new StringRecordReader();
-    reader.setExcludePattern("^#.*");
+    LineReader reader = new LineReader();
+    reader.setExcludeRegex("^#.*");
     assertTrue(reader.match("test"));
     assertTrue(reader.match("tes#t"));
     assertFalse(reader.match("#test"));
   }
   
   public void testSingleInclude() {
-    StringRecordReader reader = new StringRecordReader();
-    reader.setIncludePattern("^A.*");
+    LineReader reader = new LineReader();
+    reader.setIncludeRegex("^A.*");
     assertFalse(reader.match("test"));
     assertFalse(reader.match("abc"));
     assertTrue(reader.match("A"));
@@ -22,8 +24,8 @@ public class StringRecordReaderTestCase extends TestCase {
   }
   
   public void testMultipleInclude() {
-    StringRecordReader reader = new StringRecordReader();
-    reader.setIncludePatterns(new String[] {"^A.*", "^a.*"});
+    LineReader reader = new LineReader();
+    reader.setIncludeRegexs(new String[] {"^A.*", "^a.*"});
     assertFalse(reader.match("test"));
     assertTrue(reader.match("abc"));
     assertTrue(reader.match("A"));
@@ -31,8 +33,8 @@ public class StringRecordReaderTestCase extends TestCase {
   }
   
   public void testMultipleExclude() {
-    StringRecordReader reader = new StringRecordReader();
-    reader.setExcludePatterns(new String[] {"^#.*", "^//.*"});
+    LineReader reader = new LineReader();
+    reader.setExcludeRegexs(new String[] {"^#.*", "^//.*"});
     assertTrue(reader.match("test"));
     assertTrue(reader.match("tes#t"));
     assertTrue(reader.match("/test"));
@@ -42,9 +44,9 @@ public class StringRecordReaderTestCase extends TestCase {
   }
   
   public void testExcludesAndInclude() {
-    StringRecordReader reader = new StringRecordReader();
-    reader.setExcludePatterns(new String[] {"^#.*", "^//.*"});
-    reader.setIncludePatterns(new String[] {".*[aA].*"});
+    LineReader reader = new LineReader();
+    reader.setExcludeRegexs(new String[] {"^#.*", "^//.*"});
+    reader.setIncludeRegexs(new String[] {".*[aA].*"});
     assertFalse(reader.match("test"));
     assertTrue(reader.match("testA"));
     assertTrue(reader.match("atest"));

@@ -45,21 +45,10 @@
   </bean>
 
   <!-- Reader that accepts a single socket connection on a configured port and reads data -->
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.SocketReader">
-        <property name="port" value="9990"/>
-      </bean>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.SocketServerReadConnector">
+    <property name="port" value="9990"/>
   </bean>
 
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>

@@ -32,11 +32,9 @@ package example.adaptor;
 
 import java.util.Arrays;
 
-import org.openadaptor.auxil.connector.iostream.reader.FileReader;
-import org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector;
-import org.openadaptor.auxil.connector.iostream.reader.StringRecordReader;
-import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
-import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
+import org.openadaptor.auxil.connector.iostream.reader.FileReadConnector;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
@@ -60,9 +58,8 @@ public class Simple {
     // FileReader and because this doesn't specify a file to read from it
     // defaults to stdin.
     
-    StreamReadConnector reader = new StreamReadConnector("Reader");
-    reader.setStreamReader(new FileReader());
-    reader.setRecordReader(new StringRecordReader());
+    FileReadConnector reader = new FileReadConnector("Reader");
+    reader.setDataReader(new LineReader());
     
     // this convertor converts a delimited string to a map
     // the configuration specifies a single key
@@ -83,8 +80,7 @@ public class Simple {
     // defaults to stdin. Because no record writer is configured it defaults
     // to a StringRecordWriter (which writes a string followed by a newline)
     
-    StreamWriteConnector writer = new StreamWriteConnector("Writer");
-    writer.setStreamWriter(new FileWriter());
+    FileWriteConnector writer = new FileWriteConnector("Writer");
     
     // we then instantiate an Adaptor and set it's pipeline to be the
     // array of ordered components

@@ -31,103 +31,41 @@
 package org.openadaptor.auxil.connector.iostream.reader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 
 /**
  * StreamReader which connects to, and reads from, the supplied URL.
  * 
  * @author Eddy Higgins
  */
-public class URLReader extends AbstractStreamReader {
+public class URLReadConnector extends AbstractStreamReadConnector {
 
-  private static final Log log = LogFactory.getLog(URLReader.class);
-
-  /**
-   * This is the url which will be used to connect to.
-   */
   protected URL url;
 
-  /**
-   * Connection to the URL.
-   */
-  protected URLConnection urlConnection;
-
-  // BEGIN Bean getters/setters
-
-  /**
-   * Set the url which this reader will connect to.
-   * <p>
-   * This is a convenience wrapper around setUrl(new URL(url));
-   * 
-   * @param url
-   *          String which contains the url.
-   * @throws MalformedURLException
-   *           if the url <code>String</code> is invalid.
-   */
+  public URLReadConnector() {
+    super();
+    setDataReader(new LineReader());
+  }
+  
+  public URLReadConnector(String id) {
+    super(id);
+    setDataReader(new LineReader());
+  }
+  
   public void setUrl(String url) throws MalformedURLException {
-    setUrl(new URL(url));
+    this.url = new URL(url);
   }
 
-  /**
-   * Set the url to which this reader will connect to.
-   * 
-   * @param url
-   *          <code>URL</code> to connect to.
-   */
-  public void setUrl(URL url) {
-    this.url = url;
+  protected InputStream getInputStream() throws IOException {
+    return url.openStream();
+  }
+  
+  public Object getReaderContext() {
+    return url.toExternalForm();
   }
 
-  /**
-   * Returns the <code>URL</code> that this reader will connect to.
-   * 
-   * @return the <code>URL</code> that this reader will connect to.
-   */
-  public URL getUrl() {
-    return url;
-  }
-
-  // END Bean getters/setters
-
-  /**
-   * Establish a connection to a URL.
-   * <p>
-   * This will connect to a configured URL and obtain an <code>InputStream</code> from the connection. This will in
-   * turn be used by the base class to get an appropriate <code>Reader</code>.
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   */
-  public void connect() throws ComponentException {
-    try {
-      log.debug("Opening URL " + url);
-      urlConnection = url.openConnection();
-      _inputStream = urlConnection.getInputStream();
-
-      /**
-       * Flag the source of these records.
-       */
-      super.setReaderContext(url);
-      super.connect();
-    } catch (IOException ioe) { // Only catching exceptions that the super class doesn't
-      log.error("Failed to open url - " + url + ". Exception - " + ioe.toString());
-      throw new ComponentException("Failed to open url " + url, ioe, this);
-    }
-  }
-
-  /**
-   * Disconnect this <code>Reader</code>.
-   * 
-   * @throws org.openadaptor.control.ComponentException
-   *           if there's a problem with the disconnect.
-   */
-  public void disconnect() {
-    log.debug("Disconnecting from " + url);
-    super.disconnect();
-  }
 }

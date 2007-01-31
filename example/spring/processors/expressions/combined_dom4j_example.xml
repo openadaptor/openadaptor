@@ -38,16 +38,11 @@
     </property>
   </bean>
 
-  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <description>
-      Read in an xml document consisting of a single record.
-    </description>
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader">
-        <property name="path" value="book.xml"/>
-      </bean>
-    </property>
+  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read in an entire xml document consisting of multiple child records</description>
+    <property name="filename" value="books.xml"/>
   </bean>
+  
 
   <bean id="dom4j_convertor" class="org.openadaptor.thirdparty.dom4j.XmlToDom4jConvertor">
     <description>
@@ -151,11 +146,6 @@
     <property name="prettyPrint" value="true"/> 
   </bean>
 
-  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <description>Dump the results to stdout</description>
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>

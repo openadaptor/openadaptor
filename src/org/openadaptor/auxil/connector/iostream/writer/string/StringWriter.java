@@ -28,79 +28,28 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.writer.string;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
+import org.openadaptor.auxil.connector.iostream.writer.IDataWriter;
 
-/**
- * 
- * @author OA3 Core Team
- */
-public abstract class AbstractStreamWriter extends Component implements IStreamWriter {
-  
-  private static final Log log = LogFactory.getLog(AbstractStreamWriter.class);
+public class StringWriter extends EncodingAwareObject implements IDataWriter {
 
-  protected Writer writer;
+  protected OutputStreamWriter writer;
 
-  protected OutputStream outputStream;
-
-  protected String encoding = UTF_8;
-
-  // BEGIN Bean getters/setters
-  public Writer getWriter() {
-    return writer;
+  public void setOutputStream(OutputStream outputStream) {
+    writer = createOutputStreamReader(outputStream);
   }
 
-  public void setEncoding(String encoding) {
-    this.encoding = encoding;
+  public void write(Object data) throws IOException {
+    writer.write(data.toString());
   }
 
-  public String getEncoding() {
-    return encoding;
-  }
-
-  // END Bean getters/setters
-
-  public void connect() throws ComponentException {
-    log.debug("Getting a writer using encoding " + encoding);
-
-    if (outputStream == null) {
-      throw new ComponentException("OutputStream is not initialised", this);
-    }
-    try {
-      writer = new OutputStreamWriter(outputStream, encoding);
-    } catch (UnsupportedEncodingException uee) {
-      throw new ComponentException("Unsupported Encoding - " + encoding, this);
-    }
-    log.info("Connected (reader created)");
-  }
-
-  public void disconnect() throws ComponentException {
-    log.debug("Disconnecting (closing writer)");
-    if (writer != null && outputStream != System.out) {
-      try {
-        writer.close();
-        log.info("Writer closed");
-      } catch (IOException ioe) { // ToDo: Validate decision that this can safely be ignored.
-        log.warn(ioe.getMessage());
-      }
-    }
-    if (outputStream != null && outputStream != System.out) {
-      try {
-        outputStream.close();
-        log.info("OutputStream closed");
-      } catch (IOException ioe) { // ToDo: Validate decision that this can safely be ignored.
-        log.warn(ioe.getMessage());
-      }
-    }
+  public void flush() throws IOException {
+    writer.flush();
   }
 }

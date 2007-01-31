@@ -3,36 +3,36 @@
 
 <!--
     This adaptor does the following...
-
-        * connects to a remote mail server
-        * then polls a named folder and processes each new message as it is received
-        * marks the message as read, deletes the message or moves it to a new folder
-        * prints data to std out
-
+    
+    * connects to a remote mail server
+    * then polls a named folder and processes each new message as it is received
+    * marks the message as read, deletes the message or moves it to a new folder
+    * prints data to std out
+    
     Run it like this...
-
-      java org.openadaptor.spring.SpringApplication -config reader.xml -bean Adaptor
-
+    
+    java org.openadaptor.spring.SpringApplication -config reader.xml -bean Adaptor
+    
     You need the following in your classpath
-
-        lib
-        lib/openadaptor.jar
-        lib/openadaptor-spring.jar
-        lib/openadaptor-depends.jar
-        lib/activation.jar
-        lib/mail.jar
+    
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/activation.jar
+    lib/mail.jar
 -->
 
 <beans>
-
- <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <ref bean="Pipeline"/>
+    </property>
   </bean>
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline Reader-Writer
-    </description>
+    <description> This creates the simple pipeline Reader-Writer </description>
     <property name="processors">
       <list>
         <ref bean="Reader"/>
@@ -40,36 +40,32 @@
       </list>
     </property>
   </bean>
-
-    <!--
-        Reader that polls a named folder on the defined mail server and processes each
-        new message as it is received
-    -->
-    <bean id="Reader" class="org.openadaptor.auxil.connector.mail.MailReadConnector">
-        <property name="mailConnection">
-            <bean class="org.openadaptor.auxil.connector.mail.MailConnection">
-                <property name="host" value="mail.mydomain.com"/>
-                <property name="port" value="110"/>
-                <property name="user" value="username"/>
-                <property name="password" value="password"/>
-                <property name="protocol" value="pop3"/>
-            </bean>
-        </property>
-
-        <!--<property name="processReadMessages" value="false"/>-->
-        <!--<property name="deleteWhenRead" value="false"/>-->
-        <!--<property name="markRead" value="true"/>-->
-        <!--<property name="moveToFolder" value=""/>-->
-        <!--<property name="createFolder" value="false"/>-->
-        <!--<property name="msgBodyAsString" value="false"/>-->
-        <!--<property name="maxPolls" value="100"/>-->
-    </bean>
-
-    <!-- writes data to stdout -->
-    <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-        <property name="streamWriter">
-            <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-        </property>
-    </bean>
-
+  
+  <!--
+  Reader that polls a named folder on the defined mail server and processes each
+  new message as it is received
+  -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.mail.MailReadConnector">
+    <property name="mailConnection">
+      <bean class="org.openadaptor.auxil.connector.mail.MailConnection">
+        <property name="host" value="mail.mydomain.com"/>
+        <property name="port" value="110"/>
+        <property name="user" value="username"/>
+        <property name="password" value="password"/>
+        <property name="protocol" value="pop3"/>
+      </bean>
+    </property>
+    
+    <!--<property name="processReadMessages" value="false"/>-->
+    <!--<property name="deleteWhenRead" value="false"/>-->
+    <!--<property name="markRead" value="true"/>-->
+    <!--<property name="moveToFolder" value=""/>-->
+    <!--<property name="createFolder" value="false"/>-->
+    <!--<property name="msgBodyAsString" value="false"/>-->
+    <!--<property name="maxPolls" value="100"/>-->
+  </bean>
+  
+  <!-- writes data to stdout -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
 </beans>

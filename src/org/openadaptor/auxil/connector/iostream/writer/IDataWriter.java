@@ -28,87 +28,13 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.writer;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-/**
- * Abstract base class for classes which split data read from a <code>Reader</code> into individual records.
- * 
- * @see java.io.Reader
- * @author Eddy Higgins
- */
-public abstract class AbstractRecordReader implements IRecordReader {
-  private static final Log log = LogFactory.getLog(AbstractRecordReader.class);
-
-  /**
-   * This is the reader which will be used.
-   */
-  private Reader reader;
-
-  private boolean isDry;
-  
-  // BEGIN Bean getters/setters
-
-  /**
-   * Assign a <code>Reader</code> for use by this <code>RecordReader</code>.
-   * <p>
-   * Note that it will call initialise() if this method results in the reader being changed.
-   * 
-   * @param reader
-   *          Any <code>Reader</code> implementation
-   * @throws IOException
-   *           if an exception occurs during initialisation().
-   */
-  public void setReader(Reader reader) throws IOException { // ToDo: Decouple this from initialise().
-    if (this.reader != reader) {
-      log.info("Setting reader to " + reader);
-      this.reader = reader;
-      initialise();
-    }
-  }
-
-  /**
-   * Return the <code>Reader</code> associated with this <code>RecordReader</code>
-   * 
-   * @return The <code>Reader</code> associated with this <code>RecordReader</code>
-   */
-  public Reader getReader() {
-    return reader;
-  }
-
-  
-  public boolean isDry() {
-    return isDry;
-  }
-  
-  protected void setIsDry(boolean dry) {
-    isDry = dry;
-  }
-  
-  // END Bean getters/setters
-
-  /**
-   * Initialise this <code>RecordReader</code>.
-   * <p>
-   * Base implementation has no efffect.
-   * 
-   * @throws IOException
-   *           if a problem occurs during initialisation.
-   */
-  public void initialise() throws IOException {
-  }
-
-  /**
-   * Return the next available record, if any.
-   * 
-   * @return Object containing the next record.
-   * @throws IOException
-   *           if a problem occurs
-   */
-  public abstract Object next() throws IOException;
+public interface IDataWriter {
+  void setOutputStream(OutputStream outputStream);
+  void write(Object data) throws IOException;
+  void flush() throws IOException;
 }

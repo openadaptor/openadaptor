@@ -48,10 +48,6 @@
     <property name="createRegistry" value="true"/>
   </bean>
   
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
 </beans>

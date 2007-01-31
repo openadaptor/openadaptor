@@ -44,14 +44,7 @@
     </property>
   </bean>
 
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
-  </bean>
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <!-- this is a write connector that invokes an rmi service -->
   <bean id="RMIClient" class="org.openadaptor.auxil.connector.rmi.RMIWriteConnector">

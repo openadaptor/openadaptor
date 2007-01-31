@@ -41,7 +41,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.RecordException;
@@ -52,7 +52,7 @@ import org.openadaptor.core.exception.RecordFormatException;
  * 
  * @author Eddy Higgins
  */
-public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC2279 {
+public class OrderedMapToXmlConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToXmlConvertor.class);
 
   public static final String DEFAULT_ROOT_ELEMENT_TAG = "root";
@@ -64,7 +64,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor implements RFC22
   // an org.dom4j.Document.
   protected boolean returnXmlAsString = true;
 
-  protected String encoding = ISO_8859_1; // UTF_8; //ToDo: Decide if this is, in fact the best default.
+  protected String encoding = EncodingAwareObject.ISO_8859_1; // UTF_8; //ToDo: Decide if this is, in fact the best default.
 
   public OrderedMapToXmlConvertor() {
     super();

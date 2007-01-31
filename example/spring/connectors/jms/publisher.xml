@@ -47,15 +47,8 @@
     </property>
   </bean>
 
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
-  </bean>
-
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
   <!-- This defines jndi connection, from which we get jms connection -->
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>

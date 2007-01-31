@@ -32,13 +32,10 @@
 
 <beans>
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+    <property name="messageProcessor" ref="Pipeline"/>
   </bean>
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline WebService-Writer
-    </description>
     <property name="processors">
       <list>
         <ref bean="WebService"/>
@@ -50,13 +47,9 @@
   <!-- This is a read connector, that exposes a webservice -->
   <bean id="WebService" class="org.openadaptor.auxil.connector.soap.ReadConnectorWebService">
     <property name="serviceName" value="MyService"/>
-    <property name="localJettyPort" value="9999"/>
+    <property name="port" value="9999"/>
   </bean>
   
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
 </beans>

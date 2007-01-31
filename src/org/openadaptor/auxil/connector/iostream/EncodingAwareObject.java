@@ -28,68 +28,71 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream;
 
-import java.io.Reader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 
-import org.openadaptor.auxil.connector.iostream.RFC2279;
-import org.openadaptor.core.exception.ComponentException;
 
-/**
- * Interface by which Listeners can extract individual records from a Reader.
- * 
- * @author Eddy Higgins
- */
-public interface IStreamReader extends RFC2279 {
+public class EncodingAwareObject {
 
-  /**
-   * Get the underlying <code>Reader</code>.
-   * 
-   * @return Underlying <code>Reader</code> instance.
-   */
-  public Reader getReader();
+  public static final String US_ASCII = "US-ASCII"; // 7-bit ASCII,aka Basic Latin block of Unicode char set.
 
-  /**
-   * Sets the character encoding for this Reader.
-   * 
-   * @param encoding
-   *          <code>String</code> containing the character encoding to use
-   * @see RFC2279 for some well-known encodings.
-   */
-  public void setEncoding(String encoding);
+  public static final String ASCII = US_ASCII; // Alias - ASCII
 
-  /**
-   * Returns the character encoding in use.
-   * 
-   * @return <code>String</code> with the encoding.
-   * @see RFC2279 for some well-known encodings.
-   */
-  public String getEncoding();
+  public static final String ISO646_US = US_ASCII; // Alias - ISO646-US
 
-  /**
-   * Get information on the current origin of records for this connector. For example, a file reader might use this to
-   * hold the name of the file currently being processed; for a socket, it might be the host:port. This information may
-   * be used downstream to allow, for example, convertors to reset their header processing in preparation for a new
-   * file.
-   * 
-   * @return Object containing information about current Record Source. May be null if not in use.
-   * 
-   */
-  public Object getReaderContext();
+  public static final String ISO_8859_1 = "ISO-8859-1"; // ISO Latin Alphabet #1
 
-  /**
-   * Connects the underlying data stream and makes this reader available for use.
-   * 
-   * @throws ComponentException
-   *           if a problem occurs during connection
-   */
-  public void connect() throws ComponentException;
+  public static final String ISO_LATIN_1 = ISO_8859_1; // Alias - ISO-LATIN-1
 
-  /**
-   * Disconnect the underlying data stream.
-   * 
-   * @throws ComponentException
-   *           if a problem occurs on disconnect
-   */
-  public void disconnect() throws ComponentException;
+  public static final String UTF_8 = "UTF-8"; // Eight-bit UCS Transformation Format
+
+  public static final String UTF_16BE = "UTF-16BE"; // Sixteen-bit UCS Trans. Format, big-endian byte order
+
+  public static final String UTF_16LE = "UTF-16LE"; // Sixteen-bit UCS Trans. Format, little-endian byte order
+
+  public static final String UTF_16 = "UTF-16";// // Sixteen-bit UCS Trans. Format, byte order by optionial byte-order
+
+  private String encoding = null;
+  
+  public void setEncoding(String encoding) {
+    this.encoding = encoding;
+  }
+
+  public String getEncoding() {
+    return encoding;
+  }
+
+  public boolean isEncodingSet() {
+    return encoding != null;
+  }
+  
+  protected InputStreamReader createInputStreamReader(InputStream is) {
+    if (isEncodingSet()) {
+      try {
+        return new InputStreamReader(is, getEncoding());
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException("UnsupportedEncodingException, " + e.getMessage(), e);
+      }
+    } else {
+      return new InputStreamReader(is);
+      
+    }
+  }
+  
+  protected OutputStreamWriter createOutputStreamReader(OutputStream os) {
+    if (isEncodingSet()) {
+      try {
+        return new OutputStreamWriter(os, getEncoding());
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException("UnsupportedEncodingException, " + e.getMessage(), e);
+      }
+  } else {
+    return new OutputStreamWriter(os);
+  }
+  }
 }

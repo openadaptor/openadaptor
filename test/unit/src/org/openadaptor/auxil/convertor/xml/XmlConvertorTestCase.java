@@ -70,6 +70,7 @@ public class XmlConvertorTestCase extends TestCase {
   protected void setUp() throws Exception {
     super.setUp();
     xmlString = ResourceUtil.readFileContents(this, "test.xml");
+    xmlString = ResourceUtil.removeCarriageReturns(xmlString);
     xmlDocument = generateXmlDocument(xmlString);
     om = generateTestOrderedMap();
     xml2om = new XmlToOrderedMapConvertor();
@@ -117,12 +118,11 @@ public class XmlConvertorTestCase extends TestCase {
       Object[] resultArray = xml2om.process(xmlString);
       assertTrue(resultArray.length == 1);
       IOrderedMap map = (IOrderedMap) resultArray[0];
-      System.out.println(map);
+      //System.out.println(map);
       // String xml=(String)om2xml.convert(map);
       resultArray = om2xml.process(map);
       assertTrue(resultArray.length == 1);
       String xml = (String) resultArray[0];
-      System.out.println(xml);
       assertEquals(xmlString, xml);
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
@@ -135,7 +135,7 @@ public class XmlConvertorTestCase extends TestCase {
       Object[] resultArray = xml2om.process(xmlString);
       assertTrue(resultArray.length == 1);
       IOrderedMap map = (IOrderedMap) resultArray[0];
-      System.out.println(map);
+      //System.out.println(map);
       assertEquals(om.toString(), map.toString()); // Close enough
       // map=(IOrderedMap)xml2om.convert(xmlDocument);
       resultArray = xml2om.process(xmlDocument);

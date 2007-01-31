@@ -42,42 +42,44 @@ import org.openadaptor.core.exception.ComponentException;
 
 public class VelocityProcessor extends Component implements IDataProcessor {
 
-  private VelocityEngine engine = new VelocityEngine();
-  
+  private VelocityEngine engine;
+
   private String templateString;
+
+  private String templateFile;
+
   private Template template;
-  
+
   public VelocityProcessor() {
     super();
-    init();
   }
 
   public VelocityProcessor(String id) {
     super();
-    init();
   }
 
   private void init() {
-    try {
-      engine.init();
-    } catch (Exception e) {
-      throw new RuntimeException("failed to init velocity engine", e);
+    if (engine == null) {
+      try {
+        engine = new VelocityEngine();
+        engine.init();
+        template = templateFile != null ? engine.getTemplate(templateFile) : null;
+      } catch (Exception e) {
+        throw new RuntimeException("failed to init velocity engine", e);
+      }
     }
   }
-  
+
   public void setTemplateString(String s) {
     templateString = s;
   }
-  
+
   public void setTemplateFile(String fileName) {
-    try {
-      template = engine.getTemplate(fileName);
-    } catch (Exception e) {
-      throw new ComponentException("failed to create Template", e, this);
-    }
+    templateFile = fileName;
   }
-  
+
   public Object[] process(Object data) {
+    init();
     VelocityContext context = new VelocityContext();
     context.put("SystemProperties", System.getProperties());
     context.put("data", data);
@@ -93,13 +95,14 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     } catch (Exception e) {
       throw new ComponentException("process exception", e, this);
     }
-    return new Object[] {sw.toString()};
+    return new Object[] { sw.toString() };
   }
 
   public void reset(Object context) {
   }
 
   public void validate(List exceptions) {
+    init();
     if (template == null && templateString == null) {
       exceptions.add(new ComponentException("neither template nor templateString have been set", this));
     }

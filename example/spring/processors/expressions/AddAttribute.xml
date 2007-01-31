@@ -32,17 +32,11 @@
     </property>
   </bean>
 
-  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <description>
-      Read in an entire xml document consisting of multiple (child) records.
-    </description>
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader">
-        <property name="path" value="books.xml"/>
-      </bean>
-    </property>
+  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read in an entire xml document consisting of multiple child records</description>
+    <property name="filename" value="books.xml"/>
   </bean>
-
+  
   <bean id="OMConvertor" class="org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor">
     <property name="expression" value="*/*">
       <description>
@@ -72,11 +66,6 @@
 
   <bean id="DelimitedTextConvertor" class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
 
-  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <description>Dump the results to stdout</description>
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>

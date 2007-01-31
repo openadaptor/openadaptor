@@ -39,12 +39,6 @@
     <description>
       Define the MQ Connector used by the ReadConnector.
     </description>
-    <property name="pollingConfiguration">
-      <bean class="org.openadaptor.core.connector.PollingConfiguration">
-        <property name="pollInterval" value="5000"/>
-        <property name="maxPollLimit" value="3"/>
-      </bean>
-    </property>
     <property name="connection">
       <bean class="org.openadaptor.thirdparty.mq.MqConnection">
         <property name="channelName" value="${mq.channel}"/>
@@ -64,10 +58,6 @@
     </property>
   </bean>
 
-  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-    </property>
-  </bean>
+  <bean id="WriterConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>

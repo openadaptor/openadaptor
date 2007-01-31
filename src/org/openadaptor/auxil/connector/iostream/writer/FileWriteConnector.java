@@ -31,11 +31,13 @@
 package org.openadaptor.auxil.connector.iostream.writer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.FileUtils;
 
@@ -44,41 +46,28 @@ import org.openadaptor.util.FileUtils;
  * 
  * @author OA3 Core Team
  */
-public class FileWriter extends AbstractStreamWriter {
-  
-  private static final Log log = LogFactory.getLog(FileWriter.class);
+public class FileWriteConnector extends AbstractStreamWriteConnector {
 
-  /**
-   * The output file path
-   */
-  private String path;
+  private static final Log log = LogFactory.getLog(FileWriteConnector.class);
 
-  /**
-   * Flag to indicate whether the file should be overwritten (false) or appended to (true). Default is to append.
-   */
+  private String filename;
+
   private boolean append = true;
 
-  /**
-   * If defined then the FileWriter will rename any existing file when it starts up. Defaults to null so the file will
-   * not be moved
-   */
   private String moveExistingFileTo = null;
 
-  // BEGIN Bean getters/setters
-  public boolean isAppend() {
-    return append;
+  public FileWriteConnector() {
+    super();
+    setDataWriter(new LineWriter());
   }
 
-  public String getMoveExistingFileTo() {
-    return moveExistingFileTo;
+  public FileWriteConnector(String id) {
+    super(id);
+    setDataWriter(new LineWriter());
   }
 
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) throws ComponentException {
-    this.path = path;
+  public void setFilename(String path) throws ComponentException {
+    this.filename = path;
   }
 
   public void setAppend(boolean append) {
@@ -93,45 +82,21 @@ public class FileWriter extends AbstractStreamWriter {
     }
   }
 
-  // END Bean getters/setters
-
-  /**
-   * Creates a connection to the file defined by the "path" field for writing out the data. If the field
-   * "moveExistingFileTo" has been set and a file with the same name exists then it is moved prior to writing out any
-   * data.
-   * 
-   * @throws ComponentException
-   */
-  public void connect() throws ComponentException {
-    if (moveExistingFileTo != null) {
-      File f = new File(path);
-      if (f.exists())
-        FileUtils.moveFile(path, moveExistingFileTo);
-    }
-
-    log.debug("Opening File " + path);
-    try {
-      if (path != null) {
-        outputStream = new FileOutputStream(path, append);
-      } else {
-        outputStream = System.out;
+  protected OutputStream getOutputStream() {
+    if (filename != null) {
+      if (moveExistingFileTo != null) {
+        File f = new File(filename);
+        if (f.exists())
+          FileUtils.moveFile(filename, moveExistingFileTo);
       }
-      super.connect();
-    } catch (IOException ioe) {
-      // Only catching exceptions that the super class doesn't
-      log.error("Failed to open file - " + path + ". Exception - " + ioe.toString());
-      throw new ComponentException("Failed to open path " + path, ioe, this);
+      try {
+        return new FileOutputStream(filename, append);
+      } catch (FileNotFoundException e) {
+        throw new RuntimeException("FileNotFoundException, " + e.getMessage(), e);
+      }
+    } else {
+      return System.out;
     }
   }
 
-  /**
-   * Disconnect from the external message transport. If already disconnected then do nothing.
-   * 
-   * @throws ComponentException
-   *           if there was a problem with AbstractStreamWriter.disconnect()
-   */
-  public void disconnect() {
-    log.debug("Disconnecting from " + path);
-    super.disconnect();
-  }
 }

@@ -43,23 +43,12 @@
     </property>
   </bean>
 
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
-  </bean>
-
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
   <!-- Writer that connects to remote socket and writes data -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean id="SocketWriter" class="org.openadaptor.auxil.connector.iostream.writer.SocketWriter">
-        <property name="hostname" value="localhost"/>
-        <property name="port" value="9990"/>
-      </bean>
-    </property>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.SocketWriteConnector">
+    <property name="hostname" value="localhost"/>
+    <property name="port" value="9990"/>
   </bean>
   
 </beans>

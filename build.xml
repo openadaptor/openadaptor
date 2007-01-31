@@ -24,9 +24,6 @@
 
   <property name="dir.test.classes" value="test/classes"/>
   <property name="dir.test.lib" value="test/lib"/>
-  <!--
-  <property name="dir.test.src" value="test/src"/>
-  -->
   <property name="dir.test.output" value="test/output"/>
 
   <property name="dir.test.unit.src" value="test/unit/src"/>
@@ -253,7 +250,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system, example.springcheck" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
 
   <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean (defaults to Adaptor) to be defined">
     <property name="bean" value="Adaptor"/>
@@ -268,19 +265,20 @@
   <target name="cruise" depends="copyright.check, test.all" description="target for cruise control to call"/>
 
   <target name="compile.buildtools">
-     <mkdir dir="${dir.buildtools.classes}"/>
-     <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/>
+    <mkdir dir="${dir.buildtools.classes}"/>
+    <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/>
   </target>
 
   <target name="clean.buildtools">
-     <delete dir="${dir.buildtools.classes}"/>
+    <delete dir="${dir.buildtools.classes}"/>
   </target>
 
-  <target name="copyright.taskdef" depends="compile.buildtools">
-     <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.buildtools.classes}:${dir.classes}"/>
+  <target name="buildtools.taskdef" depends="compile.buildtools">
+    <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.buildtools.classes}:${dir.classes}"/>
+    <taskdef name="springcheck" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.buildtools.classes}"/>
   </target>
 
-  <target name="copyright.check" depends="copyright.taskdef">
+  <target name="copyright.check" depends="buildtools.taskdef" description="checks copyright notices in code">
     <copyright update="false" backupdir="${dir.buildtools.backup}">
       <fileset dir="${dir.src}" includes="**/*.java"/>
       <fileset dir="${dir.spring.src}" includes="**/*.java"/>
@@ -288,12 +286,23 @@
     </copyright>
   </target>
 
-  <target name="copyright.update" depends="copyright.taskdef">
+  <target name="copyright.correct" depends="buildtools.taskdef" description="corrects copyright notices in code">
     <copyright update="true" backupdir="${dir.buildtools.backup}">
       <fileset dir="${dir.src}" includes="**/*.java"/>
       <fileset dir="${dir.spring.src}" includes="**/*.java"/>
       <fileset dir="${dir.example.src}" includes="**/*.java"/>
     </copyright>
+  </target>
+  
+  <target name="example.springcheck" depends="buildtools.taskdef" description="checks spring config examples are valid">
+    <springcheck classpathref="classpath.test">
+      <fileset dir="${dir.example}/spring">
+        <include name="**/*.xml"/>
+        <exclude name="**/book*.xml"/>
+        <exclude name="**/test*.xml"/>
+        <exclude name="**/mq_*.xml"/>
+      </fileset>
+    </springcheck>
   </target>
   
 </project>

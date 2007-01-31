@@ -49,36 +49,28 @@
     </property>
   </bean>
 
-  <bean id="RSS_Reader" class="org.openadaptor.thirdparty.rss.RSSReadConnector">
-    <description>
-      This is the RSS Reader. Example polls twice with a five minute interval.
-    </description>
-    <!--
-       This configures polling for this connector.
-    -->
-    <property name="pollingConfiguration">
-      <bean class="org.openadaptor.core.connector.PollingConfiguration">
-        <!-- Poll every 5 minutes -->
-        <property name="pollInterval" value="300000"/>
-        <!-- Poll twice. Note negative numbers mean poll forever. -->
-        <property name="maxPollLimit" value="2"/>
+  <bean id="RSS_Reader" class="org.openadaptor.core.connector.PollingReadConnector">
+    <!-- Poll twice with 5 min interval -->
+    <property name="pollLimit" value="2"/>
+    <property name="pollIntervalMins" value="5"/>
+
+    <property name="delegate">
+      <bean class="org.openadaptor.thirdparty.rss.RSSReadConnector">
+        <description>This is the RSS Reader. Example polls twice with a five minute interval.</description>
+        <!-- Add the feeds here -->
+        <property name="urlStrings">
+          <list>
+            <value>http://www.theregister.co.uk/headlines.rss</value>
+            <value>http://slashdot.org/slashdot.rss</value>
+            <!--
+            <value>http://rss.cnn.com/rss/cnn_topstories.rss</value>
+            <value>http://news.bbc.co.uk/rss/newsonline_world_edition/front_page/rss091.xml</value>
+            <value>http://rss.news.yahoo.com/rss/topstories</value>
+            -->
+          </list>
+        </property>
       </bean>
     </property>
-
-    <!-- Add the feeds here -->
-    <property name="urlStrings">
-      <list>
-        <value>http://www.theregister.co.uk/headlines.rss</value>
-        <value>http://slashdot.org/slashdot.rss</value>
-        <!--
-        <value>http://rss.cnn.com/rss/cnn_topstories.rss</value>
-        <value>http://news.bbc.co.uk/rss/newsonline_world_edition/front_page/rss091.xml</value>
-        <value>http://rss.news.yahoo.com/rss/topstories</value>
-        -->
-      </list>
-    </property>
-    <!-- Interested in stuff happened early this morning onwards -->
-    <property name="pollStartTime" value="05:00"/>
   </bean>
 
   <!--
@@ -90,13 +82,9 @@
     <property name="xsltFile" value="xsl/rss.xsl"/>
   </bean>
 
-  <bean id="File_Writer" class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-    <property name="streamWriter">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter">
-        <property name="path" value="rss_out.html"/>
-        <property name="append" value="false"/>
-      </bean>
-    </property>
-
+  <bean id="File_Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="rss_out.html"/>
+    <property name="append" value="false"/>
   </bean>
+  
 </beans>

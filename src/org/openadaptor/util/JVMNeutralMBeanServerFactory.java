@@ -32,6 +32,8 @@ package org.openadaptor.util;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 
 import javax.management.MBeanServer;
 import javax.management.remote.JMXConnectorServer;
@@ -91,9 +93,12 @@ public class JVMNeutralMBeanServerFactory {
         int port=DEFAULT_RMI_PORT;
 
         String serviceURLString="service:jmx:rmi:///jndi/rmi://localhost:"+port+"/server";
-        log.info("Running java 1.4 - will have to manually start an RMI Service.");
-        log.info("This will only work if an RMI registry is running on the configured port: "+port);
-        log.info("e.g. rmiregistry "+port);
+        try {
+          log.info("starting rmi registry on "+  port);
+          LocateRegistry.createRegistry(port);
+        } catch (RemoteException e) {
+          log.warn(e);
+        }
         JMXServiceURL url;
         log.info("Creating an RMI connector server");
         try {

@@ -28,79 +28,41 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 
-/**
- * Very simplistic String Record Writer. Basically treats cr and lf as record delimiters.
- * 
- * @author OA3 Core Team
- */
-public class StringRecordWriter implements IRecordWriter {
+public class FileReadConnector extends AbstractStreamReadConnector {
 
-  public static final Log log = LogFactory.getLog(StringRecordWriter.class);
+  private String filename;
 
-  static final String DEFAULT_DELIMITER = System.getProperty("line.separator", "\n");
-
-  // Bean properties:
-  private Writer writer;
-
-  private String recordDelimiter = DEFAULT_DELIMITER;
-
-  // BEGIN Bean getters/setters
-  public void setWriter(Writer writer) {
-    this.writer = writer;
+  public FileReadConnector() {
+    super();
+    setDataReader(new LineReader());
   }
-
-  public Writer getWriter() {
-    return writer;
+  
+  public FileReadConnector(String id) {
+    super(id);
+    setDataReader(new LineReader());
   }
-
-  /**
-   * Optional: specify the record delimiter string output after each record (defaults to runtime
-   * <code>line.separator</code> system property value).
-   * 
-   * If explicitly set then the exact string provided will be used.
-   * 
-   * To get ASCII CR and LF you will need to use entites such as: <verbatim>&#x0D;&#x0A;</verbatim>.
-   * 
-   * Note the XML character code entity for form feed (x0c) is <i>illegal</i> in XML 1.0, so you would need to extend
-   * this class if you had a requirement to use it.
-   * 
-   * @param delimiter
-   */
-  public void setRecordDelimiter(String delimiter) {
-    // Store actual value (so getter/setter will play nicely with bean editors):
-    this.recordDelimiter = delimiter;
+  
+  public void setFilename(final String filename) {
+    this.filename = filename;
   }
-
-  public String getRecordDelimiter() {
-    return recordDelimiter;
-  }
-
-  // END Bean getters/setters
-
-  public void write(Object record) throws IOException {
-    if (writer != null) {
-      if (record != null) {
-        writer.write(record.toString());
-        writer.write(recordDelimiter);
-      } else {
-        log.warn("Ignoring null record");
-      }
+  
+  protected InputStream getInputStream() throws FileNotFoundException {
+    if (filename != null) {
+      return new FileInputStream(filename);
     } else {
-      throw new IOException("Writer not initialised");
+      return System.in;
     }
   }
-
-  public void flush() throws IOException {
-    if (writer != null) {
-      writer.flush();
-    }
+  
+  public Object getReaderContext() {
+    return filename;
   }
 }

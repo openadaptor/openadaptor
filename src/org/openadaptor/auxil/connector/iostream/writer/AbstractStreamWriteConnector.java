@@ -28,72 +28,62 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.reader;
+package org.openadaptor.auxil.connector.iostream.writer;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
 
-/**
- * reads from a file (or stdin if none specified)
- * 
- * @author Eddy Higgins
- */
-public class FileReader extends AbstractStreamReader {
+public abstract class AbstractStreamWriteConnector extends AbstractWriteConnector {
 
-  private static final Log log = LogFactory.getLog(FileReader.class);
-
-  private String path;
-
-  public void setPath(String path) throws ComponentException {
-    this.path = path;
+  private IDataWriter dataWriter;
+  private OutputStream outputStream;
+  
+  public AbstractStreamWriteConnector() {
+    super();
   }
 
-  public void connect() throws ComponentException {
-    try {
-      if (path != null) {
-        log.debug("Opening " + path);
-        _inputStream = new FileInputStream(path);
-      } else {
-        _inputStream = System.in;
-      }
+  public AbstractStreamWriteConnector(String id) {
+    super(id);
+  }
 
-      super.setReaderContext(path);
-      super.connect();
-    } catch (IOException ioe) { // Only catching exceptions that the super class doesn't
-      log.error("Failed to open - " + path + ". Exception - " + ioe.toString());
-      throw new ComponentException("Failed to open file " + path, ioe, this);
+  public void setDataWriter(IDataWriter dataWriter) {
+    this.dataWriter = dataWriter;
+  }
+
+  public void connect() {
+    try {
+      outputStream = getOutputStream();
+    } catch (IOException e) {
+      throw new ComponentException("IOException, " + e.getMessage(), e, this);
+    }
+    dataWriter.setOutputStream(outputStream);
+  }
+
+  public Object deliver(Object[] data) {
+    try {
+      for (int i = 0; i < data.length; i++) {
+        dataWriter.write(data[i]);
+      }
+      dataWriter.flush();
+      return null;
+    } catch (IOException e) {
+      throw new ComponentException("IOException, " + e.getMessage(), e, this);
     }
   }
 
-  public String getPath() {
-    return path;
+  public void disconnect() {
+    if (outputStream != null && outputStream != System.out) {
+      try {
+        outputStream.close();
+      } catch (IOException e) {
+      } finally {
+      outputStream = null;
+      }
+    }
   }
 
-  /*
-   * Not yet completed. public void setMovePath(String path) throws ComponentException { if
-   * (!FileUtils.checkDirectoryPath(path,true)){ throw new ComponentException("Unable to create movePath of "+path); }
-   * movePath=path; validateProperties(); } public String getMovePath() {return movePath;}
-   * 
-   * public void setDeleteOriginal(boolean deleteOriginal){ this.deleteOriginal=deleteOriginal; validateProperties(); }
-   * public boolean getDeleteOriginal() { return deleteOriginal; }
-   */
-  // END Bean getters/setters
-  /*
-   * Not yet completed... Override default disconnect - this allows us to move the source file if necessary
-   * 
-   * 
-   * public void disconnect() { log.debug("Disconnecting from "+url); boolean moveRequired=connected &&
-   * (movePath!=null); super.disconnect(); if (moveRequired) { log.info("Moving source file"+path+" -> "+movePath);
-   * move(path,movePath); } }
-   * 
-   * private static void move(String old,String newPath) { File oldFile=new File(old); oldFile.renameTo(new
-   * File(newPath,oldFile.getName())); }
-   * 
-   * private void validateProperties() { if (deleteOriginal && (movePath!=null)) { log.warn("Misconfiguration - both
-   * 'deleteOriginal' and 'MovePath' have been set - movePath takes precedence."); } }
-   */
+  protected abstract OutputStream getOutputStream() throws IOException;
 }

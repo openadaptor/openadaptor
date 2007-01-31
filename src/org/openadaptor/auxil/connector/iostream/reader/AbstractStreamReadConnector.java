@@ -28,22 +28,107 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.reader;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.InputStream;
+import java.util.ArrayList;
 
-/**
- * Interface by which Listeners can extract individual records from a Reader.
- * 
- * @author Eddy Higgins
- */
-public interface IRecordWriter {
-  public void setWriter(Writer writer);
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.lifecycle.LifecycleComponent;
 
-  public Writer getWriter();
+public abstract class AbstractStreamReadConnector extends LifecycleComponent implements IReadConnector {
 
-  public void write(Object record) throws IOException;
+  private InputStream inputStream;
 
-  public void flush() throws IOException;
+  private IDataReader dataReader;
+
+  private boolean isDry = false;
+
+  private int batchSize = 1;
+
+  protected String encoding;
+
+  public void setBatchSize(int batchSize) {
+    this.batchSize = batchSize;
+  }
+
+  protected AbstractStreamReadConnector() {
+    super();
+  }
+
+  protected AbstractStreamReadConnector(String id) {
+    super(id);
+  }
+
+  protected String getEncoding() {
+    return encoding;
+  }
+
+  public void setEncoding(String encoding) {
+    this.encoding = encoding;
+  }
+
+  public void setDataReader(final IDataReader dataReader) {
+    this.dataReader = dataReader;
+  }
+
+  public void connect() {
+    try {
+      inputStream = getInputStream();
+    } catch (IOException e) {
+      throw new RuntimeException("IOException, " + e.getMessage(), e);
+    }
+    setInputStream(inputStream);
+  }
+
+  protected abstract InputStream getInputStream() throws IOException;
+
+  protected void setInputStream(final InputStream inputStream) {
+    this.inputStream = inputStream;
+    dataReader.setInputStream(inputStream);
+    isDry = false;
+  }
+
+  protected void closeInputStream() {
+    if (inputStream != null && inputStream != System.in) {
+      try {
+        inputStream.close();
+        inputStream = null;
+      } catch (IOException e) {
+      }
+    }
+  }
+
+  public void disconnect() {
+    closeInputStream();
+  }
+
+  public Object getReaderContext() {
+    return null;
+  }
+
+  public boolean isDry() {
+    return isDry;
+  }
+
+  public Object[] next(long timeoutMs) {
+    try {
+      ArrayList batch = new ArrayList();
+      for (int i = 0; i < batchSize; i++) {
+        Object data = dataReader.read();
+        if (data != null) {
+          batch.add(data);
+        } else {
+          isDry = true;
+          break;
+        }
+      }
+      return batch.toArray();
+    } catch (IOException e) {
+      throw new ComponentException("IOException, " + e.getMessage(), e, this);
+    }
+  }
+
 }

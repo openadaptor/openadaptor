@@ -3,10 +3,9 @@ package org.openadaptor.jboss.jms.adaptor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openadaptor.auxil.connector.iostream.writer.FileWriter;
-import org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector;
-import org.openadaptor.auxil.connector.jms.JMSReadConnector;
+import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.auxil.connector.jms.JMSReadConnector;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
@@ -33,8 +32,7 @@ public class SubAdaptorExample {
     in.setJmsConnection(connection);
 
     // create test write connector
-    StreamWriteConnector out = new StreamWriteConnector("out");
-    out.setStreamWriter(new FileWriter());
+    FileWriteConnector out = new FileWriteConnector("out");
     
     // create router
     RoutingMap routingMap = new RoutingMap();

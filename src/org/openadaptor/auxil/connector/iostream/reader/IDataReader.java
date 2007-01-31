@@ -28,27 +28,12 @@
  Software with other software or hardware.                                           
 */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.iostream.reader;
 
-import java.io.Writer;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.openadaptor.auxil.connector.iostream.RFC2279;
-import org.openadaptor.core.exception.ComponentException;
-
-/**
- * Interface for Stream Writers.
- * 
- * @author Eddy Higgins
- */
-public interface IStreamWriter extends RFC2279 {
-
-  public Writer getWriter();
-
-  public void setEncoding(String encoding);
-
-  public String getEncoding();
-
-  public void connect() throws ComponentException;
-
-  public void disconnect() throws ComponentException;
+public interface IDataReader {
+  void setInputStream(InputStream inputStream);
+  Object read() throws IOException;
 }

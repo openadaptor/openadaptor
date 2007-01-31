@@ -50,7 +50,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.connector.iostream.RFC2279;
+import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 
 /**
  * Adaptor registration is a process for collecting active adaptor information in a central location. If the property
@@ -70,7 +70,7 @@ public class PropertiesPoster {
    * 
    * @see URLEncoder
    */
-  private static final String DEFAULT_ENCODING = RFC2279.UTF_8;
+  private static final String DEFAULT_ENCODING = EncodingAwareObject.UTF_8;
 
   private PropertiesPoster() {
   } // No instantiation allowed.

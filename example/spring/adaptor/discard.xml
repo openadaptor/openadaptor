@@ -55,14 +55,7 @@
     </property>
   </bean>
   
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.StreamReadConnector">
-    <property name="streamReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReader"/>
-    </property>
-    <property name="recordReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.StringRecordReader"/>
-    </property>
-  </bean>
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <!-- converts intput into an ordered map with single field called data -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
@@ -81,11 +74,7 @@
   
   <bean id="Writer" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-        <property name="streamWriter">
-          <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter"/>
-        </property>
-      </bean>
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
     </property>
     <property name="processor">
       <bean class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
@@ -94,13 +83,9 @@
   
   <bean id="DiscardWriter" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
-      <bean class="org.openadaptor.auxil.connector.iostream.writer.StreamWriteConnector">
-        <property name="streamWriter">
-          <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriter">
-            <property name="path" value="discards.txt"/>
-            <property name="append" value="false"/>
-          </bean>
-        </property>
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+        <property name="filename" value="discards.txt"/>
+        <property name="append" value="false"/>
       </bean>
     </property>
     <property name="processor">
