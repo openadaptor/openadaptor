@@ -52,9 +52,7 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-import javax.jms.XAQueueConnection;
 import javax.jms.XAQueueConnectionFactory;
-import javax.jms.XATopicConnection;
 import javax.jms.XATopicConnectionFactory;
 import javax.naming.NamingException;
 

@@ -32,7 +32,6 @@ package org.openadaptor.util;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
