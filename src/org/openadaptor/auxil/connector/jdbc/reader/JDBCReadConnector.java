@@ -80,7 +80,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       statement = createStatement();
       rs = statement.executeQuery(sql);
     } catch (SQLException e) {
-      throw new ComponentException("failed to create JDBC statement, " + e.getMessage(), this);
+      handleException(e, "failed to create JDBC statement");
     }
   }
 
@@ -101,12 +101,12 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       } else {
         JDBCUtil.closeNoThrow(rs);
         rs = null;
-        return null;
-      }
+       }
     }
-    catch (SQLException sqle) {
-      throw new ComponentException(sqle.getMessage(), sqle, this);
+    catch (SQLException e) {
+      handleException(e);
     }
+    return null;
   }
 
 }

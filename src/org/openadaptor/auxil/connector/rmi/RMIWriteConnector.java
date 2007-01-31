@@ -37,7 +37,7 @@ import java.rmi.registry.LocateRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 
 public class RMIWriteConnector extends LifecycleComponent implements IWriteConnector {
@@ -75,7 +75,7 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
       log.info(getId() + " looking up " + serviceName + " on " + registryHost + ":" + registryPort);
       rmiServer = (IRemoteDataProcessor) LocateRegistry.getRegistry(registryHost, registryPort).lookup(serviceName);
     } catch (Exception e) {
-      throw new ComponentException("failed to lookup rmi server", e, this);
+      throw new ConnectionException("failed to lookup rmi server", e, this);
     }
   }
 
@@ -85,7 +85,7 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
         rmiServer.process((Serializable)data[i]);
       }
     } catch (RemoteException e) {
-      throw new ComponentException("remote exception", e, this);
+      throw new ConnectionException("remote exception", e, this);
     }
     return null;
   }

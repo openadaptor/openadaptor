@@ -40,7 +40,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.QueuingReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.util.NetUtil;
 
 /**
@@ -94,7 +95,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
   
   public void validate(List exceptions) {
     if (serviceName == null) {
-      exceptions.add(new ComponentException("rmiName is not set", this));
+      exceptions.add(new ValidationException("rmiName is not set", this));
     }
   }
   
@@ -106,14 +107,14 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
         LocateRegistry.createRegistry(registryPort);
         registryHost = NetUtil.getLocalHostname();
       } catch (RemoteException e) {
-        throw new ComponentException("failed to create rmi registry", e, this);
+        throw new ConnectionException("failed to create rmi registry", e, this);
       }
     }
 
     try {
       rmiServer = new RMIDataProcessor();
     } catch (RemoteException e) {
-      throw new ComponentException("failed to create rmi server", e, this);
+      throw new ConnectionException("failed to create rmi server", e, this);
     }
 
     try {
@@ -121,7 +122,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
       LocateRegistry.getRegistry(registryHost, registryPort).rebind(serviceName, rmiServer);
     } catch (Exception e) {
       rmiServer = null;
-      throw new ComponentException("failed to bind ", e, this);
+      throw new ConnectionException("failed to bind ", e, this);
     }
   }
 
@@ -129,7 +130,7 @@ public class RMIReadConnector extends QueuingReadConnector implements IReadConne
     try {
       LocateRegistry.getRegistry(registryHost, registryPort).unbind(serviceName);
     } catch (Exception e) {
-      throw new ComponentException("failed to unbind", e, this);
+      throw new ConnectionException("failed to unbind", e, this);
     } finally {
       rmiServer = null;
     }

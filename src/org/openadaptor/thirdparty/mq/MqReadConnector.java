@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -75,7 +76,7 @@ public class MqReadConnector extends Component implements IReadConnector, ITrans
 
   public void connect() {
     if (getConnection() == null)
-      throw new ComponentException("No MqConnection configured", this);
+      throw new ConnectionException("No MqConnection configured", this);
     getConnection().setId(getId() + "_Connection");
     getConnection().connectToMQ(true);
     log.debug(getId() + " connected");

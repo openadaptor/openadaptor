@@ -45,8 +45,8 @@ import org.openadaptor.auxil.connector.http.ServletContainer;
 import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransaction;
@@ -133,7 +133,7 @@ public class ExceptionMessageProcessor extends WriteNode implements ITransaction
   
   public void validate(List exceptions) {
     if (from == null) {
-      exceptions.add(new ComponentException("from must be set", this));
+      exceptions.add(new ValidationException("from must be set", this));
     }
     super.validate(exceptions);
   }

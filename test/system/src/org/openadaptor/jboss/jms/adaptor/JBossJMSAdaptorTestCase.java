@@ -11,22 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.ObjectName;
-
 import junit.framework.TestCase;
 
 import org.openadaptor.auxil.connector.iostream.reader.FileReadConnector;
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
-import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.connector.jms.JMSConnection;
-import org.openadaptor.auxil.connector.jms.JMSReadConnector;
 import org.openadaptor.auxil.connector.jms.JMSWriteConnector;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.connector.TestWriteConnector;
-import org.openadaptor.core.jmx.MBeanServer;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;

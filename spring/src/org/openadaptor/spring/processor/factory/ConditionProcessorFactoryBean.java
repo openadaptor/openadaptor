@@ -36,7 +36,7 @@ import org.openadaptor.auxil.processor.simplerecord.ConditionProcessor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
@@ -102,7 +102,7 @@ public class ConditionProcessorFactoryBean extends Component implements FactoryB
     try {
       return Class.forName(typeName);
     } catch (ClassNotFoundException e) {
-      throw new ComponentException("Cannot find Class [" + typeName + "] in classpath.", this);
+      throw new ProcessingException("Cannot find Class [" + typeName + "] in classpath.", this);
     }
   }
 

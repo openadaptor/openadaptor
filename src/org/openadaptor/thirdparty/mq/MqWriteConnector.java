@@ -36,7 +36,7 @@ package org.openadaptor.thirdparty.mq;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -101,7 +101,7 @@ public class MqWriteConnector extends AbstractWriteConnector implements ITransac
    */
   public void connect() {
     if (!connected) {
-      if (getConnection() == null) throw new ComponentException("No MqConnection configured", this);
+      if (getConnection() == null) throw new ConnectionException("No MqConnection configured", this);
       getConnection().setId(getId()+"_Connection");
       getConnection().connectToMQ(false);
       connected = true;

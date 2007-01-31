@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ProcessingException;
 
 /**
  * HashMap based implementation of <code>IOrderedMap</code>.
@@ -433,9 +433,9 @@ public class OrderedHashMap extends HashMap implements IOrderedMap {
       // still create instances of the correct subclass.
       clone = (IOrderedMap) getClass().newInstance();
     } catch (InstantiationException e) {
-      throw new ComponentException("Failed to instantiate OrderedHashMap clone.", e, null);
+      throw new ProcessingException("Failed to instantiate OrderedHashMap clone.", e, null);
     } catch (IllegalAccessException e) {
-      throw new ComponentException("Failed to instantiate OrderedHashMap clone.", e, null);
+      throw new ProcessingException("Failed to instantiate OrderedHashMap clone.", e, null);
     }
     for (int i = 0; i < keys().size(); i++) {
       Object key = keys().get(i);

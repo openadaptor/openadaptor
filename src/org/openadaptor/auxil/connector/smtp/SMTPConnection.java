@@ -30,21 +30,23 @@
 
 package org.openadaptor.auxil.connector.smtp;
 
+import java.util.Date;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ComponentException;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.MessagingException;
-import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import java.util.Properties;
-import java.util.Date;
+import org.openadaptor.core.exception.ConnectionException;
 
 public class SMTPConnection extends Component {
 
@@ -283,7 +285,7 @@ public class SMTPConnection extends Component {
         props.put("mail.smtp.host", mailHost);
         props.put("mail.smtp.port", mailHostPort);
       } else {
-        throw new ComponentException ("FATAL: mailHost property not set", this);
+        throw new ConnectionException("FATAL: mailHost property not set", this);
       }
       // Get a Session object
       session = Session.getInstance(props, null);
@@ -310,7 +312,7 @@ public class SMTPConnection extends Component {
       message.setSentDate(new Date());
 
     } catch (MessagingException me) {
-      throw new ComponentException(me.getMessage(), me, this);
+      throw new ConnectionException(me.getMessage(), me, this);
     }
     log.debug("Successfully connected.");
     connected=true;

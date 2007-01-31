@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.SAXParser;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.util.URLUtils;
 import org.xml.sax.ErrorHandler;
@@ -127,7 +127,7 @@ public class XmlValidator extends Component implements IDataProcessor {
       in.setCharacterStream(new StringReader((String)data));
       parser.parse(in);
     } catch (Exception e) {
-      throw new ComponentException("xml is invalid", e, this);
+      throw new ProcessingException("xml is invalid", e, this);
     }
 
     log.debug("XML validated");

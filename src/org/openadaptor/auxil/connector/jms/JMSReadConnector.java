@@ -30,15 +30,27 @@
 
 package org.openadaptor.auxil.connector.jms;
 
+import java.util.List;
+
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.jms.XASession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.transaction.ITransactional;
-
-import javax.jms.*;
-import java.util.List;
 
 /**
  * Read Connector class that implements listening to JMS.
@@ -130,7 +142,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
         messageConsumer.close();
         session.close();
       } catch (JMSException e) {
-        throw new ComponentException("Exception closing JMSReadConnector.", e, this);
+        throw new ConnectionException("Exception closing JMSReadConnector.", e, this);
       }
       finally{
         messageConsumer = null;
@@ -142,10 +154,10 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   public void validate(List exceptions) {
     if(getDestinationName() == null) {
-      exceptions.add( new ComponentException("Property destinationName is mandatory", this));
+      exceptions.add( new ConnectionException("Property destinationName is mandatory", this));
     }
     if(jmsConnection == null) {
-      exceptions.add(new ComponentException("Property jmsConnection is mandatory", this));
+      exceptions.add(new ConnectionException("Property jmsConnection is mandatory", this));
     }
     else {
       jmsConnection.validate(exceptions);
@@ -157,7 +169,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   }
 
   public Object[] next(long timeoutMs) throws ComponentException {
-    if (!isConnected()) throw new ComponentException("Attempt to read from disconnected JMSReadConnector", this);
+    if (!isConnected()) throw new ConnectionException("Attempt to read from disconnected JMSReadConnector", this);
     Object data = receive(timeoutMs);
     if (data != null) {
       log.debug(getId() + " got jms message");
@@ -203,13 +215,13 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
       // If we have been sent a JMSException via the ExceptionListener registration mechanism.
       // We treat the exception as if it had been thrown by the receive method by throwing it now.
       if (listenerException != null) {
-        ComponentException ce = new ComponentException("onException called during receive.", listenerException, this);
+        ComponentException ce = new ConnectionException("onException called during receive.", listenerException, this);
         listenerException = null;
         throw ce;
       }
     } catch (JMSException jmse) {
       log.error("Exception during receive message [JMSException: " + jmse + "]");
-      throw new ComponentException("Exception during receive message.", jmse, this);
+      throw new ConnectionException("Exception during receive message.", jmse, this);
     }
     if (msg != null) {
       return unpackJMSMessage(msg);
@@ -229,11 +241,11 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
           log.debug("Handling ObjectMessage");
           msgContents = ((ObjectMessage) msg).getObject();
         } else {
-          throw new ComponentException("Unsupported JMS Message Type.", this);
+          throw new ProcessingException("Unsupported JMS Message Type.", this);
         }
       }
     } catch (JMSException e) {
-      throw new ComponentException("Error processing JMS Message text.", e, this);
+      throw new ConnectionException("Error processing JMS Message text.", e, this);
     }
     return msgContents;
   }
@@ -249,7 +261,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
           newConsumer = connectorSession.createConsumer(destination, getMessageSelector(), isNoLocal());
         }
       } catch (JMSException e) {
-        throw new ComponentException("Unable to subscribe to Destination: [" + getDestinationName() + "]", e, this);
+        throw new ConnectionException("Unable to subscribe to Destination: [" + getDestinationName() + "]", e, this);
       }
       messageConsumer = newConsumer;
     }

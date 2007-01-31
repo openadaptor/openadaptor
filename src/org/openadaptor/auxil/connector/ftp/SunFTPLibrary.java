@@ -44,6 +44,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 import sun.net.TelnetInputStream;
@@ -93,7 +94,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _ftpClient = new FtpClient(hostName, port);
       _connected = true;
     } catch (IOException e) {
-      throw new ComponentException("Failed to create SunFTP Client: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to create SunFTP Client: " + e.getMessage(), this);
     }
 
     log.debug("Connected to " + hostName);
@@ -130,7 +131,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug(userName + " logged in");
     } catch (IOException e) {
       close();
-      throw new ComponentException("Failed to login to SunFTP Server: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to login to SunFTP Server: " + e.getMessage(), this);
     }
 
     // set the file transfer mode
@@ -144,7 +145,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       }
     } catch (IOException e) {
       close();
-      throw new ComponentException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
+      throw new ConnectionException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
           + e.getMessage(), this);
     }
   }
@@ -181,7 +182,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
+      throw new ConnectionException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -224,7 +225,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
+      throw new ConnectionException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -258,7 +259,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open SunFTP stream:" + e.getMessage(), this);
+      throw new ConnectionException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
     return _out;
@@ -276,7 +277,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _connected = false;
       log.debug("SunFTP connection closed");
     } catch (IOException e) {
-      throw new ComponentException("Failed to close SunFTP Server " + e.toString(), this);
+      throw new ConnectionException("Failed to close SunFTP Server " + e.toString(), this);
     }
   }
 
@@ -329,7 +330,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       _ftpClient.readServerResponse();
     } catch (Exception e) {
       close();
-      throw new ComponentException("Failed to delete " + fileName + ": " + e.getMessage(), this);
+      throw new ConnectionException("Failed to delete " + fileName + ": " + e.getMessage(), this);
     }
   }
 
@@ -375,7 +376,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       }
     } catch (Exception e) {
       close();
-      throw new ComponentException("Error retrieving file list: " + e.getMessage(), this);
+      throw new ConnectionException("Error retrieving file list: " + e.getMessage(), this);
     }
 
     // no files - well return null then
@@ -408,7 +409,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
       // check that the directory exists
       if (!directoryExists(directoryName)) {
         close();
-        throw new ComponentException("The directory (" + directoryName + ") does NOT exist", this);
+        throw new ConnectionException("The directory (" + directoryName + ") does NOT exist", this);
       }
 
       // set up the working directory
@@ -417,7 +418,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
 
     } catch (IOException e) {
       close();
-      throw new ComponentException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
     }
 
   }

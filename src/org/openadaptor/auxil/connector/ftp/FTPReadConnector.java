@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 /**
@@ -250,7 +251,7 @@ public class FTPReadConnector extends Component implements IReadConnector {
       contents = writer.toString();
 
       if (!ftp.verifyFileTransfer())
-        throw new ComponentException("Failed to transfer file", this);
+        throw new ConnectionException("Failed to transfer file", this);
 
       log.info("File transferred: " + contents.length() + " btye(s)");
 
@@ -260,7 +261,7 @@ public class FTPReadConnector extends Component implements IReadConnector {
         ftp.delete(currentfileName);
       }
     } catch (Exception e) {
-      throw new ComponentException("Failed to retrieve source file(s) [" + currentfileName + "]: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to retrieve source file(s) [" + currentfileName + "]: " + e.getMessage(), this);
     }
 
     return contents;
@@ -283,7 +284,7 @@ public class FTPReadConnector extends Component implements IReadConnector {
     if (sourceFile.indexOf("*") > -1) {
       String[] files = ftp.fileList(sourceFile);
       if (files == null)
-        throw new ComponentException("No files match the pattern [" + sourceFile + "]", this);
+        throw new ConnectionException("No files match the pattern [" + sourceFile + "]", this);
 
       for (int i = 0; i < files.length; i++)
         _fileNames.add(files[i]);

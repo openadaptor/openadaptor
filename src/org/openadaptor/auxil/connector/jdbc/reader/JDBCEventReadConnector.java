@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
 
@@ -116,7 +117,7 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
         ThreadUtil.sleepNoThrow(timeoutMs);
       }
     } catch (SQLException e) {
-      handleSQLException(e);
+      handleException(e);
     } finally {
       JDBCUtil.closeNoThrow(s);
     }
@@ -138,9 +139,8 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
         pollStatement.setNull(3, java.sql.Types.INTEGER);
       }
     } catch (SQLException e) {
-      throw new RuntimeException("failed to create poll callable statement, " + e.getMessage(), e);
+      throw new ConnectionException("failed to create poll callable statement, " + e.getMessage(), e, this);
     }
-    resetDeadlockCount();
   }
   
   public void disconnect() {
@@ -162,10 +162,9 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
         JDBCUtil.logCurrentResultSetRow(log, "event ResultSet", rs);
         cs = convertEventToStatement(rs);
       }
-      resetDeadlockCount();
       return cs;
     } catch (SQLException e) {
-      handleSQLException(e);
+      handleException(e);
     } finally {
       JDBCUtil.closeNoThrow(rs);
     }

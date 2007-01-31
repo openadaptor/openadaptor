@@ -47,6 +47,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.openadaptor.auxil.connector.ftp.IFTPLibrary;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * This component will provide basic File Transfer Protocol (FTP) connunication to allow the adaptor to GET a file from
@@ -128,14 +129,14 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
           log.debug("ASCII transfer mode set");
         }
       } catch (IOException e) {
-        throw new ComponentException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
+        throw new ConnectionException("Failed to set " + (binaryTransfer ? "binary" : "ascii") + " transfer mode: "
             + e.getMessage(), this);
       }
 
       log.debug("ApacheFTPLibrary object initialised and connected to " + hostName);
     } catch (Exception e) {
       close();
-      throw new ComponentException("Failed to initialise the ApacheFTPLibrary object: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to initialise the ApacheFTPLibrary object: " + e.getMessage(), this);
     }
   }
 
@@ -174,7 +175,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
 
     } catch (Exception e) {
       close();
-      throw new ComponentException("Failed to login to FTP Server:" + e, this);
+      throw new ConnectionException("Failed to login to FTP Server:" + e, this);
     }
   }
 
@@ -215,7 +216,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("FTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open FTP stream:" + e.toString(), this);
+      throw new ConnectionException("Cannot open FTP stream:" + e.toString(), this);
     }
 
     return file;
@@ -259,7 +260,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("File transfer stream created using FTP PUT for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open FTP stream:" + e.getMessage(), this);
+      throw new ConnectionException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -302,7 +303,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.debug("File transfer stream created using FTP APPEND for " + fileName);
     } catch (IOException e) {
       close();
-      throw new ComponentException("Cannot open FTP stream:" + e.getMessage(), this);
+      throw new ConnectionException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
     return file;
@@ -324,7 +325,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
         log.debug("FTP Connection closed");
       }
     } catch (Exception e) {
-      throw new ComponentException("Failed to close FTP Server" + e.toString(), this);
+      throw new ConnectionException("Failed to close FTP Server" + e.toString(), this);
     }
   }
 
@@ -381,7 +382,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       _ftpClient.deleteFile(fileName);
     } catch (Exception e) {
       close();
-      throw new ComponentException("Failed to delete " + fileName + ": " + e.getMessage(), this);
+      throw new ConnectionException("Failed to delete " + fileName + ": " + e.getMessage(), this);
     }
   }
 
@@ -412,7 +413,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
         log.debug("Failed to get file list [" + filePattern + "]: No Files Found");
     } catch (Exception e) {
       close();
-      throw new ComponentException("Error retrieving file list: " + e.getMessage(), this);
+      throw new ConnectionException("Error retrieving file list: " + e.getMessage(), this);
     }
 
     return s;
@@ -435,7 +436,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
       log.info("Changed directory to [" + directoryName + "]");
     } catch (IOException e) {
       close();
-      throw new ComponentException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to change direcotries to [" + directoryName + "]: " + e.getMessage(), this);
     }
   }
 
@@ -468,7 +469,7 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
         success = true;
     } catch (IOException e) {
       close();
-      throw new ComponentException("Failed to verify file transfer: " + e.getMessage(), this);
+      throw new ConnectionException("Failed to verify file transfer: " + e.getMessage(), this);
     }
 
     return success;

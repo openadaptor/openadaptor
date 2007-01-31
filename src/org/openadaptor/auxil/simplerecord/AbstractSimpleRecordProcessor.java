@@ -36,10 +36,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Common functionality for processors which deal with ISimpleRecords.
@@ -154,7 +154,7 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
    * @return null if the test suceeded or an ComponentException if it failed
    */
   protected Exception checkMandatoryProperty(String name, boolean propTest) {
-    return propTest ? null : new ComponentException("property " + name + " is mandatory", this);
+    return propTest ? null : new ValidationException("property " + name + " is mandatory", this);
   }
 
   /**
@@ -195,7 +195,7 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
 
       sb.append(names[names.length - 1]);
 
-      result = new ComponentException("Exactly one of " + sb.toString() + " must be set", this);
+      result = new ValidationException("Exactly one of " + sb.toString() + " must be set", this);
     }
 
     return result;

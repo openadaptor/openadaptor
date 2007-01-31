@@ -30,18 +30,21 @@
 
 package org.openadaptor.auxil.connector.mail;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import java.io.IOException;
+import java.util.List;
 
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import java.io.IOException;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
 
 
 /**
@@ -254,12 +257,12 @@ public class MailReadConnector extends Component implements IReadConnector {
         log.info("Connecting to mail server");
 
         if ( conn == null )
-            throw new ComponentException("No connection properties set", this);
+            throw new ConnectionException("No connection properties set", this);
 
         try {
             conn.connect();
         } catch (MessagingException e) {
-            throw new ComponentException("Failed to connect to [" + conn.getHost() + "]: " + e.getMessage(), e, this);
+            throw new ConnectionException("Failed to connect to [" + conn.getHost() + "]: " + e.getMessage(), e, this);
         }
     }
 
@@ -276,7 +279,7 @@ public class MailReadConnector extends Component implements IReadConnector {
             if ( conn != null )
                 conn.disconnect();
         } catch (MessagingException e) {
-            throw new ComponentException("Failed to disconnect from [" + conn.getHost() + "]: " + e.getMessage(), e, this);
+            throw new ConnectionException("Failed to disconnect from [" + conn.getHost() + "]: " + e.getMessage(), e, this);
         }
     }
 
@@ -329,7 +332,7 @@ public class MailReadConnector extends Component implements IReadConnector {
                 data = new Object[] { processMailMessage(msg) };
             }
         } catch (Exception e) {
-            throw new ComponentException("Failed to process message: " + e.getMessage(), e, this);
+            throw new ConnectionException("Failed to process message: " + e.getMessage(), e, this);
         } finally{
             // we have to close the inbox after each message is processed so that the message
             // can be moved/deleted. This could be expensive so it might be a good idea to add
@@ -371,7 +374,7 @@ public class MailReadConnector extends Component implements IReadConnector {
         if ( deleteWhenRead ) {
             // hmmm ... move and delete. Which one do you really want to do?
             if ( moveWhenRead() )
-                exceptions.add(new ComponentException("Both [DeleteWhenRead] AND [MoveWhenRead] flags have been set. Which one do you want to do?", this));
+                exceptions.add(new ValidationException("Both [DeleteWhenRead] AND [MoveWhenRead] flags have been set. Which one do you want to do?", this));
 
             // no problem with looping but MarkRead means nothing
             if ( markRead )
@@ -401,7 +404,7 @@ public class MailReadConnector extends Component implements IReadConnector {
         // so warn users if they try
         if ( conn != null && "pop3".equalsIgnoreCase(conn.getProtocol()) ) {
             if ( moveWhenRead() )
-                exceptions.add(new ComponentException("POP3 does not support multiple folders so the [MoveToFolder] option is confusing", this));
+                exceptions.add(new ValidationException("POP3 does not support multiple folders so the [MoveToFolder] option is confusing", this));
 
             if ( markRead )
                 log.warn("POP3 does not support setting message flags so setting [MarkRead] will have no effect"
@@ -559,7 +562,7 @@ public class MailReadConnector extends Component implements IReadConnector {
         try {
             inbox = conn.openFolder(folder, createFolder);
         } catch (MessagingException e) {
-            throw new ComponentException("Failed to open the inbox:" + e.getMessage(), e, this);
+            throw new ConnectionException("Failed to open the inbox:" + e.getMessage(), e, this);
         }
     }
 
@@ -576,7 +579,7 @@ public class MailReadConnector extends Component implements IReadConnector {
             boolean expunge = (deleteWhenRead || moveWhenRead());
             conn.closeFolder(inbox, expunge);
         } catch (MessagingException e) {
-            throw new ComponentException("Failed to close the inbox:" + e.getMessage(), e, this);
+            throw new ConnectionException("Failed to close the inbox:" + e.getMessage(), e, this);
         }
     }
 }

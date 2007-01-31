@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Message;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.transaction.ITransaction;
@@ -111,7 +111,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     } catch (RuntimeException ex) {
       log.error(getId() + " failed to connect", ex);
       disconnectNoThrow();
-      throw new ComponentException("failed to connect", ex, this);
+      throw new ConnectionException("failed to connect", ex, this);
     }
     super.start();
   }

@@ -31,8 +31,10 @@
 package org.openadaptor.auxil.connector.jndi;
 
 import javax.naming.AuthenticationException;
+import javax.naming.CommunicationException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.ServiceUnavailableException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchResult;
 
@@ -40,6 +42,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
 
 /**
  * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
@@ -134,10 +138,10 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
       _ctxt = jndiConnection.connect();
     } catch (AuthenticationException ae) {
       log.warn("Failed JNDI authentication for principal: " + jndiConnection.getSecurityPrincipal());
-      throw new ComponentException("Failed to Authenticate JNDI connection - " + ae.toString(), ae, this);
+      throw new ConnectionException("Failed to Authenticate JNDI connection - " + ae.toString(), ae, this);
     } catch (NamingException ne) {
       log.warn(ne.getMessage());
-      throw new ComponentException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
+      throw new ConnectionException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
     }
     log.info(getId() + " connected");
   }
@@ -186,8 +190,12 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
 
         result = new Object[] { map };
       }
-    } catch (NamingException ne) {
-      throw new ComponentException(ne.getMessage(), ne, this);
+    } catch (CommunicationException e) {
+      throw new ConnectionException(e.getMessage(), e, this);
+    } catch (ServiceUnavailableException e) {
+      throw new ConnectionException(e.getMessage(), e, this);
+    } catch (NamingException e) {
+      throw new ProcessingException(e.getMessage(), e, this);
     }
     return result;
   }

@@ -36,9 +36,9 @@ import java.util.List;
 
 import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Filter an ISimpleRecord based the presence of all of a list of Attributes.
@@ -239,7 +239,7 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
     // if both are set we have a problem.
 
     if (throwExceptionOnMissingAttribute && createOnMissingAttribute) {
-      e = new ComponentException("Cannot set both of throwExceptionOnMissingAttribute and createOnMissingAttribute to true.", this);
+      e = new ValidationException("Cannot set both of throwExceptionOnMissingAttribute and createOnMissingAttribute to true.", this);
       exceptions.add(e);
     }
   }

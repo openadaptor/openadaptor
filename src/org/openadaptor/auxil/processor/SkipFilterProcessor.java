@@ -37,8 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.ValidationException;
 
 public class SkipFilterProcessor extends Component implements IDataProcessor {
 
@@ -138,7 +138,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
 
         // sanity check
         if (s.equals("0"))
-          exceptions.add(new ComponentException("Cannot skip the zero'th record", this));
+          exceptions.add(new ValidationException("Cannot skip the zero'th record", this));
 
         // not a list so must be a record number
         if (s.indexOf("-") == -1) {
@@ -150,7 +150,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
         String[] extreems = s.split("-");
 
         if (extreems.length != 2)
-          exceptions.add(new ComponentException("Failed to parse skipRecord [" + s + "]", this));
+          exceptions.add(new ValidationException("Failed to parse skipRecord [" + s + "]", this));
 
         int start, end;
         try {
@@ -160,7 +160,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
           for (int j = start; j <= end; j++)
             records2skip.add(new Integer(j));
         } catch (NumberFormatException e) {
-          exceptions.add(new ComponentException("Failed to parse skipRecord [" + s + "]: " + e.getMessage(), this));
+          exceptions.add(new ValidationException("Failed to parse skipRecord [" + s + "]: " + e.getMessage(), this));
         }
       }
 

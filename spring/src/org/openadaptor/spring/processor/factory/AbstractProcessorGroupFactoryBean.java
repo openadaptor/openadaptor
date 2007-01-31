@@ -33,7 +33,7 @@ package org.openadaptor.spring.processor.factory;
 
 import org.openadaptor.auxil.expression.ExpressionException;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.processor.ProcessorGroup;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -97,7 +97,7 @@ public abstract class AbstractProcessorGroupFactoryBean extends Component implem
     try {
       return Class.forName(typeName);
     } catch (ClassNotFoundException e) {
-      throw new ComponentException("Cannot find Class [" + typeName + "] in classpath.", this);
+      throw new ProcessingException("Cannot find Class [" + typeName + "] in classpath.", this);
     }
   }
 

@@ -30,12 +30,14 @@
 
 package org.openadaptor.auxil.connector.smtp;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
-
-import javax.mail.MessagingException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
 
 /**
  * This class will send messages via smtp (email) to destinations specified in properties.
@@ -89,10 +91,10 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
           //Send message
           smtpConnection.send();
         } else {
-          throw new ComponentException("Malformed data for smtp write connector - record has null value", this);
+          throw new ProcessingException("Malformed data for smtp write connector - record has null value", this);
         }
       } catch (MessagingException me) {
-        throw new ComponentException(me.getMessage(), me, this);
+        throw new ConnectionException(me.getMessage(), me, this);
       }
     }
 

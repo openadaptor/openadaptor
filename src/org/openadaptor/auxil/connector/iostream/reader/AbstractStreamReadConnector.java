@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 
 public abstract class AbstractStreamReadConnector extends LifecycleComponent implements IReadConnector {
@@ -127,7 +127,7 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
       }
       return batch.toArray();
     } catch (IOException e) {
-      throw new ComponentException("IOException, " + e.getMessage(), e, this);
+      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
     }
   }
 

@@ -37,7 +37,7 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * @author OA3 Core Team
@@ -66,7 +66,7 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
       socket = new Socket(hostname, port);
       return socket.getOutputStream();
     } catch (UnknownHostException e) {
-      throw new ComponentException("UnknownHostExceptiont, " + hostname + ", " + e.getMessage(), e, this);
+      throw new ConnectionException("UnknownHostExceptiont, " + hostname + ", " + e.getMessage(), e, this);
     }
   }
 

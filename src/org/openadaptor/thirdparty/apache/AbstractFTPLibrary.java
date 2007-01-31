@@ -37,6 +37,7 @@ package org.openadaptor.thirdparty.apache;
 import org.openadaptor.auxil.connector.ftp.IFTPLibrary;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 
 /**
@@ -166,7 +167,7 @@ public abstract class AbstractFTPLibrary extends Component implements IFTPLibrar
   protected void checkLoggedIn() throws ComponentException {
     if (!isLoggedIn()) {
       close();
-      throw new ComponentException("The client is NOT logged into a remote server", this);
+      throw new ConnectionException("The client is NOT logged into a remote server", this);
     }
   }
 }

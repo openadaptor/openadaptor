@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 public abstract class AbstractStreamWriteConnector extends AbstractWriteConnector {
 
@@ -57,7 +57,7 @@ public abstract class AbstractStreamWriteConnector extends AbstractWriteConnecto
     try {
       outputStream = getOutputStream();
     } catch (IOException e) {
-      throw new ComponentException("IOException, " + e.getMessage(), e, this);
+      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
     }
     dataWriter.setOutputStream(outputStream);
   }
@@ -70,7 +70,7 @@ public abstract class AbstractStreamWriteConnector extends AbstractWriteConnecto
       dataWriter.flush();
       return null;
     } catch (IOException e) {
-      throw new ComponentException("IOException, " + e.getMessage(), e, this);
+      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
     }
   }
 

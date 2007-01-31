@@ -32,19 +32,13 @@
  */
 package org.openadaptor.auxil.connector.jms;
 
-import org.openadaptor.auxil.connector.jms.JMSConnection;
-import org.openadaptor.auxil.connector.jms.JMSReadConnector;
-import org.openadaptor.core.exception.ComponentException;
-
-import javax.jms.Session;
-import javax.jms.MessageConsumer;
-import javax.jms.ExceptionListener;
 import java.util.List;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Jan 19, 2007 by oa3 Core Team
- */
+
+import javax.jms.ExceptionListener;
+import javax.jms.Session;
+
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
 
 public class MockJMSConnection extends JMSConnection {
 
@@ -73,14 +67,14 @@ public class MockJMSConnection extends JMSConnection {
   public void disconnect() {
     try {
       if (throwComponentExceptionOnDisconnect)
-        throw new ComponentException("Test disconnect ComponentException.", this);
+        throw new ConnectionException("Test disconnect ComponentException.", this);
       if (throwNPEOnDisconnect) throw new NullPointerException();
     }
     finally { isConnected = false; }
   }
 
   public void validate(List exceptions) {
-    if (!passValidate) exceptions.add(new ComponentException("failing validate for test purposes", this));
+    if (!passValidate) exceptions.add(new ValidationException("failing validate for test purposes", this));
   }
 
   // Overridden Mocks
@@ -95,7 +89,7 @@ public class MockJMSConnection extends JMSConnection {
    */
   public Session createSessionFor(JMSReadConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
+    if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
     isConnected = true;
     return mockSession;
   }
@@ -108,7 +102,7 @@ public class MockJMSConnection extends JMSConnection {
    */
   public Session createSessionFor(JMSWriteConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ComponentException("Test Exception", this);
+    if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
     isConnected = true;
     return mockSession;
   }

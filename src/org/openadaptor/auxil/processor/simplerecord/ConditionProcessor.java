@@ -38,8 +38,8 @@ import org.openadaptor.auxil.expression.IExpression;
 import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Modifies a SimpleRecord based on the result of evaluating a conditional expression. <p/> The three main parts of a
@@ -218,7 +218,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
 
       sb.append(names[names.length - 1]);
 
-      result = new ComponentException("At least one of " + sb.toString() + " must be set.", this);
+      result = new ValidationException("At least one of " + sb.toString() + " must be set.", this);
     }
 
     return result;

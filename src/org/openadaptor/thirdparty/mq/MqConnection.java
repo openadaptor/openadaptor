@@ -40,9 +40,17 @@ import javax.transaction.xa.XAException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
-import com.ibm.mq.*;
+import com.ibm.mq.MQC;
+import com.ibm.mq.MQEnvironment;
+import com.ibm.mq.MQException;
+import com.ibm.mq.MQGetMessageOptions;
+import com.ibm.mq.MQMessage;
+import com.ibm.mq.MQPutMessageOptions;
+import com.ibm.mq.MQQueue;
+import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.MQXAQueueManager;
 
 /**
  * MqConnection is responsible for all interaction with MQ. It is responsible
@@ -402,7 +410,7 @@ public class MqConnection extends Component {
 
     if(isUseLocalTransactions() && isUseXATransactions()) {
       // Both active. Can't allow this.
-      throw new ComponentException("useXATransactions and useLocalTransactions cannot both be true.", this);
+      throw new ConnectionException("useXATransactions and useLocalTransactions cannot both be true.", this);
     }
     else if (!(isUseLocalTransactions() || isUseXATransactions()) ){
       // Neither transaction mode is active
@@ -411,7 +419,7 @@ public class MqConnection extends Component {
         transactionalResource = null;
       }
       catch (Exception mqe) {
-        throw new ComponentException("Failed to create MQQueueManager for untransacted session.", mqe, this);
+        throw new ConnectionException("Failed to create MQQueueManager for untransacted session.", mqe, this);
       }
     }
     else if (isUseLocalTransactions()) {
@@ -422,7 +430,7 @@ public class MqConnection extends Component {
           transactionalResource = new MqTransactionalResource(this);
       }
       catch (Exception mqe) {
-        throw new ComponentException("Failed to create MQQueueManager for useLocalTransactions non XA session.", mqe, this);
+        throw new ConnectionException("Failed to create MQQueueManager for useLocalTransactions non XA session.", mqe, this);
       }
     }
     else if (isUseXATransactions()) {
@@ -432,10 +440,10 @@ public class MqConnection extends Component {
         queueManager = xaQueueManager.getQueueManager();
         transactionalResource = xaQueueManager.getXAResource();
       } catch (MQException mqe) {
-        throw new ComponentException("Failed to create MQXAQueueManager with " +
+        throw new ConnectionException("Failed to create MQXAQueueManager with " +
             mqe.toString(), this);
       } catch (XAException xae) {
-        throw new ComponentException("Failed to create MQXAResource with " +
+        throw new ConnectionException("Failed to create MQXAResource with " +
             xae.toString(), this);
       }
     }
@@ -541,7 +549,7 @@ public class MqConnection extends Component {
       //
       // thrown when read string fails
       //
-      throw new ComponentException("Caught Exception examining message, " + ioe.toString(), this);
+      throw new ConnectionException("Caught Exception examining message, " + ioe.toString(), this);
     }
     return messageString;
   }

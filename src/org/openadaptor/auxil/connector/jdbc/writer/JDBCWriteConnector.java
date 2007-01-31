@@ -82,11 +82,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
         }
         sucess = true;
       } catch (SQLException e) {
-        if (jdbcConnection.isDeadlockException(e) && jdbcConnection.incrementDeadlockCount() > 0) {
-          log.warn("deadlock detected, " + jdbcConnection.getDeadlockRetriesRemaining() + " retries remaining");
-        }
-        throw new ComponentException("SQLException, " + e.getMessage() + ", Error Code = " + e.getErrorCode()
-            + ", State = " + e.getSQLState(), e, this);
+        jdbcConnection.handleException(e, null);
       }
     }
     return null;
@@ -97,8 +93,8 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     try {
       jdbcConnection.connect();
       statementConverter.initialise(jdbcConnection.getConnection());
-    } catch (SQLException sqle) {
-      throw new ComponentException("Failed to establish JDBC connection - " + sqle.toString(), sqle, this);
+    } catch (SQLException e) {
+      jdbcConnection.handleException(e, "Failed to establish JDBC connection");
     }
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
@@ -109,8 +105,8 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
     try {
       jdbcConnection.disconnect();
-    } catch (SQLException sqle) {
-      throw new ComponentException("Failed to disconnect JDBC connection - " + sqle.toString(), sqle, this);
+    } catch (SQLException e) {
+      jdbcConnection.handleException(e, "Failed to disconnect JDBC connection");
     }
     connected = false;
     log.info("Connector: [" + getId() + "] disconnected");

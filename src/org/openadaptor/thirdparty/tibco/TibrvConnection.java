@@ -31,7 +31,7 @@
 package org.openadaptor.thirdparty.tibco;
 
 import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 import com.tibco.tibrv.Tibrv;
 import com.tibco.tibrv.TibrvException;
@@ -67,12 +67,12 @@ public class TibrvConnection extends Component {
       try {
         Tibrv.open(Tibrv.IMPL_NATIVE);
       } catch (TibrvException e) {
-        throw new ComponentException("failed to init rendezvous, make sure you have TIBCO/tibrv/bin in your PATH / LD_LIBRARY_PATH", e, this);
+        throw new ConnectionException("failed to init rendezvous, make sure you have TIBCO/tibrv/bin in your PATH / LD_LIBRARY_PATH", e, this);
       }
       try {
         transport = new TibrvRvdTransport(service, network, daemon);
       } catch (TibrvException e) {
-        throw new ComponentException("failed to create tibrv transport", e, this);
+        throw new ConnectionException("failed to create tibrv transport", e, this);
       }
     }
     return transport;

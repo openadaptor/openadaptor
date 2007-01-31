@@ -30,15 +30,17 @@
 
 package org.openadaptor.auxil.connector.jdbc;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-
-import javax.sql.XAConnection;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import javax.sql.XAConnection;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ConnectionException;
 
 
 /**
@@ -258,6 +260,7 @@ public class JDBCConnection extends Component {
    */
   protected void beginTransaction() throws SQLException {
     connection.setAutoCommit(false);
+    deadlockCount = 0;
     refCount++;
   }
 
@@ -293,15 +296,11 @@ public class JDBCConnection extends Component {
     this.deadlockLimit = deadlockLimit;
   }
 
-  public void resetDeadlockCount() {
-    deadlockCount = 0;
-  }
-
   /**
    * increments deadlock count
    * @return remaining retries
    */
-  public int incrementDeadlockCount() {
+  protected int incrementDeadlockCount() {
     deadlockCount++;
     return getDeadlockRetriesRemaining();
   }
@@ -311,7 +310,7 @@ public class JDBCConnection extends Component {
    * also checks that it is safe to retry, returns zero if not.
    * @return
    */
-  public int getDeadlockRetriesRemaining() {
+  protected int getDeadlockRetriesRemaining() {
     int retries = Math.max(deadlockLimit - deadlockCount, 0);
     if (retries > 1 && refCount > 1) {
       log.warn("JDBC Connection is referenced by more than one component, therefore retry is not possible");
@@ -320,4 +319,18 @@ public class JDBCConnection extends Component {
       return retries;
     }
   }
+  
+  /**
+   * interprets SQLException, this make the distinction between ConnectionExceptions
+   * (db server is unavilable) and ProcessingException (SQL failed)
+   * @param e
+   * @param message 
+   */
+  public void handleException(SQLException e, String message) {
+    throw new ConnectionException((message != null ? message + ", " : "")
+          + ", SQLException, " + e.getMessage() 
+          + ", Error Code = " + e.getErrorCode()
+          + ", State = " + e.getSQLState(), e, this);
+  }
+
 }

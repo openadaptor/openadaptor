@@ -32,6 +32,9 @@ package org.openadaptor.auxil.connector.jdbc.sybase;
 
 import java.sql.SQLException;
 
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
+
 /**
  * sybase specific jdbc connection for deadlock identification and other exception ignores
  * @author perryj
@@ -39,12 +42,28 @@ import java.sql.SQLException;
  */
 public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCConnection {
 
-  public boolean isDeadlockException(SQLException e) {
-    return e.getErrorCode() == 1205;
+  public void handleException(SQLException e) {
+    
+    // ignore deadlock, if num retries > 0
+    if (e.getErrorCode() == 1205 && incrementDeadlockCount() > 0) {
+      return;
+    }
+    
+    // ignore empty resultset
+    if (e.getSQLState().equals("JZ0R2")) {
+      return;
+    }
+    
+    // decide whether its a ConnectionException or a ProcessingException
+    switch (e.getErrorCode()) {
+      case 1602:
+        throw new ConnectionException("SQLException, " + e.getMessage() 
+            + ", Error Code = " + e.getErrorCode()
+            + ", State = " + e.getSQLState(), e, this);
+      default:
+        throw new ProcessingException("SQLException, " + e.getMessage() 
+            + ", Error Code = " + e.getErrorCode()
+            + ", State = " + e.getSQLState(), e, this);
+    }
   }
-
-  public boolean ignoreException(SQLException e) {
-    return e.getSQLState().equals("JZ0R2");
-  }
-
 }

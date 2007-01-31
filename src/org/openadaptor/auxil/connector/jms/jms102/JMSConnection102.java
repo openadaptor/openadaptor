@@ -60,9 +60,11 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ResourceException;
 import org.openadaptor.auxil.connector.jms.JMSConnection;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.ResourceException;
 
 /**
  * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.0.2 compliant code.
@@ -142,11 +144,11 @@ public class JMSConnection102 extends JMSConnection {
       //((TopicPublisher)getMessageProducer()).publish( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
-      throw new ComponentException("JMSException during publish.", jmse, this);
+      throw new ConnectionException("JMSException during publish.", jmse, this);
     } catch (ComponentException oae) {
       throw oae; // Make sure it isn't swallowed !
     } catch (Exception e) {
-      throw new ComponentException("Exception during publish.", e, this);
+      throw new ConnectionException("Exception during publish.", e, this);
     }
     return msgId;
   }
@@ -161,11 +163,11 @@ public class JMSConnection102 extends JMSConnection {
       //((QueueSender) getMessageProducer()).send( msg, getDeliveryMode(), getPriority(), getTimeToLive() );
       msgId = msg.getJMSMessageID();
     } catch (JMSException jmse) {
-      throw new ComponentException("JMSException during publish.", jmse, this);
+      throw new ConnectionException("JMSException during publish.", jmse, this);
     } catch (ComponentException oae) {
       throw oae; // Make sure it isn't swallowed !
     } catch (Exception e) {
-      throw new ComponentException("Exception during publish.", e, this);
+      throw new ConnectionException("Exception during publish.", e, this);
     }
     return msgId;
   }
@@ -178,7 +180,6 @@ public class JMSConnection102 extends JMSConnection {
    * @throws JMSException
    */
   protected Message createMessage(Object messageBody) throws JMSException {
-    Message msg;
     if (messageBody instanceof String) {
       //TextMessage textMsg = getSession().createTextMessage();
       //textMsg.setText((String) messageBody);
@@ -190,7 +191,7 @@ public class JMSConnection102 extends JMSConnection {
     } else {
       // We have never needed more message types in practice.
       // If we do need them in future this is where they go.
-      throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
+      throw new ProcessingException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
     }
     //return msg;
     return null;
@@ -240,11 +241,11 @@ public class JMSConnection102 extends JMSConnection {
           log.debug("Handling ObjectMessage");
           msgContents = ((ObjectMessage) msg).getObject();
         } else {
-          throw new ComponentException("Unsupported JMS Message Type.", this);
+          throw new ProcessingException("Unsupported JMS Message Type.", this);
         }
       }
     } catch (JMSException e) {
-      throw new ComponentException("Error processing JMS Message text.", e, this);
+      throw new ConnectionException("Error processing JMS Message text.", e, this);
     }
     return msgContents;
   }
@@ -263,7 +264,7 @@ public class JMSConnection102 extends JMSConnection {
         newSession = createQueueSession();
       }
     } catch (JMSException jmse) {
-      throw new ComponentException("Unable to create session from connection", jmse, this);
+      throw new ConnectionException("Unable to create session from connection", jmse, this);
     }
     return newSession;
   }
@@ -312,11 +313,11 @@ public class JMSConnection102 extends JMSConnection {
           if (getConnectionFactory() == null) {
             String reason = "Unable to get a connectionFactory. This may be because the required JMS implementation jars are not available on the classpath";
             log.error(reason);
-            throw new ComponentException(reason, this);
+            throw new ConnectionException(reason, this);
           } else {
             String reason = "Factory object is not an instance of ConnectionFactory. This should not happen";
             log.error(reason);
-            throw new ComponentException(reason, this);
+            throw new ConnectionException(reason, this);
           }
         }
       }
@@ -356,11 +357,11 @@ public class JMSConnection102 extends JMSConnection {
         try {
           getConnection().setClientID(getClientID());
         } catch (InvalidClientIDException ice) {
-          throw new ComponentException(
+          throw new ConnectionException(
               "Error setting clientID. ClientID either duplicate(most likely) or invalid. Check for other connected clients",
               ice, this);
         } catch (IllegalStateException ise) {
-          throw new ComponentException(
+          throw new ConnectionException(
               "Error setting clientID. ClientID most likely administratively set. Check ConnectionFactory settings",
               ise, this);
         }
@@ -368,10 +369,10 @@ public class JMSConnection102 extends JMSConnection {
 
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
-      throw new ComponentException(" JMSException during connect.", e, this);
+      throw new ConnectionException(" JMSException during connect.", e, this);
     } catch (NamingException e) {
       log.error("NamingException during connect." + e);
-      throw new ComponentException("NamingException during connect.", e, this);
+      throw new ConnectionException("NamingException during connect.", e, this);
     }
 
   }
@@ -432,7 +433,7 @@ public class JMSConnection102 extends JMSConnection {
 
 
   protected MessageConsumer createMessageConsumer(String destinationName) {
-    MessageConsumer newConsumer;
+//    MessageConsumer newConsumer;
     if (isTopic) { // isTopic will have been set correctly when the original connection was made
         //newConsumer = createTopicSubscriber(getDestinationName());
       } else {
@@ -448,7 +449,7 @@ public class JMSConnection102 extends JMSConnection {
     try {
       topic = (Topic) getCtx().lookup(destination);
     } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Topic for [" + destination + "]", e, this);
+      throw new ConnectionException("Unable to resolve Topic for [" + destination + "]", e, this);
     }
     /*
     try {

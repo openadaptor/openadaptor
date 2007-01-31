@@ -31,7 +31,7 @@
 package org.openadaptor.thirdparty.tibco;
 
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
@@ -63,7 +63,7 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
 
   public void connect() {
     if (connection == null) {
-      throw new ComponentException("connection not set", this);
+      throw new ConnectionException("connection not set", this);
     }
   }
 
@@ -80,7 +80,7 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
         setSendMessage(msg);
         connection.send(msg);
       } catch (TibrvException e) {
-        throw new ComponentException("failed to send message", e, this);
+        throw new ConnectionException("failed to send message", e, this);
       }
     }
     return null;
@@ -91,7 +91,7 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
       if (subject != null) {
         msg.setSendSubject(subject);
       } else {
-        throw new ComponentException("encountered message without a sendSubject and no subject is configured", this);
+        throw new ConnectionException("encountered message without a sendSubject and no subject is configured", this);
       }
     }
   }

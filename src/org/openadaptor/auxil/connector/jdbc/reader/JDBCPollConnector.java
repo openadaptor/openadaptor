@@ -63,7 +63,6 @@ public class JDBCPollConnector extends AbstractJDBCReadConnector {
     } catch (SQLException e) {
       throw new RuntimeException("failed to create poll callable statement, " + e.getMessage(), e);
     }
-    resetDeadlockCount();
   }
 
   public Object[] next(long timeoutMs) {
@@ -75,9 +74,8 @@ public class JDBCPollConnector extends AbstractJDBCReadConnector {
       if (data.length == 0) {
         ThreadUtil.sleepNoThrow(timeoutMs);
       }
-      resetDeadlockCount();
     } catch (SQLException e) {
-      handleSQLException(e);
+      handleException(e);
     } finally {
       JDBCUtil.closeNoThrow(s);
     }

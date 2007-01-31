@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * binds to a webservice endpoint and delivers data by calling a method
@@ -79,7 +79,7 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
     } catch (MalformedURLException e) {
       throw new RuntimeException("Malformed Url exception ", e);
     } catch (Exception e) {
-      throw new ComponentException("failed to connect", e, this);
+      throw new ConnectionException("failed to connect", e, this);
     }
   }
 
@@ -98,7 +98,7 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
       }
       return null;
     } catch (Exception e) {
-      throw new ComponentException("webservice call failed", e, this);
+      throw new ConnectionException("webservice call failed", e, this);
     }
   }
 

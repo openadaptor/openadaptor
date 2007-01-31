@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -149,7 +150,7 @@ public class RSSReadConnector extends Component implements IReadConnector {
       }
       catch (Exception ex) {
         log.error("Failed to write feed to output string");
-        throw new ComponentException("Failed to write feed to output string", ex, this);
+        throw new ConnectionException("Failed to write feed to output string", ex, this);
       }
       log.info("Record is: " + result[0]);
     } else {

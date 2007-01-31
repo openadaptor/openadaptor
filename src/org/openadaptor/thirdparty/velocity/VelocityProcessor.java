@@ -38,7 +38,9 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.ValidationException;
 
 public class VelocityProcessor extends Component implements IDataProcessor {
 
@@ -65,7 +67,7 @@ public class VelocityProcessor extends Component implements IDataProcessor {
         engine.init();
         template = templateFile != null ? engine.getTemplate(templateFile) : null;
       } catch (Exception e) {
-        throw new RuntimeException("failed to init velocity engine", e);
+        throw new ConnectionException("failed to init velocity engine", e, this);
       }
     }
   }
@@ -93,7 +95,7 @@ public class VelocityProcessor extends Component implements IDataProcessor {
         throw new Exception("neither template nor templateString have been set");
       }
     } catch (Exception e) {
-      throw new ComponentException("process exception", e, this);
+      throw new ProcessingException("process exception", e, this);
     }
     return new Object[] { sw.toString() };
   }
@@ -104,7 +106,7 @@ public class VelocityProcessor extends Component implements IDataProcessor {
   public void validate(List exceptions) {
     init();
     if (template == null && templateString == null) {
-      exceptions.add(new ComponentException("neither template nor templateString have been set", this));
+      exceptions.add(new ValidationException("neither template nor templateString have been set", this));
     }
   }
 

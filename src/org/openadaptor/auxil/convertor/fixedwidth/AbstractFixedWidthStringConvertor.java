@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Defines the common elements of a fixed width converter. <p/>
@@ -106,7 +107,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    */
   public void setFieldDetails(FixedWidthFieldDetail[] details) {
     if (fieldWidths != null)
-      throw new ComponentException("You cannot define both fieldDetails and fieldWidths", this);
+      throw new ValidationException("You cannot define both fieldDetails and fieldWidths", this);
 
     this.fieldDetails = details;
   }
@@ -137,7 +138,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     if (fieldWidths == null) {
       // if the fieldDetails have been set then we have a problem
       if (fieldDetails != null)
-        throw new ComponentException("You cannot define both fieldDetails and fieldWidths", this);
+        throw new ValidationException("You cannot define both fieldDetails and fieldWidths", this);
 
       // create new fieldDetails based on the widths
       fieldDetails = new FixedWidthFieldDetail[widths.length];
@@ -153,7 +154,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     // 2. props editor update
     else {
       if (widths.length != fieldDetails.length)
-        throw new ComponentException("Error updated field widths: the length does not match the existing field details length", this);
+        throw new ValidationException("Error updated field widths: the length does not match the existing field details length", this);
 
       for (int i = 0; i < widths.length; i++) {
         Integer width = widths[i];
@@ -238,7 +239,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
     int a = names.indexOf(name);
     int b = names.lastIndexOf(name);
     if (a != b)
-      throw new ComponentException("Multiple field names defined", this);
+      throw new ValidationException("Multiple field names defined", this);
 
     return (name != null && !name.equals(""));
   }

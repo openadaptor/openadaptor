@@ -47,7 +47,7 @@ import org.openadaptor.core.IComponent;
  * @author Kevin Scully
  */
 
-public class ComponentException extends RuntimeException {
+public abstract class ComponentException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 

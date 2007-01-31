@@ -30,23 +30,27 @@
 
 package org.openadaptor.auxil.connector.jms;
 
+import java.util.List;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.IllegalStateException;
+import javax.jms.InvalidClientIDException;
+import javax.jms.JMSException;
+import javax.jms.Session;
+import javax.jms.XAConnection;
+import javax.jms.XAConnectionFactory;
+import javax.naming.Context;
+import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.jms.*;
-import javax.jms.IllegalStateException;
-import java.io.Serializable;
-import java.util.List;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Jan 15, 2007 by oa3 Core Team
- */
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Utility class providing JMS support to the JMSReadConnector and JMSWriteConnector classes. This class
@@ -89,11 +93,6 @@ public class JMSConnection extends Component {
    * JndiConnection used for lookups.
    */
   private JNDIConnection jndiConnection;
-
-  /**
-   * The name used to create the durable topic subscription. Defaults to the <code>destinationName</code>.
-   */
-  private String durableSubscriptionName = null;
 
   /**
    * ID for client. Default is not set as can be set by ConnectionFactory. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
@@ -146,10 +145,10 @@ public class JMSConnection extends Component {
 
   public void validate(List exceptions) {
     if ((getConnectionFactory() == null) && (connectionFactoryName == null)) {
-      exceptions.add( new ComponentException("One of properties connectionFactory or connectionFactoryName must be set.", this));
+      exceptions.add( new ValidationException("One of properties connectionFactory or connectionFactoryName must be set.", this));
     }
     if(jndiConnection == null) {
-      exceptions.add(new ComponentException("Property jndiConnection is mandatory", this));
+      exceptions.add(new ValidationException("Property jndiConnection is mandatory", this));
     }
   }
 
@@ -177,7 +176,7 @@ public class JMSConnection extends Component {
         }
         session = newSession;
       } catch (JMSException jmse) {
-        throw new ComponentException("Unable to create session from connection", jmse, this);
+        throw new ConnectionException("Unable to create session from connection", jmse, this);
       }
 
     return newSession;
@@ -202,7 +201,7 @@ public class JMSConnection extends Component {
         }
         session = newSession;
       } catch (JMSException jmse) {
-        throw new ComponentException("Unable to create session from connection", jmse, this);
+        throw new ConnectionException("Unable to create session from connection", jmse, this);
       }
     return newSession;
   }
@@ -230,11 +229,11 @@ public class JMSConnection extends Component {
           if (connectionFactory == null) {
             String reason = "Unable to get a connectionFactory. This may be because the required JMS implementation jars are not available on the classpath";
             log.error(reason);
-            throw new ComponentException(reason, this);
+            throw new ConnectionException(reason, this);
           } else {
             String reason = "Factory object is not an instance of ConnectionFactory. This should not happen";
             log.error(reason);
-            throw new ComponentException(reason, this);
+            throw new ConnectionException(reason, this);
           }
         }
       }
@@ -246,21 +245,21 @@ public class JMSConnection extends Component {
         try {
           connection.setClientID(clientID);
         } catch (InvalidClientIDException ice) {
-          throw new ComponentException(
+          throw new ConnectionException(
               "Error setting clientID. ClientID either duplicate(most likely) or invalid. Check for other connected clients",
               ice, this);
         } catch (IllegalStateException ise) {
-          throw new ComponentException(
+          throw new ConnectionException(
               "Error setting clientID. ClientID most likely administratively set. Check ConnectionFactory settings",
               ise, this);
         }
       }
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
-      throw new ComponentException(" JMSException during connect.", e, this);
+      throw new ConnectionException(" JMSException during connect.", e, this);
     } catch (NamingException e) {
       log.error("NamingException during connect." + e);
-      throw new ComponentException("NamingException during connect.", e, this);
+      throw new ConnectionException("NamingException during connect.", e, this);
     }
   }
 
@@ -290,7 +289,7 @@ public class JMSConnection extends Component {
     try {
       connection.setExceptionListener(listener);
     } catch (JMSException e) {
-      throw new ComponentException("Unable to install [" + listener + "] as ExceptionListener. ", e, this);
+      throw new ConnectionException("Unable to install [" + listener + "] as ExceptionListener. ", e, this);
     }
   }
 
@@ -299,7 +298,7 @@ public class JMSConnection extends Component {
       connection.start();
     } catch (JMSException e) {
       log.error("JMSException during connection start." + e);
-      throw new ComponentException(" JMSException during connection start.", e, this);
+      throw new ConnectionException(" JMSException during connection start.", e, this);
     }
   }
 
@@ -311,7 +310,7 @@ public class JMSConnection extends Component {
       }
       setConnection(null);
     } catch (JMSException e) {
-      throw new ComponentException("Unable close jms connection for  [" + getId() + "]", e, this);
+      throw new ConnectionException("Unable close jms connection for  [" + getId() + "]", e, this);
     }
   }
 
@@ -321,7 +320,7 @@ public class JMSConnection extends Component {
     try {
       return (Destination) getCtx().lookup(destinationName);
     } catch (NamingException e) {
-      throw new ComponentException("Unable to resolve Destination for [" + destinationName + "]", e, this);
+      throw new ConnectionException("Unable to resolve Destination for [" + destinationName + "]", e, this);
     }
   }
 

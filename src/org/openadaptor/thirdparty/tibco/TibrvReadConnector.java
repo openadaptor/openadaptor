@@ -39,7 +39,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.QueuingReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 import com.tibco.tibrv.Tibrv;
 import com.tibco.tibrv.TibrvException;
@@ -112,7 +112,7 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
         TibrvListener listener = connection.createListener(topic, this);
         listenerMap.put(topic, listener);
       } catch (TibrvException e) {
-        throw new ComponentException("failed to create listener", e, this);
+        throw new ConnectionException("failed to create listener", e, this);
       }
     }
     dispathThread = new DispathThread();

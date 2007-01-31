@@ -30,16 +30,29 @@
 
 package org.openadaptor.auxil.connector.jms;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.jms.Destination;
+import javax.jms.InvalidDestinationException;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageFormatException;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.XASession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
-
-import javax.jms.*;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Write Connector class that implements publishing to JMS.
@@ -121,7 +134,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    */
   public Object deliver(Object[] records) throws ComponentException {
     if (!isConnected())
-      throw new ComponentException("Attempting to deliver via a disconnected Connector", this);
+      throw new ConnectionException("Attempting to deliver via a disconnected Connector", this);
     if (isConnected()) {
       int size = records.length;
       // ToDo: Get OA team to review the way the unbatching is done.
@@ -133,7 +146,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
         if (record != null) // todo Really necessary?
           msgIds[i] = deliverRecord(record);
         else
-          throw new ComponentException("Cannot deliver null record.", this);
+          throw new ProcessingException("Cannot deliver null record.", this);
       }
       return msgIds;
     }
@@ -161,7 +174,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
         messageProducer.close();
         session.close();
       } catch (JMSException e) {
-        throw new ComponentException("Exception closing JMSReadConnector.", e, this);
+        throw new ConnectionException("Exception closing JMSReadConnector.", e, this);
       }
       finally {
         messageProducer = null;
@@ -173,10 +186,10 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
 
   public void validate(List exceptions) {
     if (getDestinationName() == null) {
-      exceptions.add(new ComponentException("Property destinationName is mandatory", this));
+      exceptions.add(new ValidationException("Property destinationName is mandatory", this));
     }
     if (jmsConnection == null) {
-      exceptions.add(new ComponentException("Property jmsConnection is mandatory", this));
+      exceptions.add(new ValidationException("Property jmsConnection is mandatory", this));
     } else {
       jmsConnection.validate(exceptions);
     }
@@ -205,7 +218,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     try {
       newProducer = session.createProducer(destination);
     } catch (JMSException e) {
-      throw new ComponentException("Exception creating JMS Producer ", e, this);
+      throw new ConnectionException("Exception creating JMS Producer ", e, this);
     }
     log.info(" Producer initialised for JMS Destination=" + newProducer);
     return newProducer;
@@ -228,11 +241,11 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
       messageProducer.send(msg, deliveryMode, priority, timeToLive);
       msgId = msg.getJMSMessageID();
     } catch (MessageFormatException e) {
-      throw new ComponentException("MessageFormatException during publish.", e, this);
+      throw new ProcessingException("MessageFormatException during publish.", e, this);
     } catch (InvalidDestinationException e) {
-      throw new ComponentException("InvalidDestinationException during publish.", e, this);
+      throw new ConnectionException("InvalidDestinationException during publish.", e, this);
     } catch (JMSException jmse) {
-      throw new ComponentException("JMSException during publish.", jmse, this);
+      throw new ConnectionException("JMSException during publish.", jmse, this);
     }
     return msgId;
   }
@@ -257,7 +270,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     } else {
       // We have not needed more message types in practice.
       // If we do need them in future this is where they go.
-      throw new ComponentException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
+      throw new ProcessingException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
     }
     return msg;
   }
