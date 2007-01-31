@@ -252,8 +252,8 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
     if (result != null) {
       if (result instanceof Cloneable) {
         try {
-          Method m = result.getClass().getMethod("clone", null);
-          result = m.invoke(o, null);
+          Method m = result.getClass().getMethod("clone", (Class[])null);
+          result = m.invoke(o, (Object[])null);
         } catch (NoSuchMethodException nsme) {
           log.warn("Object is cloneable, but has no clone() method. Reference to original will be returned.");
         } catch (IllegalAccessException iae) {

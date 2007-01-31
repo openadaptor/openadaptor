@@ -138,8 +138,8 @@ public class JVMNeutralMBeanServerFactory {
     MBeanServer server=null;
     try {
       Class factory=Class.forName(className);
-      Method method=factory.getMethod(methodName,null);
-      server = (MBeanServer)method.invoke(factory,null);
+      Method method=factory.getMethod(methodName,(Class[])null);
+      server = (MBeanServer)method.invoke(factory,(Object[])null);
     }
     catch (Exception e) {
       log.warn("Failed to invoke "+className+"."+methodName+"(). Reason - "+e);
