@@ -262,7 +262,7 @@
     </java>
   </target>
 
-  <target name="cruise" depends="copyright.check, test.all" description="target for cruise control to call"/>
+  <target name="cruise" depends="test.all, copyright.check" description="target for cruise control to call"/>
 
   <target name="compile.buildtools">
     <mkdir dir="${dir.buildtools.classes}"/>
