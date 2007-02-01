@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * selects data from a db using a query
+      * converts the result set to XML
+      * writes data to stdout
+    
+    It is designed to illustrate the basic structure of an adaptor that polls a database
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config reader.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+      hsqldb.jar (this is not distributed with openadaptor)
+    
+    This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+    up the server make sure hsqldb.jar is in your class path and run the following...
+  
+      java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+     
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline Reader-Writer
+    </description>
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+ 
+  
+  <!-- This defines jdbc connection -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <!-- Reader which polls database using configured SQL -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="resultSetConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+    </property>
+    <property name="sql">
+      <value>
+        SELECT t.BuySell as Side, t.Qty as Size, s.ShortCode as RIC,
+               p.LongName as Counterparty, t.Price as Price
+        FROM TRADE t, SECURITY s, PARTY p
+        WHERE t.SecId = s.SecId AND t.PartyId = p.PartyId
+      </value>
+    </property>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

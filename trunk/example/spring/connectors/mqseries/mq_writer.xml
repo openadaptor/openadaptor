@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--
+  $Header:  $
+  $Revision:  $
+ -->
+<beans>
+  <description>
+    Demonstrates an adaptor which reads from stdin and publishes to IBM MQ directly.
+
+    Data originates: stdin.
+    Data terminates: MQ.
+
+    Run using
+      java org.openadaptor.spring.SpringApplication -config mq_writer.xml -bean Adaptor -props mq.properties
+
+    mq.properties is a properties format file which should be edited to supply specific mq property
+    values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
+  </description>
+ 
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline ReadConnector-MQSeries_WriteConnector
+    </description>
+    <property name="processors">
+      <list>
+        <ref bean="ReadConnector"/>
+        <ref bean="MQSeries_WriteConnector"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <!-- WriteConnector: MqWriteConnector -->
+  <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
+    <description>
+      Configured to write directly to MQ Series.
+    </description>
+    <property name="connection">
+      <bean class="org.openadaptor.thirdparty.mq.MqConnection">
+        <property name="channelName" value="${mq.channel}"/>
+        <property name="hostName" value="${mq.host}"/>
+        <property name="managerName" value="${mq.manager}"/>
+        <property name="port" value="${mq.port}"/>
+        <property name="queueName" value="${mq.queue}"/>
+        <property name="userName" value="${mq.user}"/>
+        <property name="password" value="${mq.password}"/>
+        <property name="mqCharacterSet" value="37"/>
+        <!--
+          Set one or other (not both) of the following to true
+          in order to enable the appropriate transaction mode.
+          -->
+        <property name="useLocalTransactions" value="false"/>
+        <property name="useXATransactions" value="false"/>
+      </bean>
+    </property>
+  </bean>
+
+</beans>

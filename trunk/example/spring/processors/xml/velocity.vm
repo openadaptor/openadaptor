@@ -1,0 +1,7 @@
+<record created="${SystemProperties.get("openadaptor.application.start")}">
+#set($i = 1)
+#foreach($fieldName in ${data.keys()})
+  <field${i}>${data.get($fieldName)}</field${i}>
+#set($i = $i + 1)
+#end
+</record>

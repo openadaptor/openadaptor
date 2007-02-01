@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads lines from stdin
+      * converts delmited input into a map
+      * converts map to xml
+      * writes to stdout
+    
+    It is designed to illustrate the use of velocity
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config velocity.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      foo,bar
+    
+    ...and you should see it converted to something like this...
+  
+    <record created="2006/12/20 16:11:40">
+      <field1>foo</field1>
+      <field2>bar</field2>
+    </record>
+    
+-->
+
+<beans>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="MapConverter"/>
+            <ref bean="VelocityProcessor"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor"/>
+  
+  <!-- This is a processor that converts an ordered map into an xml string -->
+  <bean id="VelocityProcessor" class="org.openadaptor.thirdparty.velocity.VelocityProcessor">
+    <property name="templateFile" value="velocity.vm"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

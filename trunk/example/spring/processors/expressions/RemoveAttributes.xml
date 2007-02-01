@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--
+  $Header: /cvs/openadaptor/cookbook/Expressions_OM.xml,v 1.7 2006/11/01 15:08:22 kscully Exp $
+  $Revision: 1.7 $
+ -->
+
+<beans>
+    <description>
+        This example illustrates the use of openadaptor Expressions (using Ordered Maps)
+        Simple example that illustrates removing specific attributes.
+
+        Data originates: File
+        Data processed : XML Records converted to Ordered Maps
+        Data processed : Remove two specified attributes.
+        Data terminates: Delimited Text to stdout
+    </description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="XmlReadConnector"/>
+            <ref bean="OMConvertor"/>
+            <ref bean="RemoveAttributes"/>
+            <ref bean="DelimitedTextConvertor"/>
+            <ref bean="WriteConnector"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read in an entire xml document consisting of multiple child records</description>
+    <property name="filename" value="books.xml"/>
+  </bean>
+  
+  <bean id="OMConvertor" class="org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor">
+    <property name="expression" value="*/*">
+      <description>
+        Convert each child record in the xml document into an ordered map. Batch the ordered maps.
+        One ordered map is created for each child record and added to the batch.
+      </description>
+    </property>
+    <property name="omitTopLevelElementTag" value="true">
+      <description>
+        As we don't want each record to retain it's parent tag,
+        to set omitTopLevelElementTag to true. This allows each
+        child to be treated as an independent ordered map.
+      </description>
+    </property>
+  </bean>
+
+  <bean id="RemoveAttributes" class="org.openadaptor.core.processor.ProcessorGroup">
+    <description>
+      This example removes 2 named attributes.
+      Attributes can be removed either by name (attributeName) or using the
+      result of an expression to derive the attribute name.
+    </description>
+    <property name="processors">
+      <list>
+        <bean class="org.openadaptor.auxil.processor.simplerecord.AttributeRemoveProcessor">
+          <!-- Doesn't remove anything here as no attribute name matches a price value. -->
+          <property name="expressionString" value="{price}"/>
+        </bean>
+        <bean class="org.openadaptor.auxil.processor.simplerecord.AttributeRemoveProcessor">
+          <property name="attributeName" value="quantity"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="DelimitedTextConvertor" class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
+
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

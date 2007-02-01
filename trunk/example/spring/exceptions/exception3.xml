@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads xml from stdin
+      * validates the xml
+      * writes to stdout
+    
+    Validation failures are trapped and sent to centralised exception manager (via soap)
+    
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config exception3.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      <data>hello</data>
+    
+    ...and you should see it echo-ed
+  
+    type something which is not an xml doc with a element called data and the validation
+    exception will be caught and sent to exception manager.
+  
+    For this to work you need to run the exception manager, this is a standalone process that
+    exposes a webservice to accept exceptions and exposes a servlet interface to browse the
+    exception store.
+  
+       java org.openadaptor.auxil.exception.ExceptionManager -dir c:\temp\eman -port 9999
+  
+    browse the exception store using this url
+  
+      http://localhost:9999
+  
+-->
+
+<beans>
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor"><ref bean="Pipeline"/></property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="Validator"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+    <!-- this routes any exception to discard writer -->
+    <property name="exceptionProcessor" ref="ExceptionProcessor"/>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <!-- Exception processor component -->
+  <bean id="ExceptionProcessor" class="org.openadaptor.auxil.exception.ExceptionMessageProcessor">
+    <!-- identifies where the exception is from -->
+    <property name="from" value="TestAdaptor"/>
+    <!-- these define the webservice that exceptions will be routed to -->
+    <property name="endpoint" value="http://localhost:9999/soap/ExceptionManager?wsdl"/>
+    <property name="remoteMethodName" value="process"/>
+  </bean>
+  
+</beans>

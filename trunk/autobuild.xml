@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="openadaptor-autobuild" default="autobuild">
+
+  <property name="svn.root" value="https://openadaptor3.openadaptor.org/svn/openadaptor3"/>
+  
+  <taskdef resource="svntask.properties"/>
+
+  <property name="dir.checkout" value="checkout"/>
+  
+  <condition property="url" value="${svn.root}/tags/${tag}">
+    <isset property="tag"/>
+  </condition>
+  
+  <condition property="checkout.tag" value="${tag}">
+    <isset property="tag"/>
+  </condition>
+  
+  <condition property="url" value="${svn.root}/branches/${branch}">
+    <isset property="branch"/>
+  </condition>
+  
+  <condition property="checkout.tag" value="${branch}">
+    <isset property="branch"/>
+  </condition>
+  
+  <property name="url" value="${svn.root}/trunk"/>
+  <property name="checkout.tag" value="trunk"/>
+  
+  <echo message="url          = ${url}"/>
+  <echo message="checkout.tag = ${checkout.tag}"/>
+  
+  <target name="autobuild" depends="checkout, build, package"/>
+  
+  <target name="checkout">
+    <delete dir="${dir.checkout}"/>
+    <svn>
+      <checkout url="${url}" destPath="${dir.checkout}"/>
+    </svn>
+    <concat destfile="${dir.checkout}/checkout.properties">tag = ${checkout.tag}
+    </concat>
+  </target>
+  
+  <target name="update">
+    <svn>
+      <update dir="${dir.checkout}"/>
+    </svn>
+  </target>
+  
+  <target name="build">
+    <ant antfile="build.xml" dir="${dir.checkout}" target="test.clean"/>
+  </target>
+  
+  <target name="package">
+    <ant antfile="package.xml" dir="${dir.checkout}" target="zippedpackage"/>
+  </target>
+  
+ 
+</project>

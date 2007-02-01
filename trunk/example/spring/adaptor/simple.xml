@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This (contrived) adaptor does the following...
+    
+      * reads lines from stdin
+      * converts delmited input into a map
+      * converts map to xml
+      * writes to stdout
+    
+    It is designed to illustrate the basic structure of an adaptor in spring.
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      hello world
+    
+    ...and you should see it converted to something like this...
+  
+      <?xml version="1.0" encoding="ISO-8859-1"?>
+      <record><field>hello world</field></record>
+    
+    In a realistic implementation the connectors could be reading/writing from/to
+    enterprise middleware (jms, mqseries, tibco...etc), databases, webservices, filesystems, 
+    ftp sites, tcp/ip sockets or specific system APIs. The processors could be converting this 
+    data to a cannonical form, normalising and enriching it, validating it against enterprise 
+    information models.
+      
+-->
+
+<beans>
+  
+  <!-- This is the bean that actually gets run -->
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="MapConverter"/>
+            <ref bean="XmlConverter"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+  
+  <!-- This is a read connector, it reads records from a stream (stdin) -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <!-- This is a processor that converts delimited strings into an ordered map -->
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <property name="fieldNames">
+      <list>
+        <value>field</value>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- This is a processor that converts an ordered map into an xml string -->
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <!-- This is a write connector that outputs the data to a stream (stdout) -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<booklist>
+  <book>
+    <title>Cosmic Banditos</title>
+    <author>A.C. Weisbecker</author>
+    <price>3.54</price>
+    <quantity>3</quantity>
+  </book>
+  <book>
+    <title>Fall From a Cliff</title>
+    <author>Eileen Dover</author>
+    <price>6.00</price>
+    <quantity>4</quantity>
+  </book>
+</booklist>  
