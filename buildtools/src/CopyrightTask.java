@@ -108,9 +108,19 @@ public class CopyrightTask extends Task {
     return sb.toString();
   }
 
+  private static String trimWhitespace(String s) {
+    s = s.replaceAll("/\\*[ \t]+", "/\\*");
+    s = s.replaceAll("[ \t]+\\*/", "\\*/");
+    s = s.replaceAll("^[ \t]+", "");
+    s = s.replaceAll("[ \t]+$", "");
+    s = s.replaceAll("\n", "");
+    s = s.replaceAll("\r", "");
+    s = s.replaceAll("[ \t][ \t]+", "");
+    return s;
+  }
   public void execute() throws BuildException {
 
-    String onelineComment = copyright.replaceAll("\n", "").replaceAll("\r", "");
+    String onelineComment = trimWhitespace(copyright);
     
     boolean uptodate = true;
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
@@ -247,8 +257,14 @@ public class CopyrightTask extends Task {
     } finally {
       closeNoThrow(reader);
     }
-    String onelineComment = comment.toString().replaceAll("\n", "").replaceAll("\r", "");
+    String onelineComment = trimWhitespace(comment.toString());
     
-    return onelineComment.equals(copyright);
+    if (onelineComment.equals(copyright)) {
+      return true;
+    } else {
+      System.err.println(onelineComment);
+      System.err.println(copyright);
+      return false;
+    }
   }
 }
