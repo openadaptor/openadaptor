@@ -23,19 +23,62 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core;
 
 import java.util.List;
 
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
+
+/**
+ * Represents a class that can send / write some data to an external resource.
+ * 
+ * @author perryj
+ *
+ */
 public interface IWriteConnector {
 
+  /**
+   * Implementations of {@link IWriteConnector} are typically beans with zero-arg
+   * constructors. This method checks that the current state of an
+   * implementation is "meaningful". Implementations are encouraged to add
+   * exception to the list parameter rather than throwing them. This allows the
+   * calling code to collate the exceptions. If the implementation is an
+   * {@link IComponent} then the exceptions should be an
+   * {@link ValidationException}.
+   * 
+   * @param exceptions
+   *          collection to which exceptions should be added
+   */
   void validate(List exceptions);
-  
+
+  /**
+   * This should be called before {@link #next(long)} is called. Implementations
+   * should use this method to establish connections to external resources and
+   * prepare to accept calls to {@link #next}. Exceptions should be thrown as
+   * RuntimeExceptions. If the implementation is an {@link IComponent} then it
+   * should throw {@link ConnectionException}.
+   */
   void connect();
 
+  /**
+   * This should be called before the implementation is unreferenced.
+   * Implementations should use this method to "cleanup" connections to external
+   * resources and reset state. Exceptions should be thrown as
+   * RuntimeExceptions. If the implementation is an {@link IComponent} then it
+   * should throw {@link ConnectionException}.
+   */
   void disconnect();
 
+  /**
+   * Delivers some data to the external resource to which the implementation is connected.
+   * It is assumed that the implementation will cast the data to the expected type(s).
+   * Exceptions should be thrown as RuntimeExceptions.
+   * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
+   * @param data the data to process
+   * @return the resopnse from the external resource
+   */
   Object deliver(Object[] data);
 }

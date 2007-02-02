@@ -27,7 +27,15 @@
 
 package org.openadaptor.core;
 
+/**
+ * Bean interface that add id string property, used throughout openadaptor to improve
+ * logging and where appropriate to name threads.
+ *  
+ * @author perryj
+ *
+ */
 public interface IComponent {
-	public String getId();
-	public void setId(String id);
+  public String getId();
+
+  public void setId(String id);
 }

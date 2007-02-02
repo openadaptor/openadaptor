@@ -29,32 +29,69 @@ package org.openadaptor.core;
 
 import java.util.List;
 
+import org.openadaptor.core.exception.ValidationException;
 
+/**
+ * Implemented by classes that are capable of doing some sort of processing.
+ * Implementations typically cast the data to the expected types(s). The core
+ * method is {@link #process(Object)}.
+ * 
+ * @author perryj
+ * 
+ */
 public interface IDataProcessor {
-	
-	void validate(List exceptions);
-	
-	void reset(Object context);
-  
-	/**
-	 * processes some data and returns zero or many objects as output
-	 * @param data
-	 * @return output, null indicates that data was disgarded, this is distinct from empty
-	 * array which indicates no return value
-	 */
-	Object[] process(Object data);
-	
+
+  /**
+   * Implementations of {@link IDataProcessor} are typically beans with zero-arg
+   * constructors. This method checks that the current state of an
+   * implementation is "meaningful". Implementations are encouraged to add
+   * exception to the list parameter rather than throwing them. This allows the
+   * calling code to collate the exceptions. If the implementation is an
+   * {@link IComponent} then the exceptions should be an
+   * {@link ValidationException}.
+   * 
+   * @param exceptions
+   *          collection to which exceptions should be added
+   */
+  void validate(List exceptions);
+
+  /**
+   * Allows calling code to communicate context information, the implementation
+   * will cast the context to an expected type.
+   * 
+   * @param context
+   * @see IReadConnector#getReaderContext()
+   */
+  void reset(Object context);
+
+  /**
+   * Processes some data and return the results. Results must be in an array, an
+   * empty array is valid but null is not. It is assumed that implementations
+   * will cast the incoming data to an expected type(s). Exceptions should be
+   * thrown as RuntimeException, if the implementation is an {@link IComponent}
+   * then this should be a subclass of {@link ComponentException}.
+   * 
+   * @return output, null indicates that data was disgarded, this is distinct
+   *         from empty array which indicates no return value
+   */
+  Object[] process(Object data);
+
+  /**
+   * static field that does nothing to the data. Can be used by code to assign a
+   * default value to and field / variable so that code can refer to that field /
+   * variable without checking for null.
+   */
   public static final IDataProcessor NULL_PROCESSOR = new IDataProcessor() {
 
-		public Object[] process(Object data) {
-			return new Object[] { data };
-		}
+    public Object[] process(Object data) {
+      return new Object[] { data };
+    }
 
-		public void reset(Object context) {
-		}
+    public void reset(Object context) {
+    }
 
-		public void validate(List exceptions) {
-		}
-	};
+    public void validate(List exceptions) {
+    }
+  };
 
 }

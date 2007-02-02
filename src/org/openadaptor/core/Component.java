@@ -23,48 +23,61 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core;
 
 import org.openadaptor.core.jmx.Administrable;
 
+/**
+ * Implementation of {@link IComponent} serves as a base class for other classes
+ * in openadaptor
+ * 
+ * @author perryj
+ * 
+ */
 public class Component implements IComponent, Administrable {
 
-	private String id;
+  private String id;
 
-	public Component() {
-	}
-	
-	public Component(String id) {
-		this.id = id;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String toString() {
-		return id != null ? id : super.toString();
-	}
+  public Component() {
+  }
 
+  public Component(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /**
+   * @return id string or {@link Object#toString()}
+   */
+  public String toString() {
+    return id != null ? id : super.toString();
+  }
+
+  /**
+   * @return inner class instance that implements {@link Component.AdminMBean}
+   */
   public Object getAdmin() {
     return new Admin();
   }
-  
+
   public interface AdminMBean {
     String getId();
   }
-  
+
   public class Admin implements AdminMBean {
 
     public String getId() {
       return Component.this.getId();
     }
-    
+
   }
 }

@@ -23,10 +23,21 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core;
 
+import org.openadaptor.core.node.Node;
+import org.openadaptor.core.router.Router;
+
+/**
+ * This is the fundamental interface in the openadaptor processing framework.
+ * {@link Adaptor}s, {@link Node}s & {@link Router}s all implement this
+ * interface and they can be coupled together in any combination.
+ * 
+ * @author perryj
+ * 
+ */
 public interface IMessageProcessor {
-	public Response process(Message msg);
+  public Response process(Message msg);
 }

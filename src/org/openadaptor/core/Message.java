@@ -31,10 +31,27 @@ import java.util.List;
 
 import org.openadaptor.core.transaction.ITransaction;
 
-
+/**
+ * Class that encapsulates the input data to be processed by an {@link IMessageProcessor}.
+ * @author perryj
+ * @see IMessageProcessor
+ */
 public class Message {
-	private Object sender;
+
+  /*
+   * A reference to the object that initiated the processing, this is not necessarily the
+   * caller of {@link IMessageProcessor#process} not is it necessarily a IMessageProcessor.
+   */
+  private Object sender;
+  
+  /**
+   * The data that should be processed as single transaction
+   */
 	private Object[] data;
+  
+  /**
+   * The {@link ITransaction} that is associated with the processing of this Message
+   */
   private ITransaction transaction;
 	
   public Message(final Object[] data, final Object sender, final ITransaction transaction) {
