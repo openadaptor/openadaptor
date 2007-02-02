@@ -262,8 +262,8 @@ public class CopyrightTask extends Task {
     if (onelineComment.equals(copyright)) {
       return true;
     } else {
-      System.err.println(onelineComment);
-      System.err.println(copyright);
+//      System.err.println(onelineComment);
+//      System.err.println(copyright);
       return false;
     }
   }
