@@ -32,9 +32,12 @@ package org.openadaptor.util.ant;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +61,8 @@ public class CopyrightTask extends Task {
 
   private File backupDir = new File(".copyright_backup");
 
+  private String copyright;
+  
   private boolean update = false;
 
   public void addFileset(FileSet set) {
@@ -72,10 +77,41 @@ public class CopyrightTask extends Task {
     backupDir = new File(dirname);
   }
   
+  public void setCopyright(String filename) {
+    try {
+      copyright = "/*\n" + readInputStreamContents(new FileInputStream(filename)) + "\n*/\n";
+    } catch (IOException e) {
+      throw new RuntimeException("IOException, " + e.getMessage(), e);
+    }
+  }
+  
+  public static String readInputStreamContents(InputStream is) {
+    StringBuffer sb = new StringBuffer();
+    char[] cbuf = new char[1024];
+    int len = 0;
+    InputStreamReader reader = null;
+    try {
+      reader = new InputStreamReader(is);
+      while ((len = reader.read(cbuf, 0, cbuf.length)) != -1) {
+        sb.append(cbuf, 0, len);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException("IOException, " + e.getMessage(), e);
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+        }
+      }
+    }
+    return sb.toString();
+  }
+
   public void execute() throws BuildException {
 
-    String copyright = "/*\n" + Application.LICENCE_TEXT + "*/\n";
-
+    String onelineComment = copyright.replaceAll("\n", "").replaceAll("\r", "");
+    
     boolean uptodate = true;
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
       FileSet fileSet = (FileSet) iter.next();
@@ -91,8 +127,8 @@ public class CopyrightTask extends Task {
     }
   }
 
-  protected boolean execute(File dir, String file, String copyright) throws BuildException {
-    if (!isCopyrightUptodate(dir, file, copyright)) {
+  protected boolean execute(File dir, String file, String onelineComment) throws BuildException {
+    if (!isCopyrightUptodate(dir, file, onelineComment)) {
       if (update) {
         overwriteCopyrightComment(dir, file, copyright);
         System.out.println("updated " + file);
@@ -213,6 +249,7 @@ public class CopyrightTask extends Task {
     } finally {
       closeNoThrow(reader);
     }
-    return comment.toString().equals(copyright);
+    String onelineComment = comment.toString().replaceAll("\n", "").replaceAll("\r", "");
+    return onelineComment.equals(copyright);
   }
 }
