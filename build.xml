@@ -250,7 +250,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system, example.springcheck" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system, copyright.check" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
 
   <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean (defaults to Adaptor) to be defined">
     <property name="bean" value="Adaptor"/>
@@ -262,7 +262,7 @@
     </java>
   </target>
 
-  <target name="cruise" depends="test.all, copyright.check" description="target for cruise control to call"/>
+  <target name="cruise" depends="test.all, example.springcheck" description="target for cruise control to call"/>
 
   <target name="compile.buildtools">
     <mkdir dir="${dir.buildtools.classes}"/>

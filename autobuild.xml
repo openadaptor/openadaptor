@@ -30,7 +30,7 @@
   <echo message="checkout.tag = ${checkout.tag}"/>
   
   <target name="autobuild" depends="checkout, build, package"/>
-  
+
   <target name="checkout">
     <delete dir="${dir.checkout}"/>
     <svn>
@@ -47,7 +47,7 @@
   </target>
   
   <target name="build">
-    <ant antfile="build.xml" dir="${dir.checkout}" target="test.clean"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="test.all"/>
   </target>
   
   <target name="package">
