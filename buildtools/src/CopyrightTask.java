@@ -118,7 +118,7 @@ public class CopyrightTask extends Task {
       DirectoryScanner ds = fileSet.getDirectoryScanner(getProject());
       String[] files = ds.getIncludedFiles();
       for (int i = 0; i < files.length; i++) {
-        uptodate &= execute(fileSet.getDir(getProject()), files[i], copyright);
+        uptodate &= execute(fileSet.getDir(getProject()), files[i], onelineComment);
       }
     }
     
@@ -183,10 +183,8 @@ public class CopyrightTask extends Task {
 
       // swap files
       File backFile = new File(backupDir, filename);
-      backFile.mkdirs();
-      if (existingFile.renameTo(new File(backupDir, filename))) {
-        throw new BuildException("failed to move original to backup dir");
-      }
+      backFile.getParentFile().mkdirs();
+      existingFile.renameTo(new File(backupDir, filename));
       (new File(dir, filename)).delete();
       newFile.renameTo(new File(dir, filename));
       
@@ -250,6 +248,7 @@ public class CopyrightTask extends Task {
       closeNoThrow(reader);
     }
     String onelineComment = comment.toString().replaceAll("\n", "").replaceAll("\r", "");
+    
     return onelineComment.equals(copyright);
   }
 }
