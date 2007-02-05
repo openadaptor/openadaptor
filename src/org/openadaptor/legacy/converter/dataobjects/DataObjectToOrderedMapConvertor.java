@@ -37,6 +37,9 @@ import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 
 /**
+ * Converts arrays of DataObjects (legacy data format from previous versions of openadaptor)
+ * to and array of objects that implement {@link IOrderedMap}.
+ * 
  * @author Russ Fennell
  */
 public class DataObjectToOrderedMapConvertor extends AbstractConvertor {

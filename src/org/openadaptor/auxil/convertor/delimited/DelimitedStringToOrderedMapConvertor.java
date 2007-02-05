@@ -23,15 +23,16 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.convertor.delimited;
 
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
 /**
- * Convert DelimitedStrings to OrderedMaps
+ * Converts delimited string records to {@link IOrderedMap} implementations.
  * 
  * @author Eddy Higgins
  */
@@ -40,11 +41,11 @@ public class DelimitedStringToOrderedMapConvertor extends AbstractDelimitedStrin
   public DelimitedStringToOrderedMapConvertor() {
     super();
   }
-  
+
   public DelimitedStringToOrderedMapConvertor(String id) {
     super(id);
   }
-  
+
   /**
    * Set flag to remove enclosing quotes from fields where necessary. This is applied to all fields
    * 
@@ -78,14 +79,14 @@ public class DelimitedStringToOrderedMapConvertor extends AbstractDelimitedStrin
   protected Object convert(Object record) {
     Object result = null;
 
-    if (!(record instanceof String))
+    if (!(record instanceof String)) {
       throw new RecordFormatException("Record is not a String. Record: " + record);
+    }
 
     String stringVal = (String) record;
     if (nextRecordContainsFieldNames) {
       setFieldNames(extractValues(stringVal));
       nextRecordContainsFieldNames = false;
-
     } else {
       result = convertDelimitedStringToOrderedMap(stringVal);
     }

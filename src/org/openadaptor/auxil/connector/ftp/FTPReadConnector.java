@@ -42,19 +42,10 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 /**
- * This component will provide basic File Transfer Protocol connunication to allow the adaptor to GET a file from a
- * remote machine. <p/>
- * 
- * If no file matches the SourceFile pattern then a null is returned otherwise the matching file is transferred and its
- * contents returned. <p/>
- * 
- * The actual transfer is performed by the FTP library defined in the properties file. There are several reference
- * implementations. The default is to use SunFTP which in turn uses the sun.net.ftp libraries. You can specify your own
- * class but it must implement the FTP interface. <p/>
+ * A Read Connector that gets files from an FTP site. Needs to be configured with an instance
+ * of {@link IFTPLibrary}.
  * 
  * Based on the original ideas by Mike Day <p/>
- * 
- * </blockquote>
  * 
  * @author Russ Fennell, Eddy Higgins
  * 

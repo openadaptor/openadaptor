@@ -40,7 +40,7 @@ import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
 /**
- * Simple Converter for delimited Strings
+ * Base Converter for delimited string records
  * 
  * @author Eddy Higgins
  */

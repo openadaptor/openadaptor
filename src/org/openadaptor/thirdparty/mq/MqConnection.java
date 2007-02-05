@@ -55,10 +55,10 @@ import com.ibm.mq.MQXAQueueManager;
  * XAResources for distributed transaction management and interacts with local
  * transaction managers for local transaction management. MB this connection component
  * is not shareable between Connectors.
- * <br><br> 
+ * <br>
  * Since IBMS's mq.jar is freely downloadable but not distributable direct access to the mq
  * a non-functional stub-api has been mocked up. This allows openadaptor to build even in the absence 
- * of mq.jar. This is not ideal but avoids thenecessity for conditional compilition being built 
+ * of mq.jar. This is not ideal but avoids the necessity for conditional compilition being built 
  * into the build script.
  */
 public class MqConnection extends Component { 

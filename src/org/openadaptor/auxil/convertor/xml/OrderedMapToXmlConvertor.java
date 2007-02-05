@@ -45,7 +45,7 @@ import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
 /**
- * Convert OrderedMaps to Xml (either Documents or Strings)
+ * Converts {@link IOrderedMap}s to xml documents or xml strings
  * 
  * @author Eddy Higgins
  */
@@ -61,7 +61,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
   // an org.dom4j.Document.
   protected boolean returnXmlAsString = true;
 
-  protected String encoding = EncodingAwareObject.ISO_8859_1; // UTF_8; //ToDo: Decide if this is, in fact the best default.
+  // TODO Decide if this is, in fact the best default.
+  protected String encoding = EncodingAwareObject.ISO_8859_1; 
 
   public OrderedMapToXmlConvertor() {
     super();

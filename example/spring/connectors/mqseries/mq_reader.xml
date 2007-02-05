@@ -58,6 +58,6 @@
     </property>
   </bean>
 
-  <bean id="WriterConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>

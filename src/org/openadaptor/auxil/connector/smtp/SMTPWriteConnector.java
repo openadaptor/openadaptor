@@ -37,55 +37,42 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
 
 /**
- * This class will send messages via smtp (email) to destinations specified in properties.
- * Records can be included as part of the body or as attachments
- *
+ * This Write Connector will deliver data by sending it as an email using the SMTP protocol.
+ * It needs to be configured with an {@link SMTPConnection}.
+ * 
  * @author Kuldip Ottal
  *
  */
 
 public class SMTPWriteConnector extends AbstractWriteConnector {
 
-  private static final Log log = LogFactory.getLog(SMTPWriteConnector.class.getName());
+  private static final Log log = LogFactory.getLog(SMTPWriteConnector.class);
 
   private SMTPConnection smtpConnection;
 
-  /**
-   * Return smtp connection
-   *
-   * @return SMTPConnection
-   */
-  public SMTPConnection getSmtpConnection() {
-    return smtpConnection;
-  }
-
-  /**
-   * Set smtp connection
-   */
-  public void setSmtpConnection(SMTPConnection smtpConnection) {
+  public void setSmtpConnection(final SMTPConnection smtpConnection) {
     this.smtpConnection = smtpConnection;
   }
 
   /**
-   * Deliver a batch of records.
+   * Creates and sends email containing the data. The body of the message is a concatentation of
+   * calls to {@link #toString()} on each element in the data array.
    *
-   * @param records - an Array of records to be processed.
-   * @return result information if any. May well be null.
+   * @param data an array of objects to be processed.
+   * @return result string confirming that the email was sucessfully sent.
    * @throws org.openadaptor.core.exception.ComponentException
    */
-  public Object deliver(Object[] records) throws ComponentException {
+  public Object deliver(Object[] data) throws ComponentException {
     String result=null;
     String body="";
 
-    int size=records.length;
+    int size=data.length;
     for (int recordIndex =0;recordIndex <size;recordIndex++) {
-      Object record =records[recordIndex];
+      Object record =data[recordIndex];
       try {
         if (record != null) {
           body += record.toString();
-          //Generate body of mail message
           smtpConnection.generateMessageBody(body);
-          //Send message
           smtpConnection.send();
         } else {
           throw new ProcessingException("Malformed data for smtp write connector - record has null value", this);
@@ -101,10 +88,8 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
 
   }
 
-
   /**
-   * Establish a connection to external message transport without starting the externalconnector. If already connected
-   * then do nothing.
+   * creates smtp connection
    */
   public void connect() {
     if (!isConnected()) {
@@ -114,7 +99,7 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
   }
 
   /**
-   * Disconnect from the external message transport. If already disconnected then do nothing.
+   * disposes of smtp connection
    */
   public void disconnect() {
     if (isConnected()) {

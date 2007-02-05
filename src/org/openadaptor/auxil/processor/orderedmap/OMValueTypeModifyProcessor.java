@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.processor.orderedmap;
 
@@ -41,66 +41,60 @@ import org.openadaptor.core.exception.RecordFormatException;
  */
 public class OMValueTypeModifyProcessor extends OrderedMapModifyProcessor {
 
-    //private static final Log log = LogFactory.getLog(OMValueTypeModifyProcessor.class);
+  //private static final Log log = LogFactory.getLog(OMValueTypeModifyProcessor.class);
 
-    /**
-     * Target type for conversion
-     */
-    protected String type;
+  /**
+   * Target type for conversion
+   */
+  protected String type;
 
-    public String getType() {
-        return type;
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  protected IOrderedMap applyToMap(IOrderedMap map) throws RecordException {
+
+    Object existingValue = map.get(getAttribute());
+    if (existingValue == null) {
+      throw new RecordFormatException("Null value for attribute [" + getAttribute()
+          + "] during OrderedMap Type Transform");
     }
 
-    public void setType(String type) {
-        this.type = type;
+    try {
+      Class newTypeClass = Class.forName(getType());
+      Class oldTypeClass = existingValue.getClass();
+      Object newValue;
+
+      if (oldTypeClass.getName().equals("java.lang.String")) {
+        Class[] argTypes = { oldTypeClass };
+        Object[] argValues = { existingValue };
+
+        Constructor constructor = newTypeClass.getConstructor(argTypes);
+        newValue = constructor.newInstance(argValues);
+      } else if (getType().equals("java.lang.String")) {
+        newValue = existingValue.toString();
+      } else {
+        // Can't handle this
+        throw new ProcessorException("Unsupported OrderedMap Type Transform.", this);
+      }
+
+      map.put(getAttribute(), newValue);
+    } catch (ClassNotFoundException e) {
+      throw new RecordFormatException("ClassNotFoundException during OrderedMap Type Transform.", e);
+    } catch (NoSuchMethodException e) {
+      throw new RecordFormatException("NoSuchMethodException during OrderedMap Type Transform.", e);
+    } catch (InstantiationException e) {
+      throw new RecordFormatException("InstantiationException during OrderedMap Type Transform.", e);
+    } catch (IllegalAccessException e) {
+      throw new RecordFormatException("IllegalAccessException during OrderedMap Type Transform.", e);
+    } catch (InvocationTargetException e) {
+      throw new RecordFormatException("InvocationTargetException during OrderedMap Type Transform.", e);
     }
-
-    protected IOrderedMap applyToMap(IOrderedMap map) throws RecordException {
-
-        Object existingValue = map.get(getAttribute());
-        if (existingValue == null) {
-            throw new RecordFormatException("Null value for attribute ["+getAttribute()+"] during OrderedMap Type Transform");
-        }
-
-        try {
-            Class newTypeClass = Class.forName(getType());
-            Class oldTypeClass = existingValue.getClass();
-            Object newValue;
-
-            if (oldTypeClass.getName().equals("java.lang.String") ) {
-                Class[] argTypes = {oldTypeClass};
-                Object[] argValues = {existingValue};
-
-                Constructor constructor = newTypeClass.getConstructor(argTypes);
-                newValue = constructor.newInstance(argValues);
-            }
-            else if ( getType().equals("java.lang.String") ) {
-                newValue = existingValue.toString();
-            }
-            else {
-                // Can't handle this
-                throw new ProcessorException("Unsupported OrderedMap Type Transform.", this);
-            }
-
-            map.put(getAttribute(), newValue);
-        }
-        catch (ClassNotFoundException e) {
-            throw new RecordFormatException("ClassNotFoundException during OrderedMap Type Transform.", e);
-        }
-        catch (NoSuchMethodException e) {
-            throw new RecordFormatException("NoSuchMethodException during OrderedMap Type Transform.", e);
-        }
-        catch (InstantiationException e) {
-            throw new RecordFormatException("InstantiationException during OrderedMap Type Transform.", e);
-        }
-        catch (IllegalAccessException e) {
-            throw new RecordFormatException("IllegalAccessException during OrderedMap Type Transform.", e);
-        }
-        catch (InvocationTargetException e) {
-            throw new RecordFormatException("InvocationTargetException during OrderedMap Type Transform.", e);
-        }
-        return map;
-    }
+    return map;
+  }
 
 }

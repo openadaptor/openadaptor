@@ -41,7 +41,11 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
- * ReadConnector that use MqConnection to read messages from an IBM MQ Queue.
+ * Read Connector that gets data from an IBM MQ Series queue. Needs to be configured with an
+ * {@link MqConnection}.
+ * 
+ * @see MqConnection
+ * 
  */
 public class MqReadConnector extends Component implements IReadConnector, ITransactional {
 

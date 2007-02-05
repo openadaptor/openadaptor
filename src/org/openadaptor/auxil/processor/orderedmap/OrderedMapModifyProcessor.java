@@ -60,7 +60,7 @@ public abstract class OrderedMapModifyProcessor extends Component implements IDa
 
   /**
    * Process a single record, which must be an instance of an IOrderedMap. Final because this is where the IOrderedMap
-   * checking is done. If you don't want this, implement IRecordProcessor directly instead.
+   * checking is done. If you don't want this, implement {@link IDataProcessor} directly instead.
    * 
    * @param record
    * @return the array of records which result from processing the incoming record.

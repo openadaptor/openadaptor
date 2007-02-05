@@ -31,12 +31,11 @@ import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.core.exception.RecordException;
 
 /**
- * Converts XML documents (as Strings) to Dom4j Documents
+ * Converts xml document strings to Dom4j document objects
  * 
  * @author Eddy Higgins
  */
 public class XmlToDom4jConvertor extends AbstractConvertor {
-  //private static final Log log = LogFactory.getLog(XmlToDom4jConvertorProcessor.class);
 
   /**
    * Convert an incoming record into a dom4j Document. Valid input records may contain an XML String,a Dom4j Document,
