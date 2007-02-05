@@ -27,6 +27,11 @@
 
 package org.openadaptor.core.lifecycle;
 
+/**
+ * Enumeration for state.
+ * @author perryj
+ *
+ */
 public class State {
 	
   public static final State STARTED = new State("STARTED");

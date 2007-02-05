@@ -27,6 +27,11 @@
 
 package org.openadaptor.core.transaction;
 
+/**
+ * Basic (and default) transaction manager.
+ * @author perryj
+ *
+ */
 public class TransactionManager implements ITransactionManager {
 
   private long timeoutMs = 0;

@@ -27,6 +27,11 @@
 
 package org.openadaptor.core.lifecycle;
 
+/**
+ * Represents a class which will manage {@link ILifecycleComponent}s.
+ * @author perryj
+ *
+ */
 public interface ILifecycleComponentManager  {
 	void register(ILifecycleComponent component); 
 	ILifecycleComponent unregister(ILifecycleComponent component);

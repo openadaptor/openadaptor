@@ -37,13 +37,12 @@ import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.WriteNode;
 
 /**
- * simplified router for when there is a single sequence of IMessageProcessors
+ * A simplified {@link Router} for when there is a single sequence of IMessageProcessors
  * and optionally a single exception processor.
  * 
  * @author perryj
- *
  */
-public class Pipeline extends AbstractRouter {
+public class Pipeline extends AbstractRouter implements IMessageProcessor {
  
   public Pipeline() {super();}
 
@@ -51,13 +50,10 @@ public class Pipeline extends AbstractRouter {
     super(id);
   }
 
-  //ToDo: Add-back ExceptionProcessor capability.
-
   public void setProcessors(List processorList){
     // create process map from list of processors
     Map processMap = new HashMap();
     IMessageProcessor previous = null;
-    //for (int i = 0; i < processors.length; i++) {
     for (Iterator it=processorList.iterator();it.hasNext();) { 
       IMessageProcessor processor = (IMessageProcessor) autoboxer.autobox(it.next());
       if (previous != null) {

@@ -50,7 +50,10 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.transaction.ITransaction;
 
-public class AbstractRouter extends Component implements IMessageProcessor,ILifecycleComponentContainer {
+/**
+ * Shared implementation of a {@link Router} and {@link Pipeline}.
+ */
+public class AbstractRouter extends Component implements ILifecycleComponentContainer {
 
   private static Log log = LogFactory.getLog(AbstractRouter.class);
 

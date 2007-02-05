@@ -31,6 +31,16 @@ import java.util.List;
 
 import org.openadaptor.core.IComponent;
 
+/**
+ * Represents a component that has {@link State} and that must be validated,
+ * started and stopped. Most top level class in the framework implement this
+ * interface. TYpically {@link Adaptor} manages this state and uses the
+ * {@link #addListener(ILifecycleListener)} and {@link #waitForState(State)} to
+ * co-ordinate the lifecycle management.
+ * 
+ * @author perryj
+ * 
+ */
 public interface ILifecycleComponent extends IComponent {
 	void validate(List exceptions);
 	void start();

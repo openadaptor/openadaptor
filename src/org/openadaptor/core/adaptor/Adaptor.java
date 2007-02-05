@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core.adaptor;
 
@@ -44,19 +44,51 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
 
+/**
+ * An Adaptor is a core framework class that serves as the "top level" Runnable
+ * bean. This bean is responsible for managing the lifecycle of
+ * {@link ILifecycleComponent}s and one or more {@link IRunnable}s. If any of
+ * the {@link IRunnable} components implement the {@link ITransactionInitiator}
+ * interface then the Adaptor will call their TransactionManager setter. Once
+ * running it receives data from the {@link IRunnable}s that it manages and
+ * delegates these to another {@link IMessageProcessor}, typically this
+ * delegate is a {@link Router} or {@link Pipeline}.
+ * 
+ * <br/>An Adaptor implements {@link Runnable} and will return when all the
+ * {@link IRunnable} components it manages have exited. If an {@link IRunnable}
+ * exits with an non-zero return code, it will stop any other {@link IRunnable}
+ * components.
+ * 
+ * <br/> When an Adaptor is configured with an {@link IMessageProcessor} that is
+ * also an {@link ILifecycleComponentContainer} it will register itself as the
+ * {@link ILifecycleComponentManager}. Routers and Pipelines implement the
+ * {@link ILifecycleComponentContainer} interface. This avoids having to
+ * duplicate the configuration for all of the components that are referred to in
+ * the Router / Pipeline in the Adaptor.
+ * 
+ * The majority of all the openadaptor examples are within the context of an
+ * Adaptor. Either as code which create and runs an Adaptor or as a spring
+ * configuration which via the SpringApplication class is run as a stand alone
+ * process.
+ * 
+ * @author perryj
+ * 
+ */
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
     Administrable, ILifecycleListener {
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
   /**
-   * IMessageProcessor that this adaptor delegate message processing to
-   * typically a Router
+   * IMessageProcessor that this adaptor delegates message processing to
+   * typically a {@link Router} or {@link Pipeline}
    */
   private IMessageProcessor processor;
 
@@ -66,19 +98,19 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private List runnables;
 
   /**
-   * ordered list of all the lifecycle components that it manages
-   * this includes adaptor runnables too
+   * ordered list of all the lifecycle components that it manages this includes
+   * adaptor runnables too
    */
   private List components;
 
   /**
-   * control whether adaptor creates a new thread to run the runnables
-   * if false can only work for an adaptor with a single runnable
+   * controls whether adaptor creates a new thread to run the runnables if false
+   * can only work for an adaptor with a single runnable
    */
   private boolean runRunnablesInCallingThread = false;
 
   /**
-   * threads uses to run the runnables
+   * threads used to run the runnables
    */
   private Thread[] runnableThreads = new Thread[0];
 
@@ -93,8 +125,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private ITransactionManager transactionManager;
 
   /**
-   * exit code, this is an aggregation of the adaptor runnable exit codes
-   * 0 denotes that adaptor exited naturally
+   * exit code, this is an aggregation of the adaptor runnable exit codes 0
+   * denotes that adaptor exited naturally
    */
   private int exitCode = 0;
 
@@ -107,7 +139,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * shutdown hook
    */
   private Thread shutdownHook = new ShutdownHook();
-  
+
   public Adaptor() {
     super();
     transactionManager = new TransactionManager();
@@ -131,18 +163,41 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
+  /**
+   * 
+   * @param runRunnablesInCallingThread
+   *          if true and there is only one {@link IRunnable} then the adaptor
+   *          will not create and run another thread when {@link #run} is called
+   */
   public void setRunInCallingThread(final boolean runRunnablesInCallingThread) {
     this.runRunnablesInCallingThread = runRunnablesInCallingThread;
   }
 
+  /**
+   * 
+   * @param transactionManager
+   *          ITransactionManager to use, defaults to {@link TransactionManager}.
+   *          Any components that implement {@link ITransactionInitiator} will
+   *          have their setter called with this when the adaptor is started.
+   */
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
 
+  /**
+   * Allows a run configuration to define restart strategies and scheduling.
+   */
   public void setRunConfiguration(AdaptorRunConfiguration config) {
     runConfiguration = config;
   }
-  
+
+  /**
+   * Registers a an {@link ILifecycleComponent} to be managed once the adaptor
+   * is started. Throws a runtime exception if the adaptor state is not
+   * {@link State#STOPPED}. Typically this is called by a
+   * {@link ILifecycleComponentContainer} as a result of the adaptor calling
+   * {@link ILifecycleComponentContainer#setComponentManager(ILifecycleComponentManager)}
+   */
   public void register(ILifecycleComponent component) {
     if (state != State.STOPPED) {
       throw new RuntimeException("Cannot register component with running adaptor");
@@ -156,10 +211,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       log.debug("component " + component.getId() + " registered with adaptor");
     }
     if (component instanceof ITransactionInitiator) {
-      ((ITransactionInitiator)component).setTransactionManager(transactionManager);
+      ((ITransactionInitiator) component).setTransactionManager(transactionManager);
     }
   }
 
+  /**
+   * Throws a runtime exception if the adaptor state is not
+   * {@link State#STOPPED}.
+   */
   public ILifecycleComponent unregister(ILifecycleComponent component) {
     ILifecycleComponent match = null;
     if (state != State.STOPPED) {
@@ -172,31 +231,40 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     return match;
   }
 
+  /**
+   * delegates processing to the configured delegate, typically a {@link Router}
+   * or {@link Pipeline}
+   */
   public Response process(Message msg) {
     return processor.process(msg);
   }
 
+  /**
+   * "starts" all of the components that it is managing. Blocks until these
+   * components "exit".
+   * 
+   */
   public void start() {
     exitCode = 0;
     registerComponents();
-    
+
     if (state != State.STOPPED) {
       throw new RuntimeException("adaptor is currently " + state.toString());
     }
-    
+
     try {
       Runtime.getRuntime().addShutdownHook(shutdownHook);
       state = State.STARTED;
       validate();
       startNonRunnables();
       startRunnables();
-  
+
       if (runRunnablesInCallingThread) {
         runRunnable();
       } else {
         runRunnableThreads();
       }
-  
+
       log.info("waiting for runnables to stop");
       waitForRunnablesToStop();
       log.info("all runnables are stopped");
@@ -210,7 +278,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       }
       state = State.STOPPED;
     }
-    
+
     if (getExitCode() != 0) {
       log.fatal("adaptor exited with " + getExitCode());
     }
@@ -249,6 +317,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
+  /**
+   * either delegates to a {@link AdaptorRunConfiguration} if one has been configured or
+   * calls {@link #start}
+   */
   public void run() {
     if (runConfiguration != null) {
       runConfiguration.run(this);
@@ -337,7 +409,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       }
     }
   }
-  
+
   private void startLifecycleComponent(ILifecycleComponent c) {
     synchronized (c) {
       if (c.isState(State.STOPPED)) {
@@ -345,7 +417,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       }
     }
   }
-  
+
   private void startNonRunnables() {
     for (Iterator iter = components.iterator(); iter.hasNext();) {
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
@@ -371,7 +443,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
     stop();
   }
-  
+
   public class ShutdownHook extends Thread {
     public void run() {
       log.info("shutdownhook invoked, calling exit()");
@@ -385,7 +457,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public void stateChanged(ILifecycleComponent component, State newState) {
     if (state == State.STARTED && runnables.contains(component) && newState == State.STOPPED) {
-      if (((ReadNode)component).getExitCode() != 0) {
+      if (((ReadNode) component).getExitCode() != 0) {
         log.warn(component.getId() + " has exited with non zero exit code, stopping adaptor");
         stopNoWait();
       }
@@ -395,13 +467,15 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public Object getAdmin() {
     return new Admin();
   }
-  
+
   public interface AdminMBean {
     String dumpState();
+
     void exit();
+
     void interrupt();
   }
-  
+
   public class Admin implements AdminMBean {
 
     public void exit() {
@@ -427,6 +501,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     public void interrupt() {
       Adaptor.this.interruptRunnables();
     }
-    
+
   }
 }

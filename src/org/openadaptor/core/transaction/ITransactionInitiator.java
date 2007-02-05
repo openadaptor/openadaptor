@@ -27,6 +27,13 @@
 
 package org.openadaptor.core.transaction;
 
+/**
+ * represents a component that will be initiating transactions and thus needs to create
+ * them using an {@link ITransactionManager}.
+ * 
+ * @author perryj
+ *
+ */
 public interface ITransactionInitiator {
   void setTransactionManager(ITransactionManager transactionManager);
 }

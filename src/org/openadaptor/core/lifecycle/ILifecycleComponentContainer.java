@@ -23,10 +23,17 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core.lifecycle;
 
-public interface ILifecycleComponentContainer  {
-	void setComponentManager(ILifecycleComponentManager manager); 
+/**
+ * Represents a object that has knowledge of some {@link ILifecycleComponent}s.
+ * Rather than managing them directly it is capable of registering them with an
+ * {@link ILifecycleComponentManager}.
+ * 
+ * @author perryj
+ */
+public interface ILifecycleComponentContainer {
+  void setComponentManager(ILifecycleComponentManager manager);
 }

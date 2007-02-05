@@ -31,6 +31,12 @@ import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.MessageException;
 
+/**
+ * This class should be used to "wrap" an IDataProcessor.
+ * 
+ * @author perryj
+ *
+ */
 public final class ProcessorNode extends Node {
 
   private boolean stripOutExceptions = false;
@@ -43,6 +49,11 @@ public final class ProcessorNode extends Node {
     super();
   }
   
+  /**
+   * Sets the behaviour of this node such that if any of the data it receives is a
+   * {@link MessageException} then the data contained in the {@link MessageException}
+   * is extracted before invoking the super class.
+   */
   public void setStripOutExceptions(final boolean stripOut) {
     this.stripOutExceptions = stripOut;
   }

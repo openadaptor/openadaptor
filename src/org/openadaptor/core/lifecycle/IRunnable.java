@@ -29,8 +29,16 @@ package org.openadaptor.core.lifecycle;
 
 import org.openadaptor.core.IMessageProcessor;
 
+/**
+ * Represents classes that "create" new data and process it by delegating to an {@link IMessageProcessor}.
+ * Implementations are typically run in separate threads, hence this interface extends {@link Runnable}, 
+ * and since they also implement {@link ILifecycleComponent} the framework components mointor their state
+ * changes and check the exitCode().
+ * 
+ * @author perryj
+ * @see Adaptor
+ */
 public interface IRunnable extends ILifecycleComponent, Runnable {
-//	void setAdaptor(Adaptor adaptor);
   void setMessageProcessor(IMessageProcessor processor);
 	int getExitCode();
 }

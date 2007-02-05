@@ -47,7 +47,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.DocumentSource;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ProcessorException;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.util.FileUtils;
 
 /**
@@ -100,18 +101,18 @@ public class XsltProcessor extends Component implements IDataProcessor {
    * Trys to load the XSLT from the file defined in the properties (will also try to find the file on the classpath if
    * it can).
    * 
-   * @throws ProcessorException
+   * @throws ValidationException
    *           if the XSLT file is not defined in the properties, the file cannot be found or there was an error parsing
    *           it
    */
   private void loadXSLT() {
     if (xsltFile == null)
-      throw new ProcessorException("xsltFile property not set", this);
+      throw new ValidationException("xsltFile property not set", this);
 
     // if the file doesn't exist try to get it via the classpath
     URL url = FileUtils.toURL(xsltFile);
     if (url == null)
-      throw new ProcessorException("File not found: " + xsltFile, this);
+      throw new ValidationException("File not found: " + xsltFile, this);
 
     // load the transform
     try {
@@ -120,7 +121,7 @@ public class XsltProcessor extends Component implements IDataProcessor {
 
       log.info("Loaded XSLT [" + xsltFile + "] successfully");
     } catch (TransformerConfigurationException e) {
-      throw new ProcessorException("Failed to load XSLT: " + e.getMessage(), this);
+      throw new ValidationException("Failed to load XSLT: " + e.getMessage(), this);
     }
   }
 
@@ -132,10 +133,10 @@ public class XsltProcessor extends Component implements IDataProcessor {
    * 
    * @return a String[] with one String resulting from the transform
    * 
-   * @throws ProcessorException
+   * @throws ProcessingException
    *           if the record type is not supported
    */
-  public Object[] process(Object record) throws ProcessorException {
+  public Object[] process(Object record) throws ProcessingException {
     if (record == null)
       return null;
 
@@ -146,7 +147,7 @@ public class XsltProcessor extends Component implements IDataProcessor {
       return transform((Document) record);
 
     // if we get this far then we cannot process the record
-    throw new ProcessorException("Invalid record (type: " + record.getClass().toString() + "). Cannot apply transform", this);
+    throw new ProcessingException("Invalid record (type: " + record.getClass().toString() + "). Cannot apply transform", this);
   }
 
   /**
@@ -173,7 +174,7 @@ public class XsltProcessor extends Component implements IDataProcessor {
     try {
       return new String[] { transform(transform, d) };
     } catch (TransformerException e) {
-      throw new ProcessorException("Transform failed: " + e.getMessage(), this);
+      throw new ProcessingException("Transform failed: " + e.getMessage(), this);
     }
   }
 
@@ -193,14 +194,14 @@ public class XsltProcessor extends Component implements IDataProcessor {
    * 
    * @return dom4j document object
    * 
-   * @throws ProcessorException
+   * @throws ProcessingException
    *           if the supplied XML cannot be parsed
    */
   private Document createDOMFromString(String xml) {
     try {
       return DocumentHelper.parseText(xml);
     } catch (DocumentException e) {
-      throw new ProcessorException("Failed to parse XML: " + e.getMessage(), this);
+      throw new ProcessingException("Failed to parse XML: " + e.getMessage(), this);
     }
   }
 }

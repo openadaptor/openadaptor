@@ -32,16 +32,42 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.ITransactional;
 
+/**
+ * This class should be used to "wrap" an {@link IReadConnector}. It handles
+ * the following
+ * <li>propogates lifecycle management to {@link IReadConnector}
+ * <li>polls {@link IReadConnector} for data, creates new {@link Message} and
+ * delegates to configured {@link IMessageProcessor}
+ * <li>Transaction creation, commit / exception
+ * 
+ * <br/><br/>This represents the "inpoint" of an Adaptor. Typically an
+ * {@link Adaptor} is managing the lifecycle of a ReadNode, it sets the
+ * TransactionManager and sets itself as the MessageProcessor.
+ * 
+ * <br/>By virtue of it's subclass, this class can also have an
+ * {@link IDataProcessor} configured, if this the case then data received from
+ * the {@link IReadConnector} is processed by the {@link IDataProcessor} before
+ * being delegated. This by-passes any exception / discard management that can
+ * be configured in delegates such as {@link Router} / {@link Pipeline}.
+ * 
+ * @author perryj
+ * @see IReadConnector
+ * @see Adaptor
+ */
 public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   private static final Log log = LogFactory.getLog(ReadNode.class);
@@ -81,14 +107,6 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     this.timeoutMs = timeout;
   }
 
-  /**
-   * if set then this component will call stop on the adaptor
-   * if it terminates unexpectedly
-   */
-//  public void setStopAdaptorOnError(boolean stopAdaptor) {
-//    this.stopAdaptorOnError = stopAdaptor;
-//  }
-//  
   public void setTransactionManager(final ITransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
@@ -151,9 +169,6 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
           transaction.rollback();
           transaction = null;
           stop();
-//          if (stopAdaptorOnError && adaptor != null) {
-//            adaptor.stopNoWait();
-//          }
         }
       }
     } finally {

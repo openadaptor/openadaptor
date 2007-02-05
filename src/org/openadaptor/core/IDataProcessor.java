@@ -71,8 +71,7 @@ public interface IDataProcessor {
    * thrown as RuntimeException, if the implementation is an {@link IComponent}
    * then this should be a subclass of {@link ComponentException}.
    * 
-   * @return output, null indicates that data was disgarded, this is distinct
-   *         from empty array which indicates no return value
+   * @return output, zero length array or null indicates that data was disgarded
    */
   Object[] process(Object data);
 

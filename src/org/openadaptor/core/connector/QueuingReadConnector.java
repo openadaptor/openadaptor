@@ -43,7 +43,7 @@ import org.openadaptor.core.transaction.ITransactionalResource;
  * The data is dequeued by calls to next().
  * 
  * By default it is configured to be transactional which mean that calls to enqueue data block 
- * until the transaction completes (if the transaction does not commit then runtime exception is thrown).
+ * until the transaction completes (if the transaction rollsback then runtime exception is thrown).
  * 
  * By default the queue size is unlimited, but a queue limit can be set, as can the behaviour
  * for if the queue size ever reaches the that limit.

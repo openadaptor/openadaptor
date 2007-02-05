@@ -40,22 +40,26 @@ import java.util.Set;
 import org.openadaptor.core.IMessageProcessor;
 
 /**
+ * The default implementation of {@link IRoutingMap}.
+ * 
  * A RoutingMap describes how adaptor components (IMessageProcessors) are linked 
  * together. It actually holds 3 different maps.
  * 
- * The processMap defines mapping between an IMessageProcessor and the list of 
+ * <li>The processMap defines mapping between an IMessageProcessor and the list of 
  * IMessageProcessors that should process it's output.
  * 
- * The discardsMap defines mapping between an IMessageProcessor and the list of 
+ * <li>The discardsMap defines mapping between an IMessageProcessor and the list of 
  * IMessageProcessors that should process it's discarded input.
  * 
- * The exceptionMap defines mapping between an IMessageProcessor and the list of 
+ * <li>The exceptionMap defines mapping between an IMessageProcessor and the list of 
  * IMessageProcessors that should process it's MessageExceptions.
  * 
- * See comments for setProcessMap, setDiscardMap, setExceptionMap
+ * <br/><br/>This makes heavy use of "autoboxing" to reduce some of the complexity
+ * for more basic configurations. See comments for setProcessMap, setDiscardMap, setExceptionMap
  * @author perryj
  * @see IMessageProcessor
  * @see MessageExpression
+ * @see IAutoboxer
  *
  */
 public class RoutingMap implements IRoutingMap {

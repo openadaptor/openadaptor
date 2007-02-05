@@ -28,9 +28,8 @@
 package org.openadaptor.core.transaction;
 
 /**
- * Interface which describes a simple openadaptor Transaction. The register/deregister methods require
- * a suitable Transaction Resource. This MAY vary depending on the underlying transaction mechanism
- * used. (E.g. for JTA this would be an XAResource)
+ * Interface which describes an openadaptor Transaction. openadaptor provides a wrapper arounf the
+ * JTA spec or it's own proprietary implementation.
  */
 public interface ITransaction {
 

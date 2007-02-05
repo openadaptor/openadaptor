@@ -30,6 +30,7 @@ package org.openadaptor.core.jmx;
 /**
  * Interface for hiding MBean implementations. Typically it works like this...
  * 
+ * <pre>
  * class Test implements Administrable {
  *  
  *  public void Object getAdmin() {
@@ -45,11 +46,12 @@ package org.openadaptor.core.jmx;
  *  }
  *  
  * }
+ * </pre>
  * 
  * This enables the following...
  * 
- * Hides MBean interface inside class that it relates too
- * Prevents you from having to expose a the management API as a public API
+ * <li>Hides MBean interface inside class that it relates too
+ * <li>Prevents you from having to expose a the management API as a public API
  * 
  * @author perryj
  *

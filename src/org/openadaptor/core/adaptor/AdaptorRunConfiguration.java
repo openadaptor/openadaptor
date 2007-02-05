@@ -37,10 +37,11 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.CronTrigger;
 
 /**
- * This component can be used to control running an adaptor, if support restart on fail
- * and scheduled stop, start and restart using cron expressions.
+ * This component can be used to control running an adaptor, it supports restart
+ * on fail and scheduled stop, start and restart using cron expressions.
  * 
- * See quartz documentation for cron expression format (http://www.opensymphony.com/quartz)
+ * See <a href="http://www.opensymphony.com/quartz">quartz</a> documentation
+ * for cron expression format
  * 
  * @author perryj
  * @see Adaptor

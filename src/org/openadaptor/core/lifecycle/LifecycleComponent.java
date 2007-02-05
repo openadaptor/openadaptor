@@ -34,6 +34,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.jmx.Administrable;
 
+/**
+ * Base implementation of the {@link ILifecycleComponent} interface.
+ * @author perryj
+ *
+ */
 public class LifecycleComponent extends Component implements ILifecycleComponent, Administrable {
 
 	private static final Log log = LogFactory.getLog(LifecycleComponent.class);

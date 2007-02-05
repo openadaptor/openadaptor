@@ -27,6 +27,14 @@
 
 package org.openadaptor.core.transaction;
 
+/**
+ * Represents a class that knows how to implement transactional semmantics for a given
+ * transport / middleware. This is relevant for components that wish to integrate with
+ * the proprietary transaction manager that is part of openadaptor.
+ * 
+ * @author perryj
+ *
+ */
 public interface ITransactionalResource {
   void begin();
   void commit();

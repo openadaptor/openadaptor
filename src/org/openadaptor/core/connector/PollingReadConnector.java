@@ -41,12 +41,20 @@ import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 
 /**
- * This is a IReadConnector that wraps another IReadConnector, it can be configured to poll at fixed intervals or using
- * a cron format.
+ * This is a IReadConnector that wraps another IReadConnector, it can be
+ * configured to poll at fixed intervals or using a cron format. When this connector
+ * polls it calls the following on the IReadConnector it is wrapping...
+ * <br/>
+ * <li>{@link IReadConnector#connect()}
+ * <li>{@link IReadConnector#next(long)}, until {@link IReadConnector#isDry()} returns true
+ * <li>{@link IReadConnector#disconnect()} 
  * 
- * Allows adaptors to poll files, directories, databases rss feeds etc...
+ * Allows adaptors to poll files, directories, databases rss feeds etc... 
  * 
- * @author OA3 Core Team
+ * See <a href="http://www.opensymphony.com/quartz">quartz</a> documentation for cron
+ * expression format
+ * 
+ * @author perryj
  */
 public class PollingReadConnector extends Component implements IReadConnector, ITransactional {
 
@@ -75,6 +83,9 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     super(id);
   }
 
+  /**
+   * Sets the read connector that this read connector is "wrapping".
+   */
   public void setDelegate(final IReadConnector delegate) {
     this.delegate = delegate;
   }
@@ -99,6 +110,10 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     this.limit = limit;
   }
 
+  /**
+   * Sets the cron expression for how frequently this read connector "polls".
+   * @param s
+   */
   public void setCronExpression(String s) {
     cron = new CronTrigger();
     try {

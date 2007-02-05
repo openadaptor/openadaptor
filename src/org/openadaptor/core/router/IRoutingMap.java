@@ -31,7 +31,19 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.Response;
 
+/**
+ * Represents a class which holds a routing configuration for processing data,
+ * discarded data and exceptions. For a given source of data it will determine
+ * the list of {@link IMessageProcessor}s to pass that data onto. The
+ * {@link Response} from each {@link IMessageProcessor} will in turn be routed
+ * according to the RoutingMap.
+ * 
+ * @author perryj
+ * @see Router
+ * @see Pipeline
+ */
 public interface IRoutingMap {
 	public Collection getMessageProcessors();
 	public List getProcessDestinations(IMessageProcessor source);

@@ -30,17 +30,10 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * General purpose openadptor exception implementation.
- * <p/>
- *
- * Has two main features:
- * <ul>
- *      <li>It extends the Apache Commons Lang NestedRuntimeException. This allows
- *      it to retain the originating exception (if any).</li>
- *      <li>It is unchecked. Unless there is very good reason otherwise, all
- *      framework exceptions should be unchecked</li>
- * </ul>
- *
+ * Base Runtime Exception that implementors of {@link IComponent} are encourage
+ * to throw. Enables the loggin and exception management to identify which
+ * component threw the exception.
+ * 
  * @author Kevin Scully
  */
 

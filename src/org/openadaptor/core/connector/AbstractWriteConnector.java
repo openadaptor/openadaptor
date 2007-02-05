@@ -33,14 +33,12 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IWriteConnector;
 
 /**
- * Abstract superclass that implements common functionality for Write Connectors.
+ * Base class that maintains a flag which denotes whether the connector is "connected"
  * 
  * @author Russ Fennell
  */
 public abstract class AbstractWriteConnector extends Component implements IWriteConnector {
   
-  // private static final Log log = LogFactory.getLog(AbstractReadConnector.class);
-
   protected boolean connected;
 
   protected AbstractWriteConnector() {
@@ -50,11 +48,6 @@ public abstract class AbstractWriteConnector extends Component implements IWrite
     super(id);
   }
 
-  /**
-   * True if connected.
-   * 
-   * @return True if connected.
-   */
   public boolean isConnected() {
     return connected;
   }

@@ -29,6 +29,12 @@ package org.openadaptor.core.exception;
 
 import org.openadaptor.core.IComponent;
 
+/**
+ * ComponentException that relates to processing problem i.e. data specific NOT
+ * transport or resource specific.
+ * @author perryj
+ *
+ */
 public class ProcessingException extends ComponentException {
 
   private static final long serialVersionUID = 1L;

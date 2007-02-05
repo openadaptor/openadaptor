@@ -115,6 +115,11 @@ public class Application {
         buildProps.load(in);
       } catch (IOException e) {
         log.error("failed to load " + BUILD_PROPERTIES_NAME + " from classpath");
+      } finally {
+        try {
+          in.close();
+        } catch (IOException e) {
+        }
       }
     } else {
       log.warn("failed to find " + BUILD_PROPERTIES_NAME + " in classpath");

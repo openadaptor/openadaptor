@@ -57,6 +57,11 @@ import org.openadaptor.util.JVMNeutralMBeanServerFactory;
 
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 
+/**
+ * Implementation of MBeanServer that delegates to sun reference impl
+ * @author perryj
+ *
+ */
 public class MBeanServer implements javax.management.MBeanServer {
 
 	private static Log log = LogFactory.getLog(MBeanServer.class);

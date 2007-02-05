@@ -27,7 +27,11 @@
 
 package org.openadaptor.core.lifecycle;
 
-
+/**
+ * Callback interface for classes that are interested in lifecycle state changes.
+ * @author perryj
+ *
+ */
 public interface ILifecycleListener {
 	void stateChanged(ILifecycleComponent component, State newState);
 }

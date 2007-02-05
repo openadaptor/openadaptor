@@ -35,6 +35,19 @@ import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.node.Node;
 
+/**
+ * Represents a class that can wrap the following
+ * <li>{@link IReadConnector}
+ * <li>{@link IDataProcessor}
+ * <li>{@link IWriteConnector}
+ * 
+ * <br/>as IMessageProcessor framework components. Also wraps single values as
+ * unary element lists. The purpose of this is to simplify the configuration of
+ * an {@link IRoutingMap}.
+ * 
+ * @author perryj
+ * 
+ */
 public interface IAutoboxer {
 	Map autobox(Map map);
   List autobox(List list);

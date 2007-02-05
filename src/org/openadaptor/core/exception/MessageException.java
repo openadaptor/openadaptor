@@ -27,6 +27,16 @@
 
 package org.openadaptor.core.exception;
 
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.Response;
+
+/**
+ * Used in {@link Response}, RuntimeExceptions thrown from calls to {@link IDataProcessor#process(Object)}
+ * are wrapped in this class with the argument to the call.
+ * 
+ * @author perryj
+ *
+ */
 public class MessageException extends Throwable {
 
 	private static final long serialVersionUID = 1L;

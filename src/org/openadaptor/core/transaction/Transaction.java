@@ -31,6 +31,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Basic (and default) implementation of {@link ITransaction} that collects and invokes
+ * {@link ITransactionalResource}s.
+ * 
+ * @author perryj
+ * 
+ */
 public class Transaction extends AbstractTransaction {
 
   private boolean rollbackOnly = false;

@@ -27,6 +27,27 @@
 
 package org.openadaptor.core.transaction;
 
+import javax.transaction.xa.XAResource;
+
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.IWriteConnector;
+
+/**
+ * Should be implemented by {@link IReadConnector}s and {@link IWriteConnector}s that
+ * are capable of taking part in a transaction.
+ * 
+ * @author perryj
+ *
+ */
 public interface ITransactional {
+  
+  /**
+   * If the implementation wants to take part in the current transaction then it should either
+   * return an instance of {@link ITransactionalResource} or and instance of {@link XAResource}.
+   * It is assumed that the configured transaction manager that creates the actual transaction
+   * will match type of resource return. Return null if the component is not configured to be
+   * transactional.
+   * @return
+   */
   public Object getResource();
 }

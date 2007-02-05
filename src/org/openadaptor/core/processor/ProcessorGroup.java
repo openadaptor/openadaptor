@@ -35,16 +35,9 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 
 /**
- * Utility processor which allows multiple processors to be grouped and treated as one.
- * <p/>
- *
- * Supported properties:
- * <pre>
- * processors       Array of IDataProcessor entries. Order is significant.
- * </pre>
- * <p/>
- *
- *
+ * Utility {@link IDataProcessor} which allows multiple processors to be grouped and treated
+ * as one.
+ * 
  * @author Eddy Higgins
  */
 public class ProcessorGroup extends Component implements IDataProcessor {
@@ -58,28 +51,15 @@ public class ProcessorGroup extends Component implements IDataProcessor {
    */
   private IDataProcessor[] processors;
 
-  //BEGIN Bean getters/setters
-
   /**
-   * list of the processors in this group.
-   * @param processors list of the processors in this group.
+   * Sets the ordered list of {@link IDataProcessor} to apply
    */
   public void setProcessors(IDataProcessor[] processors) {
     this.processors = processors;
   }
 
-  /**
-   * list of the processors in this group.
-   * @return list of the processors in this group.
-   */
-  public IDataProcessor[] getProcessors() {
-    return (processors);
-  }
-
-  //END   Bean getters/setters
-
-  /**
-   * Invoke validation of the component properties provided by each of the processors in this group.
+ /**
+   * delegates the call to the list of {@link IDataProcessor}s
    */
   public void validate(List exceptions) {
     if (processors != null) {
@@ -90,7 +70,7 @@ public class ProcessorGroup extends Component implements IDataProcessor {
   }
 
   /**
-   * This will reset each of the processors in this processor group.
+   * delegates the call to the list of {@link IDataProcessor}s
    */
   public void reset(Object context) {
     if (processors != null) {

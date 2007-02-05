@@ -33,6 +33,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Thread safe class that can be used by classes wishing to implement the
+ * {@link ILifecycleComponent} interface.
+ * 
+ * @author perryj
+ * 
+ */
 public class LifecycleDelegate {
 
   private static Log log = LogFactory.getLog(LifecycleDelegate.class);

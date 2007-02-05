@@ -28,7 +28,7 @@
 package org.openadaptor.core.transaction;
 
 /**
- *  Interface implemented by TransactionManagers used by openadaptor Nodes.
+ * Represents a transaction manager that is capable of creating new {@link ITransaction}s.
  *
  * @author Kevin Scully
  */

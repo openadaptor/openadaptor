@@ -31,7 +31,14 @@ import java.util.Map;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.MessageException;
 
-public class Router extends AbstractRouter { 
+/**
+ * An {@link IMessageProcessor} implementation that uses an {@link IRoutingMap} to
+ * process a message by calling a sequence of IMessageProcessors.
+ * 
+ * @author perryj
+ * @see IRoutingMap
+ */
+public class Router extends AbstractRouter implements IMessageProcessor { 
   public Router() {
     super();
   }
@@ -39,10 +46,7 @@ public class Router extends AbstractRouter {
   public Router(String id) {
     super(id);
   }
-  /**
-   * Meant for unit test purposes only.
-   * @param routingMap
-   */
+
   public Router(RoutingMap routingMap){
     super();
     this.routingMap=routingMap;

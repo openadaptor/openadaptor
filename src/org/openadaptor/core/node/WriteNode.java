@@ -33,15 +33,40 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.Response.DiscardBatch;
 import org.openadaptor.core.Response.ExceptionBatch;
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactional;
 
+/**
+ * This class should be used to "wrap" an {@link IWriteConnector}. It handles
+ * the following
+ * <li>propogation of lifecycle management to the {@link IWriteConnector}
+ * <li>delegation of data processing by delivering it to the
+ * {@link IWriteConnector}
+ * 
+ * <br/><br/>This represents the "outpoint" of an Adaptor. Typically an
+ * {@link Adaptor} is managing the lifecycle of a WriteNode.
+ * 
+ * By virtue of it's subclass, this class can also have an
+ * {@link IDataProcessor} configured, if this the case then data is processed by
+ * the {@link IDataProcessor} before being delegated to the
+ * {@link IWriteConnector}. This by-passes any exception / discard management
+ * that can be configured in delegates such as {@link Router} / {@link Pipeline}.
+ * 
+ * @author perryj
+ * @see Adaptor
+ * @see IWriteConnector
+ * 
+ */
 public class WriteNode extends Node {
 
 	private static final Log log = LogFactory.getLog(WriteNode.class);

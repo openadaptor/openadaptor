@@ -34,11 +34,39 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 
+/**
+ * The class which brings together the {@link IMessageProcessor} and
+ * {@link ILifecycleComponent} interfaces. Specific data processing is actually
+ * delegated to an {@link IDataProcessor} but the Node is responsbile for the
+ * following
+ * 
+ * <li>propogation of lifecycle management to the IDataProcessor
+ * <li>data un-batching
+ * <li>transaction enlisting
+ * <li>exception capture
+ * <li>discard capture
+ * 
+ * <br/><br/>This allows implementations of {@link IDataProcessor},
+ * {@link IReadConnector} and {@link IWriteConnector} to be as lightweight as
+ * possible and free from the specifics of the adaptor framework.
+ * 
+ * <br/>It is also possible to "chain" a Node to another IMessageProcessor, this
+ * is how {@link ReadNode}s initiate new message processing. This is different
+ * from {@link ProcessorNode}s and {@link WriteNode} which process
+ * {@link Message}s.
+ * 
+ * @author perryj
+ * @see Adaptor
+ * @see Router
+ */
 public class Node extends LifecycleComponent implements IMessageProcessor {
 
 	private static final Log log = LogFactory.getLog(Node.class);
@@ -85,7 +113,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 		for (int i = 0; i < inputs.length; i++) {
 			try {
 				Object[] outputs = processor.process(inputs[i]);
-				if (outputs != null) {
+				if (outputs != null && outputs.length > 0) {
 					for (int j = 0; j < outputs.length; j++) {
 						response.addOutput(outputs[j]);
 					}

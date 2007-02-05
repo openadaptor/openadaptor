@@ -29,6 +29,12 @@ package org.openadaptor.core.exception;
 
 import org.openadaptor.core.IComponent;
 
+/**
+ * ComponentException that relates to connection problem i.e. not data specific but
+ * transport or resource specific. Such as Database Server is down.
+ * @author perryj
+ *
+ */
 public class ConnectionException extends ComponentException {
 
   private static final long serialVersionUID = 1;

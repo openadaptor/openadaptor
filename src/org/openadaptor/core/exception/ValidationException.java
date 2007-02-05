@@ -29,6 +29,11 @@ package org.openadaptor.core.exception;
 
 import org.openadaptor.core.IComponent;
 
+/**
+ * ComponentException that relates to incomplete or incorrect configured state.
+ * @author perryj
+ *
+ */
 public class ValidationException extends ComponentException {
 
   private static final long serialVersionUID = 1L;

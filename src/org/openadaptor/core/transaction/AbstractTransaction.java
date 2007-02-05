@@ -27,6 +27,12 @@
 
 package org.openadaptor.core.transaction;
 
+/**
+ * base functionality for {@link ITransaction} implementations. Allows an exception error
+ * to be set within the current transaction.
+ * @author perryj
+ *
+ */
 public abstract class AbstractTransaction implements ITransaction {
 
   private Throwable errorOrException;

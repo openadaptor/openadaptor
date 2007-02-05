@@ -31,7 +31,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.exception.ProcessorException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
@@ -79,7 +79,7 @@ public class OMValueTypeModifyProcessor extends OrderedMapModifyProcessor {
         newValue = existingValue.toString();
       } else {
         // Can't handle this
-        throw new ProcessorException("Unsupported OrderedMap Type Transform.", this);
+        throw new ProcessingException("Unsupported OrderedMap Type Transform.", this);
       }
 
       map.put(getAttribute(), newValue);
