@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core.lifecycle;
 
@@ -35,36 +35,40 @@ import org.apache.commons.logging.LogFactory;
 
 public class LifecycleDelegate {
 
-	private static Log log = LogFactory.getLog(LifecycleDelegate.class);
-	
-	private ILifecycleComponent component;
-	private State currentState;
-	private List listeners = new ArrayList();
-	private Object LOCK = new Object();
-	private Object WAIT = new Object();
-	
-	public LifecycleDelegate(final ILifecycleComponent component, final State state) {
-		this.component = component;
-		this.currentState = state;
-	}
-	
-	public void addListener(ILifecycleListener listener) {
-		synchronized (LOCK) {
-			if (!listeners.contains(listener)) {
-				listeners.add(listener);
-			}
-		}
-	}
+  private static Log log = LogFactory.getLog(LifecycleDelegate.class);
 
-	public void removeListener(ILifecycleListener listener) {
-		synchronized (LOCK) {
-			if (listeners.contains(listener)) {
-				listeners.remove(listener);
-			}
-		}
-	}
+  private ILifecycleComponent component;
 
-	public void notifyListeners(State newState) {
+  private State currentState;
+
+  private List listeners = new ArrayList();
+
+  private Object LOCK = new Object();
+
+  private Object WAIT = new Object();
+
+  public LifecycleDelegate(final ILifecycleComponent component, final State state) {
+    this.component = component;
+    this.currentState = state;
+  }
+
+  public void addListener(ILifecycleListener listener) {
+    synchronized (LOCK) {
+      if (!listeners.contains(listener)) {
+        listeners.add(listener);
+      }
+    }
+  }
+
+  public void removeListener(ILifecycleListener listener) {
+    synchronized (LOCK) {
+      if (listeners.contains(listener)) {
+        listeners.remove(listener);
+      }
+    }
+  }
+
+  public void notifyListeners(State newState) {
     // copy listeners to avoid concurrent modification during notification!!!
     ILifecycleListener[] listeners = getListeners();
     for (int i = 0; i < listeners.length; i++) {
@@ -75,40 +79,40 @@ public class LifecycleDelegate {
       }
     }
   }
-	
+
   private ILifecycleListener[] getListeners() {
     synchronized (LOCK) {
       return (ILifecycleListener[]) listeners.toArray(new ILifecycleListener[listeners.size()]);
     }
   }
-  
-	public boolean isState(State state) {
-		return currentState.equals(state);
-	}
 
-	public void setState(State state) {
-		synchronized (WAIT) {
-			if (currentState != state) {
-			  currentState = state;
+  public boolean isState(State state) {
+    return currentState.equals(state);
+  }
+
+  public void setState(State state) {
+    synchronized (WAIT) {
+      if (currentState != state) {
+        currentState = state;
         notifyListeners(currentState);
       }
-			WAIT.notifyAll();
-		}
-	}
-	
-	public State getState() {
-		return currentState;
-	}
-	
-	public void waitForState(State state) {
-		while (currentState != state) {
-			synchronized (WAIT) {
-				try {
-					WAIT.wait();
-				} catch (InterruptedException e) {
-				}
-			}
-		}
-	}
+      WAIT.notifyAll();
+    }
+  }
+
+  public State getState() {
+    return currentState;
+  }
+
+  public void waitForState(State state) {
+    synchronized (WAIT) {
+      while (currentState != state) {
+        try {
+          WAIT.wait();
+        } catch (InterruptedException e) {
+        }
+      }
+    }
+  }
 
 }
