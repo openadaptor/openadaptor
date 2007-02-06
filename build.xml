@@ -103,6 +103,7 @@
     <copy todir="${dir.classes}" overwrite="true">
       <fileset dir="${dir.src}">
         <include name="**/*.properties"/>
+        <include name="**/licence.txt"/>
       </fileset>
       <filterset>
         <filter token="BUILDCOMPILER" value="${ant.java.version}"/>
