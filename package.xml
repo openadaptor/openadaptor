@@ -45,6 +45,8 @@
         <include name="*.jar"/>
         <include name="*.zip"/>
       </fileset>
+    </jarcopy>
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="jarversions.properties" version="${tag}">
       <fileset dir="${dir.test.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>

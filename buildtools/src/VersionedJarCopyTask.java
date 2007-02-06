@@ -31,7 +31,7 @@ public class VersionedJarCopyTask extends Task {
 
   private Properties versionProperties = new Properties();
 
-  private String manifestFilename = "MANIFEST.MF";
+  private String manifestFilename;
 
   private String version = "unknown";
 
@@ -65,13 +65,15 @@ public class VersionedJarCopyTask extends Task {
   }
   
   public void execute() throws BuildException {
-    Manifest manifest = new Manifest();
-    manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
-    manifest.getMainAttributes().putValue("Built-By", getProject().getProperty("user.name"));
-    manifest.getMainAttributes().putValue("Created-By", this.getClass().getName());
-    manifest.getMainAttributes().putValue("Created", (new Date()).toString());
-    manifest.getMainAttributes().putValue("Version", version);
-    Map entries = manifest.getEntries();
+    Manifest manifest = null;
+    if (manifestFilename != null) {
+      manifest = new Manifest();
+      manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
+      manifest.getMainAttributes().putValue("Built-By", getProject().getProperty("user.name"));
+      manifest.getMainAttributes().putValue("Created-By", this.getClass().getName());
+      manifest.getMainAttributes().putValue("Created", (new Date()).toString());
+      manifest.getMainAttributes().putValue("Version", version);
+    }
     
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
       FileSet fileSet = (FileSet) iter.next();
@@ -82,10 +84,12 @@ public class VersionedJarCopyTask extends Task {
         String jarName = jar.getName();
 
         // write manifest entry
-        Attributes atts = new Attributes();
-        entries.put(jarName, atts);
-        String originalJar = versionProperties.containsKey(jarName) ? versionProperties.getProperty(jarName) : "unknown";
-        atts.putValue("originaljar", originalJar);
+        if (manifest != null) {
+          Attributes atts = new Attributes();
+          manifest.getEntries().put(jarName, atts);
+          String originalJar = versionProperties.containsKey(jarName) ? versionProperties.getProperty(jarName) : "unknown";
+          atts.putValue("originaljar", originalJar);
+        }
 
         // copy jar
         jarName = versionProperties.containsKey(jarName) ? versionProperties.getProperty(jarName) : jarName;
@@ -97,12 +101,14 @@ public class VersionedJarCopyTask extends Task {
         }
       }
     }
-    try {
-      OutputStream os = new FileOutputStream(manifestFilename);
-      manifest.write(os);
-      os.close();
-    } catch (Exception e) {
-      throw new BuildException("failed to write manifest, " + e.getMessage(), e);
+    if (manifest != null) {
+      try {
+        OutputStream os = new FileOutputStream(manifestFilename);
+        manifest.write(os);
+        os.close();
+      } catch (Exception e) {
+        throw new BuildException("failed to write manifest, " + e.getMessage(), e);
+      }
     }
   }
 
