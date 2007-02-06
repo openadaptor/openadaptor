@@ -92,5 +92,9 @@ public class LineReader extends EncodingAwareObject implements IDataReader {
     return match;
   }
 
+  public void close() throws IOException {
+    reader.close();
+  }
+
 
 }

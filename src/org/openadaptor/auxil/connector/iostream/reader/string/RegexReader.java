@@ -65,4 +65,8 @@ public class RegexReader extends EncodingAwareObject implements IDataReader {
   public void setInputStream(final InputStream inputStream) {
     reader = createInputStreamReader(inputStream);
   }
+
+  public void close() throws IOException {
+    reader.close();
+  }
 }

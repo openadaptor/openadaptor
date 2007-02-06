@@ -97,4 +97,8 @@ public class RegexMultiLineReader extends EncodingAwareObject implements IDataRe
     this.includeRecordDelimiters = include;
   }
 
+  public void close() throws IOException {
+    reader.close();
+  }
+
 }

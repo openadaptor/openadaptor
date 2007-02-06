@@ -58,4 +58,9 @@ public class StringReader extends EncodingAwareObject implements IDataReader {
     reader = createInputStreamReader(inputStream);
   }
 
+  public void close() throws IOException {
+    reader.close();
+  }
+
+  
 }

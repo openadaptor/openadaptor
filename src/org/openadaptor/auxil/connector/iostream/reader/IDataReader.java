@@ -33,4 +33,5 @@ import java.io.InputStream;
 public interface IDataReader {
   void setInputStream(InputStream inputStream);
   Object read() throws IOException;
+  void close() throws IOException;
 }
