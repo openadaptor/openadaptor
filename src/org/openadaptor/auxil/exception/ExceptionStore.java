@@ -50,28 +50,28 @@ public interface ExceptionStore {
   
   /**
    * get all exception ids
-   * @return
+   * @return list of ids
    */
   List getIds(ExceptionSummary filter);
   
   /**
    * get exception summary for exception id
    * @param id
-   * @return
+   * @return the exception summary
    */
   ExceptionSummary getExceptionSummary(String id);
 
   /**
    * get stack trace for exception id
    * @param id
-   * @return
+   * @return array of stack lines
    */
   public String[] getStackTrace(String id);
 
   /**
    * get data that relates to exception
    * @param id
-   * @return
+   * @return data as a string
    */
   String getDataForId(String id);
   

@@ -43,7 +43,7 @@ import org.openadaptor.core.node.ReadNode;
 public interface IReadConnector {
 
   /**
-   * Implementations of {@link IReadConnector} are typically beans with zero-arg
+   * Implementations of this interface are typically beans with zero-arg
    * constructors. This method checks that the current state of an
    * implementation is "meaningful". Implementations are encouraged to add
    * exception to the list parameter rather than throwing them. This allows the
@@ -75,9 +75,9 @@ public interface IReadConnector {
   void disconnect();
 
   /**
-   * Used to establish whether the {@link IReadConnector} has no more data. The
-   * run implementation of {@link ReadNode} returns when this method returns
-   * true. The behaviour of the implementation is very much dependent of type of
+   * Used to establish whether there is any more data to process. The run
+   * implementation of {@link ReadNode} returns when this method returns true.
+   * The behaviour of the implementation is very much dependent of type of
    * external resource that implementation "talks to", it should only return
    * true if there will never be any more data available, this is different from
    * the scenario where thers is no data at the moment but there maybe in

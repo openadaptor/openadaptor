@@ -303,9 +303,10 @@ public class JDBCConnection extends Component {
   }
 
   /**
-   * get number of deadlock retries remaining, returns zero if no more retries are allowed
-   * also checks that it is safe to retry, returns zero if not.
-   * @return
+   * get number of deadlock retries remaining,
+   * 
+   * @return returns zero if no more retries are allowed also checks that it is
+   *         safe to retry, returns zero if not.
    */
   protected int getDeadlockRetriesRemaining() {
     int retries = Math.max(deadlockLimit - deadlockCount, 0);
@@ -318,10 +319,14 @@ public class JDBCConnection extends Component {
   }
   
   /**
-   * interprets SQLException, this make the distinction between ConnectionExceptions
-   * (db server is unavilable) and ProcessingException (SQL failed)
+   * interprets SQLException, this make the distinction between
+   * ConnectionExceptions (db server is unavilable) and ProcessingException (SQL
+   * failed)
+   * 
    * @param e
-   * @param message 
+   *          the SQLException
+   * @param message
+   *          an additonal message to append to the RuntimeException
    */
   public void handleException(SQLException e, String message) {
     throw new ConnectionException((message != null ? message + ", " : "")

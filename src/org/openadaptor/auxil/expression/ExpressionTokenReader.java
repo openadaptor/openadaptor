@@ -67,7 +67,7 @@ import org.apache.commons.logging.LogFactory;
  * Parsed tokens: |3|+|4|*|(|7|-|5|)| <BR>
  * //ToDo: Add more examples.
  * 
- * @see org.openadaptor.expression.Expression for more detail on valid expressions.
+ * @see Expression for more detail on valid expressions.
  */
 public class ExpressionTokenReader {
 
@@ -366,7 +366,7 @@ public class ExpressionTokenReader {
    * <LI>Unary operators + and - are detected here. //ToDo: Find a better way of handling unary stuff.
    * 
    * @return List containing all of the tokens from the Tokenizer.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           if it cannot read a token
    */
   public List generateTokens() throws ExpressionException {

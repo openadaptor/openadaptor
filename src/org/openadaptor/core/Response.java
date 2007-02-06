@@ -99,7 +99,7 @@ public class Response {
 
   /**
    * adds a list of some discarded input data to the response
-   * @param datum list of discarded data
+   * @param batch list of discarded data
    */
   public void addDiscardedInputs(List batch) {
     addData(batch, DiscardBatch.class);
@@ -107,7 +107,7 @@ public class Response {
 
   /**
    * adds a list of {@link MessageException}s that is a result of unsucessfully processing some input data to the response
-   * @param exception list of MessageExceptions
+   * @param batch list of MessageExceptions
    */
   public void addExceptions(List batch) {
     addData(batch, ExceptionBatch.class);

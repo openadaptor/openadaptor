@@ -28,6 +28,7 @@
 package org.openadaptor.core.lifecycle;
 
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.adaptor.Adaptor;
 
 /**
  * Represents classes that "create" new data and process it by delegating to an {@link IMessageProcessor}.

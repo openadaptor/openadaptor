@@ -127,7 +127,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p>
    * If already connected, do nothing.
    * 
-   * @throws org.openadaptor.control.ComponentException
+   * @throws ComponentException
    *           if an AuthenticationException or NamingException occurs
    */
   public void connect() {
@@ -148,7 +148,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p>
    * If already disconnected, do nothing.
    * 
-   * @throws org.openadaptor.control.ComponentException
+   * @throws ComponentException
    *           if a NamingException occurs.
    */
   public void disconnect() {

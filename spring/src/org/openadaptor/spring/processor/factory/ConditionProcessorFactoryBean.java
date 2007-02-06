@@ -139,10 +139,6 @@ public class ConditionProcessorFactoryBean extends Component implements FactoryB
 
   // Bean Accessors
 
-  /**
-   * The expression representing thr conditional if expression.
-   * @return
-   */
   public String getIfExpression() {
     return ifExpression;
   }

@@ -77,7 +77,7 @@ public class Dom4jToXmlConvertor extends AbstractConvertor {
    * @param record
    *          dom4j Document objectcontaining an XML Document (dom4j) or a
    * @return Object (String) containing XML data
-   * @throws org.openadaptor.processor.RecordFormatException
+   * @throws RecordFormatException
    *           if conversion fails
    */
   protected Object convert(Object record) throws RecordException {

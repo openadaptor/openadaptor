@@ -57,7 +57,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
   /**
    * If this is set then HTTP GET is accepted, default is false
    * 
-   * @param map
+   * @param accept
    */
   public void setAcceptGet(boolean accept) {
     acceptGet = accept;
@@ -77,7 +77,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
   }
 
   /**
-   * @see setParameterNames
+   * @see #setParameterNames
    * @param param
    */
   public void setParameterName(String param) {

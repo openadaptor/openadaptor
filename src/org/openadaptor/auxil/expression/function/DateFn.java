@@ -53,7 +53,7 @@ public class DateFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single numeric argument, or a Date.
    * @return Object containing the <code>Date</code> corresponding to the supplied long value.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If argument is null or not a Long.
    */
   protected Object operate(Object[] args) throws ExpressionException {

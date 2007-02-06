@@ -29,6 +29,7 @@ package org.openadaptor.core;
 
 import java.util.List;
 
+import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
@@ -42,7 +43,7 @@ import org.openadaptor.core.exception.ValidationException;
 public interface IDataProcessor {
 
   /**
-   * Implementations of {@link IDataProcessor} are typically beans with zero-arg
+   * Implementations of this interface are typically beans with zero-arg
    * constructors. This method checks that the current state of an
    * implementation is "meaningful". Implementations are encouraged to add
    * exception to the list parameter rather than throwing them. This allows the

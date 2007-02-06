@@ -55,11 +55,11 @@ public interface IWriteConnector {
   void validate(List exceptions);
 
   /**
-   * This should be called before {@link #next(long)} is called. Implementations
-   * should use this method to establish connections to external resources and
-   * prepare to accept calls to {@link #next}. Exceptions should be thrown as
-   * RuntimeExceptions. If the implementation is an {@link IComponent} then it
-   * should throw {@link ConnectionException}.
+   * This should be called before {@link #deliver(Object[])} is called.
+   * Implementations should use this method to establish connections to external
+   * resources and prepare to accept calls to {@link #deliver(Object[])}.
+   * Exceptions should be thrown as RuntimeExceptions. If the implementation is
+   * an {@link IComponent} then it should throw {@link ConnectionException}.
    */
   void connect();
 

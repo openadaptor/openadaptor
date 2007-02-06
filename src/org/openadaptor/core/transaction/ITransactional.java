@@ -47,7 +47,7 @@ public interface ITransactional {
    * It is assumed that the configured transaction manager that creates the actual transaction
    * will match type of resource return. Return null if the component is not configured to be
    * transactional.
-   * @return
+   * @return the output
    */
   public Object getResource();
 }

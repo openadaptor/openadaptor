@@ -72,8 +72,12 @@
         <include name="README*"/>
         <include name="spring/**"/>
         <include name="src/**"/>
+        <include name="bin/**"/>
       </fileset>
     </copy>
+    <chmod perm="+x">
+      <fileset dir="${dir.package.example}/bin"/>
+    </chmod>
   </target>
   
   <target name="sql">
@@ -84,7 +88,7 @@
   
   <target name="doc">
     <mkdir dir="${dir.package.doc}"/>
-    <javadoc destdir="${dir.package.doc}" classpathref="classpath.spring" doctitle="openadaptor ${tag}">
+    <javadoc destdir="${dir.package.doc}" classpathref="classpath.spring" doctitle="openadaptor ${tag}" verbose="false">
       <fileset dir="${dir.src}"/>
       <fileset dir="${dir.spring.src}"/>
     </javadoc>

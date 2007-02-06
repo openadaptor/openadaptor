@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -47,7 +48,7 @@ import org.openadaptor.core.exception.ValidationException;
  * 
  * @author Russ Fennell
  * 
- * @see org.openadaptor.processor.IRecordProcessor
+ * @see IDataProcessor
  * @see FixedWidthFieldDetail
  * @see AbstractFixedWidthStringConvertor
  * @see FixedWidthStringToOrderedMapConvertor

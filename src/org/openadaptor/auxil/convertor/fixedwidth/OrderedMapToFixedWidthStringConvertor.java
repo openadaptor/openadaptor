@@ -53,7 +53,7 @@ import org.openadaptor.core.exception.RecordFormatException;
  * In both cases, the string output will be trimmed/padded to the appropriate width.
  * 
  * @author Russ Fennell
- * @see org.openadaptor.collections.IOrderedMap
+ * @see IOrderedMap
  */
 public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStringConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToFixedWidthStringConvertor.class);

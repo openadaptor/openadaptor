@@ -28,8 +28,10 @@
 package org.openadaptor.core.router;
 
 import java.util.Map;
+
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.node.Node;
 
 /**
  * An {@link IMessageProcessor} implementation that uses an {@link IRoutingMap} to

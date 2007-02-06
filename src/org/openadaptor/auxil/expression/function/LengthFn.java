@@ -53,7 +53,7 @@ public class LengthFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single <code>String</code> argument
    * @return <code>Long</code> containing the length of the string.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If argument is <tt>null</tt>.
    */
   protected Object operate(Object[] args) throws ExpressionException {

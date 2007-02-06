@@ -118,7 +118,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
    * @param s
    *          "UTF-8", "ISO-8859-1", "US-ASCII", etc.
    * 
-   * @see RFC2279
+   * @see EncodingAwareObject
    */
   public void setEncoding(String s) {
     this.encoding = s;

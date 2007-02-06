@@ -94,7 +94,7 @@ public class FilterProcessor extends AbstractSimpleRecordProcessor {
    * 
    * @param filterExpressionString
    *          String containing the expression to be evaluated.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           if an <code>IExpression</code> cannot be created from the expression String.
    */
   public void setFilterExpressionString(String filterExpressionString) throws ExpressionException {

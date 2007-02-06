@@ -53,7 +53,7 @@ public class AttributeSetProcessor extends AttributeModifyProcessor {
    * @param simpleRecord
    *          record to be modified.
    * @return Modified ISimpleRecord record after modification
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *           if the modification fails.
    */
   public ISimpleRecord modifySimpleRecord(ISimpleRecord simpleRecord) throws RecordException {

@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -89,10 +90,10 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * <p/> Note that implementations should always return an Object[], even if empty. Currently a null return value is
    * treated similarily, but this behaviour is considered deprecated and is very likely to change in future.
    * 
-   * @param record -
+   * @param data -
    *          the input record to be processed.
    * @return Object[] with zero or more records, resulting from the processing operation.
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *           if the processing fails for any reason.
    */
   public Object[] process(Object data) {
@@ -189,7 +190,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * 
    * Check pre-condition of properties required to be set, and compile pattern.
    * 
-   * @throws org.openadaptor.control.ComponentException
+   * @throws ComponentException
    *           if the preconditions are not met
    */
 

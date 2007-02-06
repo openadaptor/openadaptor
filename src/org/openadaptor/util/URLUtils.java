@@ -53,7 +53,7 @@ public class URLUtils {
    * 
    * Note that in the case of files you do not need to supply the "file:" protocol.
    * 
-   * @throws org.openadaptor.control.RuntimeException
+   * @throws RuntimeException
    *           if the url is null, or it does not exist, or it does not contain any data
    */
   public static void validateURLAsDataSource(String url) {

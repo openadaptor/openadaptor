@@ -83,8 +83,6 @@ public class XsltProcessor extends Component implements IDataProcessor {
   /**
    * Hook to perform any validation of the component properties required by the implementation. Defult behaviour should
    * be a no-op.
-   * 
-   * @return an empty list
    */
   public void validate(List exceptions) {
     try {

@@ -56,7 +56,7 @@ public class MatchesFn extends AbstractFunction {
    *          Object[] which should contain a <code>String</code> argument, followed by a <code>String</code>
    *          Regular expression.
    * @return <code>Boolean</code> indicating if the String matches the supplied expression.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If argument is <tt>null</tt> or not a <code>String</code>.
    */
   protected Object operate(Object[] args) throws ExpressionException {

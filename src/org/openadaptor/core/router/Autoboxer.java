@@ -47,9 +47,9 @@ import org.openadaptor.core.node.ProcessorNode;
  * <li>{@link IDataProcessor}
  * <li>{@link IWriteConnector}
  * <br/>as
- * <li>{@link IReadNode}
- * <li>{@link IProcessorNode}
- * <li>{@link IWriteNode}
+ * <li>{@link ReadNode}
+ * <li>{@link ProcessorNode}
+ * <li>{@link WriteNode}
  * <br/>respectively.
  * Also wraps single values as unary element lists and various other things that allow
  * users to simplify the configuration of an {@link IRoutingMap}.

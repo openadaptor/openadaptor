@@ -30,6 +30,7 @@ package org.openadaptor.core.lifecycle;
 import java.util.List;
 
 import org.openadaptor.core.IComponent;
+import org.openadaptor.core.adaptor.Adaptor;
 
 /**
  * Represents a component that has {@link State} and that must be validated,

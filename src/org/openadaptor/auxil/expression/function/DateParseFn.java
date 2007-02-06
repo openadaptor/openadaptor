@@ -72,7 +72,7 @@ public class DateParseFn extends AbstractFunction {
    *          Object[] which should contain two arguments - the Object to be formatted, and the format to be applied
    *          (typically a <code>String</code>)
    * @return Object containing a <code>String</code> with the formatted value.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If arguments cannot be cast appropriately
    */
   protected Object operate(Object[] args) throws ExpressionException {

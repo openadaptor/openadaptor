@@ -38,9 +38,11 @@ import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
+import org.openadaptor.core.router.Router;
 
 /**
  * The class which brings together the {@link IMessageProcessor} and

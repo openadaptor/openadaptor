@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.node.Node;
 
 /**
  * The default implementation of {@link IRoutingMap}.
@@ -58,7 +60,7 @@ import org.openadaptor.core.IMessageProcessor;
  * for more basic configurations. See comments for setProcessMap, setDiscardMap, setExceptionMap
  * @author perryj
  * @see IMessageProcessor
- * @see MessageExpression
+ * @see MessageException
  * @see IAutoboxer
  *
  */

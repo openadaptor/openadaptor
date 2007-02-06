@@ -69,7 +69,7 @@ public class KeepNamedAttributesProcessor extends AbstractSimpleRecordProcessor 
    * @param simpleRecord
    * @param alreadyCloned
    * @return record with only the named attributes remaining.
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    * 
    */
   public Object[] processSimpleRecord(ISimpleRecord simpleRecord, boolean alreadyCloned) throws RecordException {

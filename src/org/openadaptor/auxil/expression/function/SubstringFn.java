@@ -52,7 +52,7 @@ public class SubstringFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a String, and two int arguments
    * @return String containing result of applying the substring function.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If arguments cannot be cast appropriately
    */
   protected Object operate(Object[] args) throws ExpressionException {

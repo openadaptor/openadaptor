@@ -61,7 +61,7 @@ public class AttributeRemoveProcessor extends AttributeModifyProcessor {
    * @param simpleRecord
    *          The record from which the attribute should be removed.
    * @return the record, having removed the attribute.
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *           if the attribute cannot be removed.
    */
   // ToDo: Decide behaviour if attribute didn't exist)

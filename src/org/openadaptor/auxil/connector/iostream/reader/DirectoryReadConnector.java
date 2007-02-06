@@ -47,8 +47,8 @@ import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 /**
  * StreamReader which will read files from a directory.
  * <p>
- * It finds all files which match an optional <code>FileNameFilter</code> and supplies them all as a continuous
- * Stream.
+ * It finds all files which match an optional <code>FileNameFilter</code> and
+ * supplies them all as a continuous Stream.
  * 
  * @author Eddy Higgins
  */

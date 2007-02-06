@@ -107,7 +107,7 @@ public class XmlValidator extends Component implements IDataProcessor {
    * Take the record, ensure it's a string and validate it against the schema
    * defined in the config file.
    *
-   * @param record the XML to be validated
+   * @param data the XML to be validated
    *
    * @return Object[] with zero or more records, resulting from the processing
    *         operation.
@@ -134,8 +134,6 @@ public class XmlValidator extends Component implements IDataProcessor {
   /**
    * Hook to perform any validation of the component properties required by the
    * implementation. Defult behaviour should be a no-op.
-   *
-   * @return empty list
    */
   public void validate(List exceptions) {
     

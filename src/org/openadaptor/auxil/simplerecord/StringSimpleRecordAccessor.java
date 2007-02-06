@@ -117,7 +117,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          Ignored as it is not needed.
    * @return The object associated with the supplied key
-   * @throws org.openadaptor.core.processor.RecordFormatException
+   * @throws RecordFormatException
    *           if strict is false, and the record is not <tt>null</tt> and not a <code>String</code>.
    */
   public Object get(Object key) throws RecordFormatException {
@@ -137,7 +137,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param value
    *          Object to be stored. Must be a <code>String</code> if strict is set.
    * @return The Object which has just been stored.
-   * @throws org.openadaptor.core.processor.RecordFormatException
+   * @throws RecordFormatException
    *           if supplied value is not <tt>null</tt> and not a <code>String</code>, and <code>strictM/code>
    *                                                  is set.
    */
@@ -154,7 +154,7 @@ public class StringSimpleRecordAccessor implements ISimpleRecordAccessor, ISimpl
    * @param key
    *          ignored
    * @return Object containing the previously stored record value.
-   * @throws org.openadaptor.core.processor.RecordException
+   * @throws RecordException
    *           if the operation cannot be completed.
    */
   public Object remove(Object key) throws RecordException {

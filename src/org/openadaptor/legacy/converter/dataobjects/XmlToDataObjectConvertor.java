@@ -57,7 +57,7 @@ public class XmlToDataObjectConvertor extends AbstractConvertor {
    *
    * @param record containing XML
    * @return XMl representation of the data
-   * @throws org.openadaptor.processor.RecordException
+   * @throws RecordException
    *          if conversion fails
    */
   protected Object convert(Object record) throws RecordException {

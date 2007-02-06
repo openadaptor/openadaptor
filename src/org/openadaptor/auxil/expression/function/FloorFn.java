@@ -49,7 +49,7 @@ public class FloorFn extends AbstractFunction {
    * @param args
    *          Object[] which should contain a single numeric argument
    * @return Double containing result of applying Math.floor() to argument.
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           If argument is null or non-numeric.
    */
   protected Object operate(Object[] args) throws ExpressionException {

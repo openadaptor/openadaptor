@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
 
 /**
  * Common interface for openadaptor Expressions.
@@ -77,7 +78,7 @@ public interface IExpression {
    * Currently mapping supports "Long","Double","String","Date". Unknown types will be converted as Strings.
    * 
    * @return Map of attribute name to java type mappings.
-   * @see org.openadaptor.util.Dom4jUtils this is where the actual convertion takes place.
+   * @see Dom4jUtils this is where the actual convertion takes place.
    */
   public Map getAttributeTypeMap();
 
@@ -91,7 +92,7 @@ public interface IExpression {
    * Currently mapping supports "Long","Double","String","Date". Unknown types will be converted as Strings.
    * 
    * @param attributeTypeMap
-   * @see org.openadaptor.util.Dom4jUtils this is where the actual convertion takes place.
+   * @see Dom4jUtils this is where the actual convertion takes place.
    */
   public void setAttributeTypeMap(Map attributeTypeMap);
 

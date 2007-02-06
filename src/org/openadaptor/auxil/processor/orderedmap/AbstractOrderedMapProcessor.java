@@ -48,7 +48,7 @@ public abstract class AbstractOrderedMapProcessor extends Component implements I
    * Final because this is where the IOrderedMap checking is done. If you
    * don't want this, implement IRecordProcessor directly instead.
    *
-   * @param record the record to be process
+   * @param data the record to be process
    *
    * @return the array of records which result from processing the incoming record.
    *
@@ -71,7 +71,7 @@ public abstract class AbstractOrderedMapProcessor extends Component implements I
   /**
    * Abstract call to process records that are arrays
    *
-   * @param orderedMapRecord array type record
+   * @param orderedMap array type record
    *
    * @return array of resulting objects corresponding to calling processRecord on
    * each element of the record array passed

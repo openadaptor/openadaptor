@@ -311,7 +311,7 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws org.openadaptor.control.ComponentException -
+   * @throws ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName) {

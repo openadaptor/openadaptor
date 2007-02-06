@@ -112,7 +112,7 @@ public class BinaryOp implements IPostfixFunction {
    * @param arg2
    *          Number
    * @return Object with result (one of Double or Long)
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    */
 
   protected Object operate(Object arg1, Object arg2) throws ExpressionException {

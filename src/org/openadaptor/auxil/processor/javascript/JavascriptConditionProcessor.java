@@ -61,9 +61,6 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
   /**
    * Generate an output record array.
    * Default behaviour is just to wrap the outputRecord in an Object[].
-   * @param outputRecord
-   * @param scriptResult
-   * @return
    */
   protected Object[] generateOutput(JavascriptResult jsResult) {
     Object scriptResult=jsResult.executionResult;

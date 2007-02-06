@@ -36,6 +36,7 @@ import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Message;
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;

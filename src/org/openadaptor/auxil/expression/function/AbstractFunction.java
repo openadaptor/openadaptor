@@ -73,7 +73,7 @@ public abstract class AbstractFunction implements IPostfixFunction {
    * 
    * @param stack
    *          <code>Stack</code> containing at least the required number of input arguments (in reverse order).
-   * @throws org.openadaptor.expression.ExpressionException
+   * @throws ExpressionException
    *           if incorrect number of arguments are supplied on the stack.
    */
   public void execute(Stack stack) throws ExpressionException {

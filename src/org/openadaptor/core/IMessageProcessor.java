@@ -27,6 +27,7 @@
 
 package org.openadaptor.core;
 
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.node.Node;
 import org.openadaptor.core.router.Router;
 
