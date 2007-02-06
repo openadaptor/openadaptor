@@ -27,60 +27,80 @@
 
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ResourceException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ConnectionException;
 
+/**
+ * @author Fred Perry
+ */
 public abstract class AbstractStreamWriteConnector extends AbstractWriteConnector {
 
-  private IDataWriter dataWriter;
-  private OutputStream outputStream;
-  
-  public AbstractStreamWriteConnector() {
-    super();
-  }
+    private IDataWriter dataWriter;
+    private OutputStream outputStream;
 
-  public AbstractStreamWriteConnector(String id) {
-    super(id);
-  }
-
-  public void setDataWriter(IDataWriter dataWriter) {
-    this.dataWriter = dataWriter;
-  }
-
-  public void connect() {
-    try {
-      outputStream = getOutputStream();
-    } catch (IOException e) {
-      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
+    public AbstractStreamWriteConnector() {
+        super();
     }
-    dataWriter.setOutputStream(outputStream);
-  }
 
-  public Object deliver(Object[] data) {
-    try {
-      for (int i = 0; i < data.length; i++) {
-        dataWriter.write(data[i]);
-      }
-      dataWriter.flush();
-      return null;
-    } catch (IOException e) {
-      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
+    public AbstractStreamWriteConnector(String id) {
+        super(id);
     }
-  }
 
-  public void disconnect() {
-    if (outputStream != null && outputStream != System.out) {
-      try {
-        outputStream.close();
-      } catch (IOException e) {
-      } finally {
-      outputStream = null;
-      }
+    public void setDataWriter(IDataWriter dataWriter) {
+        this.dataWriter = dataWriter;
     }
-  }
 
-  protected abstract OutputStream getOutputStream() throws IOException;
+
+    /**
+     * Note: you must set the <em>dataWriter</em> field prior to calling connect().
+     *
+     * @throws ResourceException if the dataWriter field has not been set
+     * @throws ConnectionException if there was a problem retrieving the comms
+     * stream to the remote server
+     */
+    public void connect() {
+        if (dataWriter == null)
+            throw new ResourceException("The [dataWriter] property has not been set", this);
+
+        try {
+            outputStream = getOutputStream();
+        } catch (IOException e) {
+            throw new ConnectionException("IOException, " + e.getMessage(), e, this);
+        }
+
+        dataWriter.setOutputStream(outputStream);
+    }
+
+
+    public Object deliver(Object[] data) {
+        try {
+            for (int i = 0; i < data.length; i++) {
+                dataWriter.write(data[i]);
+            }
+            dataWriter.flush();
+            return null;
+        } catch (IOException e) {
+            throw new ConnectionException("IOException, " + e.getMessage(), e, this);
+        }
+    }
+
+
+    public void disconnect() {
+        if (outputStream != null && outputStream != System.out) {
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+            } finally {
+                outputStream = null;
+            }
+        }
+    }
+
+
+    protected abstract OutputStream getOutputStream() throws IOException;
 }
