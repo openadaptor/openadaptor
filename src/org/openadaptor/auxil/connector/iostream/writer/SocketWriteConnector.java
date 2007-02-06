@@ -27,56 +27,113 @@
 
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ResourceException;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * @author OA3 Core Team
+ * Basic implementation of a TCP/IP socket. Will connect to a remote server on
+ * a specified port and write the incoming data to it. Currently, the adaptor
+ * will stop after the data has been transferred.
+ *
+ * @author Fred Perry, Russ Fennell
  */
 public class SocketWriteConnector extends AbstractStreamWriteConnector {
-  
-  private static final Log log = LogFactory.getLog(SocketWriteConnector.class);
 
-  private String hostname;
+    private static final Log log = LogFactory.getLog(SocketWriteConnector.class);
 
-  private int port;
+    private String hostname;
+    private int port = -1;
+    private Socket socket;
 
-  private Socket socket;
 
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
-  }
-
-  public void setPort(int port) {
-    this.port = port;
-  }
-
-  protected OutputStream getOutputStream() throws IOException {
-    log.info(getId() + " connecting to " + hostname + ":" + port);
-    try {
-      socket = new Socket(hostname, port);
-      return socket.getOutputStream();
-    } catch (UnknownHostException e) {
-      throw new ConnectionException("UnknownHostExceptiont, " + hostname + ", " + e.getMessage(), e, this);
+    /**
+     * Mandatory
+     *
+     * @param hostname name or ip address of the remote server to connect to
+     */
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
-  }
 
-  public void disconnect() {
-    log.debug("Disconnecting from host:port " + hostname + ":" + port);
-    super.disconnect();
-    if (socket != null) {
-      try {
-        socket.close();
-      } catch (IOException ioe) {
-        log.warn("Failed to close socket - " + ioe.toString());
-      }
+
+    /**
+     * Mandatory
+     *
+     * @param port the TCP/IP port number that the remote server is listening on
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
-  }
+
+
+    /**
+     * Checks that the mandatory properties have been set
+     *
+     * @param exceptions list of exceptions that any validation errors will be appended to
+     */
+    public void validate(List exceptions) {
+        if ( hostname == null )
+            exceptions.add(new ResourceException("[hostname] property not set. " +
+                    "Please supply the name or IP address of the remote server", this));
+
+        if ( port == -1 )
+            exceptions.add(new ResourceException("[port] property not set. " +
+                    "Please supply the TCP/IP port number that the remote server is listening on", this));
+    }
+
+
+    /**
+     * Calls the super constructor and sets the dataWriter to be an instance of a
+     * LineWriter.
+     */
+    public SocketWriteConnector() {
+        super();
+        setDataWriter(new LineWriter());
+    }
+
+
+    /**
+     * Connects to the remote server and returns an OutputStream that can be used to
+     * communicate with it via the specified port.
+     *
+     * @return a comms stream
+     *
+     * @throws IOException if there was a comms error
+     */
+    protected OutputStream getOutputStream() throws IOException {
+        log.info(getId() + " connecting to " + hostname + ":" + port);
+        try {
+            socket = new Socket(hostname, port);
+            return socket.getOutputStream();
+        } catch (UnknownHostException e) {
+            throw new ConnectionException("UnknownHostExceptiont, " + hostname + ", " + e.getMessage(), e, this);
+        }
+    }
+
+
+    /**
+     * Closes the connection to the remote server.
+     */
+    public void disconnect() {
+        log.debug("Disconnecting from host:port " + hostname + ":" + port);
+        super.disconnect();
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException ioe) {
+                log.warn("Failed to close socket - " + ioe.toString());
+            }
+        }
+    }
 
 }
