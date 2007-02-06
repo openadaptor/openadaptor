@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * binds to the remote server using the details in the JNDIConnection
+      * once connection is made, the JNDISearch is performed and the data returned
+      * prints data to std out
+    
+    It is designed to illustrate the basic structure of an adaptor that uses a JNDI
+    connection to retrieve data from a remote server
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config reader.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+  
+    To test you need to have a remote server running a JNDI lookup service.
+    
+-->
+
+<beans>
+
+    <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+        <property name="messageProcessor"><ref bean="Pipeline"/></property>
+    </bean>
+
+    <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+        <description>
+            This creates the simple pipeline Reader-Writer
+        </description>
+        <property name="processors">
+            <list>
+                <ref bean="Reader"/>
+                <ref bean="Writer"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="JNDIConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+        <description>
+            Connection details for the remote server running the JNDI lookup service
+        </description>
+        <property name="initialContextFactory"  value="com.sun.jndi.ldap.LdapCtxFactory"/>
+        <property name="providerUrl"            value="ldap://myldapserver.myCompany.com:389"/>
+        <property name="securityAuthentication" value="simple"/>
+        <property name="securityPrincipal"      value="uid=user1001,ou=ApplicationAccounts,ou=Resources,o=myCompany.com"/>
+        <property name="securityCredentials"    value="myTrickyPassword"/>
+    </bean>
+
+    <bean id="JNDISearch" class="org.openadaptor.auxil.connector.jndi.JNDISearch">
+        <property name="searchBases">
+            <list>
+                <value>ou=people,o=myCompany.com</value>
+                <value>ou=clients,o=myCompany.com</value>
+            </list>
+        </property>
+        <property name="filter" value="(sn=Smith)"/>
+        <property name="attributes">
+            <list>
+                <value>businessline</value>
+                <value>employeenumber</value>
+                <value>givenname</value>
+                <value>location</value>
+            </list>
+        </property>
+        <!--<property name="returnedDNAttributeName" value="dn"/>-->
+        <!--<property name="searchControls" value=""/>-->
+        <!--<property name="treatMultiValuedAttributesAsArray" value="false"/>-->
+        <!--<property name="joinArraysWithSeparator" value="\n"/>-->
+    </bean>
+
+    <!-- Reader that connects to a remote lookup server, performs a search and returns the resulting data -->
+    <bean id="Reader" class="org.openadaptor.auxil.connector.jndi.JNDIReadConnector">
+        <property name="jndiConnection"><ref bean="JNDIConnection"/></property>
+        <property name="search"><ref bean="JNDISearch"/></property>
+    </bean>
+
+    <!-- writes data to StdOut -->
+    <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    </bean>
+
+</beans>
