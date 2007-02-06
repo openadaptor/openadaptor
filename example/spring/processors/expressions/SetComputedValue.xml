@@ -5,6 +5,31 @@
   $Revision: 1.7 $
  -->
 
+<!--
+    This adaptor does the following...
+
+      * reads an xml document from books.xml
+      * converts from xml into an OrderedMap
+      * set {totalValue} to be the product of {price} and {quantity}.
+      * converts map to a delimited string
+      * writes to stdout
+
+    It is designed to illustrate adding using an expression to compute attribute values.
+
+    Run it like this...
+
+      java org.openadaptor.spring.SpringApplication -config SetComputedValue.xml -bean Adaptor
+
+    You need the following in your classpath
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+
+    writes to stdout
+-->
+
 <beans>
     <description>
         This example illustrates the use of openadaptor Expressions (using Ordered Maps)
@@ -38,6 +63,9 @@
   <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>Read in an entire xml document consisting of multiple child records</description>
     <property name="filename" value="books.xml"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
   </bean>
   
   <bean id="OMConvertor" class="org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor">

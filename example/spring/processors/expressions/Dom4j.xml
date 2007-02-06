@@ -5,6 +5,31 @@
   $Revision: 1.3 $
  -->
 
+<!--
+    This adaptor does the following...
+
+      * reads an xml document from book.xml
+      * converts from xml into a Dom4j document.
+      * various expressions are applied to the document.
+      * converts document to xml
+      * writes to stdout
+
+    It is designed to illustrate adding using an expression to compute attribute values.
+
+    Run it like this...
+
+      java org.openadaptor.spring.SpringApplication -config Dom4j.xml -bean Adaptor
+
+    You need the following in your classpath
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+
+    writes to stdout
+-->
+
 <beans>
   <description>
     This example illustrates the use of openadaptor Expressions (using XML/dom4j). This example
