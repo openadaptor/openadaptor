@@ -26,10 +26,27 @@ windows
 
    set CLASSPATH=lib;lib\openadaptor.jar;lib\openadaptor-spring.jar;lib\openadaptor-depends.jar
    
-unix (bash)
+unix (sh)
 
-   export CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar
-   
+   CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar
+   export CLASSPATH
+
+The example/bin directory contains 2 scripts for setting your CLASSPATH with absolute paths.
+These scripts must be run from the command line like this...
+
+windows
+
+  cd example\bin
+  .\setclasspath.bat
+  echo %CLASSPATH%
+
+unix
+
+  cd example/bin
+  source setclasspath.sh
+  echo $CLASSPATH
+  
+  
 SPRING EXAMPLES
 ===============
 
@@ -48,15 +65,21 @@ Here is how to run your first adaptor
   
   java org.openadaptor.spring.SpringApplication -config example/spring/adaptor/simple.xml -bean Adaptor
 
-(assumes your current working directory is openadaptor root dir).
-    
+or (if you have a CLASSPATH with absolute paths)
+
+  cd example/spring/adaptor
+  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+  
 For more details on this specific adaptor look and the README in that directory and the comments
 in the config file.
+
 
 CODE EXAMPLES
 =============
 
-// TODO  
+The src dir contains code examples. The ant build file build.xml will compile these examples. 
+
+In order to run the compiled examples you will need to set your classpath and include example/classes. 
   
   
    

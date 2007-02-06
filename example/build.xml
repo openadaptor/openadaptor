@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="openadaptor examples" default="compile">
+  
+  <property name="dir.classes" value="classes"/>
+  <property name="dir.lib" value="../lib"/>
+  <property name="dir.src" value="src"/>
+
+  <mkdir dir="${dir.classes}"/>
+
+  <path id="classpath">
+    <pathelement path="${dir.stub.classes}"/>
+    <fileset dir="${dir.lib}" includes="**/*.jar"/>
+  </path>
+
+  <target name="compile" description="compile the example code">
+    <javac srcdir="${dir.src}" destdir="${dir.classes}" classpathref="classpath" debug="true"/>
+    <echo message="you need to added the classes directory to your classpath to run the examples"/>
+  </target>
+
+</project>
