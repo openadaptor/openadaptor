@@ -365,6 +365,9 @@ class MultiBaseJNDISearchResults implements NamingEnumeration {
    *           if a NamingException occurs.
    */
   public boolean hasMore() throws NamingException {
+      if ( current >= searchResults.length )
+        return false;
+
     boolean result = searchResults[current].hasMore();
     if (!result) {
       result = (++current < searchResults.length) && hasMore();
