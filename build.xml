@@ -278,6 +278,7 @@
   <target name="buildtools.taskdef" depends="compile.buildtools">
     <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.buildtools.classes}:${dir.classes}"/>
     <taskdef name="springcheck" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.buildtools.classes}"/>
+    <taskdef name="jarcopy" classname="org.openadaptor.util.ant.VersionedJarCopyTask" classpath="${dir.buildtools.classes}"/>
   </target>
 
   <target name="copyright.check" depends="buildtools.taskdef" description="checks copyright notices in code">

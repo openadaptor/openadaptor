@@ -23,7 +23,7 @@
     </zip>
   </target>
   
-  <target name="lib">
+  <target name="lib" depends="buildtools.taskdef">
     <mkdir dir="${dir.package}"/>
     <mkdir dir="${dir.package.lib}"/>
     <mkdir dir="${dir.package.lib}/3rdparty"/>
@@ -36,29 +36,24 @@
     <jar destfile="${dir.package.lib}/openadaptor-spring.jar">
       <fileset dir="${dir.spring.classes}"/>
     </jar>
-    <jar destfile="${dir.package.lib}/openadaptor-depends.jar">
-      <zipgroupfileset dir="${dir.lib}" includes="*.jar,*.zip" excludes="mail.jar,activation.jar"/>
-      <!-- <zipgroupfileset dir="${dir.test.lib}" includes="*.jar,*.zip"/> -->
-      <zipgroupfileset dir="${dir.spring.lib}" includes="*.jar,*.zip"/>
-    </jar>
-    <copy todir="${dir.package.lib}/3rdparty">
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="jarversions.properties" version="${tag}" manifest="lib/MANIFEST.MF">
       <fileset dir="${dir.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>
       </fileset>
-    </copy>
-    <copy todir="${dir.package.lib}/3rdparty">
       <fileset dir="${dir.spring.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>
       </fileset>
-    </copy>
-    <copy todir="${dir.package.lib}/3rdparty">
       <fileset dir="${dir.test.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>
       </fileset>
-    </copy>
+    </jarcopy>
+    <jar destfile="${dir.package.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
+      <zipgroupfileset dir="${dir.lib}" includes="*.jar,*.zip" excludes="mail.jar,activation.jar"/>
+      <zipgroupfileset dir="${dir.spring.lib}" includes="*.jar,*.zip"/>
+    </jar>
     <copy todir="${dir.package.lib}">
       <fileset dir="${dir.lib}">
         <include name="log4j.properties"/>
