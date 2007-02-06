@@ -27,52 +27,62 @@
 
 package org.openadaptor.auxil.connector.jndi;
 
-import java.util.List;
-
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ResourceException;
+
+import java.util.List;
 
 /**
  * Abstract base class for connectors which use JNDI searches.
  */
 public abstract class AbstractJNDIReadConnector extends Component implements IReadConnector {
 
-  protected AbstractJNDIReadConnector() {
-  }
+    protected AbstractJNDIReadConnector() {
+    }
 
-  protected AbstractJNDIReadConnector(String id) {
-    super(id);
-  }
- 
-  public void validate(List exceptions) {
-  }
-  
-  //private static final Log log = LogFactory.getLog(AbstractJNDIReader.class);
+    protected AbstractJNDIReadConnector(String id) {
+        super(id);
+    }
 
-  /**
-   * This is the search class which will be used.
-   */
-  protected JNDISearch search;
+    //private static final Log log = LogFactory.getLog(AbstractJNDIReader.class);
 
-  // BEGIN Bean getters/setters
+    /**
+     * This is the search class which will be used.
+     */
+    protected JNDISearch search;
 
-  /**
-   * Returns the JNDISearch instance which this Reader will use.
-   * 
-   * @return JNDISearch instance.
-   */
-  public JNDISearch getSearch() {
-    return search;
-  }
+    // BEGIN Bean getters/setters
 
-  /**
-   * Assign a <code>JNDISearch</code> instance to this Reader.
-   * 
-   * @param search
-   *          the search to associate with this Reader.
-   */
-  public void setSearch(JNDISearch search) {
-    this.search = search;
-  }
-  // END Bean getters/setters
+    /**
+     * Returns the JNDISearch instance which this Reader will use.
+     *
+     * @return JNDISearch instance.
+     */
+    public JNDISearch getSearch() {
+        return search;
+    }
+
+    /**
+     * Assign a <code>JNDISearch</code> instance to this Reader.
+     *
+     * @param search the search to associate with this Reader.
+     */
+    public void setSearch(JNDISearch search) {
+        this.search = search;
+    }
+    // END Bean getters/setters
+
+
+    /**
+     * Checks that the search has been set
+     *
+     * @param exceptions
+     */
+    public void validate(List exceptions) {
+        if (search == null)
+            exceptions.add(new ResourceException("[search] property not set. " +
+                    "Please set it to an instance of an " +
+                    "org.openadaptor.auxil.connector.jndi.JNDISearch", this));
+    }
 }
