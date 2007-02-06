@@ -23,9 +23,11 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.jndi;
+
+import java.util.List;
 
 import javax.naming.AuthenticationException;
 import javax.naming.CommunicationException;
@@ -41,9 +43,7 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
-import org.openadaptor.core.exception.ResourceException;
-
-import java.util.List;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
@@ -56,182 +56,174 @@ import java.util.List;
  */
 public class JNDIReadConnector extends AbstractJNDIReadConnector {
 
-    private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
+  private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
 
-    // internal state:
-    /**
-     * Direcory Context for this reader.
-     */
-    protected DirContext _ctxt;
+  // internal state:
+  /**
+   * Direcory Context for this reader.
+   */
+  protected DirContext _ctxt;
 
-    /**
-     * Naming enumeration which holds the results of an executed search.
-     */
-    protected NamingEnumeration _namingEnumeration;
+  /**
+   * Naming enumeration which holds the results of an executed search.
+   */
+  protected NamingEnumeration _namingEnumeration;
 
-    /**
-     * Flag to indicate whether or not the search has already run.
-     */
-    protected boolean _searchHasExecuted = false;
+  /**
+   * Flag to indicate whether or not the search has already run.
+   */
+  protected boolean _searchHasExecuted = false;
 
-    // bean properties:
-    /**
-     * JNDIConnection which this reader will use
-     */
-    protected JNDIConnection jndiConnection;
+  // bean properties:
+  /**
+   * JNDIConnection which this reader will use
+   */
+  protected JNDIConnection jndiConnection;
 
-    public JNDIReadConnector() {
+  public JNDIReadConnector() {
+  }
+
+  public JNDIReadConnector(String id) {
+    super(id);
+  }
+
+  // BEGIN Bean getters/setters
+
+  /**
+   * Assign a JNDI connection for use by the reader. Behaviour is undefiled if this is set when the reader has already
+   * called connect().
+   *
+   * @param connection The JNDIConnection to use
+   */
+  public void setJndiConnection(JNDIConnection connection) {
+    jndiConnection = connection;
+  }
+
+  /**
+   * Return the JNDIConnection for this reader.
+   *
+   * @return JNDIConnection instance.
+   */
+  public JNDIConnection getJndiConnection() {
+    return jndiConnection;
+  }
+
+  // END Bean getters/setters
+
+  // Public accessors:
+
+  /**
+   * Return the dirContext for this reader.
+   * <p/>
+   * The dirContext is set when the underlying <code>JNDIConnection</code> object has it's connect() method invoked.
+   *
+   * @return DirContext DirContext, or <tt>null</tt> if it hasn't been set yet.
+   */
+  public DirContext getContext() {
+    return _ctxt;
+  }
+
+  /**
+   * Checks that the mandatory properties have been set
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   */
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+    if (jndiConnection == null) {
+      exceptions.add(new ValidationException("jndiConnection property is not set", this));
+    }
+  }
+
+  /**
+   * Establish an external JNDI connection.
+   * <p/>
+   * If already connected, do nothing.
+   *
+   * @throws ComponentException if an AuthenticationException or NamingException occurs
+   */
+  public void connect() {
+    try {
+      _ctxt = jndiConnection.connect();
+    } catch (AuthenticationException ae) {
+      log.warn("Failed JNDI authentication for principal: " + jndiConnection.getSecurityPrincipal());
+      throw new ConnectionException("Failed to Authenticate JNDI connection - " + ae.toString(), ae, this);
+    } catch (NamingException ne) {
+      log.warn(ne.getMessage());
+      throw new ConnectionException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
+    }
+    log.info(getId() + " connected");
+  }
+
+  /**
+   * Disconnect external JNDI connection.
+   * <p/>
+   * If already disconnected, do nothing.
+   *
+   * @throws ComponentException if a NamingException occurs.
+   */
+  public void disconnect() {
+    log.debug("Connector: [" + getId() + "] disconnecting ....");
+    if (_ctxt != null) {
+      try {
+        _ctxt.close();
+      } catch (NamingException ne) {
+        log.warn(ne.getMessage());
+      }
+    }
+    log.info(getId() + " disconnected");
+  }
+
+  /**
+   * Return the next record from this reader.
+   * <p/>
+   * It first tests if the underlying search has already executed. If not, it executes it. It then takes the next
+   * available result from the executed search, and returns it.<br>
+   * If the result set is empty, then it returns <tt>null</tt> indicating that the reader is exhausted.
+   *
+   * @return Object[] containing an IOrderedMap of results, or <tt>null</tt>
+   * @throws ComponentException
+   */
+  public Object[] next(long timeoutMs) throws ComponentException {
+    Object[] result = null;
+    try {
+      if (!_searchHasExecuted) {
+        log.info("Executing JNDI search - " + search.toString());
+        _namingEnumeration = search.execute(_ctxt);
+        _searchHasExecuted = true;
+      }
+      if (_namingEnumeration.hasMore()) {
+        IOrderedMap map = JNDIUtils.getOrderedMap((SearchResult) _namingEnumeration.next(), search
+            .getTreatMultiValuedAttributesAsArray(), search.getJoinArraysWithSeparator());
+
+        result = new Object[] { map };
+      }
+    } catch (CommunicationException e) {
+      throw new ConnectionException(e.getMessage(), e, this);
+    } catch (ServiceUnavailableException e) {
+      throw new ConnectionException(e.getMessage(), e, this);
+    } catch (NamingException e) {
+      throw new ProcessingException(e.getMessage(), e, this);
+    }
+    return result;
+  }
+
+  /**
+   * @return false if the search has not yet been performed or there are still results
+   * to be processed then we are not dry
+   */
+  public boolean isDry() {
+    try {
+      if (_namingEnumeration == null || _namingEnumeration.hasMore()) {
+        return false;
+      }
+    } catch (NamingException e) {
     }
 
-    public JNDIReadConnector(String id) {
-        super(id);
-    }
+    return true;
+  }
 
-    // BEGIN Bean getters/setters
-
-    /**
-     * Assign a JNDI connection for use by the reader. Behaviour is undefiled if this is set when the reader has already
-     * called connect().
-     *
-     * @param connection The JNDIConnection to use
-     */
-    public void setJndiConnection(JNDIConnection connection) {
-        jndiConnection = connection;
-    }
-
-    /**
-     * Return the JNDIConnection for this reader.
-     *
-     * @return JNDIConnection instance.
-     */
-    public JNDIConnection getJndiConnection() {
-        return jndiConnection;
-    }
-
-    // END Bean getters/setters
-
-    // Public accessors:
-
-    /**
-     * Return the dirContext for this reader.
-     * <p/>
-     * The dirContext is set when the underlying <code>JNDIConnection</code> object has it's connect() method invoked.
-     *
-     * @return DirContext DirContext, or <tt>null</tt> if it hasn't been set yet.
-     */
-    public DirContext getContext() {
-        return _ctxt;
-    }
-
-
-    /**
-     * Checks that the mandatory properties have been set
-     *
-     * @param exceptions list of exceptions that any validation errors will be appended to
-     */
-    public void validate(List exceptions) {
-        super.validate(exceptions);
-
-        if (jndiConnection == null)
-            exceptions.add(new ResourceException("The [jndiConnection] property is not set. " +
-                    "Please supply an instance of an " +
-                    "org.openadaptor.auxil.connector.jndi.JNDIConnection for it", this));
-    }
-
-
-    /**
-     * Establish an external JNDI connection.
-     * <p/>
-     * If already connected, do nothing.
-     *
-     * @throws ComponentException if an AuthenticationException or NamingException occurs
-     */
-    public void connect() {
-        try {
-            _ctxt = jndiConnection.connect();
-        } catch (AuthenticationException ae) {
-            log.warn("Failed JNDI authentication for principal: " + jndiConnection.getSecurityPrincipal());
-            throw new ConnectionException("Failed to Authenticate JNDI connection - " + ae.toString(), ae, this);
-        } catch (NamingException ne) {
-            log.warn(ne.getMessage());
-            throw new ConnectionException("Failed to establish JNDI connection - " + ne.toString(), ne, this);
-        }
-        log.info(getId() + " connected");
-    }
-
-    /**
-     * Disconnect external JNDI connection.
-     * <p/>
-     * If already disconnected, do nothing.
-     *
-     * @throws ComponentException if a NamingException occurs.
-     */
-    public void disconnect() {
-        log.debug("Connector: [" + getId() + "] disconnecting ....");
-        if (_ctxt != null) {
-            try {
-                _ctxt.close();
-            } catch (NamingException ne) {
-                log.warn(ne.getMessage());
-            }
-        }
-        log.info(getId() + " disconnected");
-    }
-
-    /**
-     * Return the next record from this reader.
-     * <p/>
-     * It first tests if the underlying search has already executed. If not, it executes it. It then takes the next
-     * available result from the executed search, and returns it.<br>
-     * If the result set is empty, then it returns <tt>null</tt> indicating that the reader is exhausted.
-     *
-     * @return Object[] containing an IOrderedMap of results, or <tt>null</tt>
-     * @throws ComponentException
-     */
-    public Object[] next(long timeoutMs) throws ComponentException {
-        Object[] result = null;
-        try {
-            if (!_searchHasExecuted) {
-                log.info("Executing JNDI search - " + search.toString());
-                _namingEnumeration = search.execute(_ctxt);
-                _searchHasExecuted = true;
-            }
-            if (_namingEnumeration.hasMore()) {
-                IOrderedMap map = JNDIUtils.getOrderedMap((SearchResult) _namingEnumeration.next(), search
-                        .getTreatMultiValuedAttributesAsArray(), search.getJoinArraysWithSeparator());
-
-                result = new Object[]{map};
-            }
-        } catch (CommunicationException e) {
-            throw new ConnectionException(e.getMessage(), e, this);
-        } catch (ServiceUnavailableException e) {
-            throw new ConnectionException(e.getMessage(), e, this);
-        } catch (NamingException e) {
-            throw new ProcessingException(e.getMessage(), e, this);
-        }
-        return result;
-    }
-
-
-    /**
-     * @return false if the search has not yet been performed or there are still results
-     * to be processed then we are not dry
-     */
-    public boolean isDry() {
-//        return false;
-        try {
-            if ( _namingEnumeration == null || _namingEnumeration.hasMore() )
-                return false;
-        } catch (NamingException e) {
-            // do nothing and return true
-        }
-
-        return true;
-    }
-
-
-
-    public Object getReaderContext() {
-        return null;
+  public Object getReaderContext() {
+    return null;
   }
 }

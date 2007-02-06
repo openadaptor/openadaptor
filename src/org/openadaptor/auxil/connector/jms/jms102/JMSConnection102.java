@@ -59,7 +59,7 @@ import org.openadaptor.auxil.connector.jms.JMSConnection;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
-import org.openadaptor.core.exception.ResourceException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Utility class providing JMS support to the JMS Listener and Publisher classes. Uses JMS 1.0.2 compliant code.
@@ -326,7 +326,7 @@ public class JMSConnection102 extends JMSConnection {
 
       if (!topicQueueDefined && factoriesUnified) {
         // We haven't a prayer of guessing so bail out
-        throw new ResourceException(
+        throw new ValidationException(
             "Using JMS 1.0.2 and cannot determine whether using Queue or Topic. Please set one of Properties 'queue' or 'topic' on JMSConnection102 to true", this);
       }
 
