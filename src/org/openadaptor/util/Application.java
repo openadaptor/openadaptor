@@ -48,6 +48,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Application {
 
+  private static final String REGISTRATION_PROPERTIES = "registration.properties";
+
   private static final Log log = LogFactory.getLog(Application.class);
 
   private static final String PROPERTY_HOSTADDRESS      = "openadaptor.hostaddress";
@@ -68,37 +70,15 @@ public class Application {
 
   private static final String BUILD_PROPERTIES_NAME     = ".openadaptor.properties";
 
-  public static final String LICENCE_TEXT = 
-        " Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved. \n"
-      + "                                                                                     \n"
-      + " Permission is hereby granted, free of charge, to any person obtaining a             \n"
-      + " copy of this software and associated documentation files (the                       \n"
-      + " \"Software\"), to deal in the Software without restriction, including               \n"
-      + " without limitation the rights to use, copy, modify, merge, publish,                 \n"
-      + " distribute, sublicense, and/or sell copies of the Software, and to                  \n"
-      + " permit persons to whom the Software is furnished to do so, subject to               \n"
-      + " the following conditions:                                                           \n"
-      + "                                                                                     \n"
-      + " The above copyright notice and this permission notice shall be included             \n"
-      + " in all copies or substantial portions of the Software.                              \n"
-      + "                                                                                     \n"
-      + " THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS           \n"
-      + " OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF                          \n"
-      + " MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                               \n"
-      + " NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE              \n"
-      + " LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION              \n"
-      + " OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION               \n"
-      + " WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                     \n"
-      + "                                                                                     \n"
-      + " Nothing in this notice shall be deemed to grant any rights to                       \n"
-      + " trademarks, copyrights, patents, trade secrets or any other intellectual            \n"
-      + " property of the licensor or any contributor except as expressly stated              \n"
-      + " herein. No patent license is granted separate from the Software, for                \n"
-      + " code that you delete from the Software, or for combinations of the                  \n"
-      + " Software with other software or hardware.                                           \n";
-
+  public static final String LICENCE_TEXT;
+  
   static {
-    System.err.println(LICENCE_TEXT + "\n");
+    try {
+      LICENCE_TEXT = ResourceUtil.readFileContents(ResourceUtil.class, "licence.txt");
+    } catch (Throwable e) {
+      throw new RuntimeException("unable to load openadaptor licence file, " + e.getMessage(), e);
+    }
+    System.err.println("\n" + LICENCE_TEXT + "\n");
   }
   
   public Application() {
@@ -148,7 +128,7 @@ public class Application {
 
     if (url != null && url.length() > 0) {
       try {
-        PropertiesPoster.post(url, props);
+        PropertiesPoster.post(url, filterProperties(props));
         log.info("posted system properties to " + url);
       } catch (Exception e) {
         log.warn("failed to post system properties : " + e.getMessage());
@@ -158,8 +138,30 @@ public class Application {
     }
 
   }
-
-  public static void main(String[] args) {
-    new Application();
+  
+  public static Properties filterProperties(Properties props) {
+    Properties newProps = new Properties();
+    InputStream is = Application.class.getResourceAsStream(REGISTRATION_PROPERTIES);
+    Properties registrationProps = new Properties();
+    try {
+      registrationProps.load(is);
+      for (Iterator iter = registrationProps.keySet().iterator(); iter.hasNext();) {
+        String key = (String) iter.next();
+        String propertyName = registrationProps.getProperty(key);
+        if (propertyName != null && propertyName.length() > 0) {
+          String value = props.getProperty(propertyName, "<unknown>");
+          log.debug("registration property : " + key + "," + value);
+          newProps.setProperty(key, value);
+        }
+      }
+    } catch (IOException e) {
+     log.warn("failed to load " + REGISTRATION_PROPERTIES);
+    } finally {
+      try {
+        is.close();
+      } catch (IOException e) {
+      }
+    }
+    return newProps;
   }
 }
