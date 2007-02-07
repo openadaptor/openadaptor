@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads DOXML from a file
+      * converts to DataObjects (legacy data structures from previous openadaptor versions)
+      * converts DataObjects to map
+      * converts map to xml
+      * writes to file
+    
+    It is designed to illustrate the basic structure something that needs to receive
+    the legacy DataObject format.
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config doxml_reader.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+      lib/3rdparty/legacy_openadaptor.jar
+    
+    writes output to stdout.
+-->
+
+
+<beans>
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+     <ref bean="Pipeline"/>
+   </property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="DOXmlConverter"/>
+        <ref bean="MapConverter"/>
+        <ref bean="XmlConverter"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+   
+  <!-- This read connector contexts of a file as a single string -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="doxml.txt"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
+  </bean>
+  
+  <!-- converts this string to an array of DataObject[] -->
+  <bean id="DOXmlConverter" class="org.openadaptor.legacy.converter.dataobjects.DOXmlToDataObjectConvertor"/>
+  
+  <!-- converts DataObject[] to IOrderedMap -->
+  <bean id="MapConverter" class="org.openadaptor.legacy.converter.dataobjects.DataObjectToOrderedMapConvertor"/>
+  
+  <!-- converts IOrderedMap to XML -->
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
