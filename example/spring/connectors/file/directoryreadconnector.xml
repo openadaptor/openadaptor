@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
+      * outputs to stdout
+    
+    It is designed to illustrate the basic structure of a directory reader adaptor
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config directoryreadconnector.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+    
+    writes to stdout
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>
+      Illustrate a basic directory reader adaptor.
+        * reads all files in a directory inputs whose flenames match the regex stuff[0-9].txt
+        * outputs to stdout
+    </description>
+    <property name="messageProcessor" ref="Pipeline"/>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline DirectoryReader-Writer
+    </description>
+    <property name="processors">
+      <list>
+        <ref bean="DirectoryReader"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>  
+  
+  <bean id="DirectoryReader" class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">    
+    <property name="dirname" value="inputs"/>
+    <property name="filenameRegex" value="stuff[0-9].txt"/>
+  
+  </bean>
+  
+  <!-- This writer writes data to stdout -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+    
+</beans>

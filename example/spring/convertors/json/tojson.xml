@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads a file consisting of rows of comma separated values.
+      * converts it into OrderedMaps
+      * converts from OrderedMaps to JSON
+      * writes text to stdout
+    
+    It is designed to illustrate the basic steps in generating json text.
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config tojson.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+-->
+
+<beans>
+    <description>
+      This example illustrates the basic steps in generating json text.
+        * reads a file consisting of rows of comma separated values.
+        * converts it into OrderedMaps
+        * converts from OrderedMaps to JSON
+        * writes text to stdout
+    </description>
+    
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>Define the basic adaptor pipeline</description>
+     <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="toorderedmap"/>
+            <ref bean="tojson"/>
+            <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>    
+  </bean> 
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read in an entire xml document</description>
+    <property name="filename" value="delim.csv"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+
+  <bean id="toorderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Convert to OrderedMap providing fields names.</description>
+    <property name="fieldNames">
+        <list>
+            <value>username</value>
+            <value>fullname</value>
+            <value>uniqueid</value>
+            <value>dob</value>
+        </list>
+    </property>
+  </bean>
+  
+  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJsonStringConvertor">
+    <description>Generate a json string</description>
+    <property name="tabSize" value="2"/>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
