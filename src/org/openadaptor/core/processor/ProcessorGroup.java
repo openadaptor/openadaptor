@@ -37,7 +37,7 @@ import org.openadaptor.core.IDataProcessor;
 /**
  * Utility {@link IDataProcessor} which allows multiple processors to be grouped and treated
  * as one.
- * 
+ *
  * @author Eddy Higgins
  */
 public class ProcessorGroup extends Component implements IDataProcessor {
@@ -61,11 +61,26 @@ public class ProcessorGroup extends Component implements IDataProcessor {
  /**
    * delegates the call to the list of {@link IDataProcessor}s
    */
+  public IDataProcessor[] getProcessors() {
+    return (processors);
+  }
+
+  //END   Bean getters/setters
+
+  /**
+   * Displays warning if there are no processors configured. This is not an error but
+   * just means that the data will not be transformed
+   * <p/>
+   *
+   * Invoke validation of the component properties provided by each of the processors
+   * in this group.
+   */
   public void validate(List exceptions) {
-    if (processors != null) {
-      for (int i = 0; i < processors.length; i++) {
+    if ( processors == null ) {
+      log.warn("No processors configured. The data will be passed through unmolested");
+    } else {
+      for (int i = 0; i < processors.length; i++)
         processors[i].validate(exceptions);
-      }
     }
   }
 
