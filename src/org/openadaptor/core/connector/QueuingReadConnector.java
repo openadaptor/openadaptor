@@ -135,7 +135,9 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     if (isTransacted) {
       synchronized (resource) {
         try {
-          resource.wait();
+          if (!resource.isFinished()) {
+            resource.wait();
+          }
         } catch (InterruptedException e) {
           throw new RuntimeException("thread interupted whilst waiting for transaction to complete");
         }
@@ -196,16 +198,24 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   class MyTransactionalResource implements ITransactionalResource {
 
     Throwable errorOrException = null;
+    boolean finished = false;
     
+    public boolean isFinished() {
+      return finished;
+    }
+
     public void begin() {
       errorOrException = null;
+      finished = false;
     }
 
     public synchronized void commit() {
+      finished = true;
       notify();
     }
 
     public synchronized void rollback(Throwable t) {
+      finished = true;
       errorOrException = t != null ? t : new RuntimeException("rolled back with no exception chek logs");
       notify();
     }
