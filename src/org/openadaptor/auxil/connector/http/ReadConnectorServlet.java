@@ -29,6 +29,7 @@ package org.openadaptor.auxil.connector.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
   }
 
   /**
-   * triggers jetty to be started if required registers servlet
+   * registers servlet
    */
   public void connect() {
     Servlet servlet = new HttpServlet() {
@@ -123,6 +124,15 @@ public class ReadConnectorServlet extends JettyReadConnector {
 
   private void process(HttpServletRequest request, HttpServletResponse response) {
 
+    if (log.isDebugEnabled()) {
+      Enumeration e = request.getParameterNames();
+      while (e.hasMoreElements()) {
+        String name = (String) e.nextElement();
+        String value = request.getParameter(name);
+        log.debug(name + "=" + value);
+      }
+    }
+    
     // single param configuration - queues string value
     if (parameterNames.length == 1) {
       String data = request.getParameter(parameterNames[0]);
