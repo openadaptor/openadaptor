@@ -44,6 +44,11 @@ import com.tibco.tibrv.TibrvListener;
 import com.tibco.tibrv.TibrvMsg;
 import com.tibco.tibrv.TibrvMsgCallback;
 
+/**
+ * Read Connector that subcribes to a tibco rendezvous topic / subject.
+ * @author perryj
+ *
+ */
 public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsgCallback {
 
   private static final Log log = LogFactory.getLog(TibrvReadConnector.class);
@@ -54,7 +59,7 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
 
   private Map listenerMap = new HashMap();
   
-  private DispathThread dispathThread = null;
+  private DispathThread dispatchThread = null;
   
   private boolean decodeTibrvMsg = true;
 
@@ -112,8 +117,8 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
         throw new ConnectionException("failed to create listener", e, this);
       }
     }
-    dispathThread = new DispathThread();
-    dispathThread.start();
+    dispatchThread = new DispathThread();
+    dispatchThread.start();
   }
 
   public void disconnect() {
