@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * StreamReader which will read files from a directory.
@@ -93,10 +94,14 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     });
   }
 
-  public void connect() {
+  public void validate(List exceptions) {
+    super.validate(exceptions);
     if (!dir.exists() || !dir.isDirectory()) {
-      throw new RuntimeException("dir " + dir.toString() + " does not exist or is not a directory");
+      exceptions.add(new ValidationException("dir " + dir.toString() + " does not exist or is not a directory", this));
     }
+  }
+  
+  public void connect() {
     files.addAll(Arrays.asList(dir.listFiles(filter)));
     Collections.sort(files);
     super.connect();
@@ -119,8 +124,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
 
   private InputStream getNextInputStream() {
     closeInputStream();
-    File f = (File) files.remove(0);
-    if (f != null) {
+    if (!files.isEmpty()) {
+      File f = (File) files.remove(0);
       try {
         currentFile = f;
         log.info(getId() + " opening " + f.getAbsolutePath() + "...");

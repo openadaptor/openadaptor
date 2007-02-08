@@ -27,22 +27,17 @@
 
 package org.openadaptor.auxil.connector.ftp;
 
-/*
- * File: $Header$ Rev: $Revision$
- */
-
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.thirdparty.apache.AbstractFTPLibrary;
 
 import sun.net.TelnetInputStream;
 import sun.net.ftp.FtpClient;
@@ -64,9 +59,9 @@ import sun.net.ftp.FtpClient;
  * 
  * @author Russ Fennell
  */
-public class SunFTPLibrary extends AbstractFTPLibrary {
+public class SunFTPConnection extends AbstractFTPLibrary {
   
-  private static final Log log = LogFactory.getLog(SunFTPLibrary.class);
+  private static final Log log = LogFactory.getLog(SunFTPConnection.class);
 
   // SunFTP client object that will perform the actual file transfer
   private FtpClient _ftpClient;
@@ -161,28 +156,26 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    * @throws ComponentException
    *           if we cannot open the transfer stream with the remote server
    */
-  public InputStreamReader get(String fileName) {
-    InputStreamReader file;
+  public InputStream get(String fileName) {
+    InputStream in;
 
     log.debug("get() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
 
     checkLoggedIn();
 
     try {
-      TelnetInputStream in = _ftpClient.get(fileName);
+      in = _ftpClient.get(fileName);
       if (in == null) {
         log.warn("Empty file retrieved");
         return null;
       }
-
-      file = (textEncoding == null) ? new InputStreamReader(in) : new InputStreamReader(in, textEncoding);
       log.debug("SunFTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
       throw new ConnectionException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
-    return file;
+    return in;
   }
 
   /**
@@ -202,30 +195,26 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter put(String fileName) {
-    OutputStreamWriter file;
+  public OutputStream put(String fileName) {
+    OutputStream out;
 
     log.debug("put() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
 
     checkLoggedIn();
 
     try {
-      OutputStream out = _ftpClient.put(fileName);
+      out = _ftpClient.put(fileName);
       if (out == null) {
         log.warn("Error creating file");
         return null;
       }
-
-      log.debug("Creating stream writer");
-      file = (textEncoding == null) ? new OutputStreamWriter(out) : new OutputStreamWriter(out, textEncoding);
-
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
       throw new ConnectionException("Cannot open SunFTP stream:" + e.getMessage(), this);
     }
 
-    return file;
+    return out;
   }
 
   /**
@@ -244,15 +233,15 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter append(String fileName) {
-    OutputStreamWriter _out;
+  public OutputStream append(String fileName) {
+    OutputStream _out;
 
     log.debug("append() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
 
     checkLoggedIn();
 
     try {
-      _out = new OutputStreamWriter(_ftpClient.append(fileName));
+      _out = _ftpClient.append(fileName);
       log.debug("SunFTP output transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
@@ -397,11 +386,6 @@ public class SunFTPLibrary extends AbstractFTPLibrary {
    *           if we fail to change directory or it does not exist
    */
   public void cd(String directoryName) {
-    if (!changeDir) {
-      log.warn("ChangeDir property set to false. Current working directory will NOT be changed");
-      return;
-    }
-
     try {
       // check that the directory exists
       if (!directoryExists(directoryName)) {

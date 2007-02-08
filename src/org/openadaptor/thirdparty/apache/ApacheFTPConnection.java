@@ -33,16 +33,15 @@ package org.openadaptor.thirdparty.apache;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
-import org.openadaptor.auxil.connector.ftp.IFTPLibrary;
+import org.openadaptor.auxil.connector.ftp.AbstractFTPLibrary;
+import org.openadaptor.auxil.connector.ftp.IFTPConnection;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 
@@ -63,12 +62,12 @@ import org.openadaptor.core.exception.ConnectionException;
  * Based on the original ideas by Pablo Bawdekar
  * 
  * @author Russ Fennell
- * @see IFTPLibrary
+ * @see IFTPConnection
  * @see AbstractFTPLibrary
  */
-public class ApacheFTPLibrary extends AbstractFTPLibrary {
+public class ApacheFTPConnection extends AbstractFTPLibrary {
   
-  private static final Log log = LogFactory.getLog(ApacheFTPLibrary.class);
+  private static final Log log = LogFactory.getLog(ApacheFTPConnection.class);
 
   private FTPClient _ftpClient;
 
@@ -192,31 +191,27 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    * @throws ComponentException
    *           if we cannot open the remote stream
    */
-  public InputStreamReader get(String fileName) throws ComponentException {
+  public InputStream get(String fileName) throws ComponentException {
 
-    InputStreamReader file;
+    InputStream in;
 
     log.debug("get() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
 
     checkLoggedIn();
 
     try {
-      InputStream in = _ftpClient.retrieveFileStream(fileName);
+      in = _ftpClient.retrieveFileStream(fileName);
 
       if (in == null) {
         log.warn("Error retrieving file: " + _ftpClient.getReplyString());
         return null;
       }
-
-      file = (textEncoding == null) ? new InputStreamReader(in) : new InputStreamReader(in, textEncoding);
-
-      log.debug("FTP input transfer stream created for " + fileName);
     } catch (IOException e) {
       close();
       throw new ConnectionException("Cannot open FTP stream:" + e.toString(), this);
     }
 
-    return file;
+    return in;
   }
 
   /**
@@ -236,31 +231,27 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter put(String fileName) throws ComponentException {
+  public OutputStream put(String fileName) throws ComponentException {
     log.debug("put() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
-    OutputStreamWriter file;
+    OutputStream out;
 
     checkLoggedIn();
 
     try {
       log.debug("Creating transfer stream");
-      OutputStream out = _ftpClient.storeFileStream(fileName);
+      out = _ftpClient.storeFileStream(fileName);
 
       if (out == null) {
         log.warn("Error creating file: " + _ftpClient.getReplyString());
         return null;
       }
-
-      log.debug("Creating stream writer");
-      file = (textEncoding == null) ? new OutputStreamWriter(out) : new OutputStreamWriter(out, textEncoding);
-
       log.debug("File transfer stream created using FTP PUT for " + fileName);
     } catch (IOException e) {
       close();
       throw new ConnectionException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
-    return file;
+    return out;
   }
 
   /**
@@ -279,31 +270,27 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter append(String fileName) throws ComponentException {
+  public OutputStream append(String fileName) throws ComponentException {
     log.debug("append() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
-    OutputStreamWriter file;
+    OutputStream out;
 
     checkLoggedIn();
 
     try {
       log.debug("Creating transfer stream");
-      OutputStream out = _ftpClient.appendFileStream(fileName);
+      out = _ftpClient.appendFileStream(fileName);
 
       if (out == null) {
         log.warn("Error appending to file: " + _ftpClient.getReplyString());
         return null;
       }
-
-      log.debug("Creating stream writer");
-      file = (textEncoding == null) ? new OutputStreamWriter(out) : new OutputStreamWriter(out, textEncoding);
-
       log.debug("File transfer stream created using FTP APPEND for " + fileName);
     } catch (IOException e) {
       close();
       throw new ConnectionException("Cannot open FTP stream:" + e.getMessage(), this);
     }
 
-    return file;
+    return out;
   }
 
   /**
@@ -423,11 +410,6 @@ public class ApacheFTPLibrary extends AbstractFTPLibrary {
    *          the new directory
    */
   public void cd(String directoryName) {
-    if (!changeDir) {
-      log.warn("ChangeDir property set to false. Current working directory will NOT be changed");
-      return;
-    }
-
     try {
       _ftpClient.changeWorkingDirectory(directoryName);
       log.info("Changed directory to [" + directoryName + "]");

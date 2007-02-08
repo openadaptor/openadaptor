@@ -77,7 +77,9 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
     } catch (IOException e) {
       throw new RuntimeException("IOException, " + e.getMessage(), e);
     }
-    setInputStream(inputStream);
+    if (!(isDry = (inputStream == null))) {
+      setInputStream(inputStream);
+    }
   }
 
   protected abstract InputStream getInputStream() throws IOException;

@@ -27,21 +27,18 @@
 
 package org.openadaptor.auxil.connector.ftp;
 
-/*
- * File: $Header$ Rev: $Revision$
- */
-
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Defines the actions a FTP library must be able to perform
+ * Represents an interface for an FTP implementation
  * 
  * @author Russ Fennnell
  */
-public interface IFTPLibrary {
+public interface IFTPConnection {
 
   /**
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
@@ -49,7 +46,7 @@ public interface IFTPLibrary {
    * 
    * @throws ComponentException
    */
-  public void connect();
+  public void connect() throws ConnectionException;
 
   /**
    * @return boolean to indicate if the FTPClient object has successfully connected to the remote server
@@ -67,7 +64,7 @@ public interface IFTPLibrary {
    * 
    * @throws ComponentException
    */
-  public void logon();
+  public void logon() throws ConnectionException;
 
   /**
    * This method creates a FTP input stream in the shape of an InputStreamReader that the caller can use to perform the
@@ -82,7 +79,7 @@ public interface IFTPLibrary {
    * 
    * @throws ComponentException
    */
-  public InputStreamReader get(String fileName);
+  public InputStream get(String fileName) throws ConnectionException;
 
   /**
    * This method creates a SunFTP output stream in the shape of an OutputStreamWriter that the caller can use to perform
@@ -97,11 +94,11 @@ public interface IFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter put(String fileName);
+  public OutputStream put(String fileName) throws ConnectionException;
 
   /**
    * Transfers a file to the remote server but appends the output stream the remote file rather than overwriting it.
@@ -115,16 +112,16 @@ public interface IFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStreamWriter append(String fileName);
+  public OutputStream append(String fileName) throws ConnectionException;
 
   /**
    * Close the connection to the remote server
    */
-  public void close() throws ComponentException;
+  public void close() throws ConnectionException;
 
   /**
    * Check for directory on remote server. Assumes that the client is already connected and logged into the remote
@@ -135,10 +132,10 @@ public interface IFTPLibrary {
    * 
    * @return boolean to indicate the presence of the directory
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not connected and logged into the remote server
    */
-  public boolean directoryExists(String dirName);
+  public boolean directoryExists(String dirName)  throws ConnectionException;
 
   /**
    * Deletes supplied file from the remote server
@@ -149,7 +146,7 @@ public interface IFTPLibrary {
    * @throws ComponentException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
-  public void delete(String fileName);
+  public void delete(String fileName) throws ConnectionException;
 
   /**
    * Retrieves a list of file names on the remote server that match the supplied pattern.
@@ -162,7 +159,7 @@ public interface IFTPLibrary {
    * @throws ComponentException -
    *           if there was an communications error
    */
-  public String[] fileList(String filePattern);
+  public String[] fileList(String filePattern) throws ConnectionException;
 
   /**
    * Changes the current working directory
@@ -170,12 +167,12 @@ public interface IFTPLibrary {
    * @param directoryName -
    *          the new directory
    */
-  public void cd(String directoryName);
+  public void cd(String directoryName) throws ConnectionException;
 
   /**
    * @return the current working directory
    */
-  public String getCurrentWorkingDirectory();
+  public String getCurrentWorkingDirectory() throws ConnectionException;
 
   /**
    * Sets the file transfer mode toi BINARY.
@@ -183,7 +180,7 @@ public interface IFTPLibrary {
    * @param b -
    *          If false then will be set to ASCII
    */
-  public void setBinaryTransfer(boolean b);
+  public void setBinaryTransfer(boolean b) throws ConnectionException;
 
   /**
    * There are a few FTPClient methods that do not complete the entire sequence of FTP commands to complete a
@@ -195,5 +192,5 @@ public interface IFTPLibrary {
    * 
    * @throws ComponentException
    */
-  public boolean verifyFileTransfer();
+  public boolean verifyFileTransfer() throws ConnectionException;
 }
