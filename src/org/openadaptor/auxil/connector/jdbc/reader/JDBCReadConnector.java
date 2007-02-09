@@ -56,6 +56,9 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   protected ResultSetMetaData rsmd = null;
 
 
+  /**
+   * Default constructor
+   */
   public JDBCReadConnector() {
     super();
   }
@@ -63,14 +66,20 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   public JDBCReadConnector(String id) {
     super(id);
   }
-  
+
   /**
-   *  Set sql statement to be executed
+   * Set sql statement to be executed
+   *
+   * @param sql
    */
   public void setSql(final String sql) { 
     this.sql = sql;
   }
 
+  /**
+   * Set up connection to database and execute query
+   *
+   */
   public void connect() {
     super.connect();
     try {
@@ -81,15 +90,32 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
     }
   }
 
+  /**
+   * Disconnect JDBC connection
+   *
+   * @throws ComponentException
+   */
   public void disconnect() throws ComponentException {
     JDBCUtil.closeNoThrow(statement);
     super.disconnect();
   }
 
+  /**
+   * Inpoint has no more data
+   *
+   * @return boolean return true,there is no more input data
+   */
   public boolean isDry() {
     return rs == null;
   }
 
+  /**
+   * Returns array of objects extracted from resultset
+   *
+   * @param timeoutMs
+   * @return Object[] array of objects from resultset
+   * @throws ComponentException
+   */
   public Object[] next(long timeoutMs) throws ComponentException {
     try {
       Object data = convertNext(rs);

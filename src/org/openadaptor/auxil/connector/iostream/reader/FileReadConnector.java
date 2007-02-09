@@ -33,24 +33,46 @@ import java.io.InputStream;
 
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 
+/**
+ * File Read Connector which reads data line by line
+ *
+ */
 public class FileReadConnector extends AbstractStreamReadConnector {
 
   private String filename;
 
+  /**
+   * Default Constructor
+   */
   public FileReadConnector() {
     super();
     setDataReader(new LineReader());
   }
-  
+
+  /**
+   *
+   * @param id
+   */
   public FileReadConnector(String id) {
     super(id);
     setDataReader(new LineReader());
   }
-  
+
+  /**
+   * Set filename property
+   *
+   * @param filename
+   */
   public void setFilename(final String filename) {
     this.filename = filename;
   }
-  
+
+  /**
+   * Returns InputStream created for file <code>filename</code>
+   *
+   * @return InputStream
+   * @throws FileNotFoundException
+   */
   protected InputStream getInputStream() throws FileNotFoundException {
     if (filename != null) {
       return new FileInputStream(filename);
@@ -58,7 +80,12 @@ public class FileReadConnector extends AbstractStreamReadConnector {
       return System.in;
     }
   }
-  
+
+  /**
+   * Returns filename
+   *
+   * @return Object filename
+   */
   public Object getReaderContext() {
     return filename;
   }

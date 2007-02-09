@@ -47,6 +47,9 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
   private int registryPort = RMIReadConnector.DEFAULT_PORT;
   private String serviceName = RMIReadConnector.DEFAULT_NAME;
 
+  /**
+   * Default Constructor
+   */
   public RMIWriteConnector() {
     super();
   }
@@ -54,19 +57,37 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
   public RMIWriteConnector(String id) {
     super(id);
   }
-  
+
+  /**
+   * Set registry host name
+   *
+   * @param registryHost
+   */
   public void setRegistryHost(String registryHost) {
     this.registryHost = registryHost;
   }
 
+  /**
+   * Set Service name
+   *
+   * @param name Service name
+   */
   public void setServiceName(String name) {
     this.serviceName = name;
   }
 
+  /**
+   * Set Registry port number
+   *
+   * @param registryPort Registry port
+   */
   public void setRegistryPort(int registryPort) {
     this.registryPort = registryPort;
   }
-  
+
+  /**
+   * Look up service on Registry Host and attempt to connect to service
+   */
   public void connect() {
     try {
       log.info(getId() + " looking up " + serviceName + " on " + registryHost + ":" + registryPort);
@@ -76,6 +97,12 @@ public class RMIWriteConnector extends LifecycleComponent implements IWriteConne
     }
   }
 
+  /**
+   * 
+   *
+   * @param data
+   * @return Object data
+   */
   public Object deliver(Object[] data) {
     try {
       for (int i = 0; i < data.length; i++) {

@@ -48,6 +48,10 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
 
   private String serviceName = "openadaptorws";
 
+  /**
+   * Default constructor
+   *
+   */
   public ReadConnectorWebService() {
     super();
   }
@@ -55,20 +59,37 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
   public ReadConnectorWebService(String id) {
     super(id);
   }
-  
+
+  /**
+   * Set name of web service
+   * @param name Service name
+   */
   public void setServiceName(final String name) {
     serviceName = name;
   }
-  
+
+  /**
+   * Set up webservice
+   */
   public void connect() {
     setServlet(new StringDataProcessorServlet());
     super.connect();
   }
 
+  /**
+   * Process requests
+   *
+   * @param s request string
+   */
   public void process(String s) {
     enqueue(s);
   }
-  
+
+  /**
+   * Create and return wsdl string
+   *
+   * @return String return wsdl string
+   */
   public String getEndpoint() {
     StringBuffer buffer = new StringBuffer();
     buffer.append("http://");
@@ -81,6 +102,7 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
     buffer.append("?wsdl");
     return buffer.toString();
   }
+
 
   class StringDataProcessorServlet extends XFireServlet {
 
