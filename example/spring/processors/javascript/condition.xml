@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads all data in delim.txt
+      * converts to ordered
+      * outputs to stdout
+    
+    It is designed to illustrate a simple use of a JavascriptConditionProcessor
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config condition.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+    
+    writes to stdout
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>
+      This adaptor is designed to illustrate a simple use of a JavascriptConditionProcessor
+        * reads all data in delim.txt
+        * converts to ordered
+        * outputs to stdout
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="orderedmap"/>
+            <ref bean="condition"/>
+            <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="delim.txt"/>
+  </bean>
+  
+  <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Convert to OrderedMap providing fields names</description>
+    <property name="fieldNames">
+        <list>
+            <value>username</value>
+            <value>fullname</value>
+            <value>uniqueid</value>
+            <value>dob</value>
+        </list>
+    </property>
+  </bean>
+  
+  <bean id="condition" class="org.openadaptor.auxil.processor.javascript.JavascriptConditionProcessor">
+    <description>
+      Simple use of a JavascriptConditionProcessor. If the 'username' of an incoming record
+      equals 'palinm' then add an attribute 'conditioned' with value 'Added by the then processor'
+      else add an attribute 'conditioned' with value 'Added by the else processor'.
+    </description>
+    <property name="script" value="record.get('username') == 'palinm'"/>
+    <property name="thenProcessor">
+      <bean class="org.openadaptor.auxil.processor.simplerecord.AttributeSetProcessor">
+        <property name="expressionString" value="'Added by the then processor'"/>
+        <property name="attributeName" value="conditioned"/>  
+      </bean>
+    </property>
+    <property name="elseProcessor">
+      <bean class="org.openadaptor.auxil.processor.simplerecord.AttributeSetProcessor">
+        <property name="expressionString" value="'Added by the else processor'"/>
+        <property name="attributeName" value="conditioned"/>  
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>  
