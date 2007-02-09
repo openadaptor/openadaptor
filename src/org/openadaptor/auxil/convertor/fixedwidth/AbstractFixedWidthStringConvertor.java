@@ -44,7 +44,7 @@ import org.openadaptor.core.exception.ValidationException;
  * instantiate them for us. <p/>
  * 
  * These field details are common to both conversion to and from fixed width string so we have an abstract
- * implementation of the IRecordProcessor which maintains code that manipulates them.
+ * implementation of the IDataProcessor which maintains code that manipulates them.
  * 
  * @author Russ Fennell
  * 

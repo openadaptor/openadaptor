@@ -28,6 +28,7 @@
 package org.openadaptor.auxil.convertor.fixedwidth;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,7 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Converts a fixed width string into an ordered map <p/>
@@ -149,5 +151,13 @@ public class FixedWidthStringToOrderedMapConvertor extends AbstractFixedWidthStr
     }
 
     return map;
+  }
+
+
+  public void validate(List exceptions) {
+    if (fieldDetails == null) {
+      exceptions.add(new ValidationException("Failed validation - no field details defined. ", this));
+    }
+    super.validate(exceptions);
   }
 }
