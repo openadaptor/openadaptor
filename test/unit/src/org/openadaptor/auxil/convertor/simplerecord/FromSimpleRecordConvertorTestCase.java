@@ -72,5 +72,12 @@ public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
       fail("Unexpected Exception: " + e);
     }
 
+
+    try {
+      Object result = testSubject.convert(null);
+      assertEquals(null, result);
+    } catch (Exception e) {
+      fail("Failed to convert null record [" + e.getMessage() + "]");
+    }
   }
 }
