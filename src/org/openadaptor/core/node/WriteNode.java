@@ -111,7 +111,7 @@ public class WriteNode extends Node {
 	
 	public void stop() {
     setState(State.STOPPING);
-		connector.disconnect();
+		disconnectNoThrow();
 		super.stop();
 	}
 	
@@ -183,4 +183,11 @@ public class WriteNode extends Node {
     return getId();
   }
 
+  private void disconnectNoThrow() {
+    try {
+      connector.disconnect();
+    } catch (Exception e) {
+      log.debug("disconnect failed, " + e.getMessage());
+    } 
+  }
 }

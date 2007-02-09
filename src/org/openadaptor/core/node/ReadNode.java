@@ -135,8 +135,9 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   private void disconnectNoThrow() {
     try {
       connector.disconnect();
-    } catch (Exception ex) {
-    }
+    } catch (Exception e) {
+      log.debug("disconnect failed, " + e.getMessage());
+    } 
   }
 
   public void run() {
@@ -174,7 +175,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       }
     } finally {
       log.info(getId() + " no longer running");
-      connector.disconnect();
+      disconnectNoThrow();
       super.stop();
     }
   }
