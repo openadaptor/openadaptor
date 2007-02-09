@@ -5,10 +5,10 @@ There are two types of examples
   * spring (http://www.springframework.org) xml config files
   * java source code examples
 
-openadaptor does not rely on the spring framework in anyway, however it has been
+Openadaptor does not rely on the spring framework in any way, however it has been
 written to be "spring friendly". Previous versions of openadaptor had a properties file
 based mechanism for initialising and "wiring together" the adaptor components, in the
-new version all the adaptor components have been written as "beans" so spring can be used 
+new version all the adaptor components have been written as "beans" allowing spring to be used 
 to achieve the same result.
 
 JARS & CLASSPATH
@@ -20,19 +20,20 @@ JARS & CLASSPATH
   lib/openadaptor-stub.jar     // stub implementations of APIs we don't want to or cannot ship
   lib/3rdparty/...             // dir containing all the individual jars we depend upon
 
-Unless the individual example README states otherwise, you need to set your CLASSPATH as follows...
+Unless the individual example README states otherwise, the appropriate CLASSPATH may be set as follows...
 
 windows
-
-   set CLASSPATH=lib;lib\openadaptor.jar;lib\openadaptor-spring.jar;lib\openadaptor-depends.jar
+   (Note: This assumes %OPENADAPTOR_HOME% points to openadaptor install location)
+   set CLASSPATH=%OPENADAPTOR_HOME%\lib;%OPENADAPTOR_HOME%\lib\openadaptor.jar;%OPENADAPTOR_HOME%\lib\openadaptor-spring.jar;%OPENADAPTOR_HOME%\lib\openadaptor-depends.jar
    
 unix (sh)
+   (Note: This assumes $OPENADAPTOR_HOME points to openadaptor install location))
 
-   CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar
+   CLASSPATH=$OPENADAPTOR_HOME/lib:$OPENADAPTOR_HOME/lib/openadaptor.jar:$OPENADAPTOR_HOME/lib/openadaptor-spring.jar:$OPENADAPTOR_HOME/lib/openadaptor-depends.jar
    export CLASSPATH
 
 The example/bin directory contains 2 scripts for setting your CLASSPATH with absolute paths.
-These scripts must be run from the command line like this...
+These scripts may be run from the command line like this...
 
 windows
 
@@ -72,7 +73,6 @@ or (if you have a CLASSPATH with absolute paths)
   
 For more details on this specific adaptor look and the README in that directory and the comments
 in the config file.
-
 
 CODE EXAMPLES
 =============
