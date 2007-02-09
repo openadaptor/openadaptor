@@ -39,19 +39,28 @@ public class FromSimpleRecordConvertor extends AbstractConvertor {
 
   private static final Log log = LogFactory.getLog(FromSimpleRecordConvertor.class);
 
+
   /**
-   * Performs the the actual conversion. Returns the successfully converted record or throw a RecordException.
+   * Performs the the actual conversion. Returns the successfully converted record or throws
+   * a RecordException. If the data passed is null then a null is returned.
    *
-   * @param data
+   * @param data the raw data to be processed
+   *
    * @return Converted Record
-   * @throws org.openadaptor.core.exception.RecordException
-   *          if there was a problem converting the record
+   *
+   * @throws RecordFormatException if there was a problem converting the record
    */
   protected Object convert(Object data) {
+    if ( data == null ) {
+      log.debug("Null data received. Returning null");
+      return null;
+    }
+
     if (! (data instanceof ISimpleRecord )) {
       log.warn("Incoming record is not an ISimpleRecord - Cannot get original record.");
       throw new RecordFormatException("Expected ISimpleRecord . Got [" + data.getClass().getName() + "]");
     }
+
     return ((ISimpleRecord)data).getRecord();
   }
 }
