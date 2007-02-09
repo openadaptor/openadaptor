@@ -36,7 +36,7 @@
     <jar destfile="${dir.package.lib}/openadaptor-spring.jar">
       <fileset dir="${dir.spring.classes}"/>
     </jar>
-    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="jarversions.properties" version="${tag}" manifest="lib/MANIFEST.MF">
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="${basedir}/jarversions.properties" version="${tag}" manifest="${basedir}/lib/MANIFEST.MF">
       <fileset dir="${dir.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>
@@ -46,7 +46,7 @@
         <include name="*.zip"/>
       </fileset>
     </jarcopy>
-    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="jarversions.properties" version="${tag}">
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="${basedir}/jarversions.properties" version="${tag}">
       <fileset dir="${dir.test.lib}">
         <include name="*.jar"/>
         <include name="*.zip"/>
