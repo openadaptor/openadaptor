@@ -83,9 +83,9 @@
     </copy>
   </target>
   
-  <target name="doc">
+  <target name="doc" depends="lib">
     <mkdir dir="${dir.package.doc}"/>
-    <javadoc destdir="${dir.package.doc}" classpathref="classpath.spring" doctitle="openadaptor ${tag}" verbose="false">
+    <javadoc destdir="${dir.package.doc}" classpath="${dir.package.lib}/openadaptor.jar:${dir.package.lib}/openadaptor-spring.jar" doctitle="openadaptor ${tag}" verbose="false">
       <fileset dir="${dir.src}"/>
       <fileset dir="${dir.spring.src}"/>
     </javadoc>
