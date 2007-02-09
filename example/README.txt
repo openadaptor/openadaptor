@@ -70,7 +70,12 @@ or (if you have a CLASSPATH with absolute paths)
 
   cd example/spring/adaptor
   java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+
+Upon startup the adaptor will generate logging output according to it's logging configuration. 
   
+Note that a running adaptor may be stopped by typing Ctrl-C on the command line (both Windows & Unix). Under normal
+circumstances this should cause the adaptor to terminate gracefully.
+
 For more details on this specific adaptor look and the README in that directory and the comments
 in the config file.
 
