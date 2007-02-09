@@ -2,43 +2,44 @@
 <project name="openadaptor" default="recompile.all">
   
   <tstamp/>
-  <property name="file.licence" value="src/org/openadaptor/util/licence.txt"/>
-  <property file="checkout.properties"/>
+  <property name="debug" value="true"/>
+  <property name="file.licence" value="${basedir}/src/org/openadaptor/util/licence.txt"/>
+  <property file="${basedir}/checkout.properties"/>
   <property name="tag" value="untagged"/>
 
-  <property name="dir.stub.classes" value="stub/classes"/>
-  <property name="dir.stub.lib" value="stub/lib"/>
-  <property name="dir.stub.src" value="stub/src"/>
+  <property name="dir.stub.classes" value="${basedir}/stub/classes"/>
+  <property name="dir.stub.lib" value="${basedir}/stub/lib"/>
+  <property name="dir.stub.src" value="${basedir}/stub/src"/>
 
-  <property name="dir.classes" value="classes"/>
-  <property name="dir.lib" value="lib"/>
-  <property name="dir.src" value="src"/>
-  <property name="dir.sql" value="sql"/>
+  <property name="dir.classes" value="${basedir}/classes"/>
+  <property name="dir.lib" value="${basedir}/lib"/>
+  <property name="dir.src" value="${basedir}/src"/>
+  <property name="dir.sql" value="${basedir}/sql"/>
 
-  <property name="dir.buildtools.src" value="buildtools/src"/>
-  <property name="dir.buildtools.classes" value="buildtools/classes"/>
-  <property name="dir.buildtools.backup" value="buildtools/backup"/>
+  <property name="dir.buildtools.src" value="${basedir}/buildtools/src"/>
+  <property name="dir.buildtools.classes" value="${basedir}/buildtools/classes"/>
+  <property name="dir.buildtools.backup" value="${basedir}/buildtools/backup"/>
 
-  <property name="dir.spring.classes" value="spring/classes"/>
-  <property name="dir.spring.lib" value="spring/lib"/>
-  <property name="dir.spring.src" value="spring/src"/>
+  <property name="dir.spring.classes" value="${basedir}/spring/classes"/>
+  <property name="dir.spring.lib" value="${basedir}/spring/lib"/>
+  <property name="dir.spring.src" value="${basedir}/spring/src"/>
 
-  <property name="dir.test.classes" value="test/classes"/>
-  <property name="dir.test.lib" value="test/lib"/>
-  <property name="dir.test.output" value="test/output"/>
+  <property name="dir.test.classes" value="${basedir}/test/classes"/>
+  <property name="dir.test.lib" value="${basedir}/test/lib"/>
+  <property name="dir.test.output" value="${basedir}/test/output"/>
 
-  <property name="dir.test.unit.src" value="test/unit/src"/>
-  <property name="dir.test.unit.output" value="test/unit/output"/>
+  <property name="dir.test.unit.src" value="${basedir}/test/unit/src"/>
+  <property name="dir.test.unit.output" value="${basedir}/test/unit/output"/>
 
-  <property name="dir.test.integration.src" value="test/integration/src"/>
-  <property name="dir.test.integration.output" value="test/integration/output"/>
+  <property name="dir.test.integration.src" value="${basedir}/test/integration/src"/>
+  <property name="dir.test.integration.output" value="${basedir}/test/integration/output"/>
 
-  <property name="dir.test.system.src" value="test/system/src"/>
-  <property name="dir.test.system.output" value="test/system/output"/>
+  <property name="dir.test.system.src" value="${basedir}/test/system/src"/>
+  <property name="dir.test.system.output" value="${basedir}/test/system/output"/>
 
-  <property name="dir.example" value="example"/>
-  <property name="dir.example.classes" value="example/classes"/>
-  <property name="dir.example.src" value="example/src"/>
+  <property name="dir.example" value="${basedir}/example"/>
+  <property name="dir.example.classes" value="${basedir}/example/classes"/>
+  <property name="dir.example.src" value="${basedir}/example/src"/>
 
   <mkdir dir="${dir.stub.classes}"/>
   <mkdir dir="${dir.classes}"/>
@@ -189,7 +190,7 @@
   </target>
 
   <target name="test.unit" depends="clean.test, compile.all" description="run unit tests only">
-    <junit printsummary="true">
+    <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
@@ -208,7 +209,7 @@
   </target>
 
   <target name="test.integration" depends="clean.test, compile.all" description="run integration tests only">
-    <junit printsummary="true">
+    <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
@@ -227,7 +228,7 @@
   </target>
 
   <target name="test.system" depends="clean.test, compile.all" description="run system tests only">
-    <junit printsummary="true">
+    <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
