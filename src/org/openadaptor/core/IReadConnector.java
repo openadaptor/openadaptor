@@ -34,8 +34,8 @@ import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.node.ReadNode;
 
 /**
- * This represents a class which can connect to an external resource and poll it
- * for some data.
+ * This represents a class which can connect to an external resource and aquire data.
+ * Connectors expect to be polled for the acquired data.
  * 
  * @author perryj
  * 
@@ -43,13 +43,12 @@ import org.openadaptor.core.node.ReadNode;
 public interface IReadConnector {
 
   /**
-   * Implementations of this interface are typically beans with zero-arg
-   * constructors. This method checks that the current state of an
-   * implementation is "meaningful". Implementations are encouraged to add
-   * exception to the list parameter rather than throwing them. This allows the
-   * calling code to collate the exceptions. If the implementation is an
-   * {@link IComponent} then the exceptions should be an
-   * {@link ValidationException}.
+   * This method checks that the current state of an implementation is
+   * "meaningful". Implementations of {@link IReadConnector} are typically beans with
+   * zero-arg constructors.  Implementations are encouraged to add exception to the
+   * list parameter rather than throwing them. This allows the calling code to collate
+   * the exceptions. If the implementation is an {@link IComponent} then the exceptions
+   * should be a {@link ValidationException}.
    * 
    * @param exceptions
    *          collection to which exceptions should be added
@@ -80,9 +79,9 @@ public interface IReadConnector {
    * The behaviour of the implementation is very much dependent of type of
    * external resource that implementation "talks to", it should only return
    * true if there will never be any more data available, this is different from
-   * the scenario where thers is no data at the moment but there maybe in
+   * the scenario where there is is no data at the moment but there maybe in
    * future. The documentation for each implementation should state it's
-   * specific behaviour
+   * specific behaviour.
    * 
    * @return true if no more data is available from the external rsource.
    */
@@ -101,7 +100,7 @@ public interface IReadConnector {
 
   /**
    * Allows an implementation to provide some resource specific context that
-   * relates to the data it is providing. This is typically pass to "downstream"
+   * relates to the data it is providing. This is typically passed to "downstream"
    * components that process the polled data.
    * 
    * @return some data that relates to the connection (JMS topic, filename etc...)

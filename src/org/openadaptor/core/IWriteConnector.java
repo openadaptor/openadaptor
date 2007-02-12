@@ -41,13 +41,12 @@ import org.openadaptor.core.exception.ValidationException;
 public interface IWriteConnector {
 
   /**
-   * Implementations of {@link IWriteConnector} are typically beans with zero-arg
-   * constructors. This method checks that the current state of an
-   * implementation is "meaningful". Implementations are encouraged to add
-   * exception to the list parameter rather than throwing them. This allows the
-   * calling code to collate the exceptions. If the implementation is an
-   * {@link IComponent} then the exceptions should be an
-   * {@link ValidationException}.
+   * This method checks that the current state of an implementation is
+   * "meaningful". Implementations of {@link IWriteConnector} are typically beans with
+   * zero-arg constructors.  Implementations are encouraged to add exception to the
+   * list parameter rather than throwing them. This allows the calling code to collate
+   * the exceptions. If the implementation is an {@link IComponent} then the exceptions
+   * should be a {@link ValidationException}.
    * 
    * @param exceptions
    *          collection to which exceptions should be added
@@ -76,9 +75,9 @@ public interface IWriteConnector {
    * Delivers some data to the external resource to which the implementation is connected.
    * It is assumed that the implementation will cast the data to the expected type(s).
    * Exceptions should be thrown as RuntimeExceptions.
-   * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
+   * Implementations that are {@link IComponent}s should throw {@link ConnectionException}s.
    * @param data the data to process
-   * @return the resopnse from the external resource
+   * @return the response from the external resource
    */
   Object deliver(Object[] data);
 }

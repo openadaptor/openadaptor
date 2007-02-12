@@ -40,15 +40,17 @@ import org.openadaptor.core.exception.MessageException;
  * Class that encapsulate the output data from an {@link IMessageProcessor}.
  * The Response is an ordered collection of three different types of output
  * data.
+ * <ul>
  * <li>Output data that form the sucessful processing of the input data</li>
  * <li>Discarded input data</li>
- * <li>{@link MessageException}s that are a result of unsucessful processing
+ * <li>{@link MessageException}s that are a result of unsuccessful processing
  * of the input data</li>
+ * </ul>
  * The batches are modelled as public inner classes {@link Response.OutputBatch},
  * {@link Response.DiscardBatch} and {@link Response.ExceptionBatch} Use
  * {@link #getBatches()} to extract the ordered list of batches from a Response
  * and {@link DataBatch#getData()} to extract the output from each batch.
- * 
+ *
  * @author perryj
  * @see IMessageProcessor
  */

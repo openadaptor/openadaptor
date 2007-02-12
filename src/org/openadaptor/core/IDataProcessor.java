@@ -34,8 +34,9 @@ import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Implemented by classes that are capable of doing some sort of processing.
- * Implementations typically cast the data to the expected types(s). The core
- * method is {@link #process(Object)}.
+ * Implementations expect to be presented with a Java Object as data and this is
+ * typically cast to the expected types(s).
+ * The core method is {@link #process(Object)}.
  * 
  * @author perryj
  * 
@@ -43,14 +44,13 @@ import org.openadaptor.core.exception.ValidationException;
 public interface IDataProcessor {
 
   /**
-   * Implementations of this interface are typically beans with zero-arg
-   * constructors. This method checks that the current state of an
-   * implementation is "meaningful". Implementations are encouraged to add
-   * exception to the list parameter rather than throwing them. This allows the
-   * calling code to collate the exceptions. If the implementation is an
-   * {@link IComponent} then the exceptions should be an
-   * {@link ValidationException}.
-   * 
+   * This method checks that the current state of an implementation is
+   * "meaningful". Implementations of {@link IDataProcessor} are typically beans with
+   * zero-arg constructors.  Implementations are encouraged to add exception to the
+   * list parameter rather than throwing them. This allows the calling code to collate
+   * the exceptions. If the implementation is an {@link IComponent} then the exceptions
+   * should be a {@link ValidationException}.
+   *
    * @param exceptions
    *          collection to which exceptions should be added
    */
@@ -66,20 +66,20 @@ public interface IDataProcessor {
   void reset(Object context);
 
   /**
-   * Processes some data and return the results. Results must be in an array, an
-   * empty array is valid but null is not. It is assumed that implementations
-   * will cast the incoming data to an expected type(s). Exceptions should be
-   * thrown as RuntimeException, if the implementation is an {@link IComponent}
-   * then this should be a subclass of {@link ComponentException}.
+   * Processes some data and return the results. Results must be in an array. Valid return
+   * values include null and empty arrays which indicate that the data is to be discarded.
+   * It is assumed that implementations will cast the incoming data to an expected type(s).
+   * Exceptions should be thrown as RuntimeException. If the implementation is an
+   * {@link IComponent} then this should be a subclass of {@link ComponentException}.
    * 
-   * @return output, zero length array or null indicates that data was disgarded
+   * @return output, zero length array or null indicates that data was discarded
    */
   Object[] process(Object data);
 
   /**
-   * static field that does nothing to the data. Can be used by code to assign a
-   * default value to and field / variable so that code can refer to that field /
-   * variable without checking for null.
+   * Static field initialised to an instance of IDataProcessor that does nothing to the data.
+   * Can be used by code to assign a default value to a field / variable so that code can refer to that
+   * field / variable without checking for null.
    */
   public static final IDataProcessor NULL_PROCESSOR = new IDataProcessor() {
 

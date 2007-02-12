@@ -33,8 +33,9 @@ import org.openadaptor.core.router.Router;
 
 /**
  * This is the fundamental interface in the openadaptor processing framework.
- * {@link Adaptor}s, {@link Node}s & {@link Router}s all implement this
- * interface and they can be coupled together in any combination.
+ * It is implemented by components that can be assembled to cooperate in
+ * processing data.  {@link Adaptor}s, {@link Node}s and {@link Router}s all
+ * implement this interface and they can be coupled together in any combination.
  * 
  * @author perryj
  * 

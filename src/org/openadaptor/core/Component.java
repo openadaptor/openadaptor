@@ -31,7 +31,7 @@ import org.openadaptor.core.jmx.Administrable;
 
 /**
  * Implementation of {@link IComponent} serves as a base class for other classes
- * in openadaptor
+ * in openadaptor.
  * 
  * @author perryj
  * 
