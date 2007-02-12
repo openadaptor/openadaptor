@@ -77,7 +77,7 @@ public class TableStatementConverter extends AbstractStatementConverter {
   public PreparedStatement convert(IOrderedMap map, Connection connection) {
     PreparedStatement ps;
     IOrderedMap mappedOM;
-    String sql="";
+    String sql;
     try {
       mappedOM = mapDBTableColumns(map);
       //Generate SQL
@@ -119,7 +119,7 @@ public class TableStatementConverter extends AbstractStatementConverter {
     StringBuffer columnNames=new StringBuffer(" (");
     StringBuffer  fields=new StringBuffer(" (");
     while (it.hasNext()) {
-      columnNames.append(((String) it.next()) + ",");
+      columnNames.append(it.next() + ",");
       fields.append("?,");
     }
     //Remove trailing comma
@@ -145,7 +145,7 @@ public class TableStatementConverter extends AbstractStatementConverter {
     for (int i=0;i<rsmd.getColumnCount();i++){
       tableColumnNames[i]=rsmd.getColumnName(i+1);
       tableColumnTypes[i]=rsmd.getColumnType(i+1);
-      log.debug("Column["+(i+DB_COLUMN_OFFSET)+"] name '" + tableColumnNames[i] + "' has type: "+tableColumnTypes[i]+". Java class is "+rsmd.getColumnClassName(i+DB_COLUMN_OFFSET));
+      log.debug("Column[" + (i+DB_COLUMN_OFFSET) + "] name '" + tableColumnNames[i] + "' has type: " + rsmd.getColumnTypeName(i+DB_COLUMN_OFFSET) + ".");
     }
   }
 
