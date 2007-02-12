@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
  
   <description><![CDATA[
     $Id$
@@ -42,7 +42,8 @@
             <ref bean="reader"/>
             <ref bean="orderedmap"/>
             <ref bean="js_setter"/>
-             <ref bean="writer"/>
+            <ref bean="js_date"/>
+            <ref bean="writer"/>
           </list>
         </property>
       </bean>
@@ -67,9 +68,19 @@
   
   <bean id="js_setter" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
     <description>
-      Simple use of a JavascriptProcessor. 
+      Simple use of a JavascriptProcessor. Sets a value on the incoming record based. 
     </description>
     <property name="script" value="record.put('isterry',record.get('fullname').indexOf('Terry')==0)"/>
+  </bean>
+ 
+   <bean id="js_date" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
+    <description>
+      Contrived use of a JavascriptProcessor to read the year from a field using a regular expression,
+      and set a field based on the difference between that year and the current year. 
+      It uses new Date().getFullYear() to get the current year (via javascript)
+      It extracts the year from the dob field using a regex which would match yyyy-mm-dd, and takes the first match string (yyyy)
+    </description>
+    <property name="script" value="record.put('approx_age',new Date().getFullYear() - /(\d{4})-(\d{1,2})-(\d{1,2})/.exec(record.get('dob'))[1])"/>
   </bean>
    
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
