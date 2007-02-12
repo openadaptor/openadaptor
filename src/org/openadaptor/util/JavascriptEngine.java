@@ -27,12 +27,17 @@
 
 package org.openadaptor.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.exception.RecordException;
@@ -109,7 +114,7 @@ public  class JavascriptEngine  {
   public JavascriptResult execute(String script,Object input) {
     return execute(script,input,DEFAULT_BOUND_NAME);
   }
-  
+
   /**
    * Execute a supplied javascript given an object to be bound for use
    * by the script. The boundName argument should contain the name by which
@@ -130,8 +135,7 @@ public  class JavascriptEngine  {
       Scriptable record=getRecord(context,input);
       scope.put(boundName, scope, record);
       Object scriptResult= context.evaluateString(scope,script, "<cmd>", 1, null);
-      log.info("Result type:"+(scriptResult==null?"<null>":scriptResult.getClass().getName()));
-      log.info("Result: "+scriptResult);
+      //log.debug("Result :"+scriptResult+" [type="+(scriptResult==null?"<null>":scriptResult.getClass().getName())+"]");
       ISimpleRecord outputRecord= ((ScriptableSimpleRecord)record).getSimpleRecord();
       return new JavascriptResult(scriptResult,outputRecord);
     }
@@ -167,6 +171,57 @@ public  class JavascriptEngine  {
     return record;
   }
 
+  /**
+   * Convenience mechanism to allow ad-hoc execution of javascript (for debugging or whatever).
+   * @param argv argumens of the form name=value for pre-populating the test map.
+   * @throws IOException on I/O problems.
+   */
+  public static void main(String[] argv) throws IOException{
+    ISimpleRecord map=new OrderedHashMap(); 
+    for (int i=0;i<argv.length;i++){
+      try {
+      String[] pair=argv[i].split("=");
+      String name=pair[0];
+      String value=pair[1];
+      map.put(name, value);
+      System.out.println("Primed input record with "+name+"->"+value);
+      }
+      catch (Exception e) {
+        System.err.println("Failed to process arg: "+argv[i]);
+      }
+    }
+    BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+    JavascriptEngine jse=new JavascriptEngine();
+    String line;
+    StringBuffer script=new StringBuffer();
+    System.out.println("Enter javascript to be executed.");
+    System.out.println("Two empty lines signfies end of input. ");
+    System.out.println();
+    System.out.println("The input map may be populated (top level) from command line arguments of the form 'name=value'");
+    System.out.println();
+    do  {
+      System.out.print("javascript > "); 
+      script.setLength(0);
+      while ((line=br.readLine()).length()>0) {
+        script.append(line);
+        System.out.print(" ctd. > ");
+      }  
+      System.out.println("Result: ");
+      try {
+        JavascriptResult jsr=jse.execute(script.toString(), map);
+        System.out.println(jsr.executionResult+" [type="+(jsr.executionResult==null?"<null>":jsr.executionResult.getClass().getName())+"]");
+        System.out.println("Map now is: "+jsr.outputRecord);
+      }
+      catch (org.mozilla.javascript.EvaluatorException ee) {
+        System.out.println("<error> : "+ee.toString());
+      }
+      catch (org.mozilla.javascript.EcmaError ece) {
+        System.out.println("<error>: "+ece.toString());
+      }
+    }
+    while (script.length()>0);
+    System.out.println("Exiting.");
+  }
   /**
    * Contains the result of execution a javascript script.
    * <BR>

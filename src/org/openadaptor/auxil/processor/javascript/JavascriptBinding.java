@@ -27,42 +27,76 @@
 
 package org.openadaptor.auxil.processor.javascript;
 
-
 import org.openadaptor.util.JavascriptEngine;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
-
+/**
+ * Allows execution of javascript with Bound Objects.
+ * 
+ * @author higginse
+ *
+ */
 public  class JavascriptBinding  {
 
   private String boundName=JavascriptEngine.DEFAULT_BOUND_NAME;
 
   private String script=null;
  
+  /**
+   * JavaScriptEngine which will actually execute the javascript.
+   */
   private JavascriptEngine jsEngine=new JavascriptEngine();
 
   // BEGIN Bean getters/setters
+  /**
+   * Set the name by which supplied objects may be referred
+   * to within the javascript.
+   * <br>
+   * The default value is JavascriptEngine.DEFAULT_BOUND_NAME
+   */
   public void setBoundName(String name) {
     if ((name==null) ||(name.trim().length()==0)) {
       throw new RuntimeException("Null or empty value for boundName is not permitted");
     }
     boundName=name;
   }
+  
+  /**
+   * Return the name by which supplied objects may be referred
+   * to within the javascript.
+   * <br>
+   * The default value is JavascriptEngine.DEFAULT_BOUND_NAME
+   */
   public String getBoundName() {
     return boundName;
   }
 
+  /**
+   * Return the javascript which will be executed on
+   * calls to execute(Object input)
+   * @return String containing javascript.
+   */
   public String getScript() {
     return script;
   }
+  /**
+   * Assigns the javascript which will be executed on
+   * calls to execute(Object input)
+   * @param script String containing javascript.
+   */
   public void setScript(String script) {
     this.script = script;
   }
 
   // END Bean getters/setters
-
-  public JavascriptBinding() {
-    super();
-  }
   
+  /**
+   * Evaluate the configured javascript in the context of the 
+   * supplied input Object.
+   * @param input Object containing a record which the javascript may
+   *              refer to using the boundName.
+   * @return JavascriptResult containing the (possibly modified)
+   *         record, and the the result of javascript evaluation.
+   */
   public JavascriptResult execute(Object input) {
     return jsEngine.execute(script, input,boundName);
   }
