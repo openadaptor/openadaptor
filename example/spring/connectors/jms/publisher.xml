@@ -8,7 +8,7 @@
       * publishes data to a JMS queue
     
     It is designed to illustrate the basic structure of an adaptor that processes
-    data by publishing onto rendezvous.
+    data by publishing to JMS queues
 
     Run it like this...
     

@@ -39,7 +39,7 @@ import org.openadaptor.core.exception.ProcessingException;
  */
 public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCConnection {
 
-  public void handleException(SQLException e) {
+  public void handleException(SQLException e, String message) {
     
     // ignore deadlock, if num retries > 0
     if (e.getErrorCode() == 1205 && incrementDeadlockCount() > 0) {
@@ -54,11 +54,13 @@ public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCCon
     // decide whether its a ConnectionException or a ProcessingException
     switch (e.getErrorCode()) {
       case 1602:
-        throw new ConnectionException("SQLException, " + e.getMessage() 
+        throw new ConnectionException((message != null ? message + ", " : "")
+            + ", SQLException, " + e.getMessage() 
             + ", Error Code = " + e.getErrorCode()
             + ", State = " + e.getSQLState(), e, this);
       default:
-        throw new ProcessingException("SQLException, " + e.getMessage() 
+        throw new ProcessingException((message != null ? message + ", " : "")
+            + ", SQLException, " + e.getMessage() 
             + ", Error Code = " + e.getErrorCode()
             + ", State = " + e.getSQLState(), e, this);
     }

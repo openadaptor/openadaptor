@@ -30,35 +30,75 @@ package org.openadaptor.core.transaction.jta;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.objectweb.jotm.Jotm;
+import org.objectweb.transaction.jta.TMService;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionManager;
 
 
 public class JtaTransactionManager implements ITransactionManager {
 
-  protected TransactionManager transactionManager;
+  private static final Log log = LogFactory.getLog(JtaTransactionManager.class);
 
+  protected static final int DEFAULT_TIMEOUT_MS = 60 * 1000;
+
+  private TransactionManager transactionManager;
+  
+  private long timeoutMs = DEFAULT_TIMEOUT_MS;
+
+  private TMService jotm = null;
+  
+  public JtaTransactionManager() {
+  }
+  
   public JtaTransactionManager(final TransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
 
+  public void setTransactionManager(final TransactionManager transactionManager) {
+    this.transactionManager = transactionManager;
+    setTransactionTimeout(timeoutMs);
+  }
+
   public ITransaction getTransaction() {
+    if (transactionManager == null) {
+      log.info("creating (and starting) jotm");
+      try {
+        jotm = new Jotm(true, false);
+        transactionManager = jotm.getTransactionManager();
+        transactionManager.setTransactionTimeout((int)(timeoutMs / 1000));
+      } catch (Exception e) {
+        throw new RuntimeException("failed to create jotm  transaction manager, " + e.getMessage(), e);
+      }
+    }
     try {
+      if (transactionManager.getTransaction() == null) {
+        transactionManager.begin();
+      }
       return new JtaTransaction(transactionManager.getTransaction());
-    } catch (SystemException e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
 
   public void setTransactionTimeout(long timeoutMs) {
-    try {
-      transactionManager.setTransactionTimeout((int) (timeoutMs / 1000));
-    } catch (SystemException e) {
-      throw new RuntimeException(e);
+    if (transactionManager != null) {
+      try {
+        transactionManager.setTransactionTimeout((int) (timeoutMs / 1000));
+      } catch (SystemException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
   public void stop() {
+    if (jotm != null) {
+      log.info("stopping jotm");
+      jotm.stop();
+    }
   }
 
+  
 }

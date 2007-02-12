@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,18 +55,20 @@ public class JDBCConnection extends Component {
   private String username;
   private String password;
   private Connection connection = null;
+  private XADataSource xaDataSource = null;
   private boolean isTransacted = false;
   private Properties properties;
   private int deadlockCount;
   private int deadlockLimit = 3;
   private int refCount = 0;
 
-
-
-  /** transactional resource, can either be XAResource or ITransactionalResource */
+  /** 
+   * transactional resource, can either be XAResource or ITransactionalResource 
+   */
   private Object transactionalResource = null;
+
   /**
-   * The JDBCConnection class can be initialised with all required resources
+   * create JDBC connection based on the following parameters
    * @param driver
    * @param url
    * @param username
@@ -80,63 +83,39 @@ public class JDBCConnection extends Component {
   }
 
   /**
-   * Default constructor
+   * create JDBC connection based on an XADataSource
+   * @param xaDataSource
    */
-  public JDBCConnection() {} //No-arg constructor for beans
+  public JDBCConnection(XADataSource xaDataSource) {
+    this();
+    this.xaDataSource = xaDataSource;
+  }
+  
+  public JDBCConnection() {
+  }
 
-  /**
-   * Set JDBC driver string
-   */
   public void setDriver(String driver) {this.driver = driver;}
 
-  /**
-   * Set the URL string for the database server, generally includes server name/ip address, port number and database name
-   */
   public void setUrl(String url) {this.url = url;}
 
-  /**
-   * Set database username credential
-   */
   public void setUsername(String username) {this.username = username;}
 
-  /**
-   * Set database password credential
-   */
   public void setPassword(String password) {this.password = password;}
 
-  /**
-   * Set JDBC connection
-   */
+  public void setXaDataSource(XADataSource xaDataSource) {
+    this.xaDataSource = xaDataSource;
+  }
+  
   public void setConnection(Connection connection) {
     this.connection = connection;
   }
 
-  /**
-   * Return JDBC driver string
-   *
-   * @return JDBC driver string
-   */
   public String getDriver() { return driver; }
 
-  /**
-   * Return the URL string for the database server, generally includes server name/ip address, port number and database name
-   *
-   * @return url string
-   */
   public String getUrl() { return url; }
 
-  /**
-   * Return database username credential
-   *
-   * @return database username credential
-   */
   public String getUsername() { return username; }
 
-  /**
-   * Return database password credential
-   *
-   * @return database password credential
-   */
   public String getPassword() { return password; }
 
   public Properties getProperties() {
@@ -147,46 +126,55 @@ public class JDBCConnection extends Component {
     this.properties = properties;
   }
 
-  /**
-   * JDBC connection
-   *
-   * @return connection
-   */
   public Connection getConnection() {
     return connection;
   }
 
-  /**
-   * Is JDBC Connection transacted
-   *
-   * @return boolean
-   */
   public boolean isTransacted() {
     return isTransacted;
   }
 
-  /**
-   * Set connection to be transacted
-   */
   public void setTransacted(boolean transacted) {
     this.isTransacted = transacted;
   }
 
-  /**
-   * returns transactional resource, can either be XAResource or ITransactionalResource
-   *
-   * @return transactionalResource
-   */
   public Object getTransactionalResource() {
     return transactionalResource;
   }
 
   /**
+   * depending on how this object/bean as been constructed/initialise this will
+   * either create a connection directly from the jdbc connection parameters, or
+   * create a connection from using an XADataSource. If the component is
+   * transacted then this will set the transaction resource.
+   * 
+   * @throws SQLException
+   */
+  public void connect() throws SQLException {
+    if (xaDataSource != null) {
+      connectViaXADataSource();
+    } else {
+      connectDirectly();
+    }
+  }
+  
+  /**
+   * Create connection and set transactional resource from XADataSource
+   * @throws SQLException
+   */
+  private void connectViaXADataSource() throws SQLException {
+    XAConnection xaConnection = xaDataSource.getXAConnection();
+    setConnection(xaConnection.getConnection());
+    transactionalResource = xaConnection.getXAResource();
+    connection.setAutoCommit(false);
+  }
+  
+  /**
    * Instantiate the JDBC driver and set up connection to database using credentials
    *
    * @throws SQLException
    */
-  public void connect() throws SQLException {
+  private void connectDirectly() throws SQLException {
     if (connection == null) {
 
       if (driver == null) {
@@ -206,8 +194,8 @@ public class JDBCConnection extends Component {
       try {
         Class.forName(driver);
       }
-      catch (ClassNotFoundException cnfe) { //Rebrand error as an SQL one.
-        throw new SQLException("Unable to instantiate JDBC driver: " + driver);
+      catch (ClassNotFoundException e) {
+        throw new RuntimeException("Unable to instantiate JDBC driver, " + driver + ", " + e.getMessage(), e);
       }
 
       //Set up properties for use with DriverManager
@@ -223,9 +211,8 @@ public class JDBCConnection extends Component {
       log.info("Connecting to " + url + " as " + username);
       setConnection( DriverManager.getConnection(url, props) );
 
-      if (connection instanceof XAConnection) {
-        transactionalResource = ((XAConnection) connection).getXAResource();
-      } else if (isTransacted()) {
+      if (isTransacted()) {
+        connection.setAutoCommit(false);
         transactionalResource = new JDBCTransactionalResource(this);
       }
     }
@@ -256,7 +243,6 @@ public class JDBCConnection extends Component {
    * @throws SQLException
    */
   protected void beginTransaction() throws SQLException {
-    connection.setAutoCommit(false);
     deadlockCount = 0;
     refCount++;
   }

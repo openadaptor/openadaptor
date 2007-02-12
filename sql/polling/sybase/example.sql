@@ -44,6 +44,9 @@ INSERT Trade VALUES (2, "BT.L", "S", 500000, 19.99)
 INSERT TradeEvent (TradeId) VALUES (1)
 go
 
+/*
+** HERE IS THE SQL TO RESET THE EVENTS
+*/
 
-
-
+UPDATE TradeEvent SET Processed = NULL
+go

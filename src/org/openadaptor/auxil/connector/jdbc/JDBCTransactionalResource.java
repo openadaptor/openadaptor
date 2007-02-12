@@ -31,7 +31,11 @@ import org.openadaptor.core.transaction.ITransactionalResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
+/**
+ * 
+ * @author perryj
+ *
+ */
 public class JDBCTransactionalResource implements ITransactionalResource {
 
   private static final Log log = LogFactory.getLog(JDBCTransactionalResource.class);
@@ -47,11 +51,7 @@ public class JDBCTransactionalResource implements ITransactionalResource {
    */
   public void begin() {
     try {
-      if (!connection.isTransacted()) {
-        throw new RuntimeException("Attempt to start transaction using an untransacted JDBC connection");
-      } else {
-        connection.beginTransaction();
-      }
+      connection.beginTransaction();
     } catch (Exception e) {
       throw new RuntimeException("JDBC Exception on attempt to start transaction using a JDBC connection", e);
     }
@@ -63,12 +63,8 @@ public class JDBCTransactionalResource implements ITransactionalResource {
    */
   public void commit() {
     try {
-      if (!connection.isTransacted()) {
-        throw new RuntimeException("Attempt to commit a transaction using an untransacted JDBC connection");
-      } else {
-        connection.commitTransaction();
-        log.debug("JDBC Transaction committed");
-      }
+      connection.commitTransaction();
+      log.debug("JDBC Transaction committed");
     } catch (Exception e) {
       throw new RuntimeException("JDBC Exception on attempt to commit a transaction using a JDBC connection", e);
     }
@@ -79,12 +75,8 @@ public class JDBCTransactionalResource implements ITransactionalResource {
    */
   public void rollback(Throwable t) {
     try {
-      if (!connection.isTransacted()) {
-        throw new RuntimeException("Attempt to rollback a transaction using an untransacted JDBC connection");
-      } else {
-        log.debug("JDBC Transaction rolled back");
-        connection.rollbackTransaction();
-      }
+      log.debug("JDBC Transaction rolled back");
+      connection.rollbackTransaction();
     } catch (Exception e) {
       throw new RuntimeException("JDBC Exception on attempt to rollback a transaction using a JDBC connection", e);
     }

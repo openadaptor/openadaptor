@@ -160,7 +160,6 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
    * <br>
    * Note that it may be a (modified) clone of the original
    * record that this instance was created with.
-   * @return
    */
   public ISimpleRecord getSimpleRecord() {
     return simpleRecord;

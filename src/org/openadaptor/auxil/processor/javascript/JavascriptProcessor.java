@@ -65,7 +65,6 @@ public  class JavascriptProcessor implements IDataProcessor {
   }
   /**
    * Returns the binding for this processor.
-   * @return
    */
   public JavascriptBinding getJavascriptBinding() {
     return javascript;
