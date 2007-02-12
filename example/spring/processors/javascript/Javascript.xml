@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This adaptor does the following...
+    
+      * reads all data in delim.txt
+      * modifies the fields using javascript
+      * outputs to stdout
+    
+    It is designed to illustrate a simple use of a JavascriptProcessor
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringApplication -config Javascript.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+    
+    writes to stdout
+-->
+
+<beans>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>
+      This adaptor is designed to illustrate a simple use of a JavascriptProcessor
+        * reads all data in delim.txt
+        * modifies the fields via javascript
+        * outputs to stdout
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="orderedmap"/>
+            <ref bean="js_setter"/>
+             <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="delim.txt"/>
+  </bean>
+  
+  <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Convert to OrderedMap providing fields names</description>
+    <property name="fieldNames">
+        <list>
+            <value>username</value>
+            <value>fullname</value>
+            <value>uniqueid</value>
+            <value>dob</value>
+        </list>
+    </property>
+  </bean>
+  
+  <bean id="js_setter" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
+    <description>
+      Simple use of a JavascriptProcessor. 
+    </description>
+    <property name="script" value="record.put('isterry',record.get('fullname').indexOf('Terry')==0)"/>
+  </bean>
+   
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>  
