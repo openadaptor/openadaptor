@@ -15,7 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/jotm.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
@@ -30,9 +29,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/dumbster.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/jonas_timer.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/jotm_jrmp_stubs.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/carol.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxremote.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxtools.jar"/>
@@ -66,5 +63,8 @@
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/carol.jar"/>
+	<classpathentry kind="lib" path="lib/jotm.jar"/>
+	<classpathentry kind="lib" path="lib/jotm_jrmp_stubs.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
