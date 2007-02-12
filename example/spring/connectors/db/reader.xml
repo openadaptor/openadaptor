@@ -32,7 +32,7 @@
 <beans>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor"><ref bean="Pipeline"/></property>
+    <property name="messageProcessor" ref="Pipeline"/>
   </bean>
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
