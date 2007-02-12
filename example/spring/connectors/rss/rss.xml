@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--
-  
-  $Id: rss.xml,v 1.7 2006/06/02 07:07:41 higginse Exp $
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+ $Id$
 
  Simple example to illustrate use of RSS connectors and Files
  Data originates: RSS
@@ -16,21 +18,7 @@
 
  Run using
   java org.openadaptor.spring.SpringApplication -config rss.xml -bean Adaptor
- -->
-<beans>
-  <description>
-    Simple example to illustrate use of RSS connectors and Files
-    Data originates: RSS
-    Data processed : XSLT
-    Data terminates: File as HTML
-
-    Note: If you wish to run it through a proxy, then the adaptor will need to be run with
-    appropriate System properties for the proxy configuration, e.g
-    -D http.proxyHost= {proxy-host} -D http.proxyPort={proxy-port}
-
-    Run using
-      java org.openadaptor.spring.SpringApplication -config rss.xml -bean Adaptor
-  </description>
+  ]]></description>
 
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
    <property name="messageProcessor" ref="Pipeline"/>

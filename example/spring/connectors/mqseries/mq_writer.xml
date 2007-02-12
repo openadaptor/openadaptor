@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--
-  $Header:  $
-  $Revision:  $
- -->
-<beans>
-  <description>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+    $Id$
+    
     Demonstrates an adaptor which reads from stdin and publishes to IBM MQ directly.
 
     Data originates: stdin.
@@ -16,7 +16,7 @@
 
     mq.properties is a properties format file which should be edited to supply specific mq property
     values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
-  </description>
+  ]]></description>
  
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
    <property name="messageProcessor" ref="Pipeline"/>

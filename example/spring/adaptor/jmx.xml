@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+    $Id$
+  
     Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
     will automatically be registered. The adaptor will be registered and this example includes 
     a utility bean that exposes useful methods for viewing JVM properties.
@@ -10,9 +15,7 @@
     at http://localhost:8082).
     
     The actual adaptor, simply reads stdin and writes to stdout.
--->
-
-<beans>
+  ]]></description>
   
   <!-- embed this in your config to expose jmx interface via http & rmi -->
 	<bean class="org.openadaptor.core.jmx.MBeanServer">

@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<!--
-    This adaptor does the following...
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+    $Id$
+  
+    This example adaptor illustrates the basic steps in generating json text.
     
       * reads a file consisting of rows of comma separated values.
       * converts it into OrderedMaps
       * converts from OrderedMaps to JSON
       * writes text to stdout
     
-    It is designed to illustrate the basic steps in generating json text.
-
     Run it like this...
     
       java org.openadaptor.spring.SpringApplication -config tojson.xml -bean Adaptor
@@ -21,16 +23,7 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
--->
-
-<beans>
-    <description>
-      This example illustrates the basic steps in generating json text.
-        * reads a file consisting of rows of comma separated values.
-        * converts it into OrderedMaps
-        * converts from OrderedMaps to JSON
-        * writes text to stdout
-    </description>
+  ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
     <description>Define the basic adaptor pipeline</description>

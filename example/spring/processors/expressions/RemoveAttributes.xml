@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--
-  $Header: /cvs/openadaptor/cookbook/Expressions_OM.xml,v 1.7 2006/11/01 15:08:22 kscully Exp $
-  $Revision: 1.7 $
- -->
-
-<!--
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+    $Id$
+  
     This adaptor does the following...
 
       * reads an xml document from books.xml
@@ -28,10 +28,7 @@
       lib/openadaptor-depends.jar
 
     writes to stdout
--->
 
-<beans>
-    <description>
         This example illustrates the use of openadaptor Expressions (using Ordered Maps)
         Simple example that illustrates removing specific attributes.
 
@@ -39,7 +36,7 @@
         Data processed : XML Records converted to Ordered Maps
         Data processed : Remove two specified attributes.
         Data terminates: Delimited Text to stdout
-    </description>
+  ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor">
