@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor examples" default="compile">
+<project name="openadaptor-examples" default="build">
   
   <property name="dir.classes" value="classes"/>
   <property name="dir.lib" value="../lib"/>
@@ -16,5 +16,11 @@
     <javac srcdir="${dir.src}" destdir="${dir.classes}" classpathref="classpath" debug="true"/>
     <echo message="you need to added the classes directory to your classpath to run the examples"/>
   </target>
-
+  
+  <target name="docs" description="generate documentation for the example code">
+    <ant antfile="tools/docs.xml" />
+  </target>
+  
+  <target name="build" description="compile examples and generate documentation"
+    depends="compile,docs"/>
 </project>

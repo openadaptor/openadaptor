@@ -1,0 +1,254 @@
+<?xml version="1.0" ?>
+
+<!--
+#* [[
+#* Copyright (C) 2005 The Software Conservancy as Trustee. All rights
+#* reserved.
+#*
+#* Permission is hereby granted, free of charge, to any person obtaining a
+#* copy of this software and associated documentation files (the
+#* "Software"), to deal in the Software without restriction, including
+#* without limitation the rights to use, copy, modify, merge, publish,
+#* distribute, sublicense, and/or sell copies of the Software, and to
+#* permit persons to whom the Software is furnished to do so, subject to
+#* the following conditions:
+#*
+#* The above copyright notice and this permission notice shall be included
+#* in all copies or substantial portions of the Software.
+#*
+#* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+#* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+#* LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+#* OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+#* WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#*
+#* Nothing in this notice shall be deemed to grant any rights to
+#* trademarks, copyrights, patents, trade secrets or any other intellectual
+#* property of the licensor or any contributor except as expressly stated
+#* herein. No patent license is granted separate from the Software, for
+#* code that you delete from the Software, or for combinations of the
+#* Software with other software or hardware.
+#* ]]
+-->
+
+<project name="openadaptor-examples-docs" default="jar">
+
+    <property file="docs.properties"/>    <!-- Where to find XSL Transforms, Schemas, DTDs -->
+    <xmlcatalog id="oa3XmlCatalog">
+        <entity publicId="adaptorDoc.xsl"
+                location="${cookbook.dir}/xslt/adaptorDoc.xsl"/>
+
+        <!-- Lies: -->
+        <dtd publicId="-//SPRING//DTD BEAN//EN"
+             location="${cookbook.dir}/xslt/spring-beans-2.0.dtd"/>
+
+        <!-- Truth:
+        <dtd publicId="-//SPRING//DTD BEAN//EN"
+             location="${cookbook.dir}/xslt/spring-beans.dtd"/>
+
+        <dtd publicId="-//SPRING//DTD BEAN 2.0//EN"
+             location="${cookbook.dir}/xslt/spring-beans-2.0.dtd"/>
+         -->
+    </xmlcatalog>
+
+
+    <!--
+      * Generates the project Cookbook (including index pages)
+      -->
+    <target name="cookbook_prepare">
+
+        <!-- Start with a clean cookbook build directory: -->
+        <mkdir dir="${build.cookbook.dir}"/>
+        <delete>
+            <fileset dir="${build.cookbook.dir}" includes="**/*"/>
+        </delete>
+
+        <!-- Copy all of the XML cookbook examples and data to the build directory: -->
+        <copy todir="${build.cookbook.dir}">
+            <fileset dir="${cookbook.dir}"/>
+        </copy>
+
+        <mkdir dir="${build.cookbook.images.dir}"/>
+
+
+        <condition property="graphviz.dot" value="${graphviz.dot.windows}">
+          <and>
+            <os family="windows"/>
+            <available file="${graphviz.dot.windows}"/>
+          </and>
+        </condition>
+
+        <condition property="graphviz.dot" value="${graphviz.dot.unix}">
+          <and>
+            <os family="unix"/>
+            <not>
+              <os name="Mac OS X"/>
+            </not>
+            <available file="${graphviz.dot.unix}"/>
+          </and>
+        </condition>
+
+        <condition property="graphviz.dot" value="${graphviz.dot.mac}">
+          <and>
+            <os name="Mac OS X"/>
+            <available file="${graphviz.dot.mac}"/>
+          </and>
+        </condition>
+
+    </target>
+
+
+    <!--
+      * Generates the project Cookbook images
+      -->
+    <target name="cookbook_images" depends="cookbook_prepare" if="graphviz.dot">
+
+        <!-- Generate GraphViz dot notation file using XSLT for each cookbook example -->
+        <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.dir}"
+                includes="*.xml" style="${cookbook.dir}/xslt/oa3toDot.xsl">
+            <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+            <xmlcatalog refid="oa3XmlCatalog"/>
+            <mapper type="glob" from="*.xml" to="*.dot"/>
+        </xslt>
+
+
+        <!-- Generate GIF for each cookbook example from GraphViz dot notation file -->
+        <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
+        <mapper id="outImage" type="glob" from="*.dot" to="${build.cookbook.images.dir}/*.${graphviz.image.fileextension}" />
+
+        <apply executable="${graphviz.dot}"
+               dest="${build.cookbook.images.dir}" failifexecutionfails="false">
+            <arg value="-T${graphviz.image.fileextension}"/>
+            <srcfile/>
+            <fileset dir="${build.cookbook.dir}" includes="*.dot"/>
+            <mapper refid="outImage" />
+            <redirector>
+              <outputmapper refid="outImage" />
+            </redirector>
+        </apply>
+
+
+        <!-- Generate image map for each cookbook example from GraphViz dot notation file -->
+        <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
+        <mapper id="outCmap" type="glob" from="*.dot" to="${build.cookbook.images.dir}/*.map" />
+
+        <apply executable="${graphviz.dot}"
+               dest="${build.cookbook.images.dir}" failifexecutionfails="false">
+            <arg value="-Tcmapx"/>
+            <srcfile/>
+            <fileset dir="${build.cookbook.dir}" includes="*.dot"/>
+            <mapper refid="outCmap" />
+            <redirector>
+              <outputmapper refid="outCmap" />
+            </redirector>
+        </apply>
+
+        <!-- Clean up the generated dot files at this point -->
+        <delete>
+            <fileset dir="${build.cookbook.dir}" includes="**/*.dot"/>
+        </delete>
+
+
+        <!-- Generate html image page using XSLT for each cookbook example -->
+        <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}"
+                includes="*.xml" style="${cookbook.dir}/xslt/nodemap.xsl">
+            <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+            <param name="imageFileExtension" expression="${graphviz.image.fileextension}"/>
+            <xmlcatalog refid="oa3XmlCatalog"/>
+            <mapper type="glob" from="*.xml" to="*.html"/>
+        </xslt>
+
+        <!-- Generate html page using XSLT for each cookbook example -->
+        <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.dir}"
+                includes="*.xml" style="${cookbook.dir}/xslt/beans.xsl">
+            <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+            <xmlcatalog refid="oa3XmlCatalog"/>
+            <mapper type="glob" from="*.xml" to="*.html"/>
+        </xslt>
+
+    </target>
+
+
+    <!--
+      * Generates the project Cookbook (including index pages)
+      -->
+    <target name="cookbook" depends="cookbook_prepare,cookbook_images" description="Build the cookbook">
+
+        <!-- Combine all cookbook examples into a single file (so we can later generate index) -->
+        <concat destfile="${build.cookbook.dir}/cookbook_combined.xml" fixlastline="yes">
+            <fileset dir="${cookbook.dir}" includes="**.xml"/>
+            <filterchain>
+                <tokenfilter>
+                    <!-- Apply regexps to whole of input file at once: -->
+                    <filetokenizer/>
+                    <!-- Pull the name of each cookbook example out of its CVS Header comment,
+                         and add as "id" attribute to its "beans" element: -->
+                    <replaceregex pattern="(.*?)(Header: /cvs/oa3/cookbook/)([^.]+?)(\.xml,v .*?)&lt;beans&gt;"
+                        flags="sg"
+                        replace="\1\2\3\4&lt;beans id=&quot;\3&quot;&gt;"/>
+                    <!-- Strip out the first two lines of every cookbook example (as inappropriate): -->
+                    <replaceregex pattern="&lt;\?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;\?&gt;"
+                        flags="g"
+                        replace=""/>
+                    <replaceregex pattern="&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;"
+                        flags="g"
+                        replace=""/>
+                    <!-- Add xml version declaration back once at top of file, and open cookbook element: -->
+                    <replaceregex pattern="^"
+                        flags="m"
+                        replace="&lt;\?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;\?&gt;
+&lt;cookbook&gt;"/>
+                    <!-- Close cookbook element at end of file: -->
+                    <replaceregex pattern="$"
+                        flags="s"
+                        replace="&lt;/cookbook&gt;"/>
+                </tokenfilter>
+            </filterchain>
+        </concat>
+
+
+        <!-- Generate html page using XSLT: mapping cookbook examples to beans -->
+        <xslt basedir="${build.cookbook.dir}" destdir="${build.cookbook.dir}"
+              includes="cookbook_combined.xml" style="${cookbook.dir}/xslt/cookbook2beans.xsl">
+          <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+          <xmlcatalog refid="oa3XmlCatalog"/>
+          <mapper type="glob" from="cookbook_combined.xml" to="cookbook2beans.html"/>
+        </xslt>
+
+        <!-- Generate html page using XSLT: mapping beans to cookbook examples -->
+        <xslt basedir="${build.cookbook.dir}" destdir="${build.cookbook.dir}"
+              includes="cookbook_combined.xml" style="${cookbook.dir}/xslt/beans2cookbook.xsl">
+          <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+          <xmlcatalog refid="oa3XmlCatalog"/>
+          <mapper type="glob" from="cookbook_combined.xml" to="beans2cookbook.html"/>
+        </xslt>
+
+        <!-- Generate html image page using XSLT: containing node maps for all cookbook examples -->
+        <xslt basedir="${build.cookbook.dir}" destdir="${build.cookbook.images.dir}"
+              includes="cookbook_combined.xml" style="${cookbook.dir}/xslt/allnodemaps.xsl">
+          <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+          <param name="imageFileExtension" expression="${graphviz.image.fileextension}"/>
+          <xmlcatalog refid="oa3XmlCatalog"/>
+          <mapper type="glob" from="cookbook_combined.xml" to="index.html"/>
+        </xslt>
+
+        <!-- Generate main index.html page using XSLT: containing summary of cookbook information -->
+        <xslt basedir="${build.cookbook.dir}" destdir="${build.cookbook.dir}"
+              includes="cookbook_combined.xml" style="${cookbook.dir}/xslt/index.xsl">
+          <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}"/>
+          <xmlcatalog refid="oa3XmlCatalog"/>
+          <mapper type="glob" from="cookbook_combined.xml" to="index.html"/>
+        </xslt>
+
+        <!-- Tidy up temporary XML file used for index generation -->
+        <delete file="${build.cookbook.dir}/cookbook_combined.xml"/>
+
+        <!-- Clean up the generated map files at this point -->
+        <delete>
+            <fileset dir="${build.cookbook.dir}" includes="**/*.map"/>
+        </delete>
+
+    </target>
+</project>
