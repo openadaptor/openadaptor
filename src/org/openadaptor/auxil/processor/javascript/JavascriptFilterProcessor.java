@@ -31,25 +31,65 @@ package org.openadaptor.auxil.processor.javascript;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
-
+/**
+ * Extend JavascriptProcessor to filter records based on the result of script execution.
+ * <br>
+ * This processor differes from JavascriptProcessor in that it uses the result of the
+ * javascript execution to filter records.
+ * <br>
+ * It expects the javascript to return a Boolean result, which dictates whether a given
+ * record passes through or is discarded by the processor.
+ * <br>
+ * Default behaviour is to discard records where the javascript returns true.
+ * This may be overridden by the discartMatches property.
+ * @author higginse
+ *
+ */
 public  class JavascriptFilterProcessor extends JavascriptProcessor {
 
   private static final Log log = LogFactory.getLog(JavascriptFilterProcessor.class);
 
+  //Default behaviour is to discard records where the javascript returns true.
   private boolean discardMatches=true;
 
   // BEGIN Bean getters/setters
+  /**
+   * Returns true (default) if this processor will discard records where
+   * the javascript has returned true.
+   * <br>
+   * Unsurprisingly returns false otherwise.
+   */
   public boolean getDiscardMatches() {
     return discardMatches;
   }
+  /**
+   * Configure discard behaviour for this processor.
+   * <br>
+   * If set to true (the default), it will discard records where
+   * the javascript evaluates to true. 
+   * <br>
+   * If set to false, it will discard records where the javascript
+   * evaluates to false.
+   * 
+   * @param discardMatches boolean containing true to discard matches, false otherwise.
+   */
   public void setDiscardMatches(boolean discardMatches) {
     this.discardMatches = discardMatches;
   }
   // END Bean getters/setters
 
   /**
-   * Generate an output record array.
-   * Default behaviour is just to wrap the outputRecord in an Object[].
+   * Generate output record array whose contents depend on the supplied
+   * JavascriptResult.
+   * <be>
+   * This overrides the superclass default behaviour in that it examines
+   * the result of the evaulated javascript and either returns the output
+   * record, or discards it depending on that result.
+   * The resultant output will either be an empty Object[] or one containing
+   * a single value - the output record from the javascript result.
+   * <br>
+   * It expects the javascript to return a Boolean value. If not it will
+   * throw a RuntimeException.
    */
   protected Object[] generateOutput(JavascriptResult jsResult) {
     Object scriptResult=jsResult.executionResult;

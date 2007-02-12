@@ -32,7 +32,25 @@ import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.*;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.exception.RecordFormatException;
-
+/**
+ * This class provides a (Scriptable) wrapper around ISimpleRecord.
+ * It permits reference to an ISimpleRecord from with javascript.
+ * <br>
+ * As part of the Rhino javascript mapping mechansim, methods which
+ * are prefixec with jsFunction_ are exposed as methods within the
+ * javascript environment. For example jsFunction_get(Object key) will
+ * be available with the javascript as get(Object key).
+ * <br>
+ * In addition, it will clone() the wrapped simplerecord if the
+ * operation being attempted is to modify the record. Thus
+ * the original ISimpleRecord should never itself be modified.
+ * <br>
+ * See individual method signatures for more detail.
+ * <br>
+ * See the Rhino documentation for further details on the mappping.
+ * @author higginse
+ *
+ */
 public class ScriptableSimpleRecord extends ScriptableObject  {
   public static final long serialVersionUID = 0x00;
   private static final Log log = LogFactory.getLog(ScriptableSimpleRecord.class);
@@ -40,10 +58,20 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
   private ISimpleRecord simpleRecord;
   private boolean modified=false;
   
-  // The zero-argument constructor used by Rhino runtime to create instances
+  /**
+   * zero-argument constructor used by Rhino runtime to create instances.
+   * <br>
+   * This is not indended for use by anything other than the Rhino environment.
+   */
   public ScriptableSimpleRecord() {}
 
   // Method jsConstructor defines the JavaScript constructor
+  /**
+   * This corresponds roughly to the constructor for the 
+   * ScriptableSimpleRecord. 
+   * <br>
+   * See the Rhino documentation for further detail on usage.
+   */
   public void jsConstructor(Object simpleRecord) { 
     if (simpleRecord instanceof ISimpleRecord){
       this.simpleRecord=(ISimpleRecord)simpleRecord;
@@ -54,50 +82,98 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
     }
   }
 
-  // The class name is defined by the getClassName method
+  /**
+   * Return the className of this class.
+   * <br>
+   * Required by Rhino.
+   */
   public String getClassName() { 
     return CLASSNAME; 
     }
 
-  // Exposed methods are be defined using the jsFunction_ prefix. Here we define
-  //  get for JavaScript.
+ /**
+  * Mapping of ISimpleRecord.get(Object key).
+  * @param key Map key for which a value is being retrieved.
+  * @return Object the value for the key as defined by ISimpleRecord.get(Object key)
+  */
   public Object jsFunction_get(Object key) {
     log.debug("get("+key+") invoked");
     Object value=simpleRecord.get(key);
-
     return value;
   }
 
-  //Note: Always forces modify flag, even if new value = old value.
+  /**
+   * Mapping of ISimpleRecord.put(Object key, Object value).
+   * <br>
+   * This differs from a trivial mapping in that it guarantees that
+   * the original simple record has already cloned() first.
+   * <br>
+   * Note: Always forces flags as modified, even if new value = old value.
+   */
   public void jsFunction_put(Object key,Object value) {
     log.debug("put("+key+","+value+") invoked");
     modify();
     simpleRecord.put(key, value);
   }
+ 
+  /**
+   * Convenience wrapper around jsFunction_put(Object key, Object value).
+   * <br>
+   * 
+   */
+  public void jsFunction_set(Object key,Object value) {
+    jsFunction_put(key, value);
+  }
 
-  //Note: Always forces modify flag, even if it didn't contain the key.
+  /**
+   * Mapping of ISimpleRecord.remove(Object key).
+   * <br>
+   * This differs from a trivial mapping in that it guarantees that
+   * the original simple record has already cloned() first.
+   * <br>
+   * Note: Always forces flags as modified, even if new value = old value.
+   */
     public Object jsFunction_remove(Object key) {
     log.debug("remove("+key+") invoked");
     modify();
     return simpleRecord.remove(key);
   }
 
+    /**
+     * Mapping of ISimpleRecord.toString().
+     */
   public String jsFunction_toString() {
     return simpleRecord.toString();
   }
 
+  /**
+   * Mapping of ISimpleRecord.containsKey(Object key).
+   */
   public boolean js_Function_containsKey(Object key) {
     log.debug("containsKey("+key+") invoked");
     return simpleRecord.containsKey(key);
   }
   
+  /**
+   * Returns the underlying simpleRecord associated with 
+   * this mapping. 
+   * <br>
+   * Note that it may be a (modified) clone of the original
+   * record that this instance was created with.
+   * @return
+   */
   public ISimpleRecord getSimpleRecord() {
     return simpleRecord;
   }
   
+  /**
+   * This will clone the simpleRecord, if it hasn't already
+   * been cloned.
+   *
+   */
   private void modify() {
     if (!modified) {
-      log.info("Modifying a simpleRecord - cloning original");
+      log.debug("Modifying a simpleRecord - cloning original");
       simpleRecord=(ISimpleRecord)simpleRecord.clone();
       modified=true;
     }

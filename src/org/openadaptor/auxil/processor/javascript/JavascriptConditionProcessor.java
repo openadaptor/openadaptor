@@ -33,34 +33,81 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 
+/**
+ * Processor which uses the evaluated result of javascript to 
+ * implement an if/then/else construct.
+ * <br>
+ *  The evaluated javascript result returns true the 'then' processor
+ *  is executed, otherwise the 'else' processor is executed.
+ *  If the selected (then/else) processor is not configured, the record 
+ *  will pass through without further change.
+ * <br>
+ * Note: If the javascript does not return a Boolean result, a 
+ * RuntimeException will be thrown.
+ * 
+ * @author higginse
+ *
+ */
 public  class JavascriptConditionProcessor extends JavascriptProcessor {
 
   private static final Log log = LogFactory.getLog(JavascriptConditionProcessor.class);
 
   // BEGIN Bean getters/setters
+  /**
+   * Processor which will be invoked if javascript evaluates to true
+   */
   protected IDataProcessor thenProcessor;
 
+  /**
+   * Processor which will be invoked if javascript evaluates to false
+   */
   protected IDataProcessor elseProcessor;
+  
+  /**
+   * Assign an optional processor which will be invoked if the
+   * javascript evaluates to true.
+   * @param thenProcessor Any IDataProcessor instance.
+   */
   public void setThenProcessor(IDataProcessor thenProcessor) {
     this.thenProcessor = thenProcessor;
   }
 
+  /**
+   * Return the processor, if any which will be invoked if the
+   * javascript evaluates to true.
+   * @return IDataProcessor instance (or null)
+   */
   public IDataProcessor getThenProcessor() {
     return thenProcessor;
   }
 
-  public void setElseProcessor(IDataProcessor elseProcessor) {
+  /**
+   * Assign an optional processor which will be invoked if the
+   * javascript evaluates to false.
+   * @param elseProcessor Any IDataProcessor instance.
+   */
+ public void setElseProcessor(IDataProcessor elseProcessor) {
     this.elseProcessor = elseProcessor;
   }
 
+ /**
+  * Return the processor, if any which will be invoked if the
+  * javascript evaluates to false.
+  * @return IDataProcessor instance (or null)
+  */
   public IDataProcessor getElseProcessor() {
     return elseProcessor;
   }
   // END Bean getters/setters
 
   /**
-   * Generate an output record array.
-   * Default behaviour is just to wrap the outputRecord in an Object[].
+   * Invoke thenProcessor or ElseProcessor depending on the evaluation result
+   * of the supplied JavaScriptResult.
+   * <br>
+   * It will return the output of the called processor, or will wrap the 
+   * result from the JavascriptResult in an Object[] if no processor has been
+   * configured.
+   * 
    */
   protected Object[] generateOutput(JavascriptResult jsResult) {
     Object scriptResult=jsResult.executionResult;
