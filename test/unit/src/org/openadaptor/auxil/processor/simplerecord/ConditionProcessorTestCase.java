@@ -330,7 +330,7 @@ public class ConditionProcessorTestCase extends AbstractTestAbstractSimpleRecord
 
     ConditionProcessor processor = (ConditionProcessor) testProcessor;
     try {
-      processor.setifExpressionString(expressionString);
+      processor.setIfExpressionString(expressionString);
     } catch (ExpressionException e) {
       fail("Error setting processor if expression string. Exception [" + e + "]");
     }

@@ -8,7 +8,6 @@
 		<config>example/spring/adaptor/registration.xml</config>
 		<config>example/spring/connectors/socket/writer.xml</config>
 		<config>example/spring/processors/expressions/Dom4j.xml</config>
-		<config>example/spring/processors/expressions/book.xml</config>
 		<config>example/spring/processors/xml/velocity.xml</config>
 		<config>example/spring/connectors/db/writer.xml</config>
 		<config>example/spring/adaptor/simple.xml</config>
@@ -45,7 +44,6 @@
 		<config>example/spring/exceptions/exception4.xml</config>
 		<config>example/spring/connectors/mqseries/mq_reader.xml</config>
 		<config>example/spring/connectors/db/writer3.xml</config>
-		<config>example/spring/processors/expressions/books.xml</config>
 		<config>example/spring/legacy/doxml_reader.xml</config>
 		<config>example/spring/connectors/db/reader.xml</config>
 		<config>example/spring/exceptions/exception3.xml</config>

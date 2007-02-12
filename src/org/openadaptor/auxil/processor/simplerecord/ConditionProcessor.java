@@ -99,7 +99,7 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
    * @throws ExpressionException
    *           if an <code>IExpression</code> cannot be created from the expression String.
    */
-  public void setifExpressionString(String ifExpressionString) throws ExpressionException {
+  public void setIfExpressionString(String ifExpressionString) throws ExpressionException {
     setIfExpression(Expression.createExpressionFromString(ifExpressionString));
   }
 

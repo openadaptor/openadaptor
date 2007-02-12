@@ -115,7 +115,7 @@ public class ConditionProcessorFactoryBean extends Component implements FactoryB
 
     conditionProcessor.setId(getId());
     if (getIfExpression() != null) {
-      conditionProcessor.setifExpressionString(getIfExpression());
+      conditionProcessor.setIfExpressionString(getIfExpression());
     }
     conditionProcessor.setSimpleRecordAccessor(getSimpleRecordAccessor());
     if (thenExpression != null) {
