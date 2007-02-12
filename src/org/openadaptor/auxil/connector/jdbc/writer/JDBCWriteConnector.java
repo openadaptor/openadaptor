@@ -29,12 +29,14 @@ package org.openadaptor.auxil.connector.jdbc.writer;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -64,9 +66,24 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     this.jdbcConnection = jdbcConnection;
   }
 
+
+  /**
+   * @param statementConverter the class that converts the incoming data into a PreparedStatement.
+   * Defaults to a StatementConverter.
+   */
   public void setStatementConverter(final IStatementConverter statementConverter) {
     this.statementConverter = statementConverter;
   }
+
+
+  /**
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   */
+  public void validate(List exceptions) {
+    if ( jdbcConnection == null )
+      exceptions.add(new ValidationException("You must supply values for the [jdbcConnection] property", this));
+  }
+
 
   public Object deliver(Object[] data) throws ComponentException {
     boolean sucess = false;
