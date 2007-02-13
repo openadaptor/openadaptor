@@ -12,17 +12,23 @@
 Java CLASSPATH and verify that you can sun the simple adaptor. If not then please refer 
 to the instructions in <a href="../readme.html">example/readme.html</a>.</p>
 
+<p>It is strongly recommended that you read the openadaptor whitepaper, before attempting
+this tutorial.</p>
+
 <p>In this tutorial you will run a series of adaptors that illustrate openadaptor, the
 instrcutions show you how to run these from the command prompt / shell. The examples
 are simplistic in order make them easy to run and experiment with. All of the adaptors
 are expressed as spring framework configuration files. 
-The later examples use JMS and you will need to install and run a default jboss i
-mplementation for these
-to work.</p>
+The later examples use JMS and you will need to install and run a default jboss 
+implementation for these to work, other examples illustrate writing data to a database,
+for simplicity we use hypersonic db, which you will need to runup.</p>
 
 <a name="contents"/>
 <li><a href="#initial">Set Up</a></li>
 <li><a href="#step1">Step1</a></li>
+<li><a href="#step2">Step2</a></li>
+<li><a href="#step3">Step3</a></li>
+<li><a href="#step4">Step4</a></li>
 
 <a name="initial"/>
 <h2>Set Up</h2>
@@ -44,9 +50,11 @@ directory, since the entire tutorial will be run from this directory, this shoul
 
 <a name="step1"/>
 <h2>Step 1</h2>
-<p>This first adaptor exposes a servlet interface and outputs data that it receives to
+<p>This first adaptor <a href="step01.xml" target="_blank">step01.xml</a> exposes a servlet 
+interface and outputs data that it receives to
 stdout. NOTE: This is deliberately contrived to enable us to send data into the adaptor using
-a test web page. To run this adaptor type this</p>
+a test web page, ultimately we will replace this with something a bit more realistic. 
+To run this adaptor type this</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
@@ -72,9 +80,9 @@ INFO  [Servlet] Servlet running
 We have provided a web page that will post data to the adaptor servlet interface, open 
 <a href="test.html" target="_blank">test.html</a> and give it a try.
 You should see the fields you input, echoed by your adaptor, like this</p>
-<div class="shell"><pre>
+<textarea cols="100" rows="2" readonly="true">
 {buySell=BUY, ticker=XYZ, price=100}
-</pre></div>
+</textarea>
 
 <p>Use Ctrl-C to stop the adaptor process cleanly.</p>
 
@@ -82,8 +90,8 @@ You should see the fields you input, echoed by your adaptor, like this</p>
 
 <h3>Understanding the program you ran</h3>
 <p>The java program you ran <code>org.openadaptor.spring.SpringApplication</code> is a
-helper class that we provide in <code>openadaptor-spring.jar</code>. It expects a minimum of
-two parameters, one must be the a url for a spring XML configuration and the other must be 
+helper class that we provide in <code>openadaptor-spring.jar</code>. The config argumemnt 
+is a url for a spring XML configuration and the bean argument is 
 the name of a bean in the configuration file that implements <code>java.lang.Runnable</code>.
 This helper class is not specific to any of the openadaptor code, it simply provides a
 convenient way of launching a stand alone process based on a spring XML configuration.</p>
@@ -97,8 +105,8 @@ assumes that it is a file url, hence the following are equivalent.</p>
 </code>
 
 <h3>Understanding the spring XML configuration file</h3>
-If you understood the previous section then it should be obvious that the "entry point" is the 
-bean with the id "Adaptor".
+<p>If you understood the previous section then it then it makes sense to look first at the
+"Adaptor" bean.</p>
 
 <textarea cols="100" rows="5" readonly="true">
 
@@ -178,11 +186,12 @@ and the HTTP adaptor. You can access the jmx HTTP interface using this url
 
 <a name="step2"/>
 <h2>Step 2</h2>
-<p>This second adaptor extends the first adaptor by adding a processor into the pipeline.
+<p>This adaptor <a href="step02.xml" target="_blank">step02.xml</a> 
+extends the previous adaptor by adding a processor into the pipeline.
 This processor converts a Map that the ServletReadConnector outputs to an XML document. Here is
 the additional bean and the modified config for the Pipeline bean.</p>
 
-<textarea cols="100" rows="14" readonly="true">
+<textarea cols="100" rows="15" readonly="true">
 
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <property name="processors">
@@ -194,20 +203,157 @@ the additional bean and the modified config for the Pipeline bean.</p>
     </property>
   </bean>  
 
-  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor"/>
-
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="Trade"/>
+  </bean>
 </textarea>
 
-<p>Run it like this</p>
+<p>Run it like this (make sure you stop the previous adaptor)</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringApplication -config step02.xml -bean Adaptor
 </pre></div>
 
-<p>and test with the test webpage <a href="test.html" target="_blank">test.html</a>
+<p>and test with the test webpage <a href="test.html" target="_blank">test.html</a></p>
 
+<p>What you should see is a small XML document the represents the data that you input.
+Something like this</p>
+
+<textarea cols="100" rows="4" readonly="true">
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Trade><buySell>SELL</buySell><ticker>ABC</ticker><price>123.56</price></Trade>
+</textarea>
+
+<p>What happens now, is that the output from the Servlet is routed to the a processor
+that converts the java Map to an xml document (the root element is configured to be "Trade"),
+this is then routed to a FileWriteConnector that writes the output to the console (stdout).</p>
 
 <a href="#contents">back to contents</a>
+
+<a name="step3"/>
+<h2>Step 3</h2>
+<p>This adaptor <a href="step03.xml" target="_blank">step03.xml</a> 
+extends the previous adaptor by adding another processor into the pipeline.
+This processor validates that the XML against an XML schema file. Here is
+the additional bean and the modified config for the Pipeline bean.</p>
+
+<textarea cols="100" rows="16" readonly="true">
+
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="XMLConverter"/>
+        <ref bean="Validator"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+   
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+</textarea>    
+
+<p>The processor uses an XML Schema definition file to validate the XML</p>
+
+<p>Run it like this (make sure you stop the previous adaptor)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step03.xml -bean Adaptor
+</pre></div>
+
+<p>and test with the test webpage <a href="test.html" target="_blank">test.html</a>.
+If you input a numeric price then the adaptor should behave as it previously
+did. However if you input a non numeric price the adaptor will fail and exit.
+What happens is that the Validator throws and processing exception, that exception will
+go all the way back to the ReadConnector (The Servlet) an cause the adaptor to stop.</p>
+
+<p>openadaptor components can be configured to catch exception and process them, thus enabling
+the adaptor to keep running. The Pipeline component (which provides simple routing) can be
+configured with a Processor or WriteConnector, any processing exceptions in the adaptor will
+be caught and routed to the configured component. This adaptor 
+<a href="step03a.xml" target="_blank">step03a.xml</a> illustrates how to configure this feature.
+In this case the exception is simply written to an error file.
+Here are the additional beans and the modified Pipeline configuration.
+
+<textarea cols="100" rows="18" readonly="true">
+
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="XMLConverter"/>
+        <ref bean="Validator"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+  </bean>
+
+  <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="error.txt"/>
+  </bean>
+</textarea>    
+
+<p>Run it like this (make sure you stop the previous adaptor)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step03a.xml -bean Adaptor
+</pre></div>
+
+<p>Repeat the previous test,  <a href="test.html" target="_blank">test.html</a>
+ this time the invalid xml should be filtered out and written to
+a a file called error.txt. The adaptor should keep running when you input an invalid price.</p>
+
+<a href="#contents">back to contents</a>
+
+<a name="step4"/>
+<h2>Step 4</h2>
+<p>This adaptor <a href="step04.xml" target="_blank">step03.xml</a> 
+extends the previous adaptor by replacing the FileWriteConnector with a
+JMS Write Connector, that publishes our Trade XML onto a JMS queue. For this
+to work we need a JMS implementation. This tutorial is designed to work with
+a default installation of the jBoss application server, this is free to download
+and should be trivial to install and run. Download a binary distribution from
+<a href="http://www.jboss.org">http://www.jboss.org</a>, 
+unzip and run from a command prompt using the run.bat/run.sh
+scripts provided in the jBoss bin dir.</p>
+
+<p>Here are the additonal beans and the modified Writer bean</p>
+
+<textarea cols="100" rows="17" readonly="true">
+
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+  </bean>
+
+</textarea>    
+
+<p>Run it like this (make sure you stop the previous adaptor)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step04.xml -bean Adaptor
+</pre></div>
+
+<p>When you test, <a href="test.html" target="_blank">test.html</a>, the adaptor will
+now publish the valid aml documents to the configured JMS queue. If you want to verify
+this then adjust the log4j.properties file so that it logs openadaptor code at DEBUG.
+Or if you are feeling bold, set this dynamically via the JMS interface.</p>
+<a href="#contents">back to contents</a>
+
 
 </body>
 

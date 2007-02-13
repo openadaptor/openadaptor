@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.WriteNode;
 
@@ -77,7 +78,7 @@ public class Pipeline extends AbstractRouter implements IMessageProcessor {
       throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
     }
     Map exceptionMap = new HashMap();
-    exceptionMap.put(java.lang.Exception.class.getName(), exceptionProcessor);
+    exceptionMap.put(ProcessingException.class.getName(), exceptionProcessor);
     routingMap.setExceptionMap(exceptionMap);    
   }
 }
