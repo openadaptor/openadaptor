@@ -92,13 +92,16 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
 
   /**
-   * Checks that all mandatory properties have been set.
+   * Checks that all mandatory properties have been set. Calls validate() on the statement
+   * converter to ensure that it's properties are correctly set as well. 
    *
    * @param exceptions list of exceptions that any validation errors will be appended to
    */
   public void validate(List exceptions) {
     if ( jdbcConnection == null )
       exceptions.add(new ValidationException("You must supply values for the [jdbcConnection] property", this));
+
+    statementConverter.validate(exceptions, this);
   }
 
 

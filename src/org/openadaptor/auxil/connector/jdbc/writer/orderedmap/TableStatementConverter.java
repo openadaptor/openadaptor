@@ -41,6 +41,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ValidationException;
 
 
 public class TableStatementConverter extends AbstractStatementConverter {
@@ -56,16 +58,16 @@ public class TableStatementConverter extends AbstractStatementConverter {
 
   public TableStatementConverter() {
   }
-  
+
   public TableStatementConverter(final String tableName) {
     this.tableName = tableName;
   }
-  
+
   public TableStatementConverter(final String tableName, final Map mapping) {
     this.tableName = tableName;
     this.mapping = mapping;
   }
-  
+
   public void setMapping(final Map mapping) {
     this.mapping = mapping;
   }
@@ -73,6 +75,23 @@ public class TableStatementConverter extends AbstractStatementConverter {
   public void setTableName(final String tableName) {
     this.tableName = tableName;
   }
+
+
+  /**
+   * Checks that the properties for the statement converter are valid. If any problems are found
+   * then an exception is raised and added to the supplied list.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   * @param comp       the component that this converter is connected to
+   */
+  public void validate(List exceptions, Component comp) {
+    if ( "".equals(tableName) )
+      exceptions.add(new ValidationException("The [tableName] property must be supplied", comp));
+
+    if ( mapping == null || mapping.size() == 0 )
+      log.info("No field mapping defined. The attribute names in the ordered map must match the column names in the database");
+  }
+
 
   public PreparedStatement convert(IOrderedMap map, Connection connection) {
     PreparedStatement ps;

@@ -41,6 +41,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.Component;
 
 
 public class SQLStatementConverter extends AbstractStatementConverter {
@@ -60,6 +62,20 @@ public class SQLStatementConverter extends AbstractStatementConverter {
 
   public void initialise(Connection connection) {
   }
+
+
+  /**
+   * Checks that the properties for the statement converter are valid. If any problems are found
+   * then an exception is raised and added to the supplied list.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   * @param comp       the component that this converter is connected to
+   */
+  public void validate(List exceptions, Component comp) {
+    if ( "".equals(sql) )
+      exceptions.add(new ValidationException("The [sql] property must be supplied", comp));
+  }
+
 
   public PreparedStatement convert(IOrderedMap om, Connection connection) {
     try {
@@ -112,10 +128,8 @@ public class SQLStatementConverter extends AbstractStatementConverter {
     Iterator sqlStatementKeysIterator = sqlStatementKeys.iterator();
     while (sqlStatementKeysIterator.hasNext()) {
       String key = (String) sqlStatementKeysIterator.next();
-      if (!(omKeys.contains(key))) {
-        valid=false;
+      if (!(omKeys.contains(key)))
         throw new RuntimeException("Sql statement placeholder '" + key + "' not found in OrderedMap");
-      }
     }
 
     return valid;

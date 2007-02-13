@@ -27,19 +27,16 @@
 
 package org.openadaptor.auxil.connector.jdbc.writer.orderedmap;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.Component;
+
+import java.sql.*;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class CallableStatementConverter extends AbstractStatementConverter {
@@ -58,6 +55,22 @@ public class CallableStatementConverter extends AbstractStatementConverter {
   public void setMapping(List mapping) {
     this.mapping = mapping;
   }
+
+  /**
+   * Checks that the properties for the statement converter are valid. If any problems are found
+   * then an exception is raised and added to the supplied list.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   * @param comp       the component that this converter is connected to
+   */
+  public void validate(List exceptions, Component comp) {
+    if ( procName == null || procName.equals("") )
+      exceptions.add(new ValidationException("The [procName] property must be supplied", comp));
+
+    if ( mapping == null || mapping.size() == 0 )
+      log.info("No field mapping defined. The attribute names in the ordered map must match the column names in the database");
+  }
+
 
   public PreparedStatement convert(IOrderedMap om, Connection connection) {
     CallableStatement cs;
@@ -128,7 +141,7 @@ public class CallableStatementConverter extends AbstractStatementConverter {
     return types;
   }
 
-  private String statementParameters(int argCount) throws SQLException {
+  private String statementParameters(int argCount) {
     StringBuffer sqlString=new StringBuffer();
     for (int i=0;i<argCount;i++) {
       sqlString.append("?,");

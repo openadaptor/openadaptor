@@ -27,23 +27,28 @@
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import org.openadaptor.core.Component;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.List;
 
 /**
  * Converts some data into a PreparedStatement.
+ *
  * @author perryj
+ *
  * @see JDBCWriteConnector
  */
 public interface IStatementConverter {
-  
+
   /**
    * Do any initialisation required. Called with a valid connection once before convert is called.
    * Calling this method again should reset and state.
    * @param connection
    */
   void initialise(Connection connection);
-  
+
   /**
    * Convert data into a fully resolved PreparedStatement
    * @param data
@@ -51,4 +56,15 @@ public interface IStatementConverter {
    * @return fully resolved PreparedStatement
    */
   PreparedStatement convert(Object data, Connection connection);
+
+
+  /**
+   * Checks that the properties for the statement converter are valid. If any problems are found
+   * then an exception is raised and added to the supplied list.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   * @param comp the component that this converter is connected to. We need to pass this as any
+   * exceptions raised require it as part of their constructor!
+   */
+  public void validate(List exceptions, Component comp);
 }
