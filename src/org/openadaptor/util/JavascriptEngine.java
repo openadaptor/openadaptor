@@ -139,7 +139,16 @@ public  class JavascriptEngine  {
       ISimpleRecord outputRecord= ((ScriptableSimpleRecord)record).getSimpleRecord();
       return new JavascriptResult(scriptResult,outputRecord);
     }
+    catch (org.mozilla.javascript.EvaluatorException ee) {
+      log.error("Javascript execution failed: "+ee.toString());
+      throw new RuntimeException("Javascript execution failed: "+ee.toString(),ee);
+    }
+    catch (org.mozilla.javascript.EcmaError ece) {
+      log.error("Javascript execution failed: "+ece.toString());
+      throw new RuntimeException("Javascript execution failed: "+ece.toString(),ece);
+    }    
     finally{
+      //Rhino has repectfully requested that we always make sure we exit the context!
       Context.exit();
     }
   }
@@ -210,7 +219,12 @@ public  class JavascriptEngine  {
       try {
         JavascriptResult jsr=jse.execute(script.toString(), map);
         System.out.println(jsr.executionResult+" [type="+(jsr.executionResult==null?"<null>":jsr.executionResult.getClass().getName())+"]");
-        System.out.println("Map now is: "+jsr.outputRecord);
+        String mod="unchanged";
+        if (map!=jsr.outputRecord) {
+          mod="modified";
+          map=jsr.outputRecord;
+        }
+        System.out.println("Map ["+mod+"] is: "+map);
       }
       catch (org.mozilla.javascript.EvaluatorException ee) {
         System.out.println("<error> : "+ee.toString());
