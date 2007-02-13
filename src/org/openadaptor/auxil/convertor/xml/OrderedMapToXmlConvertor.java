@@ -30,6 +30,7 @@ package org.openadaptor.auxil.convertor.xml;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import org.dom4j.io.XMLWriter;
 import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
@@ -137,8 +139,13 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
    *           if the record is not an IOrderedMap
    */
   public Object convert(Object record) throws RecordException {
-    if (!(record instanceof IOrderedMap))
-      throw new RecordFormatException("Record is not an IOrderedMap. Record: " + record);
+    if (!(record instanceof IOrderedMap)) {
+      if (record instanceof Map) {
+        record = new OrderedHashMap((Map)record);
+      } else {
+        throw new RecordFormatException("Record is not an IOrderedMap. Record: " + record);
+      }
+    }
 
     return convertOrderedMapToXml((IOrderedMap) record, returnXmlAsString);
   }

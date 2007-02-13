@@ -1,9 +1,213 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
+<STYLE TYPE="text/css">
+  .shell { width: 90%; background-color: EEEEEE }
+</STYLE>
 <title>openadaptor tutorial</title>
 </head>
 <body>
+<h1>Tutorial</h1>
+<p>This tutorial assumes that you have already managed to install openadaptor, set your
+Java CLASSPATH and verify that you can sun the simple adaptor. If not then please refer 
+to the instructions in <a href="../readme.html">example/readme.html</a>.</p>
+
+<p>In this tutorial you will run a series of adaptors that illustrate openadaptor, the
+instrcutions show you how to run these from the command prompt / shell. The examples
+are simplistic in order make them easy to run and experiment with. All of the adaptors
+are expressed as spring framework configuration files. 
+The later examples use JMS and you will need to install and run a default jboss i
+mplementation for these
+to work.</p>
+
+<a name="contents"/>
+<li><a href="#initial">Set Up</a></li>
+<li><a href="#step1">Step1</a></li>
+
+<a name="initial"/>
+<h2>Set Up</h2>
+<p>launch a command prompt / shell and follow these these instructions</p>
+<h4>Windows</h4>
+<div class="shell"><pre>
+  cd example\tutorial
+  set CLASSPATH=.;..\..\lib\openadaptor.jar;..\..\lib\opendaptor-spring.jar;..\..\lib\openadaptor-depends.jar  
+</pre></div>
+<h4>Unix</h4>
+<div class="shell"><pre>
+  cd example/tutorial
+  CLASSPATH=.:../../lib/openadaptor.jar:../../lib/opendaptor-spring.jar:../../lib/openadaptor-depends.jar  
+  export CLASSPATH
+</pre></div>
+<p>NOTE: for simplicity this sets your CLASSPATH environment variable relative to the tutorial
+directory, since the entire tutorial will be run from this directory, this should work fine.</p>
+<a href="#contents">back to contents</a>
+
+<a name="step1"/>
+<h2>Step 1</h2>
+<p>This first adaptor exposes a servlet interface and outputs data that it receives to
+stdout. NOTE: This is deliberately contrived to enable us to send data into the adaptor using
+a test web page. To run this adaptor type this</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
+</pre></div>
+
+<p>You should see a flurry of logging which include the openadaptor copyright notice
+and licence, it should look like this...</p>
+
+<div class="shell"><pre>
+INFO  [Adaptor] Writer registered with Pipeline
+INFO  [Adaptor] Servlet registered with Pipeline
+INFO  [Adaptor] Writer started
+2007-02-13 10:31:03.874::INFO:  Logging to STDERR via org.mortbay.log.StdErrLog
+2007-02-13 10:31:03.874::INFO:  jetty-6.0.1
+2007-02-13 10:31:03.905::INFO:  Started SocketConnector @ 0.0.0.0:9999
+INFO  [Adaptor] Servlet added servlet http://iblongsw336240:9999/*
+INFO  [Adaptor] Servlet started
+INFO  [Adaptor] waiting for runnables to stop
+INFO  [Servlet] Servlet running
+</pre></div>
+
+<p>All this and the configuration file will be explained later, but first let's test the adaptor. 
+We have provided a web page that will post data to the adaptor servlet interface, open 
+<a href="test.html" target="_blank">test.html</a> and give it a try.
+You should see the fields you input, echoed by your adaptor, like this</p>
+<div class="shell"><pre>
+{buySell=BUY, ticker=XYZ, price=100}
+</pre></div>
+
+<p>Use Ctrl-C to stop the adaptor process cleanly.</p>
+
+<p>The rest of this section explains what has happened and some details about how.</p>
+
+<h3>Understanding the program you ran</h3>
+<p>The java program you ran <code>org.openadaptor.spring.SpringApplication</code> is a
+helper class that we provide in <code>openadaptor-spring.jar</code>. It expects a minimum of
+two parameters, one must be the a url for a spring XML configuration and the other must be 
+the name of a bean in the configuration file that implements <code>java.lang.Runnable</code>.
+This helper class is not specific to any of the openadaptor code, it simply provides a
+convenient way of launching a stand alone process based on a spring XML configuration.</p>
+
+<p>If the url for the configuration file does not specify a protocol then the program
+assumes that it is a file url, hence the following are equivalent.</p>
+
+<code>
+  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
+  java org.openadaptor.spring.SpringApplication -config file:step01.xml -bean Adaptor
+</code>
+
+<h3>Understanding the spring XML configuration file</h3>
+If you understood the previous section then it should be obvious that the "entry point" is the 
+bean with the id "Adaptor".
+
+<textarea cols="100" rows="5" readonly="true">
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Pipeline"/>
+  </bean>
+</textarea>
+
+<p>This represents the top level controller in the process. It manages the processing
+lifecycle and co-ordinates the ReadConnectors, Processors and WriteConnectors. This very
+simple example has one ReadConnector and one WriteConnector, called "Servlet" and "Writer"
+respectively. The ReadConnector "sits there" waiting for data to be POSTED, the Writer
+prints any data it receives to the conosle (stdout). Here are the beans in the config
+that relate to these two components.</p>
+
+<textarea cols="100" rows="7" readonly="true">
+
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+</textarea>
+
+<p>These are linked together by the Pipeline bean, which is configured with an ordered list
+of processors. This defines that the output from the Servlet should be "piped" to the Writer.</p>
+
+<textarea cols="100" rows="11" readonly="true">
+
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>  
+</textarea>
+
+<h3>Understanding the log output</h3>
+<p>The Adaptor bean is configured with the Pipeline, when the Adaptor bean is "run", the Pipeline
+registers all the processors with the Adaptor. If you look at the log output you can see that
+the various components are registered and started, the adaptor then waits for the ReadConnectors
+that are Runnable to stop.</p>
+
+<p>openadaptor uses the apache commons logging framework, this can utilise a variety of logging
+implementation and resolves it's behaviour based on the Java classpath. Our examples will pick
+up the log4j logging package and this is controlled by the log4j.properties file in the tutorial dir.</p>
+
+<p>Try uncommenting the DEBUG line (and other example configurations) and rerunning the adaptor. 
+log4j is very powerful, please refer to <a href="http://logging.apache.org">log4j</a>
+for more information on how to configure log4j.</p>
+
+<h3>Other arguments to the program you ran</h3>
+<p><code>org.openadaptor.spring.SpringApplication</code> can also accept a url to a 
+java properties file, this enables you to separate out
+certain configuration value that are then referred to indeirectly in the config file.
+Typically you want to do this for environment specific parameters, so that you can have
+a single config that can be used with different properties files for different environments
+(test, uat, production, etc...). As with the config url, the helper class will assume that
+the protocol is file.</p>
+
+<p>It can also accept a jmx port number argument, If this is specified then the helper class
+will automatically start a JMX server and HTTP adaptor, any named beans in the config that have
+MBeans will be automatically registered with the MBeanServer. NOTE: alternatively you are free to
+use standard spring mechanism for JMX instrumentation.</p>.
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor -jmx 9001
+</pre></div>
+
+<p>You should notice that there is now additonal log output that relates to the JMX MBeanServer
+and the HTTP adaptor. You can access the jmx HTTP interface using this url 
+<a href="http://localhost:9001" target="_blank">http://localhost:9001</a>.</p>
+
+<a href="#contents">back to contents</a>
+
+<a name="step2"/>
+<h2>Step 2</h2>
+<p>This second adaptor extends the first adaptor by adding a processor into the pipeline.
+This processor converts a Map that the ServletReadConnector outputs to an XML document. Here is
+the additional bean and the modified config for the Pipeline bean.</p>
+
+<textarea cols="100" rows="14" readonly="true">
+
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="XMLConverter"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>  
+
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor"/>
+
+</textarea>
+
+<p>Run it like this</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step02.xml -bean Adaptor
+</pre></div>
+
+<p>and test with the test webpage <a href="test.html" target="_blank">test.html</a>
+
+
+<a href="#contents">back to contents</a>
 
 </body>
 

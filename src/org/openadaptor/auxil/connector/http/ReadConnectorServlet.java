@@ -53,7 +53,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
 
   private boolean acceptGet = false;
 
-  private String[] parameterNames;
+  private String[] parameterNames = new String[0];
 
   /**
    * If this is set then HTTP GET is accepted, default is false
@@ -146,7 +146,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
     }
 
     // multiple param configuration - queues map
-    else {
+    else if (parameterNames.length > 1){
       Map map = new HashMap();
       for (int i = 0; i < parameterNames.length; i++) {
         String data = request.getParameter(parameterNames[i]);
@@ -159,6 +159,24 @@ public class ReadConnectorServlet extends JettyReadConnector {
         for (int i = 0; i < parameterNames.length; i++) {
           msg += (i > 0 ? "," : "") + parameterNames[i];
         }
+        log.error(getId() + " " + msg);
+        writeErrorNoThrow(response, msg);
+      }
+    } 
+    
+    // no param configuration - queues map of all request parameters
+    else {
+      Map map = new HashMap();
+      Enumeration e = request.getParameterNames();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        String data = request.getParameter(key);
+        map.put(key, data);
+      }
+      if (!map.isEmpty()) {
+        enqueue(map);
+      } else {
+        String msg = "request did not contain any parameters ";
         log.error(getId() + " " + msg);
         writeErrorNoThrow(response, msg);
       }
