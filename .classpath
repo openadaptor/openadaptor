@@ -10,11 +10,18 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="test/lib"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry exported="true" kind="lib" path="spring/lib/spring.jar"/>
-	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="spring/lib/spring.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xerces.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
@@ -24,7 +31,11 @@
 	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/jmock.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jms.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/spring-mock.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/spring-mock.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/dumbster.jar"/>
@@ -66,5 +77,8 @@
 	<classpathentry kind="lib" path="lib/carol.jar"/>
 	<classpathentry kind="lib" path="lib/jotm.jar"/>
 	<classpathentry kind="lib" path="lib/jotm_jrmp_stubs.jar"/>
+	<classpathentry kind="lib" path="lib/resolver.jar"/>
+	<classpathentry kind="lib" path="lib/serializer.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
