@@ -17,7 +17,7 @@
     
     Run it like this...
     
-      java org.openadaptor.spring.SpringApplication -config exception3.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config exception4.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -25,6 +25,7 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
+      lib/3rdparty/activation.jar
      
     Once it is running it will wait for command line input
     
@@ -37,11 +38,12 @@
     type something which is not an xml doc with a element called data and the validation
     exception will be caught and sent to exception manager.
   
-    For this to work you need to run the exception manager, this is a standalone process that
+    For this to work you need to run an exception manager, this is a standalone process that
     exposes a webservice to accept exceptions and exposes a servlet interface to browse the
-    exception store.
-  
-       java org.openadaptor.auxil.exception.ExceptionManager -dir c:\temp\eman -port 9999
+    exception store. The following will start a FileSystemExceptionManager storing error records
+    in a directory eman.
+
+       java org.openadaptor.auxil.exception.file.FileSystemExceptionManager -dir eman -port 9999
   
     browse the exception store using this url
   
