@@ -5,6 +5,7 @@
  
   <description><![CDATA[
     $Id$
+    $HeadURL$
   
     This example adaptor illustrates the basic steps in generating json text.
     

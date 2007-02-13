@@ -5,6 +5,8 @@
  
   <description><![CDATA[
     $Id$
+    $HeadURL$
+    
     This example relies on a hypersonic database running (http://www.hsqldb.org) to run
     up the server make sure hsqldb.jar is in your class path and run the following...
   

@@ -5,6 +5,7 @@
  
   <description><![CDATA[
     $Id$
+    $HeadURL$
     
     Illustrates how to get the adaptor to "register" itself at start up.
     By defining the openadaptor.registration.url, the adaptor will post the resolved

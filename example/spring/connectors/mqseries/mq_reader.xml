@@ -5,6 +5,7 @@
  
   <description><![CDATA[
     $Id$
+    $HeadURL$
 
     Demonstrates an adaptor which reads from IBM MQ directly and writes to stdout. The data read
     off the queue is passed directly to the WriteConnector.

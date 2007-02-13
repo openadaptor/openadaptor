@@ -5,6 +5,8 @@
  
   <description><![CDATA[
     $Id$
+    $HeadURL$
+    
     This adaptor does the following...
     
       * polls a jms queue
