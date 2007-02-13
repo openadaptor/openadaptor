@@ -19,8 +19,6 @@
     
     The actual adaptor, simply reads stdin and writes to stdout.
   ]]></description>
-
-<beans>
   
   <!-- embed this in your config to get the adaptor to post it's system props to a jsp -->
   <bean id="SystemProperties" class="org.openadaptor.util.SystemProperties">
