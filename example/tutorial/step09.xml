@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="XMLConverter"/>
+        <entry key-ref="XMLConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="CustomProcessor"/>
+        <entry key-ref="CustomProcessor" value-ref="SQLConverter"/>
+        <entry key-ref="SQLConverter">
+          <list>
+            <ref bean="Writer"/>
+            <ref bean="SqlLog"/>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="discardMap">
+      <map>
+        <entry key-ref="Filter" value-ref="DiscardLog"/>
+      </map>
+    </property>
+    <property name="exceptionMap">
+      <map>
+        <entry key="*">
+          <map>
+            <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="ErrorLog"/>
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+   
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+  
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <property name="simpleRecordAccessor">
+      <bean class="org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
+    </property>
+  </bean>
+  
+  <bean id="Filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
+    <property name="script" value="record.get('/Trade/ticker') == 'XXX'"/>
+  </bean>
+
+  <bean id="SQLConverter" class="org.openadaptor.thirdparty.velocity.VelocityProcessor">
+    <property name="templateString">
+      <value>
+        INSERT INTO TRADE 
+        VALUES ('$data.get('/Trade/buySell')', 
+                '$data.get('/Trade/ticker')', 
+                $data.get('/Trade/price'))
+      </value>
+    </property>
+  </bean>
+
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+  </bean>
+
+  <bean id="CustomProcessor" class="CustomProcessor">
+    <property name="field" value="/Trade/buySell"/>
+    <property name="map">
+      <map>
+        <entry key="BUY" value="B"/>
+        <entry key="SELL" value="S"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="SqlLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/sql.txt"/>
+  </bean>
+  
+  <bean id="DiscardLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/discard.txt"/>
+  </bean>
+  
+  <bean id="ErrorLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/suberror.txt"/>
+  </bean>
+  
+</beans>

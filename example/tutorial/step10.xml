@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor" ref="Pipeline"/>
   </bean>
@@ -10,7 +9,7 @@
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <property name="processors">
       <list>
-        <ref bean="Servlet"/>
+        <ref bean="FileReader"/>
         <ref bean="XMLConverter"/>
         <ref bean="Validator"/>
         <ref bean="Writer"/>
@@ -18,19 +17,38 @@
     </property>
     <property name="exceptionProcessor" ref="ExceptionHandler"/>
   </bean>
-   
-  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="port" value="9999"/>
-   </bean>
+  
+  <bean id="FileReader" class="org.openadaptor.core.node.ReadNode">
+    <property name="connector">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+        <property name="filename" value="input/data.txt"/>
+        <property name="dataReader">
+          <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+        </property>
+      </bean>
+    </property>
+    <property name="processor">
+      <bean class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+        <property name="delimiter" value=","/>
+        <property name="fieldNames">
+          <list>
+            <value>buySell</value>
+            <value>ticker</value>
+            <value>price</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
   
   <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
     <property name="rootElementTag" value="Trade"/>
   </bean>
-
+  
   <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
     <property name="schemaURL" value="schema.xsd"/>
   </bean>
-    
+  
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
     <property name="providerUrl" value="jnp://localhost:1099"/>
@@ -45,9 +63,9 @@
     <property name="destinationName" value="queue/testQueue"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
-
+  
   <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/error.txt"/>
+    <property name="filename" value="error.txt"/>
   </bean>
   
 </beans>

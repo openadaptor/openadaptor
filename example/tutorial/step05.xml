@@ -28,6 +28,7 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
     <property name="destinationName" value="queue/testQueue"/>
     <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="transacted" value="true"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>

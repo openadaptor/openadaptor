@@ -24,11 +24,18 @@ implementation for these to work, other examples illustrate writing data to a da
 for simplicity we use hypersonic db, which you will need to runup.</p>
 
 <a name="contents"/>
+<h2>Contents</h2>
 <li><a href="#initial">Set Up</a></li>
-<li><a href="#step1">Step1</a></li>
-<li><a href="#step2">Step2</a></li>
-<li><a href="#step3">Step3</a></li>
-<li><a href="#step4">Step4</a></li>
+<li><a href="#step1">Step 1</a></li>
+<li><a href="#step2">Step 2</a></li>
+<li><a href="#step3">Step 3</a></li>
+<li><a href="#step4">Step 4</a></li>
+<li><a href="#step5">Step 5</a></li>
+<li><a href="#step6">Step 6</a></li>
+<li><a href="#step7">Step 7</a></li>
+<li><a href="#step8">Step 8</a></li>
+<li><a href="#step9">Step 9</a></li>
+<li><a href="#step10">Step 10</a></li>
 
 <a name="initial"/>
 <h2>Set Up</h2>
@@ -311,7 +318,7 @@ a a file called error.txt. The adaptor should keep running when you input an inv
 
 <a name="step4"/>
 <h2>Step 4</h2>
-<p>This adaptor <a href="step04.xml" target="_blank">step03.xml</a> 
+<p>This adaptor <a href="step04.xml" target="_blank">step04.xml</a> 
 extends the previous adaptor by replacing the FileWriteConnector with a
 JMS Write Connector, that publishes our Trade XML onto a JMS queue. For this
 to work we need a JMS implementation. This tutorial is designed to work with
@@ -349,12 +356,350 @@ scripts provided in the jBoss bin dir.</p>
 </pre></div>
 
 <p>When you test, <a href="test.html" target="_blank">test.html</a>, the adaptor will
-now publish the valid aml documents to the configured JMS queue. If you want to verify
+now publish the valid xml documents to the configured JMS queue. If you want to verify
 this then adjust the log4j.properties file so that it logs openadaptor code at DEBUG.
-Or if you are feeling bold, set this dynamically via the JMS interface.</p>
+Or if you are feeling bold, set this dynamically via the JMS interface. Or continue to
+the next step in which we run a new adaptor that will process the messages on the queue.</p>
+
 <a href="#contents">back to contents</a>
 
+<a name="step5"/>
+<h2>Step 5</h2>
+<p>This adaptor <a href="step05.xml" target="_blank">step05.xml</a> 
+illustrates how to subscribe to the JMS queue. It contains a single read connector
+(JMSReadConnector) and a single write connector (FileWriteConnector). As you can
+imagine, all it does is get messages from the queue and print them to the console
+(stdout). Since this is not an extension of the previous example (a publisher) it
+is best to launch another command prompt to continue with the tutorial, you will need
+to follow the <a href="#setup">set up instructions</a>. Once you have done that here 
+is how to run it</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step05.xml -bean Adaptor
+</pre></div>
+
+<p/>You should see the messages that you published to the queue in Step 4. You
+can run this adaptor and the adaptor in Step 4, concurrently. Everytime you input
+a test trade using the web page <a href="test.html" target="_blank">test.html</a>
+you should receive the message in your adaptor that is subscribing to the queue.</p>
+
+<p>However, if you look at the config you will see that in this example
+the Pipeline bean has been replaced by a Router bean.</p>
+
+<textarea cols="100" rows="13" readonly="true">
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+</textarea>    
+
+<p> A Router allows more complicated linkage between ReadConnectors, Processors and 
+WriteConnector. As it's name implies a Router specifies the processing route between the components, 
+in this example the processing route is very trivial (in fact we could have used a Pipeline 
+bean as before), however subsequent examples will build upon this configuration. Noate that
+from the Adaptor's point of view, the Router is simply an IMessageProcessor, just like Pipeline.</p>
+
+<a href="#contents">back to contents</a>
+
+<a name="step6"/>
+<h2>Step 6</h2>
+<p>This adaptor <a href="step06.xml" target="_blank">step06.xml</a> extends the
+previous example and illustrates how to use a standard component to filter out
+messages based on their content. This involves adding 2 processor beans.</p>
+
+<p>the first transforms the XML message into something called an ISimpleRecord, this is a Java
+interface that allows subsequent processors to access the contents the underlying data. 
+In this case the underlying data is the XML document and the first processor bean 
+XMLConverter uses dom4J to provide access to the document. Here is the config for this bean.</p>
+
+<textarea cols="100" rows="8" readonly="true">
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <property name="simpleRecordAccessor">
+      <bean class="org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
+    </property>
+  </bean>
+
+</textarea>    
+
+<p>The second bean, called Filter, does the filtering and this uses a processor that
+evaluates a Javascript expression, the Javascript code is a property of the bean and
+accesses the contents of the message using XPATH, by virtue of the fact that the
+document has been wrapped as an ISimpleRecord. Here is the config for this bean</p>
+
+<textarea cols="100" rows="5" readonly="true">
+  <bean id="Filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
+    <property name="script" value="record.get('/Trade/ticker') == 'XXX'"/>
+  </bean>
+
+</textarea>    
+
+<p>And this is the modified config for the Router</p>
+
+<textarea cols="100" rows="11" readonly="true">
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="XMLConverter"/>
+        <entry key-ref="XMLConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+
+</textarea>    
+
+<p>Here is how to run it, (make sure you stop the previous adaptor from Step5)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step06.xml -bean Adaptor
+</pre></div>
+
+<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+you should see that messages that have ticker set to "XXX" are discarded.</p>
+
+<a href="#contents">back to contents</a>
+
+<a name="step7"/>
+<h2>Step 7</h2>
+<p>This adaptor <a href="step07.xml" target="_blank">step07.xml</a> extends the
+previous example and illustrates how to use a standard processor to transform 
+the XML documemnt into a SQL statement. In this example the SQL statement is simply
+written to the console, stdout. This process uses the Velocity 
+, refer to <a href="http://velocity.apache.org">http://velocity.apache.org</a> for documentation
+of their template language. Here is the config, notice that the velocity template is a property
+of the bean (it is also possible to specify the template as a file).</p>
+
+<textarea cols="100" rows="12" readonly="true">
+
+  <bean id="SQLConverter" class="org.openadaptor.thirdparty.velocity.VelocityProcessor">
+    <property name="templateString">
+      <value>
+        INSERT INTO TRADE ('SIDE', 'STOCK', 'PRICE') 
+        VALUES ('$data.get('/Trade/buySell')', 
+                '$data.get('/Trade/ticker')', 
+                $data.get('/Trade/price'))
+      </value>
+    </property>
+  </bean>
+</textarea>    
+
+<p>And this is the modified config for the Router</p>
+
+<textarea cols="100" rows="12" readonly="true">
+
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="XMLConverter"/>
+        <entry key-ref="XMLConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="SQLConverter"/>
+        <entry key-ref="SQLConverter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+</textarea>    
+
+<p>Here is how to run it, (make sure you stop the previous adaptor from Step6)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step07.xml -bean Adaptor
+</pre></div>
+
+<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+you should see SQL Statements.</p>
+
+<a href="#contents">back to contents</a>
+
+<a name="step8"/>
+<h2>Step 8</h2>
+<p>This adaptor <a href="step08.xml" target="_blank">step08.xml</a> extends the
+previous example and shows you how to execute the SQL statements against a database.
+For simplicity these instructions use hypersonic < a href="http://hsqldb.org">http://hsqldb.org</a>
+which is a 100% java lightweight db. For the example to work you will need to run up the hypersonic
+server, this is very easy, you simply need to run these commands from a new command promt.</p>
+
+<h4>Windows</h4>
+<div class="shell"><pre>
+  cd example\tutorial\db
+  java -classpath ..\..\..\lib\3rdparty\hsqldb.jar org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+</pre></div>
+<h4>Unix</h4>
+<div class="shell"><pre>
+  cd example/tutorial/db
+  java -classpath ../../../lib/3rdparty/hsqldb.jar org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+</pre></div>
+
+<p>Here is the new Writer bean and a related bean that defines the JDBC Connection.</p>
+
+<textarea cols="100" rows="13" readonly="true">
+
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+  </bean>
+</textarea>    
+
+<p>NOTE: The router config doesn't change because we have simply replaced the Writer bean
+with an alternative implementation. Here is how to run it, (make sure you stop the previous 
+adaptor from Step7)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step08.xml -bean Adaptor
+</pre></div>
+
+<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+the SQL statements will be executed against the hypersonic db. There are a couple of
+ways to verify this.</p>
+
+<li>The server writes it's state to the hsql.script on shutdown, so you can ctrl-C
+the server and look at the contents of example/tutorial/db/hsql.script</li>
+<li>use the jdbc parameters with a SQL client to check the contents of the database</li>
+<p>Or you could trust us :) </p>
+<a href="#contents">back to contents</a>
+
+<a name="step9"/>
+<h2>Step 9</h2>
+<p>This adaptor <a href="step09.xml" target="_blank">step09.xml</a> extends the
+previous example by showing how the Router can be configured to process discarded messages
+and processing exceptions. In addition to this we show how to write and integrate your 
+own processor.</p>
+
+<p>Here is the modified Router bean</p>
+
+<textarea cols="100" rows="32" readonly="true">
+
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="XMLConverter"/>
+        <entry key-ref="XMLConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="CustomProcessor"/>
+        <entry key-ref="CustomProcessor" value-ref="SQLConverter"/>
+        <entry key-ref="SQLConverter">
+          <list>
+            <ref bean="Writer"/>
+            <ref bean="SqlLog"/>
+          </list>
+        </entry>
+      </map>
+    </property>
+    <property name="discardMap">
+      <map>
+        <entry key-ref="Filter" value-ref="DiscardLog"/>
+      </map>
+    </property>
+    <property name="exceptionMap">
+      <map>
+        <entry key="*">
+          <map>
+            <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="ErrorLog"/>
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
+</textarea>    
+
+<p>There are a number of significant changes in the above config.</p>
+
+<p>Firstly, the entry in the processMap for SQLConverter is mapped to a list containing 2 beans. 
+This means that data output by the SQLConverter should be routed to both beans. The first bean
+is the Writer (as before), the other bean is new and is implemented by a FileWriteConnector.</p>
+
+<p>Secondly, the Router has a new property called discardMap this is defines how discarded
+data should be routed. It has a single entry which maps the Filter bean to a new bean called
+DiscardLog, this is also implemented by a FileWriteConnector. This means any data that is discarded
+by the Filter bean is routed to the DiscardLog.</p>
+
+<p>Thirdly, the Router has a new property called exceptionMap, this defines how processing exceptions
+are handled. The value is a map of maps, where the key to the first map is either a bean or a wildcard
+(as in the example above) and value maps the classname of an exception to a bean (or list of beans).
+In the example above this means that ProcessingExceptions thrown by any bean in the adaptor will be
+routed to the ErrorLog bean, this is also implemented by a FileWriteConnector.</p>
+
+<p>Here are the new beans</p>
+
+<textarea cols="100" rows="13" readonly="true">
+
+  <bean id="SqlLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/sql.txt"/>
+  </bean>
+  
+  <bean id="DiscardLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/discard.txt"/>
+  </bean>
+  
+  <bean id="ErrorLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/suberror.txt"/>
+  </bean>
+</textarea>    
+
+<p>Lastly, the Router now includes a new processor bean called CustomProcessor. This is custom code
+that is included in the tutorial <a href="src/CustomProcessor.java">src/CustomProcessor.java</a>.
+This custom code is a little bit contrived since there are standard component available which
+provide this functionality. The processor can be configured to transform a field value based on
+a map property. Here is the config.</p>.
+
+<textarea cols="100" rows="10" readonly="true">
+
+  <bean id="CustomProcessor" class="CustomProcessor">
+    <property name="field" value="/Trade/buySell"/>
+    <property name="map">
+      <map>
+        <entry key="BUY" value="B"/>
+        <entry key="SELL" value="S"/>
+      </map>
+    </property>
+  </bean>
+</textarea>    
+
+<p>It transforms the value for the buySell element to "B" or "S", if the incoming value is not "BUY"
+or "SELL" then it will throw a ProcessingException.</p>
+
+<p>Before running the example you will need to compile the code. This requires that you have the
+JDK (rather than the JRE). These instructions assume that you run the command in the command prompt
+that you have been running the adaptor (otherwise set your classpath according to the 
+<a href="#setup">set up instructions</a>).</p>
+
+<div class="shell"><pre>
+  javac -d . -sourcepath src
+</pre></div>
+
+<p>This should create a Java class file called CustomProcessor.class. Here is how to run
+the adaptor, (make sure you stop the previous adaptor from Step8)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step09.xml -bean Adaptor
+</pre></div>
+
+<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+you should notice the following behaviour changes</p>
+
+<li>All filtered messages, those with ticker = "XXX", are now written to the discard log 
+<a href="output/discard.txt">output/discard.txt</a>.</li>
+<li>All sucessfully executed SQL statements are now written to the sql log, 
+<a href="output/discard.txt">output/discard.txt</a></li>
+<li>The buySell column in the db and sql log is now B or S</li>
+<li>Trades which have buySell = "?" throw exceptions and the exception plus the message is
+written to the the exception log <a href="output/exception.txt">output/discard.txt</a></li>
+<p></p>
+<a href="#contents">back to contents</a>
 
 </body>
+
 
 </html>
