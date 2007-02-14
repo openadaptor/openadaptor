@@ -29,7 +29,7 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
-      hsqldb.jar (this is not distributed with openadaptor)
+      lib/3rdparty/hsqldb.jar
     
     once running any data that read from std input is written into the test table.
   ]]></description>

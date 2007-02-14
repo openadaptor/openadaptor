@@ -67,14 +67,14 @@
     <copy todir="${dir.package.example}">
       <fileset dir="${dir.example}">
         <include name="README*"/>
+        <include name="readme*"/>
         <include name="spring/**"/>
         <include name="src/**"/>
         <include name="bin/**"/>
+        <include name="tutorial/**"/>
       </fileset>
     </copy>
-    <chmod perm="+x">
-      <fileset dir="${dir.package.example}/bin"/>
-    </chmod>
+    <copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties"/>
   </target>
   
   <target name="sql">
