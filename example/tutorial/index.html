@@ -328,7 +328,13 @@ a default installation of the jBoss application server, this is free to download
 and should be trivial to install and run. Download a binary distribution from
 <a href="http://www.jboss.org">http://www.jboss.org</a>, 
 unzip and run from a command prompt using the run.bat/run.sh
-scripts provided in the jBoss bin dir.</p>
+scripts provided in the jBoss bin dir. In addition to this you will need to copy
+the following jar file to the opendapator lib\3rdparty dir</p>
+
+<pre>
+  jboss-X.Y.Z/client/jbossall-client.jar
+</pre>
+
 
 <p>Here are the additonal beans and the modified Writer bean</p>
 
@@ -360,7 +366,7 @@ scripts provided in the jBoss bin dir.</p>
 <p>When you test, <a href="test.html" target="_blank">test.html</a>, the adaptor will
 now publish the valid xml documents to the configured JMS queue. If you want to verify
 this then adjust the log4j.properties file so that it logs openadaptor code at DEBUG.
-Or if you are feeling bold, set this dynamically via the JMX interface. Or continue to
+Or continue to
 the next step in which we run a new adaptor that will process the messages in the queue.</p>
 
 <a href="#contents">back to contents</a>
@@ -570,10 +576,9 @@ adaptor from Step7)</p>
 the SQL statements will be executed against the hypersonic db. There are a couple of
 ways to verify this.</p>
 
-<li>The server writes it's state to the hsql.script on shutdown, so you can ctrl-C
-the server and look at the contents of example/tutorial/db/hsql.script</li>
+<li>The server writes a log file, tail the hsql.log file</li>
 <li>use the jdbc parameters with a SQL client to check the contents of the database</li>
-<p>Or you could trust us :) </p>
+<p/>
 <a href="#contents">back to contents</a>
 
 <a name="step9"/>
@@ -680,8 +685,13 @@ JDK (rather than the JRE). These instructions assume that you run the command in
 that you have been running the adaptor (otherwise set your classpath according to the 
 <a href="#setup">set up instructions</a>).</p>
 
+<h4>Windows</h4>
 <div class="shell"><pre>
-  javac -d . -sourcepath src
+  javac -d . src\CustomProcessor.java
+</pre></div>
+<h4>Unix</h4>
+<div class="shell"><pre>
+  javac -d . src/CustomProcessor.java
 </pre></div>
 
 <p>This should create a Java class file called CustomProcessor.class. Here is how to run
