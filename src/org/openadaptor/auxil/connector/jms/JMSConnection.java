@@ -162,18 +162,7 @@ public class JMSConnection extends Component {
       createConnection();
       startConnection();
     }
-    Session newSession;
-      try {
-        if (connection instanceof XAConnection) {
-          newSession = ((XAConnection) connection).createXASession();
-        } else {
-          newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
-        }
-      } catch (JMSException jmse) {
-        throw new ConnectionException("Unable to create session from connection", jmse, this);
-      }
-
-    return newSession;
+    return createSessionFor(connector.isTransacted(), connector.getAcknowledgeMode());
   }
 
   /**
@@ -186,19 +175,23 @@ public class JMSConnection extends Component {
       createConnection();
       startConnection(); // Todo Do we really need to start the connection here?
     }
-    Session newSession;
-      try {
-        if (connection instanceof XAConnection) {
-          newSession = ((XAConnection) connection).createXASession();
-        } else {
-          newSession = (connection.createSession(connector.isTransacted(), connector.getAcknowledgeMode()));
-        }
-      } catch (JMSException jmse) {
-        throw new ConnectionException("Unable to create session from connection", jmse, this);
-      }
-    return newSession;
+    return createSessionFor(connector.isTransacted(), connector.getAcknowledgeMode());
   }
 
+  protected Session createSessionFor(boolean isTransacted, int acknowledgeMode) {
+    Session newSession;
+    try {
+      if (!isTransacted && (connection instanceof XAConnection)) {
+        newSession = ((XAConnection) connection).createXASession();
+      }
+      else {
+        newSession = (connection.createSession(isTransacted, acknowledgeMode));
+      }
+    } catch (JMSException jmse) {
+      throw new ConnectionException("Unable to create session from connection", jmse, this);
+    }
+    return newSession;
+  }
 
   // End Session Stuff
 

@@ -267,14 +267,21 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   private Object createTransactionalResource(Session newSession) {
     Object resource = null;
-    if (newSession instanceof XASession) {
+    if (isTransacted && isTransactedSession(newSession)) {
+      resource = new JMSTransactionalResource(newSession);
+    }
+    else if (newSession instanceof XASession) {
       resource = ((XASession) newSession).getXAResource();
-    } else {
-      if (isTransacted) {
-        resource = new JMSTransactionalResource(newSession);
-      }
     }
     return resource;
+  }
+
+  private boolean isTransactedSession(Session aSession) {
+    try {
+      return aSession.getTransacted();
+    } catch (JMSException e) {
+      throw new ConnectionException("Error testing transacted state of JMS Session : [" + getDestinationName() + "]", e, this);
+    }
   }
 
   // End  Support methods
