@@ -9,11 +9,12 @@
 <body>
 <h1>Tutorial</h1>
 <p>This tutorial assumes that you have already managed to install openadaptor, set your
-Java CLASSPATH and verify that you can sun the simple adaptor. If not then please refer 
+Java CLASSPATH and verify that you can run the simple adaptor. If not then please refer 
 to the instructions in <a href="../readme.html">example/readme.html</a>.</p>
 
 <p>It is strongly recommended that you read the openadaptor whitepaper, before attempting
-this tutorial.</p>
+this tutorial. This provides an overview of the what openadaptor is designed to do, it's high
+level design and some terminology that is used in this tutorial.</p>
 
 <p>In this tutorial you will run a series of adaptors that illustrate openadaptor, the
 instrcutions show you how to run these from the command prompt / shell. The examples
@@ -21,21 +22,23 @@ are simplistic in order make them easy to run and experiment with. All of the ad
 are expressed as spring framework configuration files. 
 The later examples use JMS and you will need to install and run a default jboss 
 implementation for these to work, other examples illustrate writing data to a database,
-for simplicity we use hypersonic db, which you will need to runup.</p>
+for simplicity we use hypersonic db, which you will need to "run up". You do not need to be
+familiar with jBoss or hypersonic.</p>
 
 <a name="contents"/>
 <h2>Contents</h2>
 <li><a href="#initial">Set Up</a></li>
-<li><a href="#step1">Step 1</a></li>
-<li><a href="#step2">Step 2</a></li>
-<li><a href="#step3">Step 3</a></li>
-<li><a href="#step4">Step 4</a></li>
-<li><a href="#step5">Step 5</a></li>
-<li><a href="#step6">Step 6</a></li>
-<li><a href="#step7">Step 7</a></li>
-<li><a href="#step8">Step 8</a></li>
-<li><a href="#step9">Step 9</a></li>
-<li><a href="#step10">Step 10</a></li>
+<li><a href="#step1">Step  1: A Test Adaptor</a></li>
+<li><a href="#step2">Step  2: XML Conversion</a></li>
+<li><a href="#step3">Step  3: XML Validation</a></li>
+<li><a href="#step4">Step  4: JMS Publishing</a></li>
+<li><a href="#step5">Step  5: JMS Subscribing</a></li>
+<li><a href="#step6">Step  6: Message Filtering</a></li>
+<li><a href="#step7">Step  7: SQL Conversion</a></li>
+<li><a href="#step8">Step  8: SQL Execution</a></li>
+<li><a href="#step9">Step  9: Discard and Exception Routing and Custom Code</a></li>
+<li><a href="#step10">Step 10: Reading from a File</a></li>
+<li><a href="#summary">Summary</a></li>
 
 <a name="initial"/>
 <h2>Set Up</h2>
@@ -43,32 +46,31 @@ for simplicity we use hypersonic db, which you will need to runup.</p>
 <h4>Windows</h4>
 <div class="shell"><pre>
   cd example\tutorial
-  set CLASSPATH=.;..\..\lib\openadaptor.jar;..\..\lib\opendaptor-spring.jar;..\..\lib\openadaptor-depends.jar  
+  setclasspath.bat
 </pre></div>
 <h4>Unix</h4>
 <div class="shell"><pre>
   cd example/tutorial
-  CLASSPATH=.:../../lib/openadaptor.jar:../../lib/opendaptor-spring.jar:../../lib/openadaptor-depends.jar  
-  export CLASSPATH
+  source setclasspath.sh
 </pre></div>
-<p>NOTE: for simplicity this sets your CLASSPATH environment variable relative to the tutorial
+<p>For simplicity this sets your CLASSPATH environment variable relative to the tutorial
 directory, since the entire tutorial will be run from this directory, this should work fine.</p>
 <a href="#contents">back to contents</a>
 
 <a name="step1"/>
 <h2>Step 1</h2>
 <p>This first adaptor <a href="step01.xml" target="_blank">step01.xml</a> exposes a servlet 
-interface and outputs data that it receives to
-stdout. NOTE: This is deliberately contrived to enable us to send data into the adaptor using
+interface and outputs data that it receives to the console (stdout).
+This is deliberately contrived to enable us to send data into the adaptor using
 a test web page, ultimately we will replace this with something a bit more realistic. 
-To run this adaptor type this</p>
+To run this adaptor type this in the aformentioned command prompt / shell.</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
 </pre></div>
 
-<p>You should see a flurry of logging which include the openadaptor copyright notice
-and licence, it should look like this...</p>
+<p>You should see a flurry of logging which includes the openadaptor copyright notice
+and licence, the last line of the log should look like this...</p>
 
 <div class="shell"><pre>
 INFO  [Adaptor] Writer registered with Pipeline
@@ -84,8 +86,8 @@ INFO  [Servlet] Servlet running
 </pre></div>
 
 <p>All this and the configuration file will be explained later, but first let's test the adaptor. 
-We have provided a web page that will post data to the adaptor servlet interface, open 
-<a href="test.html" target="_blank">test.html</a> and give it a try.
+We have provided a web page that contains a form which will post data to the adaptor servlet interface. 
+Open <a href="test.html" target="_blank">test.html</a> and give it a try.
 You should see the fields you input, echoed by your adaptor, like this</p>
 <textarea cols="100" rows="2" readonly="true">
 {buySell=BUY, ticker=XYZ, price=100}
@@ -112,8 +114,8 @@ assumes that it is a file url, hence the following are equivalent.</p>
 </code>
 
 <h3>Understanding the spring XML configuration file</h3>
-<p>If you understood the previous section then it then it makes sense to look first at the
-"Adaptor" bean.</p>
+<p>If you understood the previous section then it then it makes sense that the first part of the
+configuration file to look at is the "Adaptor" bean. Here it is</p>
 
 <textarea cols="100" rows="5" readonly="true">
 
@@ -138,8 +140,8 @@ that relate to these two components.</p>
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 </textarea>
 
-<p>These are linked together by the Pipeline bean, which is configured with an ordered list
-of processors. This defines that the output from the Servlet should be "piped" to the Writer.</p>
+<p>These are linked together by the Pipeline bean, it's processors property is an ordered list of beans. 
+This defines that the output from the Servlet should be "piped" to the Writer.</p>
 
 <textarea cols="100" rows="11" readonly="true">
 
@@ -170,7 +172,7 @@ for more information on how to configure log4j.</p>
 <h3>Other arguments to the program you ran</h3>
 <p><code>org.openadaptor.spring.SpringApplication</code> can also accept a url to a 
 java properties file, this enables you to separate out
-certain configuration value that are then referred to indeirectly in the config file.
+certain configuration values that are then referred to indirectly in the config file.
 Typically you want to do this for environment specific parameters, so that you can have
 a single config that can be used with different properties files for different environments
 (test, uat, production, etc...). As with the config url, the helper class will assume that
@@ -179,7 +181,7 @@ the protocol is file.</p>
 <p>It can also accept a jmx port number argument, If this is specified then the helper class
 will automatically start a JMX server and HTTP adaptor, any named beans in the config that have
 MBeans will be automatically registered with the MBeanServer. NOTE: alternatively you are free to
-use standard spring mechanism for JMX instrumentation.</p>.
+use standard spring mechanism for JMX instrumentation. Try rerunning the adaptor like this</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor -jmx 9001
@@ -194,7 +196,7 @@ and the HTTP adaptor. You can access the jmx HTTP interface using this url
 <a name="step2"/>
 <h2>Step 2</h2>
 <p>This adaptor <a href="step02.xml" target="_blank">step02.xml</a> 
-extends the previous adaptor by adding a processor into the pipeline.
+extends the previous adaptor by adding a processor bean into the pipeline.
 This processor converts a Map that the ServletReadConnector outputs to an XML document. Here is
 the additional bean and the modified config for the Pipeline bean.</p>
 
@@ -223,7 +225,7 @@ the additional bean and the modified config for the Pipeline bean.</p>
 
 <p>and test with the test webpage <a href="test.html" target="_blank">test.html</a></p>
 
-<p>What you should see is a small XML document the represents the data that you input.
+<p>What you should see is a small XML document containing the data that you input.
 Something like this</p>
 
 <textarea cols="100" rows="4" readonly="true">
@@ -232,16 +234,16 @@ Something like this</p>
 <Trade><buySell>SELL</buySell><ticker>ABC</ticker><price>123.56</price></Trade>
 </textarea>
 
-<p>What happens now, is that the output from the Servlet is routed to the a processor
-that converts the java Map to an xml document (the root element is configured to be "Trade"),
-this is then routed to a FileWriteConnector that writes the output to the console (stdout).</p>
+<p>What is happening here, is that the output from the Servlet is "piped" to XMLConverter bean.
+This converts the map of data into an XML document (the root element is configured to be "Trade"),
+this output is then "piped" to the Writer bean which writes the output to the console (stdout).</p>
 
 <a href="#contents">back to contents</a>
 
 <a name="step3"/>
 <h2>Step 3</h2>
 <p>This adaptor <a href="step03.xml" target="_blank">step03.xml</a> 
-extends the previous adaptor by adding another processor into the pipeline.
+extends the previous adaptor by adding another processor bean into the pipeline.
 This processor validates that the XML against an XML schema file. Here is
 the additional bean and the modified config for the Pipeline bean.</p>
 
@@ -279,11 +281,11 @@ go all the way back to the ReadConnector (The Servlet) an cause the adaptor to s
 
 <p>openadaptor components can be configured to catch exception and process them, thus enabling
 the adaptor to keep running. The Pipeline component (which provides simple routing) can be
-configured with a Processor or WriteConnector, any processing exceptions in the adaptor will
+configured with a Write Connector, any processing exceptions in the adaptor will
 be caught and routed to the configured component. This adaptor 
 <a href="step03a.xml" target="_blank">step03a.xml</a> illustrates how to configure this feature.
 In this case the exception is simply written to an error file.
-Here are the additional beans and the modified Pipeline configuration.
+Here are the additional beans and the modified Pipeline configuration.</p>
 
 <textarea cols="100" rows="18" readonly="true">
 
@@ -300,7 +302,7 @@ Here are the additional beans and the modified Pipeline configuration.
   </bean>
 
   <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="error.txt"/>
+    <property name="filename" value="output/puberror.txt"/>
   </bean>
 </textarea>    
 
@@ -358,8 +360,8 @@ scripts provided in the jBoss bin dir.</p>
 <p>When you test, <a href="test.html" target="_blank">test.html</a>, the adaptor will
 now publish the valid xml documents to the configured JMS queue. If you want to verify
 this then adjust the log4j.properties file so that it logs openadaptor code at DEBUG.
-Or if you are feeling bold, set this dynamically via the JMS interface. Or continue to
-the next step in which we run a new adaptor that will process the messages on the queue.</p>
+Or if you are feeling bold, set this dynamically via the JMX interface. Or continue to
+the next step in which we run a new adaptor that will process the messages in the queue.</p>
 
 <a href="#contents">back to contents</a>
 
@@ -383,8 +385,8 @@ can run this adaptor and the adaptor in Step 4, concurrently. Everytime you inpu
 a test trade using the web page <a href="test.html" target="_blank">test.html</a>
 you should receive the message in your adaptor that is subscribing to the queue.</p>
 
-<p>However, if you look at the config you will see that in this example
-the Pipeline bean has been replaced by a Router bean.</p>
+<p>If you look at the config you will see that in this example
+the Pipeline bean has been replaced by a Router bean. Here is the config.</p>
 
 <textarea cols="100" rows="13" readonly="true">
 
@@ -401,11 +403,14 @@ the Pipeline bean has been replaced by a Router bean.</p>
   </bean>
 </textarea>    
 
-<p> A Router allows more complicated linkage between ReadConnectors, Processors and 
+<p>A Router allows more complicated linkage between ReadConnectors, Processors and 
 WriteConnector. As it's name implies a Router specifies the processing route between the components, 
 in this example the processing route is very trivial (in fact we could have used a Pipeline 
-bean as before), however subsequent examples will build upon this configuration. Noate that
+bean as before), however subsequent examples will build upon this configuration. Note that
 from the Adaptor's point of view, the Router is simply an IMessageProcessor, just like Pipeline.</p>
+
+<p>A Pipeline is actually just a simplified Router in which the processMap is infered from the
+ordered list of processors.</p>
 
 <a href="#contents">back to contents</a>
 
@@ -415,7 +420,7 @@ from the Adaptor's point of view, the Router is simply an IMessageProcessor, jus
 previous example and illustrates how to use a standard component to filter out
 messages based on their content. This involves adding 2 processor beans.</p>
 
-<p>the first transforms the XML message into something called an ISimpleRecord, this is a Java
+<p>The first transforms the XML message into something called an ISimpleRecord, this is an
 interface that allows subsequent processors to access the contents the underlying data. 
 In this case the underlying data is the XML document and the first processor bean 
 XMLConverter uses dom4J to provide access to the document. Here is the config for this bean.</p>
@@ -432,7 +437,7 @@ XMLConverter uses dom4J to provide access to the document. Here is the config fo
 <p>The second bean, called Filter, does the filtering and this uses a processor that
 evaluates a Javascript expression, the Javascript code is a property of the bean and
 accesses the contents of the message using XPATH, by virtue of the fact that the
-document has been wrapped as an ISimpleRecord. Here is the config for this bean</p>
+underlying data is an XML document. Here is the config for this bean</p>
 
 <textarea cols="100" rows="5" readonly="true">
   <bean id="Filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
@@ -553,7 +558,7 @@ server, this is very easy, you simply need to run these commands from a new comm
   </bean>
 </textarea>    
 
-<p>NOTE: The router config doesn't change because we have simply replaced the Writer bean
+<p>NOtice that the router config doesn't change because we have simply replaced the Writer bean
 with an alternative implementation. Here is how to run it, (make sure you stop the previous 
 adaptor from Step7)</p>
 
@@ -575,8 +580,8 @@ the server and look at the contents of example/tutorial/db/hsql.script</li>
 <h2>Step 9</h2>
 <p>This adaptor <a href="step09.xml" target="_blank">step09.xml</a> extends the
 previous example by showing how the Router can be configured to process discarded messages
-and processing exceptions. In addition to this we show how to write and integrate your 
-own processor.</p>
+and processing exceptions, how the map properties of the Router can specify mulitple 
+destinations, and how to write and integrate a custom processor.</p>
 
 <p>Here is the modified Router bean</p>
 
@@ -627,7 +632,7 @@ by the Filter bean is routed to the DiscardLog.</p>
 
 <p>Thirdly, the Router has a new property called exceptionMap, this defines how processing exceptions
 are handled. The value is a map of maps, where the key to the first map is either a bean or a wildcard
-(as in the example above) and value maps the classname of an exception to a bean (or list of beans).
+(as in the example above) and the value is a map between the exception and a bean (or list of beans).
 In the example above this means that ProcessingExceptions thrown by any bean in the adaptor will be
 routed to the ErrorLog bean, this is also implemented by a FileWriteConnector.</p>
 
@@ -652,7 +657,7 @@ routed to the ErrorLog bean, this is also implemented by a FileWriteConnector.</
 that is included in the tutorial <a href="src/CustomProcessor.java">src/CustomProcessor.java</a>.
 This custom code is a little bit contrived since there are standard component available which
 provide this functionality. The processor can be configured to transform a field value based on
-a map property. Here is the config.</p>.
+a map property. Here is the config.</p>
 
 <textarea cols="100" rows="10" readonly="true">
 
@@ -695,9 +700,73 @@ you should notice the following behaviour changes</p>
 <a href="output/discard.txt">output/discard.txt</a></li>
 <li>The buySell column in the db and sql log is now B or S</li>
 <li>Trades which have buySell = "?" throw exceptions and the exception plus the message is
-written to the the exception log <a href="output/exception.txt">output/discard.txt</a></li>
+written to the the exception log <a href="output/suberror.txt">output/suberror.txt</a></li>
 <p></p>
 <a href="#contents">back to contents</a>
+
+<a name="step10"/>
+<h2>Step 10</h2>
+<p>This adaptor <a href="step10.xml" target="_blank">step10.xml</a> extends the
+adaptor in Step 4. It replaces the servlet input with a read connector which
+reads lines of character data from a file and a processor which parses delimited
+fields from those lines. The connector and processor are wrapped in a ReadNode.
+Here is the bean.</p>
+
+<textarea cols="100" rows="24" readonly="true">
+
+  <bean id="FileReader" class="org.openadaptor.core.node.ReadNode">
+    <property name="connector">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+        <property name="filename" value="input/data.txt"/>
+        <property name="dataReader">
+          <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+        </property>
+      </bean>
+    </property>
+    <property name="processor">
+      <bean class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+        <property name="delimiter" value=","/>
+        <property name="fieldNames">
+          <list>
+            <value>buySell</value>
+            <value>ticker</value>
+            <value>price</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+</textarea>    
+
+<p>The input is the contents of <a href="input/data.txt">input/data.txt</a>. This example illustrates
+how file based connectors can be used for both batch file processing and as part of testing. It
+also highlights some of the implementation of openadaptor. In the previous examples adaptors where 
+assembled from ReadConnectors, Processors and WriteConnectors, however the adaptor framework actually
+deals with implementations of IMessageProcessor and IRunnable (See the java docs). The classes
+that actually implement these interfaces are ReadNode,
+ProcessorNode and WriteNode respectively. These classes provide the transaction management, batching
+and exception capture capabilities.
+For convenience (and brevity in the configurations), Routers and Pipelines wrap / "autobox" 
+ReadConnectors, Processors and WriteConnectors. However if you can still couple a connector and processor
+together by creating ReadNode and WriteNode beans explicitly, as we do in this case.</p>
+
+<p>Here is how to run
+the adaptor, (make sure you stop the previous adaptor from Step4)</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringApplication -config step10.xml -bean Adaptor
+</pre></div>
+
+<p>When you run this the adaptor will process the contents of the file and exit cleanly, if
+you are running the the adaptor in Step 9 then you should see it receive this data as before.</p>
+<a href="#contents">back to contents</a>
+
+<a name="summary"/>
+<h2>Summary</h2>
+<p>This tutorial builds up two adaptor examples that are much more representative than 
+the simplistic examples in the example/spring. It does not give a comprehensive view
+of all of openadaptor capabilities, you need to refer to the other spring examples and
+the java docs.</p>
 
 </body>
 
