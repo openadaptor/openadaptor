@@ -43,6 +43,15 @@
   <property name="build.cookbook.docs.dir" value="../build/docs" />
   <property name="build.cookbook.images.dir" value="../build/images" />
 
+  <patternset id="example.xml.config.files">
+    <include name="**/*.xml" />    
+    <exclude name="**/data/*.xml" />
+    <exclude name="**/input/*.xml" />
+    <exclude name="**/output/*.xml" />
+    <exclude name="**/processors/expressions/book.xml" />
+    <exclude name="**/processors/expressions/books.xml" />
+  </patternset>
+
 
   <xmlcatalog id="oa3XmlCatalog">
     <entity publicId="adaptorDoc.xsl" location="${tools.cookbook.dir}/xslt/adaptorDoc.xsl" />
@@ -104,7 +113,8 @@
   <target name="docs_images" depends="docs_prepare" if="graphviz.dot">
 
     <!-- Generate GraphViz dot notation file using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}" includes="**/*.xml" style="${tools.cookbook.dir}/xslt/oa3toDot.xsl">
+    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}" style="${tools.cookbook.dir}/xslt/oa3toDot.xsl">
+      <patternset refid="example.xml.config.files"/>
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.dot" />
@@ -141,13 +151,14 @@
     </apply>
 
     <!-- Clean up the generated dot files at this point -->
-    <delete>
+    <!--<delete>
       <fileset dir="${build.cookbook.images.dir}" includes="**/*.dot" />
-    </delete>
+    </delete>-->
 
 
     <!-- Generate html image page using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.docs.dir}" includes="**/*.xml" style="${tools.cookbook.dir}/xslt/nodemap.xsl">
+    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}" style="${tools.cookbook.dir}/xslt/nodemap.xsl">
+      <patternset refid="example.xml.config.files"/>
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <xmlcatalog refid="oa3XmlCatalog" />
@@ -155,7 +166,8 @@
     </xslt>
 
     <!-- Generate html page using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.docs.dir}" includes="**/*.xml" style="${tools.cookbook.dir}/xslt/beans.xsl">
+    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.docs.dir}" style="${tools.cookbook.dir}/xslt/beans.xsl">
+      <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.html" />
@@ -171,7 +183,9 @@
 
     <!-- Combine all cookbook examples into a single file (so we can later generate index) -->
     <concat destfile="${build.cookbook.docs.dir}/cookbook_combined.xml" fixlastline="yes">
-      <fileset dir="${cookbook.dir}" includes="**.xml" />
+      <fileset dir="${cookbook.dir}">
+        <patternset refid="example.xml.config.files"/>
+      </fileset>
       <filterchain>
         <tokenfilter>
           <!-- Apply regexps to whole of input file at once: -->

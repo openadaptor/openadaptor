@@ -45,13 +45,16 @@
   -->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns="http://www.w3.org/TR/xhtml1/strict">
+                xmlns="http://www.w3.org/TR/xhtml1/strict"
+                xmlns:beans="http://www.springframework.org/schema/beans">
 
 <xsl:param name="oaVersion"/>
 <xsl:param name="imageFileExtension"/>
 
 <xsl:template match="/">
-<xsl:variable name="thisExample" select="substring-before(substring-after(comment(),'/cvs/oa3/cookbook/'),'.xml,v')"/>
+
+<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/'),'.xml ')"/>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15"/>
@@ -86,9 +89,10 @@
         <a href="../cookbook2beans.html#{$thisExample}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
     </p>
 
-    <img src="{$thisExample}.{$imageFileExtension}" usemap="#Map{translate($thisExample, '-', '_')}" alt=""/>
-    <xsl:copy-of select="document(concat('../../build/cookbook/images/',$thisExample,'.map'))"/>
+    <img src="{$thisExample}.{$imageFileExtension}" usemap="#Map{translate($thisExample, '/', '_')}" alt=""/>
+    <xsl:copy-of select="document(concat('../../build/images/',$thisExample,'.map'))"/>
 
+    <pre><xsl:value-of select="beans:beans/beans:description"/></pre>
   </body>
 </html>
 </xsl:template>

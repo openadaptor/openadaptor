@@ -46,24 +46,25 @@
     XSLT stylesheet that converts a Spring bean config file into a Graphviz/Dot input file.
     He showed how well it could work and we used his work as the inspiration for this file.
   -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:beans="http://www.springframework.org/schema/beans">
     <xsl:output method="text"/>
 
-    <xsl:variable name="exampleName" select="substring-before(substring-after(comment(),'Header: /cvs/oa3/cookbook/'),'.xml,v')"/>
-    <xsl:variable name="graphName" select="concat('Map', translate($exampleName, '-', '_'))"/>
+    <xsl:variable name="exampleName" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/'),'.xml ')"/>
+    <xsl:variable name="graphName" select="concat('Map_', translate($exampleName, '/', '_'))"/>
 
     <xsl:template match="/">
         digraph <xsl:value-of select="$graphName"/> {
         graph [ ];
         node  [ shape=rectangle, style=filled, fontname=Helvetica, fontsize="10", color=pink ];
         edge  [ fontname=Helvetica, fontsize="9" ];
-        <xsl:apply-templates select="beans/bean"/>
+        <xsl:apply-templates select="beans:beans/beans:bean"/>
         }
     </xsl:template>
 
 
-    <xsl:template match="bean">
-        <xsl:variable name="srcNode" select="concat(@id,@name)"/>
+    <xsl:template match="beans:bean">
+        <xsl:variable name="srcNode" select="concat(@id,@beans:name)"/>
 
         <!-- Name of node ("node id"): -->
         <xsl:text>"</xsl:text>
@@ -78,10 +79,10 @@
         <xsl:text>&lt;table&gt;&lt;tr&gt;&lt;td&gt;</xsl:text>
         <xsl:value-of select="$srcNode"/>
         <xsl:text>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</xsl:text>
-        <xsl:value-of select="@class"/>
-        <xsl:if test="@factory-bean">
+        <xsl:value-of select="@beans:class"/>
+        <xsl:if test="@beans:factory-bean">
             <xsl:text>Factory: </xsl:text>
-            <xsl:value-of select="@factory-bean"/>
+            <xsl:value-of select="@beans:factory-bean"/>
         </xsl:if>
         <xsl:text>&lt;/td&gt;&lt;/tr&gt;</xsl:text>
         <xsl:text>&lt;/table&gt;</xsl:text>
@@ -101,25 +102,25 @@
         <xsl:choose>
             <!-- Transport and Factories: -->
             <xsl:when test="contains($srcNode, 'transport')">color=lightgray</xsl:when>
-            <xsl:when test="contains(@class, 'Factory')">color=lightgray</xsl:when>
-            <xsl:when test="@factory-bean">color=lightgray</xsl:when>
+            <xsl:when test="contains(@beans:class, 'Factory')">color=lightgray</xsl:when>
+            <xsl:when test="@beans:factory-bean">color=lightgray</xsl:when>
 
             <!-- Standard OA3 classes: -->
             <xsl:when test="contains(@class, 'org.oa3')">
                 <xsl:choose>
-                    <xsl:when test="contains(@class, 'org.oa3.node.Node')">color=LightCyan</xsl:when>
-                    <xsl:when test="contains(@class, 'org.oa3.node.BufferNode')">color=LightCyan</xsl:when>
-                    <xsl:when test="contains(@class, 'Proxy')">color=LightCyan</xsl:when>
-                    <xsl:when test="contains(@class, 'org.oa3.node.AdaptorInpoint')">color=YellowGreen</xsl:when>
-                    <xsl:when test="contains(@class, 'org.oa3.node.AdaptorOutpoint')">color=YellowGreen</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'org.oa3.node.Node')">color=LightCyan</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'org.oa3.node.BufferNode')">color=LightCyan</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'Proxy')">color=LightCyan</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'org.oa3.node.AdaptorInpoint')">color=YellowGreen</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'org.oa3.node.AdaptorOutpoint')">color=YellowGreen</xsl:when>
                     <xsl:otherwise>color=LightBlue</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
 
             <!-- Standard Spring classes: -->
-            <xsl:when test="contains(@class, 'org.springframework')">
+            <xsl:when test="contains(@beans:class, 'org.springframework')">
                 <xsl:choose>
-                    <xsl:when test="contains(@class, 'interceptor')">color=Orange</xsl:when>
+                    <xsl:when test="contains(@beans:class, 'interceptor')">color=Orange</xsl:when>
                     <xsl:otherwise>color=Wheat</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
@@ -140,13 +141,13 @@
 
 
     <xsl:template name="calculateEdges">
-        <xsl:param name="srcNode"          select="concat(ancestor::bean[@id|@name]/@id,ancestor::bean[@id|@name]/@name)"/>
+        <xsl:param name="srcNode"          select="concat(ancestor::beans:bean[@id|@beans:name]/@id,ancestor::beans:bean[@id|@beans:name]/@beans:name)"/>
 
-        <xsl:for-each select="property">
+        <xsl:for-each select="beans:property">
             <xsl:choose>
                 <!-- Add routing edge definitions for this node: -->
-                <xsl:when test="@name='chainedNodes'">
-                    <xsl:for-each select="list">
+                <xsl:when test="@beans:name='chainedNodes'">
+                    <xsl:for-each select="beans:list">
                         <xsl:call-template name="routingEdge">
                             <xsl:with-param name="srcNode"          select="$srcNode"/>
                             <xsl:with-param name="edgeTooltipLabel" select="'chainedNodes'"/>
@@ -156,11 +157,11 @@
                         </xsl:call-template>
                     </xsl:for-each>
                     <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-                    <xsl:apply-templates select="list/bean"/>
+                    <xsl:apply-templates select="beans:list/beans:bean"/>
                 </xsl:when>
 
-                <xsl:when test="@name='discardChainedNodes'">
-                    <xsl:for-each select="list">
+                <xsl:when test="@beans:name='discardChainedNodes'">
+                    <xsl:for-each select="beans:list">
                         <xsl:call-template name="routingEdge">
                             <xsl:with-param name="srcNode"          select="$srcNode"/>
                             <xsl:with-param name="edgeLabel"        select="'Discard'"/>
@@ -171,12 +172,12 @@
                         </xsl:call-template>
                     </xsl:for-each>
                     <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-                    <xsl:apply-templates select="list/bean"/>
+                    <xsl:apply-templates select="beans:list/beans:bean"/>
                 </xsl:when>
 
                 <!-- Add exception edge definitions for this node: -->
-                <xsl:when test="@name='staticExceptionRouting'">
-                    <xsl:for-each select="map/entry">
+                <xsl:when test="@beans:name='staticExceptionRouting'">
+                    <xsl:for-each select="beans:map/beans:entry">
                         <xsl:call-template name="exceptionEdge">
                             <xsl:with-param name="srcNode"          select="$srcNode"/>
                             <xsl:with-param name="edgeTooltipLabel" select="'staticExceptionRouting'"/>
@@ -184,11 +185,11 @@
                         </xsl:call-template>
                     </xsl:for-each>
                     <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-                    <xsl:apply-templates select="map/entry/value/bean"/>
+                    <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean"/>
                 </xsl:when>
 
-                <xsl:when test="@name='dynamicExceptionRouting'">
-                    <xsl:for-each select="map/entry">
+                <xsl:when test="@beans:name='dynamicExceptionRouting'">
+                    <xsl:for-each select="beans:map/beans:entry">
                         <xsl:call-template name="exceptionEdge">
                             <xsl:with-param name="srcNode"          select="$srcNode"/>
                             <xsl:with-param name="edgeTooltipLabel" select="'dynamicExceptionRouting'"/>
@@ -196,25 +197,25 @@
                         </xsl:call-template>
                     </xsl:for-each>
                     <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-                    <xsl:apply-templates select="map/entry/value/bean"/>
+                    <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean"/>
                 </xsl:when>
 
                 <!-- Add helper bean reference edge definitions for this node: -->
                 <xsl:otherwise>
-                    <xsl:for-each select="@ref | ref[@bean]/@bean | @factory-bean">
+                    <xsl:for-each select="@beans:ref | beans:ref[@beans:bean]/@beans:bean | @beans:factory-bean">
                         <xsl:call-template name="referenceEdge">
                             <xsl:with-param name="srcNode" select="$srcNode"/>
                         </xsl:call-template>
                     </xsl:for-each>
 
-                    <xsl:for-each select="list/ref/@bean | map/entry/key/ref/@bean | map/entry/@key-ref | map/entry/value/ref/@bean | map/entry/@value-ref">
+                    <xsl:for-each select="beans:list/beans:ref/@beans:bean | beans:map/beans:entry/beans:key/beans:ref/@beans:bean | beans:map/beans:entry/@beans:key-ref | beans:map/beans:entry/beans:value/beans:ref/@beans:bean | beans:map/beans:entry/@beans:value-ref">
                         <xsl:call-template name="referenceEdge">
                             <xsl:with-param name="srcNode" select="$srcNode"/>
                         </xsl:call-template>
                     </xsl:for-each>
 
                     <!-- Apply edge rules to child beans (that are NOT inline beans in routing properties) -->
-                    <xsl:for-each select="bean | list/bean | map/entry/key/bean | map/entry/value/bean">
+                    <xsl:for-each select="beans:bean | beans:list/beans:bean | beans:map/beans:entry/beans:key/beans:bean | beans:map/beans:entry/beans:value/beans:bean">
                         <xsl:call-template name="calculateEdges">
                             <xsl:with-param name="srcNode"  select="$srcNode"/>
                         </xsl:call-template>
@@ -225,7 +226,7 @@
         </xsl:for-each>
 
         <!-- Check for factory bean reference: -->
-        <xsl:for-each select="@factory-bean">
+        <xsl:for-each select="@beans:factory-bean">
             <xsl:call-template name="referenceEdge">
                 <xsl:with-param name="srcNode"          select="$srcNode"/>
             </xsl:call-template>
@@ -237,7 +238,7 @@
     <!-- Chained node routing: -->
     <xsl:template name="routingEdge">
         <!-- Parameters (and default values for them): -->
-        <xsl:param name="srcNode"          select="concat(ancestor::bean[@id|@name]/@id,ancestor::bean[@id|@name]/@name)"/>
+        <xsl:param name="srcNode"          select="concat(ancestor::beans:bean[@id|@beans:name]/@id,ancestor::beans:bean[@id|@beans:name]/@beans:name)"/>
         <xsl:param name="edgeLabel"        select="''"/>
         <xsl:param name="edgeTooltipLabel" select="''"/>
         <xsl:param name="edgeColor"        select="'black'"/>
@@ -249,8 +250,8 @@
             <xsl:call-template name="genericEdge">
                 <xsl:with-param name="srcNode" select="$srcNode"/>
                 <xsl:with-param name="destNode">
-                    <xsl:value-of select="@bean"/>  <!-- list item is a bean reference (normal) -->
-                    <xsl:value-of select="concat(@id,@name)"/>    <!-- list item is an inline bean (unusual) -->
+                    <xsl:value-of select="@beans:bean"/>  <!-- list item is a bean reference (normal) -->
+                    <xsl:value-of select="concat(@id,@beans:name)"/>    <!-- list item is an inline bean (unusual) -->
                 </xsl:with-param>
                 <xsl:with-param name="edgeTooltipLabel" select="concat($srcNode, '.', $edgeTooltipLabel)"/>
                 <xsl:with-param name="edgeLabel"        select="$edgeLabel"/>
@@ -267,7 +268,7 @@
     <!-- Exception routing: -->
     <xsl:template name="exceptionEdge">
         <!-- Parameters (and default values for them): -->
-        <xsl:param name="srcNode"          select="concat(ancestor::bean[@id|@name]/@id,ancestor::bean[@id|@name]/@name)"/>
+        <xsl:param name="srcNode"          select="concat(ancestor::beans:bean[@id|@beans:name]/@id,ancestor::beans:bean[@id|@beans:name]/@beans:name)"/>
         <xsl:param name="edgeTooltipLabel" select="''"/>
         <xsl:param name="edgeStyle"        select="'solid'"/>
         <xsl:param name="arrowTailShape"   select="'none'"/>
@@ -275,15 +276,15 @@
         <xsl:call-template name="genericEdge">
             <xsl:with-param name="srcNode" select="$srcNode"/>
             <xsl:with-param name="destNode">
-                <xsl:value-of select="@value-ref"/> <!-- list item is a bean reference (normal) -->
-                <xsl:value-of select="@bean-ref"/>  <!-- list item is a bean reference (normal) -->
-                <xsl:value-of select="ref/@bean"/>  <!-- list item is a bean reference (normal) -->
-                <xsl:value-of select="concat(value/@id, value/@name)"/>  <!-- list item is an inline bean (unusual) -->
+                <xsl:value-of select="@beans:value-ref"/> <!-- list item is a bean reference (normal) -->
+                <xsl:value-of select="@beans:bean-ref"/>  <!-- list item is a bean reference (normal) -->
+                <xsl:value-of select="beans:ref/@beans:bean"/>  <!-- list item is a bean reference (normal) -->
+                <xsl:value-of select="concat(beans:value/@id, beans:value/@beans:name)"/>  <!-- list item is an inline bean (unusual) -->
             </xsl:with-param>
             <xsl:with-param name="edgeLabel">
-                <xsl:value-of select="@key"/>
-                <xsl:value-of select="key/@value"/>
-                <xsl:value-of select="key/value"/>
+                <xsl:value-of select="@beans:key"/>
+                <xsl:value-of select="beans:key/@beans:value"/>
+                <xsl:value-of select="beans:key/beans:value"/>
             </xsl:with-param>
             <xsl:with-param name="edgeTooltipLabel" select="concat($srcNode, '.', $edgeTooltipLabel)"/>
             <xsl:with-param name="edgeColor"        select="'red'"/>
@@ -298,15 +299,15 @@
     <!-- Reference edges: -->
     <xsl:template name="referenceEdge">
         <!-- Parameters (and default values for them): -->
-        <xsl:param name="srcNode"          select="concat(ancestor::bean[@id|@name]/@id,ancestor::bean[@id|@name]/@name)"/>
+        <xsl:param name="srcNode"          select="concat(ancestor::beans:bean[@id|@beans:name]/@id,ancestor::beans:bean[@id|@beans:name]/@beans:name)"/>
 
         <xsl:variable name="compoundPropertyName">
-            <xsl:for-each select="ancestor-or-self::property[@name]">
+            <xsl:for-each select="ancestor-or-self::beans:property[@beans:name]">
                 <xsl:text>.</xsl:text>
-                <xsl:value-of select="@name"/>
+                <xsl:value-of select="@beans:name"/>
             </xsl:for-each>
-            <xsl:if test=". = ../@factory-bean">
-                <xsl:text>@factory-bean</xsl:text>
+            <xsl:if test=". = ../@beans:factory-bean">
+                <xsl:text>@beans:factory-bean</xsl:text>
             </xsl:if>
         </xsl:variable>
 
@@ -337,10 +338,10 @@
     <!-- Generic edges (routing and references): -->
     <xsl:template name="genericEdge">
         <!-- Parameters (and default values for them): -->
-        <xsl:param name="srcNode" select="concat(ancestor::bean[@id|@name]/@id,ancestor::bean[@id|@name]/@name)"/>
+        <xsl:param name="srcNode" select="concat(ancestor::beans:bean[@id|@beans:name]/@id,ancestor::beans:bean[@id|@beans:name]/@beans:name)"/>
         <xsl:param name="destNode">
-            <xsl:value-of select="ref/@bean"/>
-            <xsl:value-of select="concat(@id,@name)"/>
+            <xsl:value-of select="beans:ref/@beans:bean"/>
+            <xsl:value-of select="concat(@id,@beans:name)"/>
         </xsl:param>
         <xsl:param name="edgeLabel"        select="''"/>
         <xsl:param name="edgeTooltipLabel" select="$srcNode"/>

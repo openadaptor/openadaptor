@@ -45,7 +45,8 @@
   -->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns="http://www.w3.org/TR/xhtml1/strict">
+                xmlns="http://www.w3.org/TR/xhtml1/strict"
+                xmlns:beans="http://www.springframework.org/schema/beans">
 
 <xsl:param name="oaVersion"/>
 <xsl:param name="imageFileExtension"/>
@@ -74,7 +75,7 @@
 
     <b><xsl:value-of select="$oaVersion"/></b>
 
-    <xsl:for-each select="beans">
+    <xsl:for-each select="beans:beans">
         <p></p>
         <table border="1" bgcolor="#CCCCCC">
             <xsl:choose>
@@ -88,7 +89,7 @@
                     </tr>
                     <!-- Cookbook example description -->
                     <tr bgcolor="#FFFFFF">
-                        <td><xsl:apply-templates select="description"/></td>
+                        <td><xsl:apply-templates select="beans:description"/></td>
                     </tr>
                     <!-- Cookbook example node map -->
                     <tr bgcolor="#FFFFFF">

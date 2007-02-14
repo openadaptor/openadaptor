@@ -40,7 +40,8 @@
   -->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns="http://www.w3.org/TR/xhtml1/strict">
+                xmlns="http://www.w3.org/TR/xhtml1/strict"
+                xmlns:beans="http://www.springframework.org/schema/beans">
 
 <xsl:param name="oaVersion"/>
 
@@ -81,10 +82,10 @@
             <th><font color="white">Bean class</font></th>
             <th><font color="white">Cookbook examples</font></th>
         </tr>
-        <xsl:for-each select="beans//bean">
-            <xsl:sort select="@class"/>  <!-- sort by package/class names -->
-            <xsl:variable name="thisClass" select="@class"/>
-            <xsl:if test="not(preceding::bean[@class = $thisClass])">  <!-- ensure each class appears exactly once! -->
+        <xsl:for-each select="beans:beans//beans:bean">
+            <xsl:sort select="@beans:class"/>  <!-- sort by package/class names -->
+            <xsl:variable name="thisClass" select="@beans:class"/>
+            <xsl:if test="not(preceding::beans:bean[@beans:class = $thisClass])">  <!-- ensure each class appears exactly once! -->
                 <tr>
                     <!-- First column: bean class name -->
                     <td>
@@ -94,10 +95,10 @@
 
                     <!-- Second column: table of cookbook examples (that use this bean class) -->
                     <td>
-                        <xsl:if test="//bean[@class = $thisClass]">   <!-- (reduce risk of empty table as messes up web browsers) -->
+                        <xsl:if test="//beans:bean[@beans:class = $thisClass]">   <!-- (reduce risk of empty table as messes up web browsers) -->
                             <table>
-                                <xsl:for-each select="//bean[@class = $thisClass]">
-                                    <xsl:variable name="thisExample" select="ancestor::beans[@id]/@id"/>
+                                <xsl:for-each select="//beans:bean[@beans:class = $thisClass]">
+                                    <xsl:variable name="thisExample" select="ancestor::beans:beans[@id]/@id"/>
                                     <xsl:choose>
                                         <xsl:when test="string-length($thisExample) > 0">
                                             <tr>
@@ -109,7 +110,7 @@
                                                     </xsl:when>
                                                     <!-- Anonymous bean => show name of top-level parent bean -->
                                                     <xsl:otherwise>
-                                                        <xsl:variable name="parentBeanName" select="ancestor::bean[@id!='']/@id"/>
+                                                        <xsl:variable name="parentBeanName" select="ancestor::beans:bean[@id!='']/@id"/>
                                                         <xsl:choose>
                                                             <xsl:when test="string-length($parentBeanName) > 0">
                                                                 <td><a href="./{$thisExample}.html#{$parentBeanName}">[in <xsl:value-of select="$parentBeanName"/>]</a></td>
