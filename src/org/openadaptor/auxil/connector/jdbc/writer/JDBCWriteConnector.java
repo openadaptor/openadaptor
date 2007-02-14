@@ -150,17 +150,15 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     if ( jdbcConnection == null )
       throw new ConnectionException("No connection details defined. You must supply values for the [jdbcConnection] property", this);
 
-    if ( jdbcConnection.isConnected() ) {
-      log.info("Using existing connection");
-      return;
+    if (!jdbcConnection.isConnected() ) {
+      try {
+        jdbcConnection.connect();
+      } catch (SQLException e) {
+        jdbcConnection.handleException(e, "Failed to establish JDBC connection");
+      }
     }
 
-    try {
-      jdbcConnection.connect();
-      statementConverter.initialise(jdbcConnection.getConnection());
-    } catch (SQLException e) {
-      jdbcConnection.handleException(e, "Failed to establish JDBC connection");
-    }
+    statementConverter.initialise(jdbcConnection.getConnection());
 
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
