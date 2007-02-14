@@ -16,14 +16,14 @@
             <entry key-ref="Processor">
               <list>
                 <ref bean="WriteConnector"/>
-                <ref bean="NpeExceptor"/>
+                <ref bean="ConnectExceptor"/>
               </list>
             </entry>
           </map>
         </property>
         <property name="exceptionMap">
           <map>
-            <entry key="java.lang.NullPointerException" value-ref="NpeError"/>
+            <entry key="org.openadaptor.core.exception.ConnectionException" value-ref="ConnectError"/>
             <entry key="java.lang.Exception" value-ref="Error"/>
           </map>
         </property>
@@ -50,9 +50,14 @@
     <property name="exceptionFrequency" value="1"/>
   </bean>
 
-  <bean id="NpeExceptor" class="org.openadaptor.core.processor.TestProcessor">
-    <property name="id" value="NpeExceptor"/>
-    <property name="exceptionClassName" value="java.lang.NullPointerException"/>
+  <bean id="ConnectExceptor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="ConnectExceptor"/>
+    <property name="exception">
+      <bean class="org.openadaptor.core.exception.ConnectionException">
+        <constructor-arg value="test"/>
+        <constructor-arg ref="ConnectExceptor"/>
+      </bean>
+    </property>
     <property name="exceptionFrequency" value="1"/>
   </bean>
 
@@ -61,9 +66,9 @@
     <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
   </bean>
 
-  <bean id="NpeError" class="org.openadaptor.core.connector.TestWriteConnector">
+  <bean id="ConnectError" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="NpeError"/>
-    <property name="expectedOutput" value="java.lang.NullPointerException:null:Processor(test data 1)"/>
+    <property name="expectedOutput" value="org.openadaptor.core.exception.ConnectionException:null:Processor(test data 1)"/>
   </bean>
 
 </beans>
