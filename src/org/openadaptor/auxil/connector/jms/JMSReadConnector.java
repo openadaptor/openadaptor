@@ -59,12 +59,12 @@ import org.openadaptor.core.transaction.ITransactional;
  * Main Properties
  * <ul>
  * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
+ * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
+ * <li><b>transacted</b>                If true then a transacted session is acquired and a TransactionalResource created even if XA resources are available.
  * <li><b>durable</b>                   Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
  * <li><b>durableSubscriptionName</b>   Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
- * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
  * <li><b>messageSelector</b>           Not set by default.
  * <li><b>noLocal</b>                   Default is <i>false</i>
- * <li><b>transacted</b>                Set true if a transacted session is required. Default is false and ignored if an XAConnection is made.
  * </ul>
  * <p/>
  * @see JMSConnection
@@ -265,6 +265,14 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
     return messageConsumer;
   }
 
+  /**
+   * Create a transactional resource for this connector.<br>
+   * If transacted is true then a JMSTransactionalResource is always returned. If transacted
+   * is false and an XAResource is available then the XAResource is returned. Null otherwise,
+   *
+   * @param newSession
+   * @return TransactionalResource, XAResource or null
+   */
   private Object createTransactionalResource(Session newSession) {
     Object resource = null;
     if (isTransacted && isTransactedSession(newSession)) {
@@ -276,6 +284,11 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
     return resource;
   }
 
+  /**
+   * Test transacted status of the JMS Session object. Wrap any JMSExceptions in a ConnectionException.
+   * @param aSession  Session to be tested.
+   * @return          Transacted or not
+   */
   private boolean isTransactedSession(Session aSession) {
     try {
       return aSession.getTransacted();
