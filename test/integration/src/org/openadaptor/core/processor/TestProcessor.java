@@ -37,10 +37,12 @@ import java.util.List;
 
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ProcessingException;
 
 public class TestProcessor extends Component implements IDataProcessor {
 
-  private Class exceptionClass = RuntimeException.class;
+  private ComponentException exception = new ProcessingException("test", this);
 
   private int exceptionFrequency = 0;
 
@@ -57,18 +59,14 @@ public class TestProcessor extends Component implements IDataProcessor {
     super(id);
   }
 
-  public void setExceptionClassName(String c) {
-    try {
-      exceptionClass = Class.forName(c);
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-  }
-
   public void setExceptionFrequency(int frequency) {
     this.exceptionFrequency = frequency;
   }
 
+  public void setException(ComponentException exception) {
+    this.exception = exception;
+  }
+  
   public void setDiscardFrequency(int frequency) {
     this.discardFrequency = frequency;
   }
@@ -81,13 +79,7 @@ public class TestProcessor extends Component implements IDataProcessor {
     count++;
 
     if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
-      RuntimeException ex = null;
-      try {
-        ex = (RuntimeException) exceptionClass.newInstance();
-      } catch (Exception e) {
-        throw new RuntimeException("failed to throw runtimeException " + exceptionClass.getName());
-      }
-      throw ex;
+      throw exception;
     }
 
     if (discardFrequency > 0 && (count % discardFrequency == 0)) {

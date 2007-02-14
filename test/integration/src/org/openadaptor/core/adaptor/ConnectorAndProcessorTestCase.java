@@ -86,7 +86,6 @@ public class ConnectorAndProcessorTestCase extends TestCase {
 		outconnector.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
 		writeNode.setConnector(outconnector);
 		TestProcessor processor = new TestProcessor("p");
-		processor.setExceptionClassName("java.lang.NullPointerException");
 		processor.setExceptionFrequency(3);
 		processor.setDiscardFrequency(4);
 		writeNode.setProcessor(processor);

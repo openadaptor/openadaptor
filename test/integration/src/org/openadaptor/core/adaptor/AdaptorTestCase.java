@@ -43,6 +43,7 @@ import junit.framework.TestCase;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.connector.TestWriteConnector;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.TestProcessor;
@@ -178,14 +179,14 @@ public class AdaptorTestCase extends TestCase {
 		// create processor
 		TestProcessor processor = new TestProcessor("Processor1");
 		
-		// create processor which deliberately throws a RuntimeException
+		// create processor which deliberately throws a ProcessingException
 		TestProcessor exceptor = new TestProcessor("Exceptor");
 		exceptor.setExceptionFrequency(3);
 		
-		// create processor which deliberately throws a NPE
-		TestProcessor npeExceptor = new TestProcessor("NpeExceptor");
-		npeExceptor.setExceptionClassName("java.lang.NullPointerException");
-		npeExceptor.setExceptionFrequency(5);
+		// create processor which deliberately throws a ConnectionException
+		TestProcessor connectionExceptor = new TestProcessor("ConnectionExceptor");
+    connectionExceptor.setException(new ProcessingException("test", connectionExceptor));
+    connectionExceptor.setExceptionFrequency(5);
 		
 		// create writeNode for processed data
 		TestWriteConnector writeNode = new TestWriteConnector("writeNode");
@@ -209,7 +210,7 @@ public class AdaptorTestCase extends TestCase {
 		processMap.put(readNode, readNodeRecipients);
 		List processorRecipients = new ArrayList();
 		processorRecipients.add(writeNode);
-		processorRecipients.add(npeExceptor);
+		processorRecipients.add(connectionExceptor);
 		processMap.put(processor, processorRecipients);
 		routingMap.setProcessMap(processMap);
 		
