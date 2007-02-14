@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="XMLConverter"/>
+        <entry key-ref="XMLConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+   
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+  </bean>
+  
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <property name="simpleRecordAccessor">
+      <bean class="org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
+    </property>
+  </bean>
+  
+  <bean id="Filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
+    <property name="script" value="record.get('/Trade/ticker') == 'XXX'"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

@@ -379,4 +379,8 @@ public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimple
   public Class getUnderlyingType() {
     return document.getClass();
   }
+  
+  public String toString() {
+    return document.asXML();
+  }
 }

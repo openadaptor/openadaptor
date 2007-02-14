@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 /**
@@ -47,7 +48,7 @@ import org.openadaptor.util.JavascriptEngine.JavascriptResult;
  * @author higginse
  *
  */
-public  class JavascriptProcessor implements IDataProcessor {
+public  class JavascriptProcessor extends Component implements IDataProcessor {
 
   private static final Log log = LogFactory.getLog(JavascriptProcessor.class);
 

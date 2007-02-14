@@ -98,7 +98,7 @@ public class ReadConnectorServlet extends JettyReadConnector {
         if (acceptGet) {
           process(request, response);
         } else {
-          log.info("httpGet ignored");
+          log.debug("httpGet ignored");
         }
       }
 
