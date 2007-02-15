@@ -118,14 +118,17 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
   public void validate(List exceptions) {
     super.validate(exceptions);
 
-    if ( thenProcessor == null && elseProcessor == null )
+    if ( thenProcessor == null && elseProcessor == null ) {
       log.warn("No [thenProcessor] or [elseProcessor] defined. The data will not be modified");
+    }
 
-    if ( thenProcessor == null && elseProcessor != null )
+    if ( thenProcessor == null && elseProcessor != null ) {
       log.warn("No [thenProcessor] defined. Only records that don't match the condition script will be modified");
+    }
 
-    if ( thenProcessor != null && elseProcessor == null )
+    if ( thenProcessor != null && elseProcessor == null ) {
       log.debug("No [elseProcessor] defined. Only records that match the condition filter will be modified");
+    }
   }
 
 
@@ -140,8 +143,9 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
    * @throws ProcessingException if a null was passed
    */
   protected Object[] generateOutput(JavascriptResult jsResult) {
-    if ( jsResult == null )
+    if ( jsResult == null ) {
       throw new ProcessingException("Null result passed. Unable to process", this);
+    }
 
     Object scriptResult=jsResult.executionResult;
     if (!(scriptResult instanceof Boolean)) {
