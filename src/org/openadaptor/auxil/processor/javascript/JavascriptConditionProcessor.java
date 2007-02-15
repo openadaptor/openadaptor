@@ -31,7 +31,10 @@ package org.openadaptor.auxil.processor.javascript;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
+
+import java.util.List;
 
 /**
  * Processor which uses the evaluated result of javascript to 
@@ -62,7 +65,7 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
    * Processor which will be invoked if javascript evaluates to false
    */
   protected IDataProcessor elseProcessor;
-  
+
   /**
    * Assign an optional processor which will be invoked if the
    * javascript evaluates to true.
@@ -100,6 +103,32 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
   }
   // END Bean getters/setters
 
+
+  /**
+   * Checks that the mandatory properties have been set. Will call validate() on the
+   * super class to ensure that it's mandatory properties have also been set.
+   * <p/>
+   *
+   * Although it's permissible to not define the <em>then</em> and <em>else</em>
+   * processors, we write out warnings to give the user some chance when debugging
+   * adaptors.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   */
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+
+    if ( thenProcessor == null && elseProcessor == null )
+      log.warn("No [thenProcessor] or [elseProcessor] defined. The data will not be modified");
+
+    if ( thenProcessor == null && elseProcessor != null )
+      log.warn("No [thenProcessor] defined. Only records that don't match the condition script will be modified");
+
+    if ( thenProcessor != null && elseProcessor == null )
+      log.debug("No [elseProcessor] defined. Only records that match the condition filter will be modified");
+  }
+
+
   /**
    * Invoke thenProcessor or ElseProcessor depending on the evaluation result
    * of the supplied JavaScriptResult.
@@ -107,9 +136,13 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
    * It will return the output of the called processor, or will wrap the 
    * result from the JavascriptResult in an Object[] if no processor has been
    * configured.
-   * 
+   *
+   * @throws ProcessingException if a null was passed
    */
   protected Object[] generateOutput(JavascriptResult jsResult) {
+    if ( jsResult == null )
+      throw new ProcessingException("Null result passed. Unable to process", this);
+
     Object scriptResult=jsResult.executionResult;
     if (!(scriptResult instanceof Boolean)) {
       String msg="Script should return a Boolean result. Instead it has returned: ";
@@ -118,12 +151,12 @@ public  class JavascriptConditionProcessor extends JavascriptProcessor {
       throw new RuntimeException(msg);
     }
     Object record=jsResult.outputRecord.getRecord();
-    
+
     if (((Boolean)scriptResult).booleanValue()){
       return thenProcessor == null ? new Object[] { record } : thenProcessor.process(record);
     }
     else {
-      return elseProcessor == null ? new Object[] { record } : elseProcessor.process(record);     
-    }   
+      return elseProcessor == null ? new Object[] { record } : elseProcessor.process(record);
+    }
   }
 }
