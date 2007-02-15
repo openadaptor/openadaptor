@@ -27,8 +27,13 @@
 
 package org.openadaptor.auxil.processor.javascript;
 
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.util.JavascriptEngine;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
+
+import java.util.List;
+
 /**
  * Allows execution of javascript with Bound Objects.
  * 
@@ -38,13 +43,14 @@ import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 public  class JavascriptBinding  {
 
   private String boundName=JavascriptEngine.DEFAULT_BOUND_NAME;
-
   private String script=null;
- 
+
+
   /**
    * JavaScriptEngine which will actually execute the javascript.
    */
   private JavascriptEngine jsEngine=new JavascriptEngine();
+
 
   // BEGIN Bean getters/setters
   /**
@@ -59,7 +65,8 @@ public  class JavascriptBinding  {
     }
     boundName=name;
   }
-  
+
+
   /**
    * Return the name by which supplied objects may be referred
    * to within the javascript.
@@ -70,6 +77,7 @@ public  class JavascriptBinding  {
     return boundName;
   }
 
+
   /**
    * Return the javascript which will be executed on
    * calls to execute(Object input)
@@ -78,17 +86,21 @@ public  class JavascriptBinding  {
   public String getScript() {
     return script;
   }
+
+
   /**
-   * Assigns the javascript which will be executed on
-   * calls to execute(Object input)
+   * Mandatory. Assigns the javascript which will be executed on calls to
+   * execute(Object input)
+   *
    * @param script String containing javascript.
    */
   public void setScript(String script) {
     this.script = script;
   }
 
+
   // END Bean getters/setters
-  
+
   /**
    * Evaluate the configured javascript in the context of the 
    * supplied input Object.
@@ -99,5 +111,18 @@ public  class JavascriptBinding  {
    */
   public JavascriptResult execute(Object input) {
     return jsEngine.execute(script, input,boundName);
+  }
+
+
+  /**
+   * Checks that the mandatory properties have been set
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   * @param comp the component that this class is bound to. Required as part of the
+   * constructor for any ValidationExceptions we may raise
+   */
+  public void validate(List exceptions, IComponent comp) {
+    if ( script == null )
+      exceptions.add(new ValidationException("You must supply a value for the [script] property", comp));
   }
 }

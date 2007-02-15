@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 /**
  * Executes javascript scripts in the context of the data record.
@@ -42,9 +43,9 @@ import org.openadaptor.util.JavascriptEngine.JavascriptResult;
  * the binding associates the current record with the javscript
  * for execution.
  * <br>
- * The binding may be omitted, in which case a default binding will 
+ * The binding may be omitted, in which case a default binding will
  * used (see JavascriptBinging for the default binding).
- *  
+ *
  * @author higginse
  *
  */
@@ -126,9 +127,29 @@ public  class JavascriptProcessor extends Component implements IDataProcessor {
     //log.info("Result was: "+context.toString(result));
     return new Object[] {jsResult.outputRecord};
   }
-  
+
+
+  /**
+   * Checks that the mandatory properties have been set. Will call validate() on the
+   * JavascriptBinding object to ensure that it's mandatory properties have also been
+   * set.
+   * <p/>
+   *
+   * While it is valid to supply a blank script we write a warning to the logs as the
+   * processor will not modify the data.
+   *
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   */
   public void validate(List exceptions) {
+    if ( javascript == null )
+      exceptions.add(new ValidationException("Javascript bindings object not set up. Fatal error", this));
+
+      javascript.validate(exceptions,  this);
+
+      if ( "".equals(javascript.getScript()) )
+        log.warn(getId() + ": An empty script has been defined. The processor will NOT effect the data");
   }
+
 
   public void reset(Object context) {
   }
