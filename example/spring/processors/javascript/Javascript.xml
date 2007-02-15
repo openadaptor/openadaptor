@@ -72,7 +72,7 @@
       Simple use of a JavascriptProcessor. Sets a value on the incoming record based. 
     </description>
     <property name="script" value="
-      /* you can include comments */
+      /* scripts can be written across multiple lines and include comments */
       var name    = record.get('fullname');
       var isTerry = name.indexOf('Terry') == 0;
 
