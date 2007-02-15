@@ -27,18 +27,17 @@
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Processes data by executing PreparedStatements against a database.
@@ -98,9 +97,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * @param exceptions list of exceptions that any validation errors will be appended to
    */
   public void validate(List exceptions) {
-    if ( jdbcConnection == null )
-      exceptions.add(new ValidationException("You must supply values for the [jdbcConnection] property", this));
-
+    if ( jdbcConnection == null ) {
+      exceptions.add(new ValidationException("jdbcConnection property not set", this));
+    }
     statementConverter.validate(exceptions, this);
   }
 
@@ -116,8 +115,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * or if the jdbcConnection details have not been set
    */
   public Object deliver(Object[] data) throws ComponentException {
-    if ( jdbcConnection == null )
-      throw new ConnectionException("No connection details defined. You must supply values for the [jdbcConnection] property", this);
 
     boolean sucess = false;
     while (!sucess) {
@@ -146,9 +143,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    */
   public void connect() throws ComponentException {
     log.debug("Connector: [" + getId() + "] connecting ....");
-
-    if ( jdbcConnection == null )
-      throw new ConnectionException("No connection details defined. You must supply values for the [jdbcConnection] property", this);
 
     if (!jdbcConnection.isConnected() ) {
       try {
@@ -193,8 +187,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * @return the transaction resource if the connection is transacted or null otherwise
    */
   public Object getResource() {
-    if ( jdbcConnection != null && jdbcConnection.isTransacted() )
+    if ( jdbcConnection != null && jdbcConnection.isTransacted()) {
       return jdbcConnection.getTransactionalResource();
+    }
 
     return null;
   }

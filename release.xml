@@ -31,6 +31,8 @@
   
   <target name="autobuild" depends="checkout, build, package"/>
 
+  <target name="rebuild" depends="update, build, package"/>
+
   <target name="checkout">
     <delete dir="${dir.checkout}"/>
     <svn>
