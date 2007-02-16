@@ -3,7 +3,7 @@
   
   <import file="build.xml"/>
   
-  <property name="dir.package" value="package"/>
+  <property name="dir.package" value="${basedir}/package"/>
   <property name="dir.package.lib" value="${dir.package}/lib"/>
   <property name="dir.package.example" value="${dir.package}/example"/>
   <property name="dir.package.sql" value="${dir.package}/sql"/>
