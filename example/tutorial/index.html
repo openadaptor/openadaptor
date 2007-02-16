@@ -2,10 +2,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
 <STYLE TYPE="text/css">
-  .shell { width: 90%; background-color: EEEEEE }
+  .shell { width: 90%; background-color: #EEEEEE }
 </STYLE>
+
 <title>openadaptor tutorial</title>
 </head>
+
 <body>
 <h1>Tutorial</h1>
 <p>This tutorial assumes that you have already managed to install openadaptor, set your
@@ -386,7 +388,7 @@ is how to run it</p>
   java org.openadaptor.spring.SpringApplication -config step05.xml -bean Adaptor
 </pre></div>
 
-<p/>You should see the messages that you published to the queue in Step 4. You
+<p>You should see the messages that you published to the queue in Step 4. You
 can run this adaptor and the adaptor in Step 4, concurrently. Everytime you input
 a test trade using the web page <a href="test.html" target="_blank">test.html</a>
 you should receive the message in your adaptor that is subscribing to the queue.</p>
@@ -473,7 +475,7 @@ underlying data is an XML document. Here is the config for this bean</p>
   java org.openadaptor.spring.SpringApplication -config step06.xml -bean Adaptor
 </pre></div>
 
-<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+<p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
 you should see that messages that have ticker set to "XXX" are discarded.</p>
 
 <a href="#contents">back to contents</a>
@@ -524,7 +526,7 @@ of the bean (it is also possible to specify the template as a file).</p>
   java org.openadaptor.spring.SpringApplication -config step07.xml -bean Adaptor
 </pre></div>
 
-<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+<p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
 you should see SQL Statements.</p>
 
 <a href="#contents">back to contents</a>
@@ -533,7 +535,7 @@ you should see SQL Statements.</p>
 <h2>Step 8</h2>
 <p>This adaptor <a href="step08.xml" target="_blank">step08.xml</a> extends the
 previous example and shows you how to execute the SQL statements against a database.
-For simplicity these instructions use hypersonic < a href="http://hsqldb.org">http://hsqldb.org</a>
+For simplicity these instructions use hypersonic <a href="http://hsqldb.org">http://hsqldb.org</a>
 which is a 100% java lightweight db. For the example to work you will need to run up the hypersonic
 server, this is very easy, you simply need to run these commands from a new command promt.</p>
 
@@ -572,7 +574,7 @@ adaptor from Step7)</p>
   java org.openadaptor.spring.SpringApplication -config step08.xml -bean Adaptor
 </pre></div>
 
-<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+<p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
 the SQL statements will be executed against the hypersonic db. There are a couple of
 ways to verify this.</p>
 
@@ -701,7 +703,7 @@ the adaptor, (make sure you stop the previous adaptor from Step8)</p>
   java org.openadaptor.spring.SpringApplication -config step09.xml -bean Adaptor
 </pre></div>
 
-<p/>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
+<p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
 you should notice the following behaviour changes</p>
 
 <li>All filtered messages, those with ticker = "XXX", are now written to the discard log 
