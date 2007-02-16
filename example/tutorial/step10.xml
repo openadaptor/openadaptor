@@ -65,7 +65,7 @@
   </bean>
   
   <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="error.txt"/>
+    <property name="filename" value="output/puberror.txt"/>
   </bean>
   
 </beans>
