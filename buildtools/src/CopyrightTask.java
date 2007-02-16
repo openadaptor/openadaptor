@@ -47,7 +47,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
-import org.openadaptor.util.Application;
 
 public class CopyrightTask extends Task {
 
