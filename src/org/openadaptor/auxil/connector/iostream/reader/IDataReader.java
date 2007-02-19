@@ -30,8 +30,28 @@ package org.openadaptor.auxil.connector.iostream.reader;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Interface that represents something that can read data from an InputStream. 
+ * Implementations could be based around strings or specific binary formats.
+ * 
+ * @author perryj
+ *
+ */
 public interface IDataReader {
+  
+  /**
+   * resets the implementation with a new InputStream, subsequent calls
+   * to {@link #read()} will read from that stream.
+   */
   void setInputStream(InputStream inputStream);
+
+  /**
+   * read some data from InputStream that has been set
+   */
   Object read() throws IOException;
+  
+  /**
+   * close any readers that have been setup on the current InputStream
+   */
   void close() throws IOException;
 }

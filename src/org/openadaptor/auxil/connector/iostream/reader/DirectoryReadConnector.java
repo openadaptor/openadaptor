@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,19 +47,20 @@ import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
- * StreamReader which will read files from a directory.
- * <p>
- * It finds all files which match an optional <code>FileNameFilter</code> and
- * supplies them all as a continuous Stream.
+ * Read Connector that will read all the files in a directory.
+ * {@link #setFilenameFilter} and {@link #setFilenameRegex(String)} allow the
+ * files to be restricted to a matching subset. The list of files is established
+ * when connect is called, the order in which the files are read is the default
+ * implementation of {@link java.io.File#compareTo(File)}. This behaviour can
+ * be overridden by using the fileComparator property, this class provides class
+ * constants for comparing based on name and timestamp.
  * 
  * @author Eddy Higgins
  */
 public class DirectoryReadConnector extends AbstractStreamReadConnector {
+
   private static final Log log = LogFactory.getLog(DirectoryReadConnector.class);
 
-  /**
-   * Path to the directory being read.
-   */
   private File dir;
 
   private List files = new ArrayList();
@@ -66,6 +68,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
   private File currentFile;
   
   private FilenameFilter filter;
+  
+  private Comparator fileComparator;
 
   public DirectoryReadConnector() {
     super();
@@ -81,10 +85,17 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     dir = new File(path);
   }
 
+  /**
+   * restricts the files that are read to those that match this filename filter
+   */
   public void setFilenameFilter(FilenameFilter filter) {
     this.filter = filter;
   }
 
+  /**
+   * sets the filename filter that restricts the files that are read to those
+   * whose unqualified name matches this regular expression
+   */
   public void setFilenameRegex(String regex) {
     final Matcher matcher = Pattern.compile(regex).matcher("");
     setFilenameFilter(new FilenameFilter() {
@@ -101,16 +112,32 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     }
   }
   
+  /**
+   * establishes the ordered list of files to be processed
+   */
   public void connect() {
     files.addAll(Arrays.asList(dir.listFiles(filter)));
-    Collections.sort(files);
+    if (fileComparator != null) {
+      Collections.sort(files, fileComparator);
+    } else {
+      Collections.sort(files);
+    }
     super.connect();
   }
   
+  /**
+   * open the next input stream to read from
+   */
   protected InputStream getInputStream() throws IOException {
     return getNextInputStream();
   }
 
+  /**
+   * If we have reached the end of the current input stream (super.isDry())
+   * is true but we have more files to process then open the next file
+   * and set the input stream. returns true we have reached the end of current
+   * input stream.
+   */
   public boolean isDry() {
     if (super.isDry() && !files.isEmpty()) {
       setInputStream(getNextInputStream());
@@ -118,6 +145,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     return super.isDry();
   }
 
+  /**
+   * @return name of current file we are reading
+   */
   public Object getReaderContext() {
     return currentFile.getAbsolutePath();
   }
@@ -138,4 +168,35 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
       return null;
     }
   }
+
+  /**
+   * controls the order in which the files are read
+   */
+  public void setFileComparator(Comparator fileComparator) {
+    this.fileComparator = fileComparator;
+  }
+  
+  /**
+   * can be used as a value for fileComparator property, compares based on
+   * unqualified file name
+   */
+  public static final Comparator NAME_COMPARATOR = new Comparator() {
+    public int compare(Object o1, Object o2) {
+      File f1 = (File) o1;
+      File f2 = (File) o2;
+      return f1.getName().compareTo(f2.getName());
+    }
+  };
+  
+  /**
+   * can be used as a value for fileComparator property, compares based on
+   * file timestamp
+   */
+  public static final Comparator TIMESTAMP_COMPARATOR = new Comparator() {
+    public int compare(Object o1, Object o2) {
+      File f1 = (File) o1;
+      File f2 = (File) o2;
+      return (int) (f1.lastModified() - f2.lastModified());
+    }
+  };
 }

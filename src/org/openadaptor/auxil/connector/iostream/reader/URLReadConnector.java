@@ -35,7 +35,7 @@ import java.net.URL;
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 
 /**
- * StreamReader which connects to, and reads from, the supplied URL.
+ * Read Connector which connects to, and reads from a URL.
  * 
  * @author Eddy Higgins
  */
