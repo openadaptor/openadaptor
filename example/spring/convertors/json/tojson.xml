@@ -43,7 +43,7 @@
   </bean> 
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <description>Read in an entire xml document</description>
+    <description>Read a comma delimited file line by line</description>
     <property name="filename" value="delim.csv"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
@@ -61,12 +61,11 @@
         </list>
     </property>
   </bean>
-  
-  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJsonStringConvertor">
-    <description>Generate a json string</description>
-    <property name="tabSize" value="2"/>
-  </bean>
-  
+
+  <!-- Convert to JSON using defulat property settings -->
+  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJSONConvertor"/>
+
+  <!-- Write to file relying on asString to do the right thing -->
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
 </beans>
