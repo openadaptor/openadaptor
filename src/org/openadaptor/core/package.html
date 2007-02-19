@@ -1,20 +1,30 @@
 <!DOCTYPE HTML PUBLIC "//W3C//DTD/HTML 4.0//EN">
 <html>
 <body>
-Fundamental infrastructure components and interfaces for OpenAdaptor.
+Fundamental interfaces of openadaptor and the classes that they reference.
 
-<p>The Core Package contains the implementation of the fundamental OpenAdaptor components and concepts such as adaptor,
-message passing, lifecyle management, transactionality and so on.</p>
+<p> The
+<b>IMessageProcessor</b> interface represents something that can process a Message and return a Response,
+classes such as Adaptor, Node, Router and Pipeline implement this interface. The implementations
+of IMessageProcessor and other core interfaces to do with transaction management, exception
+processing and lifecycle management are all under this package.</p>
 
-<p>Core is where the fundamental OpenAdaptor interfaces are found. These are the interfaces implemented by Connectors,
-DataProcessors and MessageProcessors etc.</p>
+<p>The <b>IReadConnector</b>
+represents something that connect to an external resource and read / receive data, it can be thought
+of as the thing that initiates the processing.</p>
+<p>The <b>IWriteConnector</b> interface represents something that can connect to an external resource and write / deliver
+data, it can be thought of as the thing that completes the processing.</p>
+<p>The <b>IDataProcessor</b> represents something that modifies or discards data, it can be thought of as an
+intermediate step in the processing.</p> 
 
-<p>Standard implementations of these interfaces are found in the auxil package. That package contains connectors and
-processors which leverage the core infrastructure components. The package provides connector implementations which
-provide support for key Java technologies such as JMS, JDBC, SOAP, Files, Sockets etc. Implementations of
-DataProcessors are provided which work with data in XML and Record form.</p>
+<p>The implementations of these interfaces are mainly found in the following packages.</p>
+<li>org.openadaptor.auxil</li>
+<li>org.openadaptor.thirdparty</li>
+<p/>
 
-<p>See also: <code>org.openadaptor.auxil</code></p>
-
+@see org.openadaptor.auxil
+@see org.openadaptor.thirdparty
 </body>
+
+
 </html>

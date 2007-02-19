@@ -66,12 +66,14 @@
   <target name="example">
     <copy todir="${dir.package.example}">
       <fileset dir="${dir.example}">
-        <include name="README*"/>
+        <include name="readme.html"/>
+        <include name="build.xml"/>
         <include name="readme*"/>
         <include name="spring/**"/>
         <include name="src/**"/>
         <include name="bin/**"/>
         <include name="tutorial/**"/>
+        <include name="tools/**"/>
       </fileset>
     </copy>
     <copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties"/>

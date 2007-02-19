@@ -36,7 +36,7 @@ import org.openadaptor.core.exception.ValidationException;
  * Implemented by classes that are capable of doing some sort of processing.
  * Implementations expect to be presented with a Java Object as data and this is
  * typically cast to the expected types(s).
- * The core method is {@link #process(Object)}.
+ * The core method is {@link #process}.
  * 
  * @author perryj
  * 
