@@ -44,7 +44,7 @@ import org.openadaptor.core.exception.ValidationException;
  * a specified port and write the incoming data to it. Currently, the adaptor
  * will stop after the data has been transferred.
  *
- * @author Fred Perry, Russ Fennell
+ * @author Russ Fennell
  */
 public class SocketWriteConnector extends AbstractStreamWriteConnector {
 

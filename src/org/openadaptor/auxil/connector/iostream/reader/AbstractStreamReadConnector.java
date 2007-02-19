@@ -36,10 +36,11 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 
 /**
- * Base class for all iostream based ReadConnectors. This implements IReadConnector by
- * delegating to a {@link IDataReader} which does the work of reading discrete data from
- * the stream. Subclasses of this base class need to implement {@link #getInputStream}.
- * This class also implements utiliy method that the subclass may need.
+ * Base implementation for Read Connector that read from java.io.InputStream.
+ * This implements IReadConnector by delegating to a {@link IDataReader} which
+ * does the work of reading discrete data from the stream. Subclasses of this
+ * base class need to implement {@link #getInputStream}. This class also
+ * implements utiliy method that the subclass may need.
  * 
  * @author perryj
  * @see IDataReader

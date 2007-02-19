@@ -30,8 +30,28 @@ package org.openadaptor.auxil.connector.iostream.writer;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Represent something that writes data to an outputStream. Implementations
+ * could be based around strings or specific binary formats.
+ * 
+ * @author perryj
+ * 
+ */
 public interface IDataWriter {
+  
+  /**
+   * resets the output stream, enabling the implementation to create
+   * any writers "around" that outputstream.
+   */
   void setOutputStream(OutputStream outputStream);
+
+  /**
+   * writes data
+   */
   void write(Object data) throws IOException;
+
+  /**
+   * flushes all data that has been written
+   */
   void flush() throws IOException;
 }

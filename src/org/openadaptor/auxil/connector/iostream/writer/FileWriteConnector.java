@@ -39,7 +39,8 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.FileUtils;
 
 /**
- * Simple writer that writes data to the specified file
+ * A Write Connector that write data to a file (or stdout if the filename property
+ * is not set).
  * 
  * @author OA3 Core Team
  */
@@ -69,9 +70,12 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
 
   public void setAppend(boolean append) {
     this.append = append;
-    log.info("Will " + (append ? "append" : "overwrite") + " file");
+    log.info(getId() + " will " + (append ? "append" : "overwrite") + " file");
   }
 
+  /**
+   * sets the path which an existing output file will be moved to
+   */
   public void setMoveExistingFileTo(String path) {
     if (path != null) {
       this.moveExistingFileTo = path;

@@ -32,12 +32,17 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
+ * Base implementation for Write Connectors that write to an java.io.OutputStream.
+ * This implements IWriteConnector by delegating to an {@link IDataWriter}. The
+ * subclasses need to implement {@link #getOutputStream()}. This class also implements
+ * utility methods that the subclass may need.
+ * 
  * @author Fred Perry
+ * @see IDataWriter
  */
 public abstract class AbstractStreamWriteConnector extends AbstractWriteConnector {
 
@@ -64,13 +69,6 @@ public abstract class AbstractStreamWriteConnector extends AbstractWriteConnecto
     }
   }
   
-  /**
-   * Note: you must set the <em>dataWriter</em> field prior to calling connect().
-   *
-   * @throws ComponentException if the dataWriter field has not been set
-   * @throws ConnectionException if there was a problem retrieving the comms
-   * stream to the remote server
-   */
   public void connect() {
     try {
       outputStream = getOutputStream();
