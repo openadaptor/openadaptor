@@ -40,6 +40,8 @@ import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
  * Read Connector that accepts a single socket connection, after this is made
  * it reads data from the InputStream associated with the socket.
  * 
+ * Defaults dataReader to {@link LineReader}
+ *
  * @author OA3 Eddy Higgins
  */
 

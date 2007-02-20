@@ -55,6 +55,8 @@ import org.openadaptor.core.exception.ValidationException;
  * be overridden by using the fileComparator property, this class provides class
  * constants for comparing based on name and timestamp.
  * 
+ * Defaults dataReader to {@link LineReader}
+ * 
  * @author Eddy Higgins
  */
 public class DirectoryReadConnector extends AbstractStreamReadConnector {

@@ -31,11 +31,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
- * Read Connector which connects to, and reads from a URL.
+ * Read Connector which connects to, and reads from a URL. Defaults dataReader
+ * to {@link LineReader}.
  * 
  * @author Eddy Higgins
  */
@@ -61,8 +64,17 @@ public class URLReadConnector extends AbstractStreamReadConnector {
     return url.openStream();
   }
   
+  /**
+   * returns url property
+   */
   public Object getReaderContext() {
     return url.toExternalForm();
   }
 
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+    if (url == null) {
+      exceptions.add(new ValidationException("url property not set", this));
+    }
+  }
 }

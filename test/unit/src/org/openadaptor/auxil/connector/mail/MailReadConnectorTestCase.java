@@ -38,7 +38,6 @@ import javax.mail.MessagingException;
 import java.util.List;
 import java.util.ArrayList;
 
-
 /**
  * Tests the MailReadConnector class.
  *
@@ -48,87 +47,85 @@ import java.util.ArrayList;
  */
 public class MailReadConnectorTestCase extends TestCase {
 
-    /**
-     * test the property defaults and setters as well as the property logic
-     */
-    public void testProperties() {
-        MailReadConnector rdr = new MailReadConnector();
+  /**
+   * test the property defaults and setters as well as the property logic
+   */
+  public void testProperties() {
+    MailReadConnector rdr = new MailReadConnector();
 
-        // defaults
-        assertFalse(rdr.processReadMessages());
-        assertFalse(rdr.deleteWhenRead());
-        assertFalse(rdr.createFolder());
-        assertFalse(rdr.moveWhenRead());
-        assertTrue(rdr.markRead());
-        assertEquals(-1, rdr.getMaxPolls());
+    // defaults
+    assertFalse(rdr.processReadMessages());
+    assertFalse(rdr.deleteWhenRead());
+    assertFalse(rdr.createFolder());
+    assertFalse(rdr.moveWhenRead());
+    assertTrue(rdr.markRead());
+    assertEquals(-1, rdr.getMaxPolls());
 
+    // setters
+    rdr.setProcessReadMessages(true);
+    assertTrue(rdr.processReadMessages());
 
-        // setters
-        rdr.setProcessReadMessages(true);
-        assertTrue(rdr.processReadMessages());
+    rdr.setDeleteWhenRead(true);
+    assertTrue(rdr.deleteWhenRead());
 
-        rdr.setDeleteWhenRead(true);
-        assertTrue(rdr.deleteWhenRead());
+    rdr.setCreateFolder(true);
+    assertTrue(rdr.createFolder());
 
-        rdr.setCreateFolder(true);
-        assertTrue(rdr.createFolder());
+    rdr.setMoveToFolder("somefolder");
+    assertTrue(rdr.moveWhenRead());
+    assertEquals("somefolder", rdr.getMoveToFolder());
 
-        rdr.setMoveToFolder("somefolder");
-        assertTrue(rdr.moveWhenRead());
-        assertEquals("somefolder", rdr.getMoveToFolder());
+    rdr.setMarkRead(false);
+    assertFalse(rdr.markRead());
 
-        rdr.setMarkRead(false);
-        assertFalse(rdr.markRead());
+    rdr.setMaxPolls(100);
+    assertEquals(100, rdr.getMaxPolls());
 
-        rdr.setMaxPolls(100);
-        assertEquals(100, rdr.getMaxPolls());
+    // property validation
+    rdr = new MailReadConnector();
 
+    // validate with defaults should work
+    List exceptions = new ArrayList();
+    rdr.validate(exceptions);
+    assertEquals(0, exceptions.size());
 
-        // property validation
-        rdr = new MailReadConnector();
+    // can't move and delete
+    rdr.setDeleteWhenRead(true);
+    rdr.setMoveToFolder("somefolder");
+    rdr.validate(exceptions);
+    assertEquals(1, exceptions.size());
 
-        // validate with defaults should work
-        List exceptions = new ArrayList();
-        rdr.validate(exceptions);
-        assertEquals(0, exceptions.size());
+    // can't move when using POP3 server as doesn't support multiple folders
+    try {
+      MailConnection conn = new MailConnection();
+      conn.setProtocol(MailConnection.PROTOCOL_POP3);
 
-        // can't move and delete
-        rdr.setDeleteWhenRead(true);
-        rdr.setMoveToFolder("somefolder");
-        rdr.validate(exceptions);
-        assertEquals(1, exceptions.size());
+      rdr = new MailReadConnector();
+      rdr.setMoveToFolder("somefolder");
+      rdr.setMailConnection(conn);
 
-        // can't move when using POP3 server as doesn't support multiple folders
-        try {
-            MailConnection conn = new MailConnection();
-            conn.setProtocol(MailConnection.PROTOCOL_POP3);
-
-            rdr = new MailReadConnector();
-            rdr.setMoveToFolder("somefolder");
-            rdr.setMailConnection(conn);
-
-            exceptions = new ArrayList();
-            rdr.validate(exceptions);
-            assertEquals(1, exceptions.size());
-        } catch (MessagingException e) {
-            fail("Failed to detect that you are not allowed to move messages on a POP3 server");
-        }
-
-        // can't mark as read when using POP3 server. Doesn't rais an error but
-        // does log a warning message
-        try {
-            MailConnection conn = new MailConnection();
-            conn.setProtocol(MailConnection.PROTOCOL_POP3);
-
-            rdr = new MailReadConnector();
-            rdr.setMarkRead(true);
-            rdr.setMailConnection(conn);
-
-            exceptions = new ArrayList();
-            rdr.validate(exceptions);
-            assertEquals(0, exceptions.size());
-        } catch (MessagingException e) {
-            fail("Failed to detect that marking messages as READ doesn't work with POP3");
-        }
+      exceptions = new ArrayList();
+      rdr.validate(exceptions);
+      assertEquals(1, exceptions.size());
+    } catch (MessagingException e) {
+      fail("Failed to detect that you are not allowed to move messages on a POP3 server");
     }
+
+    // can't mark as read when using POP3 server. Doesn't rais an error but
+    // does log a warning message
+    try {
+      MailConnection conn = new MailConnection();
+      conn.setProtocol(MailConnection.PROTOCOL_POP3);
+
+      rdr = new MailReadConnector();
+      rdr.setMarkRead(true);
+      rdr.setMailConnection(conn);
+
+      exceptions = new ArrayList();
+      rdr.validate(exceptions);
+      assertEquals(0, exceptions.size());
+    } catch (MessagingException e) {
+      fail("Failed to detect that marking messages as READ doesn't work with POP3");
+    }
+  }
 }

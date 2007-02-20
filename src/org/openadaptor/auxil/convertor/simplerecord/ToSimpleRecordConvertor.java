@@ -35,7 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Use an accessor to wrap incoming data in an ISimpleRecord view.
+ * Wraps incoming data in a {@link ISimpleRecordAccessor}, so that subsequent
+ * processors can access the underlying data using the ISimpleRecordAccessor API.
+ * 
  */
 public class ToSimpleRecordConvertor extends AbstractConvertor {
 
@@ -44,7 +46,7 @@ public class ToSimpleRecordConvertor extends AbstractConvertor {
   private ISimpleRecordAccessor simpleRecordAccessor;
 
   /**
-   * Performs the the actual conversion. Returns the successfully converted record or throw a RecordException.
+   * Wraps incoming data with the simpleRecordAccessor property.
    *
    * @param data
    * @return Converted Record
@@ -56,7 +58,7 @@ public class ToSimpleRecordConvertor extends AbstractConvertor {
     if (simpleRecordAccessor != null) {
       simpleRecord = simpleRecordAccessor.asSimpleRecord(data);
     } else {
-      if (data instanceof ISimpleRecord) { //Easy. We're done.
+      if (data instanceof ISimpleRecord) {
         simpleRecord = (ISimpleRecord) data;
       } else {
         log.warn("Incoming record is not an ISimpleRecord - perhaps a SimpleRecordAccessor must be specified?");
