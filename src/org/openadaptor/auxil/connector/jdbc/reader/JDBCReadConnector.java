@@ -43,7 +43,7 @@ import org.openadaptor.util.JDBCUtil;
  * 
  * @see AbstractResultSetConverter
  * @author Eddy Higgins
- * @perryj
+ * @author perryj
  */
 
 public class JDBCReadConnector extends AbstractJDBCReadConnector {
