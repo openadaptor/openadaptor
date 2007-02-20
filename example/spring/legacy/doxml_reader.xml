@@ -53,7 +53,7 @@
    
   <!-- This read connector contexts of a file as a single string -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="doxml.txt"/>
+    <property name="filename" value="input/doxml.txt"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
     </property>

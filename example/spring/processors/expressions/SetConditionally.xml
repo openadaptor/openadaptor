@@ -56,7 +56,7 @@
 
   <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>Read in an entire xml document consisting of multiple child records</description>
-    <property name="filename" value="books.xml"/>
+    <property name="filename" value="input/books.xml"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
     </property>

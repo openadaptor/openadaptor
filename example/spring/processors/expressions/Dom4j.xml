@@ -9,7 +9,7 @@
   
     This adaptor does the following...
 
-      * reads an xml document from book.xml
+      * reads an xml document from input/book.xml
       * converts from xml into a Dom4j document.
       * various expressions are applied to the document.
       * converts document to xml
@@ -63,7 +63,7 @@
 
   <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>Read in an entire xml document consisting of multiple child records</description>
-    <property name="filename" value="book.xml"/>
+    <property name="filename" value="input/book.xml"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
     </property>

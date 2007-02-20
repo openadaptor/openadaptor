@@ -73,7 +73,7 @@
   </bean>
   
   <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
-    <property name="schemaURL" value="schema.xsd"/>
+    <property name="schemaURL" value="input/schema.xsd"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>

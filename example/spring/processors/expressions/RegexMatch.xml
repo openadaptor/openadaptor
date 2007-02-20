@@ -9,7 +9,7 @@
   
     This adaptor does the following...
 
-      * reads an xml document from books.xml
+      * reads an xml document from input/books.xml
       * converts from xml into an OrderedMap
       * adds new attribute {match} with value dependant on attribute {title} matching regex '^Cosmic.*$'.
       * converts map to a delimited string
@@ -58,7 +58,7 @@
 
   <bean id="XmlReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>Read in an entire xml document consisting of multiple child records</description>
-    <property name="filename" value="books.xml"/>
+    <property name="filename" value="input/books.xml"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
     </property>

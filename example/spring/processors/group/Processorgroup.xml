@@ -44,7 +44,7 @@
 
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="input.txt"/>
+    <property name="filename" value="input/input.txt"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
         <property name="excludeRegex" value="^#.*"/>

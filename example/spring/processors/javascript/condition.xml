@@ -9,7 +9,7 @@
   
     This adaptor does the following...
     
-      * reads all data in delim.txt
+      * reads all data in input/delim.txt
       * converts to ordered
       * outputs to stdout
     
@@ -32,7 +32,7 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
     <description>
       This adaptor is designed to illustrate a simple use of a JavascriptConditionProcessor
-        * reads all data in delim.txt
+        * reads all data in input/delim.txt
         * converts to ordered
         * outputs to stdout
     </description>
@@ -51,7 +51,7 @@
   </bean>
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="delim.txt"/>
+    <property name="filename" value="input/delim.txt"/>
   </bean>
   
   <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
