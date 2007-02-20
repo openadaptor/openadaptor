@@ -31,7 +31,7 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
     <description>
       Illustrate a basic directory reader adaptor.
-        * reads all files in a directory inputs whose flenames match the regex stuff[0-9].txt
+        * reads all files in a directory input/inputs whose flenames match the regex stuff[0-9].txt
         * outputs to stdout
     </description>
     <property name="messageProcessor" ref="Pipeline"/>
@@ -50,7 +50,7 @@
   </bean>  
   
   <bean id="DirectoryReader" class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">    
-    <property name="dirname" value="inputs"/>
+    <property name="dirname" value="input/inputs"/>
     <property name="filenameRegex" value="stuff[0-9].txt"/>
   
   </bean>
