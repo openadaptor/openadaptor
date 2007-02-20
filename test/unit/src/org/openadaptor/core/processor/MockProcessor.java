@@ -108,7 +108,7 @@ public class MockProcessor implements IDataProcessor {
       try {
         exceptionClass = Class.forName(getExceptionClassName());
         exception = (RecordException) exceptionClass.getConstructor(new Class[] { Class.forName("java.lang.String") })
-            .newInstance(new String[] { "Raising Exception: [" + getExceptionClassName() + "}" });
+            .newInstance((Object[])new String[] { "Raising Exception: [" + getExceptionClassName() + "}" });
       } catch (ClassNotFoundException e) {
         log.error("Failed to throw configured exception. Reason [" + e + "]");
         return false;
