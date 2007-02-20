@@ -135,16 +135,25 @@ public class MBeanServer implements javax.management.MBeanServer {
 		return mServer.createMBean(arg0, arg1, arg2, arg3, arg4);
 	}
 
+	/**
+	 * @deprecated 
+	 */
 	public ObjectInputStream deserialize(ObjectName arg0, byte[] arg1)
 			throws InstanceNotFoundException, OperationsException {
 		throw new RuntimeException("deprecated");
 	}
 
+	/**
+	 * @deprecated 
+	 */
 	public ObjectInputStream deserialize(String arg0, byte[] arg1)
 			throws OperationsException, ReflectionException {
 		throw new RuntimeException("deprecated");
 	}
 
+	/**
+	 * @deprecated 
+	 */
 	public ObjectInputStream deserialize(String arg0, ObjectName arg1, byte[] arg2)
 			throws InstanceNotFoundException, OperationsException,
 			ReflectionException {
