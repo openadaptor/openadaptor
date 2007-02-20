@@ -88,8 +88,12 @@
   <target name="doc" depends="lib">
     <mkdir dir="${dir.package.doc}"/>
     <javadoc destdir="${dir.package.doc}" classpath="${dir.package.lib}/openadaptor.jar:${dir.package.lib}/openadaptor-spring.jar" doctitle="openadaptor ${tag}" verbose="false">
-      <fileset dir="${dir.src}"/>
-      <fileset dir="${dir.spring.src}"/>
+      <fileset dir="${dir.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.spring.src}">
+        <include name="**/*.java"/>
+      </fileset>
     </javadoc>
   </target>
   
