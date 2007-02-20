@@ -13,7 +13,7 @@
     * filters out data that = "discard"
     * writes data to stdout
   
-  Filtered data is sent to discard.txt
+  Filtered data is sent to output/discards.txt
   
   Run it like this...
   
@@ -87,7 +87,7 @@
   <bean id="DiscardWriter" class="org.openadaptor.core.node.WriteNode">
     <property name="connector">
       <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-        <property name="filename" value="discards.txt"/>
+        <property name="filename" value="output/discards.txt"/>
         <property name="append" value="false"/>
       </bean>
     </property>
