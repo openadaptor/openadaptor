@@ -44,7 +44,7 @@
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>Read a comma delimited file line by line</description>
-    <property name="filename" value="delim.csv"/>
+    <property name="filename" value="input/delim.csv"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
     </property>

@@ -50,7 +50,7 @@
   </bean>
 
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="sample_json_object.txt"/>
+    <property name="filename" value="input/sample_json_object.txt"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
     </property>

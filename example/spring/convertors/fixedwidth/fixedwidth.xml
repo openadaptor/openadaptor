@@ -50,7 +50,7 @@
   </bean>
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="fixedwidth.txt"/>
+    <property name="filename" value="input/fixedwidth.txt"/>
   </bean>
   
   <bean id="fixedwidthconvertor" class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthStringToOrderedMapConvertor">
