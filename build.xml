@@ -302,9 +302,8 @@
     <springcheck classpathref="classpath.test">
       <fileset dir="${dir.example}/spring">
         <include name="**/*.xml"/>
-        <exclude name="**/output.xml"/>
-        <exclude name="**/book*.xml"/>
-        <exclude name="**/test*.xml"/>
+        <exclude name="**/input/*"/>
+        <exclude name="**/output/*"/>
         <exclude name="**/mq_*.xml"/>
       </fileset>
     </springcheck>
