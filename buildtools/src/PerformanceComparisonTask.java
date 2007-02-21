@@ -26,25 +26,27 @@ public class PerformanceComparisonTask extends Task {
   }
   
   public void execute() {
-    long time1 = 0;
-    long time2 = 0;
-    for (int i = 0; i < iterations; i++) {
-      time1 += timeExecution(target1);
-      time2 += timeExecution(target2);
-    }
-    long diff = (time1 - time2) / iterations;
-    int uplift = (int) (((double)diff / ((double)time1 / iterations)) * 100);
-    log("mean diff = " + diff + ", uplift = " + uplift + "%");
-    if (expectedUpLift != 0 && uplift < expectedUpLift) {
-      throw new BuildException("% uplift in peformance is less than expected");
+    long mean1 = timeExecution(target1, iterations);
+    if (target2 != null) {
+      long mean2 = timeExecution(target2, iterations);
+      long diff = mean1 - mean2;
+      int uplift = (int) (((double)diff / ((double)mean1)) * 100);
+      log("mean diff = " + diff + ", uplift = " + uplift + "%");
+      if (expectedUpLift != 0 && uplift < expectedUpLift) {
+        throw new BuildException("% uplift in peformance is less than expected");
+      }
     }
   }
   
-  private long timeExecution(String target) {
-    long start = System.currentTimeMillis();
-    getProject().executeTarget(target);
-    long time = System.currentTimeMillis() - start;
-    log("time to execute " + target + " was " + time + "ms");
-    return time;
+  private long timeExecution(String target, int num) {
+    long total = 0;
+    for (int i = 0; i < num; i++) {
+      long start = System.currentTimeMillis();
+      getProject().executeTarget(target);
+      long time = System.currentTimeMillis() - start;
+      log("time to execute " + target + " was " + time + "ms");
+      total += time;
+    }
+    return total / num;
   }
 }

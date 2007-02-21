@@ -65,6 +65,8 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   protected IAutoboxer autoboxer=new Autoboxer();
   
+  private boolean logDiscardAsInfo = false;
+  
   public AbstractRouter() {
     super();
   }
@@ -145,7 +147,11 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       if (batch instanceof OutputBatch) {
         process(new Message(batch.getData(),node,transaction),routingMap.getProcessDestinations(node));
       } else if (batch instanceof DiscardBatch) {
-        log.info(node.toString() + " discarded " + batch.size() + " input(s)");
+        if (logDiscardAsInfo) {
+          log.info(node.toString() + " discarded " + batch.size() + " input(s)");
+        } else {
+          log.debug(node.toString() + " discarded " + batch.size() + " input(s)");
+        }
         process(new Message(batch.getData(),node,transaction),routingMap.getDiscardDestinations(node));
       } else if (batch instanceof ExceptionBatch) {
         processExceptions(node, batch.getData(), transaction);
@@ -180,5 +186,9 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   public Collection getMessageProcessors() {
     return routingMap.getMessageProcessors();
+  }
+
+  public void setLogDiscardAsInfo(boolean logDiscardAsInfo) {
+    this.logDiscardAsInfo = logDiscardAsInfo;
   }
 }
