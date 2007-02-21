@@ -119,10 +119,10 @@ convenient way of launching a stand alone process based on a spring XML configur
 <p>If the url for the configuration file does not specify a protocol then the program
 assumes that it is a file url, hence the following are equivalent.</p>
 
-<code>
+<div class="shell"><pre>
   java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
   java org.openadaptor.spring.SpringApplication -config file:step01.xml -bean Adaptor
-</code>
+</pre></div>
 
 <h3>Understanding the spring XML configuration file</h3>
 <p>If you understood the previous section then it then it makes sense that the first part of the
