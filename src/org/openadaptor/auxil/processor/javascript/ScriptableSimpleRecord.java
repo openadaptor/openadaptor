@@ -149,7 +149,7 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
   /**
    * Mapping of ISimpleRecord.containsKey(Object key).
    */
-  public boolean js_Function_containsKey(Object key) {
+  public boolean jsFunction_containsKey(Object key) {
     log.debug("containsKey("+key+") invoked");
     return simpleRecord.containsKey(key);
   }
