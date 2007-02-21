@@ -27,27 +27,18 @@
 
 package org.openadaptor.auxil.connector.jms;
 
-import java.util.List;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.IllegalStateException;
-import javax.jms.InvalidClientIDException;
-import javax.jms.JMSException;
-import javax.jms.Session;
-import javax.jms.XAConnection;
-import javax.jms.XAConnectionFactory;
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
+
+import javax.jms.*;
+import javax.jms.IllegalStateException;
+import javax.naming.Context;
+import javax.naming.NamingException;
+import java.util.List;
 
 /**
  * Utility class providing JMS support to the JMSReadConnector and JMSWriteConnector classes. This class
@@ -307,6 +298,8 @@ public class JMSConnection extends Component {
       return (Destination) getCtx().lookup(destinationName);
     } catch (NamingException e) {
       throw new ConnectionException("Unable to resolve Destination for [" + destinationName + "]", e, this);
+    } catch (ClassCastException cce) {
+      throw new ConnectionException("Object looked up at [" + destinationName + "] is not a Destination. ", cce, this);
     }
   }
 
