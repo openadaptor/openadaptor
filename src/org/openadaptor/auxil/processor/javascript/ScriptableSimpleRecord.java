@@ -166,6 +166,29 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
   }
   
   /**
+   * Clear the underlying simpleRecords associated
+   * with this mapping.
+   * <br>
+   * This differs from a trivial mapping in that it guarantees that
+   * the original simple record has already cloned() first.
+   * <br>
+   * Note: Always forces flags as modified, even if new value = old value.
+   */
+  public void jsFunction_clear() {
+	 log.debug("clear() invoked");
+	 modify();
+	 simpleRecord.clear();
+  }
+  
+ /*
+  public ScriptableSimpleRecord jsFunction_clone() {
+	 ScriptableSimpleRecord clone=new ScriptableSimpleRecord();
+	 clone.simpleRecord=(ISimpleRecord)simpleRecord.clone();
+	 return clone;
+  }
+  */
+  
+  /**
    * This will clone the simpleRecord, if it hasn't already
    * been cloned.
    *
