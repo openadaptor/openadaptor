@@ -91,7 +91,8 @@
 	    destdir="${dir.package.doc}"
 	    classpath="${dir.package.lib}/openadaptor.jar:${dir.package.lib}/openadaptor-depends.jar:${dir.package.lib}/openadaptor-spring.jar:${dir.package.lib}/openadaptor-stub.jar:${dir.lib}/mail.jar:${dir.lib}/activation.jar"
 	    doctitle="openadaptor ${tag}" 
-	    verbose="false">
+	    verbose="false"
+    	additionalparam="-quiet">
       <fileset dir="${dir.src}">
         <include name="**/*.java"/>
       </fileset>
