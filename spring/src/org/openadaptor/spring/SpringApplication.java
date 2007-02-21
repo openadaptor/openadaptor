@@ -27,6 +27,7 @@
 
 package org.openadaptor.spring;
 
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.Map;
@@ -75,14 +76,17 @@ public class SpringApplication {
         } else {
           throw new RuntimeException("unrecognised cmd line arg " + args[i]);
         }
+        if (configUrl==null) {
+        	throw new RuntimeException("Cannot start: -config option is required");
+        }
+        if (beanName==null) {
+        	throw new RuntimeException("Cannot start: -bean option is required");
+        }
       }
     } catch (RuntimeException e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
-      System.err
-          .println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
-              + "\n  -bean <id> " + "\n  [-props <url>] "
-              + "\n  [-jmx <http port>]");
+      usage(System.err);
       System.exit(1);
     }
 
@@ -99,6 +103,12 @@ public class SpringApplication {
       e.printStackTrace();
       System.exit(1);
     }
+  }
+  
+  private static void usage (PrintStream ps) {
+  	ps.println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
+              + "\n  -bean <id> " + "\n  [-props <url>] "
+              + "\n  [-jmx <http port>]");  	
   }
 
   public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {
