@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.spring;
 
@@ -52,6 +52,14 @@ public class SpringApplication {
 
   private static Log log = LogFactory.getLog(SpringApplication.class);
 
+  private static String getOptionValue(String[] args,int index){
+    if (args.length>index+1){
+      return args[index+1];
+    }
+    else {
+      throw new RuntimeException("Option "+args[index]+" requires a value, which has not been supplied");
+    }
+  }
   /**
    * read cmd line args and run SpringApplication
    * 
@@ -66,13 +74,22 @@ public class SpringApplication {
     try {
       for (int i = 0; i < args.length; i++) {
         if (args[i].equals("-config")) {
-          configUrl = args[++i];
+          configUrl = getOptionValue(args, i++);//args[++i];
         } else if (args[i].equals("-props")) {
-          propsUrl = args[++i];
+          propsUrl = getOptionValue(args, i++);//args[++i];
         } else if (args[i].equals("-bean")) {
-          beanName = args[++i];
+          beanName = getOptionValue(args, i++);//args[++i];
         } else if (args[i].equals("-jmx")) {
-          jmxPort = Integer.parseInt(args[++i]);
+          String jmxPortString =getOptionValue(args, i++);
+          try {
+            jmxPort = Integer.parseInt(jmxPortString);
+            if ((jmxPort<=0) || (jmxPort>65535))  {
+              throw new RuntimeException("Illegal jmx port specified: "+jmxPort+". Valid range is [1-65535]");
+            }
+          }
+          catch (NumberFormatException nfe) {
+            throw new RuntimeException("-jmx option requires a integer port number");
+          }
         } else {
           throw new RuntimeException("unrecognised cmd line arg " + args[i]);
         }
@@ -104,11 +121,11 @@ public class SpringApplication {
       System.exit(1);
     }
   }
-  
+
   private static void usage (PrintStream ps) {
-  	ps.println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
-              + "\n  -bean <id> " + "\n  [-props <url>] "
-              + "\n  [-jmx <http port>]");  	
+    ps.println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
+        + "\n  -bean <id> " + "\n  [-props <url>] "
+        + "\n  [-jmx <http port>]");  	
   }
 
   public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {
