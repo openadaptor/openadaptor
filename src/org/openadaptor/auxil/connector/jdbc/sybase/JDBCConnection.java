@@ -29,6 +29,8 @@ package org.openadaptor.auxil.connector.jdbc.sybase;
 
 import java.sql.SQLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
 
@@ -39,10 +41,13 @@ import org.openadaptor.core.exception.ProcessingException;
  */
 public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCConnection {
 
+  private static final Log log = LogFactory.getLog(JDBCConnection.class);
+
   public void handleException(SQLException e, String message) {
     
     // ignore deadlock, if num retries > 0
     if (e.getErrorCode() == 1205 && incrementDeadlockCount() > 0) {
+      log.info("deadlock detected, " + getDeadlockRetriesRemaining() + " retries remaining");
       return;
     }
     

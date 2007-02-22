@@ -48,7 +48,7 @@ import org.openadaptor.core.exception.ConnectionException;
  */
 public class JDBCConnection extends Component {
 
-  private static final Log log = LogFactory.getLog(JDBCConnection.class.getName());
+  private static final Log log = LogFactory.getLog(JDBCConnection.class);
 
   private String driver;
   private String url;
