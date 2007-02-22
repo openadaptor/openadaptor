@@ -30,6 +30,9 @@
 
 package org.openadaptor.auxil.processor.javascript;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
@@ -82,6 +85,10 @@ public class JavascriptProcessorTestCase extends TestCase {
     log.info("testProcessNonISimpleRecord()");
     // Expect a RecordFormatException
     try {
+      processor.setScript("3+4"); //Any non null script;
+      List validationExceptions=new ArrayList();
+      processor.validate(validationExceptions);
+      
       processor.process(new Object());
     } catch (RecordFormatException e) {
       return;
@@ -132,6 +139,10 @@ public class JavascriptProcessorTestCase extends TestCase {
   
   private ISimpleRecord execRaw(String script) {
     processor.setScript(script);
+    List validationExceptions=new ArrayList();
+    processor.validate(validationExceptions);
+    assertTrue("Script should validate ok",validationExceptions.isEmpty());
+
     Object[] result=processor.process(record);
     assertTrue("expected a result array with one entry",result.length==1);
     ISimpleRecord output=(ISimpleRecord)result[0];

@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ProcessingException;
-import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 
 import java.util.List;
 

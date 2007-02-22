@@ -30,7 +30,6 @@ package org.openadaptor.auxil.processor.javascript;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.util.JavascriptEngine.JavascriptResult;
 /**
  * Extend JavascriptProcessor to filter records based on the result of script execution.
  * <br>
