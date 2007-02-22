@@ -134,7 +134,10 @@ public class SpringApplication {
 
   public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl, int jmxPort) {
     try {
-      if (configUrl.indexOf(":") == -1) {
+      // filthy hack for the moment, originally we prefixed the config with file: if
+      // it did not contain a colon, however we need to allow for fully qualified
+      // windows paths with drive mappings
+      if (configUrl.indexOf(":") < 2) {
         configUrl = "file:" + configUrl;
       }
       XmlBeanFactory factory = new XmlBeanFactory(new UrlResource(configUrl));
