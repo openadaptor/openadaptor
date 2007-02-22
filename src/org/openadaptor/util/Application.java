@@ -48,9 +48,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Application {
 
-  private static final String REGISTRATION_PROPERTIES = "registration.properties";
-
   private static final Log log = LogFactory.getLog(Application.class);
+
+  private static final String REGISTRATION_PROPERTIES   = "registration.properties";
 
   private static final String PROPERTY_HOSTADDRESS      = "openadaptor.hostaddress";
 
@@ -81,11 +81,24 @@ public class Application {
     System.err.println("\n" + LICENCE_TEXT + "\n");
   }
   
-  public Application() {
+  private String registrationUrl;
+  
+  private Properties additionalRegistrationProps;
+  
+  private boolean registerOnlyOnce = true;
+  
+  private boolean registered;
+  
+  protected Application() {
 
     // get system props
     Properties props = new Properties();
     props.putAll(System.getProperties());
+
+    // set start time and host properties
+    props.put(PROPERTY_START_TIMESTAMP, (new SimpleDateFormat(START_TIMESTAMP_FORMAT)).format(new Date()));
+    props.put(PROPERTY_HOSTNAME, NetUtil.getLocalHostname());
+    props.put(PROPERTY_HOSTADDRESS, NetUtil.getLocalHostAddress());
 
     // override with build properties
     Properties buildProps = new Properties();
@@ -105,38 +118,66 @@ public class Application {
       log.warn("failed to find " + BUILD_PROPERTIES_NAME + " in classpath");
     }
 
-    // set start time and host properties
-    props.put(PROPERTY_START_TIMESTAMP, (new SimpleDateFormat(START_TIMESTAMP_FORMAT)).format(new Date()));
-    props.put(PROPERTY_HOSTNAME, NetUtil.getLocalHostname());
-    props.put(PROPERTY_HOSTADDRESS, NetUtil.getLocalHostAddress());
-
     for (Iterator iter = buildProps.entrySet().iterator(); iter.hasNext();) {
       Map.Entry entry = (Map.Entry) iter.next();
-      if (props.containsKey(entry.getKey())) {
+      if (props.containsKey(entry.getKey()) && !props.get(entry.getKey()).equals(entry.getValue())) {
         log.info("build property " + entry.getKey() + " overrides system property");
       }
+      log.info(entry.getKey() + "=" + entry.getValue());
       props.put(entry.getKey(), entry.getValue());
     }
 
+    // override system properties with merged properties and log
     System.setProperties(props);
     for (Iterator iter = System.getProperties().entrySet().iterator(); iter.hasNext();) {
       Map.Entry entry = (Map.Entry) iter.next();
       log.debug("system property " + entry.getKey() + "=[" + entry.getValue() + "]");
     }
-
-    String url = props.getProperty(PROPERTY_REGISTRATION_URL, null);
+  }
+  
+  /**
+   * called by subclasses that want to register with a url
+   */
+  protected void register() {
+    
+    if (registered && registerOnlyOnce) {
+      return;
+    }
+    
+    String url = getRegistrationUrl();
 
     if (url != null && url.length() > 0) {
       try {
-        PropertiesPoster.post(url, filterProperties(props));
-        log.info("posted system properties to " + url);
+        Properties propsToPost = filterProperties(System.getProperties());
+        addAdditonalRegistrationProps(propsToPost);
+        PropertiesPoster.post(url, propsToPost);
+        registered = true;
+        log.info("posted registration properties to " + url);
       } catch (Exception e) {
-        log.warn("failed to post system properties : " + e.getMessage());
+        log.warn("failed to post registration properties : " + e.getMessage());
       }
-    } else {
-      log.info("registration url property (" + PROPERTY_REGISTRATION_URL + ") is not configured");
     }
+  }
 
+  private void addAdditonalRegistrationProps(Properties propsToPost) {
+    if (additionalRegistrationProps != null) {
+      for (Iterator iter = additionalRegistrationProps.entrySet().iterator(); iter.hasNext();) {
+        Map.Entry entry = (Map.Entry) iter.next();
+        if (propsToPost.containsKey(entry.getKey())) {
+          log.warn("not overriding " + entry.getKey() + " with additonalRegistration property");
+        } else {
+          propsToPost.put(entry.getKey(), entry.getValue());
+        }
+      }
+    }
+  }
+  
+  private String getRegistrationUrl() {
+    if (registrationUrl != null) {
+      return registrationUrl;
+    } else {
+      return System.getProperty(PROPERTY_REGISTRATION_URL, null);
+    }
   }
   
   public static Properties filterProperties(Properties props) {
@@ -163,5 +204,31 @@ public class Application {
       }
     }
     return newProps;
+  }
+
+  /**
+   * 
+   * @param additionalRegistrationProps properties that should be registered with the registration
+   * url, in addition to those mapped in registration.properties.
+   */
+  public void setAdditionalRegistrationProps(final Properties additionalRegistrationProps) {
+    this.additionalRegistrationProps = additionalRegistrationProps;
+  }
+
+  /**
+   * 
+   * @param registrationUrl a url to post application properties to
+   */
+  public void setRegistrationUrl(final String registrationUrl) {
+    this.registrationUrl = registrationUrl;
+  }
+
+  /**
+   * 
+   * @param registerOnlyOnce if true then only the first call to register will
+   * post the properties to the registration url
+   */
+  public void setRegisterOnlyOnce(final boolean registerOnlyOnce) {
+    this.registerOnlyOnce = registerOnlyOnce;
   }
 }

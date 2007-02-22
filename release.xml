@@ -49,7 +49,8 @@
   </target>
   
   <target name="build">
-    <ant antfile="build.xml" dir="${dir.checkout}" target="test.all"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="recompile.all"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="copyright.check"/>
   </target>
   
   <target name="package">

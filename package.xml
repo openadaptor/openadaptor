@@ -9,11 +9,23 @@
   <property name="dir.package.sql" value="${dir.package}/sql"/>
   <property name="dir.package.doc" value="${dir.package}/doc"/>
   
+  <path id="classpath.package.test">
+    <pathelement path="${dir.package.lib}"/>
+    <pathelement path="${dir.package.lib}/openadaptor.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-depends.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-spring.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-stub.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/mail.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/activation.jar"/>
+    <pathelement path="${dir.test.classes}"/>
+    <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
+  </path>
+
   <target name="clean">
     <delete dir="${dir.package}"/>
   </target>
   
-  <target name="zippedpackage" depends="package, zip" description="create zipped package"/>
+  <target name="zippedpackage" depends="package, test, zip" description="create zipped package"/>
   
   <target name="package" depends="clean, lib, sql, example, doc"/>
   
@@ -183,6 +195,15 @@
         <include name="**/*.java"/>
       </fileset>
     </javadoc>
+  </target>
+
+  <target name="test" description="checks spring config examples are valid">
+    <ant target="test.all" inheritAll="false">
+      <reference refid="classpath.package.test" torefid="classpath.test"/> 
+    </ant>
+    <ant target="example.springcheck" inheritAll="false">
+      <reference refid="classpath.package.test" torefid="classpath.test"/> 
+    </ant>
   </target>
   
 </project>

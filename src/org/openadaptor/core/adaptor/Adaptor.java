@@ -258,6 +258,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       validate();
       startNonRunnables();
       startRunnables();
+      register();
 
       if (runRunnablesInCallingThread) {
         runRunnable();

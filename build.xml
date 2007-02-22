@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor" default="recompile.all">
+<project name="openadaptor" default="retest.all">
   
   <tstamp/>
   <property name="debug" value="true"/>
@@ -93,7 +93,7 @@
 
   <target name="recompile.all" depends="clean.all, compile.all" description="clean and compile all code and tests"/>
 
-  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test.unit, compile.test.integration, compile.test.system, compile.example" description="compile code and tests"/>
+  <target name="compile.all" depends="compile.stub, compile, compile.rmi, compile.spring, compile.test, compile.example" description="compile code and tests"/>
 
   <target name="compile.stub">
     <javac srcdir="${dir.stub.src}" destdir="${dir.stub.classes}" classpathref="classpath.stub"/>
@@ -122,6 +122,8 @@
     <javac srcdir="${dir.spring.src}" destdir="${dir.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
   </target>
 
+  <target name="compile.test" depends="compile.test.unit, compile.test.integration, compile.test.system"/>
+  
   <target name="compile.test.unit">
     <javac srcdir="${dir.test.unit.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
     <copy todir="${dir.test.classes}" overwrite="true">
@@ -189,7 +191,11 @@
     </delete>
   </target>
 
-  <target name="test.unit" depends="clean.test, compile.all" description="run unit tests only">
+  <target name="retest.all" depends="recompile.all, test.all" description="clean, recompile and test"/>
+  
+  <target name="test.all" depends="test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+
+  <target name="test.unit" description="run unit tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
@@ -208,7 +214,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.integration" depends="clean.test, compile.all" description="run integration tests only">
+  <target name="test.integration" description="run integration tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
@@ -227,7 +233,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.system" depends="clean.test, compile.all" description="run system tests only">
+  <target name="test.system" description="run system tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
@@ -252,20 +258,6 @@
      </junitreport>
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
-
-  <target name="test.all" depends="recompile.all, test.unit, test.integration, test.system, copyright.check" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
-
-  <target name="run.example.spring" description="runs a spring example expects -Dconfig and -Dbean (defaults to Adaptor) to be defined">
-    <property name="bean" value="Adaptor"/>
-    <java classname="org.openadaptor.spring.SpringApplication" classpathref="classpath.example">
-      <arg value="-config"/>
-      <arg value="${config}"/>
-      <arg value="-bean"/>
-      <arg value="${bean}"/>
-    </java>
-  </target>
-
-  <target name="cruise" depends="test.all, example.springcheck" description="target for cruise control to call"/>
 
   <target name="compile.buildtools">
     <mkdir dir="${dir.buildtools.classes}"/>
@@ -308,5 +300,7 @@
       </fileset>
     </springcheck>
   </target>
-  
+ 
+  <target name="cruise" depends="retest.all, example.springcheck, copyright.check" description="target for cruise control to call"/>
+   
 </project>
