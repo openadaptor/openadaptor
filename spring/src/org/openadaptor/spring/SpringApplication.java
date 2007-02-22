@@ -76,12 +76,12 @@ public class SpringApplication {
         } else {
           throw new RuntimeException("unrecognised cmd line arg " + args[i]);
         }
-        if (configUrl==null) {
-        	throw new RuntimeException("Cannot start: -config option is required");
-        }
-        if (beanName==null) {
-        	throw new RuntimeException("Cannot start: -bean option is required");
-        }
+      }
+      if (configUrl==null) {
+        throw new RuntimeException("Cannot start: -config option is required");
+      }
+      if (beanName==null) {
+        throw new RuntimeException("Cannot start: -bean option is required");
       }
     } catch (RuntimeException e) {
       System.err.println(e.getMessage());
