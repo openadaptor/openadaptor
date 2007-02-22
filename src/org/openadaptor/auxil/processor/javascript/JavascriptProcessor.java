@@ -30,6 +30,7 @@ package org.openadaptor.auxil.processor.javascript;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -281,6 +282,8 @@ public  class JavascriptProcessor extends Component implements IDataProcessor {
       try {
         JavascriptProcessor jsp=new JavascriptProcessor();
         jsp.setScript(script.toString());
+        List exceptions=new ArrayList();
+        jsp.validate(exceptions);
         JavascriptResult jsr=jsp.execute(map);
         System.out.println(jsr.executionResult+" [type="+(jsr.executionResult==null?"<null>":jsr.executionResult.getClass().getName())+"]");
         String mod="unchanged";
