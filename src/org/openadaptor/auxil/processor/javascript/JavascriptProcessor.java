@@ -27,24 +27,21 @@
 
 package org.openadaptor.auxil.processor.javascript;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
+import org.mozilla.javascript.*;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Executes javascript scripts in the context of the data record.
  * <br>
@@ -161,13 +158,12 @@ public  class JavascriptProcessor extends Component implements IDataProcessor {
       log.warn("Configured javascript is empty.");
     }
     try {
-    compiledScript=compile(script);
+      compiledScript=compile(script);
     }
     catch (RuntimeException re) {
-      exceptions.add(new ValidationException("Failed to compile javascript. Fatal error", this));
+      exceptions.add(new ValidationException("Failed to compile javascript. Fatal error", re, this));
     }
   }
-
 
   public void reset(Object context) {}
 
@@ -179,6 +175,13 @@ public  class JavascriptProcessor extends Component implements IDataProcessor {
       ScriptableObject.defineClass(scope,ScriptableSimpleRecord.class);
       compiledScript=context.compileString(script, "oa script", 1, null);
       log.debug("Javascript has been compiled from source script");
+    }
+    catch (EvaluatorException ee) {
+      // Added to provide a bit more info in the log about what's gone wrong.
+      String msg="Failed to compile "+ScriptableSimpleRecord.CLASSNAME+":";
+      msg = msg + " Exception is [" +  ee + "] Statement is [" + ee.lineSource() + "]";
+      log.warn(msg);
+      throw new RuntimeException(msg,ee);
     }
     catch (Exception e) {
       String msg="Failed to define "+ScriptableSimpleRecord.CLASSNAME;
