@@ -162,11 +162,11 @@ public class Application implements IComponent {
     List toLog = new ArrayList();
     for (Iterator iter = propsToRegister.entrySet().iterator(); iter.hasNext();) {
       Map.Entry entry = (Map.Entry) iter.next();
-      toLog.add(entry.getKey() + " = " + entry.getValue());
+      toLog.add(entry.getKey() + "=" + entry.getValue());
     }
     Collections.sort(toLog);
     for (Iterator iter = toLog.iterator(); iter.hasNext();) {
-      log.info(iter.next());
+      log.info("property, " + iter.next());
       
     }
 
