@@ -120,6 +120,9 @@
 
   <target name="compile.spring">
     <javac srcdir="${dir.spring.src}" destdir="${dir.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
+    <copy todir="${dir.spring.classes}" overwrite="true">
+      <fileset dir="${dir.spring.src}" includes="**/*.xml"/>
+    </copy>
   </target>
 
   <target name="compile.test" depends="compile.test.unit, compile.test.integration, compile.test.system"/>
