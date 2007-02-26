@@ -181,13 +181,13 @@
 <h4>Windows command prompt</h4>
 <div class="shell"><pre>
   cd example\spring\adaptor
-  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
 </pre></div>
 
 <h4>Unix (bourne shell)</h4>
 <div class="shell"><pre>
   cd example/spring/adaptor
-  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
 </pre></div>
 
 <p>If everything works you should see a flury of logging and the program should "sit there" waiting for
@@ -213,15 +213,14 @@
   provides as spring configuration files. openadaptor provides a spring specific helper class for
   running adaptors as a standalone process.</p>
 <pre>
-  org.openadaptor.spring.SpringApplication
+  org.openadaptor.spring.SpringAdaptor
 </pre>
   
 <p>this expects the following arguments
 <pre>
   -config <i>url</i>   : where url points to a spring config, defaults to file:
-  -bean <i>id</i>      : where id is the id of a bean in the spring config file
-  -props <i>url</i>    : (optional) url for properties file
-  -jmx <i>port</i>     : (optional) if specified then runs default jmx mbean server and http adaptor
+  -bean <i>id</i>      : (optional) where id is the id of an Adaptor bean in the spring config file
+  -jmxport <i>port</i> : (optional) if specified then runs default jmx mbean server and http adaptor
 </pre>
   
 <p>Here is how to run an adaptor using this class (ensure that you are in the root of the openadaptor
@@ -229,30 +228,30 @@
 
 <h4>Windows command prompt</h4>
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config example\spring\adaptor\simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config example\spring\adaptor\simple.xml 
 </pre></div>
 
 or
 
 <div class="shell"><pre>
   cd example\spring\adaptor
-  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
 </pre></div>
 
 <h4>Unix (bourne shell)</h4>
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config example/spring/adaptor/simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config example/spring/adaptor/simple.xml 
 </pre></div>
 
 or
 
 <div class="shell"><pre>
   cd example/spring/adaptor
-  java org.openadaptor.spring.SpringApplication -config simple.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
 </pre></div>
 
 <p>Upon startup the adaptor will generate logging output according to it's logging configuration. Note
-  that a running adaptor may be stopped by typing Ctrl-C on the command line (both Windows & Unix).
+  that a running adaptor may be stopped by typing Ctrl-C on the command line (both Windows and Unix).
   Under normal circumstances this should cause the adaptor to terminate gracefully.</p>
 
 <p>For more details on the examples look ar the header comments in the spring config file, or the

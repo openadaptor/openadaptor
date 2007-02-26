@@ -16,7 +16,7 @@
 
     Run it like this...
     
-      java org.openadaptor.spring.SpringApplication -config subscriber.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config subscriber.xml -bean Adaptor
     
     You need the following in your classpath
   

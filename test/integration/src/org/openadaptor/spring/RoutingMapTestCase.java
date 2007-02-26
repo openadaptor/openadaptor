@@ -33,6 +33,7 @@
 
 package org.openadaptor.spring;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -43,18 +44,23 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.router.IRoutingMap;
-import org.openadaptor.spring.SpringApplication;
 import org.openadaptor.util.ResourceUtil;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.UrlResource;
 
 
 public class RoutingMapTestCase extends TestCase {
 
   protected static final String RESOURCE_LOCATION = "test/integration/src/";
 
-  ListableBeanFactory factory = SpringApplication.getBeanFactory(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "routing.xml"), null);
+  ListableBeanFactory factory;
 
-
+  public RoutingMapTestCase() throws BeansException, MalformedURLException {
+    factory = new XmlBeanFactory(new UrlResource("file:" + ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "routing.xml")));
+  }
+  
   private IRoutingMap getRoutingMap(String testName) {
     return (IRoutingMap) factory.getBean(testName);
   }

@@ -19,7 +19,7 @@
 
     Run it like this...
 
-      java org.openadaptor.spring.SpringApplication -config RemoveAttributes.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config RemoveAttributes.xml -bean Adaptor
 
     You need the following in your classpath
 

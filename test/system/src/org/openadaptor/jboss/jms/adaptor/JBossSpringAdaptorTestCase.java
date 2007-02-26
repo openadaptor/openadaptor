@@ -1,36 +1,42 @@
 package org.openadaptor.jboss.jms.adaptor;
 
+import java.net.MalformedURLException;
+
 import junit.framework.TestCase;
 
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.spring.SpringApplication;
 import org.openadaptor.util.ResourceUtil;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.UrlResource;
 
 public class JBossSpringAdaptorTestCase extends TestCase {
 
-  public void xtest() {
-    String configFile = ResourceUtil.getResourcePath(this, "test/src/", "spring.xml");
+  public void xtest() throws BeansException, MalformedURLException {
+    String configFile = "file:" + ResourceUtil.getResourcePath(this, "test/src/", "spring.xml");
+
+    ListableBeanFactory factory = new XmlBeanFactory(new UrlResource(configFile));;
 
     // run publisher
-    SpringApplication.runXml(configFile, null, "Publisher");
+    Adaptor publisher = (Adaptor) factory.getBean("Publisher");
+    publisher.run();
 
     // create and start thread to stop subscriber after 5 secs
-    ListableBeanFactory factory = SpringApplication.getBeanFactory(configFile, null);
-    final Adaptor adaptor = (Adaptor) factory.getBean("Subscriber");
+    final Adaptor subscriber = (Adaptor) factory.getBean("Subscriber");
     Thread t = new Thread() {
       public void run() {
         try {
           Thread.sleep(5000);
         } catch (InterruptedException e) {
         }
-        adaptor.stop();
+        subscriber.stop();
       }
     };
     t.start();
 
     // run subscriber
-    adaptor.run();
+    subscriber.run();
   }
 
   public void test2() {

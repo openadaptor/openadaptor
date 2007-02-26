@@ -20,7 +20,7 @@
 
     Run it like this...
 
-      java org.openadaptor.spring.SpringApplication -config RegexMatch.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config RegexMatch.xml -bean Adaptor
 
     You need the following in your classpath
 

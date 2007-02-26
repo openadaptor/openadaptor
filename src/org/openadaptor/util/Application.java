@@ -30,13 +30,17 @@ package org.openadaptor.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IComponent;
 
 /**
  * core functionality that is desirable for applications, outputs license, loads build
@@ -46,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * top level application class (such as an adaptor).
  * 
  */
-public class Application {
+public class Application implements IComponent {
 
   private static final Log log = LogFactory.getLog(Application.class);
 
@@ -58,11 +62,9 @@ public class Application {
 
   private static final String PROPERTY_REGISTRATION_URL = "openadaptor.registration.url";
 
-  public static final String PROPERTY_CONFIG_URL        = "openadaptor.config.url";
+  private static final String PROPERTY_CONFIG_URL        = "openadaptor.config.url";
 
-  public static final String PROPERTY_PROPS_URL         = "openadaptor.props.url";
-
-  public static final String PROPERTY_COMPONENT_ID      = "openadaptor.component.id";
+  private static final String PROPERTY_COMPONENT_ID      = "openadaptor.component.id";
 
   public static final String PROPERTY_START_TIMESTAMP   = "openadaptor.application.start";
 
@@ -83,7 +85,7 @@ public class Application {
   
   private String registrationUrl;
   
-  private Properties additionalRegistrationProps;
+  private Properties props;
   
   private boolean registerOnlyOnce = true;
   
@@ -92,11 +94,14 @@ public class Application {
   protected Application() {
 
     // get system props
-    Properties props = new Properties();
+    props = new Properties();
     props.putAll(System.getProperties());
 
     // set start time and host properties
-    props.put(PROPERTY_START_TIMESTAMP, (new SimpleDateFormat(START_TIMESTAMP_FORMAT)).format(new Date()));
+    String timestamp = (new SimpleDateFormat(START_TIMESTAMP_FORMAT)).format(new Date());
+    // TODO: remove this and make property name private
+    System.setProperty(PROPERTY_START_TIMESTAMP, timestamp);
+    props.put(PROPERTY_START_TIMESTAMP, timestamp);
     props.put(PROPERTY_HOSTNAME, NetUtil.getLocalHostname());
     props.put(PROPERTY_HOSTADDRESS, NetUtil.getLocalHostAddress());
 
@@ -123,16 +128,22 @@ public class Application {
       if (props.containsKey(entry.getKey()) && !props.get(entry.getKey()).equals(entry.getValue())) {
         log.info("build property " + entry.getKey() + " overrides system property");
       }
-      log.info(entry.getKey() + "=" + entry.getValue());
+      log.info(entry.getKey() + " = " + entry.getValue());
       props.put(entry.getKey(), entry.getValue());
     }
 
-    // override system properties with merged properties and log
-    System.setProperties(props);
-    for (Iterator iter = System.getProperties().entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      log.debug("system property " + entry.getKey() + "=[" + entry.getValue() + "]");
-    }
+  }
+  
+  public String getId() {
+    return props.getProperty(PROPERTY_COMPONENT_ID, null);
+  }
+
+  public void setId(String id) {
+    props.setProperty(PROPERTY_COMPONENT_ID, id);
+  }
+
+  public void setConfigData(String data) {
+    props.setProperty(PROPERTY_CONFIG_URL, data);
   }
   
   /**
@@ -144,13 +155,26 @@ public class Application {
       return;
     }
     
-    String url = getRegistrationUrl();
+    // filter and transform properties
+    Properties propsToRegister = filterProperties(props);
+    
+    // sort and log
+    List toLog = new ArrayList();
+    for (Iterator iter = propsToRegister.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      toLog.add(entry.getKey() + " = " + entry.getValue());
+    }
+    Collections.sort(toLog);
+    for (Iterator iter = toLog.iterator(); iter.hasNext();) {
+      log.info(iter.next());
+      
+    }
 
+    // if registration url is set then post
+    String url = getRegistrationUrl();
     if (url != null && url.length() > 0) {
       try {
-        Properties propsToPost = filterProperties(System.getProperties());
-        addAdditonalRegistrationProps(propsToPost);
-        PropertiesPoster.post(url, propsToPost);
+        PropertiesPoster.post(url, propsToRegister);
         registered = true;
         log.info("posted registration properties to " + url);
       } catch (Exception e) {
@@ -159,19 +183,6 @@ public class Application {
     }
   }
 
-  private void addAdditonalRegistrationProps(Properties propsToPost) {
-    if (additionalRegistrationProps != null) {
-      for (Iterator iter = additionalRegistrationProps.entrySet().iterator(); iter.hasNext();) {
-        Map.Entry entry = (Map.Entry) iter.next();
-        if (propsToPost.containsKey(entry.getKey())) {
-          log.warn("not overriding " + entry.getKey() + " with additonalRegistration property");
-        } else {
-          propsToPost.put(entry.getKey(), entry.getValue());
-        }
-      }
-    }
-  }
-  
   private String getRegistrationUrl() {
     if (registrationUrl != null) {
       return registrationUrl;
@@ -180,7 +191,7 @@ public class Application {
     }
   }
   
-  public static Properties filterProperties(Properties props) {
+  private static Properties filterProperties(Properties props) {
     Properties newProps = new Properties();
     InputStream is = Application.class.getResourceAsStream(REGISTRATION_PROPERTIES);
     Properties registrationProps = new Properties();
@@ -207,12 +218,13 @@ public class Application {
   }
 
   /**
-   * 
-   * @param additionalRegistrationProps properties that should be registered with the registration
-   * url, in addition to those mapped in registration.properties.
+   * Adds props to application properties
    */
-  public void setAdditionalRegistrationProps(final Properties additionalRegistrationProps) {
-    this.additionalRegistrationProps = additionalRegistrationProps;
+  public void setAdditionalRegistrationProps(final Properties props) {
+    for (Iterator iter = props.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      this.props.put(entry.getKey(), entry.getValue());
+    }
   }
 
   /**

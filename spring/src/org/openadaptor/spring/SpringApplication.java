@@ -29,7 +29,10 @@ package org.openadaptor.spring;
 
 import java.io.PrintStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.MBeanServer;
@@ -41,159 +44,205 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.util.Application;
+import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionReader;
+import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
 
+/**
+ * Helper class for launching openadaptor application based on spring.
+ * @author perryj
+ *
+ */
 public class SpringApplication {
 
   private static Log log = LogFactory.getLog(SpringApplication.class);
 
-  private static String getOptionValue(String[] args,int index){
-    if (args.length>index+1){
-      return args[index+1];
-    }
-    else {
-      throw new RuntimeException("Option "+args[index]+" requires a value, which has not been supplied");
-    }
-  }
-  /**
-   * read cmd line args and run SpringApplication
-   * 
-   * @param args
-   */
-  public static void main(String[] args) {
-    String configUrl = null;
-    String propsUrl = null;
-    String beanName = null;
-    int jmxPort = 0;
+  private ArrayList configUrls = new ArrayList();
 
+  private String beanId;
+
+  private int jmxPort;
+
+  public SpringApplication() {
+    setConfigUrls(Collections.EMPTY_LIST);
+  }
+  
+  public static void main(String[] args) {
     try {
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equals("-config")) {
-          configUrl = getOptionValue(args, i++);//args[++i];
-        } else if (args[i].equals("-props")) {
-          propsUrl = getOptionValue(args, i++);//args[++i];
-        } else if (args[i].equals("-bean")) {
-          beanName = getOptionValue(args, i++);//args[++i];
-        } else if (args[i].equals("-jmx")) {
-          String jmxPortString =getOptionValue(args, i++);
-          try {
-            jmxPort = Integer.parseInt(jmxPortString);
-            if ((jmxPort<=0) || (jmxPort>65535))  {
-              throw new RuntimeException("Illegal jmx port specified: "+jmxPort+". Valid range is [1-65535]");
-            }
-          }
-          catch (NumberFormatException nfe) {
-            throw new RuntimeException("-jmx option requires a integer port number");
-          }
-        } else {
-          throw new RuntimeException("unrecognised cmd line arg " + args[i]);
-        }
-      }
-      if (configUrl==null) {
-        throw new RuntimeException("Cannot start: -config option is required");
-      }
-      if (beanName==null) {
-        throw new RuntimeException("Cannot start: -bean option is required");
-      }
-    } catch (RuntimeException e) {
+      SpringApplication app = new SpringApplication();
+      app.parseArgs(args);
+      app.run();
+      System.exit(0);
+    } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
       usage(System.err);
       System.exit(1);
     }
-
-    System.setProperty(Application.PROPERTY_CONFIG_URL, configUrl);
-    if (propsUrl != null) {
-      System.setProperty(Application.PROPERTY_PROPS_URL, propsUrl);
-    }
-    System.setProperty(Application.PROPERTY_COMPONENT_ID, beanName);
-
-    try {
-      runXml(configUrl, propsUrl, beanName, jmxPort);
-      System.exit(0);
-    } catch (RuntimeException e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
   }
 
-  private static void usage (PrintStream ps) {
-    ps.println("usage: java " + SpringApplication.class.getName() + "\n  -config <url> "
-        + "\n  -bean <id> " + "\n  [-props <url>] "
-        + "\n  [-jmx <http port>]");  	
+  protected String getBeanId() {
+    return beanId;
   }
 
-  public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl) {
-    return getBeanFactory(configUrl, propsUrl, 0);
+  public void setBeanId(final String beanId) {
+    this.beanId = beanId;
   }
 
-  public static ListableBeanFactory getBeanFactory(String configUrl, String propsUrl, int jmxPort) {
-    try {
-      // filthy hack for the moment, originally we prefixed the config with file: if
-      // it did not contain a colon, however we need to allow for fully qualified
-      // windows paths with drive mappings
-      if (configUrl.indexOf(":") < 2) {
-        configUrl = "file:" + configUrl;
+  protected ArrayList getConfigUrls() {
+    return configUrls;
+  }
+
+  public void setConfigUrls(final List configUrls) {
+    this.configUrls.clear();
+    this.configUrls.add("classpath:" + ResourceUtil.getResourcePath(this, "", ".openadaptor-spring.xml"));
+    this.configUrls.addAll(configUrls);
+  }
+
+  public void addConfigUrl(String configUrl) {
+    this.configUrls.add(configUrl);
+  }
+
+  protected int getJmxPort() {
+    return jmxPort;
+  }
+
+  public void setJmxPort(final int jmxPort) {
+    this.jmxPort = jmxPort;
+  }
+
+  protected void parseArgs(String[] args) {
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals("-config")) {
+        configUrls.add(getOptionValue(args, i++));
+      } else if (args[i].equals("-bean")) {
+        beanId = getOptionValue(args, i++);
+      } else if (args[i].equals("-jmxport")) {
+        String jmxPortString = getOptionValue(args, i++);
+        try {
+          jmxPort = Integer.parseInt(jmxPortString);
+          if ((jmxPort <= 0) || (jmxPort > 65535)) {
+            throw new RuntimeException("Illegal jmx port specified: " + jmxPort + ". Valid range is [1-65535]");
+          }
+        } catch (NumberFormatException nfe) {
+          throw new RuntimeException("-jmx option requires a integer port number");
+        }
+      } else {
+        throw new RuntimeException("unrecognised cmd line arg " + args[i]);
       }
-      XmlBeanFactory factory = new XmlBeanFactory(new UrlResource(configUrl));
-      preProcessFactory(propsUrl, factory);
-      setComponentIds(factory);
-      configureMBeanServer(factory, jmxPort, configUrl, propsUrl);
-      return factory;
-    } catch (BeansException e) {
-      log.error("error", e);
-      throw new RuntimeException("BeansException : " + e.getMessage());
-    } catch (MalformedURLException e) {
-      log.error("error", e);
-      throw new RuntimeException("MalformedUrlException : " + e.getMessage());
     }
   }
 
-  public static void runXml(String configUrl, String propsUrl, String beanId) {
-    runXml(configUrl, propsUrl, beanId, 0);
+  protected String getConfigUrlsString() {
+    StringBuffer buffer = new StringBuffer();
+    for (Iterator iter = configUrls.iterator(); iter.hasNext();) {
+      buffer.append(buffer.length() > 0 ? "," : "").append(iter.next());
+    }
+    return buffer.toString();
+  }
+  
+  public void run() {
+    Runnable bean = getRunnableBean(createBeanFactory());
+    if (bean instanceof Application) {
+      ((Application)bean).setConfigData(getConfigUrlsString());
+    }
+    Thread.currentThread().setName(beanId);
+    bean.run();
   }
 
-  /**
-   * run a spring application, creates Xml bean factory from url post processes factory using optional properties url
-   * and system properties gets runnable bean and calls run
-   * 
-   * @param configUrl
-   *          url that points to xml spring config
-   * @param propsUrl
-   *          url that points to properties file
-   * @param beanId
-   *          id of bean that implements Runnable
-   */
-  public static void runXml(String configUrl, String propsUrl, String beanId, int jmxPort) {
-    try {
-      ListableBeanFactory factory = getBeanFactory(configUrl, propsUrl, jmxPort);
-      Runnable runnerBean = (Runnable) factory.getBean(beanId);
-      Thread.currentThread().setName(beanId);
-      runnerBean.run();
-    } catch (BeansException e) {
-      log.error("bean exception", e);
-      throw new RuntimeException("BeansException : " + e.getMessage());
+  protected Runnable getRunnableBean(ListableBeanFactory factory) {
+    String beanId = getBeanId();
+    if (beanId == null) {
+      throw new RuntimeException("No bean specified");
+    }
+    return (Runnable) factory.getBean(beanId);
+  }
+  
+  protected static void usage(PrintStream ps) {
+    ps.println("usage: java " + SpringApplication.class.getName() 
+        + "\n  -config <url> [ -config <url> ]" 
+        + "\n  -bean <id> "
+        + "\n  [-jmxport <http port>]"
+        + "\n\n"
+        + " e.g. java " + SpringApplication.class.getName() + " -config file:test.xml -bean Application");
+  }
+
+  private ListableBeanFactory createBeanFactory() {
+    if (configUrls.isEmpty()) {
+      throw new RuntimeException("no config urls specified");
+    }
+    GenericApplicationContext context = new GenericApplicationContext();
+    for (Iterator iter = configUrls.iterator(); iter.hasNext();) {
+      String configUrl = (String) iter.next();
+      loadBeanDefinitions(configUrl, context);
+    }
+    context.refresh();
+    setComponentIds(context);
+    configureMBeanServer(context);
+    return context;
+  }
+
+  protected void loadBeanDefinitions(String url, GenericApplicationContext context) {
+    String protocol = "";
+    if (url.indexOf(':') != -1) {
+      protocol = url.substring(0, url.indexOf(':'));
+    }
+    
+    if (protocol.equals("file") || protocol.equals("http")) {
+      loadBeanDefinitionsFromUrl(url, context);
+    } else if (protocol.equals("classpath")) {
+      loadBeanDefinitionsFromClasspath(url, context);
+    } else {
+      loadBeanDefinitions("file:" + url, context);
     }
   }
 
-  private static void preProcessFactory(String propsUrl, XmlBeanFactory factory) throws MalformedURLException {
-    PropertyPlaceholderConfigurer configurer = new PropertyPlaceholderConfigurer();
-    if (propsUrl != null) {
-      if (propsUrl.indexOf(":") == -1) {
-        propsUrl = "file:" + propsUrl;
+  private void loadBeanDefinitionsFromClasspath(String url, GenericApplicationContext context) {
+    String resourceName = url.substring(url.indexOf(':') + 1);
+    BeanDefinitionReader reader = null;
+    if (url.endsWith(".xml")) {
+      reader = new XmlBeanDefinitionReader(context);
+    } else if (url.endsWith(".properties")) {
+      reader = new PropertiesBeanDefinitionReader(context);
+    }
+    
+    if (reader != null) {
+      reader.loadBeanDefinitions(new ClassPathResource(resourceName));
+    } else {
+      throw new RuntimeException("No BeanDefinitionReader associated with " + url);
+    }
+  }
+
+  private void loadBeanDefinitionsFromUrl(String url, GenericApplicationContext context) {
+    BeanDefinitionReader reader = null;
+    if (url.endsWith(".xml")) {
+      reader = new XmlBeanDefinitionReader(context);
+    } else if (url.endsWith(".properties")) {
+      reader = new PropertiesBeanDefinitionReader(context);
+    }
+    
+    if (reader != null) {
+      try {
+        reader.loadBeanDefinitions(new UrlResource(url));
+      } catch (BeansException e) {
+        log.error("error", e);
+        throw new RuntimeException("BeansException : " + e.getMessage());
+      } catch (MalformedURLException e) {
+        log.error("error", e);
+        throw new RuntimeException("MalformedUrlException : " + e.getMessage());
       }
-      configurer.setLocation(new UrlResource(propsUrl));
+    } else {
+      throw new RuntimeException("No BeanDefinitionReader associated with " + url);
     }
-    configurer.setProperties(System.getProperties());
-    configurer.postProcessBeanFactory(factory);
   }
 
-  private static void setComponentIds(XmlBeanFactory factory) {
+  private static void setComponentIds(ListableBeanFactory factory) {
     String[] beanNames = factory.getBeanDefinitionNames();
     for (int i = 0; i < beanNames.length; i++) {
       Object bean = factory.getBean(beanNames[i]);
@@ -211,18 +260,18 @@ public class SpringApplication {
     }
   }
 
-  private static void configureMBeanServer(XmlBeanFactory factory, int jmxPort, String configUrl, String propsUrl) {
+  private void configureMBeanServer(ListableBeanFactory factory) {
     MBeanServer mbeanServer = (MBeanServer) getFirstBeanOfType(factory, MBeanServer.class);
     if (mbeanServer == null && jmxPort != 0) {
       mbeanServer = new org.openadaptor.core.jmx.MBeanServer(jmxPort);
     }
     if (mbeanServer != null) {
-      attemptToRegisterBean(new FactoryConfig(configUrl, propsUrl), mbeanServer, "Config");
+      attemptToRegisterBean(new FactoryConfig(configUrls), mbeanServer, "Config");
       String[] beanNames = factory.getBeanDefinitionNames();
       for (int i = 0; i < beanNames.length; i++) {
         Object bean = factory.getBean(beanNames[i]);
         if (bean instanceof Administrable) {
-          bean = ((Administrable)bean).getAdmin();
+          bean = ((Administrable) bean).getAdmin();
         }
         attemptToRegisterBean(bean, mbeanServer, beanNames[i]);
       }
@@ -243,11 +292,19 @@ public class SpringApplication {
     }
   }
 
-  public static Object getFirstBeanOfType(DefaultListableBeanFactory factory, Class beanClass) {
+  private static Object getFirstBeanOfType(ListableBeanFactory factory, Class beanClass) {
     Map beanMap = factory.getBeansOfType(MBeanServer.class);
     for (Iterator iter = beanMap.values().iterator(); iter.hasNext();) {
       return iter.next();
     }
     return null;
+  }
+
+  private static String getOptionValue(String[] args, int index) {
+    if (args.length > index + 1) {
+      return args[index + 1];
+    } else {
+      throw new RuntimeException("Option " + args[index] + " requires a value, which has not been supplied");
+    }
   }
 }

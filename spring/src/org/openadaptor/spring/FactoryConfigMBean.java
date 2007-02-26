@@ -28,7 +28,5 @@
 package org.openadaptor.spring;
 
 public interface FactoryConfigMBean {
-
   String dumpConfig();
-  String dumpProperties();
 }

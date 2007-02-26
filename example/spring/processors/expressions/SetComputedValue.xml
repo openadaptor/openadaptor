@@ -19,7 +19,7 @@
 
     Run it like this...
 
-      java org.openadaptor.spring.SpringApplication -config SetComputedValue.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config SetComputedValue.xml -bean Adaptor
 
     You need the following in your classpath
 

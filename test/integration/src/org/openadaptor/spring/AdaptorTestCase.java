@@ -33,47 +33,52 @@
 
 package org.openadaptor.spring;
 
-import org.openadaptor.spring.SpringApplication;
-import org.openadaptor.util.ResourceUtil;
-
 import junit.framework.TestCase;
+
+import org.openadaptor.util.ResourceUtil;
 
 public class AdaptorTestCase extends TestCase {
   protected static final String RESOURCE_LOCATION = "test/integration/src/";
 
+  private void runAdaptor(String configUrl) {
+    SpringAdaptor app = new SpringAdaptor();
+    app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, configUrl));
+    app.run();
+  }
+  
   public void testAdaptor1() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor1.xml"), null, "Adaptor");
+    runAdaptor("adaptor1.xml");
   }
   
   public void testAdaptor1a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor1a.xml"), null, "Adaptor");
+    runAdaptor("adaptor1a.xml");
   }
   
   public void testAdaptor2() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor2.xml"), null, "Adaptor");
+    runAdaptor("adaptor2.xml");
   }
   
   public void testAdaptor2a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor2a.xml"), null, "Adaptor");
+    runAdaptor("adaptor2a.xml");
   }
   
   public void testAdaptor3() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor3.xml"), null, "Adaptor");
+    runAdaptor("adaptor3.xml");
   }
   
   public void testAdaptor3a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor3a.xml"), null, "Adaptor");
+    runAdaptor("adaptor3a.xml");
   }
   
   public void testAdaptor4() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor4.xml"), null, "Adaptor");
+    runAdaptor("adaptor4.xml");
   }
 
   public void testAdaptor4a() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor4a.xml"), null, "Adaptor");
+    runAdaptor("adaptor4a.xml");
   }
 
   public void testAdaptor5() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "adaptor5.xml"), null, "Adaptor");
+    runAdaptor("adaptor5.xml");
   }
 }

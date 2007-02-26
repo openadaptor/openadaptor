@@ -20,7 +20,7 @@
 
     Run it like this...
     
-      java org.openadaptor.spring.SpringApplication -config doxml_reader.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config doxml_reader.xml -bean Adaptor
     
     You need the following in your classpath
   

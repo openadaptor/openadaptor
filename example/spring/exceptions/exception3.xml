@@ -17,7 +17,7 @@
     
     Run it like this...
     
-      java org.openadaptor.spring.SpringApplication -config exception3.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config exception3.xml -bean Adaptor
     
     You need the following in your classpath
   

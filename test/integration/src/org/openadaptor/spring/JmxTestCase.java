@@ -33,16 +33,18 @@
 
 package org.openadaptor.spring;
 
-import org.openadaptor.spring.SpringApplication;
-import org.openadaptor.util.ResourceUtil;
-
 import junit.framework.TestCase;
+
+import org.openadaptor.util.ResourceUtil;
 
 public class JmxTestCase extends TestCase {
   protected static final String RESOURCE_LOCATION = "test/integration/src/";
 
   public void test() {
-    SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "jmx.xml"), null, "Test");
+    SpringApplication app = new SpringApplication();
+    app.addConfigUrl("file:" + ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "jmx.xml"));
+    app.setBeanId("Test");
+    app.run();
   }
 	
 	public static final class Test implements Runnable, TestMBean {

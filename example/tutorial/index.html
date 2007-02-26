@@ -77,7 +77,7 @@ a test web page, ultimately we will replace this with something a bit more reali
 To run this adaptor type this in the aformentioned command prompt / shell.</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml 
 </pre></div>
 
 <p>You should see a flurry of logging which includes the openadaptor copyright notice
@@ -109,24 +109,20 @@ You should see the fields you input, echoed by your adaptor, like this</p>
 <p>The rest of this section explains what has happened and some details about how.</p>
 
 <h3>Understanding the program you ran</h3>
-<p>The java program you ran <code>org.openadaptor.spring.SpringApplication</code> is a
+<p>The java program you ran <code>org.openadaptor.spring.SpringAdaptor</code> is a
 helper class that we provide in <code>openadaptor-spring.jar</code>. The config argumemnt 
-is a url for a spring XML configuration and the bean argument is 
-the name of a bean in the configuration file that implements <code>java.lang.Runnable</code>.
-This helper class is not specific to any of the openadaptor code, it simply provides a
-convenient way of launching a stand alone process based on a spring XML configuration.</p>
+is a url for a spring XML configuration.</p>
 
 <p>If the url for the configuration file does not specify a protocol then the program
 assumes that it is a file url, hence the following are equivalent.</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor
-  java org.openadaptor.spring.SpringApplication -config file:step01.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml 
+  java org.openadaptor.spring.SpringAdaptor -config file:step01.xml 
 </pre></div>
 
 <h3>Understanding the spring XML configuration file</h3>
-<p>If you understood the previous section then it then it makes sense that the first part of the
-configuration file to look at is the "Adaptor" bean. Here it is</p>
+<p>The first part of the configuration file to look at is the "Adaptor" bean. Here it is</p>
 
 <textarea cols="100" rows="5" readonly="true">
 
@@ -181,21 +177,36 @@ log4j is very powerful, please refer to <a href="http://logging.apache.org" targ
 for more information on how to configure log4j.</p>
 
 <h3>Other arguments to the program you ran</h3>
-<p><code>org.openadaptor.spring.SpringApplication</code> can also accept a url to a 
-java properties file, this enables you to separate out
-certain configuration values that are then referred to indirectly in the config file.
-Typically you want to do this for environment specific parameters, so that you can have
-a single config that can be used with different properties files for different environments
-(test, uat, production, etc...). As with the config url, the helper class will assume that
-the protocol is file.</p>
+<p><code>org.openadaptor.spring.SpringAdaptor</code> can actually accept multiple config urls.
+Typically you want to do this to re-use common spring components or to "mix-in" environment specific 
+properties (test, uat, production, etc...).For example</p> 
 
-<p>It can also accept a jmx port number argument, If this is specified then the helper class
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml -config uat.xml
+</pre></div>
+  
+<p>The config url can be based on the following protocols:</p>
+<li>file:</li>
+<li>http:</li>
+<li>classpath:</li>
+<br/>
+      
+<p>The program can accept a bean argument, which identifies the Adaptor bean that it should run. If
+this is not specified then the program "looks" for a bean of type Adaptor, and if one and only one is found
+it defaults to this. Hence the following is equivalent:</p>
+  
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml -bean Adaptor
+</pre></div>
+ 
+<p>The program can also accept a jmx port number argument, If this is specified then the helper class
 will automatically start a JMX server and HTTP adaptor, any named beans in the config that have
 MBeans will be automatically registered with the MBeanServer. NOTE: alternatively you are free to
 use standard spring mechanism for JMX instrumentation. Try rerunning the adaptor like this</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step01.xml -bean Adaptor -jmx 9001
+  java org.openadaptor.spring.SpringAdaptor -config step01.xml -jmxport 9001
 </pre></div>
 
 <p>You should notice that there is now additonal log output that relates to the JMX MBeanServer
@@ -235,7 +246,7 @@ the additional bean and the modified config for the Pipeline bean.</p>
 <p>Run it like this (make sure you stop the previous adaptor)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step02.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step02.xml 
 </pre></div>
 
 <p>and test with the test webpage <a href="test.html" target="_blank">test.html</a></p>
@@ -289,7 +300,7 @@ the additional bean and the modified config for the Pipeline bean.</p>
 <p>Run it like this (make sure you stop the previous adaptor)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step03.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step03.xml 
 </pre></div>
 
 <p>and test with the test webpage <a href="test.html" target="_blank">test.html</a>.
@@ -328,7 +339,7 @@ Here are the additional beans and the modified Pipeline configuration.</p>
 <p>Run it like this (make sure you stop the previous adaptor)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step03a.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step03a.xml 
 </pre></div>
 
 <p>Repeat the previous test,  <a href="test.html" target="_blank">test.html</a> this time the
@@ -382,7 +393,7 @@ the following jar file to the opendapator lib\3rdparty dir</p>
 <p>Run it like this (make sure you stop the previous adaptor)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step04.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step04.xml 
 </pre></div>
 
 <p>When you test, <a href="test.html" target="_blank">test.html</a>, the adaptor will
@@ -409,7 +420,7 @@ to follow the <a href="#setup">set up instructions</a>. Once you have done that 
 is how to run it</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step05.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step05.xml 
 </pre></div>
 
 <p>You should see the messages that you published to the queue in Step 4. You
@@ -501,7 +512,7 @@ underlying data is an XML document. Here is the config for this bean</p>
   publisher from Step4 running)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step06.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step06.xml 
 </pre></div>
 
 <p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
@@ -558,7 +569,7 @@ of the bean (it is also possible to specify the template as a file).</p>
   tickers of XXX so change it back to something else.</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step07.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step07.xml 
 </pre></div>
 
 <p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
@@ -610,7 +621,7 @@ with an alternative implementation. Here is how to run it, (make sure you stop t
 adaptor from Step7 but leave the JMS publisher from Step4 running)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step08.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step08.xml 
 </pre></div>
 
 <p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
@@ -747,7 +758,7 @@ a map property. Here is the config.</p>
   from Step4 running)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step09.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step09.xml 
 </pre></div>
 
 <p>When you test with the webpage <a href="test.html" target="_blank">test.html</a>
@@ -818,7 +829,7 @@ Here is the bean.</p>
   adaptor from Step9 running to see the output from the JMS queue)</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringApplication -config step10.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config step10.xml 
 </pre></div>
 
 <p>The supplied data file should produce two succssful SQL updates, a dicarded XXX message, a JMS

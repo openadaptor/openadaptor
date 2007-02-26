@@ -33,10 +33,9 @@
 
 package org.openadaptor.spring;
 
-import org.openadaptor.spring.SpringApplication;
-import org.openadaptor.util.ResourceUtil;
-
 import junit.framework.TestCase;
+
+import org.openadaptor.util.ResourceUtil;
 
 public class SpringApplicationTestCase extends TestCase {
 
@@ -48,34 +47,27 @@ public class SpringApplicationTestCase extends TestCase {
   }
 	
 	public void testNoProps() {
-		try {
-			SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"), null, "Test");
-			fail();
-		} catch (RuntimeException e) {
-		}
-	}
-	
-	public void testPropsFile() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"),
-        ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.properties"), "Test");
-		assertTrue(result.equals("foo"));
+    SpringApplication app = new SpringApplication();
+    app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
+    app.setBeanId("Test");
+		app.run();
+    assertTrue(result.equals("foo"));
 	}
 	
 	public void testSystemProps() {
 		System.setProperty("message", "foobar");
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"), null, "Test");
+    SpringApplication app = new SpringApplication();
+    app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
+    app.setBeanId("Test");
+    app.run();
 		assertTrue(result.equals("foobar"));
 	}
 	
-	public void testSystemPropsOverride() {
-		System.setProperty("message", "foobar");
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"), ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.properties"), "Test");
-		assertTrue(result.equals("foo"));
-	}
-	
 	public void testRunner() {
-		SpringApplication.runXml(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"),
-        ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.properties"), "Runnables");
+    SpringApplication app = new SpringApplication();
+    app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
+    app.setBeanId("Runnables");
+    app.run();
 		assertTrue(result.equals("run1run2") || result.equals("run2run1"));
 	}
 	
