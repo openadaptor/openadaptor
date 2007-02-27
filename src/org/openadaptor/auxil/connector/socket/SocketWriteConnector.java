@@ -25,50 +25,47 @@
  of the Software with other software or hardware.
  */
 
-package org.openadaptor.auxil.connector.iostream.writer;
+package org.openadaptor.auxil.connector.socket;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.writer.AbstractStreamWriteConnector;
 import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 
-/**
- * Basic implementation of a TCP/IP socket. Will connect to a remote server on
- * a specified port and write the incoming data to it. Currently, the adaptor
- * will stop after the data has been transferred.
- *
- * @author Russ Fennell
- */
 public class SocketWriteConnector extends AbstractStreamWriteConnector {
 
   private static final Log log = LogFactory.getLog(SocketWriteConnector.class);
 
-  private String hostname;
+  private String remoteHostname;
 
-  private int port = -1;
+  private int port;
 
   private Socket socket;
 
-  /**
-   * Mandatory
-   *
-   * @param hostname name or ip address of the remote server to connect to
-   */
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
+  public SocketWriteConnector(String id) {
+    super(id);
+    setDataWriter(new LineWriter());
+  }
+
+  public void setRemoteHostname(String hostname) {
+    this.remoteHostname = hostname;
   }
 
   /**
    * Mandatory
-   *
-   * @param port the TCP/IP port number that the remote server is listening on
+   * 
+   * @param port
+   *          the TCP/IP port number to accept connections on or to connect to
+   *          on the remote server
    */
   public void setPort(int port) {
     this.port = port;
@@ -81,10 +78,7 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
    */
   public void validate(List exceptions) {
     super.validate(exceptions);
-    if (hostname == null) {
-      exceptions.add(new ValidationException("hostname property not set", this));
-    }
-    if (port == -1) {
+    if (port == 0) {
       exceptions.add(new ValidationException("port property not set", this));
     }
   }
@@ -99,20 +93,28 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
   }
 
   /**
-   * Connects to the remote server and returns an OutputStream that can be used to
-   * communicate with it via the specified port.
-   *
-   * @return a comms stream
-   *
+   * If the {@link #remoteHostname} property is set then connects to remote host
+   * and returns the OutputStream from that socket. Otherwise it creates a ServerSocket
+   * and waits for a connection from a client, when this happens it returns the OutputStream
+   * from that socket;
+
    * @throws IOException if there was a comms error
    */
   protected OutputStream getOutputStream() throws IOException {
-    log.info(getId() + " connecting to " + hostname + ":" + port);
-    try {
-      socket = new Socket(hostname, port);
+    if (remoteHostname != null) {
+      log.info(getId() + " connecting to " + remoteHostname + ":" + port);
+      try {
+        socket = new Socket(remoteHostname, port);
+        return socket.getOutputStream();
+      } catch (UnknownHostException e) {
+        throw new ConnectionException("UnknownHostExceptiont, " + remoteHostname + ", " + e.getMessage(), e, this);
+      }
+    } else {
+      log.info(getId() + " waiting for connection...");
+      ServerSocket serverSocket = new ServerSocket(port);
+      socket = serverSocket.accept();
+      log.info(getId() + " accepted connection from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
       return socket.getOutputStream();
-    } catch (UnknownHostException e) {
-      throw new ConnectionException("UnknownHostExceptiont, " + hostname + ", " + e.getMessage(), e, this);
     }
   }
 
@@ -120,7 +122,7 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
    * Closes the connection to the remote server.
    */
   public void disconnect() {
-    log.debug(getId() + " disconnecting from host:port " + hostname + ":" + port);
+    log.debug(getId() + " disconnecting");
     super.disconnect();
     if (socket != null) {
       try {

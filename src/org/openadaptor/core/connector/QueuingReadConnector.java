@@ -74,15 +74,14 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   
   /**
    * The max number of data elements to dequeue in a single call to next(), defaults to 1
-   * @param batchSize
    */
   public void setBatchSize(final int batchSize) {
     this.batchSize = batchSize;
   }
   
   /**
-   * if true then calls to enqueue block until the current transaction is completed
-   * @param isTransacted
+   * if true then this instance implements {@link ITransactional} by 
+   * return a {@link ITransactionalResource}
    */
   public void setTransacted(final boolean isTransacted) {
     this.isTransacted = isTransacted;
@@ -92,7 +91,6 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
    * set the max number of data elements that can be queue, the behaviour of what happens
    * when this is reached is controlled by the blockOnQueue property. Defaults to zero
    * which means unlimited queue size.
-   * @param limit
    */
   public void setQueueLimit(int limit) {
     this.queueLimit = limit;
@@ -100,15 +98,16 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   
   /**
    * if set then the call to enqueue data will block if the queue is full. 
-   * @param block
    */
   public void setBlockOnQueue(boolean block) {
     this.blockOnQueue = block;
   }
   
   /**
-   * currently synchronized because there is only one transactional resource
-   * @param data
+   * adds some data to the queue, currently synchronized because there is only one 
+   * transactional resource. If this component is configured to be transactional
+   * and a transaction has been begun, then this call will block until the transaction
+   * commits or rollsback.
    */
   protected synchronized void enqueue(Object data) {
     synchronized (LOCK) {
@@ -135,7 +134,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     if (isTransacted) {
       synchronized (resource) {
         try {
-          if (!resource.isFinished()) {
+          while (resource.inTransaction) {
             resource.wait();
           }
         } catch (InterruptedException e) {
@@ -198,24 +197,20 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   class MyTransactionalResource implements ITransactionalResource {
 
     Throwable errorOrException = null;
-    boolean finished = false;
+    boolean inTransaction = false;
     
-    public boolean isFinished() {
-      return finished;
-    }
-
     public void begin() {
+      inTransaction = true;
       errorOrException = null;
-      finished = false;
     }
 
     public synchronized void commit() {
-      finished = true;
+      inTransaction = false;
       notify();
     }
 
     public synchronized void rollback(Throwable t) {
-      finished = true;
+      inTransaction = false;
       errorOrException = t != null ? t : new RuntimeException("rolled back with no exception chek logs");
       notify();
     }

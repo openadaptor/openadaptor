@@ -47,7 +47,7 @@
   </bean>
 
   <!-- Reader that accepts a single socket connection on a configured port and reads data -->
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.SocketServerReadConnector">
+  <bean id="Reader" class="org.openadaptor.auxil.connector.socket.SocketReadConnector">
     <property name="port" value="9990"/>
   </bean>
 

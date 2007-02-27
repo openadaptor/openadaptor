@@ -49,8 +49,8 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <!-- Writer that connects to remote socket and writes data -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.SocketWriteConnector">
-    <property name="hostname" value="localhost"/>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.socket.SocketWriteConnector">
+    <property name="remoteHostname" value="localhost"/>
     <property name="port" value="9990"/>
   </bean>
   
