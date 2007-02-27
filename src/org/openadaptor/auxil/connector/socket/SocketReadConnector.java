@@ -194,7 +194,7 @@ public class SocketReadConnector extends QueuingReadConnector {
     
     public void run() {
       connector.connect();
-      while (true) {
+      while (!connector.isDry()) {
         Object[] data = connector.next(0);
         for (int i = 0; data != null && i < data.length; i++) {
           enqueue(data[i]);

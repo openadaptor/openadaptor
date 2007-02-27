@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -105,6 +106,7 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
       log.info(getId() + " connecting to " + remoteHostname + ":" + port);
       try {
         socket = new Socket(remoteHostname, port);
+        configureSocket(socket);
         return socket.getOutputStream();
       } catch (UnknownHostException e) {
         throw new ConnectionException("UnknownHostExceptiont, " + remoteHostname + ", " + e.getMessage(), e, this);
@@ -114,11 +116,17 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
       ServerSocket serverSocket = new ServerSocket(port);
       socket = serverSocket.accept();
       log.info(getId() + " accepted connection from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+      configureSocket(socket);
       return socket.getOutputStream();
     }
   }
 
-  /**
+ private void configureSocket(Socket socket2) throws SocketException {
+    socket.setTcpNoDelay(true);
+    socket.setKeepAlive(true);
+  }
+
+ /**
    * Closes the connection to the remote server.
    */
   public void disconnect() {
