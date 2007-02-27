@@ -181,6 +181,7 @@ public class Application implements IComponent {
         log.warn("failed to post registration properties : " + e.getMessage());
       }
     }
+    registered = true;
   }
 
   private String getRegistrationUrl() {

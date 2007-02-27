@@ -35,15 +35,19 @@ import java.util.List;
 
 /**
  * trivial implementation of IStatementConverter, calls toString() on data and
- * creates a PreparedStatement with that String.
+ * creates a PreparedStatement with that String. Escapes ' chars automatically
+ * but this can be switched off.
  * @author perryj
  *
  */
 public class StatementConverter implements IStatementConverter {
 
+  private boolean escapeQuotes = true;
+  
   public PreparedStatement convert(Object data, Connection connection) {
     try {
-      return connection.prepareStatement(data.toString());
+      String sql = escapeQuotes ? data.toString().replaceAll("'", "''") : data.toString();
+      return connection.prepareStatement(sql);
     } catch (Exception e) {
       throw new RuntimeException("failed to convert data to PreparedStatement, " + e.getMessage(), e);
     }
@@ -64,5 +68,13 @@ public class StatementConverter implements IStatementConverter {
    * @param comp       the component that this converter is connected to
    */
   public void validate(List exceptions, Component comp) {
+  }
+
+  /**
+   * 
+   * @param escapeQuotes controls whether single quotes are escaped
+   */
+  public void setEscapeQuotes(final boolean escapeQuotes) {
+    this.escapeQuotes = escapeQuotes;
   }
 }

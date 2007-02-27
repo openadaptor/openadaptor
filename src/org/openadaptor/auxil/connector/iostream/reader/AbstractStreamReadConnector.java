@@ -97,15 +97,15 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
         inputStream = null;
       } catch (IOException e) {
       }
+      try {
+        dataReader.close();
+      } catch (IOException e) {
+      }
     }
   }
 
   public void disconnect() {
     closeInputStream();
-    try {
-      dataReader.close();
-    } catch (IOException e) {
-    }
   }
 
   public Object getReaderContext() {

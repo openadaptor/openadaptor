@@ -48,6 +48,9 @@ public class FactoryConfig implements FactoryConfigMBean {
     for (Iterator iter = configUrls.iterator(); iter.hasNext();) {
       String configUrl = (String) iter.next();
       try {
+        if (configUrl.indexOf(":") < 2) {
+          configUrl = "file:" + configUrl;
+        }
         URL url = new URL(configUrl);
         InputStream is = url.openStream();
         BufferedReader r = new BufferedReader(new InputStreamReader(is));

@@ -105,6 +105,8 @@
       <fileset dir="${dir.src}">
         <include name="**/*.properties"/>
         <include name="**/licence.txt"/>
+        <include name="**/*.html"/>
+        <exclude name="**/package.html"/>
       </fileset>
       <filterset>
         <filter token="BUILDCOMPILER" value="${ant.java.version}"/>

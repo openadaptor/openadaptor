@@ -99,7 +99,8 @@ public class LifecycleDelegate {
 
   public void setState(State state) {
     synchronized (WAIT) {
-      if (currentState != state) {
+      if (currentState != state && isValidTransition(state)) {
+//        log.debug(component.getId() + " setting current state to " + state);
         currentState = state;
         notifyListeners(currentState);
       }
@@ -114,12 +115,26 @@ public class LifecycleDelegate {
   public void waitForState(State state) {
     synchronized (WAIT) {
       while (currentState != state) {
+//        log.debug(component.getId() + " current state is " + currentState + ", waiting for " + state);
         try {
           WAIT.wait();
         } catch (InterruptedException e) {
         }
       }
     }
+  }
+
+  private boolean isValidTransition(State newState) {
+    if (currentState == State.STARTED) {
+      return newState == State.STOPPING || newState == State.STOPPED;
+    }
+    if (currentState == State.STOPPED) {
+      return newState == State.STARTED;
+    }
+    if (currentState == State.STOPPING) {
+      return newState == State.STOPPED;
+    }
+    return false;
   }
 
 }

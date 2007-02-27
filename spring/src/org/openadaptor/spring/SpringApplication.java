@@ -69,10 +69,6 @@ public class SpringApplication {
 
   private int jmxPort;
 
-  public SpringApplication() {
-    setConfigUrls(Collections.EMPTY_LIST);
-  }
-  
   public static void main(String[] args) {
     try {
       SpringApplication app = new SpringApplication();
@@ -101,7 +97,6 @@ public class SpringApplication {
 
   public void setConfigUrls(final List configUrls) {
     this.configUrls.clear();
-    this.configUrls.add("classpath:" + ResourceUtil.getResourcePath(this, "", ".openadaptor-spring.xml"));
     this.configUrls.addAll(configUrls);
   }
 
@@ -178,6 +173,7 @@ public class SpringApplication {
       throw new RuntimeException("no config urls specified");
     }
     GenericApplicationContext context = new GenericApplicationContext();
+    loadBeanDefinitions("classpath:" + ResourceUtil.getResourcePath(this, "", ".openadaptor-spring.xml"), context);
     for (Iterator iter = configUrls.iterator(); iter.hasNext();) {
       String configUrl = (String) iter.next();
       loadBeanDefinitions(configUrl, context);
