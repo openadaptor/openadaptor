@@ -34,6 +34,7 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -203,16 +204,20 @@ public  class JavascriptProcessor extends Component implements IDataProcessor {
       ISimpleRecord outputRecord= ((ScriptableSimpleRecord)record).getSimpleRecord();
       return new JavascriptResult(scriptResult,outputRecord);
     }
-    catch (org.mozilla.javascript.EvaluatorException ee) {
+    catch (org.mozilla.javascript.EvaluatorException ee) { // Catch JavaScript Runtime Exceptions
       log.error("Javascript execution failed: "+ee.toString());
-      throw new RuntimeException("Javascript execution failed: "+ee.toString(),ee);
+      throw new ProcessingException("Javascript execution failed: "+ee.toString(),ee, this);
     }
     catch (org.mozilla.javascript.EcmaError ece) {
       log.error("Javascript execution failed: "+ece.toString());
-      throw new RuntimeException("Javascript execution failed: "+ece.toString(),ece);
-    }    
+      throw new ProcessingException("Javascript execution failed: "+ece.toString(),ece, this);
+    }
+    catch (org.mozilla.javascript.JavaScriptException jse) { // Catch explicitly thrown JavaScript Exceptions
+      log.error("Javascript exception thrown: "+jse.toString());
+      throw new ProcessingException("JavaScript exception thrown: "+jse.toString(),jse, this);
+    }
     finally{
-      //Rhino has repectfully requested that we always make sure we exit the context!
+      //Rhino has respectfully requested that we always make sure we exit the context!
       Context.exit();
     }
   }
