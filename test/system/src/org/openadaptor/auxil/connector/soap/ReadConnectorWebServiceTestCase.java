@@ -50,26 +50,26 @@ public class ReadConnectorWebServiceTestCase extends TestCase {
     try {
       // connect (this starts jetty)
       service.setPort(9999);
-      service.setTransacted(false);
       service.connect();
 
       // invoke webservice (using axis)
-      AxisThread thread = new AxisThread(service.getEndpoint(), new String[] { "foo", "bar" });
-      thread.start();
-      try {
-        thread.join();
-      } catch (InterruptedException e) {
-      }
-
+      AxisThread t = new AxisThread(service.getEndpoint(), new String[] { "foo", "bar" });
+      t.start();
+      
       // poll service and check results
-      Object[] data = service.next(1);
+      Object[] data = service.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("foo"));
 
-      data = service.next(1);
+      data = service.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("bar"));
 
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     } finally {
       // stop jetty
       service.disconnect();

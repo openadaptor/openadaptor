@@ -27,6 +27,8 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+import java.util.List;
+
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
@@ -117,6 +119,10 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
       service.setInvoker(new BeanInvoker(ReadConnectorWebService.this));
       getController().getServiceRegistry().register(service);
     }
+  }
+
+
+  public void validate(List exceptions) {
   }
 
 }

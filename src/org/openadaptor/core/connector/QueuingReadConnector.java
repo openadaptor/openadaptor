@@ -28,6 +28,7 @@
 package org.openadaptor.core.connector;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -38,29 +39,61 @@ import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.core.transaction.ITransactionalResource;
 
 /**
- * Base class for connectors that don't really poll. This provides core implementation
- * for queuing data as it arrives from the specific transport (socket, webservice, http, etc...)
- * The data is dequeued by calls to next().
+ * Base class for connectors that don't really poll. This provides the core
+ * implementation for queuing data as it arrives from the specific transport
+ * (socket, webservice, http, etc...) The data is dequeued by calls to next().
  * 
- * By default it is configured to be transactional which mean that calls to enqueue data block 
- * until the transaction completes (if the transaction rollsback then runtime exception is thrown).
+ * Calls to {@link #enqueue} block until the data is dequeued. If data
+ * is dequeued within a transaction (i.e.
+ * {@link ITransactionalResource#begin()} has been called on this component's 
+ * {@link ITransactionalResource}) then the call to enqueue will block until the
+ * transaction completes.
  * 
- * By default the queue size is unlimited, but a queue limit can be set, as can the behaviour
- * for if the queue size ever reaches the that limit.
+ * By default the queue size is unlimited, but a queue limit can be set, as can
+ * the behaviour for if the queue size ever reaches that limit.
  * 
  * @author perryj
- *
+ * 
  */
 public abstract class QueuingReadConnector extends Component implements IReadConnector, ITransactional {
 
   private static final Log log = LogFactory.getLog(QueuingReadConnector.class);
+  
+  /**
+   * max number of elements in the data array to process in one go
+   * @see #next(long)
+   */
   private int batchSize = 1;
+  
+  /**
+   * controls whether this components provides an {@link ITransactionalResource} that
+   * can be enlisted in a transaction
+   * @see #isTransacted
+   */
   private boolean isTransacted = true;
+  
+  /**
+   * internal queue where the data is held
+   */
   private List queue = new ArrayList();
+  
+  /**
+   * maximum size of the queue
+   */
   private int queueLimit  = 0;
+  
+  /**
+   * controls whether calls to enqueue block when the queue is full
+   * @see #enqueue(Object)
+   */
   private boolean blockOnQueue = true;
-  private Object LOCK = new Object();
-  private MyTransactionalResource resource = new MyTransactionalResource();
+
+  /**
+   * implementation of {@link ITransactionalResource}, which if the component is
+   * transacted will be returned when {@link #getResource()} is called
+   */
+  private QueueTransactionalResource resource = new QueueTransactionalResource();
+  
   
   protected QueuingReadConnector() {
   }
@@ -69,9 +102,6 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     super(id);
   }
 
-  public void validate(List exceptions) {
-  }
-  
   /**
    * The max number of data elements to dequeue in a single call to next(), defaults to 1
    */
@@ -88,7 +118,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   }
   
   /**
-   * set the max number of data elements that can be queue, the behaviour of what happens
+   * set the max number of items that can be queued, the behaviour of what happens
    * when this is reached is controlled by the blockOnQueue property. Defaults to zero
    * which means unlimited queue size.
    */
@@ -97,62 +127,74 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   }
   
   /**
-   * if set then the call to enqueue data will block if the queue is full. 
+   * if set then the call to enqueue data will block if the queue is full, 
+   * otherwise and exception is thrown.
    */
   public void setBlockOnQueue(boolean block) {
     this.blockOnQueue = block;
   }
   
   /**
-   * adds some data to the queue, currently synchronized because there is only one 
-   * transactional resource. If this component is configured to be transactional
-   * and a transaction has been begun, then this call will block until the transaction
-   * commits or rollsback.
+   * adds some data to the queue, blocks until the data is dequeued
    */
-  protected synchronized void enqueue(Object data) {
-    if (isTransacted) {
-      synchronized (resource) {
-        untransactedEnqueue(data);
-        try {
-          while (resource.inTransaction) {
-            resource.wait();
-          }
-        } catch (InterruptedException e) {
-          throw new RuntimeException("thread interupted whilst waiting for transaction to complete");
-        }
-        if (resource.rolledBack()) {
-          throw new RuntimeException(resource.getErrorOrException());
-        }
-      }
-    } else {
-      untransactedEnqueue(data);
-    }
-  }
-
-  private void untransactedEnqueue(Object data) {
-    synchronized (LOCK) {
+  protected void enqueue(Object data) {
+    
+    QueueItem item = new QueueItem(data);
+    
+    synchronized (queue) {
       while (queueLimit > 0 && queue.size() >= queueLimit) {
         if (blockOnQueue) {
           try {
             log.debug("queue full");
-            LOCK.wait();
+            queue.wait();
           } catch (InterruptedException e) {
+            throw new RuntimeException("thread interupted whilst waiting queue data");
           }
         } else {
-          log.error(getId() + " queue size has exceeded limit, discarding data");
-          return;
+          throw new RuntimeException("queue size has exceeded limit, discarding data");
         }
       }
-      queue.add(queue.size(), data);
+      queue.add(queue.size(), item);
       if (log.isDebugEnabled()) {
         log.debug(getId() + " queued data"); 
       }
-      LOCK.notify();
+      queue.notify();
+    }
+    
+    item.waitForDequeueNotification();
+  }
+
+  /**
+   * this dequeues the data
+   */
+  public Object[] next(long timeoutMs) {
+    synchronized (queue) {
+      
+      if (queue.size() == 0) {
+        try {
+          queue.wait(timeoutMs);
+        } catch (InterruptedException e) {
+        }
+      }
+
+      Object[] data = new Object[Math.min(batchSize, queue.size())];
+      for (int i = 0; i < data.length; i++) {
+        QueueItem item = (QueueItem) queue.remove(0);
+        resource.add(item);
+        data[i] = item.data;
+      }
+      
+      if (data.length > 0) {
+        queue.notify();
+        return data;
+      } else {
+        return null;
+      }
     }
   }
-  
+
   protected boolean queueIsEmpty() {
-    synchronized (LOCK) {
+    synchronized (queue) {
       return queue.isEmpty();
     }
   }
@@ -165,27 +207,6 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     return false;
   }
 
-  public Object[] next(long timeoutMs) {
-    synchronized (LOCK) {
-      if (queue.size() == 0) {
-        try {
-          LOCK.wait(timeoutMs);
-        } catch (InterruptedException e) {
-        }
-      }
-      Object[] data = new Object[Math.min(batchSize, queue.size())];
-      for (int i = 0; i < data.length; i++) {
-        data[i] = queue.remove(0);
-      }
-      if (data.length > 0) {
-        LOCK.notify();
-        return data;
-      } else {
-        return null;
-      }
-    }
-  }
-
   public Object getResource() {
     if (isTransacted) {
       return resource;
@@ -194,37 +215,94 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
     }
   }
 
-  //
-  // inner class that integrates with openadaptor transaction management
-  //
-  
-  class MyTransactionalResource implements ITransactionalResource {
+  /**
+   * {@link ITransactionalResource} implementation. One of these is returned if
+   * the ReadConnector is transacted. When {@link QueueItem}s are dequeued they
+   * are added to an instance of this class. This class will set the processing
+   * state of the QueueItem and allow the queueing thread block for that event.
+   * If a transaction has not begun then it simply sets the state to COMMITTED
+   * straight away. However if a transaction has been begin then the state will
+   * only be set once commit/rollback is called on this resource.
+   */
+  class QueueTransactionalResource implements ITransactionalResource {
 
-    Throwable errorOrException = null;
-    boolean inTransaction = false;
+    private boolean inTransaction = false;
+    private List items = new ArrayList();
     
-    public void begin() {
+    public synchronized void begin() {
+      if (inTransaction) {
+        throw new RuntimeException("attempt to begin a transaction whilst one is already in progress");
+      }
       inTransaction = true;
-      errorOrException = null;
     }
 
     public synchronized void commit() {
+      for (Iterator iter = items.iterator(); iter.hasNext();) {
+        QueueItem item = (QueueItem) iter.next();
+        item.complete();
+      }
+      items.clear();
       inTransaction = false;
-      notify();
     }
 
     public synchronized void rollback(Throwable t) {
+      for (Iterator iter = items.iterator(); iter.hasNext();) {
+        QueueItem item = (QueueItem) iter.next();
+        item.fail(t);
+      }
+      items.clear();
       inTransaction = false;
-      errorOrException = t != null ? t : new RuntimeException("rolled back with no exception chek logs");
-      notify();
     }
     
-    public Throwable getErrorOrException() {
-      return errorOrException;
+    private synchronized void add(QueueItem item) {
+      if (inTransaction) {
+        items.add(item);
+      } else {
+        item.complete();
+      }
+    }
+  }
+  
+  /**
+   * wrapper class that holds data to be processed, allows queueing and dequeing thread
+   * to synchronise processing and communicate status.
+   */
+
+  class QueueItem {
+    
+    Object data;
+    boolean completed = false;
+    boolean failed = false;
+    Throwable throwable = null;
+    
+    QueueItem(Object data) {
+      this.data = data;
     }
     
-    public boolean rolledBack() {
-      return errorOrException != null;
+    synchronized void complete() {
+      completed = true;
+      notifyAll();
+    }
+    
+    synchronized void fail(Throwable t) {
+      throwable = t;
+      completed = true;
+      failed = true;
+      notifyAll();
+    }
+    
+    synchronized void waitForDequeueNotification() {
+      while (!completed) {
+        try {
+          log.debug("waiting for processing to complete");
+          wait();
+        } catch (InterruptedException e) {
+          throw new RuntimeException("interupted waiting for processing to complete", e);
+        }
+      }
+      if (failed) {
+        throw new RuntimeException("processing failed", throwable);
+      }
     }
   }
 }

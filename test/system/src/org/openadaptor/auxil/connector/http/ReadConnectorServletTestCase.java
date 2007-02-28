@@ -67,7 +67,6 @@ public class ReadConnectorServletTestCase extends TestCase {
     servlet.setParameterName("data");
     servlet.setAcceptGet(false);
     servlet.setPort(DEFAULT_PORT);
-    servlet.setTransacted(false);
     testUrl = servlet.getServletUrl().replaceFirst(NetUtil.getLocalHostname(), "localhost");
   }
 
@@ -81,29 +80,51 @@ public class ReadConnectorServletTestCase extends TestCase {
     try {
       // Connect (this starts jetty)
       servlet.connect();
+      
       // to http get
-      postData(testUrl, "data", "foo");
-      postData(testUrl, "data", "bar");
+      Thread t = new Thread() {
+        public void run() {
+          postData(testUrl, "data", "foo");
+          postData(testUrl, "data", "bar");
+        }
+      };
+      t.start();
 
       // poll service and check results
-      Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      Object[] data = servlet.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("foo"));
 
-      data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      data = servlet.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("bar"));
-
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      
       servlet.setParameterNames(new String[]{"field1", "field2", "field3"});
-      Map map = new HashMap();
+      final Map map = new HashMap();
       map.put("field1", "foo");
       map.put("field2", "bar");
       map.put("field3", "foobar");
-      postData(testUrl, map);
+      
+      t = new Thread() {
+        public void run() {
+          postData(testUrl, map);
+        }
+      };
+      t.start();
 
-      data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      data = servlet.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals(map));
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
     finally{servlet.disconnect();}
   }
@@ -115,29 +136,53 @@ public class ReadConnectorServletTestCase extends TestCase {
       servlet.connect();
 
       // to http get
-      getData(testUrl, "data", "foo");
-      getData(testUrl, "data", "bar");
+      Thread t = new Thread() {
+        public void run() {
+          getData(testUrl, "data", "foo");
+          getData(testUrl, "data", "bar");
+        }
+      };
+      t.start();
 
       // poll service and check results
-      Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      Object[] data = servlet.next(0);
       assertTrue("Expected non-null data", data != null);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("foo"));
 
-      data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      data = servlet.next(0);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals("bar"));
 
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
       servlet.setParameterNames(new String[]{"field1", "field2", "field3"});
-      Map map = new HashMap();
+      final Map map = new HashMap();
       map.put("field1", "foo");
       map.put("field2", "bar");
       map.put("field3", "foobar");
-      getData(testUrl, map);
+      
+      t = new Thread() {
+        public void run() {
+          getData(testUrl, map);          
+        }
+      };
+      t.start();
 
       data = servlet.next(CONNECTOR_TIMEOUT_MS);
       assertTrue(data.length == 1);
       assertTrue(data[0].equals(map));
+
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
     }
     finally {servlet.disconnect();}
   }
@@ -146,19 +191,31 @@ public class ReadConnectorServletTestCase extends TestCase {
    * Congfigured this way Get should be ignored and next timeout with no data returned
    */
 
-  public void xxtestGetAcceptGetFalse() {
+  public void testGetAcceptGetFalse() {
     try {
       servlet.setAcceptGet(false);
       // Connect (this starts jetty)
       servlet.connect();
 
       // to http get
-      getData(testUrl, "data", "foo");
-      getData(testUrl, "data", "bar");
+      Thread t = new Thread() {
+        public void run() {
+          getData(testUrl, "data", "foo");
+          getData(testUrl, "data", "bar");
+        }
+      };
+      t.start();
 
       // poll service and check results
-      Object[] data = servlet.next(CONNECTOR_TIMEOUT_MS);
+      Object[] data = servlet.next(1000);
       assertTrue("Expected null or zero-length data", (data == null) || (data.length == 0));
+      
+      try {
+        t.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
     }
     finally {servlet.disconnect();}
   }
@@ -178,6 +235,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       writer.close();
       readResponse(connection);
     } catch (Exception e) {
+      throw new RuntimeException(e.getMessage());
     }
   }
 

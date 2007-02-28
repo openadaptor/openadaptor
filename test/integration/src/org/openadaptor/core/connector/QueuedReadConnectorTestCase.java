@@ -21,6 +21,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     
     // create readNode
     MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
+    readNode.setTransacted(false);
     
     // create writeNode
     TestWriteConnector writeNode = new TestWriteConnector("out");
@@ -52,6 +53,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     
     // create readNode
     MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
+    readNode.setTransacted(false);
     readNode.setQueueLimit(1);
     
     // create processor that introduces delay
@@ -89,6 +91,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     MyTestReadConnector readNode = new MyTestReadConnector("in", testData);
     readNode.setQueueLimit(1);
     readNode.setBlockOnQueue(false);
+    readNode.setTransacted(false);
     
     // create processor that introduces delay
     MySlowProcessor processor = new MySlowProcessor();

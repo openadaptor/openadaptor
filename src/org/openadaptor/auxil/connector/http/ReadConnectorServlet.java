@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Servlet;
@@ -189,5 +190,8 @@ public class ReadConnectorServlet extends JettyReadConnector {
       writer.write(msg);
     } catch (IOException e) {
     }
+  }
+
+  public void validate(List exceptions) {
   }
 }

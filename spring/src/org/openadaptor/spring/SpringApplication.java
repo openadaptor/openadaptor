@@ -30,7 +30,6 @@ package org.openadaptor.spring;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;

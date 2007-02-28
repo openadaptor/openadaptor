@@ -90,7 +90,6 @@ public class SocketReadConnector extends QueuingReadConnector {
   }
 
   public void validate(List exceptions) {
-    super.validate(exceptions);
     if (port == 0) {
       exceptions.add(new ValidationException("port property not set", this));
     }
