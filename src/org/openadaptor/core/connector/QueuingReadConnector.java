@@ -110,6 +110,26 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
    * commits or rollsback.
    */
   protected synchronized void enqueue(Object data) {
+    if (isTransacted) {
+      synchronized (resource) {
+        untransactedEnqueue(data);
+        try {
+          while (resource.inTransaction) {
+            resource.wait();
+          }
+        } catch (InterruptedException e) {
+          throw new RuntimeException("thread interupted whilst waiting for transaction to complete");
+        }
+        if (resource.rolledBack()) {
+          throw new RuntimeException(resource.getErrorOrException());
+        }
+      }
+    } else {
+      untransactedEnqueue(data);
+    }
+  }
+
+  private void untransactedEnqueue(Object data) {
     synchronized (LOCK) {
       while (queueLimit > 0 && queue.size() >= queueLimit) {
         if (blockOnQueue) {
@@ -128,22 +148,6 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
         log.debug(getId() + " queued data"); 
       }
       LOCK.notify();
-    }
-    
-    // if the controller is transacted then wait for transaction to complete
-    if (isTransacted) {
-      synchronized (resource) {
-        try {
-          while (resource.inTransaction) {
-            resource.wait();
-          }
-        } catch (InterruptedException e) {
-          throw new RuntimeException("thread interupted whilst waiting for transaction to complete");
-        }
-        if (resource.rolledBack()) {
-          throw new RuntimeException(resource.getErrorOrException());
-        }
-      }
     }
   }
   
