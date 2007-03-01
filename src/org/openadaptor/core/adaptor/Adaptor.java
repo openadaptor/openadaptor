@@ -437,19 +437,23 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
-  public void exit() {
+  public void exit(boolean wait) {
     state = State.STOPPING;
     if (runConfiguration != null) {
       runConfiguration.setExitFlag();
     }
-    stop();
+    if (wait) {
+      stop();
+    } else {
+      stopNoWait();
+    }
   }
 
   public class ShutdownHook extends Thread {
     public void run() {
       log.info("shutdownhook invoked, calling exit()");
       try {
-        Adaptor.this.exit();
+        Adaptor.this.exit(false);
       } catch (Throwable t) {
         log.error("uncaught error or exception", t);
       }
@@ -480,7 +484,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public class Admin implements AdminMBean {
 
     public void exit() {
-      Adaptor.this.exit();
+      Adaptor.this.exit(true);
     }
 
     public String dumpState() {
