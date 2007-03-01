@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor-release" default="autobuild">
+<project name="openadaptor-release" default="release">
 
   <property name="svn.root" value="https://openadaptor3.openadaptor.org/svn/openadaptor3"/>
   
@@ -29,9 +29,9 @@
   <echo message="url          = ${url}"/>
   <echo message="checkout.tag = ${checkout.tag}"/>
   
-  <target name="autobuild" depends="checkout, build, package"/>
+  <target name="release" depends="checkout, build, package" description="checkout clean work area, build and package"/>
 
-  <target name="rebuild" depends="update, build, package"/>
+  <target name="rerelease" depends="update, build, package" description="update existing work area, rebuild and package"/>
 
   <target name="checkout">
     <delete dir="${dir.checkout}"/>
