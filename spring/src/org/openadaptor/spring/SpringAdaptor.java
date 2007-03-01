@@ -69,7 +69,7 @@ public class SpringAdaptor extends SpringApplication {
   }
 
   protected static void usage(PrintStream ps) {
-    ps.println("usage: java " + SpringApplication.class.getName() 
+    ps.println("usage: java " + SpringAdaptor.class.getName() 
         + "\n  -config <url> [ -config <url>  | ... ]" 
         + "\n  [-bean <id>] "
         + "\n  [-jmxport <http port>]"
