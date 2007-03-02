@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
+<STYLE TYPE="text/css">
+  .shell    { width: 90%; background-color: #EEEEEE }
+  .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
+  .back     { text-align: right; font-size:9pt }
+</STYLE>
+<title>openadaptor buildme</title>
+</head>
+
+<body>
+
+<h1>The build files</h1>
+
+<table>
+  <tr>
+    <td><code><b>build.xml</b></code></td>
+    <td>Compiles everything in the work area, runs junit tests and verification targets.</td>
+  </tr>
+  <tr>
+    <td><code><b>package.xml</b></code></td>
+    <td>Creates a distribution archive from a compiled work area, does not actually do the compilation.</td>
+  </tr>
+  <tr>
+    <td><code><b>release.xml</b></code></td>
+    <td>Checks out a clean work area from the revision control system and then invokes build.xml and package.xml.</td>
+  </tr>
+</table>     
+
+<h1>The default targets</h1>
+
+<p>You can use <code>ant -p</code> to see the important targets of the respective files but all of these 
+  have sensible default targets. The following commands are normally sufficient.</p>
+
+<table>
+  <tr>
+    <td><div class="shell"><pre>ant [-f build.xml]</pre></div></td>
+    <td>Performs a clean compile and runs all the tests.</td>
+  </tr>
+  <tr>
+    <td><div class="shell"><pre>ant -f package.xml</pre></div></td>
+    <td>Creates a distribution area (in a temp directory called package), re-runs the tests and "spits out" a zip file
+    (<b>NOTE:</b> it will not compile the work area).</td>
+  </tr>
+  <tr>
+    <td><div class="shell"><pre>ant -f release.xml</pre></div></td>
+    <td>"Checks out" a new work area from subversion (in a temp directory called checkout), compiles ,tests and packages it.</td>
+  </tr>
+</table>
+
+<p>As a developer you normally only invoke <code>build.xml</code>. Invoking <code>package.xml</code> 
+and <code>release</code>.xml in your local workarea is really only applicable for testing the release 
+process. See the next section for how to build a release for "general consumption".</p> 
+
+<p>The compilation and packaging is parameterized by an ant property called "tag". This affects
+the version number that is embedded in the openadpator.jar file, the javadocs, the directory
+structure and name of the distribution zip. If you do not specify the tag property then is
+gets set to "untagged", the resultant zip file will be called <code>openadaptor-untagged-bin.zip</code>, 
+ the root directory structure will be <code>openadaptor-untagged</code> and the release will echo the
+  following log line</p>
+
+<div class="shell"><pre>
+  INFO  [main] openadaptor.build.tag = untagged
+</pre></div>
+
+<p>This reflects the fact that the distribution is based on your local workarea and is of indeterminate
+version.</p>
+  
+<h1>Building releases</h1>
+
+<p>If you want to create a release you should use <code>release.xml</code>, this will checkout a workarea from 
+subversion and invoke <code>build.xml</code> and <code>package.xml</code>. As part of the checkout 
+it generates  a file called <code>checkout.properties</code> in the checkout area. This will be 
+automatically sourced when <code>build.xml</code> and <code>package.xml</code> are invoked in the 
+workarea. Basically it sets the value for the <code>tag</code> property.</p> 
+  
+<p>If you invoke release.xml like this...</p>
+
+<div class="shell"><pre>
+  ant -f release.xml
+</pre></div>
+  
+<p>then the workarea will be based on the trunk and hence the resulting output will be 
+  <code>openadaptor-trunk-bin.zip</code> this is typically used to provide daily build.</p>
+
+<p>Versioned releases relate to specific subversion tags. If you invoke release.xml like this..</p>
+
+<div class="shell"><pre>
+  ant -f release.xml -Dtag=3.2.1
+</pre></div>
+  
+<p>then the workarea will be based on that tag and hence the resulting output will be 
+  <code>openadaptor-3.2.1-bin.zip</code></p>.
+</body>
+</html>
