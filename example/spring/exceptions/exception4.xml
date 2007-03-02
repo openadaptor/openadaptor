@@ -48,7 +48,10 @@
     this requires you to have activation.jar and mail.jar in your classpath. 
     You browse the exception store using this url
   
-      http://localhost:9999
+      http://localhost:9999/admin
+  
+    there are 2 users test/password and testadmin/password
+  
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
