@@ -30,7 +30,7 @@ for simplicity we use hypersonic db, which you will need to "run up". You do not
 familiar with jBoss or hypersonic.</p>
 
 <a name="contents"></a>
-<p class="heading">Contents</p>
+<h2>Contents</h2>
 <ol>
 <li><a href="#initial">Set Up</a></li>
 <li><a href="#step1">Step  1: A Test Adaptor</a></li>
@@ -49,7 +49,8 @@ familiar with jBoss or hypersonic.</p>
 <!--
     Initial Setup
 -->
-<a name="initial"><p class="heading">Set Up</p></a>
+<a name="initial"></a>
+<h2>Set Up</h2>
 <p>launch a command prompt / shell and follow these these instructions</p>
 <h4>Windows</h4>
 <div class="shell"><pre>
@@ -70,7 +71,7 @@ directory, since the entire tutorial will be run from this directory, this shoul
     Step 1 - A text addaptor
 -->
 <a name="step1"></a>
-<p class="heading">Step 1</p>
+<h2>Step 1</h2>
 <p>This first adaptor <a href="step01.xml" target="_blank">step01.xml</a> exposes a servlet 
 interface and outputs data that it receives to the console (stdout).
 This is deliberately contrived to enable us to send data into the adaptor using
@@ -221,7 +222,7 @@ and the HTTP adaptor. You can access the jmx HTTP interface using this url
     Step 2 - XML Conversion
 -->
 <a name="step2"></a>
-<p class="heading">Step 2</p>
+<h2>Step 2</h2>
 <p>This adaptor <a href="step02.xml" target="_blank">step02.xml</a> 
 extends the previous adaptor by adding a processor bean into the pipeline.
 This processor converts a Map that the ServletReadConnector outputs to an XML document. Here is
@@ -272,7 +273,7 @@ this output is then "piped" to the Writer bean which writes the output to the co
     Step 3 - XML Validation
 -->
 <a name="step3"></a>
-<p class="heading">Step 3</p>
+<h2>Step 3</h2>
 <p>This adaptor <a href="step03.xml" target="_blank">step03.xml</a> 
 extends the previous adaptor by adding another processor bean into the pipeline.
 This processor validates that the XML against an XML schema file. Here is
@@ -354,7 +355,7 @@ Here are the additional beans and the modified Pipeline configuration.</p>
     Step 4 - JMS Publishing
 -->
 <a name="step4"></a>
-<p class="heading">Step 4</p>
+<h2>Step 4</h2>
 <p>This adaptor <a href="step04.xml" target="_blank">step04.xml</a> 
 extends the previous adaptor by replacing the FileWriteConnector with a
 JMS Write Connector, that publishes our Trade XML onto a JMS queue. For this
@@ -410,7 +411,7 @@ the next step in which we run a new adaptor that will process the messages in th
     Step 5 - JMS Subscribing
 -->
 <a name="step5"></a>
-<p class="heading">Step 5</p>
+<h2>Step 5</h2>
 <p>This adaptor <a href="step05.xml" target="_blank">step05.xml</a> 
 illustrates how to subscribe to the JMS queue. It contains a single read connector
 (JMSReadConnector) and a single write connector (FileWriteConnector). As you can
@@ -463,7 +464,7 @@ ordered list of processors.</p>
     Step 6 - Message Filtering
 -->
 <a name="step6"></a>
-<p class="heading">Step 6</p>
+<h2>Step 6</h2>
 <p>This adaptor <a href="step06.xml" target="_blank">step06.xml</a> extends the
 previous example and illustrates how to use a standard component to filter out
 messages based on their content. This involves adding 2 processor beans.</p>
@@ -526,7 +527,7 @@ you should see that messages that have a <b>ticker</b> set to "XXX" are discarde
     Step 7 - SQL Conversion
 -->
 <a name="step7"></a>
-<p class="heading">Step 7</p>
+<h2>Step 7</h2>
 <p>This adaptor <a href="step07.xml" target="_blank">step07.xml</a> extends the
 previous example and illustrates how to use a standard processor to transform 
 the XML documemnt into a SQL statement. In this example the SQL statement is simply
@@ -583,7 +584,7 @@ you should see SQL Statements.</p>
     Step 8 - SQL Execution
 -->
 <a name="step8"></a>
-<p class="heading">Step 8</p>
+<h2>Step 8</h2>
 <p>This adaptor <a href="step08.xml" target="_blank">step08.xml</a> extends the
 previous example and shows you how to execute the SQL statements against a database.
 For simplicity these instructions use hypersonic <a href="http://hsqldb.org" target="_blank">http://hsqldb.org</a>
@@ -642,7 +643,7 @@ ways to verify this.</p>
     Step 9 - Discard and Exception Routing and Custom Code
 -->
 <a name="step9"></a>
-<p class="heading">Step 9</p>
+<h2>Step 9</h2>
 <p>This adaptor <a href="step09.xml" target="_blank">step09.xml</a> extends the
 previous example by showing how the Router can be configured to process discarded messages
 and processing exceptions, how the map properties of the Router can specify mulitple 
@@ -781,7 +782,7 @@ written to the the exception log <a href="output/suberror.txt" target="_blank">o
       Step 10 - Reading from a File
 -->
 <a name="step10"></a>
-<p class="heading">Step 10</p>
+<h2>Step 10</h2>
 <p>This adaptor <a href="step10.xml" target="_blank">step10.xml</a> extends the
 adaptor in Step 4. It replaces the servlet input with a read connector which
 reads lines of character data from a file and a processor which parses delimited
@@ -847,7 +848,7 @@ Here is the bean.</p>
     Summary
 -->
 <a name="summary"></a>
-<p class="heading">Summary</p>
+<h2>Summary</h2>
 <p>This tutorial builds up two adaptor examples that are much more representative than 
 the simplistic examples in the example/spring. It does not give a comprehensive view
 of all of openadaptor capabilities, you need to refer to the other spring examples and

@@ -3,7 +3,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
 <STYLE TYPE="text/css">
   .shell    { width: 90%; background-color: #EEEEEE }
-  .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
   .back     { text-align: right; font-size:9pt }
 </STYLE>
 <title>openadaptor readme</title>
@@ -22,7 +21,7 @@
 <p>Paths are often referred to in Unix notation, i.e. "/" rather than "\".</p>
 
 <a name="contents"></a>
-<p class="heading">Contents</p>
+<h2>Contents</h2>
 <ol>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#logging">Logging</a></li>
@@ -38,7 +37,7 @@
     Requirements
 -->
 <a name="requirements"></a>
-<p class="heading">Requirements</p>
+<h2>Requirements</h2>
 <p>openadaptor requires the JRE (Java Runtime Environment) to be installed. The minimum supported
   version of the JRE is 1.4. From the command prompt type the following to see what version, if any, is
   installed.</p>
@@ -61,7 +60,7 @@
     Logging
 -->
 <a name="logging"></a>
-<p class="heading">Logging</p>
+<h2>Logging</h2>
 <p>We use the <a href="http://logging.apache.org/">Apache Commons Logging</a> services for purposes of
   application debugging and auditing. More specifically, we supply the log4j jar and config files as
   part of the openadaptor distribution. The config file (log4j.properties) for this can be found in the
@@ -81,7 +80,7 @@
     Installation
 -->
 <a name="installation"></a>
-<p class="heading">Installation</p>
+<h2>Installation</h2>
 <p>The software for openadaptor is distributed as a zip file. Installing it is simply a case of
   unzipping the contents. The installation should look like this.</p>
 
@@ -110,7 +109,7 @@
     Setting the Java CLASSPATH
 -->
 <a name="classpath"></a>
-<p class="heading">Setting your Java CLASSPATH</p>
+<h2>Setting your Java CLASSPATH</h2>
 <p>Since openadaptor is is written in Java you need to set your Java CLASSPATH for things to work (This
   is how the Java Virtual Machine locates the Java it is instructed to run).</p>
 
@@ -175,7 +174,7 @@
     Verfiying the installation
 -->
 <a name="verify"></a>
-<p class="heading">Verifying the installation</p>
+<h2>Verifying the installation</h2>
 <p>The best way to validate the previous steps it to run an adaptor. Here are the instructions (ensure
   that you are in the root of the openadaptor distribution)</p>
 
@@ -204,7 +203,7 @@
     The Spring examples
 -->
 <a name="spring"></a>
-<p class="heading">The Spring Examples</p>
+<h2>The Spring Examples</h2>
 <p>Openadaptor does not rely on the spring framework in any way, however it has been written to be
   "spring friendly". Previous versions of openadaptor had a properties file based mechanism for
   initialising and "wiring together" the adaptor components, in the new version all the adaptor
@@ -267,7 +266,7 @@ or
     The code examples
 -->
 <a name="code"></a>
-<p class="heading">The Code Examples</p>
+<h2>The Code Examples</h2>
 <p>The <code>src</code> dir contains code examples. The ant build file build.xml will compile these examples. In
   order to run the compiled examples you will need to set your classpath and include example/classes.
   Please refer to <a href="http://ant.apache.org" target="_blank">http://ant.apache.org</a> if you are
@@ -279,7 +278,7 @@ or
     The openadaptor tutorial
 -->
 <a name="tutorial"></a>
-<p class="heading">The openadaptor tutorial</p>
+<h2>The openadaptor tutorial</h2>
 <p>The <a href="tutorial/index.html" target="_blank">tutorial</a> builds up a standalone example that
   illustrates the key concepts of openadaptor and features of the adaptor framework.</p>
 <p class="back"><a href="#contents">back to contents</a></p>
