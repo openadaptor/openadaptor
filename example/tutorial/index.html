@@ -29,8 +29,9 @@ implementation for these to work, other examples illustrate writing data to a da
 for simplicity we use hypersonic db, which you will need to "run up". You do not need to be
 familiar with jBoss or hypersonic.</p>
 
-<a name="contents"/>
+<a name="contents"></a>
 <p class="heading">Contents</p>
+<ol>
 <li><a href="#initial">Set Up</a></li>
 <li><a href="#step1">Step  1: A Test Adaptor</a></li>
 <li><a href="#step2">Step  2: XML Conversion</a></li>
@@ -43,7 +44,7 @@ familiar with jBoss or hypersonic.</p>
 <li><a href="#step9">Step  9: Discard and Exception Routing and Custom Code</a></li>
 <li><a href="#step10">Step 10: Reading from a File</a></li>
 <li><a href="#summary">Summary</a></li>
-
+</ol>
 
 <!--
     Initial Setup
@@ -68,7 +69,7 @@ directory, since the entire tutorial will be run from this directory, this shoul
 <!--
     Step 1 - A text addaptor
 -->
-<a name="step1"/>
+<a name="step1"></a>
 <p class="heading">Step 1</p>
 <p>This first adaptor <a href="step01.xml" target="_blank">step01.xml</a> exposes a servlet 
 interface and outputs data that it receives to the console (stdout).
@@ -219,7 +220,7 @@ and the HTTP adaptor. You can access the jmx HTTP interface using this url
 <!--
     Step 2 - XML Conversion
 -->
-<a name="step2"/>
+<a name="step2"></a>
 <p class="heading">Step 2</p>
 <p>This adaptor <a href="step02.xml" target="_blank">step02.xml</a> 
 extends the previous adaptor by adding a processor bean into the pipeline.
@@ -270,7 +271,7 @@ this output is then "piped" to the Writer bean which writes the output to the co
 <!--
     Step 3 - XML Validation
 -->
-<a name="step3"/>
+<a name="step3"></a>
 <p class="heading">Step 3</p>
 <p>This adaptor <a href="step03.xml" target="_blank">step03.xml</a> 
 extends the previous adaptor by adding another processor bean into the pipeline.
@@ -352,7 +353,7 @@ Here are the additional beans and the modified Pipeline configuration.</p>
 <!--
     Step 4 - JMS Publishing
 -->
-<a name="step4"/>
+<a name="step4"></a>
 <p class="heading">Step 4</p>
 <p>This adaptor <a href="step04.xml" target="_blank">step04.xml</a> 
 extends the previous adaptor by replacing the FileWriteConnector with a
@@ -408,7 +409,7 @@ the next step in which we run a new adaptor that will process the messages in th
 <!--
     Step 5 - JMS Subscribing
 -->
-<a name="step5"/>
+<a name="step5"></a>
 <p class="heading">Step 5</p>
 <p>This adaptor <a href="step05.xml" target="_blank">step05.xml</a> 
 illustrates how to subscribe to the JMS queue. It contains a single read connector
@@ -461,7 +462,7 @@ ordered list of processors.</p>
 <!--
     Step 6 - Message Filtering
 -->
-<a name="step6"/>
+<a name="step6"></a>
 <p class="heading">Step 6</p>
 <p>This adaptor <a href="step06.xml" target="_blank">step06.xml</a> extends the
 previous example and illustrates how to use a standard component to filter out
@@ -524,7 +525,7 @@ you should see that messages that have a <b>ticker</b> set to "XXX" are discarde
 <!--
     Step 7 - SQL Conversion
 -->
-<a name="step7"/>
+<a name="step7"></a>
 <p class="heading">Step 7</p>
 <p>This adaptor <a href="step07.xml" target="_blank">step07.xml</a> extends the
 previous example and illustrates how to use a standard processor to transform 
@@ -581,7 +582,7 @@ you should see SQL Statements.</p>
 <!--
     Step 8 - SQL Execution
 -->
-<a name="step8"/>
+<a name="step8"></a>
 <p class="heading">Step 8</p>
 <p>This adaptor <a href="step08.xml" target="_blank">step08.xml</a> extends the
 previous example and shows you how to execute the SQL statements against a database.
@@ -640,7 +641,7 @@ ways to verify this.</p>
 <!--
     Step 9 - Discard and Exception Routing and Custom Code
 -->
-<a name="step9"/>
+<a name="step9"></a>
 <p class="heading">Step 9</p>
 <p>This adaptor <a href="step09.xml" target="_blank">step09.xml</a> extends the
 previous example by showing how the Router can be configured to process discarded messages
@@ -779,7 +780,7 @@ written to the the exception log <a href="output/suberror.txt" target="_blank">o
 <!--
       Step 10 - Reading from a File
 -->
-<a name="step10"/>
+<a name="step10"></a>
 <p class="heading">Step 10</p>
 <p>This adaptor <a href="step10.xml" target="_blank">step10.xml</a> extends the
 adaptor in Step 4. It replaces the servlet input with a read connector which
@@ -845,7 +846,7 @@ Here is the bean.</p>
 <!--
     Summary
 -->
-<a name="summary"/>
+<a name="summary"></a>
 <p class="heading">Summary</p>
 <p>This tutorial builds up two adaptor examples that are much more representative than 
 the simplistic examples in the example/spring. It does not give a comprehensive view
