@@ -114,6 +114,7 @@
       <zipfileset src="${dir.lib}/xercesImpl.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xfire-all.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xml-apis.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xstream.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}"/>
@@ -157,6 +158,7 @@
       <zipfileset src="${dir.lib}/xercesImpl.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
       <zipfileset src="${dir.lib}/xfire-all.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
       <zipfileset src="${dir.lib}/xml-apis.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
+      <zipfileset src="${dir.lib}/xstream.jar" excludes="${includes.unqualified}" prefix="xstream"/>
       <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
       <zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
       <zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring"/>
