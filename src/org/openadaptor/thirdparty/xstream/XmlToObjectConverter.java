@@ -27,22 +27,36 @@
 
 package org.openadaptor.thirdparty.xstream;
 
+import org.dom4j.Document;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ProcessingException;
 
-public class Object2XmlConverter extends XStreamConverter implements IDataProcessor {
+/**
+ * Converts incoming xml (string or dom4j document) to a POJO using XStream.
+ * @author perryj
+ *
+ */
+public class XmlToObjectConverter extends XStreamConverter implements IDataProcessor {
 
-  public Object2XmlConverter() {
+  public XmlToObjectConverter() {
     super();
   }
 
-  public Object2XmlConverter(String id) {
+  public XmlToObjectConverter(String id) {
     super(id);
   }
 
+  /**
+   * converts xml data to a POJO. If data is dom4j document then autoconverts to
+   * XML string, otherwsie calls toString() on data.
+   * 
+   * @throws ProcessingException if data is neither a string nor a dom4j document
+   */
   public Object[] process(Object data) {
-    return new Object[] {toXml(data)};
-  }
-
-  public void reset(Object context) {
+    if (data instanceof Document) {
+      return new Object[] {toObject(((Document)data).asXML())};
+    } else {
+      return new Object[] {toObject(data.toString())};
+    }
   }
 }

@@ -15,12 +15,12 @@ public class XStreamConverterTestCase extends TestCase {
     p.age = 55;
     p.insideLeg = 11;
     
-    Object2XmlConverter processor = new Object2XmlConverter();
+    ObjectToXmlConverter processor = new ObjectToXmlConverter();
     processor.addAlias("person", p.getClass());
     processor.validate(new ArrayList());
     String xml = (String) processor.process(p)[0];
     
-    Xml2ObjectConverter proc2 = new Xml2ObjectConverter();
+    XmlToObjectConverter proc2 = new XmlToObjectConverter();
     proc2.addAlias("person", p.getClass());
     proc2.validate(new ArrayList());
     Person p2 = (Person) proc2.process(xml)[0];
@@ -35,7 +35,7 @@ public class XStreamConverterTestCase extends TestCase {
     p.age = 55;
     p.insideLeg = 11;
     
-    Object2XmlConverter processor = new Object2XmlConverter();
+    ObjectToXmlConverter processor = new ObjectToXmlConverter();
     Map map = new HashMap();
     map.put("person", p.getClass());
     processor.setAliasMap(map);
@@ -45,7 +45,7 @@ public class XStreamConverterTestCase extends TestCase {
     Map map2 = new HashMap();
     map2.put("person", p.getClass().getName());
     
-    Xml2ObjectConverter proc2 = new Xml2ObjectConverter();
+    XmlToObjectConverter proc2 = new XmlToObjectConverter();
     proc2.setAliasMap(map2);
     proc2.validate(new ArrayList());
     Person p2 = (Person) proc2.process(xml)[0];

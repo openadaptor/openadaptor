@@ -29,17 +29,24 @@ package org.openadaptor.thirdparty.xstream;
 
 import org.openadaptor.core.IDataProcessor;
 
-public class Xml2ObjectConverter extends XStreamConverter implements IDataProcessor {
+/**
+ * Converts the incoming object into an Xml string using XStream.
+ * See Base class for details of how to configure XStream.
+ * 
+ * @author perryj
+ *
+ */
+public class ObjectToXmlConverter extends XStreamConverter implements IDataProcessor {
 
-  public Xml2ObjectConverter() {
+  public ObjectToXmlConverter() {
     super();
   }
 
-  public Xml2ObjectConverter(String id) {
+  public ObjectToXmlConverter(String id) {
     super(id);
   }
 
   public Object[] process(Object data) {
-    return new Object[] {toObject(data.toString())};
+    return new Object[] {toXml(data)};
   }
 }

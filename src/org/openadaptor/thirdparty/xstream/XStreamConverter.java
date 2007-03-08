@@ -34,10 +34,16 @@ import java.util.Map;
 
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ValidationException;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+/**
+ * Base bean for using XStream, does XStream initialisation.
+ * @author perryj
+ *
+ */
 public abstract class XStreamConverter extends Component implements IDataProcessor {
 
   private XStream xstream;
@@ -51,10 +57,19 @@ public abstract class XStreamConverter extends Component implements IDataProcess
     super(id);
   }
 
+  /**
+   * tells XStream to use XPP3 parser, default is not to use this
+   * @param useXPP3
+   */
   public void setUseXPP3(final boolean useXPP3) {
     this.useXPP3 = useXPP3;
   }
 
+  /**
+   * sets map entries between xml elements and java classes that XStream will use.
+   * The keys are the xml element names, the values can either be Class objects
+   * or class names.
+   */
   public void setAliasMap(final Map aliasMap) {
     this.aliasMap.clear();
     for (Iterator iter = aliasMap.entrySet().iterator(); iter.hasNext();) {
@@ -67,6 +82,9 @@ public abstract class XStreamConverter extends Component implements IDataProcess
     }
   }
 
+  /**
+   * adds a map entry between xml elements and java classes that XStream will use.
+   */
   public void addAlias(final String element, final String className) {
     try {
       Class klass = Class.forName(className);
@@ -76,6 +94,9 @@ public abstract class XStreamConverter extends Component implements IDataProcess
     }
   }
   
+  /**
+   * adds a map entry between xml elements and java classes that XStream will use.
+   */
   public void addAlias(final String element, final Class klass) {
     this.aliasMap.put(element, klass);
   }
@@ -83,7 +104,13 @@ public abstract class XStreamConverter extends Component implements IDataProcess
   public void reset(Object context) {
   }
 
+  /**
+   * initialises XStream, expects at least one entry in the aliasMap
+   */
   public void validate(List exceptions) {
+    if (aliasMap.isEmpty()) {
+      exceptions.add(new ValidationException("aliasMap property is empty", this));
+    }
     if (useXPP3) {
       xstream = new XStream();
     } else {
