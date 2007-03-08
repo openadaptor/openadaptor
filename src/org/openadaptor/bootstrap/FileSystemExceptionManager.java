@@ -32,8 +32,8 @@ package org.openadaptor.bootstrap;
 //IT MUST BE INDEPEDENT!!!!
 //
 
-public class SpringApplication extends ClasspathBootstrapper {
+public class FileSystemExceptionManager extends ClasspathBootstrapper {
   public static void main(String[] args) {
-    main("org.openadaptor.spring.SpringApplication", args);
+    main("org.openadaptor.auxil.exception.file.FileSystemExceptionManager", args);
   }
 }

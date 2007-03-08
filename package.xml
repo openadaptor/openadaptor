@@ -49,11 +49,11 @@
       <fileset dir="${dir.stub.classes}"/>
     </jar>
     <jar destfile="${dir.package.lib}/bootstrap.jar">
-      <fileset dir="${dir.classes}" includes="org/openadaptor/util/ClasspathBootstrapper*"/>
+      <fileset dir="${dir.classes}" includes="org/openadaptor/bootstrap/*"/>
       <fileset dir="${dir.spring.classes}" includes="org/openadaptor/bootstrap/*"/>
       <fileset dir="${dir.lib}" includes="log4j.properties"/>
       <manifest>
-        <attribute name="Main-Class" value="org.openadaptor.bootstrap.SpringAdaptor"/>
+        <attribute name="Main-Class" value="org.openadaptor.bootstrap.Usage"/>
       </manifest>
     </jar>
     <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="${basedir}/jarversions.properties" version="${tag}" manifest="${basedir}/lib/MANIFEST.MF">
