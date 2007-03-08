@@ -81,5 +81,6 @@
 	<classpathentry kind="lib" path="lib/serializer.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/script.jar"/>
+	<classpathentry kind="lib" path="lib/xstream.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
