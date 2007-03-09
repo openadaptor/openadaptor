@@ -8,7 +8,7 @@ public class ScriptFilterProcessorTestCase extends TestCase {
 
   public void testFilterOnMatch() {
     ScriptFilterProcessor proc = new ScriptFilterProcessor();
-    proc.setScriptName("js");
+    proc.setLanguage("js");
     proc.setScript("/[fF]oo/.test(data);");
     proc.validate(new ArrayList());
     assertTrue(proc.process("foo").length == 0);
@@ -18,7 +18,7 @@ public class ScriptFilterProcessorTestCase extends TestCase {
   
   public void testFilterOnNoMatch() {
     ScriptFilterProcessor proc = new ScriptFilterProcessor();
-    proc.setScriptName("js");
+    proc.setLanguage("js");
     proc.setScript("/[fF]oo/.test(data);");
     proc.setFilterOnMatch(false);
     proc.validate(new ArrayList());

@@ -46,7 +46,7 @@ import org.openadaptor.core.exception.ValidationException;
 public class ScriptProcessor extends Component implements IDataProcessor {
 
   private ScriptEngine scriptEngine;
-  private String scriptName;
+  private String language;
   private String script;
   private String scriptFilename;
   private CompiledScript compiledScript;
@@ -90,8 +90,8 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     this.scriptFilename = scriptFilename;
   }
 
-  public void setScriptName(String scriptName) {
-    this.scriptName = scriptName;
+  public void setLanguage(String language) {
+    this.language = language;
   }
 
   public synchronized Object[] process(Object data) {
@@ -121,7 +121,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   }
 
   public void validate(List exceptions) {
-    if (scriptName == null) {
+    if (language == null) {
       exceptions.add(new ValidationException("scriptName property not set", this));
     }
     if (script == null && scriptFilename == null) {
@@ -131,7 +131,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
       return;
     }
     ScriptEngineManager manager = new ScriptEngineManager();
-    scriptEngine = manager.getEngineByName(scriptName);
+    scriptEngine = manager.getEngineByName(language);
     if (compile && scriptEngine instanceof Compilable) {
       try {
         if (script != null) {

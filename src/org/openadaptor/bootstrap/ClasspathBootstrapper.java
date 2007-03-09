@@ -83,8 +83,9 @@ public class ClasspathBootstrapper {
       StringBuffer classpath = new StringBuffer();
       for (int i = 0; i < urls.length; i++) {
         File file = (File) files.get(i);
-        System.err.println(ClasspathBootstrapper.class.getName() + " adding : " 
-            + (verbose ? file.getAbsolutePath() : file.getName()));
+        if (verbose) {
+          System.err.println(ClasspathBootstrapper.class.getName() + " adding : " + file.getAbsolutePath());
+        }
         urls[i] = new URL("file:" + file.getAbsolutePath());
         classpath.append(classpath.length() > 0 ? "" + File.pathSeparatorChar : "");
         classpath.append(file.getAbsolutePath());

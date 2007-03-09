@@ -20,7 +20,7 @@ public class ScriptProcessorTestCase extends TestCase {
       proc.validate(exceptions);
       assertFalse(exceptions.isEmpty());
     }
-    proc.setScriptName("js");
+    proc.setLanguage("js");
     {
       List exceptions = new ArrayList();
       proc.validate(exceptions);
