@@ -25,54 +25,32 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.legacy.converter.dataobjects;
+package org.openadaptor.legacy.convertor.dataobjects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
-import org.openadaptor.dataobjects.DataObjectException;
-import org.openadaptor.doxml.GenericXMLWriter;
-import org.openadaptor.auxil.convertor.AbstractConvertor;
-
-import java.util.Iterator;
-import java.util.Map;
 
 /**
- * Convert Data Objects into XML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
+ * Convert Data Objects into DOXML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
  * the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
  * DOXML.
- * <p>
- * Note that it extends DOXmlToDataObjectConvertorProcessor as it needs access to the DataObject 'class' to find the
- * correct method on the writer, i.e toString(DataObject[] dataObjects);
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToXmlConvertor extends AbstractConvertor {
+public class DataObjectToDOXmlConvertor extends AbstractDOXmlConvertor {
 
-  private static final Log log = LogFactory.getLog(DataObjectToXmlConvertor.class);
-
-  protected GenericXMLWriter writer = new GenericXMLWriter();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        writer.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
+  private static final Log log = LogFactory.getLog(DataObjectToDOXmlConvertor.class);
 
   /**
-   * This converts a supplied DataObject XML String into XML <B>Note</B>: Usage of this method depends on the
+   * This converts a supplied DataObjet[] into a DOXML String <B>Note</B>: Usage of this method depends on the
    * availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
    * DOXML.
    * 
    * @param record
-   *          containing DOXML
+   *          containing an Array of DataOBjects
    * @return XMl representation of the data
    * @throws RecordException
    *           if conversion fails
@@ -82,10 +60,10 @@ public class DataObjectToXmlConvertor extends AbstractConvertor {
 
     if (record instanceof DataObject[]) {
       try {
-        result = writer.toString((DataObject[]) record);
+        result = formatter.toString((DataObject[]) record);
       } catch (Exception e) {
         String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
-        DataObjectToXmlConvertor.log.warn(reason);
+        log.warn(reason);
         throw new RecordException(reason, e);
       }
     } else {

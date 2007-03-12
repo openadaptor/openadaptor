@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.legacy.converter.dataobjects;
+package org.openadaptor.legacy.convertor.dataobjects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

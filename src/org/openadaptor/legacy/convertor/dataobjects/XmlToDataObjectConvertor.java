@@ -25,40 +25,74 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.legacy.converter.dataobjects;
+package org.openadaptor.legacy.convertor.dataobjects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.dataobjects.DataObjectException;
+import org.openadaptor.doxml.GenericXMLReader;
+import org.openadaptor.auxil.convertor.AbstractConvertor;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
- * Convert DataObject XML (DOXML) into DataObjects <B>Note</B>: Usage of this class depends on the availability of a
- * legacy openadaptor jar to do the conversions, as openadaptor doesn't directly support dataobjects, or DOXML.
- * 
+ * Convert XML into DataObjects <B>Note</B>: Usage of this class depends on the availability of a legacy openadaptor
+ * jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or DOXML.
+ *
  * @author Eddy Higgins
  */
-public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
+public class XmlToDataObjectConvertor extends AbstractConvertor {
 
-  private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
+  private static final Log log = LogFactory.getLog(XmlToDataObjectConvertor.class);
+  protected GenericXMLReader reader = new GenericXMLReader();
 
+  /**
+   * This converts a supplied XML (String or dom4j Document) into a DataObject[] <B>Note</B>: Usage of this method
+   * depends on the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support
+   * dataobjects.
+   *
+   * @param record containing XML
+   * @return XMl representation of the data
+   * @throws RecordException
+   *          if conversion fails
+   */
   protected Object convert(Object record) throws RecordException {
-    Object[] result = null;
-
-    if (record instanceof String) {
+    String xml = null;
+    Object result = null;
+    if (record instanceof Document) { // Convert it into a String
+      xml = ((Document) record).asXML();
+    } else {
+      if (record instanceof String) { // Already parsed.
+        xml = (String) record;
+      }
+    }
+    if (xml != null) {
       try {
-        result = formatter.fromString((String) record);
+        result = reader.fromString(xml);
       } catch (Exception e) {
         String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
-        log.warn(reason);
+        XmlToDataObjectConvertor.log.warn(reason);
         throw new RecordException(reason, e);
       }
     } else {
-      throw new RecordFormatException("Record is not a DOXML String. Record: " + record);
+      throw new RecordFormatException("Record is not an XML String (or dom4j Document). Record: " + record);
     }
-
     return result;
   }
   // END Abstract Convertor Processor implementation
 
+  public void setAttributes(Map attributeMap) {
+    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      try {
+        reader.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
+      } catch (DataObjectException ex) {
+        throw new RuntimeException(ex.getMessage());
+      }
+    }
+  }
 }

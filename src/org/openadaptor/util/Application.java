@@ -93,6 +93,7 @@ public class Application implements IComponent {
   
   protected Application() {
 
+    log.info("classpath = " + System.getProperty("java.classpath", "not set"));
     // get system props
     props = new Properties();
     props.putAll(System.getProperties());
