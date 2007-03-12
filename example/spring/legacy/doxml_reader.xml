@@ -60,10 +60,10 @@
   </bean>
   
   <!-- converts this string to an array of DataObject[] -->
-  <bean id="DOXmlConverter" class="org.openadaptor.legacy.converter.dataobjects.DOXmlToDataObjectConvertor"/>
+  <bean id="DOXmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor"/>
   
   <!-- converts DataObject[] to IOrderedMap -->
-  <bean id="MapConverter" class="org.openadaptor.legacy.converter.dataobjects.DataObjectToOrderedMapConvertor"/>
+  <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor"/>
   
   <!-- converts IOrderedMap to XML -->
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
