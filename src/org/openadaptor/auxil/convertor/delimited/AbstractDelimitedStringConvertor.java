@@ -27,6 +27,7 @@
 
 package org.openadaptor.auxil.convertor.delimited;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,6 +59,8 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
 
   protected boolean addNeededEnclosingQuotes = false;
 
+  protected boolean protectQuotedFields = false;
+  
   // Bean properties:
   protected String[] fieldNames;
 
@@ -136,6 +139,14 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    */
   public char getQuoteChar() {
     return quoteChar;
+  }
+
+  /**
+   * controls whether delmiters that are within quotes are
+   * @param protectQuotedFields
+   */
+  public void setProtectQuotedFields(boolean protectQuotedFields) {
+    this.protectQuotedFields = protectQuotedFields;
   }
 
   /**
@@ -220,11 +231,67 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @return an array of strings corresponding to the fields in the string supplied
    */
   protected String[] extractValues(String delimitedString) {
-    String[] values = delimitedString.split(delimiter);
-    if (stripEnclosingQuotes)
+    String[] values;
+    if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
+      values = delimitedString.split(delimiter);
+    } else if (delimiter.length() > 1){
+      values = extractQuotedValues(delimitedString, delimiter, quoteChar);
+    } else {
+      values = extractQuotedValues(delimitedString, delimiter.charAt(0), quoteChar);
+    }
+    
+    if (stripEnclosingQuotes) {
       stripEnclosingQuotes(values);
+    }
 
     return values;
+  }
+
+  static String[] extractQuotedValues(String delimitedString, String d, char quoteChar) {
+    char[] chars = delimitedString.toCharArray();
+    ArrayList strings = new ArrayList();
+    boolean inQuotes = false;
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < chars.length; i++) {
+      buffer.append(chars[i]);
+      if (inQuotes) {
+        inQuotes = chars[i] != quoteChar;
+      } else if (chars[i] == quoteChar) {
+        inQuotes = delimitedString.indexOf(quoteChar, i+1) != -1;
+      } else {
+        if (buffer.toString().endsWith(d)) {
+          strings.add(buffer.substring(0, buffer.length() - d.length()));
+          buffer.setLength(0);
+        }
+      }
+    }
+    strings.add(buffer.toString());
+    return (String[]) strings.toArray(new String[strings.size()]);
+  }
+
+  static String[] extractQuotedValues(String delimitedString, char d, char quoteChar) {
+    char[] chars = delimitedString.toCharArray();
+    ArrayList strings = new ArrayList();
+    boolean inQuotes = false;
+    int start = 0;
+    for (int i = 0; i < chars.length; i++) {
+      if (inQuotes) {
+        inQuotes = chars[i] != quoteChar;
+      } else if (chars[i] == quoteChar) {
+        inQuotes = delimitedString.indexOf(quoteChar, i+1) != -1;
+      } else {
+        if (chars[i] == d) {
+          strings.add(delimitedString.substring(start, i));
+          start = i+1;
+        }
+      }
+    }
+    if (start <= chars.length) {
+      strings.add(delimitedString.substring(start, chars.length));
+    } else {
+      strings.add(new String());
+    }
+    return (String[]) strings.toArray(new String[strings.size()]);
   }
 
   /**
