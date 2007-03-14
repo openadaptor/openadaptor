@@ -112,6 +112,11 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    */
   private String destinationName;
 
+  /**
+   * Default is true which means log JMS Message Id of any published messages.
+   */
+  private boolean logMessageId = true;
+
   // Constructors
 
   public JMSWriteConnector() {}
@@ -238,6 +243,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
         log.debug("JmsPublisher sending [" + message + "]");
       messageProducer.send(msg, deliveryMode, priority, timeToLive);
       msgId = msg.getJMSMessageID();
+      if (logMessageId) { // Optionally log the message id of the published message.
+        log.info( "[" + getId() + "=" + getDestinationName() + "] sent message [ JMSMessageID=" + msgId + "] to data connection/service" );
+      }
     } catch (MessageFormatException e) {
       throw new ProcessingException("MessageFormatException during publish.", e, this);
     } catch (InvalidDestinationException e) {
@@ -380,6 +388,21 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     this.destinationName = destinationName;
   }
 
+  /**
+   * If true log the JMS Message Id after publishing.
+   * @return boolean Default is true
+   */
+  public boolean isLogMessageId() {
+    return logMessageId;
+  }
+
+  /**
+   * If true log the JMS Message Id after publishing. Defaults to true.
+   * @param logMessageId
+   */
+  public void setLogMessageId(boolean logMessageId) {
+    this.logMessageId = logMessageId;
+  }
   // end bean implementation
 
 

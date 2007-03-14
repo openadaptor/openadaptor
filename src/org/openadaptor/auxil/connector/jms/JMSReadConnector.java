@@ -114,6 +114,11 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   private Exception listenerException;
 
+  /**
+   * Default is true which means log JMS Message Id of any published messages.
+   */
+  private boolean logMessageId = true;
+
   // Constructors
 
   public JMSReadConnector() {}
@@ -209,6 +214,9 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
       } else {
         msg = messageConsumer.receive(timeoutMs);
       }
+      if ((msg != null) && (logMessageId)) {
+        log.info("[" + getId() + "=" + getDestinationName() + "] received message [JMSMessageID=" + msg.getJMSMessageID() + "]");
+      }
       // If we have been sent a JMSException via the ExceptionListener registration mechanism.
       // We treat the exception as if it had been thrown by the receive method by throwing it now.
       if (listenerException != null) {
@@ -229,6 +237,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   protected Object unpackJMSMessage(Message msg) throws ComponentException {
     Object msgContents;
+
     try {
       if (msg instanceof TextMessage) {
         log.debug("Handling TextMessage");
@@ -365,6 +374,21 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
     this.noLocal = noLocal;
   }
 
+  /**
+   * If true log the JMS Message Id of received messages.
+   * @return boolean Default is true
+   */
+  public boolean isLogMessageId() {
+    return logMessageId;
+  }
+
+  /**
+   * If true log the JMS Message Id of received messages. Defaults to true.
+   * @param logMessageId
+   */
+  public void setLogMessageId(boolean logMessageId) {
+    this.logMessageId = logMessageId;
+  }
   // End Bean implementation
 
 }

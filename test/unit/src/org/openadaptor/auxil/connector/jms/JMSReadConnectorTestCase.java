@@ -56,7 +56,6 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
   private JMSReadConnector testReadConnector;
   private MockJMSConnection mockJMSConnection;
-  private MockJNDIConnection jndiConnection;
 
   //private DirContext dirContext;
 
@@ -75,7 +74,7 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     destinationMock = new Mock(Topic.class);
 
     // Mock of openadaptor3's JNDIConnection
-    jndiConnection = new MockJNDIConnection();
+    MockJNDIConnection jndiConnection = new MockJNDIConnection();
     jndiConnection.setContext((DirContext)dirContextMock.proxy());
 
     mockJMSConnection = new MockJMSConnection();
@@ -91,7 +90,6 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     super.tearDown();
     testReadConnector = null;
     mockJMSConnection = null;
-    jndiConnection = null;
     sessionMock = null;
     messageConsumerMock = null;
     destinationMock = null;
@@ -206,13 +204,18 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     setupConnectExpectations();
     testReadConnector.connect();
 
+    messageConsumerMock.expects(once()).method("receive").will(returnValue(null));
+    assertTrue("Expected null message", testReadConnector.next(10) == null);
+
     messageConsumerMock.expects(once()).method("receive").will(returnValue(mockObjectMessage.proxy()));
     mockObjectMessage.expects(once()).method("getObject").will(returnValue(null));
+    mockObjectMessage.expects(once()).method("getJMSMessageID").will(returnValue("ID for Null contents"));
     Object nullNext = testReadConnector.next(10);
-    assertTrue("Expected null", nullNext == null);
+    assertTrue("Expected null message contents", nullNext == null);
 
     Object testNextMessage = new ArrayList();
     messageConsumerMock.expects(once()).method("receive").will(returnValue(mockObjectMessage.proxy()));
+    mockObjectMessage.expects(once()).method("getJMSMessageID").will(returnValue("TestMessageID Object Message"));
     mockObjectMessage.expects(once()).method("getObject").will(returnValue(testNextMessage));
 
     Object[] nextObjectArray = testReadConnector.next(10);
@@ -220,6 +223,7 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
     String testTextMessage = "hello World";
     messageConsumerMock.expects(once()).method("receive").will(returnValue(mockTextMessage.proxy()));
+    mockTextMessage.expects(once()).method("getJMSMessageID").will(returnValue("TestMessageID Text Message"));
     mockTextMessage.expects(once()).method("getText").will(returnValue(testTextMessage));
 
     nextObjectArray = testReadConnector.next(10);
