@@ -93,7 +93,7 @@ openadaptor.build.patch = ${patch.revision} compiled by ${user.name} on ${DSTAMP
   </target>
   
   <target name="release">
-    <ant antfile="release.xml"/>
+    <ant antfile="release.xml" inheritAll="false"/>
   </target>
   
 </project>
