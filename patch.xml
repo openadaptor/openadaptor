@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="openadaptor-patch" default="patch">
+
+  <fail unless="tag" message="this ant build file must be invoked with a tag property e.g. -Dtag=x.y.z"/>
+  
+  <tstamp/>
+  
+  <delete file="patch.jar" quiet="true"/>
+  
+  <property name="svn.root" value="https://openadaptor3.openadaptor.org/svn/openadaptor3"/>
+
+  <taskdef resource="svntask.properties"/>
+
+  <property name="dir.classes" value="${basedir}/patches/classes"/>
+  <property name="dir.package.lib" value="${basedir}/checkout/package/lib"/>
+  <property name="dir.test.classes" value="${basedir}/checkout/test/classes"/>
+  <property name="dir.test.lib" value="${basedir}/checkout/test/lib"/>
+  <property name="file.patch" value="${basedir}/patches/${tag}.xml"/>
+  <property name="dir.test.output" value="${basedir}/test/output"/>
+  
+  <path id="classpath">
+    <pathelement path="${dir.classes}"/>
+    <pathelement path="${dir.package.lib}"/>
+    <pathelement path="${dir.package.lib}/openadaptor.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-depends.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-spring.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-stub.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/mail.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/activation.jar"/>
+    <pathelement path="${dir.test.classes}"/>
+    <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
+  </path>
+
+  <target name="patch" depends="release,checkout,compile,test,jar" description="generate the latest patch for a specific tag"/>
+  
+  <target name="repatch" depends="checkout,compile,test,jar" description="generate the latest patch for a specific tag"/>
+  
+  <target name="checkout">
+    <delete dir="patches/checkout" quiet="true"/>
+    <ant antfile="${file.patch}" inheritAll="false"/>  
+  </target>
+  
+  <target name="compile">
+    <delete dir="${dir.classes}" quiet="true"/>
+    <mkdir dir="${dir.classes}"/>
+    <svn>
+      <status path="${file.patch}" revisionProperty="patch.revision" propStatusProperty="patch.status"/>
+    </svn>
+    <javac srcdir="patches/checkout" classpathref="classpath" destdir="${dir.classes}"/>
+    <unjar src="${dir.package.lib}/openadaptor.jar" dest="${dir.classes}">
+      <patternset>
+        <include name="**/.openadaptor.properties"/>
+      </patternset>
+    </unjar>
+    <concat destfile="${dir.classes}/org/openadaptor/util/.openadaptor.properties" append="true">
+openadaptor.build.patch = ${patch.revision} compiled by ${user.name} on ${DSTAMP}:${TSTAMP}</concat>
+    <copy file="${file.patch}" todir="${dir.classes}"/>
+  </target>
+  
+  <target name="jar">
+    <jar destfile="patch.jar">
+      <fileset dir="${dir.classes}"/>
+    </jar>
+  </target>
+  
+  <target name="test" description="run tests against patched classpath">
+    <delete dir="${dir.test.output}" quiet="true"/>
+    <mkdir dir="${dir.test.output}"/>
+    <!-- run any test cases that are included in the patch -->
+    <junit printsummary="true" dir="${basedir}" showoutput="true">
+      <classpath refid="classpath"/>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
+        <fileset dir="${dir.classes}">
+          <include name="**/*TestCase.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <junitreport todir="${dir.test.output}">
+      <fileset dir="${dir.test.output}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${dir.test.output}"/>
+     </junitreport>
+     <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
+    <!-- run release tests -->
+    <ant antfile="${basedir}/checkout/build.xml" target="test.all" inheritAll="false">
+      <reference refid="classpath" torefid="classpath.test"/> 
+    </ant>
+    <ant antfile="${basedir}/checkout/build.xml" target="example.springcheck" inheritAll="false">
+      <reference refid="classpath" torefid="classpath.test"/> 
+    </ant>
+  </target>
+  
+  <target name="release">
+    <ant antfile="release.xml"/>
+  </target>
+  
+</project>

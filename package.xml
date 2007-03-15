@@ -209,7 +209,7 @@
     </javadoc>
   </target>
 
-  <target name="test" description="checks spring config examples are valid">
+  <target name="test" description="run tests against packaged jars">
     <ant target="test.all" inheritAll="false">
       <reference refid="classpath.package.test" torefid="classpath.test"/> 
     </ant>

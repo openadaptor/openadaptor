@@ -35,7 +35,7 @@ fi
 OA_LIB=$_OA_ROOT/lib
 unset _OA_ROOT
 if [ -d $OA_LIB ] ; then
-  OA_CP=${OA_LIB}:${OA_LIB}/openadaptor.jar:${OA_LIB}/openadaptor-spring.jar:${OA_LIB}/openadaptor-depends.jar
+  OA_CP=${OA_LIB}:${OA_LIB}/patch.jar:${OA_LIB}/openadaptor.jar:${OA_LIB}/openadaptor-spring.jar:${OA_LIB}/openadaptor-depends.jar
     if [ ${CLASSPATH} ] ; then
       if [ "`echo $CLASSPATH | grep /openadaptor.jar`" != "" ] ; then
         echo "FATAL: CLASSPATH already contains openadaptor.jar. Not adding a second instance."

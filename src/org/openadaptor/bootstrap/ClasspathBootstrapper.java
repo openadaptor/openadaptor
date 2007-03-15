@@ -72,6 +72,7 @@ public class ClasspathBootstrapper {
       // create array of urls classpath
       String libPath = getJarDirectory();
       ArrayList files = new ArrayList();
+      files.add(new File(libPath, "patch.jar"));
       if (System.getProperty(SYSTEM_PROPERTY_OPENADAPTOR_LIB, null) != null) {
         files.addAll(getLibUrls(new File(System.getProperty(SYSTEM_PROPERTY_OPENADAPTOR_LIB))));
       }
@@ -155,6 +156,9 @@ public class ClasspathBootstrapper {
   private static boolean addToClasspath(File file) {
     if (file.exists()) {
       if (file.getName().equals(getJarName())) {
+        return false;
+      }
+      if (file.getName().endsWith("patch.jar")) {
         return false;
       }
       if (file.getName().endsWith("-depends.jar")) {

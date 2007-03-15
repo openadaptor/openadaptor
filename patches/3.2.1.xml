@@ -20,7 +20,7 @@
   
 	<target name="checkout">
 	  <svnget path="src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertor.java" revision="521"/>
-	  <svnget path="test/unit/src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertorTest.java" revision="521"/>
+	  <svnget path="test/unit/src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertorTestCase.java" revision="523"/>
 	</target>
 
 </project>
