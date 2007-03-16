@@ -9,12 +9,66 @@
   </head>
   <body>
     <h1>Frequently Asked Questions</h1>
+    <a id="contents"></a>
     <ol>
-      <li><a href="#running">How to run an adaptor as an NT Service</a></li>
+      <li><a href="#classpath">How should I set my classpath?</a></li>
+      <li><a href="#running">How can I run an adaptor as an NT Service?</a></li>
     </ol>
+
+    <a id="classpath"></a>
+    <h2>How should I set my classpath?</h2>
+    <p>openadaptor lib directory contains the following</p>
+    
+    <table>
+      <tr><td><b>log4j.properties</b></td><td>A sample log4j configuration file</td></tr>
+      <tr><td><b>openadaptor.jar</b></td><td>The actual openadaptor code</td></tr>
+      <tr><td><b>openadaptor-spring.jar</b></td><td>Helper classes for launching openadaptor processes based on spring configurations</td></tr>
+      <tr><td><b>openadaptor-depends.jar</b></td><td>Most of the 3rdparty jars, re-jarred as a single jar for convenience</td></tr>
+      <tr><td><b>3rdparty</b></td><td>The 3rd party jars</td></tr>
+    </table>
+    
+    <p>Your classpath needs to contain <b>openadaptor.jar</b>. If you are using our spring helper
+    classes to run an adaptor / application then you will need <b>openadaptor-spring.jar</b>. You will also
+    need a subset of the 3rdparty jars upon which openadaptor relies, the easist approach is to include
+    <b>openadaptor-depends.jar</b>. So your classpath would be something like this...</p>
+    
+    windows
+    <div class="shell"><pre>  set CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar</pre></div>
+    
+    *nix
+    <div class="shell"><pre>  CLASSPATH=lib:lib/openadaptor.jar:lib/openadaptor-spring.jar:lib/openadaptor-depends.jar
+  export CLASSPATH</pre></div>
+    
+    <p>example/bin contains a windows bat script and a bash profile that sets your CLASSPATH like this.
+      However you may decide to include just the 3rdparty jars that you need which is why we include the 3rdparty directory.</p>
+    
+    <p>post release 3.2.1, openadaptor comes with an additonal jar called <b>bootstrap.jar</b>. This contains
+    alternative helper classes that will bootstrap the classpath based on the location of the bootstrap.jar.
+    All you need in your classpath is bootstrap.jar. You can dump out the programs that can be run
+    from this bootstrap.jar like this</p>
+
+    <div class="shell"><pre>  java -jar bootstrap.jar</pre></div>
+    
+    <p>This should print something like the following...</p>
+    
+    <div class="shell"><pre>  This jar contains the following programs :
+    org.openadaptor.bootstrap.FileSystemExceptionManager
+    org.openadaptor.bootstrap.JDBCExceptionManager
+    org.openadaptor.bootstrap.SpringAdaptor
+    org.openadaptor.bootstrap.SpringApplication
+  When you run these they will bootstrap the classpath based on the location of this jar
+  use -Dopenadaptor.lib=... to provide an additional location to search for classpath resources</pre></div>
+    
+    <p>These bootstrapping programs will automatically construct the classpath based on the location
+    of the bootstrap.jar. The classpath will contain all the jars, zip and subdirectories. You can specify an additional directory
+    to search using the openadaptor.lib system property. <b>patch.jar</b> will always be placed at the
+    front of the classpath, it will load the contents of 3rdparty rather than openadaptor-depends.jar,
+    openadaptor-stub.jar will always be at the end of the classpath.</p>
+    <p class="back"><a href="#contents">back to contents</a></p>
+    
     
     <a id="running"></a>
-    <h2>How to run an adaptor as an NT Service</h2>
+    <h2>How can I run an adaptor as an NT Service?</h2>
     <p>There are a number of utilities for running java programs as an NT service. Here are the
     instructions for running one of the tutorial configurations using the Java Service Wrapper
     <a href="http://wrapper.tanukisoftware.org">http://wrapper.tanukisoftware.org</a>.</p>
@@ -27,6 +81,32 @@
       <li>test the configuration using wrapper.exe -c wrapper.conf</li>
       <li>install as a service using wrapper.exe -i wrapper.conf</li>
     </ol>
+    
+    <h3>openadaptor 3.2.1 example config</h3>
+    
+      <div class="shell"><pre>
+  wrapper.java.command           = c:\\installs\\jdk1.4.2\\bin\\java
+  wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
+
+  wrapper.app.parameter.1        = org.openadaptor.spring.SpringAdaptor
+  wrapper.app.parameter.2        = -config
+  wrapper.app.parameter.3        = c:\\temp\\openadaptor-latest\\example\\tutorial\\step04.xml
+
+  wrapper.java.classpath.1       = wrapper.jar
+  wrapper.java.classpath.2       = ../lib/openadaptor.jar
+  wrapper.java.classpath.3       = ../lib/openadaptor-spring.jar
+  wrapper.java.classpath.4       = ../lib/openadaptor-depends.jar
+  wrapper.java.classpath.5       = ../lib/3rdparty/jbossall-client.jar
+
+  wrapper.ntservice.name         = openadaptor
+  wrapper.ntservice.displayname  = openadaptor example service
+  wrapper.ntservice.description  = openadaptor example service
+  wrapper.ntservice.starttype    = AUTO_START
+  wrapper.ntservice.interactive  = false
+      </div></pre>
+    
+        <h3>post openadaptor 3.2.1 example config (this uses bootstrap spring launcher)</h3>
+    
       <div class="shell"><pre>
   wrapper.java.command           = c:\\installs\\jdk1.4.2\\bin\\java
   wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
@@ -44,5 +124,6 @@
   wrapper.ntservice.starttype    = AUTO_START
   wrapper.ntservice.interactive  = false
       </div></pre>
+    <p class="back"><a href="#contents">back to contents</a></p>
   </body>
 </html>
