@@ -64,6 +64,18 @@
     to search using the openadaptor.lib system property. <b>patch.jar</b> will always be placed at the
     front of the classpath, it will load the contents of 3rdparty rather than openadaptor-depends.jar,
     openadaptor-stub.jar will always be at the end of the classpath.</p>
+    
+    <p>example 1:</p>
+    <div class="shell"><pre>   java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 2:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 3:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
+    
     <p class="back"><a href="#contents">back to contents</a></p>
     
     
