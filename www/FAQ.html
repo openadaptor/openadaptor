@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <title>openadaptor3 FAQ</title>
+      <STYLE TYPE="text/css">
+        .shell    { width: 90%; background-color: #EEEEEE }
+        .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
+        .back     { text-align: right; font-size:9pt }
+      </STYLE>
+  </head>
+  <body>
+    <h1>Frequently Asked Questions</h1>
+    <ol>
+      <li><a href="#running">How to run an adaptor as an NT Service</a></li>
+    </ol>
+    
+    <a id="running"></a>
+    <h2>How to run an adaptor as an NT Service</h2>
+    <p>There are a number of utilities for running java programs as an NT service. Here are the
+    instructions for running one of the tutorial configurations using the Java Service Wrapper
+    <a href="http://wrapper.tanukisoftware.org">http://wrapper.tanukisoftware.org</a>.</p>
+    
+    <ol>
+      <li>Download the Java Service Wrapper for windows</li>
+      <li>unzip the distribution and copy the following files into the example/bin directory 
+        wrapper.exe, wrapper.dll, wrapper.jar</li>
+      <li>create a configuration file called wrapper.conf, see example below</li>
+      <li>test the configuration using wrapper.exe -c wrapper.conf</li>
+      <li>install as a service using wrapper.exe -i wrapper.conf</li>
+    </ol>
+      <div class="shell"><pre>
+  wrapper.java.command           = c:\\installs\\jdk1.4.2\\bin\\java
+  wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
+
+  wrapper.app.parameter.1        = org.openadaptor.bootstrap.SpringAdaptor
+  wrapper.app.parameter.2        = -config
+  wrapper.app.parameter.3        = c:\\temp\\openadaptor-latest\\example\\tutorial\\step04.xml
+
+  wrapper.java.classpath.1       = wrapper.jar
+  wrapper.java.classpath.2       = ../lib/bootstrap.jar
+
+  wrapper.ntservice.name         = openadaptor
+  wrapper.ntservice.displayname  = openadaptor example service
+  wrapper.ntservice.description  = openadaptor example service
+  wrapper.ntservice.starttype    = AUTO_START
+  wrapper.ntservice.interactive  = false
+      </div></pre>
+  </body>
+</html>
