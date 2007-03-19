@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+    $Id: simple.xml 465 2007-02-26 10:38:38Z fred $
+    $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/adaptor/simple.xml $
+    
+    This (contrived) adaptor does the following...
+    
+      * reads lines from stdin
+      * does encryption
+      * writes to stdout
+      * does decryption
+      * writes to stdout
+    
+    It is designed to illustrate the PasswordBaseEncyrptionProcessor
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringAdaptor -config crypto.xml
+    
+    You need the following in your classpath
+  
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+     
+    Once it is running it will wait for command line input
+    
+    type something like this...
+    
+      hello world
+    
+    ...and you should see it converted to something like this...
+  
+      tzQqNISSq4ebuD8JrmJnoA==
+      hello world
+    
+    This example shows you both encryption and decryption in the same adaptor, typically
+    you only want to do one in a single adaptor.
+   ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Input" value-ref="Encryptor"/>
+        <entry key-ref="Encryptor">
+          <list>
+            <ref bean="EncryptedOutput"/>
+            <ref bean="Decryptor"/>
+          </list>
+        </entry>
+        <entry key-ref="Decryptor" value-ref="DecryptedOutput"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="Input" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+
+  <bean id="Encryptor" class="org.openadaptor.auxil.processor.crypto.PasswordBasedEncryptionProcessor">
+    <property name="password" value="foobar"/>
+    <property name="mode" value="encrypt"/>
+  </bean>
+  
+  <bean id="Decryptor" class="org.openadaptor.auxil.processor.crypto.PasswordBasedEncryptionProcessor">
+    <property name="password" value="foobar"/>
+    <property name="mode" value="decrypt"/>
+  </bean>
+  
+  <bean id="EncryptedOutput" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+  <bean id="DecryptedOutput" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

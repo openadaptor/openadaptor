@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.iostream;
 
@@ -32,7 +32,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-
 
 public class EncodingAwareObject {
 
@@ -55,7 +54,7 @@ public class EncodingAwareObject {
   public static final String UTF_16 = "UTF-16";// // Sixteen-bit UCS Trans. Format, byte order by optionial byte-order
 
   private String encoding = null;
-  
+
   public void setEncoding(String encoding) {
     this.encoding = encoding;
   }
@@ -67,7 +66,7 @@ public class EncodingAwareObject {
   public boolean isEncodingSet() {
     return encoding != null;
   }
-  
+
   protected InputStreamReader createInputStreamReader(InputStream is) {
     if (isEncodingSet()) {
       try {
@@ -77,10 +76,10 @@ public class EncodingAwareObject {
       }
     } else {
       return new InputStreamReader(is);
-      
+
     }
   }
-  
+
   protected OutputStreamWriter createOutputStreamReader(OutputStream os) {
     if (isEncodingSet()) {
       try {
@@ -88,8 +87,32 @@ public class EncodingAwareObject {
       } catch (UnsupportedEncodingException e) {
         throw new RuntimeException("UnsupportedEncodingException, " + e.getMessage(), e);
       }
-  } else {
-    return new OutputStreamWriter(os);
+    } else {
+      return new OutputStreamWriter(os);
+    }
   }
+
+  protected String createString(byte[] bytes) {
+    if (encoding != null) {
+      try {
+        return new String(bytes, encoding);
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException("UnsupportedEncodingException, " + e.getMessage(), e);
+      }
+    } else {
+      return new String(bytes);
+    }
+  }
+  
+  protected byte[] getBytes(String s) {
+    if (encoding != null) {
+      try {
+        return s.getBytes(encoding);
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException("UnsupportedEncodingException, " + e.getMessage(), e);
+      }
+    } else {
+      return s.getBytes();
+    }
   }
 }
