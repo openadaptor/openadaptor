@@ -110,8 +110,8 @@
 -->
 <a name="classpath"></a>
 <h2>Setting your Java CLASSPATH</h2>
-<p>Since openadaptor is is written in Java you need to set your Java CLASSPATH for things to work (This
-  is how the Java Virtual Machine locates the Java it is instructed to run).</p>
+<p>Since openadaptor is written in Java you need to set your Java CLASSPATH for things to work (This
+  is how the Java Virtual Machine locates the Java classes it is instructed to run).</p>
 
 <p>The nature of what openadaptor does means that it ships with a large number of 3rd party jars, these
   can be found in lib/3rdparty. Some of these are used by the framework but many of these relate to the
@@ -166,6 +166,40 @@
 <p>Some of the openadaptor components require 3rdparty jar/zips that we can not distribute, typically
   for licencing reasons. So you will need to install these separately and add them to the CLASSPATH.
   Some of the example (tibco and mqseries) spring configurations contain comments that relate to this.</p>
+
+<p>post release 3.2.1, openadaptor comes with an additonal jar called <b>bootstrap.jar</b>. This contains
+    alternative helper classes that will bootstrap the classpath based on the location of the bootstrap.jar.
+    All you need in your classpath is bootstrap.jar. You can dump out the programs that can be run
+    from this bootstrap.jar like this</p>
+
+    <div class="shell"><pre>  java -jar bootstrap.jar</pre></div>
+    
+    <p>This should print something like the following...</p>
+    
+    <div class="shell"><pre>  This jar contains the following programs :
+    org.openadaptor.bootstrap.FileSystemExceptionManager
+    org.openadaptor.bootstrap.JDBCExceptionManager
+    org.openadaptor.bootstrap.SpringAdaptor
+    org.openadaptor.bootstrap.SpringApplication
+  When you run these they will bootstrap the classpath based on the location of this jar
+  use -Dopenadaptor.lib=... to provide an additional location to search for classpath resources</pre></div>
+    
+    <p>These bootstrapping programs will automatically construct the classpath based on the location
+    of the bootstrap.jar. The classpath will contain all the jars, zip and subdirectories. You can specify an additional directory
+    to search using the openadaptor.lib system property. <b>patch.jar</b> will always be placed at the
+    front of the classpath, it will load the contents of 3rdparty rather than openadaptor-depends.jar,
+    openadaptor-stub.jar will always be at the end of the classpath.</p>
+    
+    <p>example 1:</p>
+    <div class="shell"><pre>   java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 2:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 3:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
   
 <p class="back"><a href="#contents">back to contents</a></p>
 
