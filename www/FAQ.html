@@ -16,6 +16,7 @@
       <li><a href="#gettingstarted">Getting started</a></li>
       <li><a href="#classpath">How should I set my classpath?</a></li>
       <li><a href="#running">How can I run an adaptor as an NT Service?</a></li>
+      <li><a href="#daemon">How can I run an adaptor as daemon process?</a></li>
     </ol>
 
     <a id="gettingstarted"></a>
@@ -104,10 +105,10 @@
     <ol>
       <li>Download the Java Service Wrapper for windows</li>
       <li>unzip the distribution and copy the following files into the example/bin directory 
-        wrapper.exe, wrapper.dll, wrapper.jar</li>
-      <li>create a configuration file called wrapper.conf, see example below</li>
-      <li>test the configuration using wrapper.exe -c wrapper.conf</li>
-      <li>install as a service using wrapper.exe -i wrapper.conf</li>
+        <code>wrapper.exe</code>, <code>wrapper.dll</code>, <code>wrapper.jar</code></li>
+      <li>create a configuration file called <code>wrapper.conf</code>, see example below</li>
+      <li>test the configuration using <code>wrapper.exe -c wrapper.conf</code></li>
+      <li>install as a service using <code>wrapper.exe -i wrapper.conf</code></li>
     </ol>
     
     <h3>openadaptor 3.2.1 example config</h3>
@@ -151,6 +152,57 @@
   wrapper.ntservice.description  = openadaptor example service
   wrapper.ntservice.starttype    = AUTO_START
   wrapper.ntservice.interactive  = false
+      </div></pre>
+    <p class="back"><a href="#contents">back to contents</a></p>
+        
+        
+    <a id="daemon"></a>
+    <h2>How can I run an adaptor as daemon process?</h2>
+    <p>There are a number of utilities for running java programs as daemon. Here are the
+    instructions for running one of the tutorial configurations using the Java Service Wrapper
+    <a href="http://wrapper.tanukisoftware.org">http://wrapper.tanukisoftware.org</a>.</p>
+    
+    <ol>
+      <li>Download the Java Service Wrapper for your *nix platform</li>
+      <li>unzip the distribution and copy the following files into the <code>example/bin</code> directory 
+        <code>lib/libwrapper.so</code>, <code>bin/wrapper</code>, <code>lib/wrapper.jar</code></li>
+      <li>create a configuration file called <code>wrapper.conf</code>, see example below</li>
+      <li>copy the example script <code>src/bin/sh.script.in</code> to <code>wrapper.sh</code></li>
+      <li>edit <code>wrapper.sh</code> so that <code>WRAPPER_CONF="./wrapper.conf"</code></li>
+      <li>test the configuration using <code>./wrapper.sh console</code></li>
+      <li>run as a daemon using <code>./wrapper.sh start</code></li>
+      <li>stop daemon using <code>./wrapper.sh stop</code></li>
+    </ol>
+    
+    <h3>openadaptor 3.2.1 example config</h3>
+    
+      <div class="shell"><pre>
+  wrapper.java.command           = {your java home}/bin
+  wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
+
+  wrapper.app.parameter.1        = org.openadaptor.spring.SpringAdaptor
+  wrapper.app.parameter.2        = -config
+  wrapper.app.parameter.3        = {your openadaptor root}/example/tutorial/step04.xml
+
+  wrapper.java.classpath.1       = wrapper.jar
+  wrapper.java.classpath.2       = ../lib/openadaptor.jar
+  wrapper.java.classpath.3       = ../lib/openadaptor-spring.jar
+  wrapper.java.classpath.4       = ../lib/openadaptor-depends.jar
+  wrapper.java.classpath.5       = ../lib/3rdparty/jbossall-client.jar
+      </div></pre>
+    
+        <h3>post openadaptor 3.2.1 example config (this uses bootstrap spring launcher)</h3>
+    
+      <div class="shell"><pre>
+  wrapper.java.command           = {your java home}/bin
+  wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
+
+  wrapper.app.parameter.1        = org.openadaptor.bootstrap.SpringAdaptor
+  wrapper.app.parameter.2        = -config
+  wrapper.app.parameter.3        = {your openadaptor root}/example/tutorial/step04.xml
+
+  wrapper.java.classpath.1       = wrapper.jar
+  wrapper.java.classpath.2       = ../lib/bootstrap.jar
       </div></pre>
     <p class="back"><a href="#contents">back to contents</a></p>
   </body>
