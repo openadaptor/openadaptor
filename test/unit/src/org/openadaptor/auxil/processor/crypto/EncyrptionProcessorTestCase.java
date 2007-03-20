@@ -44,7 +44,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     }
     
     {
-      String test = "it's fleece was white as snow";
+      String test = "its fleece was white as snow";
       byte[] encryptedBytes = (byte[]) encryptor.process(test.getBytes())[0];
       byte[] decryptedBytes = (byte[]) decryptor.process(encryptedBytes)[0];
       assertTrue(test.equals(new String(decryptedBytes)));
@@ -76,7 +76,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     }
     
     {
-      String test = "it's fleece was white as snow";
+      String test = "its fleece was white as snow";
       byte[] encryptedBytes = (byte[]) encryptor.process(test.getBytes())[0];
       byte[] decryptedBytes = (byte[]) decryptor.process(encryptedBytes)[0];
       assertTrue(test.equals(new String(decryptedBytes)));
