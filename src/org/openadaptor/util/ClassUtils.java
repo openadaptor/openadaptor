@@ -69,10 +69,10 @@ public class ClassUtils {
   
   public static Collection getSubClassesFromClasspath(Class superClass) {
     String classpath = System.getProperty("java.class.path");
-    return getSubclassesFromClasspath(superClass, classpath);
+    return getSubClassesFromClasspath(superClass, classpath);
   }
   
-  public static List getSubclassesFromClasspath(Class superClass, String classpath) {
+  public static List getSubClassesFromClasspath(Class superClass, String classpath) {
     ArrayList classes = new ArrayList();
     String[] pathElements = classpath.split(File.pathSeparator);
     for (int i = 0; i < pathElements.length; i++) {
@@ -158,4 +158,5 @@ public class ClassUtils {
     boolean isPublic = Modifier.isPublic(mods);
     return isSubclass && !isAbstract && isPublic;
   }
+  
 }
