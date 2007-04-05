@@ -35,8 +35,17 @@ import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
+/**
+ * Convert ResultSets into OrderedMaps
+ * @author perryj
+ */
 public class ResultSetConverter extends AbstractResultSetConverter {
 
+  /**
+   * This convert the current row of a ResultSet into an IOrderedMap.
+   * Note that the supplied ResultSetMetaData must correspond to the
+   * supplied ResultSet, or the behaviour is undefined.
+   */
   protected Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
     int columnCount = rsmd.getColumnCount();
     IOrderedMap map = new OrderedHashMap(columnCount);
