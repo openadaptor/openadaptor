@@ -50,9 +50,7 @@
     <xsl:template match="/beans:beans">
         <!-- Get description for whole of this adaptor -->
         <xsl:if test="beans:description">
-          <p>
-            <xsl:apply-templates select="beans:description"/>
-          </p>
+          <pre><xsl:apply-templates select="beans:description"/></pre>
         </xsl:if>
         <!-- Generate clickable table of contents for top-level beans -->
         <table border="1" bgcolor="#CCCCCC">

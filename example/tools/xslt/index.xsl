@@ -131,24 +131,26 @@
             </td>
         </tr>
         <tr>
-            <td><a href="./README.TXT">README.TXT</a></td>
+            <td>
+                <table>
+                    <tr><td><a href="../readme.html">../readme.html</a></td></tr>
+                </table>
+            </td>
             <td>
                 <p>
-                    Explains how to run the cookbook examples.
+                    Explains how to run adaptors including these examples.
                 </p>
             </td>
         </tr>
         <tr>
             <td>
                 <table>
-                    <tr><td><a href="./input">input</a></td></tr>
-                    <tr><td><a href="./output">output</a></td></tr>
-                    <tr><td><a href="./tmp">tmp</a></td></tr>
+                    <tr><td><a href="../tutorial/index.html">../tutorial/index.html</a></td></tr>
                 </table>
             </td>
             <td>
                 <p>
-                    Filesystem directories for test data used by cookbook examples.
+                    Tutorial example.
                 </p>
             </td>
         </tr>

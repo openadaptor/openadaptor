@@ -81,7 +81,7 @@
             <th><font color="white">Cookbook example</font></th>
             <th><font color="white">Bean classes</font></th>
         </tr>
-        <xsl:for-each select="beans:beans">
+        <xsl:for-each select="beans">
             <tr>
                 <!-- First column: cookbook example name -->
                 <td>
@@ -92,14 +92,14 @@
                                 <tr>
                                     <td>
                                         <a name="{@id}"></a>
-                                        <a href="./{@id}.html"><xsl:value-of select="@id"/></a>
+                                        <a href="./{translate(@id,'_','/')}.html"><xsl:value-of select="@id"/></a>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><a href="./{@id}.xml"><xsl:value-of select="@id"/>.xml</a></td>
+                                    <td><a href="../{translate(@id,'_','/')}.xml"><xsl:value-of select="@id"/>.xml</a></td>
                                 </tr>
                                 <tr>
-                                    <td><a href="./images/{@id}.html">Node Map</a></td>
+                                    <td><a href="./images/{translate(@id,'_','/')}.html">Node Map</a></td>
                                 </tr>
                             </xsl:when>
                             <!-- Anonymous cookbook example ("Header" filename is missing from comment block)-->
@@ -111,7 +111,7 @@
                     </xsl:choose>
                     <!-- Cookbook example description -->
                      <tr>
-                        <td><xsl:apply-templates select="beans:description"/></td>
+                        <td><xsl:apply-templates select="description"/></td>
                     </tr>
                     </table>
                 </td>
@@ -120,27 +120,27 @@
 
                 <!-- Second column: table of bean classes (that are used by this cookbook example) -->
                 <td>
-                    <xsl:if test=".//beans:bean">   <!-- (avoid risk of empty table as messes up web browsers) -->
+                    <xsl:if test=".//bean">   <!-- (avoid risk of empty table as messes up web browsers) -->
                         <table>
-                            <xsl:for-each select=".//beans:bean">
+                            <xsl:for-each select=".//bean">
                                 <tr>
-                                    <td><a href="beans2cookbook.html#{@beans:class}"><xsl:value-of select="@beans:class"/></a></td>
+                                    <td><a href="beans2cookbook.html#{@class}"><xsl:value-of select="@class"/></a></td>
 
                                     <xsl:choose>
                                         <!-- Named bean => show name of bean -->
                                         <xsl:when test="string-length(@id) > 0">
-                                            <td><a href="./{$thisExample}.html#{@id}">[<xsl:value-of select="@id"/>]</a></td>
+                                            <td><a href="./{translate($thisExample,'_','/')}.html#{@id}">[<xsl:value-of select="@id"/>]</a></td>
                                         </xsl:when>
                                         <!-- Anonymous bean => show name of top-level parent bean -->
                                         <xsl:otherwise>
-                                            <xsl:variable name="parentBeanName" select="ancestor::beans:bean[@id!='']/@id"/>
+                                            <xsl:variable name="parentBeanName" select="ancestor::bean[@id!='']/@id"/>
                                             <xsl:choose>
                                                 <xsl:when test="string-length($parentBeanName) > 0">
-                                                    <td><a href="./{$thisExample}.html#{$parentBeanName}">[in <xsl:value-of select="$parentBeanName"/>]</a></td>
+                                                    <td><a href="./{translate($thisExample,'_','/')}.html#{$parentBeanName}">[in <xsl:value-of select="$parentBeanName"/>]</a></td>
                                                 </xsl:when>
                                                 <!-- Don't show name of top-level parent bean if it is anonymous too ;-) -->
                                                 <xsl:otherwise>
-                                                    <td><a href="./{$thisExample}.html">[no id for bean]</a></td>
+                                                    <td><a href="./{translate($thisExample,'_','/')}.html">[no id for bean]</a></td>
                                                 </xsl:otherwise>
                                             </xsl:choose>
                                          </xsl:otherwise>

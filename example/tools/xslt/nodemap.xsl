@@ -41,7 +41,7 @@
 
     Related to "allnodemaps.xsl" which produces same output except that
     every cookbook example appears on a single page.
-    This is used to generate cookbook/images/index.html.
+    This is used to generate docs/images/index.html.
   -->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -53,7 +53,20 @@
 
 <xsl:template match="/">
 
-<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/'),'.xml ')"/>
+<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')"/>
+
+<xsl:variable name="baseRelativeDepth" select="string-length(translate($thisExample,'/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-1234567890','/'))" />
+<xsl:variable name="baseRelativeDotDot">
+  <xsl:choose>
+    <xsl:when test="$baseRelativeDepth = '1'">../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '2'">../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '3'">../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '4'">../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '5'">../../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '6'">../../../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '7'">../../../../../../../</xsl:when>
+  </xsl:choose>
+</xsl:variable>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
@@ -70,27 +83,27 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>Cookbook Node Map: <xsl:value-of select="$thisExample"/></title>
+    <title>Cookbook Node Map: <xsl:value-of select="$thisExample"/>.xml</title>
   </head>
 
   <body>
-    <h1>Cookbook Node Map: <xsl:value-of select="$thisExample"/></h1>
+    <h1>Cookbook Node Map: <xsl:value-of select="$thisExample"/>.xml</h1>
 
     <p>
       <b><xsl:value-of select="$oaVersion"/></b>
     </p>
     <p>
-        <a href="../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
+        <a href="{$baseRelativeDotDot}../../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
     </p>
     <p>
-        <a href="../{$thisExample}.html">Generated documentation for <xsl:value-of select="$thisExample"/></a>
+        <a href="{$baseRelativeDotDot}../{$thisExample}.html">Generated documentation for <xsl:value-of select="$thisExample"/></a>
     </p>
     <p>
-        <a href="../cookbook2beans.html#{$thisExample}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
+        <a href="{$baseRelativeDotDot}../cookbook2beans.html#{translate($thisExample,'/','_')}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
     </p>
 
-    <img src="{$thisExample}.{$imageFileExtension}" usemap="#Map{translate($thisExample, '/', '_')}" alt=""/>
-    <xsl:copy-of select="document(concat('../../build/images/',$thisExample,'.map'))"/>
+    <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate($thisExample,'/','_')}" alt=""/>
+    <xsl:copy-of select="document(concat('../../docs/images/',$thisExample,'.map'))"/>
 
     <pre><xsl:value-of select="beans:beans/beans:description"/></pre>
   </body>

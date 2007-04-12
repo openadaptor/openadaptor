@@ -50,7 +50,21 @@
 <xsl:param name="oaVersion"/>
 
 <xsl:template match="/">
-<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/'),'.xml ')"/>
+<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')"/>
+
+<xsl:variable name="baseRelativeDepth" select="string-length(translate($thisExample,'/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-1234567890','/'))" />
+<xsl:variable name="baseRelativeDotDot">
+  <xsl:choose>
+    <xsl:when test="$baseRelativeDepth = '1'">../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '2'">../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '3'">../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '4'">../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '5'">../../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '6'">../../../../../../</xsl:when>
+    <xsl:when test="$baseRelativeDepth = '7'">../../../../../../../</xsl:when>
+  </xsl:choose>
+</xsl:variable>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15"/>
@@ -76,13 +90,13 @@
         <b><xsl:value-of select="$oaVersion"/></b>
     </p>
     <p>
-        <a href="{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
+        <a href="{$baseRelativeDotDot}../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
     </p>
     <p>
-        <a href="images/{$thisExample}.html">Node Map for <xsl:value-of select="$thisExample"/></a>
+        <a href="{$baseRelativeDotDot}images/{$thisExample}.html">Node Map for <xsl:value-of select="$thisExample"/></a>
     </p>
     <p>
-        <a href="cookbook2beans.html#{$thisExample}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
+        <a href="{$baseRelativeDotDot}cookbook2beans.html#{translate($thisExample,'/','_')}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
     </p>
 
     <xsl:apply-templates select="/beans:beans"/>

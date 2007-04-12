@@ -2,7 +2,7 @@
 
 <!--
 #* [[
-#* Copyright (C) 2005 The Software Conservancy as Trustee. All rights
+#* Copyright (C) 2005-2007 The Software Conservancy as Trustee. All rights
 #* reserved.
 #*
 #* Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,48 +38,51 @@
   <property file="docs.properties" />
   <!-- Where to find XSL Transforms, Schemas, DTDs -->
 
-  <property name="tools.cookbook.dir" value="." />
-  <property name="cookbook.dir" value="../spring" />
-  <property name="build.cookbook.docs.dir" value="../build/docs" />
-  <property name="build.cookbook.images.dir" value="../build/images" />
+  
+  <property name="src.examples.dir" value=".." />
+  <property name="src.examples.tools.dir" value="." />
 
+  <property name="build.examples.docs.dir" value="../docs" />
+  <property name="build.examples.images.dir" value="${build.examples.docs.dir}/images" />
+
+  <!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
   <patternset id="example.xml.config.files">
-    <include name="**/*.xml" />    
+    <include name="spring/**/*.xml" />
+    <include name="tutorial/**/*.xml" />
     <exclude name="**/data/*.xml" />
     <exclude name="**/input/*.xml" />
+    <exclude name="**/inputs/*.xml" />
     <exclude name="**/output/*.xml" />
+    <exclude name="**/outputs/*.xml" />
     <exclude name="**/processors/expressions/book.xml" />
     <exclude name="**/processors/expressions/books.xml" />
   </patternset>
 
-
+  <!-- Where to find the schema files: -->
   <xmlcatalog id="oa3XmlCatalog">
-    <entity publicId="adaptorDoc.xsl" location="${tools.cookbook.dir}/xslt/adaptorDoc.xsl" />
+    <entity publicId="adaptorDoc.xsl" location="${src.examples.tools.dir}/xslt/adaptorDoc.xsl" />
 
-    <dtd publicId="-//SPRING//DTD BEAN 2.0//EN" location="${tools.cookbook.dir}/xslt/spring-beans-2.0.dtd" />
+    <dtd publicId="-//SPRING//DTD BEAN 2.0//EN" location="${src.examples.tools.dir}/xslt/spring-beans-2.0.dtd" />
 
-    <entity publicId="http://www.springframework.org/schema/beans" location="${tools.cookbook.dir}/xslt/spring-beans-2.0.xsd" />
+    <entity publicId="http://www.springframework.org/schema/beans" location="${src.examples.tools.dir}/xslt/spring-beans-2.0.xsd" />
   </xmlcatalog>
 
 
-  <target name="docs_prepare" description="Generates the project Cookbook (including index pages)">
+  <target name="docs_prepare">
 
-    <!-- Start with a clean cookbook build directory: -->
-    <mkdir dir="${build.cookbook.docs.dir}" />
-    <mkdir dir="${build.cookbook.images.dir}" />
+    <!-- Start with clean cookbook and tutorial generated docs/images directories: -->
+    <mkdir dir="${build.examples.docs.dir}" />
+    <mkdir dir="${build.examples.images.dir}" />
     <delete>
-      <fileset dir="${build.cookbook.docs.dir}" includes="**/*" />
-      <fileset dir="${build.cookbook.images.dir}" includes="**/*" />
+      <fileset dir="${build.examples.images.dir}" includes="**/*,*" />
+      <fileset dir="${build.examples.docs.dir}" includes="**/*,*" />
     </delete>
+    <mkdir dir="${build.examples.docs.dir}" />
+    <mkdir dir="${build.examples.images.dir}" />
+    
 
-    <!-- Copy all of the XML cookbook examples and data to the build directory: -->
-    <copy todir="${build.cookbook.docs.dir}">
-      <fileset dir="${cookbook.dir}" />
-    </copy>
-
-    <mkdir dir="${build.cookbook.images.dir}" />
-
-
+    <!-- Set the platform/installation specific path to the installed Graphviz binary: -->
+    
     <condition property="graphviz.dot" value="${graphviz.dot.windows}">
       <and>
         <os family="windows" />
@@ -107,14 +110,12 @@
   </target>
 
 
-  <!--
-      * Generates the project Cookbook images
-      -->
-  <target name="docs_images" depends="docs_prepare" if="graphviz.dot">
+  <target name="docs_images" depends="docs_prepare" if="graphviz.dot"
+          description="Generates the project Cookbook (including index pages)">
 
     <!-- Generate GraphViz dot notation file using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}" style="${tools.cookbook.dir}/xslt/oa3toDot.xsl">
-      <patternset refid="example.xml.config.files"/>
+    <xslt basedir="${src.examples.dir}" destdir="${build.examples.images.dir}" style="${src.examples.tools.dir}/xslt/oa3toDot.xsl">
+      <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.dot" />
@@ -123,50 +124,52 @@
 
     <!-- Generate GIF for each cookbook example from GraphViz dot notation file -->
     <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
-    <mapper id="outImage" type="glob" from="*.dot" to="${build.cookbook.images.dir}/*.${graphviz.image.fileextension}" />
+    <mapper id="outImage" type="glob" from="*.dot" to="${build.examples.images.dir}/*.${graphviz.image.fileextension}" />
 
-    <apply executable="${graphviz.dot}" dest="${build.cookbook.images.dir}" failifexecutionfails="false">
+    <apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
       <arg value="-T${graphviz.image.fileextension}" />
       <srcfile />
-      <fileset dir="${build.cookbook.images.dir}" includes="**/*.dot" />
+      <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
       <mapper refid="outImage" />
       <redirector>
         <outputmapper refid="outImage" />
       </redirector>
     </apply>
 
-
+    
     <!-- Generate image map for each cookbook example from GraphViz dot notation file -->
     <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
-    <mapper id="outCmap" type="glob" from="*.dot" to="${build.cookbook.images.dir}/*.map" />
+    <mapper id="outCmap" type="glob" from="*.dot" to="${build.examples.images.dir}/*.map" />
 
-    <apply executable="${graphviz.dot}" dest="${build.cookbook.images.dir}" failifexecutionfails="false">
+    <apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
       <arg value="-Tcmapx" />
       <srcfile />
-      <fileset dir="${build.cookbook.images.dir}" includes="**/*.dot" />
+      <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
       <mapper refid="outCmap" />
       <redirector>
         <outputmapper refid="outCmap" />
       </redirector>
     </apply>
 
+
     <!-- Clean up the generated dot files at this point -->
-    <!--<delete>
-      <fileset dir="${build.cookbook.images.dir}" includes="**/*.dot" />
-    </delete>-->
+    <delete>
+      <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
+    </delete>
 
 
     <!-- Generate html image page using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.images.dir}" style="${tools.cookbook.dir}/xslt/nodemap.xsl">
-      <patternset refid="example.xml.config.files"/>
+    <xslt basedir="${src.examples.dir}" destdir="${build.examples.images.dir}" style="${src.examples.tools.dir}/xslt/nodemap.xsl">
+      <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.html" />
     </xslt>
 
+    
     <!-- Generate html page using XSLT for each cookbook example -->
-    <xslt basedir="${cookbook.dir}" destdir="${build.cookbook.docs.dir}" style="${tools.cookbook.dir}/xslt/beans.xsl">
+    <xslt basedir="${src.examples.dir}" destdir="${build.examples.docs.dir}" style="${src.examples.tools.dir}/xslt/beans.xsl">
       <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
@@ -179,12 +182,13 @@
   <!--
       * Generates the project Cookbook (including index pages)
       -->
-  <target name="docs" depends="docs_prepare,docs_images" description="Generate the documentation">
+<!--  <target name="docs" depends="docs_prepare,docs_images" description="Generate the documentation"> -->
+  <target name="docs" description="Generate the documentation">
 
     <!-- Combine all cookbook examples into a single file (so we can later generate index) -->
-    <concat destfile="${build.cookbook.docs.dir}/cookbook_combined.xml" fixlastline="yes">
-      <fileset dir="${cookbook.dir}">
-        <patternset refid="example.xml.config.files"/>
+    <concat destfile="${build.examples.docs.dir}/cookbook_combined.xml" fixlastline="yes">
+      <fileset dir="${src.examples.dir}">
+        <patternset refid="example.xml.config.files" />
       </fileset>
       <filterchain>
         <tokenfilter>
@@ -192,7 +196,15 @@
           <filetokenizer />
           <!-- Pull the name of each cookbook example out of its CVS Header comment,
                          and add as "id" attribute to its "beans" element (preserving schema namespace attributes): -->
-          <replaceregex pattern="(.*?)(Id: )([^.]+?)(\.xml,v .*?)&lt;beans([^&gt;]*?)&gt;" flags="sg" replace="\1\2\3\4&lt;beans id=&quot;\3&quot;\5&gt;" />
+          <replaceregex pattern="(.*?)(HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3\4 id=&quot;\3&quot;&gt;" />
+          <!-- Cope (dumbly) with up to 7 levels of directory nesting: -->
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
+          <replaceregex pattern="(beans id=&quot;[^&quot;/]*?)/([^&quot;]*?&quot;)" flags="sg" replace="\1_\2" />
           <!-- Strip out the first two lines of every cookbook example (as inappropriate): -->
           <replaceregex pattern="&lt;\?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;\?&gt;" flags="g" replace="" />
           <replaceregex pattern="&lt;!DOCTYPE beans PUBLIC &quot;-//SPRING//DTD BEAN//EN&quot; &quot;http://www.springframework.org/dtd/spring-beans.dtd&quot;&gt;" flags="g" replace="" />
@@ -207,21 +219,21 @@
 
 
     <!-- Generate html page using XSLT: mapping cookbook examples to beans -->
-    <xslt basedir="${build.cookbook.docs.dir}" destdir="${build.cookbook.docs.dir}" includes="cookbook_combined.xml" style="${tools.cookbook.dir}/xslt/cookbook2beans.xsl">
+    <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.docs.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/cookbook2beans.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="cookbook_combined.xml" to="cookbook2beans.html" />
     </xslt>
 
     <!-- Generate html page using XSLT: mapping beans to cookbook examples -->
-    <xslt basedir="${build.cookbook.docs.dir}" destdir="${build.cookbook.docs.dir}" includes="cookbook_combined.xml" style="${tools.cookbook.dir}/xslt/beans2cookbook.xsl">
+    <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.docs.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/beans2cookbook.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="cookbook_combined.xml" to="beans2cookbook.html" />
     </xslt>
 
     <!-- Generate html image page using XSLT: containing node maps for all cookbook examples -->
-    <xslt basedir="${build.cookbook.docs.dir}" destdir="${build.cookbook.images.dir}" includes="cookbook_combined.xml" style="${tools.cookbook.dir}/xslt/allnodemaps.xsl">
+    <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.images.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/allnodemaps.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <xmlcatalog refid="oa3XmlCatalog" />
@@ -229,18 +241,18 @@
     </xslt>
 
     <!-- Generate main index.html page using XSLT: containing summary of cookbook information -->
-    <xslt basedir="${build.cookbook.docs.dir}" destdir="${build.cookbook.docs.dir}" includes="cookbook_combined.xml" style="${cookbook.dir}/xslt/index.xsl">
+    <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.docs.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/index.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="cookbook_combined.xml" to="index.html" />
     </xslt>
 
     <!-- Tidy up temporary XML file used for index generation -->
-    <delete file="${build.cookbook.docs.dir}/cookbook_combined.xml" />
+<!--    <delete file="${build.examples.docs.dir}/cookbook_combined.xml" /> -->
 
     <!-- Clean up the generated map files at this point -->
     <delete>
-      <fileset dir="${build.cookbook.docs.dir}" includes="**/*.map" />
+      <fileset dir="${build.examples.images.dir}" includes="**/*.map" />
     </delete>
 
   </target>

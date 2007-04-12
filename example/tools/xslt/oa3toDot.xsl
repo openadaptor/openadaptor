@@ -50,7 +50,28 @@
                 xmlns:beans="http://www.springframework.org/schema/beans">
     <xsl:output method="text"/>
 
-    <xsl:variable name="exampleName" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/'),'.xml ')"/>
+    <xsl:variable name="exampleName" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')"/>
+    
+    <xsl:variable name="exampleShortName">
+      <xsl:call-template name="substring-after-last">
+        <xsl:with-param name="input"  select="$exampleName" />
+        <xsl:with-param name="substr" select="'/'" />
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="baseRelativeDepth" select="string-length(translate($exampleName,'/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-1234567890','/'))" />
+    <xsl:variable name="baseRelativeDotDot">
+      <xsl:choose>
+        <xsl:when test="$baseRelativeDepth = '1'">../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '2'">../../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '3'">../../../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '4'">../../../../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '5'">../../../../../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '6'">../../../../../../</xsl:when>
+        <xsl:when test="$baseRelativeDepth = '7'">../../../../../../../</xsl:when>
+      </xsl:choose>
+    </xsl:variable>
+    
     <xsl:variable name="graphName" select="concat('Map_', translate($exampleName, '/', '_'))"/>
 
     <xsl:template match="/">
@@ -91,7 +112,7 @@
         <!-- Node URL: -->
         <xsl:if test="string-length($srcNode) > 0">
             <xsl:text>URL="</xsl:text>
-            <xsl:value-of select="concat('../', $exampleName, '.html#', $srcNode)"/>
+            <xsl:value-of select="concat($baseRelativeDotDot, '../', $exampleName, '.html#', $srcNode)"/>
             <xsl:text>", </xsl:text>
             <xsl:text>tooltip="</xsl:text>
             <xsl:value-of select="$srcNode"/>
@@ -376,7 +397,7 @@
         <!-- Edge URL: -->
         <xsl:if test="$srcNode != ''">
             <xsl:text>URL="</xsl:text>
-            <xsl:value-of select="concat('../', $exampleName, '.html#', $srcNode)"/>
+            <xsl:value-of select="concat($baseRelativeDotDot, '../', $exampleName, '.html#', $srcNode)"/>
             <xsl:text>", </xsl:text>
             <xsl:text>tooltip="</xsl:text>
             <xsl:value-of select="$edgeTooltipLabel"/>
@@ -412,4 +433,25 @@
         </xsl:text>
     </xsl:template>
 
+  <xsl:template name="substring-after-last">
+    <xsl:param name="input" />
+    <xsl:param name="substr" />
+    
+    <!-- Extract the string which comes after the first occurence -->
+    <xsl:variable name="temp" select="substring-after($input,$substr)" />
+    
+    <xsl:choose>
+      <!-- If it still contains the search string then recursively process -->
+      <xsl:when test="$substr and contains($temp,$substr)">
+        <xsl:call-template name="substring-after-last">
+          <xsl:with-param name="input"  select="$temp" />
+          <xsl:with-param name="substr" select="$substr" />
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$temp" />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
 </xsl:stylesheet>

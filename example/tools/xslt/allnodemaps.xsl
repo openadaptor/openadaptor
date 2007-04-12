@@ -37,7 +37,7 @@
 
     Produces a single HTML page containing all cookbook examples as
     embedded clickable node map images.
-    This is used to generate cookbook/images/index.html.
+    This is used to generate docs/images/index.html.
 
     Related to "nodemap.xsl" which produces same output except for
     just one cookbook example.
@@ -75,7 +75,7 @@
 
     <b><xsl:value-of select="$oaVersion"/></b>
 
-    <xsl:for-each select="beans:beans">
+    <xsl:for-each select="beans">
         <p></p>
         <table border="1" bgcolor="#CCCCCC">
             <xsl:choose>
@@ -89,13 +89,13 @@
                     </tr>
                     <!-- Cookbook example description -->
                     <tr bgcolor="#FFFFFF">
-                        <td><xsl:apply-templates select="beans:description"/></td>
+                        <td><xsl:apply-templates select="description"/></td>
                     </tr>
                     <!-- Cookbook example node map -->
                     <tr bgcolor="#FFFFFF">
                         <td>
-                            <img src="{@id}.{$imageFileExtension}" usemap="#Map{translate(@id, '-', '_')}" alt=""/>
-                            <xsl:copy-of select="document(concat('../../build/cookbook/images/',@id,'.map'))"/>
+                            <img src="{@id}.{$imageFileExtension}" usemap="#Map{@id}" alt=""/>
+                            <xsl:copy-of select="document(concat('../../docs/images/',translate(@id, '_', '/'),'.map'))"/>
                         </td>
                     </tr>
                 </xsl:when>
