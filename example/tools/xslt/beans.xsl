@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $Header: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/beans.xsl,v 1.4 2006/10/05 14:02:31 shirea Exp $
+    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/beans.xsl,v 1.4 2006/10/05 14:02:31 shirea Exp $
 
     @author Andrew Shire
 
@@ -48,6 +48,7 @@
 <xsl:import href="adaptorDoc.xsl"/>
 
 <xsl:param name="oaVersion"/>
+<xsl:param name="imageFileExtension"/>
 
 <xsl:template match="/">
 <xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')"/>
@@ -80,11 +81,11 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>Cookbook Beans: <xsl:value-of select="$thisExample"/></title>
+    <title>Config: <xsl:value-of select="$thisExample"/></title>
   </head>
 
   <body>
-    <h1>Cookbook Beans: <xsl:value-of select="$thisExample"/></h1>
+    <h1>Config: <xsl:value-of select="$thisExample"/></h1>
 
     <p>
         <b><xsl:value-of select="$oaVersion"/></b>
@@ -93,13 +94,15 @@
         <a href="{$baseRelativeDotDot}../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
     </p>
     <p>
-        <a href="{$baseRelativeDotDot}images/{$thisExample}.html">Node Map for <xsl:value-of select="$thisExample"/></a>
-    </p>
-    <p>
-        <a href="{$baseRelativeDotDot}cookbook2beans.html#{translate($thisExample,'/','_')}">Cookbook to Beans index for <xsl:value-of select="$thisExample"/>.</a>
+        <a href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">Config to Beans index (for <xsl:value-of select="$thisExample"/>).</a>
     </p>
 
-    <xsl:apply-templates select="/beans:beans"/>
+    <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate($thisExample,'/','_')}" alt=""/>
+    <xsl:copy-of select="document(concat('../../docs/',$thisExample,'.map'))"/>
+
+    <xsl:apply-templates select="/beans:beans">
+      <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
+    </xsl:apply-templates>
 
   </body>
 </html>

@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $Header: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/oa3toDot.xsl,v 1.13 2006/11/09 12:11:12 shirea Exp $
+    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/oa3toDot.xsl,v 1.13 2006/11/09 12:11:12 shirea Exp $
 
     @author Eddy Higgins
     @author Andrew Shire
@@ -112,7 +112,7 @@
         <!-- Node URL: -->
         <xsl:if test="string-length($srcNode) > 0">
             <xsl:text>URL="</xsl:text>
-            <xsl:value-of select="concat($baseRelativeDotDot, '../', $exampleName, '.html#', $srcNode)"/>
+            <xsl:value-of select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)"/>
             <xsl:text>", </xsl:text>
             <xsl:text>tooltip="</xsl:text>
             <xsl:value-of select="$srcNode"/>
@@ -397,7 +397,7 @@
         <!-- Edge URL: -->
         <xsl:if test="$srcNode != ''">
             <xsl:text>URL="</xsl:text>
-            <xsl:value-of select="concat($baseRelativeDotDot, '../', $exampleName, '.html#', $srcNode)"/>
+            <xsl:value-of select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)"/>
             <xsl:text>", </xsl:text>
             <xsl:text>tooltip="</xsl:text>
             <xsl:value-of select="$edgeTooltipLabel"/>

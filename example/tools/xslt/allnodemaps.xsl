@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $Header: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/allnodemaps.xsl,v 1.6 2006/10/10 13:09:22 shirea Exp $
+    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/allnodemaps.xsl,v 1.6 2006/10/10 13:09:22 shirea Exp $
 
     @author Andrew Shire
 
@@ -67,11 +67,11 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>Node Maps for all Cookbook examples</title>
+    <title>Node maps for all config examples</title>
   </head>
 
   <body>
-    <h1>Node Maps for all Cookbook examples</h1>
+    <h1>Node maps for all config examples</h1>
 
     <b><xsl:value-of select="$oaVersion"/></b>
 
@@ -84,7 +84,7 @@
                     <!-- Cookbook example name -->
                     <tr bgcolor="#000099">
                         <th>
-                            <font color="white"><a name="{@id}"/><a class="th" href="../cookbook2beans.html#{@id}"><xsl:value-of select="@id"/></a></font>
+                            <font color="white"><a name="{@id}"/><a class="th" href="./config2beans.html#{@id}"><xsl:value-of select="translate(translate(@id,'_','/'),'-','_')"/></a></font>
                         </th>
                     </tr>
                     <!-- Cookbook example description -->
@@ -95,7 +95,7 @@
                     <tr bgcolor="#FFFFFF">
                         <td>
                             <img src="{translate(translate(@id,'_','/'),'-','_')}.{$imageFileExtension}" usemap="#Map_{translate(@id, '-', '_')}" alt=""/>
-                            <xsl:copy-of select="document(concat('../../docs/images/',translate(translate(@id,'_','/'),'-','_'),'.localmap'))"/>
+                            <xsl:copy-of select="document(concat('../../docs/',translate(translate(@id,'_','/'),'-','_'),'.localmap'))"/>
                         </td>
                     </tr>
                 </xsl:when>
@@ -103,7 +103,7 @@
                 <xsl:otherwise>
                     <tr bgcolor="#000099">
                         <td>
-                            <font color="white">(cookbook example missing name)</font>
+                            <font color="white">(config example missing name)</font>
                         </td>
                     </tr>
                 </xsl:otherwise>

@@ -31,14 +31,14 @@
     Software with other software or hardware.
     ]]
 
-    $Header: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/adaptorDoc.xsl,v 1.4 2006/10/06 12:39:06 shirea Exp $
+    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/adaptorDoc.xsl,v 1.4 2006/10/06 12:39:06 shirea Exp $
 
     @author Andrew Shire
 
     Autogenerates detailed documentation for OA3 XML files
     (interprets Spring config with knowledge of key OA3 semantics).
 
-    Used by "beans.xsl" which generates documentation for an entire cookbook example.
+    Used by "beans.xsl" which generates documentation for an entire config example.
   -->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -48,6 +48,7 @@
         Overall document template.
       -->
     <xsl:template match="/beans:beans">
+        <xsl:param name="baseRelativeDotDot" value="./" />
         <!-- Get description for whole of this adaptor -->
         <xsl:if test="beans:description">
           <pre><xsl:apply-templates select="beans:description"/></pre>
@@ -100,7 +101,9 @@
         <!-- Generate documentation for each bean -->
         <xsl:for-each select="beans:bean">
             <p>
-                <xsl:apply-templates select="."/>
+                <xsl:apply-templates select=".">
+                    <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
+                </xsl:apply-templates>
             </p>
         </xsl:for-each>
     </xsl:template>
@@ -109,6 +112,7 @@
         Templates for bean.
       -->
     <xsl:template match="beans:bean">
+        <xsl:param name="baseRelativeDotDot" value="./" />
         <table border="1" bgcolor="#CCCCCC">
             <colgroup>
                 <col bgcolor="#CCCCCC"/>
@@ -122,13 +126,13 @@
                     <!-- Named bean -->
                     <xsl:when test="@id">
                         <a name="{@id}"></a>
-                        <a class="th" href="./beans2cookbook.html#{@class}">
+                        <a class="th" href="{$baseRelativeDotDot}beans2config.html#{@class}">
                             <xsl:value-of select="@id"/>
                         </a>
                     </xsl:when>
                     <!-- Anonymous bean -->
                     <xsl:otherwise>
-                        <a class="th" href="./beans2cookbook.html#{@class}">
+                        <a class="th" href="{$baseRelativeDotDot}beans2config.html#{@class}">
                             <xsl:value-of select="name()"/>
                         </a>
                     </xsl:otherwise>
@@ -136,7 +140,7 @@
                 <!-- Beans always have a class, unless they refer to a factory bean: -->
                 <xsl:if test="@beans:class">
                     <xsl:text> : </xsl:text>
-                    <a class="th" href="../javadocs/{translate(@beans:class,'.','/')}.html">
+                    <a class="th" href="{$baseRelativeDotDot}../javadocs/{translate(@beans:class,'.','/')}.html">
                       <xsl:value-of select="@beans:class"/>
                     </a>
                 </xsl:if>

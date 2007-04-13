@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $Header: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/beans2cookbook.xsl,v 1.3 2006/10/03 15:10:31 shirea Exp $
+    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/beans2cookbook.xsl,v 1.3 2006/10/03 15:10:31 shirea Exp $
 
     @author Andrew Shire
 
@@ -61,11 +61,11 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>Bean classes to Cookbook examples Index</title>
+    <title>Beans to Config Index</title>
   </head>
 
   <body>
-    <h1>Bean classes to Cookbook examples Index</h1>
+    <h1>Beans to Config Index</h1>
 
     <b><xsl:value-of select="$oaVersion"/></b>
 
@@ -80,7 +80,7 @@
 
         <tr bgcolor="#000099">
             <th><font color="white">Bean class</font></th>
-            <th><font color="white">Cookbook examples</font></th>
+            <th><font color="white">Config examples</font></th>
         </tr>
         <xsl:for-each select="beans//bean">
             <xsl:sort select="@class"/>  <!-- sort by package/class names -->
@@ -102,22 +102,22 @@
                                     <xsl:choose>
                                         <xsl:when test="string-length($thisExample) > 0">
                                             <tr>
-                                                <td><a href="./cookbook2beans.html#{$thisExample}"><xsl:value-of select="$thisExample"/></a></td>
+                                                <td><a href="./config2beans.html#{$thisExample}"><xsl:value-of select="translate(translate($thisExample,'_','/'),'-','_')"/></a></td>
                                                 <xsl:choose>
                                                     <!-- Named bean => show name of bean -->
                                                     <xsl:when test="string-length(@id) > 0">
-                                                        <td><a href="./{$thisExample}.html#{@id}">[<xsl:value-of select="@id"/>]</a></td>
+                                                        <td><a href="./{translate(translate($thisExample,'_','/'),'-','_')}.html#{@id}">[<xsl:value-of select="@id"/>]</a></td>
                                                     </xsl:when>
                                                     <!-- Anonymous bean => show name of top-level parent bean -->
                                                     <xsl:otherwise>
                                                         <xsl:variable name="parentBeanName" select="ancestor::bean[@id!='']/@id"/>
                                                         <xsl:choose>
                                                             <xsl:when test="string-length($parentBeanName) > 0">
-                                                                <td><a href="./{$thisExample}.html#{$parentBeanName}">[in <xsl:value-of select="$parentBeanName"/>]</a></td>
+                                                                <td><a href="./{translate(translate($thisExample,'_','/'),'-','_')}.html#{$parentBeanName}">[in <xsl:value-of select="$parentBeanName"/>]</a></td>
                                                             </xsl:when>
                                                             <!-- Don't show name of top-level parent bean if it is anonymous too ;-) -->
                                                             <xsl:otherwise>
-                                                                <td><a href="./{$thisExample}.html">[no id for bean]</a></td>
+                                                                <td><a href="./{translate(translate($thisExample,'_','/'),'-','_')}.html">[no id for bean]</a></td>
                                                             </xsl:otherwise>
                                                         </xsl:choose>
                                                      </xsl:otherwise>

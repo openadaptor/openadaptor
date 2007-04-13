@@ -43,7 +43,7 @@
   <property name="src.examples.tools.dir" value="." />
 
   <property name="build.examples.docs.dir" value="../docs" />
-  <property name="build.examples.images.dir" value="${build.examples.docs.dir}/images" />
+  <property name="build.examples.images.dir" value="${build.examples.docs.dir}" />
 
   <!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
   <patternset id="example.xml.config.files">
@@ -152,20 +152,11 @@
     </delete>
 
 
-    <!-- Generate html image page using XSLT for each cookbook example -->
-    <xslt basedir="${src.examples.dir}" destdir="${build.examples.images.dir}" style="${src.examples.tools.dir}/xslt/nodemap.xsl">
-      <patternset refid="example.xml.config.files" />
-      <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
-      <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
-      <xmlcatalog refid="oa3XmlCatalog" />
-      <mapper type="glob" from="*.xml" to="*.html" />
-    </xslt>
-
-
     <!-- Generate html page using XSLT for each cookbook example -->
     <xslt basedir="${src.examples.dir}" destdir="${build.examples.docs.dir}" style="${src.examples.tools.dir}/xslt/beans.xsl">
       <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+      <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.html" />
     </xslt>
@@ -221,7 +212,7 @@
       <filterchain>
         <tokenfilter>
           <!-- Replace the HREF relative path with "../" (because map was originally built for use deep in images tree): -->
-          <replaceregex pattern="( href=&quot;)[./]+([^./][^&quot;])" flags="sg" replace="\1../\2" />
+          <replaceregex pattern="( href=&quot;)[./]+([^./][^&quot;])" flags="sg" replace="\1./\2" />
         </tokenfilter>
       </filterchain>
     </copy>
@@ -231,14 +222,14 @@
     <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.docs.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/cookbook2beans.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
-      <mapper type="glob" from="cookbook_combined.xml" to="cookbook2beans.html" />
+      <mapper type="glob" from="cookbook_combined.xml" to="config2beans.html" />
     </xslt>
 
     <!-- Generate html page using XSLT: mapping beans to cookbook examples -->
     <xslt basedir="${build.examples.docs.dir}" destdir="${build.examples.docs.dir}" includes="cookbook_combined.xml" style="${src.examples.tools.dir}/xslt/beans2cookbook.xsl">
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <xmlcatalog refid="oa3XmlCatalog" />
-      <mapper type="glob" from="cookbook_combined.xml" to="beans2cookbook.html" />
+      <mapper type="glob" from="cookbook_combined.xml" to="beans2config.html" />
     </xslt>
 
     <!-- Generate html image page using XSLT: containing node maps for all cookbook examples -->
@@ -246,7 +237,7 @@
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <xmlcatalog refid="oa3XmlCatalog" />
-      <mapper type="glob" from="cookbook_combined.xml" to="index.html" />
+      <mapper type="glob" from="cookbook_combined.xml" to="allimages.html" />
     </xslt>
 
     <!-- Generate main index.html page using XSLT: containing summary of cookbook information -->
