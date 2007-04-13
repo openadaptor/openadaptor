@@ -94,7 +94,7 @@
         <a href="{$baseRelativeDotDot}../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
     </p>
     <p>
-        <a href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">Config to Beans index (for <xsl:value-of select="$thisExample"/>).</a>
+        <a href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">Entry in Config to Beans index (for <xsl:value-of select="$thisExample"/>).</a>
     </p>
 
     <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate($thisExample,'/','_')}" alt=""/>
