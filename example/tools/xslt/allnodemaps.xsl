@@ -94,8 +94,8 @@
                     <!-- Cookbook example node map -->
                     <tr bgcolor="#FFFFFF">
                         <td>
-                            <img src="{@id}.{$imageFileExtension}" usemap="#Map{@id}" alt=""/>
-                            <xsl:copy-of select="document(concat('../../docs/images/',translate(@id, '_', '/'),'.map'))"/>
+                            <img src="{translate(translate(@id,'_','/'),'-','_')}.{$imageFileExtension}" usemap="#Map_{translate(@id, '-', '_')}" alt=""/>
+                            <xsl:copy-of select="document(concat('../../docs/images/',translate(translate(@id,'_','/'),'-','_'),'.localmap'))"/>
                         </td>
                     </tr>
                 </xsl:when>
