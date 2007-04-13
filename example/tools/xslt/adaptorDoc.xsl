@@ -48,7 +48,7 @@
         Overall document template.
       -->
     <xsl:template match="/beans:beans">
-        <xsl:param name="baseRelativeDotDot" value="./" />
+        <xsl:param name="baseRelativeDotDot" select="'./'" />
         <!-- Get description for whole of this adaptor -->
         <xsl:if test="beans:description">
           <pre><xsl:apply-templates select="beans:description"/></pre>
@@ -112,7 +112,7 @@
         Templates for bean.
       -->
     <xsl:template match="beans:bean">
-        <xsl:param name="baseRelativeDotDot" value="./" />
+        <xsl:param name="baseRelativeDotDot" select="'./'" />
         <table border="1" bgcolor="#CCCCCC">
             <colgroup>
                 <col bgcolor="#CCCCCC"/>
