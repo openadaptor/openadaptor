@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
-  <description><![CDATA[
-    $Id$
-    $HeadURL$
-  
+  <description><![CDATA[  
     This adaptor does the following...
     
       * reads DOXML from a file
@@ -28,7 +29,7 @@
       lib/openadaptor.jar
       lib/openadaptor-spring.jar
       lib/openadaptor-depends.jar
-      lib/3rdparty/legacy_openadaptor.jar
+      lib/3rdparty/legacy-openadaptor-1.7.2.2.jar
     
     writes output to stdout.
   ]]></description>

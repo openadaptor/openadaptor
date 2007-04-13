@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   
   <description><![CDATA[
-    $Id$
-    $HeadURL$
-
     This adaptor does the following...
     
-      * reads all data in input/delim.txt
+      * reads all data in delim.txt
       * modifies the fields using javascript
       * outputs to stdout
     
@@ -17,7 +18,7 @@
 
     Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config Javascript.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config Javascript.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -32,7 +33,7 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
     <description>
       This adaptor is designed to illustrate a simple use of a JavascriptProcessor
-        * reads all data in input/delim.txt
+        * reads all data in delim.txt
         * modifies the fields via javascript
         * outputs to stdout
     </description>
@@ -52,7 +53,7 @@
   </bean>
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="input/delim.txt"/>
+    <property name="filename" value="delim.txt"/>
   </bean>
   
   <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">

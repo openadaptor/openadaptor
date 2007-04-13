@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
-  <description><![CDATA[
-    $Id$
-    $HeadURL$
-  
+  <description><![CDATA[  
     This example adaptor illustrates the basic steps in generating json text.
     
       * reads a file consisting of rows of comma separated values.
@@ -16,7 +17,7 @@
     
     Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config tojson.xml -bean Adaptor
+      java org.openadaptor.spring.SpringApplication -config tojson.xml -bean Adaptor
     
     You need the following in your classpath
   
@@ -43,8 +44,8 @@
   </bean> 
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <description>Read a comma delimited file line by line</description>
-    <property name="filename" value="input/delim.csv"/>
+    <description>Read in an entire xml document</description>
+    <property name="filename" value="delim.csv"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
     </property>
@@ -61,11 +62,12 @@
         </list>
     </property>
   </bean>
-
-  <!-- Convert to JSON using defulat property settings -->
-  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJSONConvertor"/>
-
-  <!-- Write to file relying on asString to do the right thing -->
+  
+  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJsonStringConvertor">
+    <description>Generate a json string</description>
+    <property name="tabSize" value="2"/>
+  </bean>
+  
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
 </beans>

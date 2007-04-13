@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/beans2cookbook.xsl,v 1.3 2006/10/03 15:10:31 shirea Exp $
+    $HeadURL$
 
     @author Andrew Shire
 

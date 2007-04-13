@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/allnodemaps.xsl,v 1.6 2006/10/10 13:09:22 shirea Exp $
+    $HeadURL$
 
     @author Andrew Shire
 

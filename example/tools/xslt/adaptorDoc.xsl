@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/adaptorDoc.xsl,v 1.4 2006/10/06 12:39:06 shirea Exp $
+    $HeadURL$
 
     @author Andrew Shire
 

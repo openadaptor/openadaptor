@@ -31,7 +31,7 @@
     Software with other software or hardware.
     ]]
 
-    $HeadURL: /u1/sourcecast/data/ccvs/repository/oa3/cookbook/xslt/oa3toDot.xsl,v 1.13 2006/11/09 12:11:12 shirea Exp $
+    $HeadURL$
 
     @author Eddy Higgins
     @author Andrew Shire
