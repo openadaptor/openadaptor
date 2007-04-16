@@ -64,10 +64,9 @@
 
             <tr bgcolor="#000099">
                 <th><font color="white">Beans</font></th>
-                <th><font color="white">chainedNodes</font></th>
-                <th><font color="white">discardChainedNodes</font></th>
-                <th><font color="white">staticExceptionRouting</font></th>
-                <th><font color="white">dynamicExceptionRouting</font></th>
+                <th><font color="white">Next node(s)</font></th>
+                <th><font color="white">Discard node(s)</font></th>
+                <th><font color="white">Exception routing</font></th>
             </tr>
             <xsl:for-each select="beans:bean">
                 <tr>
@@ -91,9 +90,6 @@
                     </td>
                     <td>
                         <xsl:apply-templates select="beans:property[@name='staticExceptionRouting']/beans:map"/>
-                    </td>
-                    <td>
-                        <xsl:apply-templates select="beans:property[@name='dynamicExceptionRouting']/beans:map"/>
                     </td>
                 </tr>
             </xsl:for-each>
@@ -138,16 +134,16 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <!-- Beans always have a class, unless they refer to a factory bean: -->
-                <xsl:if test="@beans:class">
+                <xsl:if test="@class">
                     <xsl:text> : </xsl:text>
-                    <a class="th" href="{$baseRelativeDotDot}../javadocs/{translate(@beans:class,'.','/')}.html">
-                      <xsl:value-of select="@beans:class"/>
+                    <a class="th" href="{$baseRelativeDotDot}../javadocs/{translate(@class,'.','/')}.html">
+                      <xsl:value-of select="@class"/>
                     </a>
                 </xsl:if>
-                <xsl:if test="@beans:factory-bean">
+                <xsl:if test="@factory-bean">
                     <xsl:text> : factory-bean=</xsl:text>
-                    <a class="th" href="{@beans:factory-bean}">
-                      <xsl:value-of select="@beans:factory-bean"/>
+                    <a class="th" href="{@factory-bean}">
+                      <xsl:value-of select="@factory-bean"/>
                     </a>
                 </xsl:if>
             </font></th></tr>
@@ -168,25 +164,25 @@
     <!--
         Templates for the properties.
       -->
-    <xsl:template match="beans:property[@beans:value]">
+    <xsl:template match="beans:property[@value]">
         <tr bgcolor="#FFFFFF">
-            <td bgcolor="#CCCCCC"><xsl:value-of select="@beans:name"/></td>
-            <td><xsl:value-of select="@beans:value"/></td>
+            <td bgcolor="#CCCCCC"><xsl:value-of select="@name"/></td>
+            <td><xsl:value-of select="@value"/></td>
             <td><xsl:apply-templates select="beans:description"/></td>
         </tr>
     </xsl:template>
 
-    <xsl:template match="beans:property[@beans:ref]">
+    <xsl:template match="beans:property[@ref]">
         <tr bgcolor="#FFFFFF">
-            <td bgcolor="#CCCCCC"><xsl:value-of select="@beans:name"/></td>
-            <td><a href="#{@ref}"><xsl:value-of select="@beans:ref"/></a></td>
+            <td bgcolor="#CCCCCC"><xsl:value-of select="@name"/></td>
+            <td><a href="#{@ref}"><xsl:value-of select="@ref"/></a></td>
             <td><xsl:apply-templates select="beans:description"/></td>
         </tr>
     </xsl:template>
 
-    <xsl:template match="beans:property[not(@beans:value) and not(@beans:ref)]">
+    <xsl:template match="beans:property[not(@value) and not(@ref)]">
         <tr bgcolor="#FFFFFF">
-            <td bgcolor="#CCCCCC"><xsl:value-of select="@beans:name"/></td>
+            <td bgcolor="#CCCCCC"><xsl:value-of select="@name"/></td>
             <td><xsl:apply-templates select="*"/></td>
         </tr>
     </xsl:template>
@@ -224,9 +220,9 @@
     <xsl:template match="beans:entry">
         <tr>
             <td><xsl:value-of select="position()"/></td>
-            <td><xsl:apply-templates select="beans:key|@beans:key|@beans:key-ref"/></td>
-            <td><xsl:apply-templates select="beans:ref|@beans:ref"/></td>
-            <td><xsl:apply-templates select="beans:value|@beans:value|@beans:value-ref"/></td>
+            <td><xsl:apply-templates select="beans:key|@key|@key-ref"/></td>
+            <td><xsl:apply-templates select="beans:ref|@ref"/></td>
+            <td><xsl:apply-templates select="beans:value|@value|@value-ref"/></td>
             <td><xsl:value-of select="descendant-or-self::comment()"/></td>
         </tr>
     </xsl:template>
@@ -234,7 +230,7 @@
     <xsl:template match="beans:prop">
         <tr>
             <td><xsl:value-of select="position()"/></td>
-            <td><xsl:apply-templates select="@beans:key"/></td>
+            <td><xsl:apply-templates select="@key"/></td>
             <td><xsl:apply-templates select="descendant::node()"/></td>
             <td><xsl:value-of select="descendant-or-self::comment()"/></td>
         </tr>
@@ -253,16 +249,16 @@
     </xsl:template>
 
     <xsl:template match="beans:ref">
-        <xsl:if test="@beans:bean">
-            <a href="#{@beans:bean}"><xsl:value-of select="@beans:bean"/></a>
+        <xsl:if test="@bean">
+            <a href="#{@bean}"><xsl:value-of select="@bean"/></a>
         </xsl:if>
-        <xsl:if test="@beans:local">
-            <a href="#{@beans:bean}"><xsl:value-of select="@beans:local"/></a>
+        <xsl:if test="@local">
+            <a href="#{@bean}"><xsl:value-of select="@local"/></a>
         </xsl:if>
         <xsl:value-of select="."/>
     </xsl:template>
 
-    <xsl:template match="@beans:ref|@beans:key-ref|@beans:value-ref">
+    <xsl:template match="@ref|@key-ref|@value-ref">
         <a href="#{.}"><xsl:value-of select="."/></a>
     </xsl:template>
 
