@@ -50,16 +50,16 @@
   </bean>
  
   
-  <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
     <property name="password" value=""/>
   </bean>
 
-  <!-- Reader which polls database using configured SQL -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <description>Reader which polls database using configured SQL.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="resultSetConverter">
       <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>

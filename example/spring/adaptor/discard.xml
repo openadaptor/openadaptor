@@ -50,7 +50,6 @@
         <entry key-ref="Filter" value-ref="Writer"/>
       </map>
     </property>
-    <!-- discard map -->
     <property name="discardMap">
       <map>
         <entry key-ref="Filter" value-ref="DiscardWriter"/>
@@ -60,8 +59,10 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- converts intput into an ordered map with single field called data -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>
+      Converts input into an ordered map with single field called data.
+    </description>
     <property name="fieldNames">
       <list>
         <value>data</value>
@@ -69,8 +70,10 @@
     </property>
   </bean>
   
-  <!-- This processor discards data where data -->
   <bean id="Filter" class="org.openadaptor.auxil.processor.simplerecord.FilterProcessor">
+    <description>
+      This processor discards data where data field has a value of discard.
+    </description>
     <property name="discardMatches" value="true"/>
     <property name="filterExpressionString" value="{data} = 'discard'"/>
   </bean>

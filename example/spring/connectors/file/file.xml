@@ -50,8 +50,8 @@
     </property>
   </bean>
    
-  <!-- This read connector reads lines from a file -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>This read connector reads lines from a file.</description>
     <property name="filename" value="input/input.txt"/>
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
@@ -77,8 +77,8 @@
     <property name="rootElementTag" value="record"/>
   </bean>
   
-  <!-- This writer writes data to a file -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This writer writes data to a file.</description>
     <property name="filename" value="output.xml"/>
     <property name="append" value="false"/>
   </bean>

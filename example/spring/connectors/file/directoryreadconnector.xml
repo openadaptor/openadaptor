@@ -52,10 +52,10 @@
   <bean id="DirectoryReader" class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">    
     <property name="dirname" value="input/inputs"/>
     <property name="filenameRegex" value="stuff[0-9].txt"/>
-  
   </bean>
   
-  <!-- This writer writes data to stdout -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This writer writes data to stdout.</description>
+  </bean>
     
 </beans>

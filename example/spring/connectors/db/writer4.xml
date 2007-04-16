@@ -51,8 +51,8 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- converts intput into an ordered map with single field called data -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Converts intput into an ordered map with single field called data.</description>
     <property name="fieldNames">
       <list>
         <value>data</value>
@@ -60,23 +60,24 @@
     </property>
   </bean>
 
-  <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
     <property name="driver" value="TODO"/>
     <property name="url" value="TODO"/>
     <property name="username" value="TODO"/>
     <property name="password" value="TODO"/>
   </bean>
   
-  <!-- Writer which inserts data into test table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="statementConverter">
       <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.CallableStatementConverter">
-        <!-- the stored proc to call -->
-        <property name="procName" value="INSERT_TEST"/>
-        <!-- ordered list ordered map attributes to call proc with -->
+        <property name="procName" value="INSERT_TEST">
+          <description>The stored proc to call.</description>
+        </property>
         <property name="mapping">
+          <description>Ordered list of ordered map attributes to call proc with.</description>
           <list>
             <value>data</value>
           </list>

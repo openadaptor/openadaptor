@@ -53,8 +53,8 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- converts intput into an ordered map with single field called data -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Converts intput into an ordered map with single field called data.</description>
     <property name="fieldNames">
       <list>
         <value>data</value>

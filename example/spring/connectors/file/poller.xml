@@ -46,8 +46,11 @@
         </property>
     </bean>
 
-    <!-- Poller which wraps File Reader and polls infinitely every 30 seconds -->
     <bean id="Poller" class="org.openadaptor.core.connector.PollingReadConnector">
+        <description>
+          Poller which wraps File Reader and polls infinitely every 30 seconds.
+          (More example config parameters commented out in config XML file.)
+        </description>              
         <property name="delegate" ref="Reader"/>
         <!--<property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>-->
         <!--<property name="forceInitialPoll" value="true"/>-->

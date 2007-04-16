@@ -44,19 +44,23 @@
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <!-- run configuration -->
     <property name="runConfiguration">
       <bean class="org.openadaptor.core.adaptor.AdaptorRunConfiguration">
-        <!-- it will restart 3 times after a failure -->
-        <property name="restartAfterFailLimit" value="3"/>
-        <!-- it will sleep for 2 secs before restarting -->
-        <property name="restartAfterFailDelayMs" value="2000"/>
-        <!-- this schedules the start for 7am Mon-Fri, starts immediately otherwise -->
-        <!-- <property name="startCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri"/> -->
-        <!-- this schedules the stop for 7pm weekdays -->
-        <property name="stopCronExpression" value="0 0 19 ? * mon,tue,wed,thu,fri"/>
-         <!-- this schedules the restart for 7am weekdays -->
-        <property name="restartCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri"/>
+        <property name="restartAfterFailLimit" value="3">
+          <description>It will restart 3 times after a failure.</description>
+        </property>
+        <property name="restartAfterFailDelayMs" value="2000">
+          <description>It will sleep for 2 secs before restarting.</description>
+        </property>          
+<!--        <property name="startCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri">-->
+<!--          <description>This schedules the start for 7am Mon-Fri, starts immediately otherwise.</description>-->
+<!--        </property>-->
+        <property name="stopCronExpression" value="0 0 19 ? * mon,tue,wed,thu,fri">
+          <description>This schedules the stop for 7pm weekdays.</description>
+        </property>
+        <property name="restartCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri">
+          <description>This schedules the restart for 7am weekdays.</description>
+        </property>
       </bean>
     </property>
     

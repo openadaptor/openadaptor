@@ -40,7 +40,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-MapConverter-Writer
+      This creates the simple pipeline Reader-MapConverter-Writer.
     </description>
     <property name="processors">
       <list>
@@ -53,8 +53,8 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- converts intput into an ordered map with single field called data -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Converts intput into an ordered map with single field called data.</description>
     <property name="fieldNames">
       <list>
         <value>data</value>
@@ -62,16 +62,16 @@
     </property>
   </bean>
 
-  <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
     <property name="password" value=""/>
   </bean>
 
-  <!-- Writer which inserts data into test table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="statementConverter">
       <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">

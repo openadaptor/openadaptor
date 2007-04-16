@@ -54,16 +54,16 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
     <property name="password" value=""/>
   </bean>
 
-  <!-- Writer which inserts data into test table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
   </bean>
 

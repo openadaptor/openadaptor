@@ -47,14 +47,16 @@
       <record><field>hello world</field></record>
   ]]></description>
   
-  <!-- This is the bean that actually gets run -->
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>This is the bean that actually gets run.</description>
     <property name="messageProcessor" ref="Router"/>
   </bean>
   
-  <!-- The adaptor delegates it's message processing to a router. 
-       The router uses this mapping to define the "processing pipeline" -->
   <bean id="Router" class="org.openadaptor.core.router.Router">
+    <description>
+       The adaptor delegates it's message processing to a router. 
+       The router uses this mapping to define the "processing pipeline".
+    </description>
     <property name="processMap">
       <map>
         <entry key-ref="Reader" value-ref="MapConverter"/>
@@ -64,11 +66,12 @@
     </property>
   </bean>
 
-  <!-- This is a read connector, it reads records from stdin -->
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>This is a read connector, it reads records from stdin.</description>
+  </bean>
   
-  <!-- This is a processor that converts delimited strings into an ordered map -->
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>This is a processor that converts delimited strings into an ordered map.</description>
     <property name="fieldNames">
       <list>
         <value>field</value>
@@ -76,12 +79,13 @@
     </property>
   </bean>
   
-  <!-- This is a processor that converts an ordered map into an xml string -->
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>This is a processor that converts an ordered map into an xml string.</description>
     <property name="rootElementTag" value="record"/>
   </bean>
   
-  <!-- This is a write connector that outputs the data to a stream (stdout) -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that outputs the data to a stream (stdout).</description>
+  </bean>
   
 </beans>
