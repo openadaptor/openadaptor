@@ -63,7 +63,7 @@
     </property>
   </bean>
   
-  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJsonStringConvertor">
+  <bean id="tojson" class="org.openadaptor.thirdparty.json.OrderedMapToJSONStringConvertor">
     <description>Generate a json string</description>
     <property name="tabSize" value="2"/>
   </bean>
