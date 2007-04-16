@@ -33,9 +33,6 @@
 package org.openadaptor.auxil.convertor.delimited;
 
 import junit.framework.TestCase;
-
-import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
-import org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordException;
@@ -50,13 +47,23 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
   private static final String[] VALUES = { "Apples", "Oranges", "Bananas", "Pears" };
 
+  private static final String[] NAMES_FOR_TRAILING_EMPTY_ELEMENTS = { "F-1", "F-2", "F-3", "F-4", "F-5", "F-6", "F-7" };
+
+  private static final String[] VALUES_TRAILING_EMPTY_ELEMENTS = { "Apples", "Oranges", "Bananas", "Pears", "", "", "" };
+
   private static final String DELIMITER = ",";
 
   private String ds;
 
+
+
   private IOrderedMap om;
 
+
+
   private DelimitedStringToOrderedMapConvertor dsom;
+
+
 
   private OrderedMapToDelimitedStringConvertor omds;
 
@@ -99,7 +106,7 @@ public class DelimitedStringConvertorTestCase extends TestCase {
     try {
       Object[] maps = dsom.process(ds);
       assertEquals(maps.length, 1);
-      assertEquals(om, (IOrderedMap) maps[0]);
+      assertEquals(om, maps[0]);
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
@@ -118,7 +125,25 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
       maps = dsom.process(ds);
       assertEquals(maps.length, 1);
-      assertEquals(om, (IOrderedMap) maps[0]);
+      assertEquals(om, maps[0]);
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }
+
+  }
+
+  public void testDelimitedStringToOrderedMapWithTrailingEmptyStrings() {
+    // Set Test Data and Expectations
+    IOrderedMap expectedOm = generateOrderedMap(NAMES_FOR_TRAILING_EMPTY_ELEMENTS, VALUES_TRAILING_EMPTY_ELEMENTS);
+    String testDS = generateDelimitedString(DELIMITER, VALUES_TRAILING_EMPTY_ELEMENTS);
+    DelimitedStringToOrderedMapConvertor testDsom = new DelimitedStringToOrderedMapConvertor();
+    testDsom.setFieldNames(NAMES_FOR_TRAILING_EMPTY_ELEMENTS);
+    // Test
+    testDsom.validate(null);
+    try {
+      Object[] maps = testDsom.process(testDS);
+      assertEquals(maps.length, 1);
+      assertEquals(expectedOm, maps[0]);
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
@@ -131,7 +156,6 @@ public class DelimitedStringConvertorTestCase extends TestCase {
       dsom.process(om);
       fail("Convertor should not accept non String value " + om.getClass().getName());
     } catch (RecordException pe) {
-      ;
     }
     omds.validate(null);
     try {

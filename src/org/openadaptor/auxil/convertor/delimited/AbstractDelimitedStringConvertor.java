@@ -233,7 +233,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected String[] extractValues(String delimitedString) {
     String[] values;
     if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
-      values = delimitedString.split(delimiter);
+      values = delimitedString.split(delimiter, -1);
     } else if (delimiter.length() > 1){
       values = extractQuotedValues(delimitedString, delimiter, quoteChar);
     } else {
