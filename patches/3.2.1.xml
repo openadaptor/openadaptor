@@ -19,8 +19,9 @@
   </macrodef>
   
 	<target name="checkout">
-	  <svnget path="src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertor.java" revision="521"/>
+	  <svnget path="src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertor.java" revision="549"/>
 	  <svnget path="test/unit/src/org/openadaptor/auxil/convertor/delimited" filename="AbstractDelimitedStringConvertorTestCase.java" revision="523"/>
+    <svnget path="test/unit/src/org/openadaptor/auxil/convertor/delimited" filename="DelimitedStringConvertorTestCase.java" revision="549"/>
 	</target>
 
 </project>
