@@ -123,6 +123,7 @@
                 <td>
                     <!-- Router process routing: -->
                     <xsl:apply-templates select="$routerNode/beans:property[@name='processMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='processMap']/beans:map/beans:entry[@key-ref=$beanId]/beans:list" />
 
                     <!-- Pipeline process routing: -->
                     <xsl:for-each select="$routerNode/beans:property[@name='processors']/beans:list/beans:ref">
@@ -136,13 +137,14 @@
                 <td>
                     <!-- Router discard routing: -->
                     <xsl:apply-templates select="$routerNode/beans:property[@name='discardMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='discardMap']/beans:map/beans:entry[@key-ref=$beanId]/beans:list" />
 
                     <!-- Pipeline discard routing: -->
                     <!-- No support for discard routing in pipelines construct. -->
                 </td>
                 <td>
                     <!-- Router exception routing: -->
-                    <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionMap']/beans:map/beans:entry[@key-ref=$beanId]/beans:map" />
                     
                     <!-- Pipeline exception routing: -->
                     <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionProcessor']"/>
@@ -270,8 +272,12 @@
         <tr>
             <td><xsl:value-of select="position()"/></td>
             <td><xsl:apply-templates select="beans:key|@key|@key-ref"/></td>
-            <td><xsl:apply-templates select="beans:ref|@ref"/></td>
-            <td><xsl:apply-templates select="beans:value|@value|@value-ref"/></td>
+            <td>
+                <xsl:apply-templates select="beans:ref|@ref"/>
+                <xsl:apply-templates select="beans:value|@value|@value-ref"/>
+                <xsl:apply-templates select="beans:list"/>
+                <xsl:apply-templates select="beans:map"/>
+            </td>
             <td><xsl:value-of select="descendant-or-self::comment()"/></td>
         </tr>
     </xsl:template>
