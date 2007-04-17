@@ -63,37 +63,35 @@
             </colgroup>
 
             <tr bgcolor="#000099">
-                <th><font color="white">Beans</font></th>
-                <th><font color="white">Next node(s)</font></th>
-                <th><font color="white">Discard node(s)</font></th>
+                <th><font color="white">Beans index</font></th>
+                <th><font color="white">Process routing</font></th>
+                <th><font color="white">Discard routing</font></th>
                 <th><font color="white">Exception routing</font></th>
             </tr>
-            <xsl:for-each select="beans:bean">
-                <tr>
-                    <td>
-                        <xsl:choose>
-                            <!-- Named bean -->
-                            <xsl:when test="@id">
-                                <a href="#{@id}"><xsl:value-of select="@id"/></a>
-                            </xsl:when>
-                            <!-- Anonymous bean -->
-                            <xsl:otherwise>
-                                <xsl:value-of select="name()"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </td>
-                    <td>
-                        <xsl:apply-templates select="beans:property[@name='chainedNodes']/beans:list"/>
-                    </td>
-                    <td>
-                        <xsl:apply-templates select="beans:property[@name='discardChainedNodes']/beans:list"/>
-                    </td>
-                    <td>
-                        <xsl:apply-templates select="beans:property[@name='staticExceptionRouting']/beans:map"/>
-                    </td>
-                </tr>
+
+            <!--  Loop through available routing information: -->
+            <xsl:for-each select="beans:bean[(@id='Adaptor') or (@class='org.openadaptor.core.adaptor.Adaptor')]/beans:property[@name='messageProcessor']">
+            
+                <!-- Router or Pipeline directly-embedded in Adaptor: -->
+                <xsl:for-each select="beans:bean[(@class='org.openadaptor.core.router.Router') or (@class='org.openadaptor.core.router.Pipeline')]">
+                    <xsl:call-template name="routerRouting" />
+                </xsl:for-each>
+                    
+                <!-- Router or Pipeline referred-to by Adaptor: -->
+                <xsl:for-each select="@ref">
+                    <xsl:variable name="nodeName" select="." />
+                    <xsl:for-each select="/beans:beans/beans:bean[@id=$nodeName]">
+
+                        <!-- Router or Pipeline referred-to by Adaptor: -->
+                        <xsl:if test="(@class='org.openadaptor.core.router.Router') or (@class='org.openadaptor.core.router.Pipeline')">
+                            <xsl:call-template name="routerRouting" />
+                        </xsl:if>
+                                            
+                    </xsl:for-each>
+                </xsl:for-each>
             </xsl:for-each>
         </table>
+        
         <!-- Generate documentation for each bean -->
         <xsl:for-each select="beans:bean">
             <p>
@@ -103,6 +101,57 @@
             </p>
         </xsl:for-each>
     </xsl:template>
+
+
+    <xsl:template name="routerRouting">
+        <xsl:variable name="routerNode" select="." />
+        <xsl:for-each select="/beans:beans/beans:bean">
+            <xsl:variable name="beanId" select="@id" />
+            <tr>
+                <td>
+                    <xsl:choose>
+                        <!-- Named bean -->
+                        <xsl:when test="@id">
+                            <a href="#{@id}"><xsl:value-of select="@id"/></a>
+                        </xsl:when>
+                        <!-- Anonymous bean -->
+                        <xsl:otherwise>
+                            <xsl:value-of select="name()"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </td>
+                <td>
+                    <!-- Router process routing: -->
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='processMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+
+                    <!-- Pipeline process routing: -->
+                    <xsl:for-each select="$routerNode/beans:property[@name='processors']/beans:list/beans:ref">
+                        <!-- Each entry in pipeline list routes to next entry in pipeline list: -->
+                        <xsl:if test="(@bean=$beanId) and (position()!=last())">
+                            <xsl:variable name="destPos" select="position()+1"/>
+                            <xsl:apply-templates select="../beans:ref[position()=$destPos]"/>
+                        </xsl:if>
+                    </xsl:for-each>
+                </td>
+                <td>
+                    <!-- Router discard routing: -->
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='discardMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+
+                    <!-- Pipeline discard routing: -->
+                    <!-- No support for discard routing in pipelines construct. -->
+                </td>
+                <td>
+                    <!-- Router exception routing: -->
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionMap']/beans:map/beans:entry[@key-ref=$beanId]/@value-ref" />
+                    
+                    <!-- Pipeline exception routing: -->
+                    <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionProcessor']"/>
+                </td>
+            </tr>
+         </xsl:for-each>
+    </xsl:template>
+
+
 
     <!--
         Templates for bean.
