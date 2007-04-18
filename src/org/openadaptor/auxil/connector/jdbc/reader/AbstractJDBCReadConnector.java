@@ -42,6 +42,21 @@ import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
+/**
+ * Abstract readConnector for JDBC.
+ * It associates a ResultSetConvertor with the connector.
+ * By default, this is DEFAULT_CONVERTOR.
+ * 
+ * @see AbstractResultSetConverter
+ * @author Eddy Higgins
+ * @author perryj
+ */
+
+/**
+ * 
+ * @author higginse
+ *
+ */
 public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
 
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetConverter();

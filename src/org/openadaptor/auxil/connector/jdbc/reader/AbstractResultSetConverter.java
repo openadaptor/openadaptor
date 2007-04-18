@@ -36,10 +36,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetConverter;
 import org.openadaptor.util.JDBCUtil;
-
+/**
+ * Abstract base class which converts a SQL ResultSet into a format
+ * for use within an adaptor.
+ * Subclasses defined the output type.
+ * @author higginse
+ *
+ */
 public abstract class AbstractResultSetConverter {
   private static final Log log = LogFactory.getLog(ResultSetConverter.class);
 
+  /**
+   * Convert the next row in the result set into an Object.
+   * @param rs Contains the current ResultSet
+   * @return Object representing the next row from the ResultSet, or null if no rows remain.
+   *         Actual type is determined by implementing class
+   * @throws SQLException
+   */
   public Object convertNext(ResultSet rs) throws SQLException {
     ResultSetMetaData rsmd = rs.getMetaData();
     if (rs.next()) {
@@ -50,6 +63,12 @@ public abstract class AbstractResultSetConverter {
     }
   }
 
+  /**
+   * Convert all the rows in a ResultSet into an Object[].
+   * @param rs Contains the ResultSet to be converted
+   * @return Object[] with entries for each row returned.
+   * @throws SQLException
+   */
   public Object[] convertAll(ResultSet rs) throws SQLException {
     ArrayList rows = new ArrayList();
     ResultSetMetaData rsmd = rs.getMetaData();
@@ -60,6 +79,16 @@ public abstract class AbstractResultSetConverter {
     return rows.toArray(new Object[rows.size()]);
   }
 
+  /**
+   * Convert the next row in a ResultSet (given its metadata).
+   * @param rs Contains the ResultSet being converted
+   * @param rsmd ResultSetMetaData for the ResultSet.
+   * Note: Behaviour is undefined if the supplied ResultSetMetaData doesn't correspond to the
+   * supplied ResultSet.
+   * @return Object representing the next row from the ResultSet, or null if no rows remain.
+   *         Actual type is determined by implementing class
+   * @throws SQLException
+   */
   protected abstract Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException;
 
 }

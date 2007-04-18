@@ -29,6 +29,7 @@ package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
@@ -173,26 +174,29 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
    * convert event ResultSet into a statement to actually get the data
    */
   private CallableStatement convertEventToStatement(ResultSet rs) throws SQLException {
-
+    ResultSetMetaData rsmd=rs.getMetaData();
+    int cols=rsmd.getColumnCount();
     // create statement string
     StringBuffer buffer = new StringBuffer();
-    buffer.append("{ call ");
-    buffer.append(rs.getString(EVENT_RS_STORED_PROC));
-    buffer.append(" (");
-    for (int i = EVENT_RS_PARAM1; i <= rs.getMetaData().getColumnCount() && rs.getObject(i) != null; i++) {
+    buffer.append("{ call ").append(rs.getString(EVENT_RS_STORED_PROC)).append(" (");
+    
+    for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
       buffer.append(i > EVENT_RS_PARAM1 ? ",?" : "?");
     }
-    buffer.append(")}");
-    String sql = buffer.toString();
+    
+    String sql = buffer.append(")}").toString();
     
     // create statement
     CallableStatement s = prepareCall(sql);
 
     // set in parameters
-    for (int i = EVENT_RS_PARAM1; i <= rs.getMetaData().getColumnCount() && rs.getObject(i) != null; i++) {
-      s.setString((i+1)-EVENT_RS_PARAM1, rs.getString(i));
+    for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
+      String stringVal=(rs.getObject(i)==null)?null:rs.getString(i);
+      if (stringVal!=null) {
+        s.setString(i+1-EVENT_RS_PARAM1, stringVal);
+      }
       if (log.isDebugEnabled()) {
-        sql = sql.replaceFirst("\\?", rs.getString(i));
+        sql = sql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
       }
     }
     log.debug("Event sql statement = " + sql);
