@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.core.exception.ValidationException;
 
 
@@ -54,6 +55,7 @@ public class TableStatementConverter extends AbstractStatementConverter {
   private String tableName="";
   private int[] tableColumnTypes;
   private String[] tableColumnNames;
+  private int tableColumnCount;
   private Map mapping;
 
   public TableStatementConverter() {
@@ -103,8 +105,14 @@ public class TableStatementConverter extends AbstractStatementConverter {
       sql = generateSql(mappedOM);
       //Create Prepared Statement
       ps = connection.prepareStatement(sql);
+      int fieldCount=mappedOM.size();
+      if (fieldCount>tableColumnCount) {
+          String msg="Expected "+tableColumnCount+" fields, but received "+fieldCount;
+          log.warn(msg);
+          throw new RecordFormatException(msg);
+        }
       //Set Prepared Statement fields
-      for (int i=0;i<mappedOM.size();i++) {
+      for (int i=0;i<fieldCount;i++) {
         Object value=mappedOM.get(i);
         ps.setObject(i+1,value,tableColumnTypes[i]);
         if (log.isDebugEnabled()) {
@@ -159,9 +167,10 @@ public class TableStatementConverter extends AbstractStatementConverter {
     ResultSet rs=s.executeQuery(sql);
     ResultSetMetaData rsmd=rs.getMetaData();
     //Retrieve table column names and table column types from metadata
+    tableColumnCount=rsmd.getColumnCount();
     tableColumnTypes=new int[rsmd.getColumnCount()];
     tableColumnNames=new String[rsmd.getColumnCount()];
-    for (int i=0;i<rsmd.getColumnCount();i++){
+    for (int i=0;i<tableColumnCount;i++){
       tableColumnNames[i]=rsmd.getColumnName(i+1);
       tableColumnTypes[i]=rsmd.getColumnType(i+1);
       log.debug("Column[" + (i+DB_COLUMN_OFFSET) + "] name '" + tableColumnNames[i] + "' has type: " + rsmd.getColumnTypeName(i+DB_COLUMN_OFFSET) + ".");
