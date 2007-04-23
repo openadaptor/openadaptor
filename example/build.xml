@@ -18,7 +18,7 @@
   </target>
   
   <target name="docs" description="generate documentation for the example code">
-    <ant antfile="tools/docs.xml" />
+    <ant dir="${basedir}/tools" antfile="docs.xml"/>
   </target>
   
   <target name="build" description="compile examples and generate documentation"
