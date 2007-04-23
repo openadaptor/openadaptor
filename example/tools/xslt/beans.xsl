@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
     [[
-    Copyright (C) 2006 The Software Conservancy as Trustee. All rights
+    Copyright (C) 2006,2007 The Software Conservancy as Trustee. All rights
     reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,10 +48,18 @@
 <xsl:import href="adaptorDoc.xsl"/>
 
 <xsl:param name="oaVersion"/>
-<xsl:param name="imageFileExtension"/>
+<xsl:param name="imageFileExtension" select="'gif'"/>
+<xsl:param name="filepathGlobPrefix" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
+<xsl:param name="docsRelativeToTools" select="'../../docs/'"/>
+
+<xsl:param name="showJavaDocLinks" select="'true'"/>
+<xsl:param name="showConfigIndexLinks" select="'true'"/>
+<!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
+<xsl:param name="javaDocPath" select="'../../javadocs/'"/>
+
 
 <xsl:template match="/">
-<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')"/>
+<xsl:variable name="thisExample" select="substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix),'.xml ')"/>
 
 <xsl:variable name="baseRelativeDepth" select="string-length(translate($thisExample,'/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-1234567890','/'))" />
 <xsl:variable name="baseRelativeDotDot">
@@ -65,6 +73,7 @@
     <xsl:when test="$baseRelativeDepth = '7'">../../../../../../../</xsl:when>
   </xsl:choose>
 </xsl:variable>
+
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
@@ -81,27 +90,42 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>Config: <xsl:value-of select="$thisExample"/></title>
+    <title>Documentation: <xsl:value-of select="$thisExample"/></title>
   </head>
 
   <body>
-    <h1>Config: <xsl:value-of select="$thisExample"/></h1>
-
-    <p>
-        <b><xsl:value-of select="$oaVersion"/></b>
-    </p>
-    <p>
-        <a href="{$baseRelativeDotDot}../{$thisExample}.xml"><xsl:value-of select="$thisExample"/>.xml</a>
-    </p>
-    <p>
-        <a href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">Entry in Config to Beans index (for <xsl:value-of select="$thisExample"/>).</a>
-    </p>
+    <table bgcolor="#000099" width="100%">
+      <tr>
+        <th>
+          <font color="white">
+            <xsl:value-of select="$thisExample"/>
+            <xsl:text> | </xsl:text>
+            <a class="th" href="{$baseRelativeDotDot}../{$thisExample}.xml">XML</a>
+            <xsl:if test="$showConfigIndexLinks='true'">
+              <xsl:text> | </xsl:text>
+              <a class="th" href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">ConfigToBeans</a>
+              <xsl:text> | </xsl:text>
+              <a class="th" href="{$baseRelativeDotDot}allimages.html#{translate(translate($thisExample,'_','-'),'/','_')}">ImagesIndex</a>
+            </xsl:if>
+          </font>
+        </th>
+      </tr>
+      <tr bgcolor="#CCCCCC">
+        <td>
+          <xsl:value-of select="$oaVersion" />
+        </td>
+      </tr>
+    </table>
+    <p></p>
 
     <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate($thisExample,'/','_')}" alt=""/>
-    <xsl:copy-of select="document(concat('../../docs/',$thisExample,'.map'))"/>
+    <xsl:copy-of select="document(concat($docsRelativeToTools,$thisExample,'.map'))"/>
 
     <xsl:apply-templates select="/beans:beans">
       <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
+      <xsl:with-param name="showJavaDocLinks" select="$showJavaDocLinks" />
+      <xsl:with-param name="showConfigIndexLinks" select="$showConfigIndexLinks" />
+      <xsl:with-param name="javaDocPath" select="$javaDocPath" />
     </xsl:apply-templates>
 
   </body>

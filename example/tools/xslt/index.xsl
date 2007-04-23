@@ -62,11 +62,11 @@
         a.th:link    {color: white; }
         a.th:visited {color: white; }
     </style>
-    <title>OA3 Config Examples Index</title>
+    <title>OpenAdaptor 3: Config Examples Index</title>
 </head>
 
 <body>
-    <h1>OA3 Config Examples Index</h1>
+    <h1>OpenAdaptor 3: Config Examples Index</h1>
     <b><xsl:value-of select="$oaVersion"/></b>
 
     <p>
@@ -85,7 +85,7 @@
             <th><font color="white">Description</font></th>
         </tr>
         <tr>
-            <td><a href="./config2beans.html">config2beans.html</a></td>
+            <td><a href="./config2beans.html">ConfigToBeans</a></td>
             <td>
                 <p>
                     Lists all config examples (including those in tutorial).
@@ -105,7 +105,7 @@
             </td>
         </tr>
         <tr>
-            <td><a href="./beans2config.html">beans2config.html</a></td>
+            <td><a href="./beans2config.html">BeansToConfig</a></td>
             <td>
                 <p>
                     Lists all bean classes used in the config examples.
@@ -120,7 +120,7 @@
             </td>
         </tr>
         <tr>
-            <td><a href="./allimages.html">allimages.html</a></td>
+            <td><a href="./allimages.html">ImagesIndex</a></td>
             <td>
                 <p>
                     Lists all config examples (including those in tutorial).

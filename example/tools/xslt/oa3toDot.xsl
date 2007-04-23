@@ -87,9 +87,10 @@
   <xsl:template match="/">
     digraph
     <xsl:value-of select="$graphName" />
-    { graph [ ]; node [ shape=rectangle, style=filled,
-    fontname=Helvetica, fontsize="10", color=pink ]; edge [
-    fontname=Helvetica, fontsize="9" ];
+    {
+    graph [ ];
+    node [ shape=rectangle, style=filled, fontname=Helvetica, fontsize="10", color=pink ];
+    edge [ fontname=Helvetica, fontsize="9" ];
 
     <!-- Insert nodes for all top-level beans: -->
     <xsl:apply-templates select="beans:beans/beans:bean" />
@@ -114,10 +115,11 @@
     <xsl:text>&lt;table&gt;&lt;tr&gt;&lt;td&gt;</xsl:text>
     <xsl:value-of select="$srcNode" />
     <xsl:text>&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</xsl:text>
+    <xsl:variable name="labelClassLen" select="40" />
+    <xsl:variable name="tooltipClassLen" select="70" />
     <xsl:choose>
-      <xsl:when test="string-length(@class) > 40">
-        <xsl:value-of
-          select="concat('...', substring(@class, string-length(@class)-40))" />
+      <xsl:when test="string-length(@class) > $labelClassLen">
+        <xsl:value-of select="concat('...', substring(@class, string-length(@class)-$labelClassLen))" />
       </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="@class" />
@@ -127,9 +129,8 @@
       <xsl:text>Factory:</xsl:text>
       <xsl:value-of select="@factory-bean" />
       <xsl:choose>
-        <xsl:when test="string-length(@factory-bean) > 40">
-          <xsl:value-of
-            select="concat('...', substring(@factory-bean, string-length(@factory-bean)-40))" />
+        <xsl:when test="string-length(@factory-bean) > $tooltipClassLen">
+          <xsl:value-of select="concat('...', substring(@factory-bean, string-length(@factory-bean)-$tooltipClassLen))" />
         </xsl:when>
         <xsl:otherwise>
           <xsl:value-of select="@factory-bean" />
@@ -143,8 +144,7 @@
     <!-- Node URL: -->
     <xsl:if test="string-length($srcNode) > 0">
       <xsl:text>URL="</xsl:text>
-      <xsl:value-of
-        select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)" />
+      <xsl:value-of select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)" />
       <xsl:text>",</xsl:text>
       <xsl:text>tooltip="</xsl:text>
       <xsl:value-of select="$srcNode" />
@@ -156,12 +156,10 @@
     <!-- Node colour according to node type: -->
     <xsl:choose>
       <!-- Adaptors, Routers/Pipelines and Factories: -->
-      <xsl:when
-        test="contains(@class, 'org.openadaptor.core.adaptor')">
+      <xsl:when test="contains(@class, 'org.openadaptor.core.adaptor')">
         <xsl:text>color=lightgray</xsl:text>
       </xsl:when>
-      <xsl:when
-        test="contains(@class, 'org.openadaptor.core.router')">
+      <xsl:when test="contains(@class, 'org.openadaptor.core.router')">
         <xsl:text>color=lightgray</xsl:text>
       </xsl:when>
       <xsl:when test="@factory-bean">
@@ -171,18 +169,13 @@
       <!-- Standard OA3 classes: -->
       <xsl:when test="contains(@class, 'org.openadaptor')">
         <xsl:choose>
-          <xsl:when
-            test="contains(@class, 'org.openadaptor.core.node')">
+          <xsl:when test="contains(@class, 'org.openadaptor.core.node')">
             <xsl:text>color=LightCyan</xsl:text>
           </xsl:when>
-          <!-- <xsl:when test="contains(@class, 'org.oa3.node.BufferNode')">color=LightCyan</xsl:when> -->
-          <!-- <xsl:when test="contains(@class, 'Proxy')">color=LightCyan</xsl:when> -->
-          <xsl:when
-            test="contains(@class, 'org.openadaptor.core.connector')">
+          <xsl:when test="contains(@class, 'org.openadaptor.core.connector')">
             <xsl:text>color=YellowGreen</xsl:text>
           </xsl:when>
-          <xsl:when
-            test="contains(@class, 'org.openadaptor.auxil.connector')">
+          <xsl:when test="contains(@class, 'org.openadaptor.auxil.connector')">
             <xsl:text>color=YellowGreen</xsl:text>
           </xsl:when>
           <xsl:otherwise>
@@ -210,7 +203,8 @@
     </xsl:choose>
 
     <!-- End attribute list for node: -->
-    <xsl:text>];</xsl:text>
+    <xsl:text>];
+</xsl:text>
 
     <xsl:call-template name="calculateEdges">
       <xsl:with-param name="srcNode" select="$srcNode" />
@@ -232,29 +226,27 @@
             <xsl:for-each select="beans:map/beans:entry">
               <xsl:variable name="entryKeyNode" select="@key-ref" />
 
+              <!-- Reference to single processing node (single processing route): -->
               <xsl:if test="@value-ref">
                 <xsl:call-template name="routingEdge">
                   <xsl:with-param name="srcNode" select="$entryKeyNode" />
                   <xsl:with-param name="destNode" select="@value-ref" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'processRouting'" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'processRouting'" />
                   <xsl:with-param name="edgeColor" select="'black'" />
                   <xsl:with-param name="edgeLayoutWeight" select="1.0" />
-                  <xsl:with-param name="arrowHeadShape"
-                    select="'normal'" />
+                  <xsl:with-param name="arrowHeadShape" select="'normal'" />
                 </xsl:call-template>
               </xsl:if>
 
+              <!-- List of references to next processing nodes (processing fan out): -->
               <xsl:for-each select="beans:list/beans:ref">
                 <xsl:call-template name="routingEdge">
                   <xsl:with-param name="srcNode" select="$entryKeyNode" />
                   <xsl:with-param name="destNode" select="@bean" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'processRouting'" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'processRouting'" />
                   <xsl:with-param name="edgeColor" select="'black'" />
                   <xsl:with-param name="edgeLayoutWeight" select="1.0" />
-                  <xsl:with-param name="arrowHeadShape"
-                    select="'normal'" />
+                  <xsl:with-param name="arrowHeadShape" select="'normal'" />
                 </xsl:call-template>
               </xsl:for-each>
 
@@ -264,6 +256,7 @@
             <xsl:apply-templates select="beans:list/beans:bean" />
           </xsl:if>
 
+
           <!-- Pipeline: Add process routing edge definitions for this node: -->
           <xsl:if test="@name='processors'">
             <xsl:for-each select="beans:list/beans:ref">
@@ -272,43 +265,42 @@
                 <xsl:variable name="destPos" select="position()+1" />
                 <xsl:call-template name="routingEdge">
                   <xsl:with-param name="srcNode" select="@bean" />
-                  <xsl:with-param name="destNode"
-                    select="../beans:ref[position()=$destPos]/@bean" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'processRouting'" />
+                  <xsl:with-param name="destNode" select="../beans:ref[position()=$destPos]/@bean" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'processRouting'" />
                   <xsl:with-param name="edgeColor" select="'black'" />
                   <xsl:with-param name="edgeLayoutWeight" select="1.0" />
-                  <xsl:with-param name="arrowHeadShape"
-                    select="'normal'" />
+                  <xsl:with-param name="arrowHeadShape" select="'normal'" />
                 </xsl:call-template>
               </xsl:if>
             </xsl:for-each>
           </xsl:if>
 
+
           <!-- Router: Add discard routing edge definitions for this node: -->
           <xsl:if test="@name='discardMap'">
             <xsl:for-each select="beans:map/beans:entry">
               <xsl:variable name="entryKeyNode" select="@key-ref" />
+              
+              <!-- Reference to single discard node (single discard route): -->
               <xsl:if test="@value-ref">
                 <xsl:call-template name="routingEdge">
                   <xsl:with-param name="srcNode" select="$entryKeyNode" />
                   <xsl:with-param name="destNode" select="@value-ref" />
                   <xsl:with-param name="edgeLabel" select="'Discard'" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'discardRouting'" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'discardRouting'" />
                   <xsl:with-param name="edgeColor" select="'blue'" />
                   <xsl:with-param name="edgeLayoutWeight" select="0.9" />
                   <xsl:with-param name="arrowHeadShape" select="'vee'" />
                 </xsl:call-template>
               </xsl:if>
 
+              <!-- List of references to discard nodes (discard fan out): -->
               <xsl:for-each select="beans:list/beans:ref">
                 <xsl:call-template name="routingEdge">
                   <xsl:with-param name="srcNode" select="$entryKeyNode" />
                   <xsl:with-param name="destNode" select="@bean" />
                   <xsl:with-param name="edgeLabel" select="'Discard'" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'discardRouting'" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'discardRouting'" />
                   <xsl:with-param name="edgeColor" select="'blue'" />
                   <xsl:with-param name="edgeLayoutWeight" select="0.9" />
                   <xsl:with-param name="arrowHeadShape" select="'vee'" />
@@ -330,43 +322,60 @@
             <xsl:for-each select="beans:map/beans:entry">
               <xsl:variable name="entryKeyNode" select="@key-ref|@key" />
 
+              <!--
+                Typically the exceptionMap is a map of nested maps
+                (separate exception map for each node):
+                -->
               <xsl:for-each select="beans:map/beans:entry">
                 <xsl:choose>
 
+                  <!--
+                    If the nested map has a key of "*" in the map of maps
+                    then this exception routing is applied to all nodes.
+                    Rather than riddling the image with exception lines, we show this by drawing
+                    the Router itself as the source node.
+                    -->
                   <xsl:when test="$entryKeyNode='*'">
                     <xsl:call-template name="exceptionEdge">
                       <xsl:with-param name="srcNode" select="$srcNode" />
-                      <xsl:with-param name="destNode"
-                        select="@value-ref" />
-                      <xsl:with-param name="edgeTooltipLabel"
-                        select="'exceptionRouting'" />
-                      <xsl:with-param name="arrowTailShape"
-                        select="'dot'" />
+                      <xsl:with-param name="destNode" select="@value-ref" />
+                      <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
+                      <xsl:with-param name="arrowTailShape" select="'dot'" />
                     </xsl:call-template>
                   </xsl:when>
 
+                  <!--
+                    Otherwise the nested map has a Node name as a key in the map of maps
+                    and so this exception routing is applied just to this named node.
+                    We show this by drawing the named node as the source node (obviously ;-).
+                    -->
                   <xsl:otherwise>
                     <xsl:call-template name="exceptionEdge">
-                      <xsl:with-param name="srcNode"
-                        select="$entryKeyNode" />
-                      <xsl:with-param name="destNode"
-                        select="@value-ref" />
-                      <xsl:with-param name="edgeTooltipLabel"
-                        select="'exceptionRouting'" />
-                      <xsl:with-param name="arrowTailShape"
-                        select="'dot'" />
+                      <xsl:with-param name="srcNode" select="$entryKeyNode" />
+                      <xsl:with-param name="destNode" select="@value-ref" />
+                      <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
+                      <xsl:with-param name="arrowTailShape" select="'dot'" />
                     </xsl:call-template>
                   </xsl:otherwise>
 
                 </xsl:choose>
               </xsl:for-each>
 
+              <!--
+                Atypically the exceptionMap is NOT a map of maps,
+                and it is just a single unnested map:
+                -->
               <xsl:if test="not(beans:map/beans:entry)">
+                <!--
+                  This single map is treated as if it appeared in a map of maps with a key of "*",
+                  i.e. this routing is applied to all nodes.
+                  Rather than riddling the image with exception lines, we show this by drawing
+                  the Router itself as the source node.
+                  -->
                 <xsl:call-template name="exceptionEdge">
                   <xsl:with-param name="srcNode" select="$srcNode" />
                   <xsl:with-param name="destNode" select="@value-ref" />
-                  <xsl:with-param name="edgeTooltipLabel"
-                    select="'exceptionRouting'" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
                   <xsl:with-param name="arrowTailShape" select="'dot'" />
                 </xsl:call-template>
               </xsl:if>
@@ -374,24 +383,27 @@
             </xsl:for-each>
 
             <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-            <xsl:apply-templates
-              select="beans:map/beans:entry/beans:value/beans:bean" />
+            <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
           </xsl:if>
+
 
           <!--  Pipeline: add single edge for global exceptionProcessor: -->
           <xsl:if test="@name='exceptionProcessor'">
+            <!--
+              This routing is applied to all nodes.
+              Rather than riddling the image with exception lines, we show this by drawing
+              the Router itself as the source node.
+              -->
             <xsl:variable name="destNode" select="@ref" />
             <xsl:call-template name="exceptionEdge">
               <xsl:with-param name="srcNode" select="$srcNode" />
               <xsl:with-param name="destNode" select="$destNode" />
-              <xsl:with-param name="edgeTooltipLabel"
-                select="'exceptionProcessor'" />
+              <xsl:with-param name="edgeTooltipLabel" select="'exceptionProcessor'" />
               <xsl:with-param name="arrowTailShape" select="'dot'" />
             </xsl:call-template>
 
             <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-            <xsl:apply-templates
-              select="beans:map/beans:entry/beans:value/beans:bean" />
+            <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
           </xsl:if>
 
         </xsl:for-each>
@@ -400,23 +412,20 @@
       <!-- Add helper bean reference edge definitions for this node (as not Pipeline/Router): -->
       <xsl:otherwise>
         <xsl:for-each select="beans:property">
-          <xsl:for-each
-            select="@ref | beans:ref[@bean]/@bean | @factory-bean">
+          <xsl:for-each select="@ref | beans:ref[@bean]/@bean | @factory-bean">
             <xsl:call-template name="referenceEdge">
               <xsl:with-param name="srcNode" select="$srcNode" />
             </xsl:call-template>
           </xsl:for-each>
 
-          <xsl:for-each
-            select="beans:list/beans:ref/@bean | beans:map/beans:entry/beans:key/beans:ref/@bean | beans:map/beans:entry/@key-ref | beans:map/beans:entry/beans:value/beans:ref/@bean | beans:map/beans:entry/@value-ref">
+          <xsl:for-each select="beans:list/beans:ref/@bean | beans:map/beans:entry/beans:key/beans:ref/@bean | beans:map/beans:entry/@key-ref | beans:map/beans:entry/beans:value/beans:ref/@bean | beans:map/beans:entry/@value-ref">
             <xsl:call-template name="referenceEdge">
               <xsl:with-param name="srcNode" select="$srcNode" />
             </xsl:call-template>
           </xsl:for-each>
 
           <!-- Apply edge rules to child beans (that are NOT inline beans in routing properties) -->
-          <xsl:for-each
-            select="beans:bean | beans:list/beans:bean | beans:map/beans:entry/beans:key/beans:bean | beans:map/beans:entry/beans:value/beans:bean">
+          <xsl:for-each select="beans:bean | beans:list/beans:bean | beans:map/beans:entry/beans:key/beans:bean | beans:map/beans:entry/beans:value/beans:bean">
             <xsl:call-template name="calculateEdges">
               <xsl:with-param name="srcNode" select="$srcNode" />
             </xsl:call-template>
@@ -451,13 +460,11 @@
     <xsl:call-template name="genericEdge">
       <xsl:with-param name="srcNode" select="$srcNode" />
       <xsl:with-param name="destNode" select="$destNode" />
-      <xsl:with-param name="edgeTooltipLabel"
-        select="concat($srcNode, '.', $edgeTooltipLabel)" />
+      <xsl:with-param name="edgeTooltipLabel" select="concat($srcNode, '.', $edgeTooltipLabel)" />
       <xsl:with-param name="edgeLabel" select="$edgeLabel" />
       <xsl:with-param name="edgeColor" select="$edgeColor" />
       <xsl:with-param name="edgeStyle" select="$edgeStyle" />
-      <xsl:with-param name="edgeLayoutWeight"
-        select="$edgeLayoutWeight" />
+      <xsl:with-param name="edgeLayoutWeight" select="$edgeLayoutWeight" />
       <xsl:with-param name="arrowHeadShape" select="$arrowHeadShape" />
       <xsl:with-param name="arrowTailShape" select="'none'" />
     </xsl:call-template>
@@ -469,8 +476,7 @@
     <!-- Parameters (and default values for them): -->
     <xsl:param name="srcNode"
       select="concat(ancestor::beans:bean[@id|@name]/@id,ancestor::beans:bean[@id|@name]/@name)" />
-    <xsl:param name="destNode"
-      select="concat(beans:value/@id, beans:value/@name)" />
+    <xsl:param name="destNode" select="concat(beans:value/@id, beans:value/@name)" />
     <!-- list item is an inline bean (unusual) -->
     <xsl:param name="edgeTooltipLabel" select="''" />
     <xsl:param name="edgeStyle" select="'solid'" />
@@ -484,8 +490,7 @@
         <xsl:value-of select="beans:key/@value" />
         <xsl:value-of select="beans:key/beans:value" />
       </xsl:with-param>
-      <xsl:with-param name="edgeTooltipLabel"
-        select="concat($srcNode, '.', $edgeTooltipLabel)" />
+      <xsl:with-param name="edgeTooltipLabel" select="concat($srcNode, '.', $edgeTooltipLabel)" />
       <xsl:with-param name="edgeColor" select="'red'" />
       <xsl:with-param name="edgeStyle" select="$edgeStyle" />
       <xsl:with-param name="edgeLayoutWeight" select="0.5" />
@@ -513,15 +518,12 @@
 
     <!-- Proxy components use "target" and "targetNode" properties: typically these relate to dataflow: -->
     <xsl:variable name="style">
-      <xsl:variable name="len"
-        select="string-length($compoundPropertyName)" />
+      <xsl:variable name="len" select="string-length($compoundPropertyName)" />
       <xsl:choose>
-        <xsl:when
-          test="($len >= 7) and contains(substring($compoundPropertyName, $len - 6, 7), '.target')">
+        <xsl:when test="($len >= 7) and contains(substring($compoundPropertyName, $len - 6, 7), '.target')">
           <xsl:text>solid</xsl:text>
         </xsl:when>
-        <xsl:when
-          test="($len >= 11) and contains(substring($compoundPropertyName, $len - 10, 11), '.targetNode')">
+        <xsl:when test="($len >= 11) and contains(substring($compoundPropertyName, $len - 10, 11), '.targetNode')">
           <xsl:text>solid</xsl:text>
         </xsl:when>
         <xsl:otherwise>
@@ -534,8 +536,7 @@
       <xsl:with-param name="srcNode" select="$srcNode" />
       <xsl:with-param name="destNode" select="." />
       <xsl:with-param name="edgeLabel" select="'Ref'" />
-      <xsl:with-param name="edgeTooltipLabel"
-        select="concat($srcNode, $compoundPropertyName)" />
+      <xsl:with-param name="edgeTooltipLabel" select="concat($srcNode, $compoundPropertyName)" />
       <xsl:with-param name="edgeColor" select="'black'" />
       <xsl:with-param name="edgeStyle" select="$style" />
       <xsl:with-param name="edgeLayoutWeight" select="0.3" />
@@ -587,8 +588,7 @@
     <!-- Edge URL: -->
     <xsl:if test="$srcNode != ''">
       <xsl:text>URL="</xsl:text>
-      <xsl:value-of
-        select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)" />
+      <xsl:value-of select="concat($baseRelativeDotDot, $exampleName, '.html#', $srcNode)" />
       <xsl:text>",</xsl:text>
       <xsl:text>tooltip="</xsl:text>
       <xsl:value-of select="$edgeTooltipLabel" />
@@ -620,7 +620,8 @@
     <xsl:text>,</xsl:text>
 
     <!-- End attribute list for edge: -->
-    <xsl:text>];</xsl:text>
+    <xsl:text>];
+</xsl:text>
   </xsl:template>
 
   <xsl:template name="substring-after-last">
