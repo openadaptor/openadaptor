@@ -23,10 +23,11 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -48,6 +49,7 @@ import org.openadaptor.core.transaction.ITransactional;
  * component has converted the data to valid SQL).
  *
  * @author J Perry, Russ Fennell
+ * @author higginse
  *
  * @see IStatementConverter
  * @see JDBCConnection
@@ -59,6 +61,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
   private IStatementConverter statementConverter = new StatementConverter();
   private JDBCConnection jdbcConnection;
+  
+  private String preambleSQL=null;
+  private String postambleSQL=null;
 
 
   public JDBCWriteConnector() {
@@ -89,6 +94,22 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     this.statementConverter = statementConverter;
   }
 
+
+  /**
+   * Optional SQL to be executed before connector processes messages.
+   * @param sql SQL statement
+   */
+  public void setPreambleSQL(String sql) {
+    this.preambleSQL=sql;
+  }
+
+  /**
+   * Optional SQL to be executed before connector disconnects.
+   * @param sql SQL statement
+   */
+  public void setPostambleSQL(String sql) {
+    this.postambleSQL=sql;
+  }
 
   /**
    * Checks that all mandatory properties have been set. Calls validate() on the statement
@@ -150,12 +171,25 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
       } catch (SQLException e) {
         jdbcConnection.handleException(e, "Failed to establish JDBC connection");
       }
+      //Execute preamble sql if it exists...
+      if (preambleSQL!=null) {
+        executePrePostambleSQL(preambleSQL, jdbcConnection.getConnection());
+      }
     }
 
     statementConverter.initialise(jdbcConnection.getConnection());
 
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
+  }
+  
+  private void executePrePostambleSQL(String sql, Connection connection) {
+    try {
+      PreparedStatement ps=connection.prepareStatement(sql);
+      ps.execute();
+    } catch (SQLException e) {
+      jdbcConnection.handleException(e, "Failed to execute sql: "+sql);
+    }
   }
 
 
@@ -170,6 +204,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     if ( jdbcConnection == null ) {
       log.info("Connection already closed");
       return;
+    }
+
+    //Execute postamble sql if it exists...
+    if (postambleSQL!=null) {
+      executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
     }
 
     try {
