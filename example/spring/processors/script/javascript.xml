@@ -8,39 +8,40 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This (contrived) adaptor does the following...
+  This (contrived) adaptor does the following...
     
-      * reads lines from stdin
-      * prefixes "hello" to the front
-      * writes to stdout
+    * reads lines from stdin
+    * prefixes "hello" to the front
+    * writes to stdout
     
-    It is designed to illustrate the basic structure of an adaptor in spring.
+  It is designed to illustrate the basic structure of an adaptor in spring.
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config script.xml
+    java org.openadaptor.spring.SpringAdaptor -config script.xml
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running it will wait for command line input
+  Once it is running it will wait for command line input
     
-    type something like this...
+  type something like this...
     
-      mum
+    mum
     
-    ...and you should see it converted to something like this...
+  ...and you should see it converted to something like this...
   
-      hello mum!
-    
+    hello mum!    
   ]]></description>
 
-  <!-- This is the bean that actually gets run -->
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+      This is the bean that actually gets run.
+    </description>
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Pipeline">
         <property name="processors">
@@ -56,8 +57,10 @@
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- This is a processor that converts an ordered map into an xml string -->
   <bean id="ScriptProcessor" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      This is a processor that converts an ordered map into an xml string.
+    </description>
     <property name="language" value="js"/>
     <property name="script">
       <value>
@@ -66,7 +69,8 @@
     </property>
   </bean>
   
-  <!-- This is a write connector that outputs the data to a stream (stdout) -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that outputs the data to a stream (stdout).</description>
+  </bean>
   
 </beans>

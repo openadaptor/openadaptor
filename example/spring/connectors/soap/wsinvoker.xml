@@ -8,29 +8,29 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads data from stdin
-      * invokes a webservice with the data
+    * reads data from stdin
+    * invokes a webservice with the data
     
-    It is designed to illustrate the basic structure of an adaptor that processes
-    data by calling a webservice.
+  It is designed to illustrate the basic structure of an adaptor that processes
+  data by calling a webservice.
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config wsinvoker.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config wsinvoker.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-      lib/3rdparty/activation.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/activation.jar
      
-    Once it is running you need to type some data into the command line, for the
-    processing to succeed, the webservice it is connecting to needs to be running
-    (see the adaptorws.xml example).
+  Once it is running you need to type some data into the command line, for the
+  processing to succeed, the webservice it is connecting to needs to be running
+  (see the adaptorws.xml example).
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -39,7 +39,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-WebService
+      This creates the simple pipeline Reader -> WebService.
     </description>
     <property name="processors">
       <list>
@@ -51,8 +51,8 @@
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- this is a write connector that invokes a webservice -->
   <bean id="WebService" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
+    <description>This is a write connector that invokes a webservice</description>
     <property name="endpoint" value="http://localhost:9999/MyService?wsdl"/>
     <property name="methodName" value="process"/>
   </bean>

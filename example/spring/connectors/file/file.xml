@@ -7,27 +7,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads delimited records from file
-      * converts delmited input into a map
-      * converts map to xml
-      * writes to file
+    * reads delimited records from file
+    * converts delmited input into a map
+    * converts map to xml
+    * writes to file
     
-    It is designed to illustrate the basic structure of a file reader/writer adaptor
+  It is designed to illustrate the basic structure of a file reader/writer adaptor
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config file.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config file.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
     
-    writes a file called output.xml
+  writes a file called output.xml
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -38,7 +38,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-MapConverter-XmlConvertor-Writer
+      This creates the simple pipeline Reader -> MapConverter -> XmlConvertor ->Writer.
     </description>
     <property name="processors">
       <list>

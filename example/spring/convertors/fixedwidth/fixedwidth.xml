@@ -8,26 +8,26 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[  
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads a file containing fixed width formatted data
-      * converts the data into OrderedMaps
-      * outputs to stdout
+    * reads a file containing fixed width formatted data
+    * converts the data into OrderedMaps
+    * outputs to stdout
     
-    It is designed to illustrate simple usage of a FixedWidthStringToOrderedMapConvertor
+  It is designed to illustrate simple usage of a FixedWidthStringToOrderedMapConvertor
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config fixedwidth.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config fixedwidth.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
     
-    writes to stdout
+  writes to stdout
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 

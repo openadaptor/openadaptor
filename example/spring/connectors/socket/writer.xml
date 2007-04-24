@@ -8,27 +8,27 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads data to stdin
-      * writes data down a socket
+    * reads data to stdin
+    * writes data down a socket
     
-    It is designed to illustrate the basic structure of an adaptor that connects
-    to a socket and writes data
+  It is designed to illustrate the basic structure of an adaptor that connects
+  to a socket and writes data
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config writer.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config writer.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
     
-    If order to run it, needs to connect to the remote socket, run the corresponding
-    reader example and input data at the command line
+  If order to run it, needs to connect to the remote socket, run the corresponding
+  reader example and input data at the command line
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -37,7 +37,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-Writer
+      This creates the simple pipeline Reader -> Writer.
     </description>
     <property name="processors">
       <list>
@@ -49,8 +49,8 @@
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- Writer that connects to remote socket and writes data -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.socket.SocketWriteConnector">
+    <description>Writer that connects to remote socket and writes data.</description>
     <property name="remoteHostname" value="localhost"/>
     <property name="port" value="9990"/>
   </bean>

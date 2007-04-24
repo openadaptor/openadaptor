@@ -8,51 +8,50 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[  
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads xml from stdin
-      * validates the xml
-      * writes to stdout
+    * reads xml from stdin
+    * validates the xml
+    * writes to stdout
     
-    Validation failures are trapped and sent to centralised exception manager (via soap)
+  Validation failures are trapped and sent to centralised exception manager (via soap)
     
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config exception4.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config exception4.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-      lib/3rdparty/activation.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/activation.jar
      
-    Once it is running it will wait for command line input
+  Once it is running it will wait for command line input
     
-    type something like this...
+  type something like this...
     
-      <data>hello</data>
+    <data>hello</data>
     
-    ...and you should see it echo-ed
+  ...and you should see it echo-ed
   
-    type something which is not an xml doc with a element called data and the validation
-    exception will be caught and sent to exception manager.
+  type something which is not an xml doc with a element called data and the validation
+  exception will be caught and sent to exception manager.
   
-    For this to work you need to run an exception manager, this is a standalone process that
-    exposes a webservice to accept exceptions and exposes a servlet interface to browse the
-    exception store. The following will start a FileSystemExceptionManager storing error records
-    in a directory eman.
+  For this to work you need to run an exception manager, this is a standalone process that
+  exposes a webservice to accept exceptions and exposes a servlet interface to browse the
+  exception store. The following will start a FileSystemExceptionManager storing error records
+  in a directory eman.
 
-       java org.openadaptor.auxil.exception.file.FileSystemExceptionManager -dir eman -port 9999
+    java org.openadaptor.auxil.exception.file.FileSystemExceptionManager -dir eman -port 9999
   
-    this requires you to have activation.jar and mail.jar in your classpath. 
-    You browse the exception store using this url
+  this requires you to have activation.jar and mail.jar in your classpath. 
+  You browse the exception store using this url
   
-      http://localhost:9999/admin
+    http://localhost:9999/admin
   
-    there are 2 users test/password and testadmin/password
-  
+  there are 2 users test/password and testadmin/password
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

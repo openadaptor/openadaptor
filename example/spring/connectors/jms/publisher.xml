@@ -7,32 +7,32 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[  
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads data from stdin
-      * publishes data to a JMS queue
+    * reads data from stdin
+    * publishes data to a JMS queue
     
-    It is designed to illustrate the basic structure of an adaptor that processes
-    data by publishing to JMS queues
+  It is designed to illustrate the basic structure of an adaptor that processes
+  data by publishing to JMS queues
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config publisher.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config publisher.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-      jbossall-client.jar (this is not distributed with openadaptor)
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    jbossall-client.jar (this is not distributed with openadaptor)
     
-    This example relies on a default instance of jboss running (http://www.jboss.org) on the
-    same machine that the example is being run.
+  This example relies on a default instance of jboss running (http://www.jboss.org) on the
+  same machine that the example is being run.
      
-    Once it is running you need to type some data into the command line. To
-    verify that this is working you need to be running the corresponding
-    subscriber example.
+  Once it is running you need to type some data into the command line. To
+  verify that this is working you need to be running the corresponding
+  subscriber example.
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -41,7 +41,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-Writer
+      This creates the simple pipeline Reader -> Writer.
     </description>
     <property name="processors">
       <list>
@@ -53,20 +53,22 @@
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
 
-  <!-- This defines jndi connection, from which we get jms connection -->
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <description>
+      This defines jndi connection, from which we get jms connection.
+    </description>
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
     <property name="providerUrl" value="jnp://localhost:1099"/>
   </bean>
   
-  <!-- jms connection for queue we wish to publish to -->
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <description>jms connection for queue we wish to publish to.</description>
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="connectionFactoryName" value="ConnectionFactory"/>
   </bean>
   
-  <!-- writer that publishes data onto a queue -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <description>writer that publishes data onto a queue.</description>
     <property name="destinationName" value="queue/testQueue"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>

@@ -7,40 +7,40 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads xml from stdin
-      * validates the xml
-      * writes to stdout
+    * reads xml from stdin
+    * validates the xml
+    * writes to stdout
     
-    Validation failures cause the adaptor to fail. It is designed to show how to
-    use the run configuration. This can be used to restart on failure and to
-    perform scheduled stops, starts and restarts using Cron Expressions.
+  Validation failures cause the adaptor to fail. It is designed to show how to
+  use the run configuration. This can be used to restart on failure and to
+  perform scheduled stops, starts and restarts using Cron Expressions.
   
-    See quartz documentation for cron expression format (http://www.opensymphony.com/quartz)
+  See quartz documentation for cron expression format (http://www.opensymphony.com/quartz)
     
-    Run it like this...
+  Run it like this...
+   
+    java org.openadaptor.spring.SpringAdaptor -config runconfig.xml -bean Adaptor
     
-      java org.openadaptor.spring.SpringAdaptor -config runconfig.xml -bean Adaptor
-    
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running it will wait for command line input
+  Once it is running it will wait for command line input
     
-    type something like this...
+  type something like this...
     
-      <data>hello</data>
+    <data>hello</data>
     
-    ...and you should see it echo-ed
+  ...and you should see it echo-ed
   
-    type something which is not an xml doc with a element called data and the validation
-    exception will be thrown and the adaptor will fail (because this example has no exception 
-    capture defined).
+  type something which is not an xml doc with a element called data and the validation
+  exception will be thrown and the adaptor will fail (because this example has no exception 
+  capture defined).
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

@@ -8,27 +8,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads delimited records from stdin
-      * converts delmited input into a map
-      * converts map to xml
-      * writes to stdout
+    * reads delimited records from stdin
+    * converts delmited input into a map
+    * converts map to xml
+    * writes to stdout
     
-    It is designed to illustrate the basic structure of a file reader/writer adaptor
+  It is designed to illustrate the basic structure of a file reader/writer adaptor
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config file.xml
-    
-    You need the following in your classpath
+    java org.openadaptor.spring.SpringAdaptor -config file.xml
+   
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-    
-    
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -51,8 +49,9 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
-    <property name="delimiter" value=","/>
-    <!-- this means that delimiters within quotes do not delimit -->
+    <property name="delimiter" value=",">
+      <description>This means that delimiters within quotes do not delimit.</description>
+    </property>
     <property name="protectQuotedFields" value="true"/>
     <property name="stripEnclosingQuotes" value="true"/>
   </bean>

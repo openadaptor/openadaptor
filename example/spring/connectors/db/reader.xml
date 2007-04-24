@@ -7,30 +7,30 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * selects data from a db using a query
-      * converts the result set to XML
-      * writes data to stdout
+    * selects data from a db using a query
+    * converts the result set to XML
+    * writes data to stdout
     
-    It is designed to illustrate the basic structure of an adaptor that polls a database
+  It is designed to illustrate the basic structure of an adaptor that polls a database
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-      lib/3rdparty/hsqldb.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
     
-    This example relies on a hypersonic database running (http://www.hsqldb.org) to run
-    up the server make sure hsqldb.jar is in your class path and run the following...
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
   
-      java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -39,7 +39,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Reader-Writer
+      This creates the simple pipeline Reader -> Writer.
     </description>
     <property name="processors">
       <list>

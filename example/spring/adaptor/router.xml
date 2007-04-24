@@ -7,44 +7,44 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This (contrived) adaptor does the following...
+  This (contrived) adaptor does the following...
     
-      * reads lines from stdin
-      * converts delmited input into a map
-      * converts map to xml
-      * writes to stdout
+    * reads lines from stdin
+    * converts delmited input into a map
+    * converts map to xml
+    * writes to stdout
     
-    It is designed to illustrate the basic structure of an adaptor router configuration.
-    The previous example sets an adaptor pipeline property, to the ordered list of components
-    that make up the adaptor. In this example we show an equivalent adaptor that that defines
-    the linkage between the component using a RoutingMap and a Router. Explicitly using the
-    RoutingMap and Router allows more sophisticated configurations such as
+  It is designed to illustrate the basic structure of an adaptor router configuration.
+  The previous example sets an adaptor pipeline property, to the ordered list of components
+  that make up the adaptor. In this example we show an equivalent adaptor that that defines
+  the linkage between the component using a RoutingMap and a Router. Explicitly using the
+  RoutingMap and Router allows more sophisticated configurations such as
   
-    Branching - the output of a component is routed to multiple processors
-    Exception Management - specific exceptions can be trapped at any point in the processing
-                           (see exceptions2 example).
+  Branching - the output of a component is routed to multiple processors
+  Exception Management - specific exceptions can be trapped at any point in the processing
+                         (see exceptions2 example).
   
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config router.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config router.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running it will wait for command line input
-    
-    type something like this...
-    
-      hello world
-    
-    ...and you should see it converted to something like this...
+  Once it is running it will wait for command line input
   
-      &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
-      <record><field>hello world</field></record>
+  type something like this...
+    
+    hello world
+    
+  ...and you should see it converted to something like this...
+  
+    &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+    <record><field>hello world</field></record>
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

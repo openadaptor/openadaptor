@@ -7,16 +7,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    Demonstrates an adaptor which reads from stdin and publishes to IBM MQ directly.
+  Demonstrates an adaptor which reads from stdin and publishes to IBM MQ directly.
 
-    Data originates: stdin.
-    Data terminates: MQ.
+  Data originates: stdin.
+  Data terminates: MQ.
 
-    Run using
-      java org.openadaptor.spring.SpringAdaptor -config mq_writer.xml -bean Adaptor -props mq.properties
+  Run using
+    java org.openadaptor.spring.SpringAdaptor -config mq_writer.xml -bean Adaptor -props mq.properties
 
-    mq.properties is a properties format file which should be edited to supply specific mq property
-    values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
+  mq.properties is a properties format file which should be edited to supply specific mq property
+  values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
   ]]></description>
  
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -25,7 +25,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline ReadConnector-MQSeries_WriteConnector
+      This creates the simple pipeline ReadConnector-MQSeries -> WriteConnector.
     </description>
     <property name="processors">
       <list>
@@ -37,13 +37,16 @@
 
   <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
-  <!-- WriteConnector: MqWriteConnector -->
   <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
     <description>
       Configured to write directly to MQ Series.
     </description>
     <property name="connection">
       <bean class="org.openadaptor.thirdparty.mq.MqConnection">
+        <description>
+          Set one or other (not both) of useLocalTransactions and useXATransactions
+          to true so as to enable the appropriate transaction mode.
+        </description>
         <property name="channelName" value="${mq.channel}"/>
         <property name="hostName" value="${mq.host}"/>
         <property name="managerName" value="${mq.manager}"/>
@@ -52,10 +55,6 @@
         <property name="userName" value="${mq.user}"/>
         <property name="password" value="${mq.password}"/>
         <property name="mqCharacterSet" value="37"/>
-        <!--
-          Set one or other (not both) of the following to true
-          in order to enable the appropriate transaction mode.
-          -->
         <property name="useLocalTransactions" value="false"/>
         <property name="useXATransactions" value="false"/>
       </bean>

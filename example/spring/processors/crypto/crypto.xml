@@ -8,41 +8,41 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This (contrived) adaptor does the following...
+  This (contrived) adaptor does the following...
     
-      * reads lines from stdin
-      * does encryption
-      * writes to stdout
-      * does decryption
-      * writes to stdout
+    * reads lines from stdin
+    * does encryption
+    * writes to stdout
+    * does decryption
+    * writes to stdout
     
-    It is designed to illustrate the PasswordBaseEncryptionProcessor
+  It is designed to illustrate the PasswordBaseEncryptionProcessor
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config crypto.xml
-    
-    You need the following in your classpath
+    java org.openadaptor.spring.SpringAdaptor -config crypto.xml
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running it will wait for command line input
+  Once it is running it will wait for command line input
     
-    type something like this...
+  type something like this...
     
-      hello world
+    hello world
     
-    ...and you should see it converted to something like this...
+  ...and you should see it converted to something like this...
   
-      tzQqNISSq4ebuD8JrmJnoA==
-      hello world
+    tzQqNISSq4ebuD8JrmJnoA==
+    hello world
     
-    This example shows you both encryption and decryption in the same adaptor, typically
-    you only want to do one in a single adaptor.
-   ]]></description>
+  This example shows you both encryption and decryption in the same adaptor, typically
+  you only want to do one in a single adaptor.
+  ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor" ref="Router"/>

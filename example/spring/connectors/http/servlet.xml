@@ -7,29 +7,29 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * exposes a servlet that clients can send data to
-      * writes data to stdout
+    * exposes a servlet that clients can send data to
+    * writes data to stdout
     
-    It is designed to illustrate the basic structure of exposing an adaptor as a
-    servlet, typically you want to do this to allow a non java application
-    use openadaptor functionality.
+  It is designed to illustrate the basic structure of exposing an adaptor as a
+  servlet, typically you want to do this to allow a non java application
+  use openadaptor functionality.
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config servlet.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config servlet.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running you can test it using a web browser, like this...
+  Once it is running you can test it using a web browser, like this...
   
-      http://localhost:9999/?data=foobar
+    http://localhost:9999/?data=foobar
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -38,7 +38,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline Servlet-Writer
+      This creates the simple pipeline Servlet -> Writer.
     </description>
     <property name="processors">
       <list>

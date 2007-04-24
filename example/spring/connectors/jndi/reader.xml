@@ -7,27 +7,27 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[  
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * binds to the remote server using the details in the JNDIConnection
-      * once connection is made, the JNDISearch is performed and the data returned
-      * prints data to std out
+    * binds to the remote server using the details in the JNDIConnection
+    * once connection is made, the JNDISearch is performed and the data returned
+    * prints data to std out
     
-    It is designed to illustrate the basic structure of an adaptor that uses a JNDI
-    connection to retrieve data from a remote server
+  It is designed to illustrate the basic structure of an adaptor that uses a JNDI
+  connection to retrieve data from a remote server
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
   
-    To test you need to have a remote server running a JNDI lookup service.
+  To test you need to have a remote server running a JNDI lookup service.
   ]]></description>
 
     <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -36,7 +36,7 @@
 
     <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
         <description>
-            This creates the simple pipeline Reader-Writer
+            This creates the simple pipeline Reader -> Writer.
         </description>
         <property name="processors">
             <list>
@@ -79,14 +79,14 @@
         <!--<property name="joinArraysWithSeparator" value="\n"/>-->
     </bean>
 
-    <!-- Reader that connects to a remote lookup server, performs a search and returns the resulting data -->
     <bean id="Reader" class="org.openadaptor.auxil.connector.jndi.JNDIReadConnector">
+        <description>Reader that connects to a remote lookup server, performs a search and returns the resulting data.</description>
         <property name="jndiConnection"><ref bean="JNDIConnection"/></property>
         <property name="search"><ref bean="JNDISearch"/></property>
     </bean>
 
-    <!-- writes data to StdOut -->
     <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+        <description>writes data to StdOut</description>
     </bean>
 
 </beans>

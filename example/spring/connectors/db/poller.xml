@@ -8,29 +8,29 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * polls data from a db using a query at a configured interval
-      * writes data to stdout
+    * polls data from a db using a query at a configured interval
+    * writes data to stdout
     
-    It is designed to illustrate the basic structure of an adaptor that polls a database
+  It is designed to illustrate the basic structure of an adaptor that polls a database
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
-    
-    You need the following in your classpath
+    java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
+   
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
-      lib/3rdparty/hsqldb.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
     
-    This example relies on a hypersonic database running (http://www.hsqldb.org) to run
-    up the server make sure hsqldb.jar is in your class path and run the following...
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
   
-      java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

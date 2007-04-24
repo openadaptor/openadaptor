@@ -8,44 +8,44 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads xml from stdin
-      * validates the xml (traps errors and forwards them to stdout)
-      * adds an 'opinion' attribute using the 'title' contents if available
-      * writes to stdout
+    * reads xml from stdin
+    * validates the xml (traps errors and forwards them to stdout)
+    * adds an 'opinion' attribute using the 'title' contents if available
+    * writes to stdout
     
-    It's intended to show you how to configure the Javascript processor to use simple xpath to reference SimpleRecord
-    attributes. The validation is not strictly necessary but useful for this example.
+  It's intended to show you how to configure the Javascript processor to use simple xpath to reference SimpleRecord
+  attributes. The validation is not strictly necessary but useful for this example.
     
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config JavascriptXPath.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config JavascriptXPath.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
      
-    Once it is running it will wait for command line input
+  Once it is running it will wait for command line input
     
-    type something like this...
+  type something like this...
     
-      <book><title>Dances with Goldfish</title></book>
+    <book><title>Dances with Goldfish</title></book>
     
-    ...and you should see it echo-ed including an 'opinion' attribute that references the title.
+  ...and you should see it echo-ed including an 'opinion' attribute that references the title.
 
-    type something like this (i.e. without a 'title')...
+  type something like this (i.e. without a 'title')...
 
-      <book><author>A Writer</author></book>
+    <book><author>A Writer</author></book>
 
-    ...and you should see it echo-ed including an 'opinion" atttribute that does not reference a title.
+  ...and you should see it echo-ed including an 'opinion" atttribute that does not reference a title.
 
-    type something which is not an xml doc with a root element called book and a validation exception will
-    show up on stdout with the offending xml. NB the error goes to a diferent Writer (ErrorWriter) from that
-    which writes normal output and this can be configured to write the error information anywhere required.
+  type something which is not an xml doc with a root element called book and a validation exception will
+  show up on stdout with the offending xml. NB the error goes to a diferent Writer (ErrorWriter) from that
+  which writes normal output and this can be configured to write the error information anywhere required.
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -72,9 +72,11 @@
     </property>
   </bean>
   
-  <!-- This processor validates the data as an xml string -->
   <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
-    <description>Ensure that the xml has book as root. </description>
+    <description>
+      This processor validates the data as an xml string.
+      Ensure that the xml has book as root.
+    </description>
     <property name="schemaURL" value="input/schema.xsd"/>
   </bean>
 

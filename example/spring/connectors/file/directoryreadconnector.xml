@@ -7,25 +7,25 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-    This adaptor does the following...
+  This adaptor does the following...
     
-      * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
-      * outputs to stdout
+    * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
+    * outputs to stdout
     
-    It is designed to illustrate the basic structure of a directory reader adaptor
+  It is designed to illustrate the basic structure of a directory reader adaptor
 
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config directoryreadconnector.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config directoryreadconnector.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
     
-    writes to stdout
+  writes to stdout
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
@@ -39,7 +39,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline DirectoryReader-Writer
+      This creates the simple pipeline DirectoryReader -> Writer.
     </description>
     <property name="processors">
       <list>

@@ -7,15 +7,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[  
-    Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
-    will automatically be registered. The adaptor will be registered and this example includes 
-    a utility bean that exposes useful methods for viewing JVM properties.
+  Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
+  will automatically be registered. The adaptor will be registered and this example includes 
+  a utility bean that exposes useful methods for viewing JVM properties.
     
-    This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
-    reference implementation and automatically runs a http adaptor which you can browse 
-    at http://localhost:8082).
+  This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
+  reference implementation and automatically runs a http adaptor which you can browse 
+  at http://localhost:8082).
     
-    The actual adaptor, simply reads stdin and writes to stdout.
+  The actual adaptor, simply reads stdin and writes to stdout.
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

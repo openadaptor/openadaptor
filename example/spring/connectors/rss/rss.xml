@@ -7,19 +7,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[
+  Simple example to illustrate use of RSS connectors and Files
+  Data originates: RSS
+  Data processed : XSLT
+  Data terminates: File
 
- Simple example to illustrate use of RSS connectors and Files
- Data originates: RSS
- Data processed : XSLT
- Data terminates: File
+  Note: If you wish to run it through a proxy, then the adaptor will need to be run with
+  appropriate System properties for the proxy configuration, e.g.
 
- Note: If you wish to run it through a proxy, then the adaptor will need to be run with
- appropriate System properties for the proxy configuration, e.g.
+    -D http.proxyHost=<proxy-host> -D http.proxyPort=<proxy-port>
 
- -D http.proxyHost=<proxy-host> -D http.proxyPort=<proxy-port>
-
- Run using
-  java org.openadaptor.spring.SpringAdaptor -config rss.xml -bean Adaptor
+  Run using
+    java org.openadaptor.spring.SpringAdaptor -config rss.xml -bean Adaptor
   ]]></description>
 
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -28,7 +27,7 @@
   
   <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
     <description>
-      This creates the simple pipeline RSS_Reader-Xslt_Processor-File_Writer
+      This creates the simple pipeline RSS_Reader -> Xslt_Processor -> File_Writer.
     </description>
     <property name="processors">
       <list>
@@ -40,7 +39,7 @@
   </bean>
 
   <bean id="RSS_Reader" class="org.openadaptor.core.connector.PollingReadConnector">
-    <!-- Poll twice with 5 min interval -->
+    <description>Poll twice with 5 min interval.</description>
     <property name="pollLimit" value="2"/>
     <property name="pollIntervalMins" value="5"/>
 
@@ -63,10 +62,8 @@
     </property>
   </bean>
 
-  <!--
-      process the XML string using the XLST defined in the xsl directory
-  -->
   <bean id="Xslt_Processor" class="org.openadaptor.auxil.processor.xml.XsltProcessor">
+    <description>Process the XML string using the XLST defined in the xsl directory.</description>
     <!-- Substitute with your favourite XSLT -->
     <!-- <property name="xsltFile" value="xsl/rss10.xsl"/>-->
     <property name="xsltFile" value="xsl/rss.xsl"/>

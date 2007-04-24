@@ -8,25 +8,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-    This adaptor does the following...
+  This adaptor does the following...
 
-      * reads in delimited string data
-      * applies processors to convert this to OrderMaps and then to XML
-      * writes XML to stdout
+    * reads in delimited string data
+    * applies processors to convert this to OrderMaps and then to XML
+    * writes XML to stdout
 
-    It is designed to illustrate the basic structure of a processor group that applies
-    a list of processors in order.
+  It is designed to illustrate the basic structure of a processor group that applies
+  a list of processors in order.
 
-    Run it like this...
+  Run it like this...
 
-      java org.openadaptor.spring.SpringAdaptor -config ProcessorGroup.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config ProcessorGroup.xml -bean Adaptor
 
-    You need the following in your classpath
+  You need the following in your classpath
 
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

@@ -8,23 +8,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[  
-    This example adaptor illustrates the basic steps in generating json text.
+  This example adaptor illustrates the basic steps in generating json text.
     
-      * reads a file consisting of rows of comma separated values.
-      * converts it into OrderedMaps
-      * converts from OrderedMaps to JSON
-      * writes text to stdout
+    * reads a file consisting of rows of comma separated values.
+    * converts it into OrderedMaps
+    * converts from OrderedMaps to JSON
+    * writes text to stdout
     
-    Run it like this...
+  Run it like this...
     
-      java org.openadaptor.spring.SpringApplication -config tojson.xml -bean Adaptor
+    java org.openadaptor.spring.SpringApplication -config tojson.xml -bean Adaptor
     
-    You need the following in your classpath
+  You need the following in your classpath
   
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 

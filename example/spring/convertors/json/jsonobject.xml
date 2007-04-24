@@ -8,27 +8,27 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
   <description><![CDATA[
-    This adaptor does the following...
+  This adaptor does the following...
 
-      * reads all data in sample_json_object.txt
-      * converts it to a JSONObject
-      * Wraps the Oject with an ISimpleRecordAccessor
-      * Passes it to a JavaScriptProcessor which changes the value of one of the attributes
-      * Unwraps the JSONObject
-      * Writes it to stdout relying on "asString" to do the right thing.
+    * reads all data in sample_json_object.txt
+    * converts it to a JSONObject
+    * Wraps the Oject with an ISimpleRecordAccessor
+    * Passes it to a JavaScriptProcessor which changes the value of one of the attributes
+    * Unwraps the JSONObject
+    * Writes it to stdout relying on "asString" to do the right thing.
 
-    Run it like this...
+  Run it like this...
 
-      java org.openadaptor.spring.SpringAdaptor -config jsonobject.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config jsonobject.xml -bean Adaptor
 
-    You need the following in your classpath
+  You need the following in your classpath
 
-      lib
-      lib/openadaptor.jar
-      lib/openadaptor-spring.jar
-      lib/openadaptor-depends.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
 
-    writes to stdout
+  writes to stdout
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
