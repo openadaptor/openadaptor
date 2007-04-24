@@ -66,7 +66,7 @@
   
   <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
     <description>Converts DataObject[] to IOrderedMap.</description>
-  <bean>
+  </bean>
   
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
     <description>Converts IOrderedMap to XML.</description>
