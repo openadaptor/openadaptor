@@ -51,8 +51,10 @@
   xmlns:beans="http://www.springframework.org/schema/beans">
   <xsl:output method="text" />
 
+  <xsl:param name="filepathGlobPrefix" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
+
   <xsl:variable name="exampleName"
-    select="substring-before(substring-after(beans:beans/beans:description|comment(),'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'),'.xml ')" />
+    select="substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix),'.xml ')"/>
 
   <xsl:variable name="exampleShortName">
     <xsl:call-template name="substring-after-last">
