@@ -51,10 +51,15 @@
   xmlns:beans="http://www.springframework.org/schema/beans">
   <xsl:output method="text" />
 
-  <xsl:param name="filepathGlobPrefix" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
+  <!-- Which you have depends on which DNS name you used in your SVN checkout URL: -->
+  <xsl:param name="filepathGlobPrefix1" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
+  <xsl:param name="filepathGlobPrefix2" select="'HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
 
   <xsl:variable name="exampleName"
-    select="substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix),'.xml ')"/>
+    select="concat(
+      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix1),'.xml '),
+      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix2),'.xml ')
+    )"/>    
 
   <xsl:variable name="exampleShortName">
     <xsl:call-template name="substring-after-last">
