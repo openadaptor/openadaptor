@@ -27,29 +27,15 @@
 
 package org.openadaptor.auxil.connector.jms;
 
-import java.io.Serializable;
-import java.util.List;
-
-import javax.jms.Destination;
-import javax.jms.InvalidDestinationException;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageFormatException;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.XASession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.ProcessingException;
-import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.exception.*;
 import org.openadaptor.core.transaction.ITransactional;
+
+import javax.jms.*;
+import java.util.List;
 
 /**
  * Write Connector class that implements publishing to JMS.
@@ -116,6 +102,11 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * Default is true which means log JMS Message Id of any published messages.
    */
   private boolean logMessageId = true;
+
+  /**
+   * Use to generate instances of JMSMessage. Defaults to an instance of DefaultMessageGenerator.
+   */
+  private IMessageGenerator messageGenerator = new DefaultMessageGenerator();
 
   // Constructors
 
@@ -237,7 +228,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   protected String deliverRecord(Object message) {
     String msgId;
     try {
-      Message msg = createMessage(message);
+      // Delegate message creation to an instance of IMessageGenerator.
+      Message msg = messageGenerator.createMessage(message, session);
       // send the record
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + message + "]");
@@ -246,39 +238,14 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
       if (logMessageId) { // Optionally log the message id of the published message.
         log.info( "[" + getId() + "=" + getDestinationName() + "] sent message [ JMSMessageID=" + msgId + "] to data connection/service" );
       }
-    } catch (MessageFormatException e) {
-      throw new ProcessingException("MessageFormatException during publish.", e, this);
+    } catch (RecordFormatException e) {
+      throw new ProcessingException("RecordFormatException during publish.", e, this);
     } catch (InvalidDestinationException e) {
       throw new ConnectionException("InvalidDestinationException during publish.", e, this);
     } catch (JMSException jmse) {
       throw new ConnectionException("JMSException during publish.", jmse, this);
     }
     return msgId;
-  }
-
-  /**
-   * Create required message objects.
-   *
-   * @param messageBody
-   * @return Message created from the supplied messageBody
-   * @throws javax.jms.JMSException
-   */
-  protected Message createMessage(Object messageBody) throws JMSException {
-    Message msg;
-    if (messageBody instanceof String) {
-      TextMessage textMsg = session.createTextMessage();
-      textMsg.setText((String) messageBody);
-      msg = textMsg;
-    } else if (messageBody instanceof Serializable) {
-      ObjectMessage objectMsg = session.createObjectMessage();
-      objectMsg.setObject((Serializable) messageBody);
-      msg = objectMsg;
-    } else {
-      // We have not needed more message types in practice.
-      // If we do need them in future this is where they go.
-      throw new ProcessingException("Undeliverable record type [" + messageBody.getClass().getName() + "]", this);
-    }
-    return msg;
   }
 
   /**
@@ -405,5 +372,13 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
   // end bean implementation
 
+  /** Return the IMessageGenerator instance used to generate JMSMessage instances. Defaults to an instance of DefaultMessageGenerator. */
+  public IMessageGenerator getMessageGenerator() {
+    return messageGenerator;
+  }
 
+  /** Set the IMessageGenerator instance used to generate JMSMessage instances. Defaults to an instance of DefaultMessageGenerator. */
+  public void setMessageGenerator(IMessageGenerator messageGenerator) {
+    this.messageGenerator = messageGenerator;
+  }
 }

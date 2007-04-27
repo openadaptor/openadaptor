@@ -27,19 +27,6 @@
 
 package org.openadaptor.auxil.connector.jms;
 
-import java.util.List;
-
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import javax.jms.XASession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
@@ -47,7 +34,11 @@ import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.core.transaction.ITransactional;
+
+import javax.jms.*;
+import java.util.List;
 
 /**
  * Read Connector class that implements listening to JMS.
@@ -118,6 +109,8 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
    * Default is true which means log JMS Message Id of any published messages.
    */
   private boolean logMessageId = true;
+
+  private IMessageConvertor messageConvertor = new DefaultMessageConvertor();
 
   // Constructors
 
@@ -202,7 +195,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   /**
    * Receive a message from the configured destination. This is a blocking receive which will time out based
-   * on the value of the <b>timout</b> property.
+   * on the value of the <b>timeout</b> property.
    *
    * @return Object  The contents of the received message.
    */
@@ -228,30 +221,22 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
       log.error("Exception during receive message [JMSException: " + jmse + "]");
       throw new ConnectionException("Exception during receive message.", jmse, this);
     }
-    if (msg != null) {
-      return unpackJMSMessage(msg);
-    } else {
-      return null;
-    }
+    // Unpack the message contents
+    return unpackJMSMessage(msg);
   }
 
-  protected Object unpackJMSMessage(Message msg) throws ComponentException {
-    Object msgContents;
-
-    try {
-      if (msg instanceof TextMessage) {
-        log.debug("Handling TextMessage");
-        msgContents = ((TextMessage) msg).getText();
-      } else {
-        if (msg instanceof ObjectMessage) {
-          log.debug("Handling ObjectMessage");
-          msgContents = ((ObjectMessage) msg).getObject();
-        } else {
-          throw new ProcessingException("Unsupported JMS Message Type.", this);
-        }
+  /** Unpack the message contents */
+  protected Object unpackJMSMessage(Message msg) {
+    Object msgContents = null;
+    if (msg != null) {
+      try {
+        msgContents = messageConvertor.unpackMessage(msg);
+      } catch (JMSException e) {
+        throw new ConnectionException("Error processing JMS Message text.", e, this);
       }
-    } catch (JMSException e) {
-      throw new ConnectionException("Error processing JMS Message text.", e, this);
+      catch (RecordFormatException e) {
+        throw new ProcessingException(e.getMessage(), this);
+      }
     }
     return msgContents;
   }
