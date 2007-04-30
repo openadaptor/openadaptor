@@ -374,6 +374,16 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   public void setLogMessageId(boolean logMessageId) {
     this.logMessageId = logMessageId;
   }
+
+  /** Get the IMessageConvertor used to convert the JMS Message to a record */
+  public IMessageConvertor getMessageConvertor() {
+    return messageConvertor;
+  }
+
+  /** Set the IMessageConvertor used to convert the JMS Message to a record */
+  public void setMessageConvertor(IMessageConvertor messageConvertor) {
+    this.messageConvertor = messageConvertor;
+  }
   // End Bean implementation
 
 }

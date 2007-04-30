@@ -38,8 +38,8 @@ import java.io.Serializable;
 
 /**
  * Default implementation of IMessageGenerator that generates either a TextMessage or an ObjectMessage
- * depending on the type of the messageRecord. It the messageRecord is neither a String nor an instance
- * of Serializable then a MesageFormatException is thrown.
+ * depending on the type of the messageRecord. If the messageRecord is neither a String nor an instance
+ * of Serializable then a RecordFormatException is thrown.
  */
 public class DefaultMessageGenerator implements IMessageGenerator {
   public Message createMessage(Object messageRecord, Session session) throws JMSException {

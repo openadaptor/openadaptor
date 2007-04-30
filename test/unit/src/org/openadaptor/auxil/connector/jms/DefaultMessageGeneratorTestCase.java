@@ -31,6 +31,9 @@ package org.openadaptor.auxil.connector.jms;
  * Created Apr 27, 2007 by oa3 Core Team
  */
 
+/**
+ * Test DefaultMessageGenerator's implementation of the IMessageConvertor interface.
+ */
 public class DefaultMessageGeneratorTestCase extends AbstractMessageGeneratorTests{
   protected IMessageGenerator createTestInstance() {
     return new DefaultMessageGenerator();

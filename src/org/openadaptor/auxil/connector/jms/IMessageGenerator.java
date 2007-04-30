@@ -39,5 +39,6 @@ import javax.jms.JMSException;
  * Interface that defines components used by the JMSWriteConnector to create a JMSMessage fron a record.
  */
 public interface IMessageGenerator {
-    Message createMessage( Object messageRecord, Session session ) throws JMSException;
+  /** Create the JMS Message from the Session and Record */
+  Message createMessage( Object messageRecord, Session session ) throws JMSException;
 }

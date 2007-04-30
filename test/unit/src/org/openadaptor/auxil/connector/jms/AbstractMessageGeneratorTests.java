@@ -37,6 +37,9 @@ import java.io.Serializable;
  * Created Apr 27, 2007 by oa3 Core Team
  */
 
+/**
+ * All implementations of IMessagegenerator should be tested by a concrete implementation of this class.
+ */
 public abstract class AbstractMessageGeneratorTests extends MockObjectTestCase {
 
   protected IMessageGenerator testInstance;

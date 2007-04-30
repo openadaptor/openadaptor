@@ -36,6 +36,10 @@ import javax.jms.ObjectMessage;
  * Created Apr 26, 2007 by oa3 Core Team
  */
 
+
+/**
+ * Test DefaultMessageConvertor's implementation of the IMessageConvertor interface.
+ */
 public class DefaultMessageConvertorTestCase extends AbstractMessageConvertorTests {
   protected IMessageConvertor createTestInstance() {
     return new DefaultMessageConvertor();

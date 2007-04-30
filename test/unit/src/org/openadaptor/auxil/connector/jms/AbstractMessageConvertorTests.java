@@ -39,6 +39,9 @@ import java.io.Serializable;
  * Created Apr 25, 2007 by oa3 Core Team
  */
 
+/**
+ * All implementations of IMessageConvertor should be tested by a concrete implementation of this class.
+ */
 public abstract class AbstractMessageConvertorTests extends MockObjectTestCase {
 
   protected IMessageConvertor testInstance;

@@ -34,7 +34,9 @@ import javax.jms.JMSException;
  * Created Apr 24, 2007 by oa3 Core Team
  */
 
-/** Implementations are used by JMSReadConnector to convert JMS Messages into openadaptor records */
+/**
+ * Implementations are used by JMSReadConnector to convert JMS Messages into openadaptor records
+ */
 public interface IMessageConvertor {
   /** Extract the record from the Message */
   Object unpackMessage(Message message) throws JMSException;
