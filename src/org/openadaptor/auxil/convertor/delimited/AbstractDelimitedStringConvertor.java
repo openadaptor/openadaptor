@@ -443,13 +443,11 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * 
    * @return the quoted string
    * 
-   * @throws RecordFormatException
-   *           if the field is not a CharSequence
    */
   private Object addEnclosingQuotes(Object field) throws RecordFormatException {
+    // #SC11 - No longer check that field is a charSequence (hence no longer throws RecordFormatException if not)
     Object result = field;
     if (field != null && addNeededEnclosingQuotes) {
-      if (field instanceof CharSequence) {
         String s = (field instanceof String) ? (String) field : field.toString();
 
         if (s.indexOf(delimiter) >= 0) {
@@ -464,10 +462,6 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
             result = sb.toString();
           }
         }
-      } else {
-        throw new RecordFormatException("Field is not a CharSequence. Field class is " + field.getClass().getName()
-            + " and field value is: " + field);
-      }
     }
     return result;
   }
