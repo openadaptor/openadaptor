@@ -27,6 +27,9 @@
 
 package org.openadaptor.auxil.connector.jndi;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -45,7 +48,7 @@ import javax.naming.directory.InitialDirContext;
  */
 public class JNDIConnection {
   
-  //private static final Log log = LogFactory.getLog(JNDIConnection.class);
+  private static final Log log = LogFactory.getLog(JNDIConnection.class);
 
   /**
    * The default authentication is simple authentication (username/password)
@@ -55,6 +58,8 @@ public class JNDIConnection {
   private String _initialContextFactory;
 
   private String _providerUrl;
+
+  private String _alternateProviderUrl;
 
   private String _securityAuthentication;
 
@@ -118,6 +123,33 @@ public class JNDIConnection {
   }
 
   /**
+   * Assign an alternate provider Url for this connection. This is used only
+   * if there is a problem accessing the primary provider URL.
+   * <p>
+   * Example: <blockquote>
+   *
+   * <pre>
+   * setAlternateProviderUrl(&quot;ldap://myldapserver.myCompany.com:389&quot;);
+   * </pre>
+   *
+   * </blockquote>
+   *
+   * @param alternateProviderUrl
+   */
+  public void setAlternateProviderUrl(String alternateProviderUrl) {
+    this._alternateProviderUrl = alternateProviderUrl;
+  }
+
+  /**
+   * Get the alternate provider URL for this connection.
+   *
+   * @return String containing the alternate provider URL.
+   */
+  public String getAlternateProviderUrl() {
+    return _alternateProviderUrl;
+  }
+
+  /**
    * Set the authentication type to use for this connection.
    * <p>
    * Example: <blockquote>
@@ -132,6 +164,8 @@ public class JNDIConnection {
    *          String which defines the type to use.
    * 
    */
+
+
   public void setSecurityAuthentication(String securityAuthentication) {
     _securityAuthentication = securityAuthentication;
   }
@@ -212,6 +246,43 @@ public class JNDIConnection {
     }
     if (_providerUrl != null) {
       env.put(Context.PROVIDER_URL, _providerUrl);
+    }
+    // Authentication details
+    if (_securityAuthentication != null) {
+      env.put(Context.SECURITY_AUTHENTICATION, _securityAuthentication);
+    }
+    if (_securityPrincipal != null) {
+      env.put(Context.SECURITY_PRINCIPAL, _securityPrincipal);
+    }
+    if (_securityCredentials != null) {
+      env.put(Context.SECURITY_CREDENTIALS, _securityCredentials);
+    }
+    return env;
+  }
+
+  /**
+   * Connect to a JNDI Service using the Alternate Provider URL.
+   *
+   * @return DirContext obtained.
+   * @throws NamingException
+   */
+  public DirContext connectAlternate() throws NamingException {
+    if ( _alternateProviderUrl != null ) {
+      return new InitialDirContext(getAlternateConnectionProperties());
+    }
+    else {
+      log.warn("Alternate Provider URL not Set. No alternative properties to try.");
+      return null;
+    }
+  }
+
+  public Properties getAlternateConnectionProperties() {
+    Properties env = new Properties();
+    if (_initialContextFactory != null) {
+      env.put(Context.INITIAL_CONTEXT_FACTORY, _initialContextFactory);
+    }
+    if (_providerUrl != null) {
+      env.put(Context.PROVIDER_URL, _alternateProviderUrl);
     }
     // Authentication details
     if (_securityAuthentication != null) {

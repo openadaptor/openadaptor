@@ -198,46 +198,66 @@ public class JMSConnection extends Component {
     if (log.isDebugEnabled())
       log.debug("connecting...");
     try {
-      if (connectionFactory == null) {
-        Object factoryObject = getCtx().lookup(connectionFactoryName);
-        if (factoryObject instanceof ConnectionFactory) {
-          connectionFactory = (ConnectionFactory) factoryObject;
-        } else { //We don't have a valid connectionFactory.
-          if (connectionFactory == null) {
-            String reason = "Unable to get a connectionFactory. This may be because the required JMS implementation jars are not available on the classpath";
-            log.error(reason);
-            throw new ConnectionException(reason, this);
-          } else {
-            String reason = "Factory object is not an instance of ConnectionFactory. This should not happen";
-            log.error(reason);
-            throw new ConnectionException(reason, this);
-          }
-        }
-      }
-
-      setConnection(createConnection(connectionFactory));
-
-      if (clientID != null) {
-        // A clientID has been configured so attempt to set it.
-        try {
-          connection.setClientID(clientID);
-        } catch (InvalidClientIDException ice) {
-          throw new ConnectionException(
-              "Error setting clientID. ClientID either duplicate(most likely) or invalid. Check for other connected clients",
-              ice, this);
-        } catch (IllegalStateException ise) {
-          throw new ConnectionException(
-              "Error setting clientID. ClientID most likely administratively set. Check ConnectionFactory settings",
-              ise, this);
-        }
-      }
+      doCreateConnection();
     } catch (JMSException e) {
       log.error("JMSException during connect." + e);
       throw new ConnectionException(" JMSException during connect.", e, this);
     } catch (NamingException e) {
-      log.error("NamingException during connect." + e);
-      throw new ConnectionException("NamingException during connect.", e, this);
+      log.warn("NamingException during connect. Attempting to use Alternate JNDI Settings.");
+      try {
+        overrideWithAlternateCtx();
+        if (ctx != null) { // Need to sidestep lazy initialisation
+          doCreateConnection();
+        }
+        else { throw new ConnectionException("NamingException during connect.", e, this); }
+      } catch (NamingException ne) {
+         log.warn("Alternate JNDI Settings didn't work either.");
+         throw new ConnectionException("NamingException attempting to use Alternate JNDI Settings.", ne, this);
+      } catch (JMSException je) {
+        throw new ConnectionException(" JMSException attempting to use Alternate JNDI Settings.", je, this);
+      }
+
     }
+  }
+
+  private void doCreateConnection() throws NamingException, JMSException {
+    if (connectionFactory == null) {
+      Object factoryObject = lookup(connectionFactoryName);
+      if (factoryObject instanceof ConnectionFactory) {
+        connectionFactory = (ConnectionFactory) factoryObject;
+      } else { //We don't have a valid connectionFactory.
+        if (connectionFactory == null) {
+          String reason = "Unable to get a connectionFactory. This may be because the required JMS implementation jars are not available on the classpath";
+          log.error(reason);
+          throw new ConnectionException(reason, this);
+        } else {
+          String reason = "Factory object is not an instance of ConnectionFactory. This should not happen";
+          log.error(reason);
+          throw new ConnectionException(reason, this);
+        }
+      }
+    }
+
+    setConnection(createConnection(connectionFactory));
+
+    if (clientID != null) {
+      // A clientID has been configured so attempt to set it.
+      try {
+        connection.setClientID(clientID);
+      } catch (InvalidClientIDException ice) {
+        throw new ConnectionException(
+            "Error setting clientID. ClientID either duplicate(most likely) or invalid. Check for other connected clients",
+            ice, this);
+      } catch (IllegalStateException ise) {
+        throw new ConnectionException(
+            "Error setting clientID. ClientID most likely administratively set. Check ConnectionFactory settings",
+            ise, this);
+      }
+    }
+  }
+
+  private Object lookup(String name) throws NamingException {
+    return getCtx().lookup(name);
   }
 
   protected Connection createConnection(ConnectionFactory factory) throws JMSException {
@@ -295,7 +315,7 @@ public class JMSConnection extends Component {
 
   public Destination lookupDestination( String destinationName ) {
     try {
-      return (Destination) getCtx().lookup(destinationName);
+      return (Destination) lookup(destinationName);
     } catch (NamingException e) {
       throw new ConnectionException("Unable to resolve Destination for [" + destinationName + "]", e, this);
     } catch (ClassCastException cce) {
@@ -308,6 +328,10 @@ public class JMSConnection extends Component {
       ctx = jndiConnection.connect();
     }
     return ctx;
+  }
+
+  protected void overrideWithAlternateCtx() throws NamingException {
+    ctx = jndiConnection.connectAlternate();
   }
 
   protected void setCtx(Context ctx) {
