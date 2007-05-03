@@ -32,6 +32,9 @@
  */
 package org.openadaptor.auxil.convertor.delimited;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+
 import junit.framework.TestCase;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
@@ -52,12 +55,17 @@ public class DelimitedStringConvertorTestCase extends TestCase {
   private static final String[] VALUES_TRAILING_EMPTY_ELEMENTS = { "Apples", "Oranges", "Bananas", "Pears", "", "", "" };
 
   private static final String DELIMITER = ",";
+  
+  private static final Object[] NON_STRING_NAMES = { new StringBuffer("One"), new Object(), new Integer(3), new BigDecimal(2.3) };
 
-  private String ds;
+  private static final Object[] NON_STRING_VALUES = { new Integer(1), null, new HashMap(), new Float(23.4)};
+ 
+
+  private String ds,ds2;
 
 
 
-  private IOrderedMap om;
+  private IOrderedMap om,om2;
 
 
 
@@ -74,13 +82,15 @@ public class DelimitedStringConvertorTestCase extends TestCase {
     dsom = new DelimitedStringToOrderedMapConvertor();
     dsom.setFieldNames(NAMES);
     omds = new OrderedMapToDelimitedStringConvertor();
+    om2 = generateOrderedMap(NON_STRING_NAMES,NON_STRING_VALUES);
+    ds2= generateDelimitedString(DELIMITER,NON_STRING_VALUES);
   }
 
   protected void tearDown() throws Exception {
     super.tearDown();
   }
 
-  private static String generateDelimitedString(String delimiter, String[] data) {
+  private static String generateDelimitedString(String delimiter, Object[] data) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < data.length; i++) {
       sb.append(data[i]);
@@ -91,7 +101,7 @@ public class DelimitedStringConvertorTestCase extends TestCase {
     return sb.toString();
   }
 
-  private static IOrderedMap generateOrderedMap(String[] names, String[] values) {
+  private static IOrderedMap generateOrderedMap(Object[] names, Object[] values) {
     // Create using Map add(key, value)
     IOrderedMap map = new OrderedHashMap(values.length);
     for (int i = 0; i < values.length; i++) {
@@ -113,6 +123,7 @@ public class DelimitedStringConvertorTestCase extends TestCase {
 
   }
 
+  
   public void testDelimitedStringToOrderedMapWithHeadersInFirstRow() {
     dsom.validate(null);
     try {
@@ -174,6 +185,27 @@ public class DelimitedStringConvertorTestCase extends TestCase {
       Object[] dsList = omds.process(om);
       assertEquals(dsList.length, 1);
       assertEquals(ds, (String) dsList[0]);
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }
+
+  }
+  
+/**
+ * Test that ordered map to delimited string conversion works with
+ * data values that are not strings.
+ * Tests issue corresponding to collab issue #SC11
+ * <p>
+ * Basically any data values supplies should be having their 
+ * toString() method called.
+ */
+  public void testNonStringOrderedMapToDelimitedStringConversion() {
+    omds.validate(null);
+    try {
+      omds.setDelimiter(DELIMITER);
+      Object[] dsList = omds.process(om2);
+      assertEquals(dsList.length, 1);
+      assertEquals(ds2, (String) dsList[0]);
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
