@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.convertor.xml;
 
@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,13 +50,23 @@ import org.openadaptor.core.exception.RecordFormatException;
 
 /**
  * Converts {@link IOrderedMap}s to xml documents or xml strings
- * 
+ * <p>
+ * Note that Map keys containing forward slashes are not permitted as
+ * Element tags in XML. These will be mapped according to the value
+ * of mappedSlashValue. If this property hasn't been explicitly set,
+ * a warning issues each time a conversion is made. If it is set, no
+ * warning will issue.
+ * The default value for mappedSlashValue is DEFAULT_SLASH_SUBSTITE
  * @author Eddy Higgins
  */
 public class OrderedMapToXmlConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToXmlConvertor.class);
 
   public static final String DEFAULT_ROOT_ELEMENT_TAG = "root";
+  //Forward slash is not allowed in a an element name
+  public static final String FORWARD_SLASH="/";
+
+  public static final String DEFAULT_SLASH_SUBSTITUTE="_sl_";
 
   // name, if any for root element. See convert() for info on it's effect
   protected String rootElementTag = null;
@@ -66,14 +78,17 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
   // TODO Decide if this is, in fact the best default.
   protected String encoding = EncodingAwareObject.ISO_8859_1; 
 
+  protected String mappedSlashValue=DEFAULT_SLASH_SUBSTITUTE;
+  private boolean slashMappedExplicitly=false;
+
   public OrderedMapToXmlConvertor() {
     super();
   }
-  
+
   public OrderedMapToXmlConvertor(String id) {
     super(id);
   }
-  
+
   /**
    * @return the name of the root element or null. Default to null
    */
@@ -105,13 +120,13 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
   }
 
   /**
-   * Sets a flag to ddetermine what is returned by the processor
+   * Sets a flag to determine whether a Dom4J Document, or XML String is returned by this processor.
    * 
-   * @param b
+   * @param returnXmlAsString
    *          true to return a String, false to return a DOM document
    */
-  public void setReturnXmlAsString(boolean b) {
-    this.returnXmlAsString = b;
+  public void setReturnXmlAsString(boolean returnXmlAsString) {
+    this.returnXmlAsString = returnXmlAsString;
   }
 
   /**
@@ -124,6 +139,28 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
    */
   public void setEncoding(String s) {
     this.encoding = s;
+  }
+
+  /**
+   * Assign a substutionValue for slashes in element names.
+   * <P>
+   * Forward slashes are not permitted as part of an element name.
+   * Dom4j Doesn't prevent them, but it could cause a problem when
+   * subsequently parsing the converted XML
+   * @param mappedSlashValue
+   */
+  public void setMappedSlashValue(String mappedSlashValue) {
+    if ((mappedSlashValue==null)||(FORWARD_SLASH.equals(mappedSlashValue))) {
+      log.warn("Cannot set mappedSlashValue to <null> or "+FORWARD_SLASH+". Ignored");
+    } 
+    else {
+      this.mappedSlashValue=mappedSlashValue;
+      slashMappedExplicitly=true;
+    }
+  }
+
+  public String getMappedSlashValue() {
+    return mappedSlashValue;
   }
 
   /**
@@ -205,9 +242,14 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
 
     Iterator it = map.keys().iterator();
     while (it.hasNext()) {
-      String key = (String) it.next();
+      String key = it.next().toString();
       Object value = map.get(key);
-      // addElement(root,key,value);
+      if (key.indexOf(FORWARD_SLASH) >=0){
+        if (!slashMappedExplicitly) {
+          log.warn("Element name would contain a'"+FORWARD_SLASH+"'. Implicitly mapping it to '"+mappedSlashValue+"'");
+        }
+        key=key.replaceAll(Pattern.quote(FORWARD_SLASH),mappedSlashValue);
+      }
       addElement(root, key, value);
     }
     // document done. Phew.
@@ -218,8 +260,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
         log.debug("Output Format encoding as " + encoding);
         outputFormat.setEncoding(encoding); // This definitely sets it in the header!
       }
-//      outputFormat.setOmitEncoding(true);
-//      outputFormat.setSuppressDeclaration(true);
+//    outputFormat.setOmitEncoding(true);
+//    outputFormat.setSuppressDeclaration(true);
       XMLWriter writer = new XMLWriter(sw, outputFormat);
       try {
         writer.write(doc);
