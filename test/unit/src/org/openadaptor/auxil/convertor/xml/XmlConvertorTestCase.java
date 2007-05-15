@@ -101,6 +101,28 @@ public class XmlConvertorTestCase extends TestCase {
     root.put("A", parent);
     return root;
   }
+  
+  private IOrderedMap generateTestOrderedMapWithSlashes() {
+      IOrderedMap root = new OrderedHashMap();
+      IOrderedMap parent = new OrderedHashMap();
+      IOrderedMap child = new OrderedHashMap();
+      IOrderedMap child2 = new OrderedHashMap();
+      child.put("Y/Y", "Y_VAL");
+      child.put("Z/Z", "Z_VAL");
+      parent.put("B/B", child);
+      child = new OrderedHashMap();
+      child.put("Y/Y","Y_VAL");
+      child.put("Z/Z", "Z_VAL");
+  
+    child2 = new OrderedHashMap();
+    child2.put("Y/Y", "Y_VAL2");
+    child2.put("Z/Z", "Z_VAL2");
+    parent.put("C/C", new Object[] { child, child2 });
+
+    root.put("A/A", parent);
+    return root;
+  }
+  
 
   private static Document generateXmlDocument(String xml) {
     Document document = null;
@@ -193,6 +215,23 @@ public class XmlConvertorTestCase extends TestCase {
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
+  }
+
+  
+  public void testOrderedMapToXmlWithSlashes(){
+    try {
+      Object[] resultArray = om2xml.process(generateTestOrderedMapWithSlashes());
+      assertTrue(resultArray.length == 1);
+      String xml = (String) resultArray[0];
+      System.out.println(xml);
+      String expected="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+'\n'+
+      "<A/A><B_sl_B><Y_sl_Y>Y_VAL</Y_sl_Y><Z_sl_Z>Z_VAL</Z_sl_Z></B_sl_B>"+
+      "<C_sl_C><Y_sl_Y>Y_VAL</Y_sl_Y><Z_sl_Z>Z_VAL</Z_sl_Z></C_sl_C><C_sl_C>"+
+      "<Y_sl_Y>Y_VAL2</Y_sl_Y><Z_sl_Z>Z_VAL2</Z_sl_Z></C_sl_C></A/A>";
+      assertEquals(expected,xml);
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }    
   }
 
   private static String docAsString(Document doc, String encoding) {

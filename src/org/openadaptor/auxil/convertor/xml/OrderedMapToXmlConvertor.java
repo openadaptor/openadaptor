@@ -64,7 +64,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
 
   public static final String DEFAULT_ROOT_ELEMENT_TAG = "root";
   //Forward slash is not allowed in a an element name
-  public static final String FORWARD_SLASH="/";
+  public static final char FORWARD_SLASH='/';
+  protected static final String FORWARD_SLASH_AS_STRING=new StringBuffer(FORWARD_SLASH).toString();
 
   public static final String DEFAULT_SLASH_SUBSTITUTE="_sl_";
 
@@ -150,7 +151,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
    * @param mappedSlashValue
    */
   public void setMappedSlashValue(String mappedSlashValue) {
-    if ((mappedSlashValue==null)||(FORWARD_SLASH.equals(mappedSlashValue))) {
+    if ((mappedSlashValue==null)|| (mappedSlashValue.indexOf(FORWARD_SLASH_AS_STRING)>=0)) {
       log.warn("Cannot set mappedSlashValue to <null> or "+FORWARD_SLASH+". Ignored");
     } 
     else {
@@ -244,12 +245,6 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
     while (it.hasNext()) {
       String key = it.next().toString();
       Object value = map.get(key);
-      if (key.indexOf(FORWARD_SLASH) >=0){
-        if (!slashMappedExplicitly) {
-          log.warn("Element name would contain a'"+FORWARD_SLASH+"'. Implicitly mapping it to '"+mappedSlashValue+"'");
-        }
-        key=key.replaceAll(Pattern.quote(FORWARD_SLASH),mappedSlashValue);
-      }
       addElement(root, key, value);
     }
     // document done. Phew.
@@ -295,7 +290,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
     }
     // Only one element to add
     else {
-      Element child = parent.addElement(name);
+      Element child = parent.addElement(generateElementName(name));
       if (value instanceof IOrderedMap) {
         IOrderedMap map = (IOrderedMap) value;
         Iterator it = map.keys().iterator();
@@ -310,5 +305,32 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
           child.addText(value.toString());
       }
     }
+  }
+
+  /**
+   * Convert supplied name to legal Element Name.
+   * @param key
+   * @return
+   */
+  private String generateElementName(String key) {
+    String result=key;
+    if (key!=null && (key.indexOf(FORWARD_SLASH_AS_STRING)>=0) ){
+      char[] chars=key.toCharArray();
+      StringBuffer sb=new StringBuffer();
+      for (int i=0;i<chars.length;i++){
+        char ch=chars[i];
+        if (ch==FORWARD_SLASH) {
+          sb.append(mappedSlashValue);
+        }
+        else {
+          sb.append(ch);
+        }
+      }
+      result= sb.toString();
+      if (!slashMappedExplicitly) {
+        log.warn("Implict conversion of Element name from "+key+" -> "+result);
+      }
+    }
+    return result;
   }
 }
