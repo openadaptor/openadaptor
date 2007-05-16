@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,6 +61,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToXmlConvertor.class);
 
   public static final String DEFAULT_ROOT_ELEMENT_TAG = "root";
+  public static final String NULL_KEY_ELEMENT_TAG="nullKey";
   //Forward slash is not allowed in a an element name
   public static final char FORWARD_SLASH='/';
   protected static final String FORWARD_SLASH_AS_STRING=new StringBuffer(FORWARD_SLASH).toString();
@@ -219,7 +218,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
     } else { // Try and derive it. Must have a single entry, whose value is itself an OM.
       log.debug("rootElementTag property is not set. Deriving root tag from data.");
       if (map.size() == 1) { // Might be able to derive root tag.
-        rootTag = (String) map.keys().get(0);
+        Object rootTagObject=map.keys().get(0);       
+        rootTag = rootTagObject==null?null:rootTagObject.toString();
         Object value = map.get(rootTag);
         if (value instanceof IOrderedMap) { // Bingo we're in.
           log.debug("Deriving rootElementTag property from map (set rootElementTag property explicitly to prevent this");
@@ -295,7 +295,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
         IOrderedMap map = (IOrderedMap) value;
         Iterator it = map.keys().iterator();
         while (it.hasNext()) {
-          String key = (String) it.next();
+          Object keyObject=it.next();
+          String key = keyObject==null?NULL_KEY_ELEMENT_TAG:keyObject.toString();
           addElement(child, key, map.get(key));
         }
       } else {
