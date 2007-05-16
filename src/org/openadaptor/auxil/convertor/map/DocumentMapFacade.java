@@ -332,13 +332,13 @@ public class DocumentMapFacade implements MapFacade {
    */
   private void add(Element element,Object[] objects) {
     if (objects.length>0) { //Set the first one. Easy.
-      element.setText(valueAsNonNullString(objects[0]));
+      element.setText(Dom4jUtils.valueAsNonNullString(objects[0]));
     }
     if (objects.length>1) { //Need to add extra elements for remainder.
       Element parent=element.getParent();
       String name=element.getName();
       for (int i=1;i<objects.length;i++) {
-        parent.addElement(name).setText(valueAsNonNullString(objects[i]));
+        parent.addElement(name).setText(Dom4jUtils.valueAsNonNullString(objects[i]));
         //Note- could also have done clone() on the Element, but so far we know that it has no other attribs, so didn't bother.
         //Element next=(Element)element.clone(); //Might not be fastest. Could also remember the name, and create a new
         //element.setText(valueAsNonNullString(objects[i]));
@@ -572,10 +572,6 @@ public class DocumentMapFacade implements MapFacade {
       keySet.addAll(generateKeySet((Element)it.next()));
     }     
     return keySet;
-  }
-
-  private final String valueAsNonNullString(Object o) {
-    return o == null ? "" : o.toString(); 
   }
 
 }
