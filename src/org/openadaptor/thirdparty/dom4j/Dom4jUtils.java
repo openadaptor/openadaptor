@@ -176,4 +176,26 @@ public class Dom4jUtils {
     }
     return result;
   }
+  /**
+   * Return a (non-null) String representation of supplied Object.
+   * <UL>
+   *  <LI> If object is null, returns empty String ("").
+   *  <LI> If object is a String, it returns it cast to String.
+   *  <LI> Otherwise it returns object.toString().
+   * </UL>
+   * 
+   * @param o
+   * @return
+   */
+  public static final String valueAsNonNullString(Object object) {
+    if (object==null) {
+      return "";
+    } 
+    if (object instanceof String) {
+      return (String)object;
+    }
+    else {
+      return object.toString();
+    }
+  }
 }

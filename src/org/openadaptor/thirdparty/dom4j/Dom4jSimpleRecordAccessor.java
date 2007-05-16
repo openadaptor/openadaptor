@@ -201,8 +201,8 @@ public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimple
 
     String path = key.toString().trim();
     Node node = getNode(document, path);
-    node.setText(value == null ? null : value.toString());
-
+    //node.setText(value == null ? null : value.toString());
+    node.setText(Dom4jUtils.valueAsNonNullString(value));
     return value;
   }
 
