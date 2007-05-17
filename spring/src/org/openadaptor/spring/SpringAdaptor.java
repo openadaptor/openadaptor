@@ -68,13 +68,16 @@ public class SpringAdaptor extends SpringApplication {
     return (Adaptor) factory.getBean(getBeanId());
   }
 
+
   protected static void usage(PrintStream ps) {
-    ps.println("usage: java " + SpringAdaptor.class.getName() 
-        + "\n  -config <url> [ -config <url>  | ... ]" 
-        + "\n  [-bean <id>] "
-        + "\n  [-jmxport <http port>]"
-        + "\n\n"
-        + " e.g. java " + SpringAdaptor.class.getName() + " -config file:test.xml");
+    ps.println("usage: java " + SpringApplication.class.getName()
+      + "\n  " + CONFIG + " <url> [ " + CONFIG + " <url> ]"
+      + "\n  [ " + BEAN + " <id> ]"
+      + "\n  [ " + PROPS + " <url> [ " + PROPS + " <url> ] ]"
+      + "\n  [ " + NOPROPS + " ]"
+      + "\n  [ " + JMXPORT + " <http port>]"
+      + "\n\n"
+      + " e.g. java " + SpringApplication.class.getName() + " " + CONFIG + " file:test.xml " + BEAN + " Application");
   }
 
 }

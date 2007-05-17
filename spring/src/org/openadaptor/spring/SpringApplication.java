@@ -27,17 +27,6 @@
 
 package org.openadaptor.spring;
 
-import java.io.PrintStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.management.MBeanServer;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
@@ -45,13 +34,27 @@ import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.util.Application;
 import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.FieldRetrievingFactoryBean;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
+
+import javax.management.MBeanServer;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import java.io.PrintStream;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for launching openadaptor application based on spring.
@@ -62,11 +65,25 @@ public class SpringApplication {
 
   private static Log log = LogFactory.getLog(SpringApplication.class);
 
+  protected static final String NOPROPS = "-noprops";
+  protected static final String CONFIG = "-config";
+  protected static final String BEAN = "-bean";
+  protected static final String JMXPORT = "-jmxport";
+  protected static final String PROPS = "-props";
+
+
   private ArrayList configUrls = new ArrayList();
 
   private String beanId;
 
   private int jmxPort;
+
+  /** this is populated with all -props defined arguments */
+  private ArrayList propsUrls = new ArrayList();
+
+  /** If this is true we will not add a generated PropertyPlaceholderConfigurer. */
+  private boolean suppressAutomaticPropsConfig = false; // default is false
+
 
   public static void main(String[] args) {
     try {
@@ -111,13 +128,36 @@ public class SpringApplication {
     this.jmxPort = jmxPort;
   }
 
+  protected ArrayList getPropsUrls() {
+    return propsUrls;
+  }
+
+  protected void setPropsUrls(ArrayList propsUrls) {
+    this.propsUrls = propsUrls;
+  }
+
+  protected boolean isSuppressAutomaticPropsConfig() {
+    return suppressAutomaticPropsConfig;
+  }
+
+  protected void setSuppressAutomaticPropsConfig(boolean suppressAutomaticPropsConfig) {
+    this.suppressAutomaticPropsConfig = suppressAutomaticPropsConfig;
+  }
+
   protected void parseArgs(String[] args) {
+    // First check to see if automatic property configuration is suppressed
     for (int i = 0; i < args.length; i++) {
-      if (args[i].equals("-config")) {
+      if (args[i].equals(NOPROPS)) {
+        suppressAutomaticPropsConfig = true;
+      }
+    }
+    // Now deal with the rest of the arguments
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equals(CONFIG)) {
         configUrls.add(getOptionValue(args, i++));
-      } else if (args[i].equals("-bean")) {
+      } else if (args[i].equals(BEAN)) {
         beanId = getOptionValue(args, i++);
-      } else if (args[i].equals("-jmxport")) {
+      } else if (args[i].equals(JMXPORT)) {
         String jmxPortString = getOptionValue(args, i++);
         try {
           jmxPort = Integer.parseInt(jmxPortString);
@@ -127,7 +167,12 @@ public class SpringApplication {
         } catch (NumberFormatException nfe) {
           throw new RuntimeException("-jmx option requires a integer port number");
         }
-      } else {
+      } else if (args[i].equals(PROPS)) {
+        propsUrls.add(getOptionValue(args, i++));
+      } else if (args[i].equals(NOPROPS)) {
+        // ignore because this has already been dealt with separately
+      }
+      else {
         throw new RuntimeException("unrecognised cmd line arg " + args[i]);
       }
     }
@@ -140,7 +185,7 @@ public class SpringApplication {
     }
     return buffer.toString();
   }
-  
+
   public void run() {
     Runnable bean = getRunnableBean(createBeanFactory());
     if (bean instanceof Application) {
@@ -157,14 +202,16 @@ public class SpringApplication {
     }
     return (Runnable) factory.getBean(beanId);
   }
-  
+
   protected static void usage(PrintStream ps) {
-    ps.println("usage: java " + SpringApplication.class.getName() 
-        + "\n  -config <url> [ -config <url> ]" 
-        + "\n  -bean <id> "
-        + "\n  [-jmxport <http port>]"
+    ps.println("usage: java " + SpringApplication.class.getName()
+        + "\n  "+CONFIG+" <url> [ "+CONFIG+" <url> ]"
+        + "\n  "+BEAN+" <id> "
+        + "\n  [ "+PROPS+" <url> [ "+PROPS+" <url> ] ]"
+        + "\n  [ "+NOPROPS+" ]"
+        + "\n  [ "+JMXPORT+" <http port>]"
         + "\n\n"
-        + " e.g. java " + SpringApplication.class.getName() + " -config file:test.xml -bean Application");
+        + " e.g. java " + SpringApplication.class.getName() + " "+CONFIG+" file:test.xml "+BEAN+" Application");
   }
 
   private ListableBeanFactory createBeanFactory() {
@@ -177,10 +224,68 @@ public class SpringApplication {
       String configUrl = (String) iter.next();
       loadBeanDefinitions(configUrl, context);
     }
+
+    configureProperties(context, propsUrls);
+
     context.refresh();
     setComponentIds(context);
     configureMBeanServer(context);
     return context;
+  }
+
+  /**
+   * Configure the default PropertyPlaceholderConfigurer.<br>
+   * <br>
+   * Unless suppressAutomaticPropsConfig is set true by supplying -noprops as a command line arg then
+   * this method creates and installs a PropertyPlaceholderConfigurer which allows access to System Properties
+   * and optionally add all -props defined urls as property resource locations.<br>
+   * With one exception all urls are passed through to the context in order to locate the resource. The exception
+   * is a url that is not prefixed with a protocol is assumed to be a file and arbitratily prefixed with "file:"<br>
+   * NB the arbitrary name given to the generated PropertyPlaceholderConfigurer is "openadaptorAutoGeneratedSystemPropertyConfigurer".
+   *
+   * @param context Spring Context being used.
+   * @param propsUrlList Supplied List or Property URLS.
+   */
+  protected void configureProperties(GenericApplicationContext context, ArrayList propsUrlList) {
+    // System properties
+
+    if (!suppressAutomaticPropsConfig) {
+
+      if (context.getBeansOfType(PropertyPlaceholderConfigurer.class).size() > 0) {
+        log.warn("Spring configuration file already has PropertyPlaceholderConfigurers defined. Please ensure any conflicts are resolved satisfactorily.");
+      }
+
+      MutablePropertyValues systemPropertiesModeProperties = new MutablePropertyValues();
+      systemPropertiesModeProperties.addPropertyValue("staticField", "org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_FALLBACK");
+
+      RootBeanDefinition systemPropertiesMode = new RootBeanDefinition(FieldRetrievingFactoryBean.class);
+      systemPropertiesMode.setPropertyValues(systemPropertiesModeProperties);
+
+      MutablePropertyValues properties = new MutablePropertyValues();
+      properties.addPropertyValue("ignoreResourceNotFound", "false"); // Will cause an eror if a resource url is bogus
+      Iterator propsUrlIter = propsUrlList.iterator();
+      ArrayList resourceList = new ArrayList();
+      while (propsUrlIter.hasNext()) {
+        resourceList.add(context.getResource(ensureProtocol((String) propsUrlIter.next())));
+      }
+      properties.addPropertyValue("locations", resourceList);
+      properties.addPropertyValue("systemPropertiesMode", systemPropertiesMode);
+      RootBeanDefinition propertyHolder = new RootBeanDefinition(PropertyPlaceholderConfigurer.class);
+      propertyHolder.setPropertyValues(properties);
+
+      context.registerBeanDefinition("openadaptorAutoGeneratedSystemPropertyConfigurer", propertyHolder);
+    }
+  }
+
+  private String ensureProtocol(String url) {
+    String protocol = "";
+    if (url.indexOf(':') != -1) {
+      protocol = url.substring(0, url.indexOf(':'));
+    }
+    if (protocol.equals("")) { // No protocol defined try file:
+      return "file:" + url;
+    }
+    else return url; // Lets hope its a valid protocol!.
   }
 
   protected void loadBeanDefinitions(String url, GenericApplicationContext context) {
@@ -188,7 +293,7 @@ public class SpringApplication {
     if (url.indexOf(':') != -1) {
       protocol = url.substring(0, url.indexOf(':'));
     }
-    
+
     if (protocol.equals("file") || protocol.equals("http")) {
       loadBeanDefinitionsFromUrl(url, context);
     } else if (protocol.equals("classpath")) {
@@ -206,7 +311,7 @@ public class SpringApplication {
     } else if (url.endsWith(".properties")) {
       reader = new PropertiesBeanDefinitionReader(context);
     }
-    
+
     if (reader != null) {
       reader.loadBeanDefinitions(new ClassPathResource(resourceName));
     } else {
@@ -221,7 +326,7 @@ public class SpringApplication {
     } else if (url.endsWith(".properties")) {
       reader = new PropertiesBeanDefinitionReader(context);
     }
-    
+
     if (reader != null) {
       try {
         reader.loadBeanDefinitions(new UrlResource(url));
