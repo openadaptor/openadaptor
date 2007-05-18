@@ -53,6 +53,7 @@
 <xsl:param name="filepathGlobPrefix1" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
 <xsl:param name="filepathGlobPrefix2" select="'HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
 <xsl:param name="docsRelativeToTools" select="'../../docs/'"/>
+<xsl:param name="xmlRelative" select="'../'"/>
 
 <xsl:param name="showJavaDocLinks" select="'true'"/>
 <xsl:param name="showConfigIndexLinks" select="'true'"/>
@@ -106,7 +107,7 @@
           <font color="white">
             <xsl:value-of select="$thisExample"/>
             <xsl:text> | </xsl:text>
-            <a class="th" href="{$baseRelativeDotDot}../{$thisExample}.xml">XML</a>
+            <a class="th" href="{$baseRelativeDotDot}{$xmlRelative}{$thisExample}.xml">XML</a>
             <xsl:if test="$showConfigIndexLinks='true'">
               <xsl:text> | </xsl:text>
               <a class="th" href="{$baseRelativeDotDot}config2beans.html#{translate(translate($thisExample,'_','-'),'/','_')}">ConfigToBeans</a>
