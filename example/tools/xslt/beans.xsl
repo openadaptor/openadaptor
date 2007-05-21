@@ -57,6 +57,7 @@
 
 <xsl:param name="showJavaDocLinks" select="'true'"/>
 <xsl:param name="showConfigIndexLinks" select="'true'"/>
+<xsl:param name="showOverviewLinks" select="'false'"/>
 <!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
 <xsl:param name="javaDocPath" select="'../../javadocs/'"/>
 
@@ -106,6 +107,10 @@
         <th>
           <font color="white">
             <xsl:value-of select="$thisExample"/>
+            <xsl:if test="$showOverviewLinks='true'">
+              <xsl:text> | </xsl:text>
+              <a class="th" href="index.html">Overview</a>
+            </xsl:if>
             <xsl:text> | </xsl:text>
             <a class="th" href="{$baseRelativeDotDot}{$xmlRelative}{$thisExample}.xml">XML</a>
             <xsl:if test="$showConfigIndexLinks='true'">
