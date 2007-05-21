@@ -120,8 +120,10 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * If you want tab delimited then your Spring XML config would look like: <verbatim> <property name="delimiter"
    * value="&#x09;"/> <!-- Tab separated --> </verbatim>
    * 
-   * Note that this value is actually interpreted as a regular expression, so for a "|" character
-   * you will need to use a value of "[|]" to avoid it being interpreted as a logical-OR.
+   * Note that without quotes handling this value is actually interpreted as a regular expression, so for a "|" character
+   * you will need to use a <code>value="[|]"</code> to avoid it being interpreted as a logical-OR.
+   * Whereas when it is used with quote handling it is interpreted as a literal string.
+   * This looks like a bug that should be fixed (i.e. they should both behave the same way).
    * 
    * @param delimiter
    */
