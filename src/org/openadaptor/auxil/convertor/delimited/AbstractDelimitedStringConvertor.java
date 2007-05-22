@@ -239,12 +239,9 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     String[] values;
     if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
       values = delimitedString.split(delimiter, -1);
-    } else if (delimiter.length() > 1){
-      values = extractQuotedValues(delimitedString, delimiter, quoteChar);
     } else {
-      values = extractQuotedValues(delimitedString, delimiter.charAt(0), quoteChar);
+      values = extractQuotedValues(delimitedString, delimiter, quoteChar);
     }
-    
     if (stripEnclosingQuotes) {
       stripEnclosingQuotes(values);
     }
@@ -252,7 +249,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return values;
   }
 
-  static String[] extractQuotedValues(String delimitedString, String d, char quoteChar) {
+  protected String[] extractQuotedValues(String delimitedString, String d, char quoteChar) {
     char[] chars = delimitedString.toCharArray();
     ArrayList strings = new ArrayList();
     boolean inQuotes = false;
@@ -274,29 +271,16 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return (String[]) strings.toArray(new String[strings.size()]);
   }
 
-  static String[] extractQuotedValues(String delimitedString, char d, char quoteChar) {
-    char[] chars = delimitedString.toCharArray();
-    ArrayList strings = new ArrayList();
-    boolean inQuotes = false;
-    int start = 0;
-    for (int i = 0; i < chars.length; i++) {
-      if (inQuotes) {
-        inQuotes = chars[i] != quoteChar;
-      } else if (chars[i] == quoteChar) {
-        inQuotes = delimitedString.indexOf(quoteChar, i+1) != -1;
-      } else {
-        if (chars[i] == d) {
-          strings.add(delimitedString.substring(start, i));
-          start = i+1;
-        }
-      }
-    }
-    if (start <= chars.length) {
-      strings.add(delimitedString.substring(start, chars.length));
-    } else {
-      strings.add(new String());
-    }
-    return (String[]) strings.toArray(new String[strings.size()]);
+  /**
+   * This method originally had an algorithm parallel and almost identical to 
+   * AbstractDelimitedStringConvertor#extractQuotedValues(String, String, char)
+   * but operating on chars rather than Strings/StringBuffers. This seemed 
+   * unnecessary and was replaced by a simple char->String conversion and forward
+   * to the method taking a String. Code is cleaner & easier to test
+   * at a certain performance cost (approx. 50% longer to execute).   
+   */
+  protected String[] extractQuotedValues(String delimitedString, char d, char quoteChar) {
+    return extractQuotedValues(delimitedString, new Character(d).toString(), quoteChar);
   }
 
   /**
