@@ -2,10 +2,13 @@ package org.openadaptor.auxil.convertor.delimited;
 
 import junit.framework.TestCase;
 
+/**
+ * Unit tests for {@link AbstractDelimitedStringConvertor}
+ */
 public class AbstractDelimitedStringConvertorTestCase extends TestCase {
 
   /**
-   * Test no quoted fields, single char delimiter. 
+   * Test not quoted fields with single char delimiter. 
    */	
   public void testNotQuotedFields_NotQuotedSingleCharDelimiter(){
 	check(AbstractDelimitedStringConvertor.extractQuotedValues("a,b,c", ",", '\"'),
@@ -19,7 +22,7 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
   }
   
   /**
-   * Test quoted fields but no quoted delimiters. 
+   * Test quoted fields but with not quoted single char delimiters. 
    */
   public void testQuotedFields_NotQuotedSingleCharDelimiter(){
     check(AbstractDelimitedStringConvertor.extractQuotedValues("\"a\",\"b\",\"c\"",  ",",  '\"'),     //"a","b","c"
@@ -43,7 +46,7 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
   }
   
   /**
-   * Test quoted single char delimiter.
+   * Test quoted fields with quoted single char delimiter.
    */
   public void testQuotedFields_QuotedSingleCharDelimiter(){
     check(AbstractDelimitedStringConvertor.extractQuotedValues("\"a,1\",\"b\",\"c,2\"",  ",", '\"'),  //"a,1","b","c,2"
@@ -57,7 +60,7 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
   }
   
   /**
-   * Test quoted multi char delimiter.
+   * Test quoted and unquoted fields with quoted and unquoted multi char delimiter.
    */
   public void testQuotedFields_QuotedMultiCharDelimiter(){
     check(AbstractDelimitedStringConvertor.extractQuotedValues("a::b::c", "::", '\"'),
@@ -97,4 +100,5 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
       assertTrue(strings[i].equals(strings2[i]));
     }
   }
+  
 }
