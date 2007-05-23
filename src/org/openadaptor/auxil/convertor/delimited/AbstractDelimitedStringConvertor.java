@@ -69,6 +69,10 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected char quoteChar = '\"'; // actually used to hold a char.
 
   protected boolean firstRecordContainsFieldNames = false;
+  
+  private boolean delimiterAlwaysRegExp = false;
+  
+  private boolean delimiterAlwaysLiteralString = false;
 
   protected AbstractDelimitedStringConvertor() {
   }
@@ -170,6 +174,36 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return firstRecordContainsFieldNames;
   }
 
+  /**
+   * @return 
+   */
+  public boolean isDelimiterAlwaysLiteralString() {
+    return delimiterAlwaysLiteralString;
+  }
+
+  /**
+   * If set to true the delimiter will always be treated as a literal string.
+   * Either this flag or delimiterAlwaysRegExp can be set to true at the same time.
+   */
+  public void setDelimiterAlwaysLiteralString(boolean delimiterAlwaysLiteralString) {
+    this.delimiterAlwaysLiteralString = delimiterAlwaysLiteralString;
+  }
+
+  /**
+   * @return true is delimiter is to be always treated as a regular expression, false otherwise
+   */
+  public boolean isDelimiterAlwaysRegExp() {
+    return delimiterAlwaysRegExp;
+  }
+
+  /**
+   * If set to true the delimiter will always be treated as a regular expression.
+   * Either this flag or delimiterAlwaysLiteralString can be set to true at the same time.
+   */
+  public void setDelimiterAlwaysRegExp(boolean delimiterAlwaysRegExp) {
+    this.delimiterAlwaysRegExp = delimiterAlwaysRegExp;
+  }
+  
   // END Bean getters/setters
 
   // BEGIN implementation IRecordProcessor interface
@@ -236,20 +270,140 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @return an array of strings corresponding to the fields in the string supplied
    */
   protected String[] extractValues(String delimitedString) {
-    String[] values;
-    if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
-      values = delimitedString.split(delimiter, -1);
-    } else {
-      values = extractQuotedValues(delimitedString, delimiter, quoteChar);
+    String[] values = null;
+    
+    if( delimiterAlwaysRegExp ){ 
+      if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
+        values = extractValuesRegExp(delimitedString, delimiter);
+      } else {
+        values = extractQuotedValuesRegExp(delimitedString, delimiter, quoteChar);
+      }
+    }else if( delimiterAlwaysLiteralString ){
+      if(delimiter.length()==1){
+         values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
+      }
     }
+    /* Default behaviour */
+    else{
+      /* Single char delimiters are treated as literal strings */
+      if(delimiter.length()==1){
+         values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
+      }
+      /* Multi char delimiters are treated as regular expressions. */
+      else{
+        if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
+          values = extractValuesRegExp(delimitedString, delimiter);
+        } else {
+          values = extractQuotedValuesRegExp(delimitedString, delimiter, quoteChar);
+        }
+      }
+    }
+    
     if (stripEnclosingQuotes) {
       stripEnclosingQuotes(values);
     }
-
     return values;
   }
 
-  protected String[] extractQuotedValues(String delimitedString, String d, char quoteChar) {
+  
+  /**
+   * Splits a string using a regular expression. Does not preserve blocks of characters
+   * between quoteChars.
+   * 
+   * @param delimitedString
+   * @param regexp
+   * @return
+   */
+  protected String[] extractValuesRegExp(String delimitedString, String regexp) {
+    return delimitedString.split(regexp, -1);
+  }
+  
+  /**
+   * Splits a string using a regular expression. Preserves blocks of characters
+   * between quoteChars.
+   * 
+   * @param delimitedString the delimited string
+   * @param regexp a regular expression delimiter
+   * @param quoteChar quote character
+   * @return an array of strings corresponding to the fields in the string supplied
+   */
+  protected String[] extractQuotedValuesRegExp(String delimitedString, String regexp, char quoteChar) {
+    char[] chars = delimitedString.toCharArray();
+    boolean inQuotes = false;
+    StringBuffer buffer = new StringBuffer();
+    StringBuffer quoteBuffer = new StringBuffer();
+    ArrayList quotes = new ArrayList();
+    char escapeChar = (char) 0;
+    
+    /* replace quoted blocks with the escapeChar */
+    for (int i = 0; i < chars.length; i++) { 
+      if (inQuotes) {
+        inQuotes = chars[i] != quoteChar;
+        quoteBuffer.append(chars[i]);
+        if(!inQuotes){
+          /* finished parsing a quote */
+          buffer.append(escapeChar);
+          quotes.add(quoteBuffer.toString());
+          quoteBuffer.setLength(0);
+        }
+      } else if (chars[i] == quoteChar) {
+        inQuotes = delimitedString.indexOf(quoteChar, i+1) != -1;
+        if(inQuotes){
+          /* started quote parsing */
+          quoteBuffer.append(chars[i]);
+        }else{
+          buffer.append(chars[i]);
+        }
+      } else {
+        buffer.append(chars[i]);
+      }
+    }
+  
+    /* split the delimitedString and put back the quoted blocks */
+    String [] result = buffer.toString().split(regexp, -1);
+    java.util.Iterator it = quotes.iterator();
+    for(int i=0; i<result.length; i++){
+      if(result[i].indexOf(escapeChar) != -1){
+        result[i] = result[i].replaceAll(new Character(escapeChar).toString(), (String)it.next());
+      }
+    }
+    return result;
+  }
+
+//  
+//  public String printQuotes(ArrayList quotes){
+//    String result = "";
+//    for(Object quote: quotes){
+//       result += quote.toString() + "  ";
+//    }
+//    return result;
+//  }
+  
+  /**
+   * Splits a string using a literal char delimiter. Preserves blocks of characters
+   * between quoteChars.
+   * 
+   * This method originally had an algorithm parallel and almost identical to 
+   * AbstractDelimitedStringConvertor#extractQuotedValuesLiteralString(String, String, char)
+   * but operating on chars rather than Strings/StringBuffers. This seemed 
+   * unnecessary and was replaced by a simple char->String conversion and forward
+   * to the method taking a String. Code is cleaner & easier to test
+   * at a certain performance cost (approx. 50% longer to execute).   
+   */
+  protected String[] extractQuotedValuesLiteralString(String delimitedString, char d, char quoteChar) {
+    return extractQuotedValuesLiteralString(delimitedString, new Character(d).toString(), quoteChar);
+  }
+  
+  /**
+   * Splits a string using a literal string delimiter. Preserves blocks of characters
+   * between quoteChars.
+   * 
+   * @param delimitedString
+   * @param d
+   * @param quoteChar
+   * @return
+   */
+  protected String[] extractQuotedValuesLiteralString(String delimitedString, String d, char quoteChar) {
     char[] chars = delimitedString.toCharArray();
     ArrayList strings = new ArrayList();
     boolean inQuotes = false;
@@ -271,18 +425,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return (String[]) strings.toArray(new String[strings.size()]);
   }
 
-  /**
-   * This method originally had an algorithm parallel and almost identical to 
-   * AbstractDelimitedStringConvertor#extractQuotedValues(String, String, char)
-   * but operating on chars rather than Strings/StringBuffers. This seemed 
-   * unnecessary and was replaced by a simple char->String conversion and forward
-   * to the method taking a String. Code is cleaner & easier to test
-   * at a certain performance cost (approx. 50% longer to execute).   
-   */
-  protected String[] extractQuotedValues(String delimitedString, char d, char quoteChar) {
-    return extractQuotedValues(delimitedString, new Character(d).toString(), quoteChar);
-  }
-
+  
   /**
    * Convert an ordered map into a delimited String. <p/>
    * 
