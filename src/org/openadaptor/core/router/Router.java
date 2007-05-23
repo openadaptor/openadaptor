@@ -23,15 +23,22 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core.router;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.node.Node;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 
 /**
  * An {@link IMessageProcessor} implementation that uses an {@link IRoutingMap} to
@@ -41,17 +48,51 @@ import org.openadaptor.core.node.Node;
  * @see IRoutingMap
  */
 public class Router extends AbstractRouter implements IMessageProcessor { 
+  private static final String THROWABLE_CLASSNAME=Throwable.class.getName();
+  private static final String PROCESSING_EX_CLASSNAME=ProcessingException.class.getName();
+  public static final String DEFAULT_EXCEPTION_CLASSNAME=PROCESSING_EX_CLASSNAME;
+
+  /**
+   * This contains the list of exceptions for which an ExceptionHandler,
+   * if configured will be used.
+   */
+  private List exceptionList;
+  
+  /**
+   * Flag to indicate that the processMap has already been configured.
+   * <p>
+   * Used to avoid using both setProcessMap and setProcessors simultaneously.
+   */
+  private boolean processMapConfigured=false;
+  /**
+   * Flag to indicate that the exceptionMap has already been configured.
+   * <p>
+   * Used to avoid using both setExceptionMap and setExceptionProcessor simultaneously.
+   */
+  private Boolean exceptionMapConfigured=false;
+
   public Router() {
     super();
+    init();
   }
 
   public Router(String id) {
     super(id);
+    init();
   }
 
   public Router(RoutingMap routingMap){
     super();
+    init();
     this.routingMap=routingMap;
+  }
+
+  /**
+   * Common initialisation for all constructors.
+   */
+  private void init() {
+    exceptionList=new ArrayList();
+    exceptionList.add(DEFAULT_EXCEPTION_CLASSNAME);
   }
 
   /**
@@ -70,6 +111,10 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * @see Node
    */
   public void setProcessMap(Map map) {
+    if (processMapConfigured) {
+      throw new RuntimeException("Only one of processMap and processors properties may be configured");
+    }
+    processMapConfigured=true;
     routingMap.setProcessMap(map);
   }
 
@@ -111,7 +156,62 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * @see Node
    */
   public void setExceptionMap(Map map) {
+    if (exceptionMapConfigured) {
+      throw new RuntimeException("Only one of exceptionMap and exceptionProcessor properties may be configured");
+    }
     routingMap.setExceptionMap(map);
+  }
+
+  public void setProcessors(List processorList){
+    // create process map from list of processors
+    if ((processorList==null) || (processorList.isEmpty())) { 
+      throw new RuntimeException("Null or empty processorList is not permitted");
+    }
+    Object[] processors=processorList.toArray(new Object[processorList.size()]);
+    Map processMap = new HashMap();
+    for (int i=1;i<processors.length;i++){
+      processMap.put(processors[i-1],processors[i]);
+    }
+    setProcessMap(processMap);
+  }
+ 
+  
+  
+//  Omitted until we decide whether or not we want to go this (ahem) route  :-)  
+//  /**
+//   * Sets a list of Exception classes which will be handled by 'exceptionProcessor',
+//   * if configured.
+//   * <p>
+//   * Note: Has no effect unless exceptionProcessor property is being used.
+//   * @param exceptionList
+//   */
+//  public void setExceptionList(List exceptionList) {
+//    if (exceptionList==null) { //Remove the default!
+//      this.exceptionList.clear();
+//    }
+//    else {
+//      this.exceptionList=exceptionList;
+//    }
+//  }
+
+  /**
+   * This allows configuration of a single 'catch-all' processor for exceptions.
+   * <p>
+   * the list of exceptions may be configured via the exceptionList property.
+   * If not it will default to the single exception DEFAULT_EXCEPTION_CLASSNAME
+   * @param exceptionProcessor
+   */
+  public void setExceptionProcessor(Object exceptionProcessor){
+    Object boxed=autoboxer.autobox(exceptionProcessor);
+    if (!(boxed instanceof IMessageProcessor)) {
+      throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
+    }
+    Map exceptionMap=new HashMap();
+    Iterator it=exceptionList.iterator();
+    while(it.hasNext()) {
+      exceptionMap.put(it.next(), boxed);
+    }
+    setExceptionMap(exceptionMap);
   }
 
 }

@@ -140,6 +140,7 @@ public class PipelineTestCase extends TestCase {
     assertTrue(adaptor.getExitCode() == 0);
   }
 
+  /*
   private void expectRuntimeException(Object[] pipeline) {
     try {
       createTestAdaptor(pipeline);
@@ -147,6 +148,7 @@ public class PipelineTestCase extends TestCase {
     }
     catch (RuntimeException re) {}
   }
+ 
   public void testConstraints() {
     TestReadConnector readNode = new TestReadConnector("ReadConnector");
     readNode.setDataString("foobar");
@@ -161,7 +163,7 @@ public class PipelineTestCase extends TestCase {
       expectRuntimeException(new Object[] {writeNode, processor, readNode});
       expectRuntimeException(new Object[] {readNode});
     }
-    
+   */ 
   public static List createStringList(String s, int n) {
     ArrayList list = new ArrayList();
     for (int i = 0; i < n; i++) {
