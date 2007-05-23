@@ -30,6 +30,7 @@ package org.openadaptor.auxil.convertor.delimited;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -273,29 +274,19 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     String[] values = null;
     
     if( delimiterAlwaysRegExp ){ 
-      if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
-        values = extractValuesRegExp(delimitedString, delimiter);
-      } else {
-        values = extractQuotedValuesRegExp(delimitedString, delimiter, quoteChar);
-      }
+       values = splitByRegularExpression(delimitedString);
     }else if( delimiterAlwaysLiteralString ){
-      if(delimiter.length()==1){
-         values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
-      }
+       values = splitByLiteralString(delimitedString);
     }
     /* Default behaviour */
     else{
       /* Single char delimiters are treated as literal strings */
       if(delimiter.length()==1){
-         values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
+        values = splitByLiteralString(delimitedString);
       }
       /* Multi char delimiters are treated as regular expressions. */
       else{
-        if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
-          values = extractValuesRegExp(delimitedString, delimiter);
-        } else {
-          values = extractQuotedValuesRegExp(delimitedString, delimiter, quoteChar);
-        }
+        values = splitByRegularExpression(delimitedString);
       }
     }
     
@@ -305,6 +296,25 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return values;
   }
 
+  private String [] splitByLiteralString(String delimitedString){
+    String[] values = null;
+    if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
+      values = extractValuesLiteralString(delimitedString, delimiter);
+    }else {
+      values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
+    }
+    return values;
+  }
+  
+  private String [] splitByRegularExpression(String delimitedString){
+    String[] values = null;
+    if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
+      values = extractValuesRegExp(delimitedString, delimiter);
+    } else {
+      values = extractQuotedValuesRegExp(delimitedString, delimiter, quoteChar);
+    }
+    return values;
+  }
   
   /**
    * Splits a string using a regular expression. Does not preserve blocks of characters
@@ -394,6 +404,21 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return extractQuotedValuesLiteralString(delimitedString, new Character(d).toString(), quoteChar);
   }
   
+  protected String[] extractValuesLiteralString(String delimitedString, String delimiter) {
+    char[] chars = delimitedString.toCharArray();
+    List strings = new ArrayList();
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < chars.length; i++) {
+      buffer.append(chars[i]);
+      if (buffer.toString().endsWith(delimiter)) {
+        strings.add(buffer.substring(0, buffer.length() - delimiter.length()));
+        buffer.setLength(0);
+      }
+    }
+    strings.add(buffer.toString());
+    return (String[]) strings.toArray(new String[strings.size()]);
+  }
+  
   /**
    * Splits a string using a literal string delimiter. Preserves blocks of characters
    * between quoteChars.
@@ -405,7 +430,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    */
   protected String[] extractQuotedValuesLiteralString(String delimitedString, String d, char quoteChar) {
     char[] chars = delimitedString.toCharArray();
-    ArrayList strings = new ArrayList();
+    List strings = new ArrayList();
     boolean inQuotes = false;
     StringBuffer buffer = new StringBuffer();
     for (int i = 0; i < chars.length; i++) {

@@ -8,49 +8,98 @@ import junit.framework.TestCase;
 public class AbstractDelimitedStringConvertorTestCase extends TestCase {
   
   /* Need an instance of the tested class */
-  AbstractDelimitedStringConvertor delimitedStringConvertor = new 
-    AbstractDelimitedStringConvertor(){
+  AbstractDelimitedStringConvertor convertor = new AbstractDelimitedStringConvertor(){
       protected Object convert(Object record) {
         throw new UnsupportedOperationException("Method not implemetned");
       }};
 
   /**
-   * Test AbstractDelimitedStringConvertor#extractQuotedValues 
-   * not quoted fields with single char delimiter. 
+   * Test AbstractDelimitedStringConvertor#extractValues. 
+   * Not quoted fields, single char delimiter. 
    */	
   public void testNotQuotedFields_NotQuotedSingleCharDelimiter(){
-	check(delimitedStringConvertor.extractQuotedValuesRegExp("a,b,c", ",", '\"'),
-	    new String[] {"a", "b", "c"});
-	check(delimitedStringConvertor.extractQuotedValuesRegExp("a,b,c,", ",", '\"'),
-	    new String[] {"a", "b", "c", ""});
-	check(delimitedStringConvertor.extractQuotedValuesLiteralString("a,b,c", ',', '\"'),
-	    new String[] {"a", "b", "c"});
-	check(delimitedStringConvertor.extractQuotedValuesLiteralString("a,b,c,", ',', '\"'),
-    	new String[] {"a", "b", "c", ""});
+    /* Comma delimiter */
+    convertor.setDelimiter(",");
+    convertor.setProtectQuotedFields(false);
+    convertor.setDelimiterAlwaysLiteralString(false);
+    convertor.setDelimiterAlwaysRegExp(false);
+    notQuotedCommaDelimiter();
+    convertor.setProtectQuotedFields(true);
+    notQuotedCommaDelimiter();
+    convertor.setDelimiterAlwaysLiteralString(true);
+    notQuotedCommaDelimiter();
+    convertor.setDelimiterAlwaysLiteralString(false);
+    convertor.setDelimiterAlwaysRegExp(true);
+    notQuotedCommaDelimiter();
+    
+    /* Pipe delimiter */
+    convertor.setDelimiter("|");
+    convertor.setProtectQuotedFields(false);
+    convertor.setDelimiterAlwaysLiteralString(false);
+    convertor.setDelimiterAlwaysRegExp(false);
+    notQuotedPipeDelimiter();
+    convertor.setProtectQuotedFields(true);
+    notQuotedPipeDelimiter();
+    convertor.setDelimiterAlwaysLiteralString(true);
+    notQuotedPipeDelimiter();
+    convertor.setDelimiterAlwaysLiteralString(false);
+    convertor.setDelimiterAlwaysRegExp(true);
+    check(convertor.extractValues("a|b|c"),
+        new String[] {"", "a", "|", "b", "|", "c", ""});
   }
   
+  private void notQuotedCommaDelimiter(){
+    check(convertor.extractValues("a,b,c"),
+        new String[] {"a", "b", "c"});
+    check(convertor.extractValues("a,b,c,"),
+        new String[] {"a", "b", "c", ""});
+    check(convertor.extractValues("a,b,c"),
+        new String[] {"a", "b", "c"});
+    check(convertor.extractValues("a,b,c,"),
+        new String[] {"a", "b", "c", ""});
+    check(convertor.extractValues(",,a,b,c,"),
+        new String[] {"", "", "a", "b", "c", ""});
+    check(convertor.extractValues(",,aa,,b,c,"),
+        new String[] {"", "", "aa", "", "b", "c", ""});
+  }
+  
+  private void notQuotedPipeDelimiter(){
+    check(convertor.extractValues("a|b|c"),
+        new String[] {"a", "b", "c"});
+    check(convertor.extractValues("a|b|c|"),
+        new String[] {"a", "b", "c", ""});
+    check(convertor.extractValues("a|b|c"),
+        new String[] {"a", "b", "c"});
+    check(convertor.extractValues("a|b|c|"),
+        new String[] {"a", "b", "c", ""});
+    check(convertor.extractValues("||a|b|c|"),
+        new String[] {"", "", "a", "b", "c", ""});
+    check(convertor.extractValues("||aa||b|c|"),
+        new String[] {"", "", "aa", "", "b", "c", ""});
+  }
+
   /**
    * Test AbstractDelimitedStringConvertor#extractQuotedValues 
    * quoted fields but with not quoted single char delimiters. 
    */
   public void testQuotedFields_NotQuotedSingleCharDelimiter(){
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a\",\"b\",\"c\"",  ",",  '\"'),     //"a","b","c"
+    check(convertor.extractQuotedValuesRegExp("\"a\",\"b\",\"c\"",  ",",  '\"'),     //"a","b","c"
         new String[] {"\"a\"", "\"b\"", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a\",b,\"c\"",   ",",  '\"'),        //"a",b,"c"
+    check(convertor.extractQuotedValuesRegExp("\"a\",b,\"c\"",   ",",  '\"'),        //"a",b,"c"
         new String[] {"\"a\"", "b", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a\",\"b\",\"c\",",   ",",  '\"'),   //"a","b","c",
+    check(convertor.extractQuotedValuesRegExp("\"a\",\"b\",\"c\",",   ",",  '\"'),   //"a","b","c",
         new String[] {"\"a\"", "\"b\"", "\"c\"", ""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a\",b,\"c\"",   ',',  '\"'),        //"a",b,"c"
+    check(convertor.extractQuotedValuesLiteralString("\"a\",b,\"c\"",   ',',  '\"'),        //"a",b,"c"
         new String[] {"\"a\"", "b", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a\",\"b\",\"c\"",  ',',  '\"'),     //"a","b","c"
+    check(convertor.extractQuotedValuesLiteralString("\"a\",\"b\",\"c\"",  ',',  '\"'),     //"a","b","c"
         new String[] {"\"a\"", "\"b\"", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a\",\"b\",\"c\",",  ',',  '\"'),    //"a","b","c",
+    check(convertor.extractQuotedValuesLiteralString("\"a\",\"b\",\"c\",",  ',',  '\"'),    //"a","b","c",
         new String[] {"\"a\"", "\"b\"", "\"c\"", ""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a\",,b,\"c\"",   ',',  '\"'),       //"a",,b,"c"
+    check(convertor.extractQuotedValuesLiteralString("\"a\",,b,\"c\"",   ',',  '\"'),       //"a",,b,"c"
         new String[] {"\"a\"", "", "b", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a\",\"\",\"c\"",  ',',  '\"'),      //"a","","c"
+    check(convertor.extractQuotedValuesLiteralString("\"a\",\"\",\"c\"",  ',',  '\"'),      //"a","","c"
         new String[] {"\"a\"", "\"\"", "\"c\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\" a \",\" b\",\"c\"",  ',',  '\"'),  //" a "," b","c"
+    check(convertor.extractQuotedValuesLiteralString("\" a \",\" b\",\"c\"",  ',',  '\"'),  //" a "," b","c"
         new String[] {"\" a \"", "\" b\"", "\"c\""});  
   }
   
@@ -59,13 +108,13 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
    * quoted fields with quoted single char delimiter.
    */
   public void testQuotedFields_QuotedSingleCharDelimiter(){
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a,1\",\"b\",\"c,2\"",  ",", '\"'),  //"a,1","b","c,2"
+    check(convertor.extractQuotedValuesRegExp("\"a,1\",\"b\",\"c,2\"",  ",", '\"'),  //"a,1","b","c,2"
         new String[] {"\"a,1\"", "\"b\"", "\"c,2\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a,1\",\"b\",\"c,2\"",  ',', '\"'),  //"a,1","b","c,2"
+    check(convertor.extractQuotedValuesLiteralString("\"a,1\",\"b\",\"c,2\"",  ',', '\"'),  //"a,1","b","c,2"
         new String[] {"\"a,1\"", "\"b\"", "\"c,2\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a,1\",\"b,\",\"c,2\"",  ',', '\"'),  //"a,1","b,","c,2"
+    check(convertor.extractQuotedValuesLiteralString("\"a,1\",\"b,\",\"c,2\"",  ',', '\"'),  //"a,1","b,","c,2"
         new String[] {"\"a,1\"", "\"b,\"", "\"c,2\""});
-    check(delimitedStringConvertor.extractQuotedValuesLiteralString("\"a,1\",\"b, ,\",\"c,2\",",  ',', '\"'),  //"a,1","b, ,","c,2",
+    check(convertor.extractQuotedValuesLiteralString("\"a,1\",\"b, ,\",\"c,2\",",  ',', '\"'),  //"a,1","b, ,","c,2",
         new String[] {"\"a,1\"", "\"b, ,\"", "\"c,2\"", ""});
   }
   
@@ -74,21 +123,21 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
    * quoted and unquoted fields with quoted and unquoted multi char delimiter.
    */
   public void testQuotedFields_QuotedMultiCharDelimiter(){
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("a::b::c", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp("a::b::c", "::", '\"'),
         new String[] {"a", "b", "c"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("a::b::c::", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp("a::b::c::", "::", '\"'),
         new String[] {"a", "b", "c", ""});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("a::b::::c", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp("a::b::::c", "::", '\"'),
         new String[] {"a", "b", "", "c"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("a::b:: ::c", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp("a::b:: ::c", "::", '\"'),
         new String[] {"a", "b", " ", "c"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("a::b:::c", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp("a::b:::c", "::", '\"'),
         new String[] {"a", "b", ":c"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp(":a::b:::c:", "::", '\"'),
+    check(convertor.extractQuotedValuesRegExp(":a::b:::c:", "::", '\"'),
         new String[] {":a", "b", ":c:"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a::1\"::\"b\"::\"c::2\"", "::", '\"'), //"a::1"::"b"::"c::2"
+    check(convertor.extractQuotedValuesRegExp("\"a::1\"::\"b\"::\"c::2\"", "::", '\"'), //"a::1"::"b"::"c::2"
         new String[] {"\"a::1\"", "\"b\"", "\"c::2\""});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a:::1\":::\"b\"::\"c::2\"", "::", '\"'), //"a:::1":::"b"::"c::2"
+    check(convertor.extractQuotedValuesRegExp("\"a:::1\":::\"b\"::\"c::2\"", "::", '\"'), //"a:::1":::"b"::"c::2"
         new String[] {"\"a:::1\"",":\"b\"", "\"c::2\""});
   }
   
@@ -97,11 +146,11 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
    * unclosed quotes.
    */
   public void testUnclosedQuotes(){
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("foo\",bar", ",", '\"'),  //foo",bar
+    check(convertor.extractQuotedValuesRegExp("foo\",bar", ",", '\"'),  //foo",bar
         new String[] {"foo\"", "bar"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("foo,\" ,bar", ",", '\"'),//foo," ,bar
+    check(convertor.extractQuotedValuesRegExp("foo,\" ,bar", ",", '\"'),//foo," ,bar
         new String[] {"foo", "\" ", "bar"});
-    check(delimitedStringConvertor.extractQuotedValuesRegExp("\"a::1\"::\"b\"::\"c::2", "::", '\"'), //"a::1"::"b"::"c::2
+    check(convertor.extractQuotedValuesRegExp("\"a::1\"::\"b\"::\"c::2", "::", '\"'), //"a::1"::"b"::"c::2
         new String[] {"\"a::1\"", "\"b\"", "\"c", "2"});
   }
   
@@ -113,11 +162,11 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
    * the same result as when used as a literal string delimiter (protectQuotedFields flag off).
    */
   public void testExtractValuesWithCommaDelimiter(){
-    delimitedStringConvertor.setProtectQuotedFields(true);
-    check(delimitedStringConvertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
+    convertor.setProtectQuotedFields(true);
+    check(convertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
         new String[] {"\"a\"", "\"b\"", "\"c\""});
-    delimitedStringConvertor.setProtectQuotedFields(false);
-    check(delimitedStringConvertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
+    convertor.setProtectQuotedFields(false);
+    check(convertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
         new String[] {"\"a\"", "\"b\"", "\"c\""});
   }
   
@@ -141,8 +190,8 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
 //  }
   
   public void test1(){
-    delimitedStringConvertor.setProtectQuotedFields(true);
-    check(delimitedStringConvertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
+    convertor.setProtectQuotedFields(true);
+    check(convertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
         new String[] {"\"a\"", "\"b\"", "\"c\""});
 //    delimitedStringConvertor.setProtectQuotedFields(false);
 //    check(delimitedStringConvertor.extractValues("\"a\",\"b\",\"c\""),   //"a","b","c"
