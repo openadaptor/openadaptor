@@ -53,14 +53,7 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
 
 
   /**
-   * @return a method that will cobvert the record into and instance of ISimpleRecord
-   */
-  public ISimpleRecordAccessor getHelper() {
-    return simpleRecordAccessor;
-  }
-
-  /**
-   * @return a method that will cobvert the record into and instance of ISimpleRecord
+   * @return a method that will convert records into instances of ISimpleRecord
    */
   public ISimpleRecordAccessor getSimpleRecordAccessor() {
     return simpleRecordAccessor;
