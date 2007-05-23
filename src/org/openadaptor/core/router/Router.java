@@ -69,7 +69,7 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * <p>
    * Used to avoid using both setExceptionMap and setExceptionProcessor simultaneously.
    */
-  private Boolean exceptionMapConfigured=false;
+  private boolean exceptionMapConfigured=false;
 
   public Router() {
     super();
