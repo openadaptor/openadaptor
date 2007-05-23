@@ -379,15 +379,6 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     }
     return result;
   }
-
-//  
-//  public String printQuotes(ArrayList quotes){
-//    String result = "";
-//    for(Object quote: quotes){
-//       result += quote.toString() + "  ";
-//    }
-//    return result;
-//  }
   
   /**
    * Splits a string using a literal char delimiter. Preserves blocks of characters
@@ -404,6 +395,14 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     return extractQuotedValuesLiteralString(delimitedString, new Character(d).toString(), quoteChar);
   }
   
+  /**
+   * Splits a string using a literal string delimiter. Does not preserve blocks of characters
+   * between quoteChars.
+   * 
+   * @param delimitedString
+   * @param delimiter
+   * @return
+   */
   protected String[] extractValuesLiteralString(String delimitedString, String delimiter) {
     char[] chars = delimitedString.toCharArray();
     List strings = new ArrayList();
