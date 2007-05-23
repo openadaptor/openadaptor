@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This adaptor does the following...
+    
+    * reads delimited records from stdin
+    * converts delmited input into a map
+    * applies a transform (attributeMap) to the map
+    * converts map to xml
+    * writes to stdout
+    
+  It is designed to illustrate a 'map' processor
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config file.xml
+   
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <property name="processors">
+         <list>
+           <ref bean="Reader"/>
+           <ref bean="MapConverter"/>
+           <ref bean="AttributeMapper"/>
+           <ref bean="XmlConverter"/>
+           <ref bean="Writer"/>
+         </list>
+       </property>
+     </bean>
+   </property>
+  </bean>
+   
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <property name="delimiter" value=",">
+      <description>This means that delimiters within quotes do not delimit.</description>
+    </property>
+    <property name="protectQuotedFields" value="true"/>
+    <property name="stripEnclosingQuotes" value="true"/>
+    <property name="fieldNames">
+    <list>
+     <value>alpha</value>
+     <value>beta</value>
+     <value>gamma</value>
+    </list>
+    </property>
+  </bean>
+  
+  <bean id="AttributeMapper" class="org.openadaptor.auxil.processor.map.AttributeMapProcessor">
+  <property name="map">
+    <map>
+    <entry key="alpha" value="ALPHA"/>
+    <entry key="beta">
+      <list>
+        <value>BETA-1</value>
+        <value>BETA-2</value>
+      </list>
+    </entry>
+    </map>
+  </property>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
