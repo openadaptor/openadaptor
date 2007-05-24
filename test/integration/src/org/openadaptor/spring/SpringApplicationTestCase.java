@@ -73,7 +73,7 @@ public class SpringApplicationTestCase extends TestCase {
    * Using a props file with no configurer we allow one to be auto generated but still get an error
    * as no system properties have been set.
    */
-  public void xxtestNoSystemPropsAuto() {
+  public void testNoSystemPropsAuto() {
     SpringApplication app = new SpringApplication();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
@@ -90,7 +90,7 @@ public class SpringApplicationTestCase extends TestCase {
    * the system property that we want to resolve the value to.
    */
   public void testSystemPropsAuto() {
-    System.setProperty("message", "foobar");
+    System.setProperty("noconfigurer_message", "foobar");
     SpringApplication app = new SpringApplication();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
@@ -103,7 +103,7 @@ public class SpringApplicationTestCase extends TestCase {
    * no error as no attempt to resolve a property is made. We just get the ${message} string.
    */
   public void testSystemPropsAutoSuppressed() {
-    System.setProperty("message", "foobar");
+    System.setProperty("noconfigurer_message", "foobar");
     SpringApplication app = new SpringApplication();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
@@ -126,7 +126,7 @@ public class SpringApplicationTestCase extends TestCase {
     props.add("file:test/integration/src/org/openadaptor/spring/test.properties");
     app.setPropsUrls(props);
     app.run();
-    assertTrue("Expected foo", result.equals("foo"));
+    assertTrue("Expected nofoo", result.equals("nofoo"));
   }
 
   public void testRunner() {

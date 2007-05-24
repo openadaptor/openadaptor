@@ -4,7 +4,7 @@
 <beans>  
   
   <bean id="Test" class="org.openadaptor.spring.SpringApplicationTestCase$Test">
-      <constructor-arg value="${message}"/>
+      <constructor-arg value="${noconfigurer_message}"/>
 	</bean>
   
 	<bean id="Run1" class="org.openadaptor.spring.SpringApplicationTestCase$Test">
