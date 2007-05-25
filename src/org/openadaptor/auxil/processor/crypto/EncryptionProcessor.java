@@ -78,7 +78,7 @@ public class EncryptionProcessor extends EncodingAwareComponent implements IData
     this.params = params;
   }
 
-  public void setMode(int mode) {
+  private void setMode(int mode) {
     this.mode = mode;
   }
 

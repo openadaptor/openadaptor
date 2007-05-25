@@ -1,18 +1,13 @@
 package org.openadaptor.auxil.processor.crypto;
+import junit.framework.TestCase;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
-import org.openadaptor.auxil.processor.crypto.EncryptionProcessor;
-import org.openadaptor.auxil.processor.crypto.PasswordBasedEncryptionProcessor;
-
-import junit.framework.TestCase;
 
 
 public class EncyrptionProcessorTestCase extends TestCase {
@@ -24,7 +19,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     EncryptionProcessor encryptor = new EncryptionProcessor();
     encryptor.setKey(key);
     encryptor.setAlgorithm("DES");
-    encryptor.setMode(Cipher.ENCRYPT_MODE);
+    encryptor.setMode("encrypt");
     List exceptions = new ArrayList();
     encryptor.validate(exceptions);
     assertTrue(exceptions.isEmpty());
@@ -32,7 +27,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     EncryptionProcessor decryptor = new EncryptionProcessor();
     decryptor.setKey(key);
     decryptor.setAlgorithm("DES");
-    decryptor.setMode(Cipher.DECRYPT_MODE);
+    decryptor.setMode("decrypt");
     decryptor.validate(exceptions);
     assertTrue(exceptions.isEmpty());
     
@@ -56,7 +51,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     PasswordBasedEncryptionProcessor encryptor = new PasswordBasedEncryptionProcessor();
     encryptor.setPassword("foobar");
     encryptor.setAlgorithm("PBEWithMD5AndDES");
-    encryptor.setMode(Cipher.ENCRYPT_MODE);
+    encryptor.setMode("encrypt");
     List exceptions = new ArrayList();
     encryptor.validate(exceptions);
     assertTrue(exceptions.isEmpty());
@@ -64,7 +59,7 @@ public class EncyrptionProcessorTestCase extends TestCase {
     PasswordBasedEncryptionProcessor decryptor = new PasswordBasedEncryptionProcessor();
     decryptor.setPassword("foobar");
     decryptor.setAlgorithm("PBEWithMD5AndDES");
-    decryptor.setMode(Cipher.DECRYPT_MODE);
+    decryptor.setMode("decrypt");
     decryptor.validate(exceptions);
     assertTrue(exceptions.isEmpty());
     
