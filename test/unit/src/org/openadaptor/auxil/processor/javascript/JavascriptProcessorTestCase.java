@@ -108,6 +108,32 @@ public class JavascriptProcessorTestCase extends TestCase {
     execute("record.get('s1') + record.get('s2')",STRING_ONE+STRING_TWO); 
     execute("record.get('s1').substring(2)",STRING_ONE.substring(2));
   }
+  
+  /**
+   * Check js to java type conversion.
+   * <p>
+   * Current conversions:
+   * <UL>
+   *   <LI>javascript native array -> Object[]
+   * </UL>
+   *
+   */
+  public void testJavascriptToJavaTypeConversion() {
+    String joined="alpha,beta,gamma";
+    String[] strings=joined.split(",");
+    String script="record.put('x','"+joined+"');";
+    script+="values=record.get('x').split(',');";
+    script+="record.set('y',values);";
+    script+="record.get('y');";
+    ISimpleRecord record=execRaw(script);
+    Object newVal=record.get("y");
+    assertTrue("Expected Object[]",newVal instanceof Object[]);
+    Object[] newVals=(Object[])newVal;
+    assertTrue(strings.length==newVals.length);
+    for (int i=0;i<strings.length;i++) {
+      assertEquals(strings[i], newVals[i]);
+    }
+  }
   /*
   public void testFiltering(){
     processor.setDiscardMatches(true);

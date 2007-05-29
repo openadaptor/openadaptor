@@ -113,7 +113,32 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
   public void jsFunction_put(Object key,Object value) {
     log.debug("put("+key+","+value+") invoked");
     modify();
-    simpleRecord.put(key, value);
+    simpleRecord.put(key, convertJavascriptToJava(value));
+  }
+  
+  /**
+   * Perform conversion (if appropriate) from javascript types to java.
+   * <p>
+   * The following conversion(s) are currently performed:
+   * <UL>
+   *   <LI>If incoming object is a NativeArray, convert it to an Object[]
+   * </UL> 
+   * Any object which doesn't match the above, is returned unchanged.
+   * @param data any Object (though typically from javascript)
+   * @return Object (having been converted if appropriate)
+   */
+  private static Object convertJavascriptToJava(Object data) {
+    Object converted=data;
+    if (data instanceof NativeArray) {
+      org.mozilla.javascript.NativeArray arrayValue = (NativeArray)data;
+      long length = arrayValue.getLength();
+      Object[] result = new Object[(int)length];
+      for (int i=0; i<length; i++) {
+        result[i] = arrayValue.get(i,arrayValue);
+      }
+      converted = result;
+    }   
+    return converted;
   }
  
   /**
