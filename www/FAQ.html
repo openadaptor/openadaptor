@@ -12,6 +12,7 @@
   <body>
     <a id="contents"></a>
     <h1>Frequently Asked Questions (versions 3.2.1+)</h1>
+
     <h3>1. Basics</h3>
     <ol>
       <li><a href="#gettingstarted">Getting started</a></li>
@@ -19,23 +20,29 @@
       <li><a href="#classpath">How should I set my classpath?</a></li>
       <li><a href="#xmlconfig">What are in these XML config files?</a></li>
       <li><a href="#payloadneutral">What does "payload neutral" mean for me?</a></li>
-      <li><a href="#xmlregexp">How can I transform an XML payload using a regular expression?</a></li>
+      <li><a href="#xsltregexp">Can I transform an XML payload using a regular expression in XSLT?</a></li>
     </ol>
 
-    <h3>2. Control flow</h3>
+    <h3>2. Control Flow and Scripting</h3>
     <ol>
       <li><a href="#pipevrouter">Should I use a Pipeline or a Router?</a></li>
       <li><a href="#loggingrecords">How do I write out intermediate processing results or discarded data?</a></li>
       <li><a href="#exceptions">How do I handle Exceptions?</a></li>
       <li><a href="#logging">How does logging work?</a></li>
       <li><a href="#hospital">How do I hospitalise problematic records?</a></li>
+      <li><a href="#javascriptnulls">How do I handle <code>null</code> or missing keys in JavaScript?</a></li>
+      <li><a href="#scriptregexp">Can I modify/filter a Map or XML payload using a JavaScript regular expression?</a></li>
+      <li><a href="#javascriptarrays">Can I use JavaScript arrays?</a></li>
+      <li><a href="#javascriptfunctions">Can I use JavaScript functions?</a></li>
+      <li><a href="#javascriptcompilation">Is the JavaScript precompiled?</a></li>
+      <li><a href="#scriptingcomponents">Can my JavaScript invoke other OpenAdaptor components?</a></li>
       <li><a href="#scriptscontrolflow">Can I use JavaScript control flow inside my JavascriptProcessor scripts?</a></li>
       <li><a href="#filterorcondition">Should I use a Filter or If-Condition-Else components or JavaScript?</a></li>
     </ol>
 
     <h3>3. Working with XML config files</h3>
     <ol>
-      <li><a href="#eclipse">How can Eclipse IDE help me to write my adaptors?</a></li>
+      <li><a href="#eclipsexml">How can Eclipse IDE help me to write my adaptors?</a></li>
       <li><a href="#docgen">How can I generate documentation and pictures for my adaptors?</a></li>
       <li><a href="#variables">How do I set variables from a separate properties file or on the command line?</a></li>
       <li><a href="#singleadaptormultiplefiles">How can I split a single adaptor across multiple XML files?</a></li>
@@ -51,8 +58,20 @@
       <li><a href="#daemon">How can I run an adaptor as daemon process?</a></li>
     </ol>
 
+    <h3>5. Getting hold of it</h3>
+    <ol>
+      <li><a href="#downloading">How do I Download it?</a></li>
+      <li><a href="#examplesbrowsing">Can I browse the Examples/Tutorial online?</a></li>
+      <li><a href="#javadocbrowsing">Can I browse the JavaDoc online?</a></li>
+      <li><a href="#sourcebrowsing">Can I browse the Source Code online?</a></li>
+      <li><a href="#eclipsesvn">How do I use Eclipse to checkout the source code? (Subclipse)</a></li>
+      <li><a href="#tortoisesvn">Is there a Windows client for checkingout the source code? (TortoiseSVN)</a></li>
+      <li><a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a></li>
+    </ol>
 
 
+    <hr>
+    <h1>Basics:</h1>
     <!-- Basics: -->
     <!-- Basics: -->
     <!-- Basics: -->
@@ -76,7 +95,8 @@
     <h2>Typical developments steps</h2>
     <p>
       Fundamentally an adaptor is a process that takes data from one place and puts it in another.
-      These places can be datastores (e.g. SQL database; filesystem) or entreprise buses (e.g. JMS; MQ).
+      These places can be datastores (e.g. SQL database; filesystem) or enterprise buses (e.g. JMS; MQ).
+      The data may also be transformed and/or filtered by the adaptor.
     </p>
     <p>
       Writing a new adaptor is best done as an incremental process.
@@ -319,15 +339,15 @@
     </p>
     <p>
       In OpenAdaptor version 3.0+ we have thrown away that restriction, and the data records passed
-      around simply need to be of standard Java type Object.
+      around simply needs to be of standard Java type Object.
     </p>
     <p>
       So you can read data in from one place and write it out to another, without ever needing to
       map it to a different representation.
-      This avoids lossy (non-idempotent) or pointless (excess processing overhead) conversions.
+      This avoids conversions that are lossy (non-idempotent) or pointless (excess processing overhead).
     </p>
     <p>
-      A good example of this is reading an XML record from one place and writing an XML record
+      A good example of this is reading an XML record in from one place and writing an XML record
       out to another place, perhaps having modified it using an XSLT transform or one of our
       other components that can work with XML payloads, and treating it as an XML document throughout.
     </p>
@@ -344,22 +364,30 @@
 
     
 
-    <a id="xmlregexp"></a>
-    <h2>How can I transform an XML payload using a regular expression?</h2>
+    <a id="xsltregexp"></a>
+    <h2>Can I transform an XML payload using a regular expression in XSLT?</h2>
     <p>
-      The OpenAdaptor XSLT component will meet most of your transformation needs when
-      reading XML and writing XML out.
+      No.  Whilst XSLT 1.1 has substring functions it lacks regular expression support.
     </p>
     <p>
-      Whilst XSLT 1.1 has substring methods it lacks regular expression support.
-      So you would choose to use one of our standard scripting components to
-      modify/filter based on a regular expression.
+      Instead you use one of our standard scripting components to
+      <a href="#scriptregexp">modify/filter using a JavaScript regular expression</a>.
+    </p>
+    <p>
+      There is no need to use an <code>org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor</code>
+      component because our standard modify/filter components understand XML payloads too.
+    </p>
+    <p>
+      The OpenAdaptor XSLT component will meet most of your other XML transformation needs,
+      especially when reading XML in and writing XML out.
     </p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
 
+    <hr>
+    <h1>Control flow:</h1>
     <!-- Control flow: -->
     <!-- Control flow: -->
     <!-- Control flow: -->
@@ -385,7 +413,8 @@
     <p>
       Use a Router rather than a Pipeline.
       In the Router you can say where all data goes to regardless of whether it is successfully processed
-      (unlike in OpenAdaptor 1.x where you had to write a second inverted-logic filter to catch discarded data).
+      (unlike in OpenAdaptor 1.x where you had the tricky task of writing
+      a second inverted-logic filter to catch discarded data).
     </p>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -418,14 +447,163 @@
 
     
 
+    <a id="javascriptnulls"></a>
+    <h2>How do I handle <code>null</code> or missing keys in JavaScript?</h2>
+    <p>
+      It is your responsibility to explicitly handle <code>null</code> or missing keys in JavaScript.
+    </p>
+    <p>
+      Typically you do this by using guard clauses that test for <code>null</code> in JavaScript
+      before operating on the value.
+    </p>
+    <p>
+      JavaScript will see a <code>null</code> value when you call <code>record.get(keyname)</code>
+      regardless of whether (a) the key exists and is bound to a null value in the record,
+      or (b) the key does not exist in the record.
+    </p>
+    <p>
+      You can descriminate between cases (a) and (b) using the
+      <code>record.containsKey(keyname)</code> method.
+    </p>
+    <div class="shell"><pre>  </pre></div>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+    
+
+    <a id="scriptregexp"></a>
+    <h2>Can I modify/filter a Map or XML payload using a JavaScript regular expression?</h2>
+    <p>
+      Yes.  You can use JavaScript regular expressions in the <code>script</code> property
+      of:
+    </p>
+    <ul>
+      <li><code>org.openadaptor.auxil.processor.javascript.JavascriptProcessor</code></li>
+      <li><code>org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor</code></li>
+    </ul>
+    <div class="shell"><pre>  &lt;bean id="SetBirthYear" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    &lt;description&gt;
+      Updates the 'birthyear' attribute with the result of extracting year from 'dateofbirth' attribute.
+      
+      Uses JavaScript regular expression to parse and takes first capture group as result.
+    &lt;/description&gt;
+    &lt;property name="script"&gt;
+      record.put('birthyear',/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(record.get('dateofbirth'))[1]/;
+    &lt;/script&gt;
+  &lt;/bean&gt;</pre></div> 
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+    
+    <a id="javascriptarrays"></a>
+    <h2>Can I use JavaScript arrays?</h2>
+    <p>
+      Yes (added for OpenAdaptor 3.2.1.1).
+    </p>
+    <p>
+      In your script you use <code>record.get()</code>, <code>record.set()</code>
+      and <code>record.put()</code> where the value is a JavaScript native array.
+    </p>
+    <div class="shell"><pre>  &lt;bean id="ParseAddress" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    &lt;description&gt;
+      Split address string into an array of strings on ',' characters.
+      Input address='National Maritime Museum, Greenwich, LONDON SE10 9NF';
+      Output address={'National Maritime Museum',' Greenwich',' LONDON SE10 9NF'};
+    &lt;/description&gt;
+    &lt;property name="script"&gt;
+      address = record.get('address');
+      if (address != null) {
+        record.set('address', address.split(','));
+      }
+    &lt;/property&gt;
+    &lt;property name="discardMatches" value="false" /&gt;
+  &lt;/bean&gt;</pre></div>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="javascriptfunctions"></a>
+    <h2>Can I use JavaScript functions?</h2>
+    <p>
+      Yes, their scope is the script in which they are defined.
+    </p>
+<!--    <div class="shell"><pre>  </pre></div>-->
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="javascriptcompilation"></a>
+    <h2>Is the JavaScript precompiled?</h2>
+    <p>
+      Yes, by default the JavaScript is compiled at adaptor load time.
+    </p>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="scriptingcomponents"></a>
+    <h2>Can my JavaScript invoke other OpenAdaptor components?</h2>
+    <p>
+      No, because this goes against the clean architecture of OpenAdaptor.
+    </p>
+    <p>
+      Instead you should use the <a href="filterorcondition">filter components or the if-then-else components</a>.
+    </p>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
     <a id="scriptscontrolflow"></a>
     <h2>Can I use JavaScript control flow inside my JavascriptProcessor scripts?</h2>
-    <p></p>
-    <div class="shell"><pre>  &lt;bean id="FilterOnMessageTypeContact" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor"&gt;
-    &lt;description&gt;Only pass through messages of type Contact.&lt;/description&gt;
-    &lt;property name="script" value="
-        (record.get('messageType') == 'Contact')
-    "/&gt;
+    <p>
+      Yes.  You write JavaScript in the normal way, and operate on the <code>record</code> passed in
+      which also doubles as the result object.
+    </p>
+    <p>
+      Your condition expressions will typically involve data extracted from each incoming record.
+      It can also involve <a href="#variables">variables from a separate properties file or command line</a>
+      which are specific to this executing instance of the adaptor: these are evaluated when the adaptor
+      is loaded and thereafter behave as literal string values.
+    </p>
+    <p>
+      As a design guideline we very strongly advocate avoiding writing long pieces of JavaScript (a screenful is long).
+      Instead break down your JavaScript into small blocks of defined functionality and place each
+      in a separate <code>JavaScriptProcessor</code>.
+      This makes it much easier to unit-test each piece of logic (we plan to provide some practical
+      help with this at the component level in the future) according to expected inputs and outputs.
+      It also allows you to take advantage of the discard and exception routing support of OpenAdaptor.
+      Note that hosting it in multiple components may mean using <code>JavascriptFilterProcessor</code>
+      components to express branching logic as well as <code>JavascriptProcessor</code> components.
+    </p>
+    <div class="shell"><pre>  &lt;bean id="DiscountedTrainFare" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    &lt;description&gt;Calcuate train fare discount applicable based on age (and for illustration) gender.&lt;/description&gt;
+    &lt;property name="script"&gt;
+      // examine incoming object:
+      age = record.get('age');
+      gender = record.get('gender');
+      
+      // assume full fare:
+      percentage = 100;
+      
+      if (age != null) {
+        // no discount available unless we know their age ;-)
+        if (age &lt; 2) {
+          percentage = 0; // infants travel free
+        } else if (age &lt;= 16) {
+          percentage = 50; // children half-price
+        } else {
+          if ((gender != null) &amp;&amp; (gender == 'female') &amp;&amp; (age &gt;= ${myprop.pension.age.female})) {
+            // women over 60
+            percentage = 66;
+          } else if (age &gt;= ${myprop.pension.age.male}) {
+            // everyone over 65  (assumes male pension age same or older than female for brevity)
+            percentage = 66;
+          }
+        }
+      }
+      
+      // modify outgoing object:
+      record.set('rate',percentage);
+    &lt;/property&gt;
     &lt;property name="discardMatches" value="false" /&gt;
   &lt;/bean&gt;</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -445,11 +623,13 @@
 
     
 
+    <hr>
+    <h1>Working with XML config files:</h1>
     <!-- Working with XML config files: -->
     <!-- Working with XML config files: -->
     <!-- Working with XML config files: -->
 
-    <a id="eclipse"></a>
+    <a id="eclipsexml"></a>
     <h2>How can Eclipse IDE help me to write my adaptors?</h2>
     <p></p>
     <div class="shell"><pre>  </pre></div>
@@ -580,6 +760,8 @@
  
 
 
+    <hr>
+    <h1>Services and Other topics</h1>
     <!-- Services and Other topics: -->
     <!-- Services and Other topics: -->
     <!-- Services and Other topics: -->
@@ -954,5 +1136,128 @@
   wrapper.java.classpath.2       = ../lib/bootstrap.jar
       </div></pre>
     <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <hr>
+    <h1>Getting hold of it:</h1>
+    <!--  Getting hold of it: -->
+    <!--  Getting hold of it: -->
+    <!--  Getting hold of it: -->
+
+    <a id="downloading"></a>
+    <h2>How do I Download it?</h2>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="examplesbrowsing"></a>
+    <h2>Can I browse the Examples/Tutorial online?</h2>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="javadocbrowsing"></a>
+    <h2>Can I browse the JavaDoc online?</h2>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="sourcebrowsing"></a>
+    <h2>Can I browse the Source Code online?</h2>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="eclipsesvn"></a>
+    <h2>How do I use Eclipse to checkout the source code? (Subclipse)</h2>
+    <p>
+      (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
+    </p>
+ Downloading and installing Subclipse:
+
+The plug-in can be downloaded from http://subclipse.tigris.org You can also download Subclipse using Eclipse.
+
+   1. Go to the location where you have downloaded Eclipse, for example D:\eclipse-SDK-3.0.2-win32 to install Subclipse.
+   2. Double click the Eclipse icon to open Eclipse.
+   3. To download Subclipse, click Help > Software Updates > Find and Install.
+   4. Select the option Search For New Features To Install.
+   5. Click Next.In the window that is displayed next click the New Remote Site.You will see a small window which will have two columns Name and URL.
+   6. Enter Subclipse in the name column and in the URL area enter http://subclipse.tigris.org/update.
+   7. Click OK. You can see Subclipse listed on the Sites to Install section. Select Subclipse.
+   8. Click Next.  Select the version of Subclipse, for example 1.0.x.
+   9. Click Next.  You will see a window where you have to select I Accept The Terms In The License Agreements.
+  10. Click Next.  You will see a window which will ask you for the location to install.
+  11. Click Next.  You will see a verification window.
+  12. Click Install.  After the installation process is over,you will be asked to restart your workspace or Apply Changes.  You can either restart the workspace or click Apply Changes as they are required for a complete installation of Subclipse.
+
+Configuring a code repository in Subclipse
+
+Subclipse allows you to work with Subversion code repositories. The following procedure describes how to configure a version control repository in Subclipse.
+To configure a code repository in Subclipse:
+
+Once the components have been installed, go to the Eclipse main window.
+
+   1. From the main menu go to Window > Show View and select SVN Repository.
+   2. Log in to CollabNet and create a project with Subversion as the versioning component.
+   3. After you create a project go to Eclipse, click Window > Open Perspective > Other > Select SVN Repository Exploring .
+   4. Click Ok. You will see the SVN Repository explorer on the right hand side of the main window. Right click Repository Location.
+   5. Enter the URL, for example http://firstsvn.<domainname>.net/svn/firstsvn where "firstsvn" is the project you have created inCollabNet,"domainname" is the domain name, and "firstsvn" is the project name again.
+   6. Click finish.
+   7. Go to the SVN Repository explorer and expand the project from the navigation menu..
+   8. You can see the contents of your project listed in folders.
+   9. Now select a folder, right click and select "Checkout as Project."
+  10. From the right side of the main window, right click the Resources view to go to the workspace. A workspace is the place where you store all your project files, make modifications, commit files and do other tasks. For example, let the workspace be C:\Test.
+    <p class="back"><a href="#contents">back to contents</a></p>
+    
+    
+    <a id="tortoisesvn"></a>
+    <h2>Is there a Windows client for checkingout the source code? (TortoiseSVN)</h2>
+    <p>
+      (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
+    </p>
+
+    * TortoiseSVN is a very popular Windows Subversion Client. It has the same features as Subversion.
+    * It's features include Windows Shell (Explorer) integration,easy-to-use dialogs for version control operations.
+    * The User Interface is available in different languages.
+
+Installing TortoiseSVN
+
+   1. From the TortoiseSVN install page http://tortoisesvn.tigris.org/download.html , download the version you would like to install. The latest version is the best option.
+   2. Double click on the installer icon and click Next.Change the directory into which to install TortoiseSVN or accept the default.
+   3. Select "Install for all users" and click Next.
+   4. TortoiseSVN starts installing the required files in the path you specified.
+   5. After the installation you will be asked to reboot your computer.
+
+      The reason why a reboot is required is that TortoiseSVN integrates with the Windows Explorer, which cannot be updated without a reboot.
+
+      Note - TortoiseSVN is an Operating System level application.
+   6. For more information about the working process of TortoiseSVN, visit the help files at http://tortoisesvn.tigris.org/docs.html
+   7. For other information on Frequently Asked Questions, translations etc. visit http://tortoisesvn.tigris.org/.
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+    <a id="eclipsetortoiseversions"></a>
+    <h2>Which versions of Subclipse and TortoiseSVN work together?</h2>
+    <p>
+      The underlying issue is that Subversion itself changed (around 1.2?).
+      It maintained compatibility of clients with servers, but it changed the format
+      of checked out worktrees which means that different SVN clients cannot always
+      be used on the same worktree.
+    </p>
+    <p>
+      We are successfully using the following combination on the same worktree:
+    </p>
+    <ul>
+      <li>Subclipse 1.0.5 (using default Java HL JNI library)</li>
+      <li>TortoiseSVN 1.4.3 (contains Subversion 1.4.3)</li>
+    </ul>
+    <p>
+      We tried some of the earlier versions of TortoiseSVN with this version of Subclipse and
+      were unable to use them on the same worktree.
+    </p>
+    <p class="back"><a href="#contents">back to contents</a></p>
+    
   </body>
 </html>
