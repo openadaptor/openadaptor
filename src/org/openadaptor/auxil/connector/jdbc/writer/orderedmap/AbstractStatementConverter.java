@@ -65,4 +65,8 @@ public abstract class AbstractStatementConverter implements IStatementConverter 
     }
   }
 
+  public boolean preparedStatementIsReusable() {
+    return false;
+  }
+
 }

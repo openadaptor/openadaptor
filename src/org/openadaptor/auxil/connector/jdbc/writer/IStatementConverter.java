@@ -67,4 +67,12 @@ public interface IStatementConverter {
    * exceptions raised require it as part of their constructor!
    */
   public void validate(List exceptions, Component comp);
+  
+  /**
+   * Indicates whether returned PreparedStatement (from convert) can be reused multiple times.
+   * Default is false.
+   * It should return true if, for example a prepared statement is to be reused multiple times.
+   * @return false if ps must be closed each time
+   */
+  public boolean preparedStatementIsReusable();
 }

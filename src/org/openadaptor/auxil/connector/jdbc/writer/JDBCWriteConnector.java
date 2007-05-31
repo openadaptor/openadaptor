@@ -61,9 +61,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
   private IStatementConverter statementConverter = new StatementConverter();
   private JDBCConnection jdbcConnection;
-  
+
   private String preambleSQL=null;
   private String postambleSQL=null;
+
+  private boolean statementIsReusable;
 
 
   public JDBCWriteConnector() {
@@ -143,7 +145,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
         for (int i = 0; i < data.length; i++) {
           PreparedStatement s = statementConverter.convert(data[i], jdbcConnection.getConnection());
           s.executeUpdate();
-          s.close();
+          if (!statementIsReusable){
+            s.close();
+          }
         }
         sucess = true;
       } catch (SQLException e) {
@@ -178,11 +182,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     }
 
     statementConverter.initialise(jdbcConnection.getConnection());
-
+    statementIsReusable=statementConverter.preparedStatementIsReusable();
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
   }
-  
+
   private void executePrePostambleSQL(String sql, Connection connection) {
     try {
       PreparedStatement ps=connection.prepareStatement(sql);
@@ -204,6 +208,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     if ( jdbcConnection == null ) {
       log.info("Connection already closed");
       return;
+    }
+
+    //Close preparedStatement if reusable...
+    if (statementIsReusable) {
+      //Todo - keep a handle on the statement so we can close it here...
     }
 
     //Execute postamble sql if it exists...

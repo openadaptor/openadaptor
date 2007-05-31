@@ -65,4 +65,9 @@ public class StatementConverter implements IStatementConverter {
    */
   public void validate(List exceptions, Component comp) {
   }
+  
+  public boolean preparedStatementIsReusable() {
+    return false;
+  }
+
 }
