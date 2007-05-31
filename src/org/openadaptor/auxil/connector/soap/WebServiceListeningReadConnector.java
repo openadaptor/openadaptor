@@ -44,9 +44,9 @@ import org.openadaptor.auxil.connector.http.JettyReadConnector;
  * @author perryj
  *
  */
-public class ReadConnectorWebService extends JettyReadConnector implements IStringDataProcessor {
+public class WebServiceListeningReadConnector extends JettyReadConnector implements IStringDataProcessor {
 
-  private static final Log log = LogFactory.getLog(ReadConnectorWebService.class);
+  private static final Log log = LogFactory.getLog(WebServiceListeningReadConnector.class);
 
   private String serviceName = "openadaptorws";
 
@@ -54,11 +54,11 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
    * Default constructor
    *
    */
-  public ReadConnectorWebService() {
+  public WebServiceListeningReadConnector() {
     super();
   }
 
-  public ReadConnectorWebService(String id) {
+  public WebServiceListeningReadConnector(String id) {
     super(id);
   }
 
@@ -118,7 +118,7 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
       ObjectServiceFactory factory = new ObjectServiceFactory(getXFire().getTransportManager(), null);
       Service service = factory.create(IStringDataProcessor.class, serviceName, null, null);
       log.info(getId() + " created webservice " + getEndpoint());
-      service.setInvoker(new BeanInvoker(ReadConnectorWebService.this));
+      service.setInvoker(new BeanInvoker(WebServiceListeningReadConnector.this));
       getController().getServiceRegistry().register(service);
     }
   }

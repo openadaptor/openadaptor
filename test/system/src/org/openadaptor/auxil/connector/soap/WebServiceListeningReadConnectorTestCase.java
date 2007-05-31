@@ -39,13 +39,13 @@ import junit.framework.TestCase;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
-import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector;
 
-public class ReadConnectorWebServiceTestCase extends TestCase {
+public class WebServiceListeningReadConnectorTestCase extends TestCase {
 
   public void testAxis() {
 
-    ReadConnectorWebService service = new ReadConnectorWebService();
+    WebServiceListeningReadConnector service = new WebServiceListeningReadConnector();
 
     try {
       // connect (this starts jetty)

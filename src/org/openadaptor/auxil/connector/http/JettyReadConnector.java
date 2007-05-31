@@ -29,12 +29,12 @@ package org.openadaptor.auxil.connector.http;
 
 import javax.servlet.Servlet;
 
-import org.openadaptor.auxil.connector.soap.ReadConnectorWebService;
+import org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector;
 import org.openadaptor.core.connector.QueuingReadConnector;
 
 /**
  * base class for read connectors that require an http server
- * @see ReadConnectorWebService
+ * @see WebServiceListeningReadConnector
  * @author perryj
  *
  */

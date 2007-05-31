@@ -250,7 +250,8 @@
           <exclude name="**/TIBCO*.java"/>
           <!-- -->
           <!--exclude name="**/WebService*.java"/-->
-          <exclude name="**/ReadConnectorWebService*.java"/>
+          <exclude name="**/WebServiceListeningReadConnector*.java"/>
+          <exclude name="**/WebServicePollingReadConnector*.java"/>
           <!-- -->
         </fileset>
       </batchtest>
