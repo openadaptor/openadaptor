@@ -249,7 +249,7 @@
           <exclude name="**/MQ*.java"/>
           <exclude name="**/TIBCO*.java"/>
           <!-- -->
-          <exclude name="**/WebService*.java"/>
+          <!--exclude name="**/WebService*.java"/-->
           <exclude name="**/ReadConnectorWebService*.java"/>
           <!-- -->
         </fileset>
