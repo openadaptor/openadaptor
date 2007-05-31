@@ -37,14 +37,14 @@ import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
 import org.codehaus.xfire.transport.http.XFireServlet;
-import org.openadaptor.auxil.connector.http.JettyReadConnector;
+import org.openadaptor.auxil.connector.http.ServletServingReadConnector;
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data
  * @author perryj
  *
  */
-public class WebServiceListeningReadConnector extends JettyReadConnector implements IStringDataProcessor {
+public class WebServiceListeningReadConnector extends ServletServingReadConnector implements IStringDataProcessor {
 
   private static final Log log = LogFactory.getLog(WebServiceListeningReadConnector.class);
 

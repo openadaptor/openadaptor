@@ -29,28 +29,43 @@ package org.openadaptor.auxil.connector.http;
 
 import javax.servlet.Servlet;
 
-import org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector;
 import org.openadaptor.core.connector.QueuingReadConnector;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * base class for read connectors that require an http server
- * @see WebServiceListeningReadConnector
+ * Base class for read connectors that require an http server with servlet container.
+ * 
+ * @see {@link WebServiceListeningReadConnector}
  * @author perryj
- *
  */
-public abstract class JettyReadConnector extends QueuingReadConnector {
+public abstract class ServletServingReadConnector extends QueuingReadConnector {
 
-  //private static final Log log = LogFactory.getLog(JettyReadConnector.class);
+  private static final Log log = LogFactory.getLog(ServletServingReadConnector.class);
   
   private ServletContainer servletContainer = new ServletContainer();
   private String path = "/*";
   private Servlet servlet;
   
-  protected JettyReadConnector() {
-  }
+  protected ServletServingReadConnector() {}
 
-  protected JettyReadConnector(String id) {
+  protected ServletServingReadConnector(String id) {
     super(id);
+  }
+  
+  public void connect() {
+    log.info("Starting servlet container..");
+    servletContainer.start();
+    addServlet(servlet, path);
+  }
+  
+  public void disconnect() {
+    log.info("Stopping servlet container.");
+    servletContainer.stop();
+  }
+  
+  public void addServlet(Servlet servlet, String path) {
+    servletContainer.addServlet(servlet, path);
   }
   
   public void setServletContainer(final ServletContainer servletContainer) {
@@ -75,19 +90,5 @@ public abstract class JettyReadConnector extends QueuingReadConnector {
   
   protected String getPath() {
     return path;
-  }
-  
-  public void connect() {
-    servletContainer.start();
-    addServlet(servlet, path);
-  }
-  
-  public void disconnect() {
-    servletContainer.stop();
-  }
-  
-  public void addServlet(Servlet servlet, String path) {
-    servletContainer.addServlet(servlet, path);
-  }
-  
+  }  
 }

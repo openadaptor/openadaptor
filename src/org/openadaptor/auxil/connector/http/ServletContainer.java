@@ -39,6 +39,9 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.openadaptor.util.NetUtil;
 
+/**
+ * Class implements a simple http server with a servlet container.
+ */
 public class ServletContainer {
 
   private static final Log log = LogFactory.getLog(ServletContainer.class);
@@ -50,8 +53,7 @@ public class ServletContainer {
   private boolean managed = false;
   private int refs;
 
-  public ServletContainer() {
-  }
+  public ServletContainer() {}
   
   public ServletContainer(final Server server) {
     this.server = server;

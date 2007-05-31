@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
  * @author perryj
  * 
  */
-public class ReadConnectorServlet extends JettyReadConnector {
+public class ReadConnectorServlet extends ServletServingReadConnector {
 
   private static final Log log = LogFactory.getLog(ReadConnectorServlet.class);
 
