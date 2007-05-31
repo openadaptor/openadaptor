@@ -95,14 +95,16 @@ public class ReadConnectorWebService extends JettyReadConnector implements IStri
   public String getEndpoint() {
     StringBuffer buffer = new StringBuffer();
     buffer.append("http://");
-    buffer.append(getServletContainer().getHost());
+    buffer.append(getServletContainer().getHost().trim());
     buffer.append(":");
     buffer.append(getServletContainer().getPort());
     buffer.append(getServletContainer().getContext().equals("/") ? "" : getServletContainer().getContext());
     buffer.append(getPath().replaceAll("\\*", ""));
     buffer.append(serviceName);
     buffer.append("?wsdl");
-    return buffer.toString();
+    String endpoint = buffer.toString();
+    log.debug("Endpoint: " + endpoint);
+    return endpoint;
   }
 
 
