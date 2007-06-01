@@ -15,12 +15,14 @@
 
     <h3>1. Basics</h3>
     <ol>
+      <li><a href="#versions">Versions of OpenAdaptor</a></li>
       <li><a href="#gettingstarted">Getting started</a></li>
       <li><a href="#typicaldevsteps">Typical developments steps</a></li>
       <li><a href="#classpath">How should I set my classpath?</a></li>
       <li><a href="#xmlconfig">What are in these XML config files?</a></li>
       <li><a href="#payloadneutral">What does "payload neutral" mean for me?</a></li>
       <li><a href="#xsltregexp">Can I transform an XML payload using a regular expression in XSLT?</a></li>
+      <li><a href="#customcomponents">What about custom components?</a></li>
     </ol>
 
     <h3>2. Control Flow and Scripting</h3>
@@ -30,7 +32,7 @@
       <li><a href="#exceptions">How do I handle Exceptions?</a></li>
       <li><a href="#logging">How does logging work?</a></li>
       <li><a href="#hospital">How do I hospitalise problematic records?</a></li>
-      <li><a href="#javascriptnulls">How do I handle <code>null</code> or missing keys in JavaScript?</a></li>
+      <li><a href="#javascriptnulls">How do I handle <code>null</code> or missing record keys in JavaScript?</a></li>
       <li><a href="#scriptregexp">Can I modify/filter a Map or XML payload using a JavaScript regular expression?</a></li>
       <li><a href="#javascriptarrays">Can I use JavaScript arrays?</a></li>
       <li><a href="#javascriptfunctions">Can I use JavaScript functions?</a></li>
@@ -42,6 +44,7 @@
 
     <h3>3. Working with XML config files</h3>
     <ol>
+      <li><a href="#eclipsesetup">How do I set up the Eclipse IDE to work with OpenAdaptor?</a></li>
       <li><a href="#eclipsexml">How can Eclipse IDE help me to write my adaptors?</a></li>
       <li><a href="#docgen">How can I generate documentation and pictures for my adaptors?</a></li>
       <li><a href="#variables">How do I set variables from a separate properties file or on the command line?</a></li>
@@ -75,6 +78,79 @@
     <!-- Basics: -->
     <!-- Basics: -->
     <!-- Basics: -->
+
+    <a id="versions"></a>
+    <h2>Versions of OpenAdaptor</h2>
+    <p>
+      OpenAdaptor has a long history, and we are now putting all of our development effort
+      into the OpenAdaptor&nbsp;3.2.1+ codebase.
+    </p>
+    <p>
+      All other versions are now either in legacy maintenance mode (1.7.2.2) or no longer supported.
+      Legacy maintenance mode means that our community is still actively helping people with queries,
+      and that we are only patching significant bugs.
+    </p>
+    <p>
+      The supported migration path for legacy adaptors is to upgrade to 1.7.2.2 and then move to 3.2.1+.
+    </p>
+    <table border="1">
+      <tr>
+        <th>Version</th>
+        <th>Project URL</th>
+        <th>Status</th>
+        <th>Comment</th>
+      </tr>
+      <tr>
+        <td>OpenAdaptor&nbsp;3.2.1+</td>
+        <td>https://openadaptor3.openadaptor.org</td>
+        <td>
+          <table>
+            <tr><td>ACTIVE (Fully SUPPORTED)</td></tr>
+            <tr><td>We are committed to developing this codebase further.</td></tr>
+          </table>
+        </td>
+        <td>
+          Subversion project we are actively developing.
+          We are already using it in production.
+        </td>
+      </tr>
+      <tr>
+        <td>OpenAdaptor&nbsp;1.x</td>
+        <td>https://openadaptor.openadaptor.org</td>
+        <td>
+          <table>
+            <tr><td>LEGACY (SUPPORTED)</td></tr>
+            <tr><td>Migrate to 1.7.2.2, and then to OpenAdaptor&nbsp;3.2.1+.</td></tr>
+          </table>
+        </td>
+        <td>
+          CVS project in legacy maintenance mode.
+          We are still using it in production (with a migration programme underway).
+        </td>
+      </tr>
+      <tr>
+        <td>OA3.0, OA3.1</td>
+        <td>https://oa3.openadaptor.org</td>
+        <td>
+          <table>
+            <tr><td>UNSUPPORTED (prototype)</td></tr>
+            <tr><td>Migrate immediately to 3.2.1+</td></tr>
+          </table>
+        </td>
+        <td>
+          CVS project used for prototyping: completely superceded by OpenAdaptor&nbsp;3.2.1+ codebase.
+          Migration is straightforward.
+        </td>
+      </tr>
+    </table>
+    <p>
+      If you are migrating legacy OpenAdaptor&nbsp;1.x adaptors you may encounter
+      <a href="#customcomponents">custom components</a> which may now be supported by standard
+      componentry in OpenAdaptor&nbsp;3.2.1+.
+    </p>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
 
     <a id="gettingstarted"></a>
     <h2>Getting started</h2>
@@ -386,6 +462,50 @@
 
     
 
+    <a id="customcomponents"></a>
+    <h2>What about custom components?</h2>
+    <p>
+      All versions of OpenAdaptor provide a suite of reusable components.
+      They can connect to datastores, and can process/filter data on its way through your adaptor.
+    </p>
+    <p>
+      Similarly all versions of OpenAdaptor allow you to provide your own custom components.
+    </p>
+    <p>
+      In OpenAdaptor 3.2.1+ we have:
+    </p>
+    <ul>
+      <li>
+        Reduced the need to write custom Processor components.
+        We examined hundreds of adaptors written by others and found that most of the custom components
+        were simply applying some business logic to manipulate attributes.
+        <ul>
+          <li>
+            <code>JavascriptProcessor</code> and <code>JavascriptFilterProcessor</code>
+            allow custom attribute manipulation to be expressed inside the adaptor XML config file.
+          </li>
+          <li>
+            XML payloads are handled natively by OpenAdaptor 3.2.1+, both by general purpose
+            components and by XML specific components such as <code>XsltProcessor</code>.
+          </li>
+        </ul>
+      </li>
+      <li>
+        Made it easier to write custom Processor components.
+        Now you just need to concentrate on your custom transformation logic,
+        whereas in OpenAdaptor 1.x you also had to correctly code
+        some boiler plate data marshalling logic.
+      </li>
+    </ul>
+    <p>
+      As a rule of thumb, it is best to avoid/minimise using custom components as it makes
+      it easier to support/maintain your adaptor long term.
+    </p>
+    <!-- <div class="shell"><pre>  </pre></div> -->
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+    
+
     <hr>
     <h1>Control flow:</h1>
     <!-- Control flow: -->
@@ -448,9 +568,9 @@
     
 
     <a id="javascriptnulls"></a>
-    <h2>How do I handle <code>null</code> or missing keys in JavaScript?</h2>
+    <h2>How do I handle <code>null</code> or missing record keys in JavaScript?</h2>
     <p>
-      It is your responsibility to explicitly handle <code>null</code> or missing keys in JavaScript.
+      It is your responsibility to explicitly handle <code>null</code> or missing record keys in JavaScript.
     </p>
     <p>
       Typically you do this by using guard clauses that test for <code>null</code> in JavaScript
@@ -462,11 +582,26 @@
       or (b) the key does not exist in the record.
     </p>
     <p>
-      You can descriminate between cases (a) and (b) using the
-      <code>record.containsKey(keyname)</code> method.
+      You can descriminate between cases (a) and (b) using the <code>record.containsKey(keyname)</code> method.
     </p>
-    <div class="shell"><pre>  </pre></div>
-    <p class="back"><a href="#contents">back to contents</a></p>
+    <div class="shell"><pre>  &lt;bean id="FilterDateOfBirth" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    &lt;description&gt;
+      Set 'dobstatus' attribute according to presence and value of 'dateofbirth' attribute.
+    &lt;/description&gt;
+    &lt;property name="script"&gt;
+      dob = record.get('dateofbirth');
+      if (dob == null) {
+        if (record.containsKey('dateofbirth')) {
+          found = "present and explicitly null";
+        } else {
+          found = "missing and implicitly null";
+        }
+      } else {
+        found = "present and not null";
+      }
+      record.set('dobstatus',found);
+    &lt;/script&gt;
+  &lt;/bean&gt;</pre></div>     <p class="back"><a href="#contents">back to contents</a></p>
 
     
 
@@ -490,6 +625,10 @@
       record.put('birthyear',/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(record.get('dateofbirth'))[1]/;
     &lt;/script&gt;
   &lt;/bean&gt;</pre></div> 
+  
+  
+  XXXXXXXXXXXXXXXXX     Filter with a match example
+  
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -629,9 +768,38 @@
     <!-- Working with XML config files: -->
     <!-- Working with XML config files: -->
 
+    <a id="eclipsesetup"></a>
+    <h2>What Eclipse IDE Features should I install?</h2>
+    <p>
+      This section explains what "Eclipse Features" to install.
+      A later section explains the <a href="#eclipsexml">benefits and how to use them</a>.
+    </p>
+    <p>
+      Click Help &gt; Software Updates &gt; Find and Install (you can use Manage Configuration
+      if instead you want to inspect what is already installed).
+    </p>
+    <p>
+      http://springide.org/project/wiki/SpringideCallistoInstall
+    </p>
+    <div class="shell"><pre>  </pre></div>
+    <p class="back"><a href="#contents">back to contents</a></p>
+
+
+    
     <a id="eclipsexml"></a>
     <h2>How can Eclipse IDE help me to write my adaptors?</h2>
     <p></p>
+    <ul>
+      <li>XML syntax colouring and completion</li>
+      <li>Spring Schema completion and navigation to bean definitions by "id"</li>
+      <li>OpenAdaptor classes (source and JavaDoc)</li>
+      <li>OpenAdaptor properties (completion and JavaDoc)</li>
+      <li></li>
+      <li>Running adaptor XML files directly from within Eclipse.</li>
+      <li>Generating documentation and images from your adaptor XML config file.</li>
+      <li></li>
+      <li></li>
+    </ul>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -1147,24 +1315,41 @@
 
     <a id="downloading"></a>
     <h2>How do I Download it?</h2>
+    <p>
+      <a href="https://openadaptor3.openadaptor.org/servlets/ProjectDocumentList">
+        https://openadaptor3.openadaptor.org/servlets/ProjectDocumentList
+      </a>
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
 
     <a id="examplesbrowsing"></a>
     <h2>Can I browse the Examples/Tutorial online?</h2>
+    <p>
+      Soon to be added...
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
 
     <a id="javadocbrowsing"></a>
     <h2>Can I browse the JavaDoc online?</h2>
+    <p>
+      Soon to be added...
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
 
     <a id="sourcebrowsing"></a>
     <h2>Can I browse the Source Code online?</h2>
+    <p>
+      Yes.&nbsp;&nbsp;
+      <a href="https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/">
+        https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/
+      </a>
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -1174,40 +1359,38 @@
     <p>
       (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
     </p>
- Downloading and installing Subclipse:
-
-The plug-in can be downloaded from http://subclipse.tigris.org You can also download Subclipse using Eclipse.
-
-   1. Go to the location where you have downloaded Eclipse, for example D:\eclipse-SDK-3.0.2-win32 to install Subclipse.
-   2. Double click the Eclipse icon to open Eclipse.
-   3. To download Subclipse, click Help > Software Updates > Find and Install.
-   4. Select the option Search For New Features To Install.
-   5. Click Next.In the window that is displayed next click the New Remote Site.You will see a small window which will have two columns Name and URL.
-   6. Enter Subclipse in the name column and in the URL area enter http://subclipse.tigris.org/update.
-   7. Click OK. You can see Subclipse listed on the Sites to Install section. Select Subclipse.
-   8. Click Next.  Select the version of Subclipse, for example 1.0.x.
-   9. Click Next.  You will see a window where you have to select I Accept The Terms In The License Agreements.
-  10. Click Next.  You will see a window which will ask you for the location to install.
-  11. Click Next.  You will see a verification window.
-  12. Click Install.  After the installation process is over,you will be asked to restart your workspace or Apply Changes.  You can either restart the workspace or click Apply Changes as they are required for a complete installation of Subclipse.
-
-Configuring a code repository in Subclipse
-
-Subclipse allows you to work with Subversion code repositories. The following procedure describes how to configure a version control repository in Subclipse.
-To configure a code repository in Subclipse:
-
-Once the components have been installed, go to the Eclipse main window.
-
-   1. From the main menu go to Window > Show View and select SVN Repository.
-   2. Log in to CollabNet and create a project with Subversion as the versioning component.
-   3. After you create a project go to Eclipse, click Window > Open Perspective > Other > Select SVN Repository Exploring .
-   4. Click Ok. You will see the SVN Repository explorer on the right hand side of the main window. Right click Repository Location.
-   5. Enter the URL, for example http://firstsvn.<domainname>.net/svn/firstsvn where "firstsvn" is the project you have created inCollabNet,"domainname" is the domain name, and "firstsvn" is the project name again.
-   6. Click finish.
-   7. Go to the SVN Repository explorer and expand the project from the navigation menu..
-   8. You can see the contents of your project listed in folders.
-   9. Now select a folder, right click and select "Checkout as Project."
-  10. From the right side of the main window, right click the Resources view to go to the workspace. A workspace is the place where you store all your project files, make modifications, commit files and do other tasks. For example, let the workspace be C:\Test.
+    <p>
+      First follow the instructions in <a href="#eclipsesetup">What Eclipse IDE Features should I install?</a>
+      to get Spring IDE Feature installed in Eclipse.
+    </p>
+    <p>
+      Then:
+    </p>  
+    <ol>
+      <li>Click Window > Open Perspective > Other > SVN Repository Exploring.
+      <li>Click Ok.  Move mouse to the SVN Repository explorer that appears.
+      <li>Right click New > Repository Location.
+      <li>Enter the URL as <code>https://openadaptor3.openadaptor.org/svn/openadaptor3</code>
+      <li>Click Finish.
+      <li>Go to the SVN Repository explorer and expand the project from the navigation menu.
+      <li>You can see the project contents listed in folders.
+      <li>Now select a folder (should be "trunk" or a specific sub-directory of "tags"), 
+          right click and select "Checkout as Project".
+          <i>Do NOT select the repository as a whole as that will check out a
+          full copy of every tagged copy too!</i>
+      </li>
+    </ol>
+    <p>
+      You may need to configure Subversion to use your HTTPS proxy server,
+      e.g. if you are behind a corporate firewall.
+      Because Subclipse uses a separate Subversion library in the background, you will
+      need to edit the config for that (typically <code>$HOME/.subversion/servers</code> as described in
+      <a href="http://svnbook.red-bean.com/en/1.1/ch07.html#svn-ch-7-sect-1.3.1">Subversion book</a>):
+    </p>
+    <div class="shell"><pre>[global]
+http-proxy-host = myproxy.my.network
+http-proxy-port = 8080
+http-compression = yes</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
     
     
@@ -1216,24 +1399,23 @@ Once the components have been installed, go to the Eclipse main window.
     <p>
       (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
     </p>
-
-    * TortoiseSVN is a very popular Windows Subversion Client. It has the same features as Subversion.
-    * It's features include Windows Shell (Explorer) integration,easy-to-use dialogs for version control operations.
-    * The User Interface is available in different languages.
-
-Installing TortoiseSVN
-
-   1. From the TortoiseSVN install page http://tortoisesvn.tigris.org/download.html , download the version you would like to install. The latest version is the best option.
-   2. Double click on the installer icon and click Next.Change the directory into which to install TortoiseSVN or accept the default.
-   3. Select "Install for all users" and click Next.
-   4. TortoiseSVN starts installing the required files in the path you specified.
-   5. After the installation you will be asked to reboot your computer.
-
-      The reason why a reboot is required is that TortoiseSVN integrates with the Windows Explorer, which cannot be updated without a reboot.
-
-      Note - TortoiseSVN is an Operating System level application.
-   6. For more information about the working process of TortoiseSVN, visit the help files at http://tortoisesvn.tigris.org/docs.html
-   7. For other information on Frequently Asked Questions, translations etc. visit http://tortoisesvn.tigris.org/.
+    <p>
+      TortoiseSVN is a Subversion Client for Microsoft Windows which integrates
+      with the Windows Shell (Explorer).
+    </p>
+    <ul>
+      <li>http://tortoisesvn.tigris.org/download.html</li>
+      <li>http://tortoisesvn.tigris.org/docs.html</li>
+    </ul>
+    <p>
+      Same proxying issues apply to TortoiseSVN as for
+      <a href="#eclipsesvn">corporate firewall traversal with Subclipse</a>
+      with the caveat that TortoiseSVN also provides a GUI for simple case
+      (under Settings > Network) as well as allowing the standard file to
+      be used to configure all cases.
+      We still recommend configuring in the standard file as then all of your
+      local Subversion clients will be using the same configuration.
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -1254,7 +1436,7 @@ Installing TortoiseSVN
       <li>TortoiseSVN 1.4.3 (contains Subversion 1.4.3)</li>
     </ul>
     <p>
-      We tried some of the earlier versions of TortoiseSVN with this version of Subclipse and
+      We tried some of the earlier versions of TortoiseSVN with this version of Subclipse, but
       were unable to use them on the same worktree.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
