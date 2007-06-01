@@ -34,15 +34,18 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
-import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
 
 /**
- * ReadConnector that connects to a webservice, polls it and saves the returned data
- * in a queue.
+ * WebServicePollingReadConnector calls a web service and return its result for 
+ * further processing in subsequent nodes. At the moment that class has fairly 
+ * limitted capabilities; the web services needs to take no arguments and http proxy
+ * server is not supported. 
  * 
- * @author lachork
+ * @author Kris Lachor
  */
-public class WebServicePollingReadConnector extends QueuingReadConnector {
+public class WebServicePollingReadConnector extends Component implements IReadConnector {
 
   private static final Log log = LogFactory.getLog(WebServicePollingReadConnector.class);
 
@@ -55,7 +58,9 @@ public class WebServicePollingReadConnector extends QueuingReadConnector {
   /**
    * Default constructor.
    */
-  public WebServicePollingReadConnector() {}
+  public WebServicePollingReadConnector() {
+    log.info("Created new web service polling read connector");
+  }
 
   /**
    * Constructor. 
@@ -86,21 +91,28 @@ public class WebServicePollingReadConnector extends QueuingReadConnector {
     client.close();
   }
   
+  public Object[] next(long timeoutMs) {
+    return invoke();
+  }
   
+
+  public boolean isDry() {
+    return false;
+  }
+
   /**
    * Invokes webservice, puts results to a queue.
    */
-  public void invoke(){
+  public Object [] invoke(){
     Object [] result = null;
     try {
       result = client.invoke(serviceName, new Object[] {});
+      log.debug("Invoked the service. Result = " + (result != null ? result[0] : result));
     } catch (Exception e) {
       log.error("Call to web service failed: " + wsEndpoint + " " + serviceName);
-      return;
+      return null;
     } 
-    for(int i=0; i<result.length; i++){
-      enqueue(result[i]);
-    }
+    return result;
   }
 
 
@@ -127,6 +139,10 @@ public class WebServicePollingReadConnector extends QueuingReadConnector {
 
   public String getServiceName() {
     return serviceName;
+  }
+
+  public Object getReaderContext() {
+    return null;
   }
  
 }
