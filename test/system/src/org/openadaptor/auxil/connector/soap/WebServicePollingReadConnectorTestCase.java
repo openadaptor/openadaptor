@@ -35,6 +35,8 @@ package org.openadaptor.auxil.connector.soap;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -53,7 +55,7 @@ import org.codehaus.xfire.test.EchoImpl;
 /**
  * Unit tests for {@link WebServicePollingReadConnector}.
  * 
- * @author lachork
+ * @author Kris Lachor
  */
 public class WebServicePollingReadConnectorTestCase extends TestCase {
 
@@ -151,6 +153,29 @@ public class WebServicePollingReadConnectorTestCase extends TestCase {
     assertTrue(data.length == 1);
     checkRandomInteger(data[0]);
     wsConnector.disconnect();
+  }
+  
+  public void testValidateNoEndpoint(){
+    wsConnector.setServiceName(TEST_SERVICE_NAME);
+    List exceptions = new ArrayList();
+    wsConnector.validate(exceptions);
+    assertTrue(exceptions.size()==1);
+    wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS");
+    wsConnector.validate(exceptions);
+    assertTrue(exceptions.size()==2);
+    wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS" + "?wsdl");
+    wsConnector.validate(exceptions);
+    assertTrue(exceptions.size()==2);
+  }
+  
+  public void testValidateNoServiceName(){
+    wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS"  + "?wsdl");
+    List exceptions = new ArrayList();
+    wsConnector.validate(exceptions);
+    assertTrue(exceptions.size()==1);
+    wsConnector.setServiceName(TEST_SERVICE_NAME);
+    wsConnector.validate(exceptions);
+    assertTrue(exceptions.size()==1);
   }
     
 }

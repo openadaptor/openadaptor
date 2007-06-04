@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * WebServicePollingReadConnector calls a web service with a specified name and specified
@@ -76,7 +77,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
    * 
    * @see IReadConnector#connect()
    */
-  public void connect() {
+  public void connect(){
     log.debug("About to connect.");
     try {
       client = new Client(new URL(wsEndpoint));
@@ -126,7 +127,13 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
 
 
   public void validate(List exceptions) {
-    log.debug("No validation rules.");
+    log.debug("Validating wsEndpoing: " + wsEndpoint);
+    if(null==wsEndpoint || wsEndpoint.indexOf("wsdl")==-1){
+      exceptions.add(new ValidationException("Unknown web service endpoint", this));
+    }
+    if(null==serviceName){
+      exceptions.add(new ValidationException("Unknown web service endpoint", this));
+    }
   }
 
   /**
