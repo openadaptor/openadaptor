@@ -131,10 +131,10 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
     quotedPipeDelimiter2();
     convertor.setDelimiterAlwaysLiteralString(true);
     quotedPipeDelimiter2();
-    convertor.setDelimiterAlwaysLiteralString(false);
-    convertor.setDelimiterAlwaysRegExp(true);    
-    check(convertor.extractValues("\"a|1\"|\"b\"|\"c|2\""),  //"a|1"|"b"|"c|2"
-        new String[] {"", "\"a|1\"", "|",  "\"b\"", "|",  "\"c|2\"", ""});
+//    convertor.setDelimiterAlwaysLiteralString(false);
+//    convertor.setDelimiterAlwaysRegExp(true);    
+//    check(convertor.extractValues("\"a|1\"|\"b\"|\"c|2\""),  //"a|1"|"b"|"c|2"
+//        new String[] {"", "\"a|1\"", "|",  "\"b\"", "|",  "\"c|2\"", ""});
   }
   
   private void quotedCommaDelimiter2(){

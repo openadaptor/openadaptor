@@ -30,7 +30,6 @@ package org.openadaptor.auxil.convertor.delimited;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -278,13 +277,13 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     }else if( delimiterAlwaysLiteralString ){
        values = splitByLiteralString(delimitedString);
     }
-    /* Default behaviour */
+    /* default behaviour (user specified no extra properties) */
     else{
-      /* Single char delimiters are treated as literal strings */
+      /* single char delimiters are treated as literal strings */
       if(delimiter.length()==1){
         values = splitByLiteralString(delimitedString);
       }
-      /* Multi char delimiters are treated as regular expressions. */
+      /* multi char delimiters are treated as regular expressions */
       else{
         values = splitByRegularExpression(delimitedString);
       }
@@ -343,16 +342,16 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     StringBuffer buffer = new StringBuffer();
     StringBuffer quoteBuffer = new StringBuffer();
     ArrayList quotes = new ArrayList();
-    char escapeChar = (char) 0;
-    
-    /* replace quoted blocks with the escapeChar */
+    String escapeSeq = new String(new char[]{0, 0xff, 0, 0xff});
+
+    /* replace quoted blocks with the escapeSeq */
     for (int i = 0; i < chars.length; i++) { 
       if (inQuotes) {
         inQuotes = chars[i] != quoteChar;
         quoteBuffer.append(chars[i]);
         if(!inQuotes){
           /* finished parsing a quote */
-          buffer.append(escapeChar);
+          buffer.append(escapeSeq);
           quotes.add(quoteBuffer.toString());
           quoteBuffer.setLength(0);
         }
@@ -373,8 +372,8 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     String [] result = buffer.toString().split(regexp, -1);
     java.util.Iterator it = quotes.iterator();
     for(int i=0; i<result.length; i++){
-      if(result[i].indexOf(escapeChar) != -1){
-        result[i] = result[i].replaceAll(new Character(escapeChar).toString(), (String)it.next());
+      if(result[i].indexOf(escapeSeq) != -1){
+        result[i] = result[i].replaceAll(escapeSeq, (String)it.next());
       }
     }
     return result;
