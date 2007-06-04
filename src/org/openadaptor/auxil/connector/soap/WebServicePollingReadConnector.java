@@ -38,10 +38,10 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 
 /**
- * WebServicePollingReadConnector calls a web service and return its result for 
- * further processing in subsequent nodes. At the moment that class has fairly 
- * limitted capabilities; the web services needs to take no arguments and http proxy
- * server is not supported. 
+ * WebServicePollingReadConnector calls a web service with a specified name and specified
+ * endpoint. Returns web service's result for processing in subsequent nodes. At the moment 
+ * it has fairly limitted capability - passing arguments to web services and http proxy 
+ * server are not supported. 
  * 
  * @author Kris Lachor
  */
@@ -73,6 +73,8 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
 
   /**
    * Connects to web service.
+   * 
+   * @see IReadConnector#connect()
    */
   public void connect() {
     log.debug("About to connect.");
@@ -85,17 +87,24 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
     }
   }
   
-  
+  /**
+   * @see IReadConnector#disconnect()
+   */
   public void disconnect(){
     log.debug("About to disconnect.");
     client.close();
   }
   
+  /**
+   * @see IReadConnector#next(long)
+   */
   public Object[] next(long timeoutMs) {
     return invoke();
   }
   
-
+  /**
+   * @see IReadConnector#isDry()
+   */
   public boolean isDry() {
     return false;
   }
@@ -133,6 +142,11 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
     return wsEndpoint;
   }
 
+  /**
+   * Sets web service endpoint.
+   * 
+   * @param wsEndpoint - web service end point.
+   */
   public void setWsEndpoint(String wsEndpoint) {
     this.wsEndpoint = wsEndpoint;
   }
