@@ -44,7 +44,7 @@
 
     <h3>3. Working with XML config files</h3>
     <ol>
-      <li><a href="#eclipsesetup">How do I set up the Eclipse IDE to work with OpenAdaptor?</a></li>
+      <li><a href="#eclipseplugins">What Eclipse IDE Plugins should I install?</a></li>
       <li><a href="#eclipsexml">How can Eclipse IDE help me to write my adaptors?</a></li>
       <li><a href="#docgen">How can I generate documentation and pictures for my adaptors?</a></li>
       <li><a href="#variables">How do I set variables from a separate properties file or on the command line?</a></li>
@@ -68,7 +68,7 @@
       <li><a href="#javadocbrowsing">Can I browse the JavaDoc online?</a></li>
       <li><a href="#sourcebrowsing">Can I browse the Source Code online?</a></li>
       <li><a href="#eclipsesvn">How do I use Eclipse to checkout the source code? (Subclipse)</a></li>
-      <li><a href="#tortoisesvn">Is there a Windows client for checkingout the source code? (TortoiseSVN)</a></li>
+      <li><a href="#tortoisesvn">Is there a Windows client to checkout the source code? (TortoiseSVN)</a></li>
       <li><a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a></li>
     </ol>
 
@@ -102,7 +102,7 @@
       </tr>
       <tr>
         <td>OpenAdaptor&nbsp;3.2.1+</td>
-        <td>https://openadaptor3.openadaptor.org</td>
+        <td><a href="https://openadaptor3.openadaptor.org">https://openadaptor3.openadaptor.org</a></td>
         <td>
           <table>
             <tr><td>ACTIVE (Fully SUPPORTED)</td></tr>
@@ -116,7 +116,7 @@
       </tr>
       <tr>
         <td>OpenAdaptor&nbsp;1.x</td>
-        <td>https://openadaptor.openadaptor.org</td>
+        <td><a href="https://openadaptor.openadaptor.org">https://openadaptor.openadaptor.org</a></td>
         <td>
           <table>
             <tr><td>LEGACY (SUPPORTED)</td></tr>
@@ -130,7 +130,7 @@
       </tr>
       <tr>
         <td>OA3.0, OA3.1</td>
-        <td>https://oa3.openadaptor.org</td>
+        <td><a href="https://oa3.openadaptor.org">https://oa3.openadaptor.org</a></td>
         <td>
           <table>
             <tr><td>UNSUPPORTED (prototype)</td></tr>
@@ -195,6 +195,9 @@
       <li>
         Run your adaptor, and examine the output.
         Have you successfully captured the input data?
+      </li>
+      <li>
+        Gradually add more components, testing as you go.
       </li>
     </ol>
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -768,47 +771,115 @@
     <!-- Working with XML config files: -->
     <!-- Working with XML config files: -->
 
-    <a id="eclipsesetup"></a>
-    <h2>What Eclipse IDE Features should I install?</h2>
+    <a id="eclipseplugins"></a>
+    <h2>What Eclipse IDE Plugins should I install?</h2>
     <p>
-      This section explains what "Eclipse Features" to install.
-      A later section explains the <a href="#eclipsexml">benefits and how to use them</a>.
+      We assume you have a clean install of Eclipse&nbsp;3.2.1+ (you will need to vary these instructions
+      if you have already installed extra plugins).
     </p>
     <p>
-      Click Help &gt; Software Updates &gt; Find and Install (you can use Manage Configuration
-      if instead you want to inspect what is already installed).
+      Install the following plugins, plus all the plugins they depend upon:
+    </p>
+    <table border="1">
+      <tr>
+        <td><b>Web Standard Tools (WST)</th><td>Adds XSD aware XML editing.</td></b>
+      </tr>
+      <tr>
+        <td><b>Subclipse</td></b>
+        <td>For accessing a Subversion source code repository.</td>
+      </tr>
+      <tr>
+        <td><b>Spring IDE</td></b>
+        <td>Adds Spring aware XML editing <i>(requires "Web Standard Tools (WST)")</i>.</td>
+      </tr>
+    </table>
+    <p>
+      Click "Help" &gt; "Software Updates" &gt; "Find and Install" &gt;
+      "Search for new features to install..."
     </p>
     <p>
-      http://springide.org/project/wiki/SpringideCallistoInstall
+      Use the "New Remote Site..." button to add:
     </p>
-    <div class="shell"><pre>  </pre></div>
+    <table border="1">
+      <tr>
+        <td><b>Spring IDE update site</td></b>
+        <td>http://springide.org/updatesite/</td>
+      </tr>
+      <tr>
+        <td><b>Subclipse update site</td></b>
+        <td>http://subclipse.tigris.org/update_1.0.x</td>
+      </tr>
+    </table>
+    <p>
+      Check the boxes against:
+    </p>
+    <ul>
+      <li>Callisto Discovery Site</li>
+      <li>Spring IDE update site</li>
+      <li>Subclipse update site</li>
+    </ul>
+    <p>
+      Click "Finish" which causes it to query the selected update sites.
+      <i>If you get unexpected site connectivity errors check your Eclipse proxy settings
+      (Windows &gt; Preferences... &gt; Internet &gt; Proxy Settings)</i>.
+    </p>
+    <p>
+      Select:
+    </p>
+    <ul>
+      <li>Spring IDE</li>
+      <li>Subclipse</li>
+      <li>Callisto Discovery Site &gt; Web and J2EE Development &gt; Web Standard Tools (WST)</li>
+    </ul>
+    <p>
+      Click "Select Required..." (adds in all dependent plugins).
+    </p>
+    <p>
+      Click "Next..." and keep going until you have finished installing
+      and then allow Eclipse to Restart itself to complete installation.
+    </p>
+    <p>
+      In a <a href="#eclipsesvn">later section</a> we explain how to use Subclipse to checkout the source code.     
+    </p>
+    <p>
+      In the <a href="#eclipsexml">next section</a> we explain how Eclipse can help you write your adaptors
+      now that you have installed the "Web Standard Tools (WST)" and "Spring IDE" plugins.
+    </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
     
     <a id="eclipsexml"></a>
     <h2>How can Eclipse IDE help me to write my adaptors?</h2>
-    <p></p>
+    <p>
+      This assumes that you have followed the <a href="#eclipseplugins">instructions in the previous section</a>
+      which explain which "Eclipse Plugins" to install (otherwise these feature will be unavailable).
+    </p>
     <ul>
-      <li>XML syntax colouring and completion</li>
-      <li>Spring Schema completion and navigation to bean definitions by "id"</li>
+      <li>XML syntax colouring and completion.</li>
+      <li>
+        XSD Schema aware editing <i>(requires you to correctly declare the Spring 2.0 XSD schema
+        <a href="#xmlconfig">in the <code>beans</code> element as in the XML config file examples</a>)</i>.
+      </li>
+      <li>Spring Schema completion and navigation to bean definitions by "id" <i>(requires Spring IDE)</i>.</li>
       <li>OpenAdaptor classes (source and JavaDoc)</li>
       <li>OpenAdaptor properties (completion and JavaDoc)</li>
-      <li></li>
       <li>Running adaptor XML files directly from within Eclipse.</li>
-      <li>Generating documentation and images from your adaptor XML config file.</li>
-      <li></li>
-      <li></li>
+      <li><a href="#docgen">Generating documentation and images</a> from your adaptor XML config file using Ant target.</li>
     </ul>
-    <div class="shell"><pre>  </pre></div>
+<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
     
     <a id="docgen"></a>
     <h2>How can I generate documentation and pictures for my adaptors?</h2>
-    <p></p>
-    <div class="shell"><pre>  </pre></div>
+    <p>
+      <b>This has been parameterised so that it can be re-used in your own build environment
+      to generate documentation about your own adaptors.  We will publish instructions on how to
+      do this in due course.</b>
+    </p>
+<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
@@ -864,6 +935,11 @@
 
     <a id="singleadaptormultiplefiles"></a>
     <h2>How can I split a single adaptor across multiple XML files?</h2>
+    <p><i>
+      In general it is best to avoid this and have a single XML config file per adaptor using
+      the PropertyPlaceholderConfigurer to pass in values as defined in
+      <a href="#variables">variables setting section</a> above.      
+    </i></p>
     <p>
       These are Spring XML config files, so you can have multiple files that are combined together in a single adaptor.
     </p>
@@ -900,8 +976,17 @@
 
     <a id="multipleadaptorssinglefile"></a>
     <h2>How can I host multiple adaptors in a single XML file?</h2>
-    <p></p>
-    <div class="shell"><pre>  </pre></div>
+    <p><i>
+      In general it is best to avoid this and have a single XML config file per adaptor using
+      the PropertyPlaceholderConfigurer to pass in values as defined in
+      <a href="#variables">variables setting section</a> above.      
+    </i></p>
+    <p>
+      You define multiple Adaptor beans, each with a different bean id in your XML config file.
+      Then you pass in the bean id you want to use as a <code>-adaptor</code> argument
+      to the <code>SpringApplication</code> command line.
+    </p>
+<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
     
 
@@ -1313,6 +1398,8 @@
     <!--  Getting hold of it: -->
     <!--  Getting hold of it: -->
 
+    <p>For Subversion repository access you will need to join the "OpenAdaptor3" project.</p>
+
     <a id="downloading"></a>
     <h2>How do I Download it?</h2>
     <p>
@@ -1327,8 +1414,20 @@
     <a id="examplesbrowsing"></a>
     <h2>Can I browse the Examples/Tutorial online?</h2>
     <p>
-      Soon to be added...
+      Generated documentation (XML config, generated images, generated documentation, generated
+      cross-referencing indexes): <b>Soon to be added...</b>
     </p>
+    <p>
+      XML config is also accessible within the source code tree:
+    </p>
+    <ul>
+      <li><a href="https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/examples/spring">
+        https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/examples/spring
+      </a></li>
+      <li><a href="https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/examples/tutorial">
+        https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/examples/tutorial
+      </a></li>
+    </ul>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -1336,7 +1435,7 @@
     <a id="javadocbrowsing"></a>
     <h2>Can I browse the JavaDoc online?</h2>
     <p>
-      Soon to be added...
+      <b>Soon to be added...</b>
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -1345,7 +1444,7 @@
     <a id="sourcebrowsing"></a>
     <h2>Can I browse the Source Code online?</h2>
     <p>
-      Yes.&nbsp;&nbsp;
+      Yes:&nbsp;&nbsp;
       <a href="https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/">
         https://openadaptor3.openadaptor.org/source/browse/openadaptor3/trunk/
       </a>
@@ -1356,12 +1455,14 @@
 
     <a id="eclipsesvn"></a>
     <h2>How do I use Eclipse to checkout the source code? (Subclipse)</h2>
+    <p><i>
+      (We recommend using the latest stable version of the Subclipse plugin.
+      Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>,
+      and <a href="#eclipseplugins">What Eclipse IDE Plugins should I install?</a>)
+    </i></p>
     <p>
-      (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
-    </p>
-    <p>
-      First follow the instructions in <a href="#eclipsesetup">What Eclipse IDE Features should I install?</a>
-      to get Spring IDE Feature installed in Eclipse.
+      First follow the instructions in <a href="#eclipseplugins">What Eclipse IDE Plugins should I install?</a>
+      to get the Subclipse plugin installed in Eclipse.
     </p>
     <p>
       Then:
@@ -1376,6 +1477,7 @@
       <li>You can see the project contents listed in folders.
       <li>Now select a folder (should be "trunk" or a specific sub-directory of "tags"), 
           right click and select "Checkout as Project".
+          <br/>
           <i>Do NOT select the repository as a whole as that will check out a
           full copy of every tagged copy too!</i>
       </li>
@@ -1395,10 +1497,10 @@ http-compression = yes</pre></div>
     
     
     <a id="tortoisesvn"></a>
-    <h2>Is there a Windows client for checkingout the source code? (TortoiseSVN)</h2>
-    <p>
+    <h2>Is there a Windows client to checkout the source code? (TortoiseSVN)</h2>
+    <p><i>
       (Please also read <a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a>)
-    </p>
+    </i></p>
     <p>
       TortoiseSVN is a Subversion Client for Microsoft Windows which integrates
       with the Windows Shell (Explorer).
@@ -1432,11 +1534,11 @@ http-compression = yes</pre></div>
       We are successfully using the following combination on the same worktree:
     </p>
     <ul>
-      <li>Subclipse 1.0.5 (using default Java HL JNI library)</li>
+      <li>Subclipse 1.0.5 or 1.2.0 (using default Java HL JNI library)</li>
       <li>TortoiseSVN 1.4.3 (contains Subversion 1.4.3)</li>
     </ul>
     <p>
-      We tried some of the earlier versions of TortoiseSVN with this version of Subclipse, but
+      We tried some of the earlier versions of TortoiseSVN with version 1.0.5 of Subclipse, but
       were unable to use them on the same worktree.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
