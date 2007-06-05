@@ -59,11 +59,10 @@ public class PreparedStatementTableConverter extends AbstractStatementConverter 
 
   private String tableName="";
   private int[] outputTypes;
-  private int tableColumnCount;
   private List outputColumns;
 
   private PreparedStatement reusablePreparedStatement;
-
+  
   public PreparedStatementTableConverter() {
   }
 
