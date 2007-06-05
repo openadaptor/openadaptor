@@ -115,6 +115,11 @@
     <xslt basedir="${src.examples.dir}" destdir="${build.examples.images.dir}" style="${src.examples.tools.dir}/xslt/oa3toDot.xsl">
       <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+      <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
+      <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
+      <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
+      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
+      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.dot" />
     </xslt>
@@ -165,6 +170,8 @@
       <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
       <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
       <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
+      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
+      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
       <param name="showJavaDocLinks" expression="true" />
       <param name="showConfigIndexLinks" expression="true" />
       <!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->

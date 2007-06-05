@@ -52,6 +52,8 @@
 <!-- Which you have depends on which DNS name you used in your SVN checkout URL: -->
 <xsl:param name="filepathGlobPrefix1" select="'HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
 <xsl:param name="filepathGlobPrefix2" select="'HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
+<xsl:param name="filepathGlobPrefix3" select="'some value1 defined specifically for your build environment'"/>
+<xsl:param name="filepathGlobPrefix4" select="'some value2 defined specifically for your build environment'"/>
 <xsl:param name="docsRelativeToTools" select="'../../docs/'"/>
 <xsl:param name="xmlRelative" select="'../'"/>
 
@@ -66,7 +68,9 @@
 <xsl:variable name="thisExample"
     select="concat(
       substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix1),'.xml '),
-      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix2),'.xml ')
+      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix2),'.xml '),
+      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix3),'.xml '),
+      substring-before(substring-after(beans:beans/beans:description|comment(),$filepathGlobPrefix4),'.xml ')
     )"/> 
 
 <xsl:variable name="baseRelativeDepth" select="string-length(translate($thisExample,'/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ._-1234567890','/'))" />
