@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads DOXML from a file
+    * converts to DataObjects (legacy data structures from previous openadaptor versions)
+    * converts DataObjects to map
+    * converts map to xml
+    * writes to file
+    
+  It is designed to illustrate the basic structure something that needs to receive
+  the legacy DataObject format.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config doxml_reader.xml -bean Adaptor
+
+  For this example to run correctly you need to download the legacy openadaptor.jar from
+  openadaptor 1.7.2.2 or later. This is available from http://www.openadaptor.org. Ensure
+  that the legacy openadaptor.jar is at the end of your classpath and that your classpath
+  does not include openadaptor-stub.jar.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <legacy openadaptor>/openadaptor.jar
+    
+  writes output to stdout.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+     <ref bean="Pipeline"/>
+   </property>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="DOXmlConverter"/>
+        <ref bean="MapConverter"/>
+        <ref bean="XmlConverter"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+   
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>This read connector contexts of a file as a single string.</description>
+    <property name="filename" value="input/doxml.txt"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
+  </bean>
+  
+  <bean id="DOXmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor">
+    <description>Converts this string to an array of DataObject[].</description>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
+    <description>Converts DataObject[] to IOrderedMap.</description>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>Converts IOrderedMap to XML.</description>
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * exposes an rmi service that clients can send data to
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of exposing an adaptor as a
+  an rmi service.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config server.xml -bean Adaptor
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  To test it fully you can run the other example which processes data by invoking
+  the service.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor" ref="Pipeline"/>
+  </bean>
+
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline RMIService -> Writer.
+    </description>
+    <property name="processors">
+      <list>
+        <ref bean="RMIService"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="RMIService" class="org.openadaptor.auxil.connector.rmi.RMIReadConnector">
+    <description>This is a read connector, that exposes an rmi service.</description>
+    <property name="serviceName" value="TestService"/>
+    <property name="createRegistry" value="true"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

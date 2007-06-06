@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[
+  Illustrates how to get the adaptor to "register" the fact that it is starting with
+  a servlet. It registers a subset of system properties plus any additionalRegistrationProps.
+    
+  Typically the url is a jsp that will store these props, thus enabling organisations
+  which deploy openadaptor to maintain an inventory if it's use.
+    
+  The distribution may contain embedded properties, these cannot be overwritten
+  using system properties. This enables custom distributions to enforce core behaviour,
+  such as registration.
+    
+  The actual adaptor, simply reads stdin and writes to stdout.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="ReadConnector"/>
+            <ref bean="WriteConnector"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <property name="registrationUrl" value="http://foo.com/register.jsp"/> 
+    <property name="additionalRegistrationProps">
+      <props>
+        <prop key="version">3.2.1</prop>
+      </props>
+    </property>
+  </bean>
+
+  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

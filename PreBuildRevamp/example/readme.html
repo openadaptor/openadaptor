@@ -1,0 +1,348 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
+<STYLE TYPE="text/css">
+  .shell    { width: 90%; background-color: #EEEEEE }
+  .back     { text-left: right; font-size:9pt }
+</STYLE>
+<title>openadaptor readme</title>
+</head>
+
+<body>
+
+<h1>Getting started</h1>
+
+<p>These instructions provide a step by step guide to getting started with openadaptor. They require the
+  reader to be able to install openadaptor and the Java Runtime Environment (JRE), if it is not already
+  installed.</p>
+
+
+<h3>Conventions</h3>
+<p>Paths are often referred to in Unix notation, i.e. "/" rather than "\".</p>
+
+<a name="contents"></a>
+<h2>Contents</h2>
+<ol>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#classpath">Setting your Java CLASSPATH</a></li>
+<li><a href="#verify">Verifying the installation</a></li>
+<li><a href="#spring">Spring Examples</a></li>
+<li><a href="#code">Code Examples</a></li>
+<li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#tutorial">Environment</a></li>
+</ol>
+
+<!--
+    Requirements
+-->
+<a name="requirements"></a>
+<h2>Requirements</h2>
+<p>openadaptor requires the JRE (Java Runtime Environment) to be installed. The minimum supported
+  version of the JRE is 1.4. From the command prompt type the following to see what version, if any, is
+  installed.</p>
+<pre>
+  java -version
+</pre>
+<p>If the JRE is installed and your PATH environment variable includes the JAVA bin directory then you
+  should see the version information. openadaptor is currently built and tested with the following
+  version</p>
+<pre>
+  1.4.2
+</pre>
+<p>If you do not have JAVA installed or have a version prior to 1.4 then you need to install a new
+  version of the JRE or JDK. Please refer to <a href="http://www.java.com" target="_blank">http://www.java.com</a>
+  for details on how to do this.</p>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    Logging
+-->
+<a name="logging"></a>
+<h2>Logging</h2>
+<p>We use the <a href="http://logging.apache.org/">Apache Commons Logging</a> services for purposes of
+  application debugging and auditing. More specifically, we supply the log4j jar and config files as
+  part of the openadaptor distribution. The config file (log4j.properties) for this can be found in the
+  <code>lib</code> directory.</p>
+
+<p>In general this file can be left alone and will provide enough logging details for most applications.
+  One common change that you may find useful is to turn on the debug log level. This is simplicity
+  itsef, simply modify the first line in the config file as follows:</p>
+
+<pre>
+  log4j.rootLogger     = DEBUG, A
+</pre>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    Installation
+-->
+<a name="installation"></a>
+<h2>Installation</h2>
+<p>The software for openadaptor is distributed as a zip file. Installing it is simply a case of
+  unzipping the contents. The installation should look like this.</p>
+
+<pre>
+  opendaptor-X.Y.Z
+   |
+   |-doc              // this contains the java API documentation, launch index.html
+   |  
+   |- example         // README.txt and ant build file to compile code examples
+   |   |
+   |   |- bin         // scripts to set your JAVACLASSPATH
+   |   |- spring      // spring framework example files
+   |   |- src         // java code examples
+   |   |- tutorial    // a walk-through to illustrate adaptor creation
+   |
+   |- lib             // openadaptor jar files and log4j properties file
+   |   |
+   |   |- 3rdparty    // 3rdparty jars/zips upon which openadaptor and the examples depends
+   |
+   |- sql             // database schema and example files          
+</pre>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    Setting the Java CLASSPATH
+-->
+<a name="classpath"></a>
+<h2>Setting your Java CLASSPATH</h2>
+<p>Since openadaptor is written in Java you need to set your Java CLASSPATH for things to work (This
+  is how the Java Virtual Machine locates the Java classes it is instructed to run).</p>
+
+<p>The nature of what openadaptor does means that it ships with a large number of 3rd party jars, these
+  can be found in lib/3rdparty. Some of these are used by the framework but many of these relate to the
+  different things it is capable of connecting to and the different data formats it can process. To make
+  your life easy we have collated the majority of the third party jars into a single jar called
+  <code>openadaptor-depends.jar</code> (This contains a manifest with the version of the 3rdparty jars
+  that are included).</p>
+
+<p>For most of the examples that we provide it it sufficient to set your CLASSPATH with the following...</p>
+
+<pre>
+  lib                          // so that the <a href="http://logging.apache.org" target="_blank">log4j</a> logging configuration is "picked up"
+  lib/openadaptor.jar          // the openadaptor code
+  lib/openadaptor-spring.jar   // spring specific helper classes
+  lib/openadaptor-depends.jar  // subset of 3rd party jars upon which our core code depends
+</pre>
+
+<p>One of the ways in which Java will "pickup" it's CLASSPATH is from an environment variable named
+  CLASSPATH. The following instructions show how to set this in both a Windows command prompt and a Unix
+  (bourne shell).</p>
+
+<h4>Windows command prompt</h4>
+<div class="shell"><pre>
+  set OPENADAPTOR_HOME=c:\openadaptor-X.Y.Z
+  set CLASSPATH=%OPENADAPTOR_HOME%\lib;%OPENADAPTOR_HOME%\lib\openadaptor.jar;%OPENADAPTOR_HOME%\lib\openadaptor-spring.jar;%OPENADAPTOR_HOME%\lib\openadaptor-depends.jar
+</pre></div>
+   
+<h4>Unix (bourne shell)</h4>
+<div class="shell"><pre>
+  OPENADAPTOR_HOME=~/opendaptor-X.Y.Z
+  CLASSPATH=$OPENADAPTOR_HOME/lib:$OPENADAPTOR_HOME/lib/openadaptor.jar:$OPENADAPTOR_HOME/lib/openadaptor-spring.jar:$OPENADAPTOR_HOME/lib/openadaptor-depends.jar
+  export CLASSPATH
+</pre></div>
+
+<p>Alternatively the example/bin directory contains 2 scripts for setting your CLASSPATH with absolute
+  paths. The following instructions show how to run the respective scripts on both Windows and *nix.</p>
+
+<h4>Windows command prompt</h4>
+<div class="shell"><pre>
+  cd example\bin
+  .\setclasspath.bat
+  echo %CLASSPATH%
+</pre></div>
+
+<h4>Unix (bourne shell)</h4>
+<div class="shell"><pre>
+  cd example/bin
+  source setclasspath.sh
+  echo $CLASSPATH
+</pre></div>
+
+<p>Some of the openadaptor components require 3rdparty jar/zips that we can not distribute, typically
+  for licencing reasons. So you will need to install these separately and add them to the CLASSPATH.
+  Some of the example (tibco and mqseries) spring configurations contain comments that relate to this.</p>
+
+<p>post release 3.2.1, openadaptor comes with an additonal jar called <b>bootstrap.jar</b>. This contains
+    alternative helper classes that will bootstrap the classpath based on the location of the bootstrap.jar.
+    All you need in your classpath is bootstrap.jar. You can dump out the programs that can be run
+    from this bootstrap.jar like this</p>
+
+    <div class="shell"><pre>  java -jar bootstrap.jar</pre></div>
+    
+    <p>This should print something like the following...</p>
+    
+    <div class="shell"><pre>  This jar contains the following programs :
+    org.openadaptor.bootstrap.FileSystemExceptionManager
+    org.openadaptor.bootstrap.JDBCExceptionManager
+    org.openadaptor.bootstrap.SpringAdaptor
+    org.openadaptor.bootstrap.SpringApplication
+  When you run these they will bootstrap the classpath based on the location of this jar
+  use -Dopenadaptor.lib=... to provide an additional location to search for classpath resources</pre></div>
+    
+    <p>These bootstrapping programs will automatically construct the classpath based on the location
+    of the bootstrap.jar. The classpath will contain all the jars, zip and subdirectories. You can specify an additional directory
+    to search using the openadaptor.lib system property. <b>patch.jar</b> will always be placed at the
+    front of the classpath, it will load the contents of 3rdparty rather than openadaptor-depends.jar,
+    openadaptor-stub.jar will always be at the end of the classpath.</p>
+    
+    <p>example 1:</p>
+    <div class="shell"><pre>   java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 2:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    
+    <p>example 3:</p>
+    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
+  java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
+  
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+
+<!--
+    Verfiying the installation
+-->
+<a name="verify"></a>
+<h2>Verifying the installation</h2>
+<p>The best way to validate the previous steps it to run an adaptor. Here are the instructions (ensure
+  that you are in the root of the openadaptor distribution)</p>
+
+<h4>Windows command prompt</h4>
+<div class="shell"><pre>
+  cd example\spring\adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
+</pre></div>
+
+<h4>Unix (bourne shell)</h4>
+<div class="shell"><pre>
+  cd example/spring/adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
+</pre></div>
+
+<p>If everything works you should see a flury of logging and the program should "sit there" waiting for
+  you to type something. If you type something then it should be echoed. Type Ctrl-C to quit to shutdown
+  the adaptor.</p>
+
+<p>If it didn't work then you will probably see a "stack trace". The first things to check are the
+  command line you typed is correct and that your CLASSPATH is correct.</p>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    The Spring examples
+-->
+<a name="spring"></a>
+<h2>The Spring Examples</h2>
+<p>Openadaptor does not rely on the spring framework in any way, however it has been written to be
+  "spring friendly". Previous versions of openadaptor had a properties file based mechanism for
+  initialising and "wiring together" the adaptor components, in the new version all the adaptor
+  components have been written as "beans" allowing spring to be used to achieve the same result.</p>
+
+<p>We do advocate using the spring framework to assemble adaptors. The majority of our examples are
+  provides as spring configuration files. openadaptor provides a spring specific helper class for
+  running adaptors as a standalone process.</p>
+<pre>
+  org.openadaptor.spring.SpringAdaptor
+</pre>
+  
+<p>this expects the following arguments
+<pre>
+  -config <i>url</i>   : where url points to a spring config, defaults to file:
+  -bean <i>id</i>      : (optional) where id is the id of an Adaptor bean in the spring config file
+  -jmxport <i>port</i> : (optional) if specified then runs default jmx mbean server and http adaptor
+</pre>
+  
+<p>Here is how to run an adaptor using this class (ensure that you are in the root of the openadaptor
+  distribution)</p>
+
+<h4>Windows command prompt</h4>
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config example\spring\adaptor\simple.xml 
+</pre></div>
+
+or
+
+<div class="shell"><pre>
+  cd example\spring\adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
+</pre></div>
+
+<h4>Unix (bourne shell)</h4>
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config example/spring/adaptor/simple.xml 
+</pre></div>
+
+or
+
+<div class="shell"><pre>
+  cd example/spring/adaptor
+  java org.openadaptor.spring.SpringAdaptor -config simple.xml 
+</pre></div>
+
+<p>Upon startup the adaptor will generate logging output according to it's logging configuration. Note
+  that a running adaptor may be stopped by typing Ctrl-C on the command line (both Windows and Unix).
+  Under normal circumstances this should cause the adaptor to terminate gracefully.</p>
+
+<p>For more details on the examples look ar the header comments in the spring config file, or the
+  README.txt if one exists in the example directory.</p>
+
+<p>For more information on the spring framework refer to 
+<a href="http://www.springframework.org" target="_blank">http://www.springframework.org</a></p>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    The code examples
+-->
+<a name="code"></a>
+<h2>The Code Examples</h2>
+<p>The <code>src</code> dir contains code examples. The ant build file build.xml will compile these examples. In
+  order to run the compiled examples you will need to set your classpath and include example/classes.
+  Please refer to <a href="http://ant.apache.org" target="_blank">http://ant.apache.org</a> if you are
+  not familiar with ant.</p>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+<!--
+    The openadaptor tutorial
+-->
+<a name="tutorial"></a>
+<h2>The openadaptor tutorial</h2>
+<p>The <a href="tutorial/index.html" target="_blank">tutorial</a> builds up a standalone example that
+  illustrates the key concepts of openadaptor and features of the adaptor framework.</p>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+<!--
+    The openadaptor examples environment
+-->
+<a name="environment"></a>
+<h2>Environment</h2>
+<p>Several tutorial examples require availibility of a JMS implementation. Those examples were successfully tested with a default installation of the jBoss application server in the following versions:</p>
+
+<ul>
+<li>jboss-3.2.8 SP1</li>
+<li>jboss-4.0.0</li>
+<li>jboss-4.0.5 GA</li>
+</ul>
+
+<p>The tests were carried out on Windows XP, running open adaptor v3.2.1 in these versions of Sun JVM:</p>
+
+<ul>
+<li>1.4.2 (1.4.2_14-b05)</li>
+<li>1.5.0 (1.5.0_11-b03)</li>
+</ul>
+
+The tests will NOT run with jBoss jboss-4.2.0.GA. This is due to different version of logging libraries used by the jBoss client and open adaptor.
+
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
+</body>
+</html>

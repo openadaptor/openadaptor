@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id$
+  $HeadURL$
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+  
+    * reads data from stdin
+    * filters out data that = "discard"
+    * writes data to stdout
+  
+  Filtered data is sent to output/discards.txt
+  
+  Run it like this...
+  
+  java org.openadaptor.spring.SpringAdaptor -config discard.xml -bean Adaptor
+  
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  
+  Once it is running it will wait for command line input
+  
+  type something like this...
+  
+    foobar
+  
+  ...and you should see it echo-ed
+  
+  type in discard and it should be filtered out and sent discards.txt
+  ]]></description>
+  
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="MapConverter"/>
+        <entry key-ref="MapConverter" value-ref="Filter"/>
+        <entry key-ref="Filter" value-ref="Writer"/>
+      </map>
+    </property>
+    <property name="discardMap">
+      <map>
+        <entry key-ref="Filter" value-ref="DiscardWriter"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>
+      Converts input into an ordered map with single field called data.
+    </description>
+    <property name="fieldNames">
+      <list>
+        <value>data</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="Filter" class="org.openadaptor.auxil.processor.simplerecord.FilterProcessor">
+    <description>
+      This processor discards data where data field has a value of discard.
+    </description>
+    <property name="discardMatches" value="true"/>
+    <property name="filterExpressionString" value="{data} = 'discard'"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.core.node.WriteNode">
+    <property name="connector">
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+    </property>
+    <property name="processor">
+      <bean class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
+    </property>
+  </bean>
+  
+  <bean id="DiscardWriter" class="org.openadaptor.core.node.WriteNode">
+    <property name="connector">
+      <bean class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+        <property name="filename" value="output/discards.txt"/>
+        <property name="append" value="false"/>
+      </bean>
+    </property>
+    <property name="processor">
+      <bean class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
+    </property>
+  </bean>
+  
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * subscribes to a subject
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that subscribes
+  to rendezvous.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config subscriber.xml -bean Adaptor
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+    tibrvj.jar (this is not distributed with openadaptor)
+    
+  tibrvj calls the native rendezvous installation, so this needs to be installed
+  and the libraries need to be in your PATH / LD_LIBRARY_PATH.
+     
+  Once it is running you need to publish a message, either by running the
+  corresponding publisher example or using tibrvsend.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor" ref="Pipeline"/>
+  </bean>
+  
+  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+    <description>
+      This creates the simple pipeline Reader -> Writer.
+    </description>
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="TibrvConnection" class="org.openadaptor.thirdparty.tibco.TibrvConnection">
+    <description>This defines rv connection.</description>
+    <property name="service" value=""/>  
+    <property name="network" value=""/>  
+    <property name="daemon" value=""/>  
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.thirdparty.tibco.TibrvReadConnector">
+    <description>This is a read connector, that subscribes to rendezvous.</description>
+    <property name="connection" ref="TibrvConnection"/>
+    <property name="topics">
+      <list>
+        <value>test</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

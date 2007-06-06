@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * polls data from a db using a query at a configured interval
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that polls a database
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
+   
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
+    
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="Poller"/>
+            <ref bean="XmlConverter"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="Poller" class="org.openadaptor.core.connector.PollingReadConnector">
+    <description>Poller which wraps JDBC Reader below, polls immediately and then every fifth second.</description>
+    <property name="delegate" ref="Reader"/>
+    <property name="forceInitialPoll" value="true"/>
+    <property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <description>Reader which polls database using configured SQL.</description>
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="sql">
+      <value>
+        SELECT t.BuySell as Side, t.Qty as Size, s.ShortCode as RIC,
+               p.LongName as Counterparty, t.Price as Price
+        FROM TRADE t, SECURITY s, PARTY p
+        WHERE t.SecId = s.SecId AND t.PartyId = p.PartyId
+      </value>
+    </property>
+  </bean>
+
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="TRADE"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

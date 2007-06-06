@@ -1,0 +1,25 @@
+<body>
+Fundamental interfaces of openadaptor and the classes that they reference.
+
+<p> The
+<b>IMessageProcessor</b> interface represents something that can process a Message and return a Response,
+classes such as Adaptor, Node, Router and Pipeline implement this interface. The implementations
+of IMessageProcessor and other core interfaces to do with transaction management, exception
+processing and lifecycle management are all under this package.</p>
+
+<p>The <b>IReadConnector</b>
+represents something that connect to an external resource and read / receive data, it can be thought
+of as the thing that initiates the processing.</p>
+<p>The <b>IWriteConnector</b> interface represents something that can connect to an external resource and write / deliver
+data, it can be thought of as the thing that completes the processing.</p>
+<p>The <b>IDataProcessor</b> represents something that modifies or discards data, it can be thought of as an
+intermediate step in the processing.</p> 
+
+<p>The implementations of these interfaces are mainly found in the following packages.</p>
+<li>org.openadaptor.auxil</li>
+<li>org.openadaptor.thirdparty</li>
+<p/>
+
+@see org.openadaptor.auxil
+@see org.openadaptor.thirdparty
+</body>

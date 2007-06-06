@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="ReadConnector"/>
+            <ref bean="Processor"/>
+            <ref bean="Exceptor"/>
+            <ref bean="WriteConnector"/>
+          </list>
+        </property>
+        <property name="exceptionProcessor" ref="ErrorNode"/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="ReadConnector" class="org.openadaptor.core.connector.TestReadConnector">
+    <property name="id" value="ReadConnector"/>
+    <property name="maxSend" value="2"/>
+  </bean>
+
+  <bean id="Processor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="Processor"/>
+  </bean>
+
+  <bean id="WriteConnector" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="WriteConnector"/>
+    <property name="expectedOutput" value="Exceptor(Processor(test data 1))"/>
+  </bean>
+
+  <bean id="Exceptor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="Exceptor"/>
+    <property name="exceptionFrequency" value="2"/>
+  </bean>
+
+  <bean id="ErrorNode" class="org.openadaptor.core.node.WriteNode">
+    <property name="connector">
+      <ref bean="Error"/>
+    </property>
+  </bean>
+
+  <bean id="Error" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="Error"/>
+    <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
+  </bean>
+
+</beans>

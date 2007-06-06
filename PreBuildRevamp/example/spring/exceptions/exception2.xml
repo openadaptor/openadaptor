@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads xml from stdin
+    * validates the xml
+    * writes to stdout
+    
+  Validation failures are trapped and send to a discard file
+    
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config exception2.xml -bean Adaptor
+  
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will wait for command line input
+    
+  type something like this...
+    
+    <data>hello</data>
+    
+  ...and you should see it echo-ed
+  
+  type something which is not an xml doc with a element called data and the validation
+  exception will be caught and sent to the discards.txt
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="Reader" value-ref="Validator"/>
+        <entry key-ref="Validator" value-ref="Writer"/>
+      </map>
+    </property>
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>This processor validates the data as an xml string.</description>
+    <property name="schemaURL" value="input/schema.xsd"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="discards.txt"/>
+    <property name="append" value="false"/>
+  </bean>
+  
+</beans>

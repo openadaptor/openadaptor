@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <description><![CDATA[
+  This adaptor does the following...
+
+    * reads all data in sample_json_object.txt
+    * converts it to a JSONObject
+    * Wraps the Oject with an ISimpleRecordAccessor
+    * Passes it to a JavaScriptProcessor which changes the value of one of the attributes
+    * Unwraps the JSONObject
+    * Writes it to stdout relying on "asString" to do the right thing.
+
+  Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config jsonobject.xml -bean Adaptor
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
+  writes to stdout
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+      This adaptor is designed to illustrate a simple use of a JavascriptProcessor with a JSONObject.
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Pipeline">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="jsonbject"/>
+            <ref bean="SimpleRecordWrapper"/>
+            <ref bean="updater"/>
+            <ref bean="unwrapper"/>
+            <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/sample_json_object.txt"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
+  </bean>
+
+  <bean id="jsonbject" class="org.openadaptor.thirdparty.json.StringToJSONConvertor"/>
+
+  <bean id="SimpleRecordWrapper" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <description>Wrap the JSONObject with an ISimpleRecordAccessor</description>
+    <property name="simpleRecordAccessor">
+      <bean class="org.openadaptor.thirdparty.json.JSONObjectSimpleRecordAccessor"/>
+    </property>
+  </bean>
+
+  <bean id="updater" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
+    <description>
+      Simple use of a JavascriptProcessor. Changes the "age" attribute to 21.
+    </description>
+    <property name="script" value="record.put('age', 21 )"/>
+  </bean>
+
+  <bean id="unwrapper" class="org.openadaptor.auxil.convertor.simplerecord.FromSimpleRecordConvertor"/>
+
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>
