@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,17 +48,18 @@ import org.openadaptor.core.node.Node;
  * A RoutingMap describes how adaptor components (IMessageProcessors) are linked 
  * together. It actually holds 3 different maps.
  * 
- * <li>The processMap defines mapping between an IMessageProcessor and the list of 
- * IMessageProcessors that should process it's output.
+ * <li>The <code>processMap</code> defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process its output.
  * 
- * <li>The discardsMap defines mapping between an IMessageProcessor and the list of 
- * IMessageProcessors that should process it's discarded input.
+ * <li>The <code>discardMap</code> defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process its discarded input.
  * 
- * <li>The exceptionMap defines mapping between an IMessageProcessor and the list of 
- * IMessageProcessors that should process it's MessageExceptions.
+ * <li>The <code>exceptionMap</code> defines mapping between an IMessageProcessor and the list of 
+ * IMessageProcessors that should process its MessageExceptions.
  * 
  * <br/><br/>This makes heavy use of "autoboxing" to reduce some of the complexity
  * for more basic configurations. See comments for setProcessMap, setDiscardMap, setExceptionMap
+ * 
  * @author perryj
  * @see IMessageProcessor
  * @see MessageException
@@ -135,7 +137,7 @@ public class RoutingMap implements IRoutingMap {
    * slightly easier. Non list values will automatically be boxed into a list. 
    * Values which are not actually IMessageProcessors but are Connectors or Processors will
    * be automatically boxed in a Node. 
-   * If the parameters is not a map of maps then value is interpreted as the exceptin map
+   * If the parameters is not a map of maps then value is interpreted as the exception map
    * for all components.
    * There is a default Autoboxer but this can be overriden.
    * 
@@ -147,17 +149,18 @@ public class RoutingMap implements IRoutingMap {
 	public void setExceptionMap(Map map) {
 		exceptionMap.clear();
 		map = autoboxer.autobox(map);
+       
 		if (isMapOfMaps(map)) {
 			for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry entry = (Map.Entry) iter.next();
 				if (!(entry.getKey() instanceof IMessageProcessor) && !DEFAULT_KEY.equals(entry.getKey())) {
 					throw new RuntimeException("key " + entry.getKey().toString() + " is not IMessageProcessor");
 				}
-				OrderedExceptionMap oemap = new OrderedExceptionMap((Map)entry.getValue());
+				OrderedExceptionToProcessorsMap oemap = new OrderedExceptionToProcessorsMap((Map)entry.getValue());
 				exceptionMap.put(entry.getKey(), oemap);
 			}
 		} else {
-			OrderedExceptionMap oemap = new OrderedExceptionMap(map);
+			OrderedExceptionToProcessorsMap oemap = new OrderedExceptionToProcessorsMap(map);
 			exceptionMap.put(DEFAULT_KEY, oemap);
 		}
 	}
@@ -176,10 +179,15 @@ public class RoutingMap implements IRoutingMap {
 		return l != null ? l : Collections.EMPTY_LIST;
 	}
 
+    /**
+     * Gets destinations (a list of message processors) for a given processor and exception.
+     * 
+     * @return a list of IMessageProcessors
+     */
 	public List getExceptionDestinations(IMessageProcessor processor, Throwable exception) {
-		OrderedExceptionMap map = (OrderedExceptionMap) exceptionMap.get(processor);
+		OrderedExceptionToProcessorsMap map = (OrderedExceptionToProcessorsMap) exceptionMap.get(processor);
 		if (map == null) {
-			map = (OrderedExceptionMap) exceptionMap.get(DEFAULT_KEY);
+			map = (OrderedExceptionToProcessorsMap) exceptionMap.get(DEFAULT_KEY);
 		}
 		if (map != null) {
 			return map.getDestinations(exception);
@@ -219,59 +227,79 @@ public class RoutingMap implements IRoutingMap {
 		}
 		return result;
 	}
-	
-	class OrderedExceptionMap {
-		private List mExceptions = new ArrayList();
-		private Map mExceptionMap = new HashMap();
-		
-		OrderedExceptionMap(Map map) {
-			for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry entry = (Map.Entry) iter.next();
-				try {
-					Class exceptionClass = Class.forName(entry.getKey().toString());
-					if (Throwable.class.isAssignableFrom(exceptionClass)) {
-						List processorList = autoboxIMessageProcessorList(entry.getValue());
-						processors.addAll(processorList);
-						mExceptionMap.put(exceptionClass, processorList);
-						mExceptions.add(exceptionClass);
-					} else {
-						throw new RuntimeException(entry.getKey().toString() + " is not throwable");
-					}
-				} catch (ClassNotFoundException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		}
-		
-		List getDestinations(Throwable exception) {
-			List l = (List) mExceptionMap.get(exception.getClass());
-			for (Iterator iter = mExceptions.iterator(); l == null && iter.hasNext();) {
-				Class exceptionClass = (Class) iter.next();
-				if (exceptionClass.isAssignableFrom(exception.getClass())) {
-					l = (List) mExceptionMap.get(exceptionClass);
-				}
-			}
-			return l != null ? l : Collections.EMPTY_LIST;
-		}
-
-	}
-
-	private static List autoboxIMessageProcessorList(Object value) {
-		List list = null;
-		if (value instanceof List) {
-			list = (List) value;
-		} else {
-			list = new ArrayList();
-			list.add(value);
-		}
-		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-			Object element = (Object) iterator.next();
-			if (!(element instanceof IMessageProcessor)) {
-				throw new RuntimeException("value " + element.toString() + "(" 
+    
+      
+    private List autoboxIMessageProcessorList(Object value) {
+        List list = null;
+        if (value instanceof List) {
+            list = (List) value;
+        } else {
+            list = new ArrayList();
+            list.add(value);
+        }
+        for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+            Object element = (Object) iterator.next();
+            if (!(element instanceof IMessageProcessor)) {
+                throw new RuntimeException("value " + element.toString() + "(" 
             + element.getClass().getName() + ") is not IMessageProcessor");
-			}
-		}
-		return list;
-	}
+            }
+        }
+        return list;
+    }
+    
+    
+    /**
+     * Maps exceptions to their processors. Keys are exception classes
+     * (java.lang.Class), values are Lists of IMessageProcessors.
+     */
+    protected class OrderedExceptionToProcessorsMap extends LinkedHashMap {
+  
+      /**
+       * Constructor. Iterates through <code>map</code>, creates exception
+       * instances based on their class names (map's keys), autoboxes
+       * corresponding message processors (map's values) and stores the resulting
+       * pair (key: exception classes, value: list of processors) in itself.
+       * 
+       * @param a map; keys are exception class names (Strings), values are
+       *          exception processors (anything that implements
+       *          IMessageProcessor).
+       */
+      protected OrderedExceptionToProcessorsMap(Map map) {
+        for (Iterator iter = map.entrySet().iterator(); iter.hasNext();) {
+          Map.Entry entry = (Map.Entry) iter.next();
+          try {
+            Class exceptionClass = Class.forName(entry.getKey().toString());
+            if (Throwable.class.isAssignableFrom(exceptionClass)) {
+              List processorList = autoboxIMessageProcessorList(entry.getValue());
+              processors.addAll(processorList);
+              put(exceptionClass, processorList);
+            } else {
+              throw new RuntimeException(entry.getKey().toString()
+                  + " is not throwable");
+            }
+          } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      }
+  
+      /**
+       * Finds a list of processors for an exception.
+       * 
+       * @param exception an instance of Throwable
+       * @return list of processors, if any, configured for <code>exception</code>
+       */
+      protected List getDestinations(Throwable exception) {
+        List destinations = (List) get(exception.getClass());
+        for (Iterator iter = keySet().iterator(); destinations == null && iter.hasNext();) {
+          Class exceptionClass = (Class) iter.next();
+          if (exceptionClass.isAssignableFrom(exception.getClass())) {
+            destinations = (List) get(exceptionClass);
+          }
+        }
+        return destinations != null ? destinations : Collections.EMPTY_LIST;
+      }
+    } //ExceptionMap
 
+ 
 }
