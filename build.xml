@@ -41,6 +41,7 @@
 
   <property name="dir.example" value="${basedir}/example"/>
   <property name="dir.example.classes" value="${basedir}/example/classes"/>
+  <property name="dir.example.docs" value="${basedir}/example/docs"/>
   <property name="dir.example.src" value="${basedir}/example/src"/>
 
   <mkdir dir="${dir.stub.classes}"/>
@@ -54,6 +55,9 @@
   <mkdir dir="${dir.test.system.output}"/>
 
   <mkdir dir="${dir.example.classes}"/>
+  <mkdir dir="${dir.example.docs}"/>
+
+  <mkdir dir="${dir.javadocs}"/>
 
   <path id="classpath.stub">
     <pathelement path="${dir.stub.classes}"/>
@@ -197,7 +201,7 @@
   <target name="clean.example">
     <delete>
       <fileset dir="${dir.example.classes}" includes="**/*"/>
-      <fileset dir="${dir.package.example.doc}" includes="**/*"/>
+      <fileset dir="${dir.example.docs}" includes="**/*"/>
     </delete>
   </target>
 
