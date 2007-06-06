@@ -29,9 +29,9 @@
   <echo message="url          = ${url}"/>
   <echo message="checkout.tag = ${checkout.tag}"/>
   
-  <target name="release" depends="checkout, build, package" description="checkout clean work area, build and package"/>
+  <target name="release" depends="checkout, build" description="checkout clean work area, build and package"/>
 
-  <target name="rerelease" depends="update, build, package" description="update existing work area, rebuild and package"/>
+  <target name="rerelease" depends="update, build" description="update existing work area, rebuild and package"/>
 
   <target name="checkout">
     <delete dir="${dir.checkout}"/>
@@ -48,14 +48,18 @@
     </svn>
   </target>
   
-  <target name="build">
+  <!--target name="build">
     <ant antfile="build.xml" dir="${dir.checkout}" target="recompile.all"/>
     <ant antfile="build.xml" dir="${dir.checkout}" target="copyright.check"/>
+  </target-->
+
+  <target name="build">
+    <ant antfile="build.xml" dir="${dir.checkout}" target="cruise"/>
   </target>
   
-  <target name="package">
+  <!--target name="package">
     <ant antfile="package.xml" dir="${dir.checkout}" target="zippedpackage"/>
-  </target>
+  </target-->
   
  
 </project>

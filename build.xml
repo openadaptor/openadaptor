@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="openadaptor" default="retest.all">
-  
+
   <tstamp/>
   <property name="debug" value="true"/>
   <property name="file.licence" value="${basedir}/src/org/openadaptor/util/licence.txt"/>
@@ -36,6 +36,8 @@
 
   <property name="dir.test.system.src" value="${basedir}/test/system/src"/>
   <property name="dir.test.system.output" value="${basedir}/test/system/output"/>
+
+  <property name="dir.javadocs" value="${basedir}/javadocs"/>
 
   <property name="dir.example" value="${basedir}/example"/>
   <property name="dir.example.classes" value="${basedir}/example/classes"/>
@@ -160,7 +162,9 @@
     <javac srcdir="${dir.example.src}" destdir="${dir.example.classes}" classpathref="classpath.example" debug="${debug}"/>
   </target>
 
-  <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test, clean.example, clean.buildtools" description="clean all compile and test output"/>
+  <!-- Cleaning -->
+
+  <target name="clean.all" depends="clean.stub, clean, clean.spring, clean.test, clean.example, clean.buildtools, clean.javadocs" description="clean all compile and test output"/>
 
   <target name="clean.stub">
     <delete>
@@ -193,12 +197,20 @@
   <target name="clean.example">
     <delete>
       <fileset dir="${dir.example.classes}" includes="**/*"/>
+      <fileset dir="${dir.package.example.doc}" includes="**/*"/>
     </delete>
   </target>
 
-  <target name="retest.all" depends="recompile.all, test.all" description="clean, recompile and test"/>
-  
-  <target name="test.all" depends="test.unit, test.integration, test.system" description="Run combined tests cleanly (currently unit, integration and system tests)"/>
+  <target name="clean.javadocs">
+    <delete>
+      <fileset dir="${dir.javadocs}" includes="**/*"/>
+    </delete>
+  </target>
+
+
+  <!-- Test targets -->
+
+  <target name="test.all" depends="test.unit, test.integration, test.system" description="Run combined tests (currently unit, integration and system tests)"/>
 
   <target name="test.unit" description="run unit tests only">
     <junit printsummary="true" dir="${basedir}">
@@ -287,6 +299,7 @@
       <fileset dir="${dir.spring.src}" includes="**/*.java"/>
       <fileset dir="${dir.example.src}" includes="**/*.java"/>
     </copyright>
+
   </target>
 
   <target name="copyright.correct" depends="buildtools.taskdef" description="corrects copyright notices in code">
@@ -307,7 +320,260 @@
       </fileset>
     </springcheck>
   </target>
- 
-  <target name="cruise" depends="retest.all, example.springcheck, copyright.check" description="target for cruise control to call"/>
+
+    <!-- javac srcdir="${dir.src}" destdir="${dir.classes}" classpathref="classpath" debug="${debug}"/ -->
+
+  <target name="javadocs">
+    <mkdir dir="${dir.javadocs}"/>
+    <javadoc
+      destdir="${dir.javadocs}"
+      classpathref="classpath"
+      doctitle="openadaptor ${tag}"
+      verbose="false"
+      additionalparam="-quiet">
+      <fileset dir="${dir.src}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${dir.spring.src}">
+        <include name="**/*.java"/>
+      </fileset>
+    </javadoc>
+  </target>
+
+  <!-- Lets put the example doc generation here -->
+  <target name="example.doc">
+    <ant antfile="docs.xml" dir="${basedir}/example/tools" target="docs"/>
+  </target>
+
+
+  <!-- Do a clean full build -->
+  <target name="build.all" depends="recompile.all, example.springcheck, copyright.check, javadocs, example.doc" description="build all source and documentation."/>
+
+  <!-- Do a full build followed by a full test -->
+  <target name="retest.all" depends="build.all, test.all" description="do a full clean, recompile and test"/>
+
+
+  <!-- ********** Support for Packaging ******** -->
+
+
+
+
+  <property name="dir.package" value="${basedir}/package"/>
+  <property name="dir.package.lib" value="${dir.package}/lib"/>
+  <property name="dir.package.example" value="${dir.package}/example"/>
+  <property name="dir.package.sql" value="${dir.package}/sql"/>
+  <property name="dir.package.javadocs" value="${dir.package}/javadocs"/>
+  <property name="dir.package.example.doc" value="${dir.package}/example/docs" />
+
+  <path id="classpath.test.package">
+    <pathelement path="${dir.package.lib}"/>
+    <pathelement path="${dir.package.lib}/openadaptor.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-depends.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-spring.jar"/>
+    <pathelement path="${dir.package.lib}/openadaptor-stub.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/mail.jar"/>
+    <pathelement path="${dir.package.lib}/3rdparty/activation.jar"/>
+
+    <pathelement path="${dir.test.classes}"/>
+    <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
+  </path>
+
+  <target name="clean.package">
+    <delete dir="${dir.package}"/>
+  </target>
+
+  <target name="zip">
+    <zip destfile="openadaptor-${tag}-bin.zip">
+      <zipfileset dir="${dir.package}" prefix="openadaptor-${tag}"/>
+    </zip>
+  </target>
+
+  <target name="lib.package" depends="buildtools.taskdef">
+    <mkdir dir="${dir.package}"/>
+    <mkdir dir="${dir.package.lib}"/>
+    <mkdir dir="${dir.package.lib}/3rdparty"/>
+    <jar destfile="${dir.package.lib}/openadaptor.jar">
+      <fileset dir="${dir.classes}"/>
+    </jar>
+    <jar destfile="${dir.package.lib}/openadaptor-spring.jar">
+      <fileset dir="${dir.spring.classes}"/>
+    </jar>
+    <jar destfile="${dir.package.lib}/openadaptor-stub.jar">
+      <fileset dir="${dir.stub.classes}"/>
+    </jar>
+    <jar destfile="${dir.package.lib}/bootstrap.jar">
+      <fileset dir="${dir.classes}" includes="org/openadaptor/bootstrap/*"/>
+      <fileset dir="${dir.spring.classes}" includes="org/openadaptor/bootstrap/*"/>
+      <fileset dir="${dir.lib}" includes="log4j.properties"/>
+      <manifest>
+        <attribute name="Main-Class" value="org.openadaptor.bootstrap.Usage"/>
+      </manifest>
+    </jar>
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="${basedir}/jarversions.properties" version="${tag}" manifest="${basedir}/lib/MANIFEST.MF">
+      <fileset dir="${dir.lib}">
+        <include name="*.jar"/>
+        <include name="*.zip"/>
+      </fileset>
+      <fileset dir="${dir.spring.lib}">
+        <include name="*.jar"/>
+        <include name="*.zip"/>
+      </fileset>
+    </jarcopy>
+    <jarcopy todir="${dir.package.lib}/3rdparty" versionProperties="${basedir}/jarversions.properties" version="${tag}">
+      <fileset dir="${dir.test.lib}">
+        <include name="*.jar"/>
+        <include name="*.zip"/>
+      </fileset>
+    </jarcopy>
+    <property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*"/>
+    <jar destfile="${dir.package.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
+      <!-- ordered list of jars, only includes qualified resources -->
+      <zipfileset src="${dir.lib}/XmlSchema.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-codec.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-collections.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-httpclient.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-jxpath.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-lang.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-net.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/dom4j.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxen.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jdom.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jetty-util.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jetty.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jms.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jmxremote.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jmxri.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/js.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/json.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jta-spec.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/log4j.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/qname.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/quartz.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/resolver.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/rome.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/saaj.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/serializer.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/servlet-api.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/stax-api.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/velocity.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/wsdl4j.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/wstx-asl.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xercesImpl.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xfire-all.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xml-apis.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xstream.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}"/>
+      <!-- ordered list of jars, includes non-qualified resources but with prefix -->
+      <zipfileset src="${dir.lib}/XmlSchema.jar" excludes="${includes.unqualified}" prefix="XmlSchema"/>
+      <zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol"/>
+      <zipfileset src="${dir.lib}/commons-codec.jar" excludes="${includes.unqualified}" prefix="commons-codec"/>
+      <zipfileset src="${dir.lib}/commons-collections.jar" excludes="${includes.unqualified}" prefix="commons-collections"/>
+      <zipfileset src="${dir.lib}/commons-httpclient.jar" excludes="${includes.unqualified}" prefix="commons-httpclient"/>
+      <zipfileset src="${dir.lib}/commons-jxpath.jar" excludes="${includes.unqualified}" prefix="commons-jxpath"/>
+      <zipfileset src="${dir.lib}/commons-lang.jar" excludes="${includes.unqualified}" prefix="commons-lang"/>
+      <zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging"/>
+      <zipfileset src="${dir.lib}/commons-net.jar" excludes="${includes.unqualified}" prefix="commons-net"/>
+      <zipfileset src="${dir.lib}/dom4j.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
+      <zipfileset src="${dir.lib}/jaxen.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
+      <zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc"/>
+      <zipfileset src="${dir.lib}/jdom.jar" excludes="${includes.unqualified}" prefix="jdom"/>
+      <zipfileset src="${dir.lib}/jetty-util.jar" excludes="${includes.unqualified}" prefix="jetty-util"/>
+      <zipfileset src="${dir.lib}/jetty.jar" excludes="${includes.unqualified}" prefix="jetty"/>
+      <zipfileset src="${dir.lib}/jms.jar" excludes="${includes.unqualified}" prefix="jms"/>
+      <zipfileset src="${dir.lib}/jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote"/>
+      <zipfileset src="${dir.lib}/jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri"/>
+      <zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools"/>
+      <zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm"/>
+      <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs"/>
+      <zipfileset src="${dir.lib}/js.jar" excludes="${includes.unqualified}" prefix="js"/>
+      <zipfileset src="${dir.lib}/json.jar" excludes="${includes.unqualified}" prefix="json"/>
+      <zipfileset src="${dir.lib}/jta-spec.jar" excludes="${includes.unqualified}" prefix="jta-spec"/>
+      <zipfileset src="${dir.lib}/log4j.jar" excludes="${includes.unqualified}" prefix="log4j"/>
+      <zipfileset src="${dir.lib}/qname.jar" excludes="${includes.unqualified}" prefix="qname"/>
+      <zipfileset src="${dir.lib}/quartz.jar" excludes="${includes.unqualified}" prefix="quartz"/>
+      <zipfileset src="${dir.lib}/resolver.jar" excludes="${includes.unqualified}" prefix="resolver"/>
+      <zipfileset src="${dir.lib}/rome.jar" excludes="${includes.unqualified}" prefix="rome"/>
+      <zipfileset src="${dir.lib}/saaj.jar" excludes="${includes.unqualified}" prefix="saaj"/>
+      <zipfileset src="${dir.lib}/serializer.jar" excludes="${includes.unqualified}" prefix="serializer"/>
+      <zipfileset src="${dir.lib}/servlet-api.jar" excludes="${includes.unqualified}" prefix="servlet-api"/>
+      <zipfileset src="${dir.lib}/stax-api.jar" excludes="${includes.unqualified}" prefix="stax-api"/>
+      <zipfileset src="${dir.lib}/velocity.jar" excludes="${includes.unqualified}" prefix="velocity"/>
+      <zipfileset src="${dir.lib}/wsdl4j.jar" excludes="${includes.unqualified}" prefix="wsdl4j"/>
+      <zipfileset src="${dir.lib}/wstx-asl.jar" excludes="${includes.unqualified}" prefix="wstx-asl"/>
+      <zipfileset src="${dir.lib}/xercesImpl.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
+      <zipfileset src="${dir.lib}/xfire-all.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
+      <zipfileset src="${dir.lib}/xml-apis.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
+      <zipfileset src="${dir.lib}/xstream.jar" excludes="${includes.unqualified}" prefix="xstream"/>
+      <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
+      <zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
+      <zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring"/>
+    </jar>
+    <copy todir="${dir.package.lib}">
+      <fileset dir="${dir.lib}">
+        <include name="log4j.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+    <target name="javadocs.package">
+    <copy todir="${dir.package.javadocs}">
+      <fileset dir="${basedir}">
+        <include name="javadocs/**"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="example.package">
+    <copy todir="${dir.package.example}">
+      <fileset dir="${dir.example}">
+        <include name="readme.html"/>
+        <include name="build.xml"/>
+        <include name="readme*"/>
+        <include name="spring/**"/>
+        <include name="src/**"/>
+        <include name="bin/**"/>
+        <include name="tutorial/**"/>
+        <include name="tools/**"/>
+        <include name="docs/**"/>
+      </fileset>
+    </copy>
+    <copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties"/>
+  </target>
+
+  <target name="sql.package">
+    <copy todir="${dir.package.sql}">
+      <fileset dir="${dir.sql}"/>
+    </copy>
+  </target>
+
+
+  <target name="test.package" description="run tests against packaged jars">
+    <ant target="test.all" inheritAll="false">
+      <reference refid="classpath.test.package" torefid="classpath.test"/>
+    </ant>
+    <ant target="example.springcheck" inheritAll="false">
+      <reference refid="classpath.test.package" torefid="classpath.test"/>
+    </ant>
+  </target>
+
+  <!-- Main Packaging Targets -->
+
+  <target name="zippedpackage" depends="package, zip" description="create zipped package"/>
+
+  <target name="package" depends="clean.package, lib.package, sql.package, example.package, javadocs.package, test.package"/>
+
+
+  <!-- Cruise is intended to be the target for continuous builds -->
+
+  <target name="cruise" depends="build.all, zippedpackage" description="target for cruise control to call"/>
    
 </project>
+
