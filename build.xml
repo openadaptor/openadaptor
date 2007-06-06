@@ -527,10 +527,18 @@
     </copy>
   </target>
 
-    <target name="javadocs.package">
+  <target name="javadocs.package">
     <copy todir="${dir.package.javadocs}">
       <fileset dir="${basedir}">
         <include name="javadocs/**"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="faq.package">
+    <copy todir="${dir.package}">
+      <fileset dir="${basedir}/www">
+        <include name="FAQ.html"/>
       </fileset>
     </copy>
   </target>
@@ -572,7 +580,7 @@
 
   <target name="zippedpackage" depends="package, zip" description="create zipped package"/>
 
-  <target name="package" depends="clean.package, lib.package, sql.package, example.package, javadocs.package, test.package"/>
+  <target name="package" depends="clean.package, lib.package, sql.package, example.package, javadocs.package, faq.package, test.package"/>
 
 
   <!-- Cruise is intended to be the target for continuous builds -->
