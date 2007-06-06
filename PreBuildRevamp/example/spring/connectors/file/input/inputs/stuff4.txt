@@ -1,3 +1,0 @@
-<stuff>
-  xml stuff from stuff 4
-</stuff>
