@@ -1,0 +1,149 @@
+=================================================
+openadaptor3 production 3.2.1.1 Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 7th June 2007
+Author: openadaptor Core Team
+
+openadaptor 3.2.1.1
+=======
+
+Summary
+=======
+This is the second production release of openadaptor 3.2.1
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+This release focuses on fixing defects and some enhancements.
+
+================================================================================
+
+
+Enhancements
+============
+
+Documentation
+
+  Jboss environment - 'Environment' section was added to the example/readme.html
+  detailing versions of the JBoss application server successfully tested to work
+  with those openadaptor examples that require a JMS implementation.
+
+
+Configuration
+
+  SpringApplication and SpringAdaptor have been enhanced to substitute for 
+  system properties. Properties resources can be specified on the command line
+  using one or more "-props <resource-name>" arguments. This is now the default
+  behaviour. Default 3.2.1 behaviour can be reinstated by supplying "- noprops"
+  as a command line argument.
+
+
+Database
+
+  TableStatementConverter has been modified to issue a warning and throw a 
+  RecordFormatException when an incoming ordered map contains more fields than
+  the output table it is writing to.
+
+
+General Enahncements
+
+  Legacy JMS 1.0.2 compliant connection code has been removed. We see no 
+  advantage in maintaning this going forward.
+
+  The Pipeline class has been refactored as a trivial subclass of Router. It is
+  likely to be deprecated from the next release - Router already implements all
+  of its behaviour and can be configured similarly if desired.
+
+  PreparedStatementTableConverter has been added. This can offer significant 
+  performance improvements over previous mechanisms by reusing a prepared 
+  statement for multiple written data records.
+
+  The exception manager/store has been temporarily removed. We intend to 
+  refactor this to be easier to use and less reliant on webservices. In
+  the meantime, exception handling and re-routing works as before using standard
+  components. 
+
+  We have begun the process of replacing usage of ISimpleRecord with Map
+  instances. Ultimately this should allow generic processors which operate on 
+  standard Maps.
+ 
+  JDBCWriteConnector now allows preamble and postamble SQL to be executed before
+  the connector starts processing records and after it finishes processing the
+  last records, respectively.
+
+  ScriptableSimpleRecord has been enhanced to support returned Object[] values.
+
+
+Packaging
+
+  The webservice tests have been removed as they are failing due to differences
+  in the running environment. New tests will appear in due  course.
+
+
+Defects
+
+  SC13  Bug in OrderedMapToXmlConvertor - Conversion would fail if key could not
+        be cast to a string as it used (String)key. Modified to use
+        key.toString() instead which is considerably more optimistic.
+
+
+  SC14  Bug in OrderedMapToDelimitedStringConvertor This was failing to convert
+        non-String value objects to delimited strings. Now uses toString() to
+        obtain its String representation
+
+  SC15  Bug in Dom4J simple record processora - this would have failed if an
+        attempt to put(key,null) was made.
+
+  SC16  Bug in AbstractDelimitedStringConvertor - The mechanism for splitting
+        strings was inconsistent; one character long delimiters were treated as
+        either literal strings or regular expressions depending on the 
+        delimited strings having quoted blocks in them.(blocks of text not to
+        be broken up by the convertor even if they contained the delimiter)
+        Users to specify via bean properties if the delimiter is to be always
+        treated as a regular expression or always as a delimited string. For
+        the default behaviour a one character delimiter (anticipated to be the
+        case in most situations) is used as a literal string whereas longer
+        delimiters are interpreted as regular expressions.
+ 
+  SC17  Bug in AbstractDelimitedStringConvertor - it was dropping
+        trailing empty elements.
+
+
+
+
+
+++++++++++++++++++++++++
+
+=================================================
+openadaptor3.2.1.1 production Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 07th June 2007
+Author: openadaptor Core Team
+
+openadaptor 3.2.1.1
+=======
+
+Summary
+=======
+This is the first monthly release since the production release of 
+openadaptor 3.2.1
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+
+
+
+
+
+
