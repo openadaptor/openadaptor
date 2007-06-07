@@ -50,7 +50,7 @@ Database
   the output table it is writing to.
 
 
-General Enahncements
+General Enhancements
 
   Legacy JMS 1.0.2 compliant connection code has been removed. We see no 
   advantage in maintaning this going forward.
@@ -91,7 +91,6 @@ Defects
         be cast to a string as it used (String)key. Modified to use
         key.toString() instead which is considerably more optimistic.
 
-
   SC14  Bug in OrderedMapToDelimitedStringConvertor This was failing to convert
         non-String value objects to delimited strings. Now uses toString() to
         obtain its String representation
@@ -112,9 +111,6 @@ Defects
  
   SC17  Bug in AbstractDelimitedStringConvertor - it was dropping
         trailing empty elements.
-
-
-
 
 
 ++++++++++++++++++++++++
