@@ -187,7 +187,7 @@ public class WriteNode extends Node {
     try {
       connector.disconnect();
     } catch (Exception e) {
-      log.debug("disconnect failed, " + e.getMessage());
+      log.error("disconnect failed, " + e.getMessage());
     } 
   }
 }
