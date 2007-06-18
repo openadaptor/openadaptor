@@ -53,7 +53,7 @@ Database
 General Enhancements
 
   Legacy JMS 1.0.2 compliant connection code has been removed. We see no 
-  advantage in maintaning this going forward.
+  advantage in maintaining this going forward.
 
   The Pipeline class has been refactored as a trivial subclass of Router. It is
   likely to be deprecated from the next release - Router already implements all
@@ -111,6 +111,21 @@ Defects
  
   SC17  Bug in AbstractDelimitedStringConvertor - it was dropping
         trailing empty elements.
+        
+  SC18  Null values in returned data will cause data to be lost. Fixed.
+        
+  SC19  OrderedMapToXMLConvertor could inadvertently have introduced illegal tag
+        names in the generated XML. This would occur if an incoming key name
+        contained a forward slash (/) character, which is illegal in XML tag
+        names. Unfortunately dom4j does not detect this, and will generate XML
+        with the illegal tag names. Subsequent parsing of the generated XML will
+        fail however, by virtue of the illegal key name. Consequently, the
+        mappedSlashValue property has been added. This specifies the value that
+        will be substituted in place of slash characters in generated key names.
+        By default this is implicitly set to DEFAULT_SLASH_SUBSTITUTE. Note that
+        if the mappedSlashValue property is not explicitly set, a warning will
+        issue each time a slash has been implicitly mapped (explicitly setting
+        the mapped value will prevent such warnings).
 
 
 ++++++++++++++++++++++++
