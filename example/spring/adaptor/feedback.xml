@@ -16,6 +16,17 @@
   
   Objective: clone incoming records that have multiple values for the "guid" attribute,
   such that each individual "guid" is in a separate cloned outgoing record.
+
+  Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config feedback.xml -bean Adaptor
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar    
   
   Split on semi-colon guid attribute values like:
      user1,a878de987dd;c56e987f8ad

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id$
-  $HeadURL$
+  $Id:jmx.xml 641 2007-06-06 09:52:53Z kscully $
+  $HeadURL:https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/adaptor/jmx.xml $
  --> 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,7 +10,18 @@
   Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
   will automatically be registered. The adaptor will be registered and this example includes 
   a utility bean that exposes useful methods for viewing JVM properties.
-    
+
+Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config jmx.xml -bean Adaptor
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
   This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
   reference implementation and automatically runs a http adaptor which you can browse 
   at http://localhost:8082).
