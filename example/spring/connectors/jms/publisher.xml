@@ -58,7 +58,7 @@
       This defines jndi connection, from which we get jms connection.
     </description>
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
-    <property name="providerUrl" value="jnp://localhost:1199"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
     <!-- 
       Uncomment the following property to specify an alternate provider url. 
       Currently only JMSConnection can take advantage of this feature 
