@@ -36,6 +36,9 @@
 <project name="openadaptor-examples-docs" default="docs">
   <target name="${basedir}/package/example/docs"/>
 
+  <!-- default id to use trunk. Override with a particular tag when building releases -->
+  <property name="tag" value="trunk"/>
+
   <property file="docs.properties" />
   <!-- Where to find XSL Transforms, Schemas, DTDs -->
 
@@ -116,8 +119,8 @@
       <patternset refid="example.xml.config.files" />
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
-      <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
-      <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
+      <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${tag}/example/" /> -->
+      <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${tag}/example/" /> -->
       <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
       <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
       <xmlcatalog refid="oa3XmlCatalog" />
@@ -168,8 +171,8 @@
       <param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
       <param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
       <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
-      <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
-      <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/" /> -->
+      <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${tag}/example/" /> -->
+      <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${tag}/example/" /> -->
       <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
       <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
       <param name="showJavaDocLinks" expression="true" />
@@ -198,8 +201,8 @@
           <filetokenizer />
           <!-- Pull the name of each cookbook example out of its CVS Header comment,
                and add as "id" attribute to its "beans" element (preserving schema namespace attributes): -->
-          <replaceregex pattern="(HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-          <replaceregex pattern="(HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(HeadURL: https://www.openadaptor.org/svn/openadaptor3/${tag}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${tag}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern1})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern2})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <!-- Cope (dumbly) with up to 3 underscores in bean relative path filename (map to minus sign): -->

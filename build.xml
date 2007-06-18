@@ -5,7 +5,7 @@
   <property name="debug" value="true"/>
   <property name="file.licence" value="${basedir}/src/org/openadaptor/util/licence.txt"/>
   <property file="${basedir}/checkout.properties"/>
-  <property name="tag" value="untagged"/>
+  <property name="tag" value="trunk"/>
 
   <property name="dir.stub.classes" value="${basedir}/stub/classes"/>
   <property name="dir.stub.lib" value="${basedir}/stub/lib"/>
