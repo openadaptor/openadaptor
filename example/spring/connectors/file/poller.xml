@@ -16,7 +16,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config reader.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config poller.xml -bean Adaptor
     
   You need the following in your classpath
   
@@ -24,7 +24,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    hsqldb.jar (this is not distributed with openadaptor)
+    lib/3rdparty/hsqldb.jar 
     
   This example relies on a hypersonic database running (http://www.hsqldb.org) to run
   up the server make sure hsqldb.jar is in your class path and run the following...
