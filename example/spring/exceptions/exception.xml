@@ -70,7 +70,7 @@
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="discards.txt"/>
+    <property name="filename" value="output/discards.txt"/>
     <property name="append" value="false"/>
   </bean>
   
