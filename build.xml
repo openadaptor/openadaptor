@@ -528,7 +528,7 @@
   </target>
 
   <target name="javadocs.package">
-    <copy todir="${dir.package.javadocs}">
+    <copy todir="${dir.package}">
       <fileset dir="${basedir}">
         <include name="javadocs/**"/>
       </fileset>
