@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <description><![CDATA[
+    $Id$
+    $HeadURL$
+
+    This is a sample adaptor which
+
+      * reads data from a database according to a query
+      * writes the resultant data to another, possibly different database
+
+    It can optionally select particular field to write at the output stage
+
+    Run it like this...
+
+      java -DinputTable=MyTable -DoutputTable=MyOtherTable org.openadaptor.spring.SpringAdaptor -config copytable.xml -bean Adaptor -props copytable.properties
+
+    You need the following in your classpath (substituting database driver jar(s) as appropriate)
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+
+      (one or more database driver jars such as ...)
+
+      lib/jconn2.jar (sybase)
+      lib/ifxjdbc-2.21.JC2.jar   (informix)
+      lib/jtds-1.2.jar           (SQLServer)
+
+    You must also supply appropriate values for properties in the file copytable.properties.
+
+   ]]></description>
+
+
+ <!-- Main adaptor configuration -->
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <property name="processMap">
+         <map>
+           <entry key-ref="Reader" value-ref="Writer"/>
+         </map>
+       </property>
+       <!-- exception map -->
+       <property name="exceptionMap">
+       <map>
+         <entry key="java.lang.Exception" value-ref="DiscardWriter"/>
+       </map>
+       </property>
+     </bean>
+   </property>
+ </bean>
+
+  <!-- Informix jdbc connection -->
+  <bean id="InputJdbcConnectionInformix"
+  	class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+  	<property name="driver" value="${informix_driver}" />
+  	<property name="url" value="${informix_url}" />
+  	<property name="username" value="${informix_user}" />
+  	<property name="password" value="${informix_password}" />
+  </bean>
+
+  <!-- SQLServer jdbc connection (jtds) -->
+  <bean id="OutputJdbcConnectionSQLServer"
+  	class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+  	<property name="driver" value="${sqlserver_driver}" />
+  	<property name="url" value="${sqlserver_url}" />
+  	<property name="username" value="${sqlserver_user}" />
+  	<property name="password" value="${sqlserver_password}" />
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <property name="jdbcConnection" ref="InputJdbcConnectionInformix"/>
+    <!-- The SQL here can actually be any valid SQL -->
+    <property name="sql">
+      <value>
+        SELECT *
+        FROM ${inputTable}
+      </value>
+    </property>
+  </bean>
+
+  <!-- Writer which inserts a row into a test table -->
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <property name="jdbcConnection" ref="OutputJdbcConnectionSQLServer"/>
+
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.PreparedStatementTableConverter">
+        <property name="tableName" value="${outputTable}"/>
+        <!-- Uncomment to restrict the written columns to those listed
+        <property name="outputColumns">
+         <list>
+       	  <value>alpha</value>
+          <value>beta</value>
+         </list>
+        </property>
+        -->
+      </bean>
+    </property>
+
+  </bean>
+
+  <!-- Just log failures to stdout -->
+  <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>
