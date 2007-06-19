@@ -7,6 +7,15 @@
   <property file="${basedir}/checkout.properties"/>
   <property name="tag" value="trunk"/>
 
+  <!-- defaults to use trunk. Override with a particular tag when building releases -->
+  <condition property="examples.relative.basename" value="tags/${tag}">
+    <not>
+      <equals arg1="${tag}" arg2="trunk"/>
+    </not>
+  </condition>
+
+  <property name="examples.relative.basename" value="${tag}" />
+
   <property name="dir.stub.classes" value="${basedir}/stub/classes"/>
   <property name="dir.stub.lib" value="${basedir}/stub/lib"/>
   <property name="dir.stub.src" value="${basedir}/stub/src"/>
@@ -346,9 +355,11 @@
 
   <!-- Lets put the example doc generation here -->
   <target name="example.doc">
-    <ant antfile="docs.xml" dir="${basedir}/example/tools" target="docs"/>
+    <ant antfile="docs.xml" dir="${basedir}/example/tools" target="docs">
+      <property name="filecomment.path.pattern1" value="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
+      <property name="filecomment.path.pattern2" value="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
+    </ant>
   </target>
-
 
   <!-- Do a clean full build -->
   <target name="build.all" depends="recompile.all, example.springcheck, copyright.check, javadocs, example.doc" description="build all source and documentation."/>
