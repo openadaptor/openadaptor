@@ -36,16 +36,6 @@
 <project name="openadaptor-examples-docs" default="docs">
   <target name="${basedir}/package/example/docs"/>
 
-  <!-- defaults to use trunk. Override with a particular tag when building releases -->
-  <condition property="examples.relative.basename" value="tags/${tag}">
-    <not>
-      <equals arg1="${tag}" arg2="trunk"/>
-    </not>
-  </condition>
-
-  <property name="examples.relative.basename" value="${tag}" />
-
-
   <property file="docs.properties" />
   <!-- Where to find XSL Transforms, Schemas, DTDs -->
 
@@ -58,6 +48,9 @@
 
   <property name="filecomment.path.pattern1" value="this pattern will not be found"/>
   <property name="filecomment.path.pattern2" value="this pattern will not be found"/>
+  <property name="filecomment.path.pattern3" value="this pattern will not be found"/>
+  <property name="filecomment.path.pattern4" value="this pattern will not be found"/>
+
 
     <!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
   <patternset id="example.xml.config.files">
@@ -128,8 +121,10 @@
       <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
       <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
       <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
-      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
-      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
+      <param name="filepathGlobPrefix1" expression="${filecomment.path.pattern1}" />
+      <param name="filepathGlobPrefix2" expression="${filecomment.path.pattern2}" />
+      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern3}" />
+      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern4}" />
       <xmlcatalog refid="oa3XmlCatalog" />
       <mapper type="glob" from="*.xml" to="*.dot" />
     </xslt>
@@ -180,8 +175,10 @@
       <!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
       <!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
       <!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
-      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern1}" />
-      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern2}" />
+      <param name="filepathGlobPrefix1" expression="${filecomment.path.pattern1}" />
+      <param name="filepathGlobPrefix2" expression="${filecomment.path.pattern2}" />
+      <param name="filepathGlobPrefix3" expression="${filecomment.path.pattern3}" />
+      <param name="filepathGlobPrefix4" expression="${filecomment.path.pattern4}" />
       <param name="showJavaDocLinks" expression="true" />
       <param name="showConfigIndexLinks" expression="true" />
       <!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
@@ -192,9 +189,6 @@
     </xslt>
 
   </target>
-
-
-  <echo message="examples.relative.basename  = ${examples.relative.basename}"/>
   
   <!-- Generates the project Cookbook (including index pages) -->
   <target name="docs" depends="docs_prepare,docs_images" description="Generate the documentation">
@@ -210,10 +204,10 @@
           <filetokenizer />
           <!-- Pull the name of each cookbook example out of its CVS Header comment,
                and add as "id" attribute to its "beans" element (preserving schema namespace attributes): -->
-          <replaceregex pattern="(HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-          <replaceregex pattern="(HeadURL: /)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern1})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern2})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(${filecomment.path.pattern3})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(${filecomment.path.pattern4})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <!-- Cope (dumbly) with up to 3 underscores in bean relative path filename (map to minus sign): -->
           <replaceregex pattern="(beans id=&quot;[^&quot;_]*?)_([^&quot;]*?&quot;)" flags="sg" replace="\1-\2" />
           <replaceregex pattern="(beans id=&quot;[^&quot;_]*?)_([^&quot;]*?&quot;)" flags="sg" replace="\1-\2" />
