@@ -36,8 +36,15 @@
 <project name="openadaptor-examples-docs" default="docs">
   <target name="${basedir}/package/example/docs"/>
 
-  <!-- default id to use trunk. Override with a particular tag when building releases -->
-  <property name="tag" value="trunk"/>
+  <!-- defaults to use trunk. Override with a particular tag when building releases -->
+  <condition property="examples.relative.basename" value="tags/${tag}">
+    <not>
+      <equals arg1="${tag}" arg2="trunk"/>
+    </not>
+  </condition>
+
+  <property name="examples.relative.basename" value="${tag}" />
+
 
   <property file="docs.properties" />
   <!-- Where to find XSL Transforms, Schemas, DTDs -->
@@ -201,8 +208,8 @@
           <filetokenizer />
           <!-- Pull the name of each cookbook example out of its CVS Header comment,
                and add as "id" attribute to its "beans" element (preserving schema namespace attributes): -->
-          <replaceregex pattern="(HeadURL: https://www.openadaptor.org/svn/openadaptor3/${tag}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-          <replaceregex pattern="(HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${tag}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+          <replaceregex pattern="(HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/)([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern1})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <replaceregex pattern="(${filecomment.path.pattern2})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
           <!-- Cope (dumbly) with up to 3 underscores in bean relative path filename (map to minus sign): -->
