@@ -194,6 +194,8 @@
   </target>
 
 
+  <echo message="examples.relative.basename  = ${examples.relative.basename}"/>
+  
   <!-- Generates the project Cookbook (including index pages) -->
   <target name="docs" depends="docs_prepare,docs_images" description="Generate the documentation">
 
