@@ -36,6 +36,16 @@
 <project name="openadaptor-examples-docs" default="docs">
   <target name="${basedir}/package/example/docs"/>
 
+  <!-- defaults to use trunk. Override with a particular tag when building releases -->
+  <condition property="examples.relative.basename" value="tags/${tag}">
+    <not>
+      <equals arg1="${tag}" arg2="trunk"/>
+    </not>
+  </condition>
+
+  <property name="examples.relative.basename" value="trunk" />
+
+
   <property file="docs.properties" />
   <!-- Where to find XSL Transforms, Schemas, DTDs -->
 
