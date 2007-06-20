@@ -54,7 +54,9 @@
   </target-->
 
   <target name="build">
-    <ant antfile="build.xml" dir="${dir.checkout}" target="cruise"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="build.all"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="example.doc"/>
+    <ant antfile="build.xml" dir="${dir.checkout}" target="zippedpackage"/>
   </target>
   
   <!--target name="package">
