@@ -362,7 +362,7 @@
   </target>
 
   <!-- Do a clean full build -->
-  <target name="build.all" depends="recompile.all, example.springcheck, copyright.check, javadocs, example.doc" description="build all source and documentation."/>
+  <target name="build.all" depends="recompile.all, example.springcheck, copyright.check, javadocs" description="build all source and documentation."/>
 
   <!-- Do a full build followed by a full test -->
   <target name="retest.all" depends="build.all, test.all" description="do a full clean, recompile and test"/>
