@@ -32,21 +32,21 @@
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Pipeline"/>
-  </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline Reader -> RMIClient.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="RMIClient"/>
-      </list>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline Reader -> RMIClient.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="RMIClient"/>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
-
+  
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="RMIClient" class="org.openadaptor.auxil.connector.rmi.RMIWriteConnector">

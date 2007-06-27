@@ -20,21 +20,21 @@
   ]]></description>
  
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor" ref="Pipeline"/>
+   <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline ReadConnector-MQSeries -> WriteConnector.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="ReadConnector"/>
+            <ref bean="MQSeries_WriteConnector"/>
+          </list>
+        </property>
+      </bean>
+   </property>
   </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline ReadConnector-MQSeries -> WriteConnector.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="ReadConnector"/>
-        <ref bean="MQSeries_WriteConnector"/>
-      </list>
-    </property>
-  </bean>
-
+ 
   <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
