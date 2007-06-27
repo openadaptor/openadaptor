@@ -34,20 +34,21 @@
         * reads all files in a directory input/inputs whose flenames match the regex stuff[0-9].txt
         * outputs to stdout
     </description>
-    <property name="messageProcessor" ref="Pipeline"/>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline DirectoryReader -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="DirectoryReader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>  
+    </property>
   </bean>
   
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline DirectoryReader -> Writer.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="DirectoryReader"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
-  </bean>  
   
   <bean id="DirectoryReader" class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">    
     <property name="dirname" value="input/inputs"/>
