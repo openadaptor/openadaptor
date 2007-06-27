@@ -34,18 +34,18 @@
   To test it fully you can run the other example which processes data by invoking
   a webservice.
   ]]></description>
-  
+
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Pipeline"/>
-  </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <property name="processors">
-      <list>
-        <ref bean="WebService"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processors">
+  				<list>
+  					<ref bean="WebService" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
   </bean>
 
   <bean id="WebService" class="org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector">

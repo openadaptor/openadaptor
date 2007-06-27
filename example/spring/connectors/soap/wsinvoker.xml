@@ -32,21 +32,21 @@
   processing to succeed, the webservice it is connecting to needs to be running
   (see the adaptorws.xml example).
   ]]></description>
-  
+
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor" ref="Pipeline"/>
-  </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <description>
-      This creates the simple pipeline Reader -> WebService.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="WebService"/>
-      </list>
-    </property>
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<description>
+  				This creates the simple pipeline Reader -> WebService.
+  			</description>
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="WebService" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
   </bean>
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
