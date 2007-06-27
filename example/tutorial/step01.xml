@@ -12,10 +12,10 @@
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Pipeline"/>
+    <property name="messageProcessor" ref="Router"/>
   </bean>
   
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+  <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processors">
       <list>
         <ref bean="Servlet"/>
