@@ -102,6 +102,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 	public void setProcessor(IDataProcessor processor) {
 		this.processor = processor;
 	}
+    
+    public IDataProcessor getProcessor(){
+        return this.processor;
+    }
 
 	public Response process(Message msg) {
 		

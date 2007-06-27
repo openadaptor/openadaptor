@@ -42,6 +42,7 @@ import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.node.Node;
 
+
 /**
  * The default implementation of {@link IRoutingMap}.
  * 
@@ -164,6 +165,10 @@ public class RoutingMap implements IRoutingMap {
 			exceptionMap.put(DEFAULT_KEY, oemap);
 		}
 	}
+    
+    protected Map getExceptionMap(){
+      return this.exceptionMap;
+    }
 
 	public Collection getMessageProcessors() {
 		return Collections.unmodifiableCollection(processors);
@@ -190,11 +195,34 @@ public class RoutingMap implements IRoutingMap {
 			map = (OrderedExceptionToProcessorsMap) exceptionMap.get(DEFAULT_KEY);
 		}
 		if (map != null) {
-			return map.getDestinations(exception);
+            return map.getDestinations(exception);
 		} else {
 			return Collections.EMPTY_LIST;
 		}
 	}
+    
+  
+    /**
+     * Checks if <code>processor</code> has already been autoboxed in 
+     * processMap. Returns the box if found.
+     * 
+     * @param processor a processor
+     * @return boxed processor if any can be found
+     */
+    protected Object getIfAlreadyAutoboxed(Object processor){
+      Object boxed = null;
+      Iterator ite = processMap.keySet().iterator();
+      while(ite.hasNext()){
+        Object key = ite.next();
+        if(! (key instanceof Node)) continue;
+        Node node = (Node) key;
+        if(node.getProcessor().equals(processor)){
+           boxed = node;
+           break;
+        }
+      }
+      return boxed;  
+    }
 
 	/**
 	 * checks that the keys and values are actually IMessageProcessor instances and autoboxes

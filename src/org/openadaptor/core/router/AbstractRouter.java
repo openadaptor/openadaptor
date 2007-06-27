@@ -50,6 +50,7 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.transaction.ITransaction;
 
+
 /**
  * Shared implementation of a {@link Router} and {@link Pipeline}.
  */
@@ -78,12 +79,16 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   protected void setRoutingMap(final RoutingMap routingMap) {
     this.routingMap = routingMap;
   }
+  
+  protected RoutingMap getRoutingMap(){
+    return this.routingMap;
+  }
 
   public void setComponentManager(ILifecycleComponentManager manager) {
     this.componentManager=manager;
     registerComponents();
   }
-
+  
   public Response process(Message msg) {
     return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
   }
