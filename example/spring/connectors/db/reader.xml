@@ -34,10 +34,22 @@
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Pipeline"/>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+            This creates the simple pipeline Reader -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
   </bean>
   
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
+  <bean class="org.openadaptor.core.router.Router">
     <description>
       This creates the simple pipeline Reader -> Writer.
     </description>
@@ -61,6 +73,9 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <description>Reader which polls database using configured SQL.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
+    <!-- Untested dev property
+    <property name="maxBatchSize" value="0"/> 
+    -->
     <property name="resultSetConverter">
       <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
     </property>
