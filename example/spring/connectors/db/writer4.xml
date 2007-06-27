@@ -33,21 +33,22 @@
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor" ref="Pipeline"/>
-  </bean>
+   <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <description>
+         This creates the simple pipeline Reader -> MapConverter -> Writer.
+       </description>
+       <property name="processors">
+         <list>
+           <ref bean="Reader"/>
+           <ref bean="MapConverter"/>
+           <ref bean="Writer"/>
+         </list>
+       </property>
+     </bean>
+   </property>
+ </bean>
   
-  <bean id="Pipeline" class="org.openadaptor.core.router.Router">
-    <description>
-      This creates the simple pipeline Reader -> MapConverter -> Writer.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="MapConverter"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
-  </bean>
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
