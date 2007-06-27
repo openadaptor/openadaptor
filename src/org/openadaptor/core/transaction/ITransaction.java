@@ -28,8 +28,8 @@
 package org.openadaptor.core.transaction;
 
 /**
- * Interface which describes an openadaptor Transaction. openadaptor provides a wrapper arounf the
- * JTA spec or it's own proprietary implementation.
+ * Interface which describes an openadaptor Transaction. openadaptor provides a wrapper around the
+ * JTA spec or its own proprietary implementation.
  */
 public interface ITransaction {
 
