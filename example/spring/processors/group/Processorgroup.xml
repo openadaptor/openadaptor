@@ -31,7 +31,7 @@
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor">
-      <bean class="org.openadaptor.core.router.Pipeline">
+      <bean class="org.openadaptor.core.router.Router">
         <property name="processors">
           <list>
             <ref bean="Reader"/>

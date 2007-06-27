@@ -38,25 +38,23 @@
     
   writes output to stdout.
   ]]></description>
-  
- <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor">
-     <ref bean="Pipeline"/>
-   </property>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="DOXmlConverter" />
+  					<ref bean="MapConverter" />
+  					<ref bean="XmlConverter" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
   </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="DOXmlConverter"/>
-        <ref bean="MapConverter"/>
-        <ref bean="XmlConverter"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
-  </bean>
-   
+
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <description>This read connector contexts of a file as a single string.</description>
     <property name="filename" value="input/doxml.txt"/>

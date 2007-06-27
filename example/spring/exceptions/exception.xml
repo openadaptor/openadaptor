@@ -40,22 +40,24 @@
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Pipeline"/>
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="Validator" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  			<property name="exceptionProcessor" ref="DiscardWriter">
+  				<description>
+  					this routes any exception to discard writer
+  				</description>
+  			</property>
+  		</bean>
+  	</property>
   </bean>
-  
-  <bean id="Pipeline" class="org.openadaptor.core.router.Pipeline">
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="Validator"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
-    <property name="exceptionProcessor" ref="DiscardWriter">
-      <description>this routes any exception to discard writer</description>
-    </property>
-  </bean>
- 
+
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <property name="dataReader">
       <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
