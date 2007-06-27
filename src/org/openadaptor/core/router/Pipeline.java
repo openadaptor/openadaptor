@@ -27,6 +27,14 @@
 
 package org.openadaptor.core.router;
 
+/**
+ * Stub class (for Legacy pipeline class).
+ * Retained for backwards compatibility only.
+ * Likely to be removed shortly.
+ * @author higginse
+ * @see Router
+ * @deprecated - Use Router only. 
+ */
 public class Pipeline extends Router  {
 
   public Pipeline() {super();}
