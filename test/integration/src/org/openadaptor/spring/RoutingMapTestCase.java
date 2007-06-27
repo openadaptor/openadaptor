@@ -41,6 +41,8 @@ import junit.framework.TestCase;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.router.IRoutingMap;
@@ -137,7 +139,43 @@ public class RoutingMapTestCase extends TestCase {
 		assertTrue(destinations.get(0).toString().equals("Discard"));
 		assertTrue(destinations.get(1).toString().equals("Error"));
 	}
-	
+    
+    
+    /**
+     * Tests routing of exceptions.
+     */
+    public void testExceptionRouting1(){
+      IRoutingMap map = getRoutingMap("testExceptionRouting1");
+      List destinations = map.getExceptionDestinations(getNode("Processor3"), new Exception("foo"));
+      assertTrue(destinations.size() == 0);
+      destinations = map.getExceptionDestinations(getNode("Processor3"), new ProcessingException("foo", null));
+      assertTrue(destinations.size() == 1);
+      assertTrue(destinations.get(0).toString().equals("Error"));
+      
+      destinations = map.getExceptionDestinations(getNode("ReadNode"), new Exception("foo"));
+      assertTrue(destinations.size() == 0);
+      destinations = map.getExceptionDestinations(getNode("ReadNode"), new ProcessingException("foo", null));
+      assertTrue(destinations.size() == 0);
+      destinations = map.getExceptionDestinations(getNode("ReadNode"), new NullPointerException("foo"));
+      assertTrue(destinations.size() == 1);
+      assertTrue(destinations.get(0).toString().equals("Discard"));
+      
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new Exception("foo"));
+      assertTrue(destinations.size() == 1);
+      assertTrue(destinations.get(0).toString().equals("Processor1"));
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new RuntimeException("foo"));
+      assertTrue(destinations.size() == 1);
+      assertTrue(destinations.get(0).toString().equals("Processor1"));
+      /* MessageException directly extends Throwable and therefore won't be caught by the Exception handler */
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new MessageException("foo", null));
+      assertTrue(destinations.size() == 0);
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new ProcessingException("foo", null));
+      assertTrue(destinations.size() == 2);
+      assertTrue(destinations.get(0).toString().equals("Discard"));
+      assertTrue(destinations.get(1).toString().equals("Error")); 
+    }
+    
+    
 	public static final class DummyNode implements IMessageProcessor {
 
 		private String id;

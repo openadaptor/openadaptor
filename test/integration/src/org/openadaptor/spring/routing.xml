@@ -68,6 +68,38 @@
       </map>
     </property>
   </bean>
+
+  <bean id="testExceptionRouting1" class="org.openadaptor.core.router.RoutingMap">
+    <property name="exceptionMap">
+      <map>
+        <entry key="*">
+          <map>
+            <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="Error"/>
+          </map>
+        </entry>
+        <entry key-ref="ReadNode">
+          <map>
+            <entry key="java.lang.NullPointerException">
+              <list>
+                <ref bean="Discard"/>
+              </list>
+            </entry>
+          </map>
+        </entry>
+        <entry key-ref="WriteNode">
+          <map>
+            <entry key="org.openadaptor.core.exception.ProcessingException">
+              <list>
+                <ref bean="Discard"/>
+                <ref bean="Error"/>
+              </list>
+            </entry>
+            <entry key="java.lang.Exception" value-ref="Processor1"/>
+          </map>
+        </entry>
+      </map>
+    </property>
+  </bean>
   
   <bean id="ReadNode" class="org.openadaptor.spring.RoutingMapTestCase$DummyNode">
     <constructor-arg value="ReadNode"/>
