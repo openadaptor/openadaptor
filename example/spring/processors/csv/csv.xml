@@ -19,7 +19,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config file.xml
+    java org.openadaptor.spring.SpringAdaptor -config csv.xml
    
   You need the following in your classpath
   
