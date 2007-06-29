@@ -43,6 +43,7 @@ familiar with jBoss or hypersonic.</p>
 <li><a href="#step8">Step  8: SQL Execution</a></li>
 <li><a href="#step9">Step  9: Discard and Exception Routing and Custom Code</a></li>
 <li><a href="#step10">Step 10: Reading from a File</a></li>
+<li><a href="#step10">Step 11: Exception Handling and the Hispital</a></li>
 <li><a href="#summary">Summary</a></li>
 </ol>
 
@@ -842,6 +843,138 @@ Here is the bean.</p>
   running the the adaptor in Step 9 then you should see it receive this data as before.</p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
+
+<!--
+      Step 11 - Exception Handling and the Hispital
+-->
+<a name="step11"></a>
+<h2>Step 11</h2>
+<p>This example demonstrates usage of exception handling and exception routing mechanisms.</p>
+ 
+<p>The only way to enable exception handling in OA is via the exceptionProcessor property on the Router. 
+If this property is not set, the exception handling is disabled and the first exception that occurs
+will cause the adaptor to shut down (the exception will be logged in the standard log4j logs. It'll
+not be propagated outside of the OA scope).
+
+The exceptionProcessor can be <i>anything</i> but typically it'll be a simple file writer connector:</p>
+
+<textarea cols="110" rows="12" readonly="true">
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      ....
+      ....
+    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="errors.log"/>
+  </bean>
+</textarea>    
+
+<p>This set up is simple and likely to be sufficient for the majority of adaptors. 
+It will cause all exceptions (instances of java.lang.Exception and its subclasses) thrown in any 
+of the adaptor's nodes to be caught and processed by the ExceptionHandler - a file write connector, which simply means 
+the exception will be written to the errors.log file. After logging it the adaptor will continue to work 
+an process subsequent records. The errors.log's role is informative only - it can be reviewed but 
+does not provide a way of refeeding the errornous data back into the OA.</p>
+
+
+<p>If for some reason, this basic exceptionProcessor isn't enough, OA provides more advanced ways of defining an 
+exception handler:</p>
+
+
+<ul>
+
+<li>exceptionProcessor can be made up of any number of nodes which can fan out just like any other nodes in  
+the 'normal' processing flow. Such composite exceptionProcessor should be set up very carefully and any 
+user-defined implementations of OA interfaces that take part in exception handling should be programmed defensively 
+and try to avoid throwing exceptions themselves - such scenario would lead to a new new exception being put 
+at the beginning of the exception processing path which could in turn cause an indefinite exception catch 
+- rethrow cycle. </li>
+
+
+<br/>A fan-out may be useful in situations when information about errors/exceptions needs to be sent to multiple destinations.
+For example, we want to log all the exceptions but also e-mail an alert to application owners about certain exceptions 
+or send an error chat message an organisation's instant messaging system. <br/>
+
+<textarea cols="110" rows="25" readonly="true">
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     
+      <!-- Normal flow path -->
+      <entry key-ref="Reader" value-ref="Processor"/>
+      <entry key-ref="Processor" value-ref="Writer"/>
+        
+      <!-- Exception processing path --> 
+      <entry key-ref="ExceptionHandlerProxy" value-ref="FileWriter"/>  
+      <entry key-ref="ExceptionHandlerProxy" value-ref="ExceptionFilter"/>
+      <entry key-ref="ExceptionFilter" value-ref="EMailWriter"/>
+      <entry key-ref="ExceptionFilter" value-ref="ChatChannelWriter"/>
+    </property>
+    
+    <property name="exceptionProcessor" ref="ExceptionHandlerProxy"/>
+  </bean>
+
+  <bean id="ExceptionHandlerProxy" class="org.openadaptor.core.exception.ExceptionHandlerProxy"/>
+   
+  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="errors.log"/>
+  </bean>
+</textarea> 
+
+<br/><br/>
+
+In the example above the org.openadaptor.core.exception.ExceptionHandler is used as a proxy, as an exception handling entry
+point that redirects handling to FileWriter and ExceptionFilter. From ExceptionFilter, providing they meet the criteria,
+the exceptions will be sent to EMailWriter and ChatChannelWriter.
+
+<br/><br/>
+
+<li>by defining an exceptionProcessor on the Router we make it the default handler for all exception types, 
+which means all exceptions will be handled by one and the same exceptionProcessor (perhaps made up of a number of different
+nodes as shown in the preceding bullet point). This behaviour can be altered - different exception processors can be set up to handle different exception types.
+This is done by defining the exceptionProcessor as an org.openadaptor.core.exception.ExceptionHandlerProxy with
+a redefined exception routing map, as in this example:<br/><br/>
+<textarea cols="110" rows="20" readonly="true">
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      
+    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
+      </map>
+    </property>
+  </bean>
+</textarea> 
+</li>
+<br/><br/>
+<li>a predefined exception handler - HospitalDBWriter - can be used for writing exceptions to a database 
+table. The writer stores information such as exception class name, originating component name, exception timestamp and 
+- most importantly - the user data which caused the exception. The table can either be used for informative purpose 
+only or as a staging area where the user data can be fixed and sent back to OA for another attempt processing. 
+Another predefined node - HospitalDBReader can be used to read the data from 'the hospital' back to the OA.
+OA does not provide any ready-to-use tools for editing user data in the hospital at the moment.
+Although any RDMS can be used for the hospital, HospitalDBWriter and HospitalDBReader connectors assume certain 
+structure of the table which needs to be created beforehand - SQL scripts are provided for the major RDMS engines.
+</li>
+
+
+</ul>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step11.xml 
+</pre></div>
+
+
+<p class="back"><a href="#contents">back to contents</a></p>
+
+
 
 
 <!--
