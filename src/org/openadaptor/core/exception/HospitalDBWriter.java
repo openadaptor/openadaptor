@@ -68,7 +68,8 @@ public class HospitalDBWriter extends JDBCWriteConnector {
        IOrderedMap map = new OrderedHashMap();
        map.put(TIMESTAMP, new java.util.Date().toString());
        map.put(EXCEPTION_CLASS, messageException.getException().getClass().getName());
-       map.put(COMPONENT, messageException.getOriginatingModule());
+       String component = messageException.getOriginatingModule();
+       map.put(COMPONENT, null==component ? "Unknown" : component);
        map.put(DATA, messageException.getData());
        convertedData[i]=map;       
      }
