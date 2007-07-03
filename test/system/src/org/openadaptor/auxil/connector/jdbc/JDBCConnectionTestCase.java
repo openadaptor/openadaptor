@@ -33,16 +33,19 @@
 
 package org.openadaptor.auxil.connector.jdbc;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
 /**
- * This test case uses the Hypersonic database. The database is created in memory when a jdbc connection is established.
+ * This test case uses the Hypersonic database. The database is created in memory when 
+ * a jdbc connection is established.
  *
  */
 public class JDBCConnectionTestCase extends TestCase {
+  
     private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
     private static final String DB_URL="jdbc:hsqldb:mem:test";
     private static final String DB_USER="sa";
@@ -61,7 +64,15 @@ public class JDBCConnectionTestCase extends TestCase {
       Properties props = new Properties();
       props.setProperty("shutdown", "true");
       jdbcConnection.setProperties(props);
-
+      jdbcConnection.connect();
+      
+      /* run in schema if defined */
+      String schema = getSchemaDefinition();
+      if(null != schema){
+        PreparedStatement preparedStatement = jdbcConnection.getConnection().prepareStatement(schema);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+      }
     }
 
     protected void tearDown() throws Exception {
@@ -71,7 +82,6 @@ public class JDBCConnectionTestCase extends TestCase {
     }
 
     public void testConnection() throws SQLException {
-      jdbcConnection.connect();
       assertTrue("JDBCConnection not connected", jdbcConnection.isConnected());
     }
 
@@ -80,4 +90,7 @@ public class JDBCConnectionTestCase extends TestCase {
       assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
     }
 
+    protected String getSchemaDefinition(){
+      return null;
+    }
 }
