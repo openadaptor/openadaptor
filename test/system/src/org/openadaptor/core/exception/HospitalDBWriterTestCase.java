@@ -52,11 +52,11 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
   
   private static String SELECT_ALL_ERRORS_SQL = "SELECT * FROM ERROR_LOG";
   
-  protected static final String RESOURCE_LOCATION = "test/system/src/";
+  private static final String RESOURCE_LOCATION = "test/system/src/";
   
-  protected static final String CONFIG_FILE_1 = "hospital_db.xml";
+  private static final String CONFIG_FILE_1 = "hospital_db.xml";
   
-  protected static final String CONFIG_FILE_2 = "hospital_db_2.xml";
+  private static final String CONFIG_FILE_2 = "hospital_db_2.xml";
  
   protected String getSchemaDefinition() {
     return SCHEMA;
@@ -179,7 +179,7 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
   /**
    * Simple write connector that throws an exception.
    */
-  public static final class ExceptionThrowingWriteConnector implements IWriteConnector {
+  public static final class ExceptionThrowingWriteConnector extends Component implements IWriteConnector {
     public void connect() {}
     public void disconnect() {}
     public Object deliver(Object[] data) {
