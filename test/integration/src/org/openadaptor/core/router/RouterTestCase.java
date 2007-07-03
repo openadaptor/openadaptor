@@ -41,7 +41,6 @@ import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
-import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.BeansException;
@@ -51,7 +50,7 @@ import org.springframework.core.io.UrlResource;
 
 
 /**
- * Integration tests for Router.
+ * Integration tests for {@link Router}.
  * 
  * @author Kris Lachor
  */
@@ -93,7 +92,7 @@ public class RouterTestCase extends TestCase {
     assertNotNull(exceptionToProcessorsMapObj);
     RoutingMap.OrderedExceptionToProcessorsMap exceptionToProcessorsMap = 
       (RoutingMap.OrderedExceptionToProcessorsMap) exceptionToProcessorsMapObj;
-    List exceptionHandlers = (List) exceptionToProcessorsMap.get(ProcessingException.class);
+    List exceptionHandlers = (List) exceptionToProcessorsMap.get(Exception.class);
     assertNotNull(exceptionHandlers);
     assertTrue(exceptionHandlers.size()==1);
     Object exceptionHandler = exceptionHandlers.get(0);

@@ -127,7 +127,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 					response.addDiscardedInput(inputs[i]);
 				}
 			} catch (Exception e) {
-				response.addException(new MessageException(inputs[i], e));
+				response.addException(new MessageException(inputs[i], e, getId()));
 			}
 		}
 			

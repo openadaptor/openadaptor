@@ -23,47 +23,18 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.core.exception;
 
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.Response;
 
 /**
- * Used in {@link Response}, RuntimeExceptions thrown from calls to {@link IDataProcessor#process(Object)}
- * are wrapped in this class with the argument to the call.
+ * Test cases for {@link ExceptionHandlerProxy}.
  * 
- * @author perryj
- *
+ * @author Kris Lachor
  */
-public class MessageException extends Throwable {
+public class ExceptionHandlerProxyTestCase {
+  
+  
 
-	private static final long serialVersionUID = 1L;
-	private Object data;
-	private Exception exception;
-    private String originatingModule;
-
-    public MessageException(final Object data, final Exception exception, 
-          final String originatingModule) {
-		this.data = data;
-		this.exception = exception;
-        this.originatingModule = originatingModule;
-	}
-
-	public Object getData() {
-		return data;
-	}
-
-	public Exception getException() {
-		return exception;
-	}
-	
-	public String toString() {
-		return exception.getClass().getName() + ":" + exception.getMessage() + ":" + data.toString();
-    }
-    
-    public String getOriginatingModule() {
-      return originatingModule;
-    }
 }

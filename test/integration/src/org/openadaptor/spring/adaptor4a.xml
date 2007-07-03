@@ -21,16 +21,10 @@
             </entry>
           </map>
         </property>
-        <property name="exceptionMap">
-          <map>
-            <entry key="org.openadaptor.core.exception.ConnectionException" value-ref="ConnectError"/>
-            <entry key="java.lang.Exception" value-ref="Error"/>
-          </map>
-        </property>
+        <property name="exceptionProcessor" ref="ExceptionHandler"/>
       </bean>
     </property>
   </bean>
-
 
   <bean id="ReadConnector" class="org.openadaptor.core.connector.TestReadConnector">
     <property name="id" value="ReadConnector"/>
@@ -69,6 +63,15 @@
   <bean id="ConnectError" class="org.openadaptor.core.connector.TestWriteConnector">
     <property name="id" value="NpeError"/>
     <property name="expectedOutput" value="org.openadaptor.core.exception.ConnectionException:null:Processor(test data 1)"/>
+  </bean>
+ 
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+     <property name="exceptionMap">
+        <map>
+          <entry key="org.openadaptor.core.exception.ConnectionException" value-ref="ConnectError"/>
+          <entry key="java.lang.Exception" value-ref="Error"/>
+        </map>
+     </property>
   </bean>
 
 </beans>

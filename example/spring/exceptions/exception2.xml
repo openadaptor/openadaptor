@@ -50,11 +50,7 @@
         <entry key-ref="Validator" value-ref="Writer"/>
       </map>
     </property>
-    <property name="exceptionMap">
-      <map>
-        <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
-      </map>
-    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
   </bean>
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
@@ -73,6 +69,14 @@
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
     <property name="filename" value="discards.txt"/>
     <property name="append" value="false"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandler">
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
+      </map>
+    </property>
   </bean>
   
 </beans>

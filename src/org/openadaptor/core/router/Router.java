@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.exception.IExceptionHandler;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.node.Node;
@@ -47,9 +48,8 @@ import org.openadaptor.core.node.Node;
  * @see IRoutingMap
  */
 public class Router extends AbstractRouter implements IMessageProcessor { 
-  private static final String THROWABLE_CLASSNAME=Throwable.class.getName();
-  private static final String PROCESSING_EX_CLASSNAME=ProcessingException.class.getName();
-  public static final String DEFAULT_EXCEPTION_CLASSNAME=PROCESSING_EX_CLASSNAME;
+
+  private static final String DEFAULT_EXCEPTION_CLASSNAME=Exception.class.getName();
 
   /**
    * This contains the list of exceptions for which an ExceptionHandler,
@@ -135,7 +135,7 @@ public class Router extends AbstractRouter implements IMessageProcessor {
   public void setDiscardMap(Map map) {
     routingMap.setDiscardMap(map);
   }
-
+  
   /**
    * Sets the exceptionMap which defines how to route MessageExceptions from one
    * adaptor component to anothers. 
@@ -154,7 +154,7 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * @see IMessageProcessor
    * @see Node
    */
-  public void setExceptionMap(Map map) {
+  private void setExceptionMap(Map map) {
     if (exceptionMapConfigured) {
       throw new RuntimeException("Only one of exceptionMap and exceptionProcessor properties may be configured");
     }
@@ -175,24 +175,6 @@ public class Router extends AbstractRouter implements IMessageProcessor {
   }
  
   
-  
-//  Omitted until we decide whether or not we want to go this (ahem) route  :-)  
-//  /**
-//   * Sets a list of Exception classes which will be handled by 'exceptionProcessor',
-//   * if configured.
-//   * <p>
-//   * Note: Has no effect unless exceptionProcessor property is being used.
-//   * @param exceptionList
-//   */
-//  public void setExceptionList(List exceptionList) {
-//    if (exceptionList==null) { //Remove the default!
-//      this.exceptionList.clear();
-//    }
-//    else {
-//      this.exceptionList=exceptionList;
-//    }
-//  }
-
   /**
    * This allows configuration of a single 'catch-all' processor for exceptions.
    * <p>
@@ -216,6 +198,18 @@ public class Router extends AbstractRouter implements IMessageProcessor {
       throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
       //todo - do we have to do this? it can also be a read or write connector or a data processor 
     }
+    
+    /* Set exceptionMap - check if a custom map was defined on the ExceptionHandler. */
+    if( boxed instanceof IExceptionHandler ){
+      IExceptionHandler exceptionHandler = (IExceptionHandler) boxed;
+      Map exceptionMap = exceptionHandler.getExceptionMap();
+      if(null != exceptionMap){
+        setExceptionMap(exceptionMap);
+        return;
+      }
+    }
+    
+    /* If not then populate the exceptionMap from the default exceptionList. */
     Map exceptionMap=new HashMap();
     Iterator it=exceptionList.iterator();
     while(it.hasNext()) {

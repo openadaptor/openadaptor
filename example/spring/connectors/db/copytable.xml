@@ -47,12 +47,8 @@
            <entry key-ref="Reader" value-ref="Writer"/>
          </map>
        </property>
-       <!-- exception map -->
-       <property name="exceptionMap">
-       <map>
-         <entry key="java.lang.Exception" value-ref="DiscardWriter"/>
-       </map>
-       </property>
+       <!-- exception processor -->
+       <property name="exceptionProcessor" ref="ExceptionHandler"/>
      </bean>
    </property>
  </bean>
@@ -109,5 +105,13 @@
 
   <!-- Just log failures to stdout -->
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandler">
+     <property name="exceptionMap">
+       <map>
+         <entry key="java.lang.Exception" value-ref="DiscardWriter"/>
+       </map>
+     </property>
+  </bean>
 
 </beans>

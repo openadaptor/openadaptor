@@ -13,9 +13,9 @@ public class ProcessorNodeTest extends TestCase {
   public void test() {
     Object[] data = new Object[] {"foo", "bar", "foobar"};
     Object[] exceptionData = new Object[] {
-        new MessageException(data[0], new RuntimeException("test")),
+        new MessageException(data[0], new RuntimeException("test"), "test"),
         data[1],
-        new MessageException(data[2], new RuntimeException("test"))
+        new MessageException(data[2], new RuntimeException("test"), "test")
     };
     
     ProcessorNode node = new ProcessorNode();
