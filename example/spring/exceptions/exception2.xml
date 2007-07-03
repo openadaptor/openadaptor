@@ -71,7 +71,7 @@
     <property name="append" value="false"/>
   </bean>
   
-  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandler">
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
     <property name="exceptionMap">
       <map>
         <entry key="java.lang.RuntimeException" value-ref="DiscardWriter"/>
