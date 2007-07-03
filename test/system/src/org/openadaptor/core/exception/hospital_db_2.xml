@@ -35,9 +35,7 @@
   </bean>
   
   <bean id="reader" class="org.openadaptor.core.exception.HospitalDBWriterTestCase$TestReadConnector"/>
-  
-  <bean id="dummyWriter" class="org.openadaptor.core.exception.HospitalDBWriterTestCase$DummyWriteConnector"/>
-  
+    
   <bean id="exceptionThrowingWriter" class="org.openadaptor.core.exception.HospitalDBWriterTestCase$ExceptionThrowingWriteConnector"/>
   
 </beans>
