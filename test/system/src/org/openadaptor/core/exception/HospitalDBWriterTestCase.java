@@ -42,7 +42,8 @@ import org.springframework.core.io.UrlResource;
 
 
 /**
- * System tests for {@link HospitalDBWriter}.
+ * System tests for {@link HospitalDBWriter} and hospital reader.
+ * Uses in-memory HSQL database for the hospital.
  * 
  * @author Kris Lachor
  */
@@ -54,10 +55,15 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
   
   private static final String RESOURCE_LOCATION = "test/system/src/";
   
-  private static final String CONFIG_FILE_1 = "hospital_db.xml";
+  private static final String CONFIG_FILE_WRITER_1 = "hospital_db_writer.xml";
   
-  private static final String CONFIG_FILE_2 = "hospital_db_2.xml";
+  private static final String CONFIG_FILE_WRITER_2 = "hospital_db_writer2.xml";
+  
+  private static final String CONFIG_FILE_READER = "hospital_db_reader.xml";
  
+  /**
+   * @return hospital table definition.
+   */
   protected String getSchemaDefinition() {
     return SCHEMA;
   }
@@ -82,7 +88,7 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
   public void testHospitalIsEmpty2() throws Exception{
     SpringAdaptor adaptor = new SpringAdaptor();
     UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_1));
+        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_1));
     String configPath = urlResource.getFile().getAbsolutePath();
     adaptor.addConfigUrl(configPath);
     adaptor.run();
@@ -96,10 +102,10 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
    * Runs adaptor with a node that throws an exception. 
    * Verifies hospital has one entry.
    */
-  public void testHospitalGetsOneException() throws Exception{
+  public void testHospitalWriterGetsOneException() throws Exception{
     SpringAdaptor adaptor = new SpringAdaptor();
     UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_2));
+        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
     String configPath = urlResource.getFile().getAbsolutePath();
     adaptor.addConfigUrl(configPath);
     adaptor.run();
@@ -114,10 +120,10 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
    * Runs adaptor (two times) with a node that throws an exception. 
    * Verifies the hostpital has two exceptions, verifies corect values of its some data.
    */
-  public void testHospitalGetsTwoExceptions() throws Exception{
+  public void testHospitalWriterGetsTwoExceptions() throws Exception{
     SpringAdaptor adaptor = new SpringAdaptor();
     UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_2));
+        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
     String configPath = urlResource.getFile().getAbsolutePath();
     adaptor.addConfigUrl(configPath);
     adaptor.run();
@@ -136,10 +142,29 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
     preparedStmt.close();
   }
   
+  /**
+   * Runs adapter that creates one entry in the hospital, then 
+   * adapter that reads from the hospital. Verifies that the read data is not empty.
+   */
+  public void testHospitalReader() throws Exception{
+    SpringAdaptor adaptor = new SpringAdaptor();
+    UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
+        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
+    String configPath = urlResource.getFile().getAbsolutePath();
+    adaptor.addConfigUrl(configPath);
+    adaptor.run();
+    
+    adaptor = new SpringAdaptor();
+    urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
+        this, RESOURCE_LOCATION, CONFIG_FILE_READER));
+    configPath = urlResource.getFile().getAbsolutePath();
+    adaptor.addConfigUrl(configPath);
+    adaptor.run(); 
+  }
   
   
   //
-  // Helper classes
+  // Helper read and write connectors.
   //
   //
   
@@ -184,6 +209,24 @@ public class HospitalDBWriterTestCase extends JDBCConnectionTestCase {
     public void disconnect() {}
     public Object deliver(Object[] data) {
        throw new RuntimeException();
+    }
+    public void validate(List exceptions) {}
+  }
+  
+  /**
+   * Write connector that verifies the hospital data
+   */
+  public static final class TestWriteConnector extends Component implements IWriteConnector {
+    public void connect() {}
+    public void disconnect() {}
+    public Object deliver(Object[] data) {
+       if(data == null || data.length == 0){
+         throw new RuntimeException("Hospital data empty");
+       }
+       for (int i = 0; i < data.length; i++) {
+         System.out.println(data[i]);
+       }
+       return null;
     }
     public void validate(List exceptions) {}
   }

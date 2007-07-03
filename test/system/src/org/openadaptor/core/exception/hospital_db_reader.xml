@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor" ref="router"/>
+   </bean>
+  
+   <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="hospitalReader" value-ref="testWriter"/> 
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="hospitalReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+	  <description>Reader which polls database using configured SQL.</description>
+	  <property name="jdbcConnection" ref="JdbcConnection"/>
+	  <property name="resultSetConverter">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+	  </property>
+	  <property name="sql">
+	    <value>
+	      SELECT data, exception_class_name, originating_component
+	      FROM error_log
+	    </value>
+	  </property>
+  </bean>
+       
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
+  
+  <bean id="testWriter" class="org.openadaptor.core.exception.HospitalDBWriterTestCase$TestWriteConnector"/>
+     
+</beans>
