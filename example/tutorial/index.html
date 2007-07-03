@@ -896,7 +896,7 @@ at the beginning of the exception processing path which could in turn cause an i
 
 <br/>Branching in the exception handler may be useful in situations when information about errors/exceptions needs to be sent to multiple destinations.
 For example, we want to log all the exceptions but also e-mail an alert to application owners about some of the exceptions 
-or send an error chat message the organisation's instant messaging system. <br/>
+or send an error chat message the organisation's instant messaging system. <br/><br/>
 
 <textarea cols="110" rows="25" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
@@ -1005,7 +1005,10 @@ structure of the table which needs to be created beforehand - SQL scripts are pr
 
 
 </ul>
-
+These three ways of defining the exception handler, if necessary, could be used in combination to suit most complex needs -
+to create an exceptionProcessor made up of several nodes some of which could branch off, include the hostpital node as
+well as handle different exception types differently. 
+<br/><br/>
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringAdaptor -config step11.xml 
 </pre></div>
