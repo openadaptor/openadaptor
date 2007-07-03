@@ -27,14 +27,16 @@
 
 package org.openadaptor.core.exception;
 
+import junit.framework.TestCase;
+
 
 /**
  * Test cases for {@link ExceptionHandlerProxy}.
  * 
  * @author Kris Lachor
  */
-public class ExceptionHandlerProxyTestCase {
+public class ExceptionHandlerProxyTestCase extends TestCase {
   
+  public void test1(){}
   
-
 }

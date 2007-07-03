@@ -35,15 +35,8 @@
         <entry key-ref="Filter" value-ref="DiscardLog"/>
       </map>
     </property>
-    <property name="exceptionMap">
-      <map>
-        <entry key="*">
-          <map>
-            <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="ErrorLog"/>
-          </map>
-        </entry>
-      </map>
-    </property>
+    <!-- exception processor -->
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
   </bean>
    
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
@@ -114,6 +107,18 @@
   
   <bean id="ErrorLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
     <property name="filename" value="output/suberror.txt"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+        <entry key="*">
+          <map>
+            <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="ErrorLog"/>
+          </map>
+        </entry>
+      </map>
+    </property>
   </bean>
   
 </beans>
