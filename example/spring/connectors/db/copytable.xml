@@ -106,7 +106,7 @@
   <!-- Just log failures to stdout -->
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
-  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandler">
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
      <property name="exceptionMap">
        <map>
          <entry key="java.lang.Exception" value-ref="DiscardWriter"/>
