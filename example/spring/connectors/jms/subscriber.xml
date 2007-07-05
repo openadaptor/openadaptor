@@ -9,27 +9,14 @@
   <description><![CDATA[    
   This adaptor does the following...
     
-    * polls a jms queue
+    * listens to a jms topic
     * writes data to stdout
     
-  It is designed to illustrate the basic structure of an adaptor that subscribes to jms
+  It is designed to illustrate the basic structure of an adaptor that subscribes to a jms topic
 
-  Run it like this...
-    
-    java org.openadaptor.spring.SpringAdaptor -config subscriber.xml -bean Adaptor
-    
-  You need the following in your classpath
-  
-    lib
-    lib/openadaptor.jar
-    lib/openadaptor-spring.jar
-    lib/openadaptor-depends.jar
-    jbossall-client.jar (this is not distributed with openadaptor)
-    
-  This example relies on a default instance of jboss running (http://www.jboss.org) on the
-  same machine that the example is being run.
+  See the accompanying readme.txt for information on how to run this example.
      
-  To verify that this is working you need put some data on the queue, the corresponding
+  To verify that this is working you need put some data on the topic, the corresponding
   publisher example should do this.
   ]]></description>
   
@@ -51,19 +38,23 @@
   
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
     <description>Defines jndi connection, from which we get jms connection.</description>
-    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
-    <property name="providerUrl" value="jnp://localhost:1099"/>
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
   </bean>
   
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <description>jms connection for queue we wish to subscribe to.</description>
     <property name="jndiConnection" ref="JndiConnection"/>
-    <property name="connectionFactoryName" value="ConnectionFactory"/>
+    <property name="connectionFactoryName" value="${jms.tp.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
   </bean>
 
   <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
     <description>Reader that polls a jms queue.</description>
-    <property name="destinationName" value="queue/testQueue"/>
+    <property name="destinationName" value="${jms.t.destinationName.1}"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
   

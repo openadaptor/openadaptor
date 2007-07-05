@@ -10,25 +10,12 @@
   This adaptor does the following...
     
     * reads data from stdin
-    * publishes data to a JMS queue
+    * publishes data to a JMS topic
     
   It is designed to illustrate the basic structure of an adaptor that processes
-  data by publishing to JMS queues
+  data by publishing to a JMS topic.
 
-  Run it like this...
-    
-    java org.openadaptor.spring.SpringAdaptor -config publisher.xml -bean Adaptor
-    
-  You need the following in your classpath
-  
-    lib
-    lib/openadaptor.jar
-    lib/openadaptor-spring.jar
-    lib/openadaptor-depends.jar
-    jbossall-client.jar (this is not distributed with openadaptor)
-    
-  This example relies on a default instance of jboss running (http://www.jboss.org) on the
-  same machine that the example is being run.
+  See the accompanying readme.txt for information on how to run this example.
      
   Once it is running you need to type some data into the command line. To
   verify that this is working you need to be running the corresponding
@@ -57,26 +44,30 @@
     <description>
       This defines jndi connection, from which we get jms connection.
     </description>
-    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
-    <property name="providerUrl" value="jnp://localhost:1099"/>
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
     <!-- 
       Uncomment the following property to specify an alternate provider url. 
       Currently only JMSConnection can take advantage of this feature 
     -->
     <!--    
-    <property name="alternateProviderUrl" value="jnp://localhost:1099"/>
+    <property name="alternateProviderUrl" value="url goes here"/>
     -->
   </bean>
   
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <description>jms connection for queue we wish to publish to.</description>
     <property name="jndiConnection" ref="JndiConnection"/>
-    <property name="connectionFactoryName" value="ConnectionFactory"/>
+    <property name="connectionFactoryName" value="${jms.ts.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
     <description>writer that publishes data onto a queue.</description>
-    <property name="destinationName" value="queue/testQueue"/>
+    <property name="destinationName" value="${jms.t.destinationName.1}"/>
     <property name="jmsConnection" ref="JmsConnection"/>
   </bean>
 

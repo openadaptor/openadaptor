@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: pubTopic.xml 380 2007-06-05 13:10:59Z scullyk $
+  $HeadURL: https://dresdneroa3.collabnet.drkw.net:443/svn/dresdneroa3/trunk/example/spring/connectors/jms/jmsgrid/pubTopic.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<description><![CDATA[
+    This adaptor does the following...
+    
+      * reads data from JMS Topic
+      * publishes data to a JMS Queue
+      * uses jta transaction management.
+    
+    It is designed to illustrate the basic structure of an adaptor that processes
+    data by subscribing to a jms topic and publishing to a jms queue. The adaptor
+    is transacted using a JTA transaction manager (JOTM by default) to manage a
+    distributed transaction including both connectors
+
+    See the accompanying readme.txt for information on how to run this example.
+    
+    Once it is running you need to publish some data to the topic subscribed to.
+    You can use the publisher example for this.
+ ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <!-- JTA transaction manager -->
+    <property name="transactionManager">
+      <bean class="org.openadaptor.core.transaction.jta.JtaTransactionManager"/>
+    </property>
+  </bean>
+
+
+  <!-- This defines jndi connection, from which we get jms connections -->
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
+  </bean>
+
+  <!-- jms connection for queue we wish to subscribe to -->
+  <bean id="JmsReaderConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.xats.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+  </bean>
+
+  <!-- Reader that polls a jms queue -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="${jms.t.destinationName.1}"/>
+    <property name="jmsConnection" ref="JmsReaderConnection"/>
+  </bean>
+  
+  <!-- jms connection for queue we wish to publish to -->
+  <bean id="JmsWriterConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.xaqs.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+  </bean>
+  
+  <!-- writer that publishes data onto a queue -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="${jms.q.destinationName.1}"/>
+    <property name="jmsConnection" ref="JmsWriterConnection"/>
+  </bean>
+
+</beans>
