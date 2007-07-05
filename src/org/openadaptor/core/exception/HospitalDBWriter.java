@@ -35,9 +35,8 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
 /**
  * Extends JDBCWriteConnector by first converting the records into 
- * IOrderedMap. Assumes the data are 
+ * IOrderedMap. Assumes the data are instances of  MessageException.
  * 
- * @todo descr.
  * @author Kris Lachor
  */
 public class HospitalDBWriter extends JDBCWriteConnector {

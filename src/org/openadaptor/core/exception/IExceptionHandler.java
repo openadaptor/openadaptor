@@ -29,6 +29,7 @@ package org.openadaptor.core.exception;
 
 import java.util.Map;
 
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
 
 /**
@@ -37,7 +38,7 @@ import org.openadaptor.core.IMessageProcessor;
  * 
  * @author Kris Lachor
  */
-public interface IExceptionHandler extends IMessageProcessor{
+public interface IExceptionHandler extends IDataProcessor{
   
   /**
    * Sets a bespoke exception map.

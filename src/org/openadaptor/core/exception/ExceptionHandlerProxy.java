@@ -27,6 +27,7 @@
 
 package org.openadaptor.core.exception;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -71,13 +72,29 @@ public class ExceptionHandlerProxy implements IExceptionHandler{
       this.exceptionMap = exceptionMap;
     }
   }
-  
-  /**
-   * The class is a proxy and itself doesn't do any processing.
-   * 
-   * @return null
-   */
-  public Response process(Message msg) {
-    return null;
+
+  public Object[] process(Object data) {
+    return new Object[]{data};
   }
+
+  public void reset(Object context) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void validate(List exceptions) {
+    // TODO Auto-generated method stub
+    
+  }
+  
+//  /**
+//   * The class is a proxy and itself doesn't do any processing.
+//   * 
+//   * @return null
+//   */
+//  public Response process(Message msg) {
+//    Response response = new Response();
+//    response.addOutput(msg);
+//    return response;
+//  }
 }
