@@ -27,27 +27,17 @@
 
 package org.openadaptor.auxil.convertor.exception;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
-import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.MessageException;
-import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.exception.RecordFormatException;
 
 /**
+ * Converts a MessageException to an ordered map.
+ * 
+ * @author Kris Lachor
  */
 public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
@@ -67,10 +57,16 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
     super(id);
   }
 
+  /**
+   * Converts the <code>record</code> into an <code>IOrderedMap</code> .
+   *
+   * @param a record, expected to be a MessageException.
+   * @return 
+   */
   protected Object convert(Object record) {
-  
       if(! (record instanceof MessageException)){
         log.error("Exception handling error.");   
+        return null;
       }
       MessageException messageException = (MessageException) record;
       IOrderedMap map = new OrderedHashMap();
@@ -80,8 +76,5 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       map.put(COMPONENT, null==component ? "Unknown" : component);
       map.put(DATA, messageException.getData());
       return map;       
-
   }
-
- 
 }

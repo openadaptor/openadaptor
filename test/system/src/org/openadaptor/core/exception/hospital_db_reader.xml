@@ -39,6 +39,6 @@
        
   <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
   
-  <bean id="testWriter" class="org.openadaptor.core.exception.HospitalDBWriterTestCase$TestWriteConnector"/>
+  <bean id="testWriter" class="org.openadaptor.core.exception.HospitalTestCase$TestWriteConnector"/>
      
 </beans>
