@@ -80,6 +80,8 @@ public class RoutingMap implements IRoutingMap {
 	private Map exceptionMap = new HashMap();
 	
 	private IAutoboxer autoboxer;
+    
+    private Object boxedExceptionProcessor = null;
 	
 	public RoutingMap(final IAutoboxer autoboxer) {
 		this.autoboxer = autoboxer;
@@ -191,7 +193,13 @@ public class RoutingMap implements IRoutingMap {
      */
 	public List getExceptionDestinations(IMessageProcessor processor, Throwable exception) {
 		OrderedExceptionToProcessorsMap map = (OrderedExceptionToProcessorsMap) exceptionMap.get(processor);
-		if (map == null) {
+		
+        /* Exceptions thrown from the exceptionProcessor will not be processed */
+        if(processor.equals(this.boxedExceptionProcessor)){
+            return Collections.EMPTY_LIST;
+        }
+        
+        if (map == null ) {
 			map = (OrderedExceptionToProcessorsMap) exceptionMap.get(DEFAULT_KEY);
 		}
 		if (map != null) {
@@ -328,6 +336,11 @@ public class RoutingMap implements IRoutingMap {
         return destinations != null ? destinations : Collections.EMPTY_LIST;
       }
     } //ExceptionMap
+
+
+    public void setBoxedExceptionProcessor(Object boxedExceptionProcessor) {
+      this.boxedExceptionProcessor = boxedExceptionProcessor;
+    }
 
  
 }

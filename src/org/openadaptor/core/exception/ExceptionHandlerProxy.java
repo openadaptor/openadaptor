@@ -32,8 +32,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Message;
-import org.openadaptor.core.Response;
+import org.openadaptor.core.Component;
 
 /**
  * A class that can be used for one of or both:
@@ -49,7 +48,7 @@ import org.openadaptor.core.Response;
  * @todo html friendly javadoc
  * @author Kris Lachor
  */
-public class ExceptionHandlerProxy implements IExceptionHandler{
+public class ExceptionHandlerProxy extends Component implements IExceptionHandler{
 
   private static final Log logger = LogFactory.getLog(ExceptionHandlerProxy.class);
   
@@ -73,28 +72,18 @@ public class ExceptionHandlerProxy implements IExceptionHandler{
     }
   }
 
+  
+/**
+* The class is a proxy and itself doesn't do any processing.
+* 
+* @return null
+*/
   public Object[] process(Object data) {
     return new Object[]{data};
   }
 
-  public void reset(Object context) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void reset(Object context) {}
 
-  public void validate(List exceptions) {
-    // TODO Auto-generated method stub
-    
-  }
+  public void validate(List exceptions) {}
   
-//  /**
-//   * The class is a proxy and itself doesn't do any processing.
-//   * 
-//   * @return null
-//   */
-//  public Response process(Message msg) {
-//    Response response = new Response();
-//    response.addOutput(msg);
-//    return response;
-//  }
 }

@@ -49,6 +49,8 @@ import org.openadaptor.core.node.Node;
  */
 public class Router extends AbstractRouter implements IMessageProcessor { 
 
+
+  
   private static final String DEFAULT_EXCEPTION_CLASSNAME=Exception.class.getName();
 
   /**
@@ -191,9 +193,9 @@ public class Router extends AbstractRouter implements IMessageProcessor {
      */
     Object boxed = routingMap.getIfAlreadyAutoboxed(exceptionProcessor);
     if(null == boxed){
-         boxed = autoboxer.autobox(exceptionProcessor);
+       boxed = autoboxer.autobox(exceptionProcessor);
     }
-    
+    routingMap.setBoxedExceptionProcessor(boxed);
     if (!(boxed instanceof IMessageProcessor)) {
       throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
       //todo - do we have to do this? it can also be a read or write connector or a data processor 
@@ -217,5 +219,6 @@ public class Router extends AbstractRouter implements IMessageProcessor {
     }
     setExceptionMap(exceptionMap);
   }
+
 
 }
