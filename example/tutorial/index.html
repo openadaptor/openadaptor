@@ -887,40 +887,39 @@ exceptionProcessor:</p>
 <ul>
 
 <li>exceptionProcessor can be made up of any number of nodes which can branch just like any other nodes in  
-the 'normal' processing flow. Such composite exceptionProcessor should be assembled very carefully and any 
+the 'normal' processing flow. Such composite exceptionProcessor should be assembled carefully and any 
 user-defined implementations of OA interfaces that take part in exception handling should be programmed defensively 
-and try to avoid throwing exceptions themselves - such scenario would lead to a new new exception being put 
-at the beginning of the exception processing path which could in turn cause an indefinite exception catch 
-- rethrow cycle. </li>
+and try to avoid throwing exceptions themselves - if the exceptionProcessor itself happens to throw an exception, it will
+not be handled (to avoid an indefinite exception catch-rethrow cycle) and will cause the adaptor to shut down. </li>
 
 
 <br/>Branching in the exception handler may be useful in situations when information about errors/exceptions needs to be sent to multiple destinations.
 For example, we want to log all the exceptions but also e-mail an alert to application owners about some of the exceptions 
 or send an error chat message the organisation's instant messaging system. <br/><br/>
 
-<textarea cols="110" rows="25" readonly="true">
+<textarea cols="110" rows="20" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processors">
-     
       <!-- Normal flow path -->
       <entry key-ref="Reader" value-ref="Processor"/>
       <entry key-ref="Processor" value-ref="Writer"/>
         
       <!-- Exception processing path --> 
-      <entry key-ref="ExceptionHandlerProxy" value-ref="FileWriter"/>  
-      <entry key-ref="ExceptionHandlerProxy" value-ref="ExceptionFilter"/>
-      <entry key-ref="ExceptionFilter" value-ref="EMailWriter"/>
-      <entry key-ref="ExceptionFilter" value-ref="ChatChannelWriter"/>
+      <entry key-ref="ExceptionHandlerProxy">
+        <list>
+          <ref bean="ExceptionConverter"/>
+          <ref bean="FileWriter"/>
+        </list>
+      </entry>
+      <entry key-ref="ExceptionConverter" value-ref="XMLConverter"/> 
+      <entry key-ref="XMLConverter" value-ref="ConsoleWriter"/>   
     </property>
     
     <property name="exceptionProcessor" ref="ExceptionHandlerProxy"/>
   </bean>
 
   <bean id="ExceptionHandlerProxy" class="org.openadaptor.core.exception.ExceptionHandlerProxy"/>
-   
-  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="errors.log"/>
-  </bean>
+ 
 </textarea> 
 
 <br/><br/>
@@ -931,15 +930,23 @@ the exceptions will be sent to EMailWriter and ChatChannelWriter.
 
 <br/><br/>
 
+<p>Here is how to run a sample adaptor that implements branching in the exception processor</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step11a.xml 
+</pre></div>
+
+<br/><br/>
+
 <li>by defining an exceptionProcessor on the Router we make it the default handler for all exception types, 
 which means all exceptions will be handled by one and the same exceptionProcessor (perhaps made up of a number of different
 nodes as shown in the preceding bullet point). This behaviour can be altered - different exception processors can be set up to handle different exception types.
 This is done by defining the exceptionProcessor as an org.openadaptor.core.exception.ExceptionHandlerProxy with
 a redefined exception routing map, as in this example:<br/><br/>
-<textarea cols="110" rows="20" readonly="true">
+<textarea cols="110" rows="15" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processors">
-      
+       ...
     </property>
     <property name="exceptionProcessor" ref="ExceptionHandler"/>
   </bean>
@@ -960,7 +967,15 @@ In this example all exceptions will be handled by FileWriter1, except for Runtim
 by FileWriter2.
 
 <br/><br/>
-<li>a predefined exception handler - HospitalDBWriter - can be used for writing exceptions to a database 
+
+<p>A sample adaptor that shows this behaviour can be run like this:</p>
+
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step11b.xml 
+</pre></div>
+
+<br/><br/>
+<li>a predefined exception handler called The Hospital can be used for writing exceptions to a database 
 table. The writer stores information such as exception class name, originating component name, exception timestamp and 
 - most importantly - the user data which caused the exception. The table can either be used for informative purpose 
 only or as a staging area where the user data can be fixed and then sent back to OA for another attempt of processing. 
@@ -1000,8 +1015,13 @@ structure of the table which needs to be created beforehand - SQL scripts are pr
 </li>
 <br/><br/>
 
+<p>A sample adaptor that shows this behaviour can be run like this:</p>
 
-</li>
+<div class="shell"><pre>
+  java org.openadaptor.spring.SpringAdaptor -config step11c.xml 
+</pre></div>
+
+<br/><br/>
 
 
 </ul>
