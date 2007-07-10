@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: reader.xml 416 2007-06-27 13:08:43Z higginse $
+  $HeadURL: https://dresdneroa3.collabnet.drkw.net:443/svn/dresdneroa3/trunk/example/spring/connectors/db/mysql/reader.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<description><![CDATA[
+  This adaptor does the following...
+
+      * configured to use the default openadaptor transaction manager
+      * both connectors are configured to take part in the transaction
+      * selects data from a Hypersonic db using a query
+      * converts the result set to XML
+      * writes data to a jms topic
+
+    It is designed to illustrate the basic structure of an adaptor that uses
+    an openadptor transaction manager to distribute a transaction across multiple
+    connectors
+
+    Run it like this...
+
+      java org.openadaptor.spring.SpringAdaptor -config jdbcjms.xml -props transaction-examples.properties
+
+    You need the following in your classpath
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+      lib/3rdparty/hsqldb.jar
+
+    This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+    up the server make sure hsqldb.jar is in your class path and run the following...
+
+      java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+
+    Make sure you run this from the examples/spring/connectors/db directory
+
+ ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      <list>
+        <ref bean="Reader"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+ 
+  
+  <!-- This defines jdbc connection -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+    <property name="transacted" value="true"/>
+  </bean>
+
+  <!-- Reader which polls database using configured SQL -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="resultSetConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+    </property>
+    <property name="sql">
+      <value>
+        SELECT t.BuySell as Side, t.Qty as Size, s.ShortCode as RIC,
+               p.LongName as Counterparty, t.Price as Price
+        FROM TRADE t, SECURITY s, PARTY p
+        WHERE t.SecId = s.SecId AND t.PartyId = p.PartyId
+      </value>
+    </property>
+  </bean>
+
+  <!-- These JNDI properties are for use by the JMS Writer -->
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <description>
+      This defines jndi connection, from which we get jms connection.
+    </description>
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
+  </bean>
+
+  <!-- The JMS Connection for the JMS Writer -->
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <description>jms connection for queue we wish to publish to.</description>
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.tp.connectionFactoryName}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+  </bean>
+
+  <!-- The JMS Writer. Note the use of teh transacted property. -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <description>writer that publishes data onto a queue.</description>
+    <property name="destinationName" value="${jms.t.destinationName}"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+
+</beans>
