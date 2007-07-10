@@ -43,7 +43,7 @@ familiar with jBoss or hypersonic.</p>
 <li><a href="#step8">Step  8: SQL Execution</a></li>
 <li><a href="#step9">Step  9: Discard and Exception Routing and Custom Code</a></li>
 <li><a href="#step10">Step 10: Reading from a File</a></li>
-<li><a href="#step10">Step 11: Exception Handling</a></li>
+<li><a href="#step11">Step 11: Exception Handling</a></li>
 <li><a href="#summary">Summary</a></li>
 </ol>
 
@@ -890,7 +890,7 @@ exceptionProcessor:</p>
 the 'normal' processing flow. Such composite exceptionProcessor should be assembled carefully and any 
 user-defined implementations of OA interfaces that take part in exception handling should be programmed defensively 
 and try to avoid throwing exceptions themselves - if the exceptionProcessor itself happens to throw an exception, it will
-not be handled (to avoid an indefinite exception catch-rethrow cycle) and will cause the adaptor to shut down. </li>
+not be handled (to avoid a potential indefinite exception catch-rethrow cycle) and will cause the adaptor to shut down. </li>
 
 
 <br/>Branching in the exception handler may be useful in situations when information about errors/exceptions needs to be sent to multiple destinations.
@@ -925,12 +925,13 @@ or send an error chat message the organisation's instant messaging system. <br/>
 <br/><br/>
 
 In the example above the org.openadaptor.core.exception.ExceptionHandlerProxy is used as an exception handling entry
-point that redirects handling to FileWriter and ExceptionFilter. From ExceptionFilter, providing they meet the criteria,
-the exceptions will be sent to EMailWriter and ChatChannelWriter.
+point that redirects handling to ExceptionConverter and FileWriter. The ExceptionConverter converts exceptions to key-value pairs which
+are then sent to XMLConverter and then printed to the console as XML. On a parallel path, the exceptions are written to
+a log file.
 
 <br/><br/>
 
-<p>Here is how to run a sample adaptor that implements branching in the exception processor</p>
+<p>Here is how to run the sample adaptor that implements branching in the exception processor:</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringAdaptor -config step11a.xml 

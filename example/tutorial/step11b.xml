@@ -8,7 +8,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-  Adaptor for step 11a of the tutorial.
+  Adaptor for step 11b of the tutorial.
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -18,20 +18,8 @@
   <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processMap">
       <map>
-        <!-- Normal flow -->
         <entry key-ref="Servlet" value-ref="CustomProcessor"/> 
-        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
-     
-        <!-- Exception processors -->
-        <entry key-ref="ExceptionHandlerProxy">
-          <list>
-            <ref bean="ExceptionConverter"/>
-            <ref bean="FileWriter"/>
-          </list>
-        </entry>
-        <entry key-ref="ExceptionConverter" value-ref="XMLConverter"/> 
-        <entry key-ref="XMLConverter" value-ref="ConsoleWriter"/>
-        
+        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/>    
       </map>
     </property>
   
@@ -42,9 +30,24 @@
     <property name="port" value="9999"/>
    </bean>
   
-  <bean id="ExceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+        <entry key="*" value-ref="ConsoleWriter"/> 
+        <entry key="java.lang.RuntimeException" value-ref="FileWriter"/>
+      </map>
+    </property>
+  </bean>
   
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="FileWriter1" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/otherExceptions.txt"/>
+  </bean>
+  
+  <bean id="FileWriter2" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/processingExceptions.txt"/>
+  </bean>
   
   <bean id="CustomProcessor" class="CustomProcessor2">
     <property name="field" value="/Trade/buySell"/>
@@ -55,23 +58,5 @@
       </map>
     </property>
   </bean>
-  
-  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="Exception"/>
-  </bean>
-  
-  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/puberror.txt"/>
-  </bean>
-  
-  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
-    <property name="exceptionMap">
-      <map>
-        <entry key="*" value-ref="FileWriter1"/> 
-        <entry key="java.lang.RuntimeException" value-ref="FileWriter2"/>
-      </map>
-    </property>
-  </bean>
-
   
 </beans>
