@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.spring.SpringAdaptor;
@@ -57,6 +58,10 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
   private static final String CONFIG_FILE_WRITER_1 = "hospital_db_writer.xml";
   
   private static final String CONFIG_FILE_WRITER_2 = "hospital_db_writer2.xml";
+  
+  private static final String CONFIG_FILE_WRITER_3 = "hospital_db_writer3.xml";
+  
+  private static final String CONFIG_FILE_WRITER_4 = "hospital_db_writer4.xml";
   
   private static final String CONFIG_FILE_READER = "hospital_db_reader.xml";
  
@@ -85,29 +90,58 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * Ensures the hospital is empty.
    */
   public void testHospitalIsEmpty2() throws Exception{
-    SpringAdaptor adaptor = new SpringAdaptor();
-    UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_1));
-    String configPath = urlResource.getFile().getAbsolutePath();
-    adaptor.addConfigUrl(configPath);
-    adaptor.run();
+    runAdaptor(CONFIG_FILE_WRITER_1);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
     assertFalse("Hospital not empty", rs.next());
     preparedStmt.close();
   }
 
-  /**
-   * Runs adaptor with a node that throws an exception. 
-   * Verifies hospital has one entry.
-   */
-  public void testHospitalWriterGetsOneException() throws Exception{
+  private SpringAdaptor runAdaptor(String configFile) throws Exception{
     SpringAdaptor adaptor = new SpringAdaptor();
     UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
+        this, RESOURCE_LOCATION, configFile));
     String configPath = urlResource.getFile().getAbsolutePath();
     adaptor.addConfigUrl(configPath);
     adaptor.run();
+    return adaptor;
+  }
+  
+  /**
+   * Runs adaptor with a writer node that throws an exception. 
+   * Verifies hospital has one entry.
+   */
+  public void testHospitalWriterGetsOneExceptionFromWriteConnector() throws Exception{
+    runAdaptor(CONFIG_FILE_WRITER_2);
+    PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
+    ResultSet rs = preparedStmt.executeQuery();
+    assertTrue("Hospital is empty", rs.next());
+    assertFalse("Hospital has more than one element", rs.next());
+    preparedStmt.close();
+  }
+  
+  
+// Readers are unable to do any exception handling at the moment. 
+//  
+//  /**
+//   * Runs adaptor with a reader node that throws an exception. 
+//   * Verifies hospital has one entry.
+//   */
+//  public void testHospitalWriterGetsOneExceptionFromReadConnector() throws Exception{
+//    runAdaptor(CONFIG_FILE_WRITER_3);
+//    PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
+//    ResultSet rs = preparedStmt.executeQuery();
+//    assertTrue("Hospital is empty", rs.next());
+//    assertFalse("Hospital has more than one element", rs.next());
+//    preparedStmt.close();
+//  }
+  
+  /**
+   * Runs adaptor with a data processor node that throws an exception. 
+   * Verifies hospital has one entry.
+   */
+  public void testHospitalWriterGetsOneExceptionFromDataProcessor() throws Exception{
+    runAdaptor(CONFIG_FILE_WRITER_4);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
     assertTrue("Hospital is empty", rs.next());
@@ -120,12 +154,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * Verifies the hostpital has two exceptions, verifies corect values of its some data.
    */
   public void testHospitalWriterGetsTwoExceptions() throws Exception{
-    SpringAdaptor adaptor = new SpringAdaptor();
-    UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
-    String configPath = urlResource.getFile().getAbsolutePath();
-    adaptor.addConfigUrl(configPath);
-    adaptor.run();
+    SpringAdaptor adaptor = runAdaptor(CONFIG_FILE_WRITER_2);
     adaptor.run();
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
@@ -141,24 +170,14 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
     preparedStmt.close();
   }
   
+  
   /**
    * Runs adapter that creates one entry in the hospital, then 
    * adapter that reads from the hospital. Verifies that the read data is not empty.
    */
   public void testHospitalReader() throws Exception{
-    SpringAdaptor adaptor = new SpringAdaptor();
-    UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2));
-    String configPath = urlResource.getFile().getAbsolutePath();
-    adaptor.addConfigUrl(configPath);
-    adaptor.run();
-    
-    adaptor = new SpringAdaptor();
-    urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, CONFIG_FILE_READER));
-    configPath = urlResource.getFile().getAbsolutePath();
-    adaptor.addConfigUrl(configPath);
-    adaptor.run(); 
+    runAdaptor(CONFIG_FILE_WRITER_2);
+    runAdaptor(CONFIG_FILE_READER);
   }
   
   
@@ -185,6 +204,29 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    
     public Object[] next(long timeoutMs) { 
       return new String[]{"Dummy read connector test data"}; 
+    }
+    
+    public void validate(List exceptions) {}
+  }
+  
+  /**
+   * Simple read connector that throws an exception.
+   */
+  public static final class ExceptionThrowingReadConnector implements IReadConnector {
+    private boolean isDry = false;
+    
+    public void connect() {}
+    public void disconnect() {}
+    public Object getReaderContext() {return null;}
+   
+    public boolean isDry() { 
+      boolean result = isDry;
+      isDry = true;
+      return result;
+    }
+   
+    public Object[] next(long timeoutMs) { 
+      throw new RuntimeException("Test read connector exception");
     }
     
     public void validate(List exceptions) {}
@@ -227,6 +269,21 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
        }
        return null;
     }
+    public void validate(List exceptions) {}
+  }
+
+  
+  /**
+   * A data processor connector that throws an exception.
+   */
+  public static final class ExceptionThrowingDataProcessor extends Component implements IDataProcessor {
+
+    public Object[] process(Object data) {
+      throw new RuntimeException("Sample exception from test data processor.");
+    }
+
+    public void reset(Object context) {}
+
     public void validate(List exceptions) {}
   }
 }

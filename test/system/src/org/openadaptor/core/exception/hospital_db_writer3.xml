@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor" ref="router"/>
+   </bean>
+  
+   <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="exceptionThrowingReader" value-ref="dummyWriter"/> 
+        
+        <entry key-ref="exceptionConverter" value-ref="jdbcWriter"/> 
+      </map>
+    </property>
+    
+    <property name="exceptionProcessor" ref="exceptionConverter"/>
+  </bean>
+  
+  <bean id="exceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  
+  <bean id="jdbcWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
+    <property name="jdbcConnection" ref="jdbcConnection"/>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+  
+  <bean id="exceptionThrowingReader" class="org.openadaptor.core.exception.HospitalTestCase$ExceptionThrowingReadConnector"/>
+    
+  <bean id="dummyWriter" class="org.openadaptor.core.exception.HospitalTestCase$DummyWriteConnector"/>
+</beans>
