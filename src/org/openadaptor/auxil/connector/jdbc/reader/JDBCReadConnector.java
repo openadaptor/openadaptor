@@ -37,7 +37,8 @@ import org.openadaptor.util.JDBCUtil;
 
 
 /**
- * Connects to a database and runs a fixed query. Each time next() is called it
+ * Connects to a database and runs a fixed query. The fixed query is run the
+ * first time next is called and each subsequent time next() is called it
  * returns a single row of the ResultSet converted by the ResultSetConverter.
  * Becomes "dry" when ResultSet is finished.
  * 
@@ -54,6 +55,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   protected Statement statement = null;
   protected ResultSet rs = null;
   protected ResultSetMetaData rsmd = null;
+  protected boolean dry = false;
 
 
   /**
@@ -77,14 +79,13 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   }
 
   /**
-   * Set up connection to database and execute query
+   * Set up connection to database
    *
    */
   public void connect() {
     super.connect();
     try {
       statement = createStatement();
-      rs = statement.executeQuery(sql);
     } catch (SQLException e) {
       handleException(e, "failed to create JDBC statement");
     }
@@ -103,27 +104,30 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   /**
    * Inpoint has no more data
    *
-   * @return boolean return true,there is no more input data
+   * @return boolean  true if there is no more input data
    */
   public boolean isDry() {
-    return rs == null;
+    return dry;
   }
 
   /**
-   * Returns array of objects extracted from resultset
+   * Returns array of objects extracted from resultset. Executes the fixed
+   * query the first time it is called.
    *
-   * @param timeoutMs
+   * @param timeoutMs Ignored as this implementation is non-blocking.
    * @return Object[] array of objects from resultset
    * @throws ComponentException
    */
   public Object[] next(long timeoutMs) throws ComponentException {
     try {
+      if (rs == null) { rs = statement.executeQuery(sql); }
       Object data = convertNext(rs);
       if (data != null) {
         return new Object[] {data};
       } else {
         JDBCUtil.closeNoThrow(rs);
         rs = null;
+        dry = true;
        }
     }
     catch (SQLException e) {
