@@ -202,8 +202,8 @@ public class Router extends AbstractRouter implements IMessageProcessor {
     }
     
     /* Set exceptionMap - check if a custom map was defined on the ExceptionHandler. */
-    if( boxed instanceof IExceptionHandler ){
-      IExceptionHandler exceptionHandler = (IExceptionHandler) boxed;
+    if( exceptionProcessor instanceof IExceptionHandler ){
+      IExceptionHandler exceptionHandler = (IExceptionHandler) exceptionProcessor;
       Map exceptionMap = exceptionHandler.getExceptionMap();
       if(null != exceptionMap){
         setExceptionMap(exceptionMap);

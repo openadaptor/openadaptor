@@ -73,11 +73,11 @@ public class ExceptionHandlerProxy extends Component implements IExceptionHandle
   }
 
   
-/**
-* The class is a proxy and itself doesn't do any processing.
-* 
-* @return null
-*/
+ /**
+  * The class is a proxy and itself doesn't do any processing.
+  * 
+  * @return null
+  */
   public Object[] process(Object data) {
     return new Object[]{data};
   }

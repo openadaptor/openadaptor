@@ -73,7 +73,7 @@ public class ExceptionHandlingTestCase extends TestCase {
   }
   
   /**
-   * Starts a simple adaptor with a node that throws a RuntimeException,
+   * Starts a simple adaptor with a write node that throws a RuntimeException,
    * ensures the exceptionProcessor was used one time.
    */
   public void testOneException(){
@@ -102,6 +102,31 @@ public class ExceptionHandlingTestCase extends TestCase {
     assertTrue(eHandler.counter == 1);
   }
   
+  /**
+   * Sets ExceptionHandlerProxy with a custom exception map as the exceptionProcessor.
+   *
+   */
+  public void testExceptionHandlerProxy(){
+    processMap.put(new TestReadConnector(), new ExceptionThrowingWriteConnector());
+    router.setProcessMap(processMap);
+    ExceptionHandlerProxy exceptionHandlerProxy = new ExceptionHandlerProxy();
+    DummyExceptionHandler handler1 = new DummyExceptionHandler();
+    DummyExceptionHandler handler2 = new DummyExceptionHandler();
+    Map exceptionMap = new HashMap();
+    exceptionMap.put(Exception.class.getName(), handler1);
+    exceptionMap.put(RuntimeException.class.getName(), handler2);
+    exceptionHandlerProxy.setExceptionMap(exceptionMap);
+    router.setExceptionProcessor(exceptionHandlerProxy);
+    adaptor.run();
+    assertTrue(handler1.counter == 0);
+    assertTrue(handler2.counter == 1);
+  }
+  
+  
+  
+  //
+  // Helper test classes
+  //
   
   /**
    * Simple write connector that throws an exception.
@@ -119,11 +144,11 @@ public class ExceptionHandlingTestCase extends TestCase {
    * Simple write connector that throws an exception.
    */
   public static final class DummyExceptionHandler extends ExceptionHandlerProxy {
-    static int counter = 0;
+    int counter = 0;
     
     public Object[] process(Object data) {
       counter++;
-      return null;
+      return super.process(data);
     } 
   }
   
