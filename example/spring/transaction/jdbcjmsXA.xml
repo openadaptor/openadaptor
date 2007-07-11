@@ -57,6 +57,8 @@
   <bean name="TransactionManager" class="org.openadaptor.core.transaction.jta.JtaTransactionManager"/>
   
   <!-- MySQL XADataSource -->
+  <!-- Please uncomment below to use. Currently doesn't pass the spring check because of the MySql reference -->
+  <!--
   <bean name="XADataSource" class="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource">
     <property name="serverName" value="${mysql.serverName}"/>
     <property name="port" value="${mysql.port}"/>
@@ -64,11 +66,13 @@
     <property name="user" value="${mysql.user}"/>
     <property name="password" value="${mysql.password}"/>
   </bean>
-
+  -->
   <!-- This defines jdbc connection -->
   <!-- Note the important property is "transacted". This defaults to false. -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <!--
     <property name="xaDataSource" ref="XADataSource"/>
+    -->
     <property name="transacted" value="true"/>
   </bean>
   
