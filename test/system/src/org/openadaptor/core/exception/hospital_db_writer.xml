@@ -12,7 +12,7 @@
       <map>
         <entry key-ref="reader" value-ref="dummyWriter"/> 
         
-        <entry key-ref="exceptionConverter" value-ref="jdbcWriter"/> 
+        <entry key-ref="exceptionConvertor" value-ref="jdbcWriter"/> 
       </map>
     </property>
     <property name="exceptionProcessor" ref="exceptionConvertor"/>
