@@ -44,5 +44,10 @@ public interface IRunnable extends ILifecycleComponent, Runnable {
   void setMessageProcessor(IMessageProcessor processor);
   
   int getExitCode();
-
+  
+  /**
+   * @return an instance of a Throwable if this runnable exits with an unhandled 
+   *         error. null if the runnable exits correctly.
+   */
+  Throwable getExitError();
 }

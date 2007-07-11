@@ -11,12 +11,14 @@
     <property name="processMap">
       <map>
         <entry key-ref="reader" value-ref="dummyWriter"/> 
+        
+        <entry key-ref="exceptionConverter" value-ref="jdbcWriter"/> 
       </map>
     </property>
-    <property name="exceptionProcessor" ref="exceptionConverter"/>
+    <property name="exceptionProcessor" ref="exceptionConvertor"/>
   </bean>
   
-  <bean id="exceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  <bean id="exceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
   <bean id="jdbcWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>

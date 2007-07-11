@@ -338,6 +338,24 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
     return exitCode;
   }
+  
+  /**
+   * Returns a list of exit errors (instances of Throwable) from all
+   * Runnables in the adaptor. The list will be empty if none of the nodes (connectors, processors)
+   * in the adaptor produced an error, or if the adaptor has an exceptionProcessor set up.
+   * 
+   * @return a list of exit errors from all Runnables in the adaptor.
+   */
+  public List getExitErrors(){
+    List exitErrors = new ArrayList();
+    for (Iterator iter = runnables.iterator(); iter.hasNext();) {
+      IRunnable runnable = (IRunnable) iter.next();
+      if(runnable.getExitError() != null) {
+        exitErrors.add(runnable.getExitError());
+      }
+    }
+    return exitErrors;
+  }
 
   private void validate() {
     List exceptions = new ArrayList();

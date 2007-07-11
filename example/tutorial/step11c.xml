@@ -8,7 +8,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[
-  Adaptor for step 11a of the tutorial.
+  Adaptor for step 11c of the tutorial.
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -23,27 +23,18 @@
         <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
      
         <!-- Exception processors -->
-        <entry key-ref="ExceptionHandlerProxy">
-          <list>
-            <ref bean="ExceptionConverter"/>
-            <ref bean="FileWriter"/>
-          </list>
-        </entry>
-        <entry key-ref="ExceptionConverter" value-ref="XMLConverter"/> 
-        <entry key-ref="XMLConverter" value-ref="ConsoleWriter"/>
-        
+        <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
+      
       </map>
     </property>
   
-    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+    <property name="exceptionProcessor" ref="ExceptionConvertor"/>
   </bean>
   
   <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
     <property name="port" value="9999"/>
-   </bean>
-  
-  <bean id="ExceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
-  
+  </bean>
+   
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
   <bean id="CustomProcessor" class="CustomProcessor2">
@@ -56,22 +47,16 @@
     </property>
   </bean>
   
-  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="Exception"/>
-  </bean>
+  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
-  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/puberror.txt"/>
-  </bean>
-  
-  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
-    <property name="exceptionMap">
-      <map>
-        <entry key="*" value-ref="FileWriter1"/> 
-        <entry key="java.lang.RuntimeException" value-ref="FileWriter2"/>
-      </map>
+  <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
+    <property name="jdbcConnection" ref="jdbcConnection"/>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
+      </bean>
     </property>
   </bean>
-
   
 </beans>

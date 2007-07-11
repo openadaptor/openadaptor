@@ -78,6 +78,8 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   private long timeoutMs = 1000;
 
   private int exitCode = 0;
+  
+  private Throwable exitThrowable = null;
 
   private ITransactionManager transactionManager;
 
@@ -167,6 +169,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         } catch (Throwable e) {
           transaction.setErrorOrException(e);
           exitCode = 1;
+          exitThrowable = e;
           log.error(getId() + " uncaught exception, rolling back transaction and stopping", e);
           transaction.rollback();
           transaction = null;
@@ -229,6 +232,10 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   public String toString() {
     return getId();
+  }
+
+  public Throwable getExitError() {
+    return exitThrowable;
   }
 
 }
