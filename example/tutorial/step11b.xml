@@ -33,30 +33,22 @@
   <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
     <property name="exceptionMap">
       <map>
-        <entry key="*" value-ref="FileWriter1"/> 
-        <entry key="java.lang.RuntimeException" value-ref="FileWriter2"/>
+        <entry key="org.openadaptor.core.exception.ProcessingException" value-ref="ProcessingExceptionLog"/>
+        <entry key="java.lang.Exception" value-ref="OtherExceptionsLog"/> 
       </map>
     </property>
   </bean>
   
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
-  <bean id="FileWriter1" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/aaa.txt"/>
+  <bean id="ProcessingExceptionLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/processingExceptions.log"/>
   </bean>
   
-  <bean id="FileWriter2" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/aaa.txt"/>
+  <bean id="OtherExceptionsLog" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/otherExceptions.log"/>
   </bean>
   
-  <bean id="CustomProcessor" class="CustomProcessor2">
-    <property name="field" value="/Trade/buySell"/>
-    <property name="map">
-      <map>
-        <entry key="BUY" value="B"/>
-        <entry key="SELL" value="S"/>
-      </map>
-    </property>
-  </bean>
+  <bean id="CustomProcessor" class="CustomProcessor2"/>
   
 </beans>
