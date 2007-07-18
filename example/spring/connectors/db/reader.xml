@@ -37,7 +37,7 @@
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <description>
-            This creates the simple pipeline Reader -> Writer.
+            This creates the simple router Reader -> Writer.
         </description>
         <property name="processors">
           <list>
@@ -48,20 +48,7 @@
       </bean>
     </property>
   </bean>
-  
-  <bean class="org.openadaptor.core.router.Router">
-    <description>
-      This creates the simple pipeline Reader -> Writer.
-    </description>
-    <property name="processors">
-      <list>
-        <ref bean="Reader"/>
-        <ref bean="Writer"/>
-      </list>
-    </property>
-  </bean>
- 
-  
+   
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>

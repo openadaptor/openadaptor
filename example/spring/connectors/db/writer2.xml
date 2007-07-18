@@ -51,7 +51,6 @@
    </property>
   </bean>
   
-  
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
@@ -63,6 +62,7 @@
     </property>
   </bean>
 
+  <!-- This defines jdbc connection -->
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
@@ -71,6 +71,7 @@
     <property name="password" value=""/>
   </bean>
 
+  <!-- Writer which inserts a row into a test table, uses SQLStatementConverter to map ordred map into a db table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>

@@ -15,7 +15,7 @@
     * reads data from stdin
     * maps the data to a store procedure call
     
-  It is designed to illustrate the basic structure of an adaptor that writes to a database
+  It is designed to illustrate the basic structure of an adaptor that writes to a database.
 
   Run it like this...
     
@@ -30,13 +30,16 @@
     lib/3rdparty/hsqldb.jar
     
   once running any data that read from std input is written into the test table.
+  
+  NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
+        database with an INSERT_TEST procedure compiled in it.
   ]]></description>
   
- <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-   <property name="messageProcessor">
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
      <bean class="org.openadaptor.core.router.Router">
        <description>
-         This creates the simple pipeline Reader -> MapConverter -> Writer.
+         This creates the simple router: Reader -> MapConverter -> Writer.
        </description>
        <property name="processors">
          <list>
@@ -46,9 +49,8 @@
          </list>
        </property>
      </bean>
-   </property>
- </bean>
-  
+    </property>
+  </bean>
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
