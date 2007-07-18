@@ -19,8 +19,8 @@
     <property name="processMap">
       <map>
         <!-- Normal flow -->
-        <entry key-ref="Servlet" value-ref="CustomProcessor"/> 
-        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
+        <entry key-ref="Servlet" value-ref="ConsoleWriter"/> 
+      
      
         <!-- Exception processors -->
         <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
@@ -37,7 +37,7 @@
    
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
-  <bean id="CustomProcessor" class="CustomProcessor2">
+  <!--  bean id="CustomProcessor" class="CustomProcessor2">
     <property name="field" value="/Trade/buySell"/>
     <property name="map">
       <map>
@@ -45,6 +45,14 @@
         <entry key="SELL" value="S"/>
       </map>
     </property>
+  </bean-->
+  
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
   </bean>
   
   <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
