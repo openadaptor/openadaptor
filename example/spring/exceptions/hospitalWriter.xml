@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: step10.xml 696 2007-06-27 13:04:36Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step10.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  Adaptor for step 11c of the tutorial.
+  ]]></description>
+    
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <!-- Normal flow -->
+        <entry key-ref="Servlet" value-ref="CustomProcessor"/> 
+        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
+     
+        <!-- Exception processors -->
+        <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
+      
+      </map>
+    </property>
+  
+    <property name="exceptionProcessor" ref="ExceptionConvertor"/>
+  </bean>
+  
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+  </bean>
+   
+  <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="CustomProcessor" class="CustomProcessor2">
+    <property name="field" value="/Trade/buySell"/>
+    <property name="map">
+      <map>
+        <entry key="BUY" value="B"/>
+        <entry key="SELL" value="S"/>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  
+  <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
+    <property name="jdbcConnection" ref="jdbcConnection"/>
+    <property name="statementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
+      </bean>
+    </property>
+  </bean>
+  
+</beans>

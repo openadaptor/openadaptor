@@ -31,14 +31,18 @@
 	  </property>
 	  <property name="sql">
 	    <value>
-	      SELECT data, exception_class_name, originating_component
+	      SELECT id, timestamp, data, exception_class_name, originating_component
 	      FROM error_log
+	      WHERE fixed = 'true' AND REPROCESSED = 'false' 
 	    </value>
 	  </property>
+	  <!--  property name="postambleSQL" value="UPDATE TESTOUTPUT SET VALUE='test postamble 2' WHERE VALUE='test postamble'"/-->
+	 
   </bean>
        
   <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
   
-  <bean id="testWriter" class="org.openadaptor.core.exception.HospitalTestCase$TestWriteConnector"/>
+  <bean id="testWriter" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
      
 </beans>
+

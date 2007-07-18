@@ -62,7 +62,7 @@ public class ExceptionHandlingTestCase extends TestCase {
    * ensures the exceptionProcessor wasn't used.
    */
   public void testNoException(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new TestWriteConnector());
+    processMap.put(testComponent.new TestReadConnector(), new TestComponent.TestWriteConnector());
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -166,7 +166,7 @@ public class ExceptionHandlingTestCase extends TestCase {
    */
   public void testNoExceptionProcessorWithTwoReaders2(){
     processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new TestWriteConnector());
+    processMap.put(testComponent.new TestReadConnector(), new TestComponent.TestWriteConnector());
     router.setProcessMap(processMap);
     assertTrue(adaptor.getExitCode()==0);
     assertNotNull(adaptor.getExitErrors());

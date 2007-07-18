@@ -49,10 +49,12 @@ public class TestComponent {
    * A write connector that checks the data it receives is not empty. Does nothing
    * if it is, throws a RuntimeException if it isn't.
    */
-  public final class TestWriteConnector extends Component implements IWriteConnector {
+  public static final class TestWriteConnector extends Component implements IWriteConnector {
+    public int counter = 0;
     public void connect() {}
     public void disconnect() {}
     public Object deliver(Object[] data) {
+       counter++;
        if(data == null || data.length == 0){
          throw new RuntimeException("No data to write");
        }
