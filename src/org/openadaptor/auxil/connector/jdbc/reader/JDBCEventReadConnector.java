@@ -171,7 +171,7 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
 
   
   /**
-   * convert event ResultSet into a statement to actually get the data
+   * convert event ResultSet into a statement to get the actual data
    */
   private CallableStatement convertEventToStatement(ResultSet rs) throws SQLException {
     ResultSetMetaData rsmd=rs.getMetaData();
@@ -190,16 +190,19 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
     CallableStatement s = prepareCall(sql);
 
     // set in parameters
+    String loggedSql = sql;
     for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
-      String stringVal=(rs.getObject(i)==null)?null:rs.getString(i);
-      if (stringVal!=null) {
+      String stringVal=(rs.getObject(i)==null)?null:rs.getString(i);      
         s.setString(i+1-EVENT_RS_PARAM1, stringVal);
-      }
       if (log.isDebugEnabled()) {
-        sql = sql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
+        loggedSql = loggedSql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
       }
+
     }
-    log.debug("Event sql statement = " + sql);
+    if (log.isDebugEnabled()) {
+       log.debug("Event sql statement = " + loggedSql);
+    }
+
 
     return s;
   }
