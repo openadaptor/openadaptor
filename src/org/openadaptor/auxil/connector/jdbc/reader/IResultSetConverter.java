@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.jdbc.reader;
 
@@ -39,10 +39,16 @@ import java.sql.SQLException;
 
 public interface IResultSetConverter {
   /**
+   * Flag to indicate converter shoudl convert a single row at a time.
+   */
+  public static final int CONVERT_ONE=1;
+
+  /**
    * This is the default batch size for converting a ResultSet.
    * 
    */
-  public static final int DEFAULT_BATCH_SIZE=1;
+  public static final int DEFAULT_BATCH_SIZE=CONVERT_ONE;
+
   /**
    * This indicates that all rows from a ResultSet should be converted.
    */
