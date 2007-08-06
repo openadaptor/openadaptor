@@ -36,10 +36,12 @@ import org.openadaptor.util.TestComponent;
 
 import junit.framework.TestCase;
 
-
 /**
- * Integration tests of exception handling in general.
- * Uses real adaptors, which are assembled 'by hand' (not using Spring).
+ * Integration tests of {@link ExceptionHandlerProxy} and exception handling in general.
+ * Runs real adaptors which are assembled 'by hand' (not using Spring). Runs adaptors
+ * in various exception handling config scenarios - with and without exceptionProcessor
+ * set up, adaptors with different types and numbers of nodes throwing exceptions.
+ * Tests different types of exceptionProcessors.
  * 
  * @author Kris Lachor
  */
@@ -143,7 +145,7 @@ public class ExceptionHandlingTestCase extends TestCase {
    * Same as {@link #testNoExceptionProcessorWithOneReader()} but with two readers -
    * expects two exceptions after the adapter completes.  
    */
-  public void testNoExceptionProcessorWithTwoReaders1(){
+  public void testNoExceptionProcessorWithTwoReaders1() throws Exception {
     processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
     processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
     router.setProcessMap(processMap);

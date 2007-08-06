@@ -27,6 +27,7 @@
 
 package org.openadaptor.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openadaptor.core.Component;
@@ -43,7 +44,7 @@ import org.openadaptor.core.exception.ExceptionHandlerProxy;
  */
 public class TestComponent {
   
-  public static String TEST_ERROR_MESSAGE = "Test error message";
+  public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION, MOST LIKELY NEEDS TO BE IGNORED.";
   
   /**
    * A write connector that checks the data it receives is not empty. Does nothing
@@ -51,15 +52,22 @@ public class TestComponent {
    */
   public static final class TestWriteConnector extends Component implements IWriteConnector {
     public int counter = 0;
+    
+    public List dataCollection = new ArrayList();
+    
     public void connect() {}
+    
     public void disconnect() {}
+    
     public Object deliver(Object[] data) {
        counter++;
        if(data == null || data.length == 0){
          throw new RuntimeException("No data to write");
        }
+       dataCollection.add(data);
        return null;
     }
+    
     public void validate(List exceptions) {}
   }
   

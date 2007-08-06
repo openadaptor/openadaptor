@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.adaptor.Adaptor;
@@ -204,7 +205,17 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   }
 
   private Object[] getNext() {
-    Object[] data = connector.next(timeoutMs);
+    Object[] data = null;
+    if(connector instanceof IPollingReadConnector){
+      IPollingReadConnector pollingConnector = (IPollingReadConnector) connector;
+      if(pollingConnector.getPollingStrategy().isDry()){
+        return null;
+      }
+      data = pollingConnector.getPollingStrategy().next(timeoutMs);
+    }
+    else{
+      data = connector.next(timeoutMs);
+    }
     return data;
   }
 

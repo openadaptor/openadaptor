@@ -198,7 +198,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
 
   /**
-   * Closes the connectionh to the dattabase
+   * Closes the connection to the database
    *
    * @throws ComponentException just a wrapper around any SQLexception that may be thrown
    */

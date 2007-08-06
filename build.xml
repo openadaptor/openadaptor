@@ -278,6 +278,7 @@
           <exclude name="**/WebServiceListeningReadConnector*.java"/>
           <exclude name="**/WebServicePollingReadConnector*.java"/>
           <exclude name="**/WebServiceWriteConnector*.java"/>
+          <exclude name="**/JDBCConnectionTestCase*.java"/>
           <!-- -->
         </fileset>
       </batchtest>

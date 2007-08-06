@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter;
+import org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter;
 import org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter;
 import org.openadaptor.auxil.connector.jdbc.writer.orderedmap.TableStatementConverter;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
@@ -196,7 +196,7 @@ public class JDBCWriteConnectorTestCase extends TestCase {
     PreparedStatement s;
     s = jdbcConnection.getConnection().prepareStatement("SELECT * FROM TRADE ORDER BY TRADEID");
     ResultSet rs = s.executeQuery();
-    ResultSetConverter converter = new ResultSetConverter();
+    ResultSetToXMLConverter converter = new ResultSetToXMLConverter();
     return converter.convertAll(rs);
   }
 

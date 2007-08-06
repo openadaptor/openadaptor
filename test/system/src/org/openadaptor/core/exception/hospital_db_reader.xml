@@ -27,7 +27,7 @@
 	  <description>Reader which polls database using configured SQL.</description>
 	  <property name="jdbcConnection" ref="JdbcConnection"/>
 	  <property name="resultSetConverter">
-	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
 	  </property>
 	  <property name="sql">
 	    <value>

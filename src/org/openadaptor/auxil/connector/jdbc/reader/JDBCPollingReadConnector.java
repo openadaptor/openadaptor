@@ -32,24 +32,20 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.openadaptor.core.IPollingReadConnector;
+import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
 
 
 /**
- * Connects to a database and runs a fixed query. The fixed query is run the
- * first time next is called and each subsequent time next() is called it
- * returns a single row of the ResultSet converted by the ResultSetConverter.
- * Becomes "dry" when ResultSet is finished.
+ * Generic JDBC polling read connector created to replace:
+ * JDBCEventReadConnector, JDBCPollConnector, JDBCReadConnector
  * 
- * @see AbstractResultSetConverter
- * @author Eddy Higgins
- * @author perryj
- * @deprecated use JDBCPollingReadConnector instead.
- * @todo candidate for deletion (replaced with JDBCPollingReadConnector.)
+ * @author Eddy Higgins, Kris Lachor
+ * @todo remove 'implements IPollingReadConnector' once AbstractJDBCReadConnector extends it
  */
-
-public class JDBCReadConnector extends AbstractJDBCReadConnector {
+public class JDBCPollingReadConnector extends AbstractJDBCReadConnector implements IPollingReadConnector {
 
 //  private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
@@ -60,14 +56,15 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   protected boolean dry = false;
 
 
+  
   /**
    * Default constructor
    */
-  public JDBCReadConnector() {
+  public JDBCPollingReadConnector() {
     super();
   }
   
-  public JDBCReadConnector(String id) {
+  public JDBCPollingReadConnector(String id) {
     super(id);
   }
 
@@ -123,7 +120,14 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   public Object[] next(long timeoutMs) throws ComponentException {
     try {
       if (rs == null) { rs = statement.executeQuery(sql); }
-      Object data = convertNext(rs);
+      Object data = null;
+      if( getPollingStrategy().getConvertMode() == IPollingStrategy.CONVERT_ALL){
+        data = convertAll(rs);
+        dry = true;
+      }
+      else{
+        data = convertNext(rs);
+      }
       if (data != null) {
         return new Object[] {data};
       } else {

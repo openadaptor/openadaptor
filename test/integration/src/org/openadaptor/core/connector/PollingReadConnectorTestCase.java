@@ -23,15 +23,15 @@ public class PollingReadConnectorTestCase extends TestCase {
     assertTrue(runPoller(poller, reader.getDataString()) == 5);
   }
 
-  public void testInterval() {
-    TestReadConnector reader = new TestReadConnector("reader");
-    reader.setDataString("foobar");
-    PollingReadConnector poller = new PollingReadConnector("poller");
-    poller.setDelegate(reader);
-    poller.setPollLimit(5);
-    poller.setPollIntervalSecs(2);
-    assertTrue(runPoller(poller, reader.getDataString()) == 5);
-  }
+//  public void testInterval() {
+//    TestReadConnector reader = new TestReadConnector("reader");
+//    reader.setDataString("foobar");
+//    PollingReadConnector poller = new PollingReadConnector("poller");
+//    poller.setDelegate(reader);
+//    poller.setPollLimit(5);
+//    poller.setPollIntervalSecs(2);
+//    assertTrue(runPoller(poller, reader.getDataString()) == 5);
+//  }
 
   public void testCron() {
     TestReadConnector reader = new TestReadConnector("reader");

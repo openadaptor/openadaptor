@@ -36,8 +36,9 @@ import java.util.Map;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
+import org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
-import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetConverter;
+import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
@@ -46,12 +47,11 @@ import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.spring.SpringAdaptor;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
-import org.openadaptor.util.ResourceUtil;
+import org.openadaptor.util.SystemTestUtil;
 import org.openadaptor.util.TestComponent;
 import org.openadaptor.util.TestComponent.ExceptionThrowingWriteConnector;
 import org.openadaptor.util.TestComponent.TestReadConnector;
 import org.openadaptor.util.TestComponent.TestWriteConnector;
-import org.springframework.core.io.UrlResource;
 
 /**
  * System tests for the hospital writer and reader.
@@ -82,7 +82,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
   /**
    * @return hospital table definition.
    */
-  protected String getSchemaDefinition() {
+  public String getSchemaDefinition() {
     return SCHEMA;
   }
 
@@ -104,29 +104,19 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * Ensures the hospital is empty.
    */
   public void testHospitalIsEmpty2() throws Exception{
-    runAdaptor(CONFIG_FILE_WRITER_1);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_1);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
     assertFalse("Hospital not empty", rs.next());
     preparedStmt.close();
   }
 
-  private SpringAdaptor runAdaptor(String configFile) throws Exception{
-    SpringAdaptor adaptor = new SpringAdaptor();
-    UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
-        this, RESOURCE_LOCATION, configFile));
-    String configPath = urlResource.getFile().getAbsolutePath();
-    adaptor.addConfigUrl(configPath);
-    adaptor.run();
-    return adaptor;
-  }
-  
   /**
    * Runs adaptor with a writer node that throws an exception. 
    * Verifies hospital has one entry.
    */
   public void testHospitalWriterGetsOneExceptionFromWriteConnector() throws Exception{
-    runAdaptor(CONFIG_FILE_WRITER_2);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
     assertTrue("Hospital is empty", rs.next());
@@ -155,7 +145,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * Verifies hospital has one entry.
    */
   public void testHospitalWriterGetsOneExceptionFromDataProcessor() throws Exception{
-    runAdaptor(CONFIG_FILE_WRITER_4);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_4);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
     assertTrue("Hospital is empty", rs.next());
@@ -168,7 +158,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * Verifies the hostpital has two exceptions, verifies corect values of its some data.
    */
   public void testHospitalWriterGetsTwoExceptions() throws Exception{
-    SpringAdaptor adaptor = runAdaptor(CONFIG_FILE_WRITER_2);
+    SpringAdaptor adaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2);
     adaptor.run();
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
@@ -190,8 +180,8 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * adaptor that reads from the hospital. Runs the hospital reader.
    */
   public void testHospitalReader() throws Exception{
-    runAdaptor(CONFIG_FILE_WRITER_2);
-    runAdaptor(CONFIG_FILE_READER);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_READER);
   }
   
   
@@ -201,7 +191,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
    * to be 'fixed' first)
    */
   public void testHospitalReader2() throws Exception{
-    runAdaptor(CONFIG_FILE_WRITER_2);
+    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, CONFIG_FILE_WRITER_2);
     Router router = new Router();
     Map processMap = new HashMap();  
     Adaptor adaptor = new Adaptor();
@@ -242,7 +232,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
   private JDBCReadConnector assembleHostpitalReader(){
     JDBCConnection jdbcConnection = new LocalHSQLJdbcConnection();
     JDBCReadConnector hospitalReader = new JDBCReadConnector();
-    ResultSetConverter resultSetConverter = new ResultSetConverter();
+    ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
     hospitalReader.setResultSetConverter(resultSetConverter);
     hospitalReader.setJdbcConnection(jdbcConnection);
     hospitalReader.setSql(HOSPITAL_READER_SELECT_STMT);

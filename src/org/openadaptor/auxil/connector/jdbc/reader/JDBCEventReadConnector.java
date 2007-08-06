@@ -187,23 +187,21 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
     String sql = buffer.append(")}").toString();
     
     // create statement
-    CallableStatement s = prepareCall(sql);
+    CallableStatement callableStatement = prepareCall(sql);
 
     // set in parameters
     String loggedSql = sql;
     for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
       String stringVal=(rs.getObject(i)==null)?null:rs.getString(i);      
-        s.setString(i+1-EVENT_RS_PARAM1, stringVal);
+      callableStatement.setString(i+1-EVENT_RS_PARAM1, stringVal);
       if (log.isDebugEnabled()) {
         loggedSql = loggedSql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
       }
-
     }
     if (log.isDebugEnabled()) {
        log.debug("Event sql statement = " + loggedSql);
     }
 
-
-    return s;
+    return callableStatement;
   }
 }

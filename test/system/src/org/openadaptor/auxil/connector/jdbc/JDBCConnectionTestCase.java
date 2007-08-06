@@ -42,9 +42,10 @@ import junit.framework.TestCase;
 /**
  * This test case uses the Hypersonic database. The database is created in memory when 
  * a jdbc connection is established.
- *
+ * 
+ * This class can be used as a superclass for any test cases that require a JDBCConnection.
  */
-public class JDBCConnectionTestCase extends TestCase {
+public abstract class JDBCConnectionTestCase extends TestCase {
   
     private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
     private static final String DB_URL="jdbc:hsqldb:mem:test";
@@ -90,7 +91,8 @@ public class JDBCConnectionTestCase extends TestCase {
       assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
     }
 
-    protected String getSchemaDefinition(){
-      return null;
-    }
+    /**
+     * @return DB schemat definition to be set up before the tests are run.
+     */
+    public abstract String getSchemaDefinition();
 }

@@ -336,6 +336,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       IRunnable runnable = (IRunnable) iter.next();
       exitCode += runnable.getExitCode();
     }
+    System.out.println("Exit code: " + exitCode);
     return exitCode;
   }
   

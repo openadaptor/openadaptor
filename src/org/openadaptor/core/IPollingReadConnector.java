@@ -23,35 +23,19 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
-package org.openadaptor.auxil.connector.jdbc.reader.orderedmap;
+package org.openadaptor.core;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
-import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.IReadConnector;
 
 /**
- * Convert ResultSets into OrderedMaps
- * @author perryj
+ * Interface for a read connector that polls. 
+ * 
+ * @author Kris Lachor
  */
-public class ResultSetConverter extends AbstractResultSetConverter {
-
-  /**
-   * This convert the current row of a ResultSet into an IOrderedMap.
-   * Note that the supplied ResultSetMetaData must correspond to the
-   * supplied ResultSet, or the behaviour is undefined.
-   */
-  protected Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
-    int columnCount = rsmd.getColumnCount();
-    IOrderedMap map = new OrderedHashMap(columnCount);
-    for (int i = 1; i <= columnCount; i++) {
-      map.put(rsmd.getColumnName(i), rs.getObject(i));
-    }
-    return map;
-  }
+public interface IPollingReadConnector extends IReadConnector {
+  
+  IPollingStrategy getPollingStrategy();
+  
 }

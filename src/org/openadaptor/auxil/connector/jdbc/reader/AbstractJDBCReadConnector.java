@@ -36,9 +36,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetConverter;
+import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IPollingReadConnector;
+import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.connector.SinglePollPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
@@ -57,9 +60,18 @@ import org.openadaptor.core.transaction.ITransactional;
  * @author higginse
  *
  */
+//public abstract class AbstractJDBCReadConnector extends Component implements IPollingReadConnector, ITransactional {
 public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
 
-  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetConverter();
+  
+  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+  
+  private static IPollingStrategy DEFAULT_POLLING_STRATEGY = new SinglePollPollingStrategy();
+  
+  private IPollingStrategy defaultPollingStrategy = DEFAULT_POLLING_STRATEGY;
+  
+  private IPollingStrategy pollingStrategy = null;
+  
   
   private JDBCConnection jdbcConnection;
   private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
@@ -162,5 +174,19 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
     jdbcConnection.handleException(e, null);
   }
 
+  public IPollingStrategy getPollingStrategy(){
+    //@todo this is wrong, the reference to connector needs to be set on the strategy
+    //somewhere else.
+    IPollingStrategy result = pollingStrategy == null ? defaultPollingStrategy : pollingStrategy;
+    result.setPollingReadConnector((IPollingReadConnector) this);
+    return result;
+  }
+
+  public void setPollingStrategy(IPollingStrategy pollingStrategy) {
+    this.pollingStrategy = pollingStrategy;
+    //@todo this is wrong, the reference to connector needs to be set on the strategy
+    //somewhere else.
+    this.pollingStrategy.setPollingReadConnector((IPollingReadConnector) this);
+  }
 
 }

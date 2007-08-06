@@ -25,50 +25,34 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.reader.xml;
+package org.openadaptor.auxil.connector.jdbc.reader.orderedmap;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
-public class ResultSetConverter extends AbstractResultSetConverter {
+/**
+ * Convert ResultSets into OrderedMaps.
+ * 
+ * @author perryj
+ */
+public class ResultSetToOrderedMapConverter extends AbstractResultSetConverter {
 
-  private boolean convertToString = true;
-  private String rootElement = "row";
-  private boolean setTypeAttributes = false;
-  
-  public void setConvertToString(final boolean convertToString) {
-    this.convertToString = convertToString;
-  }
-
-  public void setSetTypeAttributes(boolean setTypeAttributes) {
-    this.setTypeAttributes = setTypeAttributes;
-  }
-
-  public void setRootElement(final String rootElement) {
-    this.rootElement = rootElement;
-  }
-
+  /**
+   * This convert the current row of a ResultSet into an IOrderedMap.
+   * Note that the supplied ResultSetMetaData must correspond to the
+   * supplied ResultSet, or the behaviour is undefined.
+   */
   protected Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException {
     int columnCount = rsmd.getColumnCount();
-    Document doc = DocumentHelper.createDocument();
-    Element root = doc.addElement(rootElement);
+    IOrderedMap map = new OrderedHashMap(columnCount);
     for (int i = 1; i <= columnCount; i++) {
-      Element e = root.addElement(rsmd.getColumnName(i));
-      String text = rs.getString(i);
-      if (text != null) {
-        e.setText(text);
-      }
-      if (setTypeAttributes) {
-        e.addAttribute("type", rsmd.getColumnClassName(i));
-      }
+      map.put(rsmd.getColumnName(i), rs.getObject(i));
     }
-    return convertToString ? (Object)doc.asXML() : doc;
+    return map;
   }
-
 }
