@@ -80,7 +80,7 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="resultSetConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
     </property>
     <!-- You can adjust this sql to match whatever example tables you have set up -->
     <property name="sql">

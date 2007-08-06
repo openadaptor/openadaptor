@@ -64,7 +64,7 @@
     <property name="maxBatchSize" value="0"/> 
     -->
     <property name="resultSetConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
     </property>
     <property name="sql">
       <value>
