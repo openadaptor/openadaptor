@@ -97,11 +97,33 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
   * @return Object the value for the key as defined by ISimpleRecord.get(Object key)
   */
   public Object jsFunction_get(Object key) {
-    log.debug("get("+key+") invoked");
     Object value=simpleRecord.get(key);
-    return value;
-  }
+    Object convertedValue = convertJavaToJavascript(value);
+    if (log.isDebugEnabled()) {
+      log.debug("get("+key+") invoked so got "+value+" and converted to "+convertedValue);
+    }
+    return convertedValue;
+}
 
+  /**
+   * Perform conversion (if appropriate) from java to javascript types.
+   * <p>
+   * The following conversion(s) are currently performed:
+   * <UL>
+   *   <LI>If incoming object is an Object[], convert it to a NativeArray
+   * </UL> 
+   * Any object which doesn't match the above, is returned unchanged.
+   * @param data any Object (though typically from java)
+   * @return Object (having been converted if appropriate)
+   */
+  private static Object convertJavaToJavascript(Object data) {
+    Object converted=data;
+    if (data instanceof Object[]) {
+      converted = new org.mozilla.javascript.NativeArray((String[])data);
+    }
+    return converted;
+  }
+ 
   /**
    * Mapping of ISimpleRecord.put(Object key, Object value).
    * <br>
@@ -111,9 +133,12 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
    * Note: Always forces flags as modified, even if new value = old value.
    */
   public void jsFunction_put(Object key,Object value) {
-    log.debug("put("+key+","+value+") invoked");
     modify();
-    simpleRecord.put(key, convertJavascriptToJava(value));
+    Object convertedValue = convertJavascriptToJava(value);
+    simpleRecord.put(key, convertedValue);
+    if (log.isDebugEnabled()) {
+      log.debug("put("+key+","+value+") invoked so put "+convertedValue);
+    }
   }
   
   /**
@@ -121,7 +146,7 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
    * <p>
    * The following conversion(s) are currently performed:
    * <UL>
-   *   <LI>If incoming object is a NativeArray, convert it to an Object[]
+   *   <LI>If incoming object is a NativeArray, convert it to a String[]
    * </UL> 
    * Any object which doesn't match the above, is returned unchanged.
    * @param data any Object (though typically from javascript)
@@ -132,9 +157,9 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
     if (data instanceof NativeArray) {
       org.mozilla.javascript.NativeArray arrayValue = (NativeArray)data;
       long length = arrayValue.getLength();
-      Object[] result = new Object[(int)length];
+      String[] result = new String[(int)length];
       for (int i=0; i<length; i++) {
-        result[i] = arrayValue.get(i,arrayValue);
+        result[i] = arrayValue.get(i,arrayValue).toString();
       }
       converted = result;
     }   
@@ -200,16 +225,16 @@ public class ScriptableSimpleRecord extends ScriptableObject  {
    * Note: Always forces flags as modified, even if new value = old value.
    */
   public void jsFunction_clear() {
-	 log.debug("clear() invoked");
-	 modify();
-	 simpleRecord.clear();
+   log.debug("clear() invoked");
+   modify();
+   simpleRecord.clear();
   }
   
  /*
   public ScriptableSimpleRecord jsFunction_clone() {
-	 ScriptableSimpleRecord clone=new ScriptableSimpleRecord();
-	 clone.simpleRecord=(ISimpleRecord)simpleRecord.clone();
-	 return clone;
+   ScriptableSimpleRecord clone=new ScriptableSimpleRecord();
+   clone.simpleRecord=(ISimpleRecord)simpleRecord.clone();
+   return clone;
   }
   */
   
