@@ -193,8 +193,19 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
                   outgoing.put(entry.getValue(), outKeyValue);
                 }
               } else {
-                // attribute has a real value, so use it:
-                outgoing.put(entry.getValue(), outKeyValue.toString());
+                // attribute has a real value, so use it (may be an array of strings):
+                if (outKeyValue instanceof Object[]) {
+                  // If it is an array of objects, convert it to an array of strings:
+                  Object[] outKeyValueArray = (Object[]) outKeyValue;
+                  String[] outKeyStringArray = new String[outKeyValueArray.length];
+                  for (int k=0; k<outKeyValueArray.length; k++) {
+                    outKeyStringArray[k] = outKeyValueArray[k].toString(); 
+                  }
+                  outgoing.put(entry.getValue(), outKeyStringArray);
+                } else {
+                  // Otherwise simply convert object to a string:
+                  outgoing.put(entry.getValue(), outKeyValue.toString());
+                }
               }
             }
           }
