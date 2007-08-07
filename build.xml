@@ -225,7 +225,7 @@
 
   <target name="test.all" depends="test.unit, test.integration, test.system" description="Run combined tests (currently unit, integration and system tests)"/>
 
-  <target name="test.unit" description="run unit tests only">
+  <target name="test.unit" depends="compile.test.unit" description="run unit tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
@@ -244,7 +244,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.integration" description="run integration tests only">
+  <target name="test.integration" depends="compile.test.integration" description="run integration tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
@@ -263,7 +263,7 @@
      <fail message="Tests failed: check ${dir.test.output}" if="test.failed"/>
   </target>
 
-  <target name="test.system" description="run system tests only">
+  <target name="test.system" depends="compile.test.system" description="run system tests only">
     <junit printsummary="true" dir="${basedir}">
       <classpath refid="classpath.test"/>
       <formatter type="xml"/>
