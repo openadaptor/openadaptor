@@ -40,8 +40,7 @@ import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrdered
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IPollingStrategy;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.connector.SinglePollPollingStrategy;
+import org.openadaptor.core.connector.LoopingPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
@@ -51,28 +50,18 @@ import org.openadaptor.core.transaction.ITransactional;
  * By default, this is DEFAULT_CONVERTOR.
  * 
  * @see AbstractResultSetConverter
- * @author Eddy Higgins
- * @author perryj
+ * @author Eddy Higgins, perryj, Kris Lachor.
  */
-
-/**
- * 
- * @author higginse
- *
- */
-//public abstract class AbstractJDBCReadConnector extends Component implements IPollingReadConnector, ITransactional {
-public abstract class AbstractJDBCReadConnector extends Component implements IReadConnector, ITransactional {
-
+public abstract class AbstractJDBCReadConnector extends Component implements IPollingReadConnector, ITransactional {
   
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
   
-  private static IPollingStrategy DEFAULT_POLLING_STRATEGY = new SinglePollPollingStrategy();
+  private static IPollingStrategy DEFAULT_POLLING_STRATEGY = new LoopingPollingStrategy();
   
   private IPollingStrategy defaultPollingStrategy = DEFAULT_POLLING_STRATEGY;
   
   private IPollingStrategy pollingStrategy = null;
-  
-  
+    
   private JDBCConnection jdbcConnection;
   private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 

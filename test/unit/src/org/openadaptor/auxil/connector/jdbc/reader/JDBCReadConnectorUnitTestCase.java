@@ -26,79 +26,85 @@
  */
 package org.openadaptor.auxil.connector.jdbc.reader;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 
-//import org.openadaptor.core.connector.LoopingPollingStrategy;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jmock.MockObjectTestCase;
+import org.jmock.Mock;
+import org.openadaptor.auxil.connector.jms.JMSReadConnectorTestCase;
+
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Unit tests for {@link JDBCPollingReadConnector}. 
- * These tests verify the  {@link JDBCPollingReadConnector} combined with the 
- * {@LoopingPollingStrategy} is fully compatible with {@link JDBCReadConnector}, which
- * it is replacing.
+ * Unit tests for {@link JDBCReadConnector}. The {@link JDBCReadConnector} is going 
+ * to be replaced by a generic JDBC reader {@link JDBCPollingReadConnector}, these 
+ * tests were written to ensure compatibility of both classes.
  * 
  * @author Kris Lachor
  */
-public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
+public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   
-  private JDBCPollingReadConnector jdbcPollingReadConnector = new JDBCPollingReadConnector();
-  
+  private JDBCReadConnector jdbcReadConnector = new JDBCReadConnector();
+    
   /**
    * @see junit.framework.TestCase#setUp()
    */
   protected void setUp() throws Exception {
     super.setUp();
-    jdbcPollingReadConnector.setId("Test Read Connector");
-    jdbcPollingReadConnector.setSql(sql);
-    jdbcPollingReadConnector.setJdbcConnection(mockConnection);    
+    jdbcReadConnector.setId("Test Read Connector");
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setJdbcConnection(mockConnection);    
   }
 
   
   /**
-   * Tests {@link JDBCPollingReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    */
   public void testConnect(){
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
-    assertNull(jdbcPollingReadConnector.statement);
-    jdbcPollingReadConnector.connect();
-    assertEquals(mockStatement.proxy(), jdbcPollingReadConnector.statement);
+    assertNull(jdbcReadConnector.statement);
+    jdbcReadConnector.connect();
+    assertEquals(mockStatement.proxy(), jdbcReadConnector.statement);
   }
   
   /**
-   * Tests {@link JDBCPollingReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    * Creating the statement throws exception.
    */
   public void testConnect2(){
     mockSqlConnection.expects(once()).method("createStatement").will(throwException(new SQLException("test", "test")));
-    assertNull(jdbcPollingReadConnector.statement);
+    assertNull(jdbcReadConnector.statement);
     try{ 
-       jdbcPollingReadConnector.connect();
+       jdbcReadConnector.connect();
     }catch(ConnectionException ce){
-       assertNull(jdbcPollingReadConnector.statement);
+       assertNull(jdbcReadConnector.statement);
        return;
     }
     assertTrue(false);
   }
   
   /**
-   * Tests {@link JDBCPollingReadConnector#disconnect}.
+   * Tests {@link JDBCReadConnector#disconnect}.
    */
   public void testDisonnect(){
     testConnect();
     mockStatement.expects(once()).method("close");
     mockSqlConnection.expects(once()).method("close");
-    jdbcPollingReadConnector.disconnect();
+    jdbcReadConnector.disconnect();
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * One call to the {@link JDBCPollingReadConnector#next(long)} method.
+   * One call to the {@link JDBCReadConnector#next(long)} method.
    */
   public void testNext() {
-    //no need to set the looping strategy - it's a default
-//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
@@ -106,9 +112,9 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
     mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
     mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
     mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
-    jdbcPollingReadConnector.connect();
-    assertFalse("Read connector dry to soon.", jdbcPollingReadConnector.isDry());
-    Object [] arr = (Object []) jdbcPollingReadConnector.next(10);
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
     assertTrue("Unexpected result type", arr[0] instanceof Map);
     assertTrue("Unexpected result count", arr.length == 1);
     Map map = (Map) arr[0];
@@ -117,14 +123,12 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * Two calls to the {@link JDBCPollingReadConnector#next(long)} method.
-   * Checks value {@link JDBCPollingReadConnector#isDry()}.
+   * Two calls to the {@link JDBCReadConnector#next(long)} method.
+   * Checks value {@link JDBCReadConnector#isDry()}.
    */
   public void testNext2() {
-//  no need to set the looping strategy - it's a default
-//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
@@ -133,17 +137,17 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
     mockResultSet.expects(once()).method("close"); 
     mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
     mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
-    jdbcPollingReadConnector.connect();
-    assertFalse("Read connector dry to soon.", jdbcPollingReadConnector.isDry());
-    Object [] arr = (Object []) jdbcPollingReadConnector.next(10);
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
     assertTrue("Unexpected result type", arr[0] instanceof Map);
     assertTrue("Unexpected result count", arr.length == 1);
     Map map = (Map) arr[0];
     String s = (String) map.get(COL1);
     assertTrue("Unexpected result", s.equals(TEST_STRING));
-    assertFalse("Read connector dry to soon.", jdbcPollingReadConnector.isDry());
-    jdbcPollingReadConnector.next(10);
-    assertTrue("Read connector not dry. Should be.", jdbcPollingReadConnector.isDry());
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    jdbcReadConnector.next(10);
+    assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
   }
 
 }

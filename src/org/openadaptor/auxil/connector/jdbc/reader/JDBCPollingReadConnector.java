@@ -44,6 +44,7 @@ import org.openadaptor.util.JDBCUtil;
  * 
  * @author Eddy Higgins, Kris Lachor
  * @todo remove 'implements IPollingReadConnector' once AbstractJDBCReadConnector extends it
+ * @todo legacy JDBCReadConnector is equivalent to this connector with the loopingpollingstrategy.
  */
 public class JDBCPollingReadConnector extends AbstractJDBCReadConnector implements IPollingReadConnector {
 

@@ -26,89 +26,37 @@
  */
 package org.openadaptor.auxil.connector.jdbc.reader;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.connector.LoopingPollingStrategy;
-import org.openadaptor.core.connector.SinglePollPollingStrategy;
-import org.openadaptor.core.router.Router;
+
 import org.openadaptor.util.LocalHSQLJdbcConnection;
-import org.openadaptor.util.TestComponent;
 
 
 /**
- * System tests for {@link JDBCPollingReadConnector} that uses different polling
- * strategies:
- * {@link SinglePollPollingStrategy}
- * {@link LoopingPollingStrategy}
+ * System tests for {@link JDBCReadConnector}.
  * 
- * Extends {@link JDBCConnectionTestCase} that starts up HSQL with appropriate schema. 
+ * Extends {@link JDBCPollingReadConnectorTestCase} that starts up HSQL with appropriate schema,
+ * and provides SQL constants.
  * 
  * @author Kris Lachor
  */
-public class JDBCPollingReadConnectorTestCase extends JDBCConnectionTestCase{
+public class JDBCReadConnectorTestCase extends JDBCPollingReadConnectorTestCase{
   
-  protected static String COL1 = "COL1";
-  
-  protected static String COL2 = "COL2";
-  
-  private static String SCHEMA = "CREATE MEMORY TABLE OA_TEST(" + COL1 + " CHAR(32)," + COL2 + " CHAR(32)); "
-    + "INSERT INTO OA_TEST VALUES ('foo', 'bar'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2')";
-  
-  protected static String SELECT_STMT_1 = "SELECT " + COL1 + ", " +  COL2 + " FROM OA_TEST";
-  
-  protected Router router = new Router();
-  
-  protected Map processMap = new HashMap();
-  
-  protected Adaptor adaptor = new Adaptor();
-  
-  JDBCPollingReadConnector reader = assembleJDBCReader(SELECT_STMT_1);
-  
-  TestComponent.TestWriteConnector writer = new TestComponent.TestWriteConnector();
-  
-  protected void setUp() throws Exception {
-    super.setUp();
-    adaptor.setMessageProcessor(router);
-  }
-  
-  /**
-   * Runs an adaptor that reads from the test table.
-   * Uses one shot polling strategy. 
-   * Ensures the writer received two records in one call.
-   */
-  public void testOneShotPollingStrategy() throws Exception{
-    reader.setPollingStrategy(new SinglePollPollingStrategy());
-    processMap.put(reader, writer);
-    router.setProcessMap(processMap);
-    assertTrue(writer.counter==0);
-    adaptor.run();
-    assertTrue(adaptor.getExitCode()==0);
-    assertTrue(writer.counter==1);
-    assertTrue(writer.dataCollection.size()==1);
-    Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
-    assertTrue(data.length == 2);
-    HashMap row1 = (HashMap) data[0];
-    assertNotNull(row1.get(COL1));
-    assertEquals(row1.get(COL1), "foo");
-    assertEquals(row1.get(COL2), "bar");
-    HashMap row2 = (HashMap) data[1];
-    assertNotNull(row2.get(COL1));
-    assertEquals(row2.get(COL1), "foo2");
-    assertEquals(row2.get(COL2), "bar2");
-  }
+  JDBCReadConnector reader = assembleJDBCReader(SELECT_STMT_1);
 
+  //overidden to avoid rerunning tests from superclass.
+  public void testOneShotPollingStrategy(){
+    assertTrue(true);
+  }
+  
   /**
    * Runs an adaptor that reads from the test table.
    * Uses looping polling strategy.
    * Ensures the writer received two records in one call.
    */
   public void testLoopingPollingStrategy()throws Exception{
-    reader.setPollingStrategy(new LoopingPollingStrategy());
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
@@ -127,9 +75,9 @@ public class JDBCPollingReadConnectorTestCase extends JDBCConnectionTestCase{
   }
   
   
-  private JDBCPollingReadConnector assembleJDBCReader(String sql){
+  private JDBCReadConnector assembleJDBCReader(String sql){
     JDBCConnection jdbcConnection = new LocalHSQLJdbcConnection();
-    JDBCPollingReadConnector jdbcReader = new JDBCPollingReadConnector();
+    JDBCReadConnector jdbcReader = new JDBCReadConnector();
     ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
     jdbcReader.setResultSetConverter(resultSetConverter);
     jdbcReader.setJdbcConnection(jdbcConnection);
@@ -137,10 +85,4 @@ public class JDBCPollingReadConnectorTestCase extends JDBCConnectionTestCase{
     return jdbcReader;
   }
 
-  /**
-   * @return test table definition.
-   */
-  public String getSchemaDefinition() {
-    return SCHEMA;
-  }
 }

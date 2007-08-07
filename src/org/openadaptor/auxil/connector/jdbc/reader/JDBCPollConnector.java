@@ -35,11 +35,14 @@ import java.sql.SQLException;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
 
+/**
+ * @deprecated Replaced by {@link JDBCPollingReadConnector}.
+ */
 public class JDBCPollConnector extends AbstractJDBCReadConnector {
 
   private String sqlStatement;
 
-  private PreparedStatement pollStatement;
+  protected PreparedStatement pollStatement;
 
   public JDBCPollConnector() {
     super();
