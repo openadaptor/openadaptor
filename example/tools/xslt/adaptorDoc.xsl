@@ -481,7 +481,14 @@
   </xsl:template>
 
   <xsl:template match="beans:value">
-    <xsl:value-of select=".|@*" />
+    <xsl:choose>
+      <xsl:when test="parent::node()[@name='script']">
+        <pre><xsl:value-of select=".|@*" /></pre>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select=".|@*" />
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="beans:ref">
