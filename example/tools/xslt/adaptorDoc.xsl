@@ -300,7 +300,14 @@
         <xsl:value-of select="@name" />
       </td>
       <td>
-        <xsl:value-of select="@value" />
+        <xsl:choose>
+          <xsl:when test="@name='script'">
+            <pre><xsl:value-of select="@value" /></pre>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@value" />
+          </xsl:otherwise>
+        </xsl:choose>
       </td>
       <td>
         <xsl:apply-templates select="beans:description" />
@@ -334,9 +341,6 @@
         <xsl:value-of select="@name" />
       </td>
       <td>
-        <xsl:if test="@name='script'">
-          <pre><xsl:value-of select="text()" /></pre>
-        </xsl:if>
         <xsl:apply-templates select="*">
           <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
           <xsl:with-param name="showJavaDocLinks" select="$showJavaDocLinks" />
