@@ -91,7 +91,7 @@
     <description>
       Discard records that are Joker cards.
     </description>
-    <property name="script">record.get('pips') == 'joker'</property>
+    <property name="script" value="record.get('pips') == 'joker'" />
     <property name="discardMatches" value="true" />
   </bean>
 
@@ -100,7 +100,7 @@
     <description>
       Pass only records that are Hearts cards.
     </description>
-    <property name="script">record.get('suit') == 'hearts'</property>
+    <property name="script" value="record.get('suit') == 'hearts'" />
     <property name="discardMatches" value="false" />
   </bean>
   
