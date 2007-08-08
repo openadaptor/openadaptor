@@ -42,7 +42,6 @@ import org.openadaptor.core.exception.ComponentException;
  */
 public abstract class AbstractPollingStrategy implements IPollingStrategy {
 
-
   private static final Log log = LogFactory.getLog(AbstractPollingStrategy.class);
   
   IPollingReadConnector delegate;
@@ -54,8 +53,6 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
   protected int limit = 1;
   
   private int count;
-  
-  
   
   public IPollingReadConnector getReadConnector() {
     return this.delegate;
@@ -99,7 +96,7 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
     try {
       Thread.sleep(timeoutMs);
     } catch (InterruptedException e) {
-      // ignore errors
+      /* ignores errors */
     }
   }
   
@@ -127,14 +124,13 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
   public void setPollLimit(final int limit) {
     this.limit = limit;
 
-    if (limit == 0)
+    if (limit == 0){
       log.warn("A PollLimit of zero will result in an infinite polling loop");
+    }
   }
 
   public int getConvertMode() {
-    return CONVERT_NEXT_ONLY;
+    return IPollingStrategy.CONVERT_NEXT_ONLY;
   }
-
-  
 
 }

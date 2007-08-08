@@ -32,21 +32,24 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.openadaptor.core.IPollingReadConnector;
-import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
 
 
 /**
- * Generic JDBC polling read connector created to replace:
- * JDBCEventReadConnector, JDBCPollConnector, JDBCReadConnector
+ * Connects to a database and runs a fixed query. The fixed query is run the
+ * first time next is called and each subsequent time next() is called it
+ * returns a single row of the ResultSet converted by the ResultSetConverter.
+ * Becomes "dry" when ResultSet is finished.
  * 
- * @author Eddy Higgins, Kris Lachor
- * @todo remove 'implements IPollingReadConnector' once AbstractJDBCReadConnector extends it
- * @todo legacy JDBCReadConnector is equivalent to this connector with the loopingpollingstrategy.
+ * @see AbstractResultSetConverter
+ * @author Eddy Higgins
+ * @author perryj
+ * @deprecated use JDBCPollingReadConnector instead.
+ * @todo candidate for deletion (replaced with JDBCPollingReadConnector.)
  */
-public class JDBCPollingReadConnector extends AbstractJDBCReadConnector implements IPollingReadConnector {
+
+public class OldJDBCReadConnector extends AbstractJDBCReadConnector {
 
 //  private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
@@ -57,15 +60,14 @@ public class JDBCPollingReadConnector extends AbstractJDBCReadConnector implemen
   protected boolean dry = false;
 
 
-  
   /**
    * Default constructor
    */
-  public JDBCPollingReadConnector() {
+  public OldJDBCReadConnector() {
     super();
   }
   
-  public JDBCPollingReadConnector(String id) {
+  public OldJDBCReadConnector(String id) {
     super(id);
   }
 
@@ -121,14 +123,7 @@ public class JDBCPollingReadConnector extends AbstractJDBCReadConnector implemen
   public Object[] next(long timeoutMs) throws ComponentException {
     try {
       if (rs == null) { rs = statement.executeQuery(sql); }
-      Object data = null;
-      if( getPollingStrategy().getConvertMode() == IPollingStrategy.CONVERT_ALL){
-        data = convertAll(rs);
-        dry = true;
-      }
-      else{
-        data = convertNext(rs);
-      }
+      Object data = convertNext(rs);
       if (data != null) {
         return new Object[] {data};
       } else {

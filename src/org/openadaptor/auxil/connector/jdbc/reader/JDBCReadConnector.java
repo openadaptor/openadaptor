@@ -32,33 +32,32 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
 
-
 /**
- * Connects to a database and runs a fixed query. The fixed query is run the
- * first time next is called and each subsequent time next() is called it
- * returns a single row of the ResultSet converted by the ResultSetConverter.
- * Becomes "dry" when ResultSet is finished.
+ * Generic JDBC polling read connector created to replace:
+ * JDBCPollConnector, JDBCReadConnector.
+ * The legacy JDBCReadConnector is equivalent to this connector with the loopingpollingstrategy.
  * 
- * @see AbstractResultSetConverter
- * @author Eddy Higgins
- * @author perryj
- * @deprecated use JDBCPollingReadConnector instead.
- * @todo candidate for deletion (replaced with JDBCPollingReadConnector.)
+ * @author Eddy Higgins, Kris Lachor
  */
-
 public class JDBCReadConnector extends AbstractJDBCReadConnector {
 
-//  private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
+//  private static final Log log = LogFactory.getLog(JDBCPollingReadConnector.class.getName());
 
   protected String sql;
+  
   protected Statement statement = null;
+  
   protected ResultSet rs = null;
+  
   protected ResultSetMetaData rsmd = null;
+  
   protected boolean dry = false;
-
 
   /**
    * Default constructor
@@ -106,14 +105,14 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   /**
    * Inpoint has no more data
    *
-   * @return boolean  true if there is no more input data
+   * @return boolean true if there is no more input data
    */
   public boolean isDry() {
     return dry;
   }
 
   /**
-   * Returns array of objects extracted from resultset. Executes the fixed
+   * Returns array of objects extracted from result set. Executes the fixed
    * query the first time it is called.
    *
    * @param timeoutMs Ignored as this implementation is non-blocking.
@@ -122,11 +121,25 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
    */
   public Object[] next(long timeoutMs) throws ComponentException {
     try {
-      if (rs == null) { rs = statement.executeQuery(sql); }
-      Object data = convertNext(rs);
+      if (rs == null) { 
+        rs = statement.executeQuery(sql); 
+      }
+      Object data = null;
+      
+      /* Converts all records in the result set or only one, depending on strategy settings */
+      if(getPollingStrategy().getConvertMode() == IPollingStrategy.CONVERT_ALL){
+        data = convertAll(rs);
+        dry = true;
+      }
+      else{
+        data = convertNext(rs);
+      }
+      
       if (data != null) {
         return new Object[] {data};
-      } else {
+      }
+      /* Becomes 'dry' if the result set was empty  */
+      else {
         JDBCUtil.closeNoThrow(rs);
         rs = null;
         dry = true;

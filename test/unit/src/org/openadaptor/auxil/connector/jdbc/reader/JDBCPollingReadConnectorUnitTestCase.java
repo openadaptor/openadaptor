@@ -33,16 +33,16 @@ import java.util.Map;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Unit tests for {@link JDBCPollingReadConnector}. 
- * These tests verify the  {@link JDBCPollingReadConnector} combined with the 
- * {@LoopingPollingStrategy} is fully compatible with {@link JDBCReadConnector}, which
+ * Unit tests for {@link JDBCReadConnector}. 
+ * These tests verify the  {@link JDBCReadConnector} combined with the 
+ * {@LoopingPollingStrategy} is fully compatible with {@link OldJDBCReadConnector}, which
  * it is replacing.
  * 
  * @author Kris Lachor
  */
 public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   
-  private JDBCPollingReadConnector jdbcPollingReadConnector = new JDBCPollingReadConnector();
+  private JDBCReadConnector jdbcPollingReadConnector = new JDBCReadConnector();
   
   /**
    * @see junit.framework.TestCase#setUp()
@@ -56,7 +56,7 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
 
   
   /**
-   * Tests {@link JDBCPollingReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    */
   public void testConnect(){
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
@@ -66,7 +66,7 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
   }
   
   /**
-   * Tests {@link JDBCPollingReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    * Creating the statement throws exception.
    */
   public void testConnect2(){
@@ -82,7 +82,7 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
   }
   
   /**
-   * Tests {@link JDBCPollingReadConnector#disconnect}.
+   * Tests {@link JDBCReadConnector#disconnect}.
    */
   public void testDisonnect(){
     testConnect();
@@ -92,9 +92,9 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * One call to the {@link JDBCPollingReadConnector#next(long)} method.
+   * One call to the {@link JDBCReadConnector#next(long)} method.
    */
   public void testNext() {
     //no need to set the looping strategy - it's a default
@@ -117,10 +117,10 @@ public class JDBCPollingReadConnectorUnitTestCase extends AbstractJDBCConnectorT
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * Two calls to the {@link JDBCPollingReadConnector#next(long)} method.
-   * Checks value {@link JDBCPollingReadConnector#isDry()}.
+   * Two calls to the {@link JDBCReadConnector#next(long)} method.
+   * Checks value {@link JDBCReadConnector#isDry()}.
    */
   public void testNext2() {
 //  no need to set the looping strategy - it's a default

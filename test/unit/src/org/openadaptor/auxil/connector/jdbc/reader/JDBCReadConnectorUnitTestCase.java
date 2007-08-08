@@ -42,15 +42,15 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Unit tests for {@link JDBCReadConnector}. The {@link JDBCReadConnector} is going 
- * to be replaced by a generic JDBC reader {@link JDBCPollingReadConnector}, these 
+ * Unit tests for {@link OldJDBCReadConnector}. The {@link OldJDBCReadConnector} is going 
+ * to be replaced by a generic JDBC reader {@link JDBCReadConnector}, these 
  * tests were written to ensure compatibility of both classes.
  * 
  * @author Kris Lachor
  */
 public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   
-  private JDBCReadConnector jdbcReadConnector = new JDBCReadConnector();
+  private OldJDBCReadConnector jdbcReadConnector = new OldJDBCReadConnector();
     
   /**
    * @see junit.framework.TestCase#setUp()
@@ -64,7 +64,7 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
 
   
   /**
-   * Tests {@link JDBCReadConnector#connect}.
+   * Tests {@link OldJDBCReadConnector#connect}.
    */
   public void testConnect(){
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
@@ -74,7 +74,7 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Tests {@link JDBCReadConnector#connect}.
+   * Tests {@link OldJDBCReadConnector#connect}.
    * Creating the statement throws exception.
    */
   public void testConnect2(){
@@ -90,7 +90,7 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Tests {@link JDBCReadConnector#disconnect}.
+   * Tests {@link OldJDBCReadConnector#disconnect}.
    */
   public void testDisonnect(){
     testConnect();
@@ -100,9 +100,9 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * One call to the {@link JDBCReadConnector#next(long)} method.
+   * One call to the {@link OldJDBCReadConnector#next(long)} method.
    */
   public void testNext() {
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
@@ -123,10 +123,10 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * Two calls to the {@link JDBCReadConnector#next(long)} method.
-   * Checks value {@link JDBCReadConnector#isDry()}.
+   * Two calls to the {@link OldJDBCReadConnector#next(long)} method.
+   * Checks value {@link OldJDBCReadConnector#isDry()}.
    */
   public void testNext2() {
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));

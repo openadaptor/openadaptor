@@ -36,7 +36,7 @@ import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
 
 /**
- * @deprecated Replaced by {@link JDBCPollingReadConnector}.
+ * @deprecated Replaced by {@link JDBCReadConnector}. Candidate for deletion.
  */
 public class JDBCPollConnector extends AbstractJDBCReadConnector {
 

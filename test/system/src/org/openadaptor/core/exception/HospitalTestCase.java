@@ -36,8 +36,8 @@ import java.util.Map;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
-import org.openadaptor.auxil.connector.jdbc.reader.JDBCPollingReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
+import org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
@@ -196,7 +196,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
     Map processMap = new HashMap();  
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    JDBCReadConnector hospitalReader = assembleHostpitalReader();
+    OldJDBCReadConnector hospitalReader = assembleHostpitalReader();
     TestComponent.TestWriteConnector writer = new TestComponent.TestWriteConnector();
     processMap.put(hospitalReader, writer);
     router.setProcessMap(processMap);
@@ -229,9 +229,9 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
 //  }
 
   
-  private JDBCReadConnector assembleHostpitalReader(){
+  private OldJDBCReadConnector assembleHostpitalReader(){
     JDBCConnection jdbcConnection = new LocalHSQLJdbcConnection();
-    JDBCReadConnector hospitalReader = new JDBCReadConnector();
+    OldJDBCReadConnector hospitalReader = new OldJDBCReadConnector();
     ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
     hospitalReader.setResultSetConverter(resultSetConverter);
     hospitalReader.setJdbcConnection(jdbcConnection);

@@ -34,7 +34,7 @@ import org.jmock.Mock;
 
 /**
  * Unit tests for {@link JDBCPollConnector}. The {@link JDBCPollConnector} is going 
- * to be replaced by a generic JDBC reader {@link JDBCPollingReadConnector}, these 
+ * to be replaced by a generic JDBC reader {@link JDBCReadConnector}, these 
  * tests were written to ensure compatibility of both classes.
  * 
  * @author Kris Lachor
