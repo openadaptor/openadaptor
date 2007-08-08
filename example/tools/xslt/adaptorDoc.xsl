@@ -334,6 +334,9 @@
         <xsl:value-of select="@name" />
       </td>
       <td>
+        <xsl:if test="@name='script'">
+          <pre><xsl:value-of select="text()" /></pre>
+        </xsl:if>
         <xsl:apply-templates select="*">
           <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
           <xsl:with-param name="showJavaDocLinks" select="$showJavaDocLinks" />
