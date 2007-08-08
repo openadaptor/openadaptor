@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  $Id: readerXA.xml 419 2007-07-10 09:25:36Z scullyk $
-  $HeadURL: https://dresdneroa3.collabnet.drkw.net:443/svn/dresdneroa3/trunk/example/spring/connectors/db/mysql/readerXA.xml $
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
