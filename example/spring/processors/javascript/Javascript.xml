@@ -72,13 +72,15 @@
     <description>
       Simple use of a JavascriptProcessor. Sets a value on the incoming record based. 
     </description>
-    <property name="script" value="
+    <property name="script">
+      <value>
       /* scripts can be written across multiple lines and include comments */
       var name    = record.get('fullname');
       var isTerry = name.indexOf('Terry') == 0;
 
       record.put('isterry',isTerry);
-      "/>
+      </value>
+    </property>
   </bean>
  
    <bean id="js_date" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
