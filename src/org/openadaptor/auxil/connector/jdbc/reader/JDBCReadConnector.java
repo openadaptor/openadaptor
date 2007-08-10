@@ -32,8 +32,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
@@ -47,7 +47,7 @@ import org.openadaptor.util.JDBCUtil;
  */
 public class JDBCReadConnector extends AbstractJDBCReadConnector {
 
-//  private static final Log log = LogFactory.getLog(JDBCPollingReadConnector.class.getName());
+  private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
   protected String sql;
   
@@ -90,6 +90,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
     } catch (SQLException e) {
       handleException(e, "failed to create JDBC statement");
     }
+    dry = false;
   }
 
   /**
@@ -120,6 +121,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
    * @throws ComponentException
    */
   public Object[] next(long timeoutMs) throws ComponentException {
+    log.info("Call for next record(s)");
     try {
       if (rs == null) { 
         rs = statement.executeQuery(sql); 
@@ -138,17 +140,17 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       if (data != null) {
         return new Object[] {data};
       }
-      /* Becomes 'dry' if the result set was empty  */
+      /* Becomes 'dry' if the result set was empty */
       else {
         JDBCUtil.closeNoThrow(rs);
         rs = null;
         dry = true;
-       }
+      }
     }
     catch (SQLException e) {
       handleException(e);
     }
-    return null;
+    return new Object[0];
   }
 
 }

@@ -28,6 +28,7 @@
 package org.openadaptor.core.connector;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +47,7 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
   
   IPollingReadConnector delegate;
   
-  private Date reconnectTime;
+  protected Date reconnectTime;
 
   private Date startTime;
   
@@ -67,8 +68,8 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
     Date now = new Date();
 
     if (delegate.isDry() && now.after(reconnectTime)) {
-      getReadConnector().disconnect();
-      getReadConnector().connect();
+      disconnect();
+      connect();
     }
 
     if (!delegate.isDry() && now.after(startTime)) {
@@ -82,10 +83,6 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
   private void initTimes() {
     if (startTime == null) {
       startTime = new Date();
-      //todo move this part to cron strategy
-//      if (cron != null && !forceInitialPoll) {
-//        startTime = cron.getFireTimeAfter(startTime);
-//      }
     }
     if (reconnectTime == null) {
       reconnectTime = new Date();
@@ -100,12 +97,10 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
     }
   }
   
-  public final void connect() {
+  public void connect() {
     initTimes();
     delegate.connect();
     count++;
-//    log.debug(getReadConnector().getId() + " poll count = " + count);
-//    calculateReconnectTime();
   }
 
   
@@ -133,4 +128,19 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
     return IPollingStrategy.CONVERT_NEXT_ONLY;
   }
 
+  public void disconnect() {
+    log.debug("Forwarding to the delegate.");
+    this.delegate.disconnect();  
+  }
+
+  public Object getReaderContext() {
+    log.debug("Forwarding to the delegate.");
+    return this.delegate.getReaderContext();
+  }
+
+  public void validate(List exceptions) {
+    log.debug("Forwarding to the delegate.");
+    this.delegate.validate(exceptions);
+  }
+  
 }

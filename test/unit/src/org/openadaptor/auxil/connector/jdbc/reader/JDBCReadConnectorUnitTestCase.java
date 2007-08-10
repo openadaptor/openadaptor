@@ -26,32 +26,24 @@
  */
 package org.openadaptor.auxil.connector.jdbc.reader;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jmock.MockObjectTestCase;
-import org.jmock.Mock;
-import org.openadaptor.auxil.connector.jms.JMSReadConnectorTestCase;
-
-import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+//import org.openadaptor.core.connector.LoopingPollingStrategy;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Unit tests for {@link OldJDBCReadConnector}. The {@link OldJDBCReadConnector} is going 
- * to be replaced by a generic JDBC reader {@link JDBCReadConnector}, these 
- * tests were written to ensure compatibility of both classes.
+ * Unit tests for {@link JDBCReadConnector}. 
+ * These tests verify the  {@link JDBCReadConnector} combined with the 
+ * {@LoopingPollingStrategy} is fully compatible with {@link OldJDBCReadConnector}, which
+ * it is replacing.
  * 
  * @author Kris Lachor
  */
-public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
+public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   
-  private OldJDBCReadConnector jdbcReadConnector = new OldJDBCReadConnector();
-    
+  private JDBCReadConnector jdbcReadConnector = new JDBCReadConnector();
+  
   /**
    * @see junit.framework.TestCase#setUp()
    */
@@ -64,7 +56,7 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
 
   
   /**
-   * Tests {@link OldJDBCReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    */
   public void testConnect(){
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
@@ -74,7 +66,7 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Tests {@link OldJDBCReadConnector#connect}.
+   * Tests {@link JDBCReadConnector#connect}.
    * Creating the statement throws exception.
    */
   public void testConnect2(){
@@ -89,8 +81,8 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
     assertTrue(false);
   }
   
-  /**
-   * Tests {@link OldJDBCReadConnector#disconnect}.
+  /**   
+   * Tests {@link JDBCReadConnector#disconnect}.
    */
   public void testDisonnect(){
     testConnect();
@@ -100,11 +92,13 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * One call to the {@link OldJDBCReadConnector#next(long)} method.
+   * One call to the {@link JDBCReadConnector#next(long)} method.
    */
   public void testNext() {
+    //no need to set the looping strategy - it's a default
+//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
@@ -123,12 +117,14 @@ public class JDBCReadConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
    * Initialises mock interfaces to result a result set with one column and one row.
-   * Two calls to the {@link OldJDBCReadConnector#next(long)} method.
-   * Checks value {@link OldJDBCReadConnector#isDry()}.
+   * Two calls to the {@link JDBCReadConnector#next(long)} method.
+   * Checks value {@link JDBCReadConnector#isDry()}.
    */
   public void testNext2() {
+//  no need to set the looping strategy - it's a default
+//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));

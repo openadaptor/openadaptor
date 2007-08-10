@@ -41,7 +41,6 @@ import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
@@ -100,7 +99,12 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   }
 
   public void setConnector(final IReadConnector connector) {
-    this.connector = connector;
+    if(connector instanceof IPollingReadConnector){
+      this.connector = ((IPollingReadConnector) connector).getPollingStrategy();
+    }
+    else {
+      this.connector = connector;
+    }
   }
 
   protected IReadConnector getConnector() {
@@ -193,7 +197,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   private boolean getNextAndProcess(ITransaction transaction) {
     Object[] data = getNext();
-    if (data != null) {
+    if (data != null && data.length != 0) {
       if (connector.getReaderContext() == prevReaderContext) {
         resetProcessor(connector.getReaderContext());
         prevReaderContext = connector.getReaderContext();
@@ -205,18 +209,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   }
 
   private Object[] getNext() {
-    Object[] data = null;
-    if(connector instanceof IPollingReadConnector){
-      IPollingReadConnector pollingConnector = (IPollingReadConnector) connector;
-      if(pollingConnector.getPollingStrategy().isDry()){
-        return null;
-      }
-      data = pollingConnector.getPollingStrategy().next(timeoutMs);
-    }
-    else{
-      data = connector.next(timeoutMs);
-    }
-    return data;
+    return connector.next(timeoutMs);
   }
 
   public int getExitCode() {

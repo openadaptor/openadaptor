@@ -46,6 +46,8 @@ import org.openadaptor.util.TestComponent;
  * {@link SinglePollPollingStrategy}
  * {@link LoopingPollingStrategy}
  * 
+ * Uses a test table with two columns and two rows.
+ * 
  * Extends {@link JDBCConnectionTestCase} that starts up HSQL with appropriate schema. 
  * 
  * @author Kris Lachor

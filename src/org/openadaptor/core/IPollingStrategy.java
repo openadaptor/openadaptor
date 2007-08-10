@@ -36,7 +36,7 @@ package org.openadaptor.core;
  * @author Kris Lachor
  * @todo - does it need to extend the IReadConnector interface?
  */
-public interface IPollingStrategy {
+public interface IPollingStrategy extends IReadConnector{
 
   //
   // might need a variable (enum) that states if we need the all result set in one call, 
@@ -52,19 +52,7 @@ public interface IPollingStrategy {
   IPollingReadConnector getReadConnector();
   
   void setPollingReadConnector(IPollingReadConnector pollingReadConnector);
-  
-  /**
-   * Delegates the call the the underlying polling read connector.
-   *
-   * @param timeoutMs
-   * @return
-   * @TODO don't need a timeout here?
-   */
-  Object[] next(long timeoutMs);
-  
-  //might need this or something else to indicate the strategy has finished.
-  boolean isDry();
-  
+    
   // will return one of the convert enum values at the top.
   int getConvertMode();
 }

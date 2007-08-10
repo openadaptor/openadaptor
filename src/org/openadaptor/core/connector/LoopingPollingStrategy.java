@@ -28,6 +28,8 @@
 package org.openadaptor.core.connector;
 
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,11 +50,19 @@ public class LoopingPollingStrategy extends AbstractPollingStrategy {
   private long intervalMs = -1;
   
   public Object[] next(long timeoutMs) {
-    return getReadConnector().next(timeoutMs);
+    Object [] result =  super.next(timeoutMs);
+    return result;
   }
 
   public long getPollIntervalMs() {
     return intervalMs;
+  }
+
+ 
+  public void connect() {
+    super.connect();
+//  log.debug(getReadConnector().getId() + " poll count = " + count);
+    calculateReconnectTime();
   }
 
   /**
@@ -90,15 +100,12 @@ public class LoopingPollingStrategy extends AbstractPollingStrategy {
 
     this.intervalMs = interval * 60 * 60 * 1000;
   }
+
   
-//  private void calculateReconnectTime() {
-//    if (cron != null) {
-//      reconnectTime = cron.getFireTimeAfter(reconnectTime);
-//    } else {
-//      reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
-//    }
-//    log.info(getId() + " next poll time = " + reconnectTime.toString());
-//  }
+  private void calculateReconnectTime() {
+    reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
+    log.info("Looping polling strategy: next poll time = " + reconnectTime.toString());
+  }
   
 //  /**
 //   * Checks that the mandatory properties have been set
