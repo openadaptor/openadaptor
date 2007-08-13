@@ -53,10 +53,7 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
     jdbcEventReadConnector.setEventTypeID("20");
   }
 
-  /**
-   * Tests {@link JDBCEventReadConnector#connect}.
-   */
-  public void testConnect(){
+  private void connect(Mock mockStatement){
     mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
     mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
     mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));
@@ -64,6 +61,13 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
     assertNull(jdbcEventReadConnector.getPollStatement());
     jdbcEventReadConnector.connect();
     assertEquals(mockStatement.proxy(), jdbcEventReadConnector.getPollStatement());
+  }
+  
+  /**
+   * Tests {@link JDBCEventReadConnector#connect}.
+   */
+  public void testConnect(){
+    connect(mockStatement);
   }
   
   /**
@@ -94,30 +98,87 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
     jdbcEventReadConnector.disconnect();
   }
   
+
   /**
    * Test method for {@link JDBCEventReadConnector#next(long)}.
+   * Stored procedure that polls returns nothing (no new events).
    */
-  public void testNext() {
-	/* connecting.. */ 
-	mockSqlConnection.expects(atLeastOnce()).method("prepareCall").will(returnValue(mockStatement.proxy()));
-	mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
-	mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));
-	mockStatement.expects(once()).method("setInt").with(eq(3), eq(20));
-    jdbcEventReadConnector.connect();
+  public void testNext1() {
+    
+    Mock mockPollStatement =  new Mock(CallableStatement.class);
+    connect(mockPollStatement);
  
-	/* actual call to next */
-    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
-    mockStatement.expects(once()).method("close"); 
+    /* 
+     * actual call to next. executeQuery returns a result set that is immediately closed
+     * (because of an SQLException thrown when no results are found..).
+     */
+    mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+    mockPollStatement.expects(once()).method("close"); 
+    mockResultSet.expects(once()).method("next").will(returnValue(false));
+    mockResultSet.expects(once()).method("close");
+    
+    assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
+    assertNull(jdbcEventReadConnector.next(10));  
+  }
+  
+  
+  /**
+   * Test method for {@link JDBCEventReadConnector#next(long)}.
+   * Stored procesure that polls returns one new event. Query constructed based on this
+   * event returns an empty result set.
+   */
+  public void testNext2() {
+    Mock mockPollStatement =  new Mock(CallableStatement.class);
+    connect(mockPollStatement);
+ 
+    /* actual call to next */
+    mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+    
     mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
     mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
     mockResultSet.expects(once()).method("getString");
+    mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
+
     mockResultSet.expects(once()).method("close");
+    mockStatement.expects(once()).method("close"); 
+    
     mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
     
     assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
     Object [] arr = (Object []) jdbcEventReadConnector.next(10);
     assertTrue("Unexpected result count", arr.length == 0);
+  }
+  
+  
+  /**
+   * Test method for {@link JDBCEventReadConnector#next(long)}.
+   * Stored procesure that polls returns one new event. Query constructed based on this
+   * event returns an a result set with one row.
+   */
+  public void testNext3() {
+    Mock mockPollStatement =  new Mock(CallableStatement.class);
+    connect(mockPollStatement);
+ 
+    /* actual call to next */
+    mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+    
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(true), returnValue(false)));
+    mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+    mockResultSetMetaData.expects(atLeastOnce()).method("getColumnCount").will(returnValue(1));
+    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue("COL1"));
+    mockResultSet.expects(once()).method("getString");
+    mockResultSet.expects(once()).method("getObject");
+    mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
+
+    mockResultSet.expects(once()).method("close");
+    mockStatement.expects(once()).method("close"); 
+
+    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+    
+    assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
+    Object [] arr = (Object []) jdbcEventReadConnector.next(10);
+    assertTrue("Unexpected result count", arr.length == 1);
   }
   
 }
