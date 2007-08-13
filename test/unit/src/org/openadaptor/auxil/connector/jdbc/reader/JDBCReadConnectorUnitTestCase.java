@@ -35,7 +35,8 @@ import org.openadaptor.core.exception.ConnectionException;
 /**
  * Unit tests for {@link JDBCReadConnector}. 
  * These tests verify the  {@link JDBCReadConnector} combined with the 
- * {@LoopingPollingStrategy} is fully compatible with {@link OldJDBCReadConnector}, which
+ * {@LoopingPollingStrategy} is fully compatible with {@link OldJDBCReadConnector},
+ * {@link JDBCPollConnector} and {@link JDBCEventReadConnector} which
  * it is replacing.
  * 
  * @author Kris Lachor

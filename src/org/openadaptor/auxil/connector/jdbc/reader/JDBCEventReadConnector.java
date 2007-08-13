@@ -204,4 +204,11 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
 
     return callableStatement;
   }
+
+  /**
+   * @return the poll statement
+   */
+  public CallableStatement getPollStatement() {
+	 return pollStatement;
+  }
 }

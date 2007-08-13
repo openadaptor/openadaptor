@@ -72,7 +72,7 @@ public abstract class AbstractJDBCConnectorTest extends MockObjectTestCase {
   }
   
   
-  /* Inner mock */
+  /* Inner mock of {@link JDBCConnection} */
   class MockJDBCConnection extends JDBCConnection {
     
     public MockJDBCConnection() {
