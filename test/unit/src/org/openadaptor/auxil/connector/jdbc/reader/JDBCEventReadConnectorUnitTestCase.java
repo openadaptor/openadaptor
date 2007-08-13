@@ -97,35 +97,35 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
     jdbcEventReadConnector.disconnect();
   }
   
-  /**
-   * Test method for {@link JDBCEventReadConnector#next(long)}.
-   */
-  public void testNext() {
-	//connecting  
-	mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
-	mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
-	mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));
-	mockStatement.expects(once()).method("setInt").with(eq(3), eq(20));
-	  
-	  
-	//actual call to next
-//    mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
-    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
-
-    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
-    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
-//    mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
-    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
-    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
-    mockResultSet.expects(once()).method("close");
-    jdbcEventReadConnector.connect();
-    assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
-    Object [] arr = (Object []) jdbcEventReadConnector.next(10);
-    assertTrue("Unexpected result type", arr[0] instanceof Map);
-    assertTrue("Unexpected result count", arr.length == 1);
-    Map map = (Map) arr[0];
-    String s = (String) map.get(COL1);
-    assertTrue("Unexpected result", s.equals(TEST_STRING));
-  }
+//  /**
+//   * Test method for {@link JDBCEventReadConnector#next(long)}.
+//   */
+//  public void testNext() {
+//	//connecting  
+//	mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
+//	mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
+//	mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));
+//	mockStatement.expects(once()).method("setInt").with(eq(3), eq(20));
+//	  
+//	  
+//	//actual call to next
+////    mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
+//    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+//
+//    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+//    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+////    mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
+//    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
+//    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
+//    mockResultSet.expects(once()).method("close");
+//    jdbcEventReadConnector.connect();
+//    assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
+//    Object [] arr = (Object []) jdbcEventReadConnector.next(10);
+//    assertTrue("Unexpected result type", arr[0] instanceof Map);
+//    assertTrue("Unexpected result count", arr.length == 1);
+//    Map map = (Map) arr[0];
+//    String s = (String) map.get(COL1);
+//    assertTrue("Unexpected result", s.equals(TEST_STRING));
+//  }
   
 }
