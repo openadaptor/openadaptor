@@ -124,7 +124,14 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
    */
   public void connect() {
     try {
-      pollStatement = jdbcConnection.getConnection().prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
+      jdbcConnection.connect();
+    } catch (SQLException e) {
+      handleException(e, "Failed to establish JDBC connection");
+    }
+//    super.connect();
+    try {
+      java.sql.Connection conn =  jdbcConnection.getConnection();
+      pollStatement = conn.prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
       pollStatement.registerOutParameter(1, java.sql.Types.INTEGER);
       pollStatement.setInt(2, Integer.parseInt(eventServiceID));
       if (eventTypeID != null) {
@@ -204,6 +211,7 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
+    java.sql.Connection conn = connection.getConnection();
     super.setJdbcConnection(jdbcConnection);
   }
   

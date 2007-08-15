@@ -133,17 +133,15 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
  
     /* actual call to next */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
-    
     mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
     mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
     mockResultSet.expects(once()).method("getString");
     mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
 
+    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
     mockResultSet.expects(once()).method("close");
     mockStatement.expects(once()).method("close"); 
-    
-    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
     
     assertFalse("Read connector dry to soon.", jdbcEventReadConnector.isDry());
     Object [] arr = (Object []) jdbcEventReadConnector.next(10);

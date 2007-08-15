@@ -48,6 +48,7 @@ import org.openadaptor.util.ThreadUtil;
  * 
  * @author Kuldip Ottal
  * @author perryj
+ * @depricated replaced by the standard JDBCReadConnector combined with DBEventDrivenPollingStrategy
  */
 public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
 
@@ -104,6 +105,7 @@ public class JDBCEventReadConnector extends AbstractJDBCReadConnector {
    * null if there are no outstanding events to process.
    */
   public Object[] next(long timeoutMs) throws ComponentException {
+    log.debug("Polling...");
     Object[] data = null;
     CallableStatement s = null;
     try {
