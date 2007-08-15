@@ -37,7 +37,6 @@ import java.util.Map;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
-import org.openadaptor.auxil.connector.jdbc.reader.OldJDBCReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
@@ -49,12 +48,14 @@ import org.openadaptor.spring.SpringAdaptor;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
 import org.openadaptor.util.SystemTestUtil;
 import org.openadaptor.util.TestComponent;
-import org.openadaptor.util.TestComponent.ExceptionThrowingWriteConnector;
-import org.openadaptor.util.TestComponent.TestReadConnector;
-import org.openadaptor.util.TestComponent.TestWriteConnector;
+//import org.openadaptor.util.TestComponent.ExceptionThrowingWriteConnector;
+//import org.openadaptor.util.TestComponent.TestReadConnector;
+//import org.openadaptor.util.TestComponent.TestWriteConnector;
 
 /**
- * System tests for the hospital writer and reader.
+ * System tests for the hospital writer and reader. 
+ * Runs adaptor in different configurations and different nodes throwing exceptions,
+ * verifies correct data has been written to the hospital. 
  * Uses in-memory HSQL database for the hospital.
  * 
  * @author Kris Lachor
@@ -196,7 +197,7 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
     Map processMap = new HashMap();  
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
-    OldJDBCReadConnector hospitalReader = assembleHostpitalReader();
+    JDBCReadConnector hospitalReader = assembleHostpitalReader();
     TestComponent.TestWriteConnector writer = new TestComponent.TestWriteConnector();
     processMap.put(hospitalReader, writer);
     router.setProcessMap(processMap);
@@ -229,9 +230,9 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
 //  }
 
   
-  private OldJDBCReadConnector assembleHostpitalReader(){
+  private JDBCReadConnector assembleHostpitalReader(){
     JDBCConnection jdbcConnection = new LocalHSQLJdbcConnection();
-    OldJDBCReadConnector hospitalReader = new OldJDBCReadConnector();
+    JDBCReadConnector hospitalReader = new JDBCReadConnector();
     ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
     hospitalReader.setResultSetConverter(resultSetConverter);
     hospitalReader.setJdbcConnection(jdbcConnection);

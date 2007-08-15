@@ -95,7 +95,7 @@ public class JDBCPollConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
   
   /**
    * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCPollConnector#next(long)}.
-   * Initialises mock interfaces to result a result set with one column and one row.
+   * Initialises mock interfaces to a result set with one column and one row.
    * One call to the {@link JDBCPollConnector#next(long)} method.
    * This connector will never become dry.
    */
@@ -117,6 +117,7 @@ public class JDBCPollConnectorUnitTestCase  extends AbstractJDBCConnectorTest{
     Map map = (Map) arr[0];
     String s = (String) map.get(COL1);
     assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertFalse("Read connector dry to soon.", jdbcPollConnector.isDry());
   }
 
 

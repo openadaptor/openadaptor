@@ -32,17 +32,20 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jdbc.reader.AbstractJDBCReadConnector;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * An abstract implementation of {@link IPollingStrategy}.
  * 
  * @author Kris Lachor
  */
-public abstract class AbstractPollingStrategy implements IPollingStrategy {
+public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector implements IPollingStrategy {
 
+ 
   private static final Log log = LogFactory.getLog(AbstractPollingStrategy.class);
   
   IPollingReadConnector delegate;
@@ -142,5 +145,15 @@ public abstract class AbstractPollingStrategy implements IPollingStrategy {
     log.debug("Forwarding to the delegate.");
     this.delegate.validate(exceptions);
   }
-  
+
+  public Object getResource() {
+    
+    if( this.delegate instanceof ITransactional){
+      return ((ITransactional) this.delegate).getResource();
+    }
+    else{
+      return null;
+    }
+  }
+   
 }

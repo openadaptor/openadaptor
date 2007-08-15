@@ -154,7 +154,7 @@ public class JDBCEventReadConnectorUnitTestCase extends AbstractJDBCConnectorTes
   /**
    * Test method for {@link JDBCEventReadConnector#next(long)}.
    * Stored procesure that polls returns one new event. Query constructed based on this
-   * event returns an a result set with one row.
+   * event returns a result set with one row.
    */
   public void testNext3() {
     Mock mockPollStatement =  new Mock(CallableStatement.class);

@@ -44,7 +44,7 @@ import org.openadaptor.core.exception.ExceptionHandlerProxy;
  */
 public class TestComponent {
   
-  public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION, MOST LIKELY NEEDS TO BE IGNORED.";
+  public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION THAT SHOULD BE IGNORED.";
   
   /**
    * A write connector that checks the data it receives is not empty. Does nothing
@@ -100,9 +100,11 @@ public class TestComponent {
    * data to write.
    */
   public final class ExceptionThrowingWriteConnector extends Component implements IWriteConnector {
+    public int counter = 0;
     public void connect() {}
     public void disconnect() {}
     public Object deliver(Object[] data) {
+       counter++;
        throw new RuntimeException(TEST_ERROR_MESSAGE);
     }
     public void validate(List exceptions) {}
