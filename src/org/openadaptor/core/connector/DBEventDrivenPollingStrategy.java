@@ -35,13 +35,14 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
+import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
 
-/**
- * 
+/** 
  * A polling strategy that uses a stored proc to poll for database events, these
  * events must be in a specific format and this component will convert that into
  * a call to underlying connector to query the data that relates to the event. 
@@ -101,19 +102,21 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   public Object[] next(long timeoutMs) throws ComponentException {
     log.info("Polling..");
     Object[] data = null;
-    CallableStatement s = null;
+    CallableStatement callableStatement = null;
     try {
-      s = getNextStatement();
-      if (s != null) {
-        ResultSet rs = s.executeQuery();
-        data = convertAll(rs);
+      callableStatement = getNextStatement();
+      if (callableStatement != null) {      
+        //
+        // todo: ultimately the event data needs to be set on the underlying connector
+        // in a protocol - neutral way, otherwise we're tied to the JDBC connector.
+        //
+        ((JDBCReadConnector) delegate).setCallableStatement(callableStatement);
+        data = delegate.next(timeoutMs);
       } else {
         ThreadUtil.sleepNoThrow(timeoutMs);
       }
-    } catch (SQLException e) {
-      handleException(e);
     } finally {
-      JDBCUtil.closeNoThrow(s);
+      JDBCUtil.closeNoThrow(callableStatement);
     }
     return data;
   }
@@ -125,13 +128,7 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   public void connect() {
     try {
       jdbcConnection.connect();
-    } catch (SQLException e) {
-      handleException(e, "Failed to establish JDBC connection");
-    }
-//    super.connect();
-    try {
-      java.sql.Connection conn =  jdbcConnection.getConnection();
-      pollStatement = conn.prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
+      pollStatement = jdbcConnection.getConnection().prepareCall("{ ? = call " + eventPollSP + "(?,?) }");
       pollStatement.registerOutParameter(1, java.sql.Types.INTEGER);
       pollStatement.setInt(2, Integer.parseInt(eventServiceID));
       if (eventTypeID != null) {
@@ -142,11 +139,12 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
     } catch (SQLException e) {
       throw new ConnectionException("failed to create poll callable statement, " + e.getMessage(), e, null);
     }
+    delegate.connect();
   }
 
   /**
    * gets next statement to execute against the database, by calling
-   * the eventPollSP and converting it's ResultSet to a CallableStatement
+   * the eventPollSP and converting its ResultSet to a CallableStatement
    */
   private CallableStatement getNextStatement() {
     CallableStatement cs = null;
@@ -211,8 +209,11 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
-    java.sql.Connection conn = connection.getConnection();
     super.setJdbcConnection(jdbcConnection);
+  }
+
+  public int getConvertMode() {
+    return IPollingStrategy.CONVERT_ALL;
   }
   
 }

@@ -27,13 +27,10 @@
 
 package org.openadaptor.core.connector;
 
-
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
 
 /**
  * A polling strategy that repeatedly calls to underlying read connector. 

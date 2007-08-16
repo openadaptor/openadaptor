@@ -27,6 +27,7 @@
 
 package org.openadaptor.auxil.connector.jdbc.reader;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -41,7 +42,11 @@ import org.openadaptor.util.JDBCUtil;
 /**
  * Generic JDBC polling read connector created to replace:
  * JDBCPollConnector, JDBCReadConnector.
- * The legacy JDBCReadConnector is equivalent to this connector with the loopingpollingstrategy.
+ * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingStrategy 
+ * with no parameters.
+ * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingStrategy 
+ * with pollLimit and pollInterval parameters set.
+ * The legacy JDBCEventReadConnector is equivalent to this connector with the DBEventDrivenPollingStrategy. 
  * 
  * @author Eddy Higgins, Kris Lachor
  */
@@ -52,6 +57,8 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   protected String sql;
   
   protected Statement statement = null;
+  
+  protected CallableStatement callableStatement = null;
   
   protected ResultSet rs = null;
   
@@ -78,10 +85,18 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   public void setSql(final String sql) { 
     this.sql = sql;
   }
+  
+  /**
+   * Sets a prepared or callable (ready to execute) statement on this connector.
+   * 
+   * @param statement a ready to execute statement
+   */
+  public void setCallableStatement(CallableStatement callableStatement) {
+    this.callableStatement = callableStatement;
+  }
 
   /**
    * Set up connection to database
-   *
    */
   public void connect() {
     super.connect();
@@ -123,14 +138,21 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   public Object[] next(long timeoutMs) throws ComponentException {
     log.info("Call for next record(s)");
     try {
-      if (rs == null) { 
-        rs = statement.executeQuery(sql); 
+      if (rs == null) {
+        /* If a callable statement's been set, ingore the sql and the statement */
+        if(callableStatement != null){
+          rs = callableStatement.executeQuery(); 
+        }
+        else{
+          rs = statement.executeQuery(sql);
+        }
       }
       Object data = null;
       
       /* Converts all records in the result set or only one, depending on strategy settings */
       if(getPollingStrategy().getConvertMode() == IPollingStrategy.CONVERT_ALL){
         data = convertAll(rs);
+        rs = null;
         dry = true;
       }
       else{
@@ -138,7 +160,8 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       }
       
       if (data != null) {
-        return new Object[] {data};
+        /* wraps data in object array only when necessary */       
+        return  data instanceof Object [] ? (Object[]) data : new Object[] {data};
       }
       /* Becomes 'dry' if the result set was empty */
       else {

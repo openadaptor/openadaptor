@@ -92,7 +92,12 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==1);
     assertTrue(writer.dataCollection.size()==1);
-    Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
+    
+    //change in the returned type from next() when converting all rows from 
+    //the result set 
+    //Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
+    Object [] data =  (Object []) writer.dataCollection.get(0);
+    
     assertTrue(data.length == 2);
     HashMap row1 = (HashMap) data[0];
     assertNotNull(row1.get(COL1));

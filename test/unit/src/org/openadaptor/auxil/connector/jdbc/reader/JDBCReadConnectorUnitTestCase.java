@@ -94,12 +94,8 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     pollingStrategy.setEventTypeID("20");
     pollingStrategy.setJdbcConnection(mockConnection);
     jdbcReadConnector.setPollingStrategy(pollingStrategy);
-    Mock mockCallableStatement =  new Mock(CallableStatement.class);    
-    mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockCallableStatement.proxy()));
-    mockCallableStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
-    mockCallableStatement.expects(once()).method("setInt").with(eq(2), eq(10));
-    mockCallableStatement.expects(once()).method("setInt").with(eq(3), eq(20));
-    pollingStrategy.connect();
+    Mock mockCallableStatement =  new Mock(CallableStatement.class);   
+    connectDBEventDrivenConnector(mockCallableStatement, pollingStrategy);
   }
   
   /**   
@@ -119,8 +115,6 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * Test ported from OldJDBCReadConnectorUnitTestCase.
    */
   public void testNext() {
-    //no need to set the looping strategy - it's a default
-//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
@@ -146,8 +140,6 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * Test ported from OldJDBCReadConnectorUnitTestCase.
    */
   public void testNext2() {
-//  no need to set the looping strategy - it's a default
-//    jdbcPollingReadConnector.setPollingStrategy(new LoopingPollingStrategy());
     mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
     mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
@@ -295,7 +287,12 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   }
   
   private void connectDBEventDrivenConnector(Mock mockStatement, IReadConnector readConnector){
+    /* Callable statement for the pollingStrategy */
     mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
+    
+    /* 'Plain' statement for the underlying connector */
+    mockSqlConnection.expects(once()).method("createStatement");
+    
     mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
     mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));
     mockStatement.expects(once()).method("setInt").with(eq(3), eq(20));    

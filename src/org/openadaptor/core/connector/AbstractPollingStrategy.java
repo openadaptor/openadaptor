@@ -45,7 +45,6 @@ import org.openadaptor.core.transaction.ITransactional;
  */
 public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector implements IPollingStrategy {
 
- 
   private static final Log log = LogFactory.getLog(AbstractPollingStrategy.class);
   
   IPollingReadConnector delegate;
@@ -147,7 +146,6 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
   }
 
   public Object getResource() {
-    
     if( this.delegate instanceof ITransactional){
       return ((ITransactional) this.delegate).getResource();
     }
