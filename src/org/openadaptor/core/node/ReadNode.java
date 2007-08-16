@@ -63,7 +63,7 @@ import org.openadaptor.core.transaction.ITransactional;
  * {@link IDataProcessor} configured, if this the case then data received from
  * the {@link IReadConnector} is processed by the {@link IDataProcessor} before
  * being delegated. This by-passes any exception / discard management that can
- * be configured in delegates such as {@link Router} / {@link Pipeline}.
+ * be configured in delegates such as {@link Router}.
  * 
  * @author perryj
  * @see IReadConnector
