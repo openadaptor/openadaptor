@@ -484,11 +484,21 @@ public class MqConnection extends Component {
   }
 
   /**
-   * Fetch next record
+   * Fetch the next record off the message queue and
+   * return the content as a string.
+   * @param timeoutMs the amount of time to listen on
+   * the queue for a record. Zero or a negative number
+   * indicates that no wait will occur and will return
+   * immediately (with null if there is no message on
+   * the queue).
    * 
    * @return String
    */
-  public String nextRecord(long timeoutMs)  {
+  public String nextRecord(long timeoutMs) {
+	  // provide simple validation for the timeout value
+	  if (timeoutMs > Integer.MAX_VALUE) 
+		  throw new IllegalArgumentException("Supplied timeout value is too big");
+	  
     String messageString = null;
     try {
       //
@@ -552,7 +562,7 @@ public class MqConnection extends Component {
   }
 
   /**
-   * Queue message
+   * Push a message onto the MQ queue
    * 
    * @param record
    */
@@ -567,7 +577,6 @@ public class MqConnection extends Component {
         mqMsg.characterSet = mqCharacterSet;
       }
       mqMsg.writeString(record);
-      log.debug("Putting MQ message");
       queue.put(mqMsg, putMessageOptions);
     }
     catch (IOException e) {
@@ -630,14 +639,13 @@ public class MqConnection extends Component {
     // Jeremy Davies for this fix.
     //
     
-     getMessageOptions = new MQGetMessageOptions(); 
+     getMessageOptions = new MQGetMessageOptions();
+     getMessageOptions.options = MQC.MQPMO_WAIT;
      if (isUseLocalTransactions()) {
-       if (isConvertOption()) {
-           getMessageOptions.options = MQC.MQPMO_SYNCPOINT | MQC.MQGMO_CONVERT; 
-           }
-     else { 
-       getMessageOptions.options = MQC.MQPMO_SYNCPOINT; 
-       } 
+    	 getMessageOptions.options |= MQC.MQPMO_SYNCPOINT;
+    	 if (isConvertOption()) { 
+    		 getMessageOptions.options |= MQC.MQGMO_CONVERT;
+    	 }
       }
   }
 
