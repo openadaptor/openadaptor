@@ -27,6 +27,8 @@
 package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -211,7 +213,8 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
      * (because of an SQLException thrown when no results are found..).
      */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
-    mockPollStatement.expects(once()).method("close"); 
+    mockPollStatement.expects(once()).method("close");  
+    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
     mockResultSet.expects(once()).method("next").will(returnValue(false));
     mockResultSet.expects(once()).method("close");
     
@@ -234,14 +237,17 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     
     /* actual call to next */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));    
-    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false), returnValue(false)));
     mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
-    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
-    mockResultSet.expects(once()).method("getString");
+    mockResultSetMetaData.expects(atLeastOnce()).method("getColumnCount").will(returnValue(15));
+    for(int i=1; i<=15; i++){
+      mockResultSetMetaData.expects(once()).method("getColumnName").with(eq(i)).will(returnValue("COL" + new Integer(i)));
+    }
+    mockResultSet.expects(atLeastOnce()).method("getObject").will(returnValue("TEST"));
     
     Mock mockActualStatement =  new Mock(CallableStatement.class);
-    mockSqlConnection.expects(once()).method("prepareCall").with(eq("{ call null ()}")).will(returnValue(mockActualStatement.proxy()));
-  
+    mockSqlConnection.expects(once()).method("prepareCall").with(eq("{ call TEST (?,?,?,?,?,?,?,?,?,?)}")).will(returnValue(mockActualStatement.proxy()));
+    mockActualStatement.expects(atLeastOnce()).method("setString");
     mockActualStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
     mockResultSet.expects(once()).method("close");
     mockActualStatement.expects(once()).method("close");   
@@ -262,22 +268,33 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     jdbcReadConnector.setPollingStrategy(pollingStrategy);
     
     Mock mockPollStatement =  new Mock(CallableStatement.class);
+    Mock mockResultSet2 = new Mock(ResultSet.class);
+    Mock mockResultSetMetaData2 = new Mock(ResultSetMetaData.class);
     connectDBEventDrivenConnector(mockPollStatement, pollingStrategy);
  
     /* actual call to next */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
     
-    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(true), returnValue(false)));
-    mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
-    mockResultSetMetaData.expects(atLeastOnce()).method("getColumnCount").will(returnValue(1));
-    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue("COL1"));
-    mockResultSet.expects(once()).method("getString");
-    mockResultSet.expects(once()).method("getObject");
-    
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+    mockResultSetMetaData.expects(atLeastOnce()).method("getColumnCount").will(returnValue(15));
+    for(int i=1; i<=15; i++){
+      mockResultSetMetaData.expects(once()).method("getColumnName").with(eq(i)).will(returnValue("COL" + new Integer(i)));
+    }
+    mockResultSet.expects(atLeastOnce()).method("getObject").will(returnValue("TEST"));
+
     Mock mockActualStatement =  new Mock(CallableStatement.class);
-    mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockActualStatement.proxy()));
-    
-    mockActualStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
+    mockSqlConnection.expects(once()).method("prepareCall").with(eq("{ call TEST (?,?,?,?,?,?,?,?,?,?)}")).will(returnValue(mockActualStatement.proxy()));
+    mockActualStatement.expects(atLeastOnce()).method("setString");
+  
+    mockActualStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet2.proxy()));
+    mockResultSet2.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+    mockResultSet2.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData2.proxy()));
+    mockResultSet2.expects(atLeastOnce()).method("getObject").will(returnValue("TEST2"));
+
+    mockResultSetMetaData2.expects(once()).method("getColumnCount").will(returnValue(1));
+    mockResultSetMetaData2.expects(once()).method("getColumnName").with(eq(1)).will(returnValue("COL1"));
+
     mockResultSet.expects(once()).method("close");
     mockActualStatement.expects(once()).method("close"); 
     

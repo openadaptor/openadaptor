@@ -139,6 +139,11 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
     log.debug("Forwarding to the delegate.");
     return this.delegate.getReaderContext();
   }
+  
+  public void setReaderConext(Object context) {
+    log.debug("Forwarding to the delegate.");
+    this.delegate.setReaderConext(context);
+  }
 
   public void validate(List exceptions) {
     log.debug("Forwarding to the delegate.");
@@ -153,5 +158,5 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
       return null;
     }
   }
-   
+
 }

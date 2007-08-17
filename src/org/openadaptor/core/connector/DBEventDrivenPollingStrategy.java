@@ -29,7 +29,6 @@ package org.openadaptor.core.connector;
 
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
@@ -40,7 +39,7 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
-import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /** 
  * A polling strategy that uses a stored proc to poll for database events, these
@@ -56,9 +55,6 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   private static final Log log = LogFactory.getLog(DBEventDrivenPollingStrategy.class);
 
   private static final String DEFAULT_SP_NAME = "OA_GetNextEvent";
-
-  private static final int EVENT_RS_STORED_PROC = 4;
-  private static final int EVENT_RS_PARAM1 = 6;
 
   private String eventPollSP = DEFAULT_SP_NAME;
 
@@ -102,25 +98,20 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   public Object[] next(long timeoutMs) throws ComponentException {
     log.info("Polling..");
     Object[] data = null;
-    CallableStatement callableStatement = null;
-    try {
-      callableStatement = getNextStatement();
-      if (callableStatement != null) {      
-        //
-        // todo: ultimately the event data needs to be set on the underlying connector
-        // in a protocol - neutral way, otherwise we're tied to the JDBC connector.
-        //
-        ((JDBCReadConnector) delegate).setCallableStatement(callableStatement);
-        data = delegate.next(timeoutMs);
-      } else {
-        ThreadUtil.sleepNoThrow(timeoutMs);
-      }
-    } finally {
-      JDBCUtil.closeNoThrow(callableStatement);
+    IOrderedMap event = getNextEvent();
+    if (event != null) {      
+      delegate.setReaderConext(event);
+      data = delegate.next(timeoutMs);
+    } else {
+      //
+      // @todo - eventually this sleeping should be removed from here. The same effect could be
+      // achieved by wrapping this strategy in the LoopingPollingStrategy and defining poll
+      // interval there
+      //
+      ThreadUtil.sleepNoThrow(timeoutMs);
     }
     return data;
   }
-  
   
   /**
    * ensures that eventServiceId has been set
@@ -142,64 +133,30 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
     delegate.connect();
   }
 
+  
   /**
    * gets next statement to execute against the database, by calling
    * the eventPollSP and converting its ResultSet to a CallableStatement
    */
-  private CallableStatement getNextStatement() {
-    CallableStatement cs = null;
+  private IOrderedMap getNextEvent() {
+    IOrderedMap event = null;
     ResultSet rs = null;
     try {
       rs = pollStatement.executeQuery();
-      if (rs.next()) {
-        JDBCUtil.logCurrentResultSetRow(log, "event ResultSet", rs);
-        cs = convertEventToStatement(rs);
+      Object [] data = convertAll(rs);
+      if(data == null || data.length == 0){
+        return null;
       }
-      return cs;
+      event = (IOrderedMap) data[0];
     } catch (SQLException e) {
       jdbcConnection.handleException(e, null);
     } finally {
       JDBCUtil.closeNoThrow(rs);
     }
-    return cs;
+    return event;
   }
 
   
-  /**
-   * convert event ResultSet into a statement to get the actual data
-   */
-  private CallableStatement convertEventToStatement(ResultSet rs) throws SQLException {
-    ResultSetMetaData rsmd=rs.getMetaData();
-    int cols=rsmd.getColumnCount();
-    // create statement string
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("{ call ").append(rs.getString(EVENT_RS_STORED_PROC)).append(" (");
-    
-    for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
-      buffer.append(i > EVENT_RS_PARAM1 ? ",?" : "?");
-    }
-    
-    String sql = buffer.append(")}").toString();
-    
-    // create statement
-    CallableStatement callableStatement = prepareCall(sql);
-
-    // set in parameters
-    String loggedSql = sql;
-    for (int i = EVENT_RS_PARAM1; i <= cols; i++) {
-      String stringVal=(rs.getObject(i)==null)?null:rs.getString(i);      
-      callableStatement.setString(i+1-EVENT_RS_PARAM1, stringVal);
-      if (log.isDebugEnabled()) {
-        loggedSql = loggedSql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
-      }
-    }
-    if (log.isDebugEnabled()) {
-       log.debug("Event sql statement = " + loggedSql);
-    }
-
-    return callableStatement;
-  }
-
   /**
    * @return the poll statement
    */

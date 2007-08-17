@@ -36,6 +36,19 @@ import org.openadaptor.core.IReadConnector;
  */
 public interface IPollingReadConnector extends IReadConnector {
   
+  /**
+   * @return a polling strategy
+   */
   IPollingStrategy getPollingStrategy();
   
+  /**
+   * Allows an implementation to provide some context that may be used to 
+   * fetch or enrich the data the reader is providing. This is typically 
+   * used by readers or polling strategies that wrap the protocol specific readers.
+   * 
+   * @param some data that relates can be used by the connector to construct queries
+   *        or enrich returned data.
+   */
+  void setReaderConext(Object context);
+
 }

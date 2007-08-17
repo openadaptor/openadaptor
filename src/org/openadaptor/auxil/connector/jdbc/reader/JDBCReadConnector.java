@@ -35,13 +35,15 @@ import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IPollingStrategy;
+import org.openadaptor.core.connector.DBEventDrivenPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
 
 /**
  * Generic JDBC polling read connector created to replace:
- * JDBCPollConnector, JDBCReadConnector.
+ * {@link JDBCPollConnector}, {@link JDBCReadConnector}, {@link JDBCEventReadConnector}.
  * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingStrategy 
  * with no parameters.
  * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingStrategy 
@@ -52,6 +54,9 @@ import org.openadaptor.util.JDBCUtil;
  */
 public class JDBCReadConnector extends AbstractJDBCReadConnector {
 
+  private static final int EVENT_RS_STORED_PROC = 3;
+  private static final int EVENT_RS_PARAM1 = 5;
+  
   private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
   protected String sql;
@@ -174,6 +179,60 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       handleException(e);
     }
     return new Object[0];
+  }
+  
+  
+  /**
+   * convert event ResultSet into a statement to get the actual data
+   */
+  private CallableStatement convertEventToStatement(IOrderedMap row) throws SQLException {
+    int cols=row.size();
+    
+    /* create statement string */
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("{ call ").append(row.get(EVENT_RS_STORED_PROC)).append(" (");   
+    for (int i = EVENT_RS_PARAM1; i < cols; i++) {
+      buffer.append(i > EVENT_RS_PARAM1 ? ",?" : "?");
+    }
+    String sql = buffer.append(")}").toString();
+    
+    /* create a call and set in parameters */
+    CallableStatement callableStatement = prepareCall(sql);
+    String loggedSql = sql;
+    for (int i = EVENT_RS_PARAM1; i < cols; i++) {
+      String stringVal= (String)((row.get(i)==null)? null: row.get(i));      
+      callableStatement.setString(i+1-EVENT_RS_PARAM1, stringVal);
+      if (log.isDebugEnabled()) {
+        loggedSql = loggedSql.replaceFirst("\\?", (stringVal==null)?"<null>":stringVal);
+      }
+    }
+    if (log.isDebugEnabled()) {
+       log.debug("Event sql statement = " + loggedSql);
+    }  
+    return callableStatement;    
+  }
+
+  /**
+   * Attempts to convert the <code>context</code> to a callable statement. This
+   * will only be successfull if the context is an IOrderedMap with elements in
+   * a predefined format, such as that returned by {@link DBEventDrivenPollingStrategy}.
+   * If successfull, the callable statement will be used for polling the database.
+   * Otherwise, the context will be ingored. 
+   */
+  public void setReaderConext(Object context) {
+    if(! (context instanceof IOrderedMap)){
+      super.setReaderConext(context);
+      return;
+    }
+    IOrderedMap event = (IOrderedMap) context;
+    CallableStatement callableStatement = null;
+    try {
+      callableStatement = convertEventToStatement(event);
+    } catch (SQLException e) {
+      log.warn("Failed to convert event to a callable statement");
+      return;
+    }
+    setCallableStatement(callableStatement); 
   }
 
 }

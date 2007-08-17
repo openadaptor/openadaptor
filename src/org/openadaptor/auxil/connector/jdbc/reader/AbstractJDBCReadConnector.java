@@ -105,6 +105,9 @@ public abstract class AbstractJDBCReadConnector extends Component implements IPo
     return null;
   }
 
+  public void setReaderConext(Object context) {
+  }
+
   public void validate(List exceptions) {
   }
   
