@@ -27,6 +27,9 @@
 package org.openadaptor.core.node;
 
 import org.openadaptor.core.*;
+import org.openadaptor.core.transaction.ITransactionInitiator;
+import org.openadaptor.core.transaction.TransactionManager;
+import org.openadaptor.core.lifecycle.IRunnable;
 import org.jmock.Mock;
 
 import java.util.ArrayList;
@@ -69,7 +72,7 @@ public class ReadNodeTestCase extends NodeTestCase {
     ((Node)testMessageProcessor).validate(exceptions);
 
     assertTrue("Unexpected exceptions", exceptions.size() == 0);
-  }  
+  }
 
   public void testValidationWithProcessor() {
     Mock readConnectorMock = mock(IReadConnector.class);
@@ -94,5 +97,46 @@ public class ReadNodeTestCase extends NodeTestCase {
     ((Node)testMessageProcessor).validate(exceptions);
 
     assertTrue("Unexpected exceptions", exceptions.size() == 1);
+  }
+
+  // Attempt to test the run method.
+
+  /**
+   * This test uses a real TransactionManager and real Message/Rsponse objects
+   * but mocks up everything else.
+   */
+  public void testRun() {
+    Mock readConnectorMock = mock(IReadConnector.class);
+    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
+
+    Mock messageRouterMock = mock(IMessageProcessor.class);
+    IMessageProcessor messageRouter = (IMessageProcessor) messageRouterMock.proxy();
+
+    Response testResponse = new Response();
+    testResponse.addOutput("Test Output");
+
+    messageRouterMock.stubs().method("process").will(returnValue(testResponse));
+
+    ((Node)testMessageProcessor).setMessageProcessor(messageRouter);
+
+    ((ReadNode)testMessageProcessor).setConnector(readConnector);
+    ((ITransactionInitiator)testMessageProcessor).setTransactionManager(new TransactionManager()); // Using the default implementation for now 'cos I'm too lazy to stub.
+    readConnectorMock.expects(once()).method("connect");
+    readConnectorMock.expects(once()).method("disconnect");
+
+    readConnectorMock.expects(atLeastOnce()).method("isDry").
+      will(onConsecutiveCalls(returnValue(false), returnValue(false), returnValue(true)));
+
+    readConnectorMock.stubs().method("next").will(returnValue(new Object[] {"test" }));
+
+    Object connectorReaderContext = new Object(); // Bit of connector fluff
+    readConnectorMock.stubs().method("getReaderContext").will(returnValue(connectorReaderContext));
+
+    ((ReadNode)testMessageProcessor).start();
+
+    ((IRunnable)testMessageProcessor).run();
+
+    assertTrue("Expected an exitcode of 0", ((IRunnable)testMessageProcessor).getExitCode() == 0 );
+
   }
 }

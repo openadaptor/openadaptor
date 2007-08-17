@@ -31,12 +31,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.IComponent;
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.IPollingReadConnector;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.Message;
+import org.openadaptor.core.*;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
@@ -206,6 +201,10 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       process(msg);
     }
     return data != null;
+  }
+
+  public Response process(Message msg) {
+    return super.process(msg);
   }
 
   private Object[] getNext() {
