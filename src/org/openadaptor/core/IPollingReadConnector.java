@@ -44,21 +44,6 @@ import org.openadaptor.core.IReadConnector;
  */
 public interface IPollingReadConnector extends IReadConnector {
   
-  /**
-   * @return a polling strategy
-   */
-  IReadConnector getDelegate();
-  
-//  /**
-//   * Allows an implementation to provide some context that may be used to 
-//   * fetch or enrich the data the reader is providing. This is typically 
-//   * used by readers or polling strategies that wrap the protocol specific readers.
-//   * 
-//   * @param some data that relates can be used by the connector to construct queries
-//   *        or enrich returned data.
-//   */
-//  void setReaderConext(Object context);
-  
   //
   // might need a variable (enum) that states if we need the all result set in one call, 
   // only one row - or perhaps something custom
@@ -67,14 +52,22 @@ public interface IPollingReadConnector extends IReadConnector {
   int CONVERT_ALL = 1;
   int CONVERT_CUSTOM = 2;
   
+  
   /**
    * @return the underlying polling read connector.
    */
-  IReadConnector getReadConnector();
+  IReadConnector getDelegate();
   
+  /**
+   * @todo should not be part of the interface
+   * @param readConnector
+   */
   void setDelegate(IReadConnector readConnector);
     
-  // will return one of the convert enum values at the top.
+  /**
+   * @return one of the conversion modes.
+   * @todo this is specific to JDBC and needs to be implemented in the result set converter instead 
+   */
   int getConvertMode();
 
 }

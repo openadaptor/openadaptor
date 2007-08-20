@@ -33,7 +33,7 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.connector.LoopingPollingStrategy;
+import org.openadaptor.core.connector.LoopingPollingReadConnector;
 import org.openadaptor.core.connector.SinglePollPollingStrategy;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
@@ -44,7 +44,7 @@ import org.openadaptor.util.TestComponent;
  * System tests for {@link JDBCReadConnector} that uses different polling
  * strategies:
  * {@link SinglePollPollingStrategy}
- * {@link LoopingPollingStrategy}
+ * {@link LoopingPollingReadConnector}
  * 
  * Uses a test table with two columns and two rows.
  * 
@@ -115,7 +115,7 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
    * Ensures the writer received two records in one call.
    */
   public void testLoopingPollingStrategy()throws Exception{
-    reader.setPollingStrategy(new LoopingPollingStrategy());
+    reader.setPollingStrategy(new LoopingPollingReadConnector());
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);

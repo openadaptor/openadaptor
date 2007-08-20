@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IPollingReadConnector;
-import org.openadaptor.core.connector.DBEventDrivenPollingStrategy;
+import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
 
@@ -215,7 +215,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   /**
    * Attempts to convert the <code>context</code> to a callable statement. This
    * will only be successfull if the context is an IOrderedMap with elements in
-   * a predefined format, such as that returned by {@link DBEventDrivenPollingStrategy}.
+   * a predefined format, such as that returned by {@link DBEventDrivenPollingReadConnector}.
    * If successfull, the callable statement will be used for polling the database.
    * Otherwise, the context will be ingored. 
    */

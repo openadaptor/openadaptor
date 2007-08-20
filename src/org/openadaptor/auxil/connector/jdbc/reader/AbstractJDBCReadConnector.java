@@ -39,9 +39,8 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
-//import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.connector.LoopingPollingStrategy;
+import org.openadaptor.core.connector.LoopingPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
@@ -57,7 +56,7 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
   
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
   
-  private static IPollingReadConnector DEFAULT_POLLING_STRATEGY = new LoopingPollingStrategy();
+  private static IPollingReadConnector DEFAULT_POLLING_STRATEGY = new LoopingPollingReadConnector();
   
   private IPollingReadConnector defaultPollingStrategy = DEFAULT_POLLING_STRATEGY;
   

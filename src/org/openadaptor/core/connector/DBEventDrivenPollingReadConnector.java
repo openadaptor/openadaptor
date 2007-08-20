@@ -53,9 +53,9 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
  * 
  * @author Kuldip Ottal, Kris Lachor
  */
-public class DBEventDrivenPollingStrategy extends AbstractPollingReadConnector {
+public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnector {
 
-  private static final Log log = LogFactory.getLog(DBEventDrivenPollingStrategy.class);
+  private static final Log log = LogFactory.getLog(DBEventDrivenPollingReadConnector.class);
   
   private static final String DEFAULT_SP_NAME = "OA_GetNextEvent";
 
@@ -167,7 +167,6 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingReadConnector {
     return event;
   }
 
-  
   /**
    * @return the poll statement
    */

@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.jmock.Mock;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.connector.DBEventDrivenPollingStrategy;
+import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
@@ -91,7 +91,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testConnect()}
    */
   public void testConnect3(){
-    DBEventDrivenPollingStrategy pollingStrategy = new DBEventDrivenPollingStrategy();
+    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
     pollingStrategy.setEventServiceID("10");
     pollingStrategy.setEventTypeID("20");
     pollingStrategy.setJdbcConnection(mockConnection);
@@ -199,7 +199,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext1()}
    */
   public void testNext4() {
-    DBEventDrivenPollingStrategy pollingStrategy = new DBEventDrivenPollingStrategy();
+    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
     pollingStrategy.setEventServiceID("10");
     pollingStrategy.setEventTypeID("20");
     pollingStrategy.setJdbcConnection(mockConnection);
@@ -226,7 +226,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext2()}
    */
   public void testNext5(){
-    DBEventDrivenPollingStrategy pollingStrategy = new DBEventDrivenPollingStrategy();
+    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
     pollingStrategy.setEventServiceID("10");
     pollingStrategy.setEventTypeID("20");
     pollingStrategy.setJdbcConnection(mockConnection);
@@ -261,7 +261,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext3()}
    */
   public void testNext6() {
-    DBEventDrivenPollingStrategy pollingStrategy = new DBEventDrivenPollingStrategy();
+    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
     pollingStrategy.setEventServiceID("10");
     pollingStrategy.setEventTypeID("20");
     pollingStrategy.setJdbcConnection(mockConnection);
