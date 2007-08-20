@@ -32,6 +32,7 @@ import java.util.Map;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
+import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.LoopingPollingReadConnector;
 import org.openadaptor.core.connector.SinglePollPollingStrategy;
@@ -84,8 +85,10 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
    * Ensures the writer received two records in one call.
    */
   public void testOneShotPollingStrategy() throws Exception{
-    reader.setPollingStrategy(new SinglePollPollingStrategy());
-    processMap.put(reader, writer);
+    IPollingReadConnector pollingReadConnector = new SinglePollPollingStrategy();
+    reader.setBatchSize(0);
+    pollingReadConnector.setDelegate(reader);
+    processMap.put(pollingReadConnector, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
     adaptor.run();
@@ -115,8 +118,9 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
    * Ensures the writer received two records in one call.
    */
   public void testLoopingPollingStrategy()throws Exception{
-    reader.setPollingStrategy(new LoopingPollingReadConnector());
-    processMap.put(reader, writer);
+    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
+    pollingReadConnector.setDelegate(reader);
+    processMap.put(pollingReadConnector, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
     adaptor.run();

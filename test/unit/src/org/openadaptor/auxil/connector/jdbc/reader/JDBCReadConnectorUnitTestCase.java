@@ -91,13 +91,13 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testConnect()}
    */
   public void testConnect3(){
-    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
-    pollingStrategy.setEventServiceID("10");
-    pollingStrategy.setEventTypeID("20");
-    pollingStrategy.setJdbcConnection(mockConnection);
-    jdbcReadConnector.setPollingStrategy(pollingStrategy);
+    DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
+    pollingReadConnector.setEventServiceID("10");
+    pollingReadConnector.setEventTypeID("20");
+    pollingReadConnector.setJdbcConnection(mockConnection);
+    pollingReadConnector.setDelegate(jdbcReadConnector);
     Mock mockCallableStatement =  new Mock(CallableStatement.class);   
-    connectDBEventDrivenConnector(mockCallableStatement, pollingStrategy);
+    connectDBEventDrivenConnector(mockCallableStatement, pollingReadConnector);
   }
   
   /**   
@@ -199,14 +199,14 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext1()}
    */
   public void testNext4() {
-    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
-    pollingStrategy.setEventServiceID("10");
-    pollingStrategy.setEventTypeID("20");
-    pollingStrategy.setJdbcConnection(mockConnection);
-    jdbcReadConnector.setPollingStrategy(pollingStrategy);
+    DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
+    pollingReadConnector.setEventServiceID("10");
+    pollingReadConnector.setEventTypeID("20");
+    pollingReadConnector.setJdbcConnection(mockConnection);
+    pollingReadConnector.setDelegate(jdbcReadConnector);
     
     Mock mockPollStatement =  new Mock(CallableStatement.class);
-    connectDBEventDrivenConnector(mockPollStatement, pollingStrategy);
+    connectDBEventDrivenConnector(mockPollStatement, pollingReadConnector);
  
     /* 
      * actual call to next. executeQuery returns a result set that is immediately closed
@@ -218,22 +218,22 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     mockResultSet.expects(once()).method("next").will(returnValue(false));
     mockResultSet.expects(once()).method("close");
     
-    assertFalse("Read connector dry to soon.", pollingStrategy.isDry());
-    assertNull(pollingStrategy.next(10));  
+    assertFalse("Read connector dry to soon.", pollingReadConnector.isDry());
+    assertNull(pollingReadConnector.next(10));  
   }
   
   /**
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext2()}
    */
   public void testNext5(){
-    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
-    pollingStrategy.setEventServiceID("10");
-    pollingStrategy.setEventTypeID("20");
-    pollingStrategy.setJdbcConnection(mockConnection);
-    jdbcReadConnector.setPollingStrategy(pollingStrategy);
+    DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
+    pollingReadConnector.setEventServiceID("10");
+    pollingReadConnector.setEventTypeID("20");
+    pollingReadConnector.setJdbcConnection(mockConnection);
+    pollingReadConnector.setDelegate(jdbcReadConnector);
     
     Mock mockPollStatement =  new Mock(CallableStatement.class);
-    connectDBEventDrivenConnector(mockPollStatement, pollingStrategy);
+    connectDBEventDrivenConnector(mockPollStatement, pollingReadConnector);
     
     /* actual call to next */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));    
@@ -244,6 +244,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
       mockResultSetMetaData.expects(once()).method("getColumnName").with(eq(i)).will(returnValue("COL" + new Integer(i)));
     }
     mockResultSet.expects(atLeastOnce()).method("getObject").will(returnValue("TEST"));
+    mockResultSet.expects(once()).method("close");
     
     Mock mockActualStatement =  new Mock(CallableStatement.class);
     mockSqlConnection.expects(once()).method("prepareCall").with(eq("{ call TEST (?,?,?,?,?,?,?,?,?,?)}")).will(returnValue(mockActualStatement.proxy()));
@@ -252,8 +253,8 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     mockResultSet.expects(once()).method("close");
     mockActualStatement.expects(once()).method("close");   
     
-    assertFalse("Read connector dry to soon.", pollingStrategy.isDry());
-    Object [] arr = (Object []) pollingStrategy.next(10);
+    assertFalse("Read connector dry to soon.", pollingReadConnector.isDry());
+    Object [] arr = (Object []) pollingReadConnector.next(10);
     assertTrue("Unexpected result count", arr.length == 0);
   }
   
@@ -261,16 +262,16 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * ported from {@link JDBCEventReadConnectorUnitTestCase#testNext3()}
    */
   public void testNext6() {
-    DBEventDrivenPollingReadConnector pollingStrategy = new DBEventDrivenPollingReadConnector();
-    pollingStrategy.setEventServiceID("10");
-    pollingStrategy.setEventTypeID("20");
-    pollingStrategy.setJdbcConnection(mockConnection);
-    jdbcReadConnector.setPollingStrategy(pollingStrategy);
+    DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
+    pollingReadConnector.setEventServiceID("10");
+    pollingReadConnector.setEventTypeID("20");
+    pollingReadConnector.setJdbcConnection(mockConnection);
+    pollingReadConnector.setDelegate(jdbcReadConnector);
     
     Mock mockPollStatement =  new Mock(CallableStatement.class);
     Mock mockResultSet2 = new Mock(ResultSet.class);
     Mock mockResultSetMetaData2 = new Mock(ResultSetMetaData.class);
-    connectDBEventDrivenConnector(mockPollStatement, pollingStrategy);
+    connectDBEventDrivenConnector(mockPollStatement, pollingReadConnector);
  
     /* actual call to next */
     mockPollStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
@@ -298,8 +299,8 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     mockResultSet.expects(once()).method("close");
     mockActualStatement.expects(once()).method("close"); 
     
-    assertFalse("Read connector dry to soon.", pollingStrategy.isDry());
-    Object [] arr = (Object []) pollingStrategy.next(10);
+    assertFalse("Read connector dry to soon.", pollingReadConnector.isDry());
+    Object [] arr = (Object []) pollingReadConnector.next(10);
     assertTrue("Unexpected result count", arr.length == 1);
   }
   

@@ -41,9 +41,9 @@ import org.openadaptor.util.JDBCUtil;
  * for use within an adaptor.
  * Subclasses defined the output type.
  * @author higginse
- *
  */
-public abstract class AbstractResultSetConverter {
+public abstract class AbstractResultSetConverter implements IResultSetConverter {
+  
   private static final Log log = LogFactory.getLog(ResultSetToOrderedMapConverter.class);
 
   /**
@@ -79,6 +79,25 @@ public abstract class AbstractResultSetConverter {
     return rows.toArray(new Object[rows.size()]);
   }
 
+  /**
+   * If <code>maxBatchSize</code> is a positive number convert not more than the 
+   * <code>maxBatchSize</code> of rows in the result set. If <code>maxBatchSize</code> equal 
+   * to zero or less - convert all rows in the result set.
+   * @param rs Contains the current ResultSet
+   * @return Object[] array with entries for each row returned
+   */
+  public Object[] convert(ResultSet rs, int maxBatchSize) throws SQLException {
+    ArrayList rows = new ArrayList();
+    ResultSetMetaData rsmd = rs.getMetaData();
+    int batchSize = 0;
+    while ((maxBatchSize<=0 || batchSize<maxBatchSize) && rs.next()) {
+      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
+      rows.add(convertNext(rs, rsmd));
+      batchSize++;
+    }
+    return rows.toArray(new Object[rows.size()]);
+  }
+  
   /**
    * Convert the next row in a ResultSet (given its metadata).
    * @param rs Contains the ResultSet being converted

@@ -38,9 +38,7 @@ import org.apache.commons.logging.Log;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.connector.LoopingPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
@@ -56,13 +54,8 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
   
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
   
-  private static IPollingReadConnector DEFAULT_POLLING_STRATEGY = new LoopingPollingReadConnector();
-  
-  private IPollingReadConnector defaultPollingStrategy = DEFAULT_POLLING_STRATEGY;
-  
-  private IPollingReadConnector pollingStrategy = null;
-    
   private JDBCConnection jdbcConnection;
+  
   private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
   public AbstractJDBCReadConnector() {
@@ -127,6 +120,10 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
     return resultSetConverter.convertAll(rs);
   }
   
+  protected Object[] convert(ResultSet rs, int maxBatchSize) throws SQLException {
+    return resultSetConverter.convert(rs, maxBatchSize);
+  }
+  
   protected CallableStatement prepareCall(String sql) throws SQLException {
     return jdbcConnection.getConnection().prepareCall(sql);
   }
@@ -164,22 +161,6 @@ public abstract class AbstractJDBCReadConnector extends Component implements IRe
 
   protected void handleException(SQLException e) {
     jdbcConnection.handleException(e, null);
-  }
-
-  public IPollingReadConnector getDelegate(){
-    //@todo this is wrong, the reference to connector needs to be set on the strategy
-    //somewhere else.
-    IPollingReadConnector result = pollingStrategy == null ? defaultPollingStrategy : pollingStrategy;
-    result.setDelegate((IReadConnector) this);
-    return result;
-  }
-
-  public void setPollingStrategy(IPollingReadConnector pollingStrategy) {
-    this.pollingStrategy = pollingStrategy;
-    //@todo this is wrong, the reference to connector needs to be set on the strategy
-    //somewhere else.
-    this.pollingStrategy.setDelegate((IReadConnector) this);
-//    this.pollingStrategy.set
   }
 
 }

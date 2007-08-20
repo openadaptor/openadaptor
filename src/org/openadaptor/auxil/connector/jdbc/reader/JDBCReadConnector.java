@@ -36,7 +36,6 @@ import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
@@ -70,6 +69,8 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
   protected ResultSetMetaData rsmd = null;
   
   protected boolean dry = false;
+  
+  protected int batchSize = IResultSetConverter.CONVERT_ONE;
 
   /**
    * Default constructor
@@ -152,28 +153,18 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
           rs = statement.executeQuery(sql);
         }
       }
-      Object data = null;
+      Object [] data = null;
       
-      /* Converts all records in the result set or only one, depending on strategy settings */
-      if(getDelegate().getConvertMode() == IPollingReadConnector.CONVERT_ALL){
-        data = convertAll(rs);
-        rs = null;
-        dry = true;
-      }
-      else{
-        data = convertNext(rs);
-      }
-      
-      if (data != null) {
-        /* wraps data in object array only when necessary */       
-        return  data instanceof Object [] ? (Object[]) data : new Object[] {data};
-      }
-      /* Becomes 'dry' if the result set was empty */
-      else {
+      /* Converts all records in the result set or only a certain subset, depending on batchSize value */
+      data = convert(rs, batchSize);          
+      if(data.length==0 ||  batchSize==IResultSetConverter.CONVERT_ALL){
         JDBCUtil.closeNoThrow(rs);
         rs = null;
         dry = true;
       }
+      
+      /* wraps data in object array only when necessary */       
+      return  data instanceof Object [] ? (Object[]) data : new Object[] {data};
     }
     catch (SQLException e) {
       handleException(e);
@@ -233,6 +224,18 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       return;
     }
     setCallableStatement(callableStatement); 
+  }
+
+  /**
+   * Sets the batch size. A negative number of zero will correspond to {@link IResultSetConverter#CONVERT_ALL}
+   * - the batch will contain all rows from the result set. Batch size equal to 1 corresponds to
+   * {@link IResultSetConverter#CONVERT_ONE}, which'll fetch the next records from the result set
+   * on every call to {@link #next(long)}.
+   * 
+   * @param convertMode the batch size
+   */
+  public void setBatchSize(int batchSize) {
+    this.batchSize = batchSize;
   }
 
 }

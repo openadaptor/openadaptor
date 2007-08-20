@@ -94,12 +94,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   }
 
   public void setConnector(final IReadConnector connector) {
-    if(connector instanceof IPollingReadConnector){
-      this.connector = ((IPollingReadConnector) connector).getDelegate();
-    }
-    else {
-      this.connector = connector;
-    }
+    this.connector = connector;
   }
 
   protected IReadConnector getConnector() {
