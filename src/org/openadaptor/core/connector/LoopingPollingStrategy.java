@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Kris Lachor
  */
-public class LoopingPollingStrategy extends AbstractPollingStrategy {
+public class LoopingPollingStrategy extends AbstractPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(LoopingPollingStrategy.class);
   

@@ -160,6 +160,9 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
   public Object getReaderContext() {
     return null;
   }
+  
+  public void setReaderConext(Object context) {
+  }
 
   public void validate(List exceptions) {
   }

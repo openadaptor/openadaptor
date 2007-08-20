@@ -202,6 +202,9 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
   public Object getReaderContext() {
     return null;
   }
+  
+  public void setReaderConext(Object context) {
+  }
 
   public boolean isDry() {
     return false;

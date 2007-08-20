@@ -112,6 +112,9 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
     return null;
   }
 
+  public void setReaderConext(Object context) {
+  }
+  
   public boolean isDry() {
     return isDry;
   }

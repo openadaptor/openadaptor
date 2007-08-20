@@ -32,22 +32,21 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.connector.jdbc.reader.AbstractJDBCReadConnector;
 import org.openadaptor.core.IPollingReadConnector;
-import org.openadaptor.core.IPollingStrategy;
+import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
- * An abstract implementation of {@link IPollingStrategy}.
+ * An abstract implementation of {@link IPollingReadConnector}.
  * 
  * @author Kris Lachor
  */
-public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector implements IPollingStrategy {
+public abstract class AbstractPollingReadConnector implements IPollingReadConnector {
 
-  private static final Log log = LogFactory.getLog(AbstractPollingStrategy.class);
+  private static final Log log = LogFactory.getLog(AbstractPollingReadConnector.class);
   
-  IPollingReadConnector delegate;
+  IReadConnector delegate;
   
   protected Date reconnectTime;
 
@@ -57,11 +56,11 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
   
   private int count;
   
-  public IPollingReadConnector getReadConnector() {
+  public IReadConnector getReadConnector() {
     return this.delegate;
   }
   
-  public void setPollingReadConnector(IPollingReadConnector delegate) {
+  public void setDelegate(IReadConnector delegate) {
     this.delegate = delegate;
   }
   
@@ -127,7 +126,7 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
   }
 
   public int getConvertMode() {
-    return IPollingStrategy.CONVERT_NEXT_ONLY;
+    return IPollingReadConnector.CONVERT_NEXT_ONLY;
   }
 
   public void disconnect() {
@@ -157,6 +156,10 @@ public abstract class AbstractPollingStrategy extends AbstractJDBCReadConnector 
     else{
       return null;
     }
+  }
+
+  public IReadConnector getDelegate() {
+    return delegate;
   }
 
 }

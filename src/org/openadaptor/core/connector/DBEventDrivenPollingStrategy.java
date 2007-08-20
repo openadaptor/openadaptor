@@ -34,7 +34,10 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.core.IPollingStrategy;
+import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
+import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
+//import org.openadaptor.core.IPollingStrategy;
+import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.util.JDBCUtil;
@@ -50,14 +53,16 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
  * 
  * @author Kuldip Ottal, Kris Lachor
  */
-public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
+public class DBEventDrivenPollingStrategy extends AbstractPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(DBEventDrivenPollingStrategy.class);
-
+  
   private static final String DEFAULT_SP_NAME = "OA_GetNextEvent";
 
   private String eventPollSP = DEFAULT_SP_NAME;
 
+  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+  
   private String eventServiceID = null;
   
   private String eventTypeID = null;
@@ -65,7 +70,13 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   private CallableStatement pollStatement;
   
   private JDBCConnection jdbcConnection;
+  
+  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
+  protected Object[] convertAll(ResultSet rs) throws SQLException {
+    return resultSetConverter.convertAll(rs);
+  }
+  
   /**
    * sets the stored procedure used to poll for data events
    */
@@ -166,11 +177,10 @@ public class DBEventDrivenPollingStrategy extends AbstractPollingStrategy {
   
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
-    super.setJdbcConnection(jdbcConnection);
   }
 
   public int getConvertMode() {
-    return IPollingStrategy.CONVERT_ALL;
+    return IPollingReadConnector.CONVERT_ALL;
   }
   
 }

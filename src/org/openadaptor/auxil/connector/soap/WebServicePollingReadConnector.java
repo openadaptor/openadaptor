@@ -161,9 +161,13 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
   public String getServiceName() {
     return serviceName;
   }
+  
 
   public Object getReaderContext() {
     return null;
+  }
+  
+  public void setReaderConext(Object context) {
   }
  
 }

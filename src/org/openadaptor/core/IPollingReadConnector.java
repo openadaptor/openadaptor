@@ -29,6 +29,14 @@ package org.openadaptor.core;
 
 import org.openadaptor.core.IReadConnector;
 
+/*
+* Interface for polling strategies. A polling strategy will define an algorithm 
+* for polling the underlying resources by read connectors. The simplest strategy might be for
+* the read connector to execute one call for data and exit, a more complex one might involve
+* multimple calls with a specified time interval in between, with the interval perhaps 
+* different for when the previous call returned data and when it did not return.
+*/
+
 /**
  * Interface for a read connector that polls. 
  * 
@@ -39,16 +47,34 @@ public interface IPollingReadConnector extends IReadConnector {
   /**
    * @return a polling strategy
    */
-  IPollingStrategy getPollingStrategy();
+  IReadConnector getDelegate();
+  
+//  /**
+//   * Allows an implementation to provide some context that may be used to 
+//   * fetch or enrich the data the reader is providing. This is typically 
+//   * used by readers or polling strategies that wrap the protocol specific readers.
+//   * 
+//   * @param some data that relates can be used by the connector to construct queries
+//   *        or enrich returned data.
+//   */
+//  void setReaderConext(Object context);
+  
+  //
+  // might need a variable (enum) that states if we need the all result set in one call, 
+  // only one row - or perhaps something custom
+  //
+  int CONVERT_NEXT_ONLY = 0;
+  int CONVERT_ALL = 1;
+  int CONVERT_CUSTOM = 2;
   
   /**
-   * Allows an implementation to provide some context that may be used to 
-   * fetch or enrich the data the reader is providing. This is typically 
-   * used by readers or polling strategies that wrap the protocol specific readers.
-   * 
-   * @param some data that relates can be used by the connector to construct queries
-   *        or enrich returned data.
+   * @return the underlying polling read connector.
    */
-  void setReaderConext(Object context);
+  IReadConnector getReadConnector();
+  
+  void setDelegate(IReadConnector readConnector);
+    
+  // will return one of the convert enum values at the top.
+  int getConvertMode();
 
 }

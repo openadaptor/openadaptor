@@ -107,4 +107,14 @@ public interface IReadConnector {
    * @see IDataProcessor#reset(Object)
    */
   Object getReaderContext();
+  
+  /**
+   * Allows the caller to provide to provide some context that may be used to construct
+   * or enrich the query the reader uses to retrieve data from the underlying resource. 
+   * This could be used by for example by polling readers or polling strategies that wrap 
+   * the protocol specific readers.
+   * 
+   * @param data that can be used by the connector to construct queries or enrich returned data.
+   */
+  void setReaderConext(Object context);
 }

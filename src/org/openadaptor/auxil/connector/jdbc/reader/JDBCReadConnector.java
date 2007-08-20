@@ -36,7 +36,7 @@ import java.sql.Statement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.IPollingStrategy;
+import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingStrategy;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.util.JDBCUtil;
@@ -155,7 +155,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       Object data = null;
       
       /* Converts all records in the result set or only one, depending on strategy settings */
-      if(getPollingStrategy().getConvertMode() == IPollingStrategy.CONVERT_ALL){
+      if(getDelegate().getConvertMode() == IPollingReadConnector.CONVERT_ALL){
         data = convertAll(rs);
         rs = null;
         dry = true;

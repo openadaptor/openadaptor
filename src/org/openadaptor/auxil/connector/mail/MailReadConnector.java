@@ -437,6 +437,9 @@ public class MailReadConnector extends Component implements IReadConnector {
   public Object getReaderContext() {
     return null;
   }
+  
+  public void setReaderConext(Object context) {
+  }
 
   /**
    * Retrieves any "new" (ie. any eligible to be processed) messages from the InBox. We

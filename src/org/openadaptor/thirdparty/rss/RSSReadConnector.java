@@ -159,6 +159,9 @@ public class RSSReadConnector extends Component implements IReadConnector {
   public Object getReaderContext() {
     return null;
   }
+  
+  public void setReaderConext(Object context) {
+  }
 
   public boolean isDry() {
     return urls.isEmpty();

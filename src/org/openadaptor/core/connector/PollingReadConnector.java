@@ -304,6 +304,10 @@ public class PollingReadConnector extends Component implements IReadConnector, I
   public final Object getReaderContext() {
     return delegate.getReaderContext();
   }
+  
+  public void setReaderConext(Object context) {
+    delegate.setReaderConext(context);
+  }
 
   public final Object getResource() {
     if (delegate instanceof ITransactional) {

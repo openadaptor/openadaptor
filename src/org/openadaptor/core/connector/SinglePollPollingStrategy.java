@@ -29,14 +29,13 @@ package org.openadaptor.core.connector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IPollingReadConnector;
-import org.openadaptor.core.IPollingStrategy;
 
 /**
  * Performs a single poll.
  * 
  * @author Kris Lachor
  */
-public class SinglePollPollingStrategy extends AbstractPollingStrategy {
+public class SinglePollPollingStrategy extends AbstractPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(SinglePollPollingStrategy.class);
 
@@ -61,7 +60,7 @@ public class SinglePollPollingStrategy extends AbstractPollingStrategy {
 
   //one shot needs to get everything with one call
   public int getConvertMode() {
-    return IPollingStrategy.CONVERT_ALL;
+    return IPollingReadConnector.CONVERT_ALL;
   }
   
   // need to have a validate method there that'd check if the delegate has been set up.
