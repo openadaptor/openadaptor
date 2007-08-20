@@ -60,4 +60,8 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
       exceptions.add(new ValidationException("search property not set", this));
     }
   }
+
+  public void setReaderConext(Object context) {
+  }
+  
 }
