@@ -73,10 +73,21 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   
   private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
-  protected Object[] convertAll(ResultSet rs) throws SQLException {
-    return resultSetConverter.convertAll(rs);
+  /**
+   * Constructor.
+   */
+  public DBEventDrivenPollingReadConnector() {
+    super();
   }
   
+  /**
+   * Constructor.
+   * @param id the id
+   */
+  public DBEventDrivenPollingReadConnector(String id) {
+    super(id);
+  }
+
   /**
    * sets the stored procedure used to poll for data events
    */
@@ -154,7 +165,7 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
     ResultSet rs = null;
     try {
       rs = pollStatement.executeQuery();
-      Object [] data = convertAll(rs);
+      Object [] data = resultSetConverter.convertAll(rs);
       if(data == null || data.length == 0){
         return null;
       }

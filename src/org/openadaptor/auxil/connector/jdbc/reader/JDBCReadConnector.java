@@ -32,12 +32,18 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
+import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 
 /**
@@ -49,15 +55,23 @@ import org.openadaptor.util.JDBCUtil;
  * with pollLimit and pollInterval parameters set.
  * The legacy JDBCEventReadConnector is equivalent to this connector with the DBEventDrivenPollingStrategy. 
  * 
+ * Associates a ResultSetConvertor with the connector, by default this is DEFAULT_CONVERTOR.
+ * 
  * @author Eddy Higgins, Kris Lachor
  */
-public class JDBCReadConnector extends AbstractJDBCReadConnector {
+public class JDBCReadConnector extends Component implements IReadConnector, ITransactional {
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
   
   private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
+  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+  
+  private JDBCConnection jdbcConnection;
+  
+  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
+  
   protected String sql;
   
   protected Statement statement = null;
@@ -101,19 +115,20 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
     this.callableStatement = callableStatement;
   }
 
+  
   /**
    * Set up connection to database
    */
   public void connect() {
-    super.connect();
     try {
-      statement = createStatement();
+      jdbcConnection.connect();
+      statement =  jdbcConnection.getConnection().createStatement();
     } catch (SQLException e) {
       handleException(e, "failed to create JDBC statement");
     }
     dry = false;
   }
-
+  
   /**
    * Disconnect JDBC connection
    *
@@ -121,7 +136,11 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
    */
   public void disconnect() throws ComponentException {
     JDBCUtil.closeNoThrow(statement);
-    super.disconnect();
+    try {
+      jdbcConnection.disconnect();
+    } catch (SQLException e) {
+      handleException(e, "Failed to disconnect JDBC connection");
+    }
   }
 
   /**
@@ -156,7 +175,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
       Object [] data = null;
       
       /* Converts all records in the result set or only a certain subset, depending on batchSize value */
-      data = convert(rs, batchSize);          
+      data = resultSetConverter.convert(rs, batchSize);          
       if(data.length==0 ||  batchSize==IResultSetConverter.CONVERT_ALL){
         JDBCUtil.closeNoThrow(rs);
         rs = null;
@@ -188,7 +207,8 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
     String sql = buffer.append(")}").toString();
     
     /* create a call and set in parameters */
-    CallableStatement callableStatement = prepareCall(sql);
+    CallableStatement callableStatement = jdbcConnection.getConnection().prepareCall(sql);
+    
     String loggedSql = sql;
     for (int i = EVENT_RS_PARAM1; i < cols; i++) {
       String stringVal= (String)((row.get(i)==null)? null: row.get(i));      
@@ -212,7 +232,7 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
    */
   public void setReaderConext(Object context) {
     if(! (context instanceof IOrderedMap)){
-      super.setReaderConext(context);
+      setReaderConext(context);
       return;
     }
     IOrderedMap event = (IOrderedMap) context;
@@ -236,6 +256,37 @@ public class JDBCReadConnector extends AbstractJDBCReadConnector {
    */
   public void setBatchSize(int batchSize) {
     this.batchSize = batchSize;
+  }
+  
+  public void setJdbcConnection(JDBCConnection connection) {
+    jdbcConnection = connection;
+  }
+
+  public void setResultSetConverter(AbstractResultSetConverter resultSetConverter) {
+    this.resultSetConverter = resultSetConverter;
+  }
+  
+  protected void handleException(SQLException e, String message) {
+    jdbcConnection.handleException(e, message);
+  }
+
+  protected void handleException(SQLException e) {
+    jdbcConnection.handleException(e, null);
+  }
+  
+  public Object getResource() {
+    if (jdbcConnection.isTransacted()) {
+      return jdbcConnection.getTransactionalResource();
+    } else {
+      return null;
+    }
+  }
+  
+  public Object getReaderContext() {
+    return null;
+  }
+
+  public void validate(List exceptions) {
   }
 
 }

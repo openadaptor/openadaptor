@@ -38,10 +38,6 @@ import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 
 /**
  * Converts a result set to XML.
- * 
- * @deprecated instead of using this deticated result set -> XML converter, 
- *             use a ResultSetToOrderedMapConverter and then OrderedMapToXmlConvertor 
- *             (result set -> ordered map -> XML). 
  */
 public class ResultSetToXMLConverter extends AbstractResultSetConverter {
 

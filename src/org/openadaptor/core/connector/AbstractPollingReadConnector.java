@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
@@ -42,7 +43,7 @@ import org.openadaptor.core.transaction.ITransactional;
  * 
  * @author Kris Lachor
  */
-public abstract class AbstractPollingReadConnector implements IPollingReadConnector {
+public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(AbstractPollingReadConnector.class);
   
@@ -55,7 +56,23 @@ public abstract class AbstractPollingReadConnector implements IPollingReadConnec
   protected int limit = 1;
   
   private int count;
-  
+
+  /**
+   * Constructor.
+   */
+  public AbstractPollingReadConnector() {
+    super();
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param id the id.
+   */
+  public AbstractPollingReadConnector(String id) {
+    super(id);
+  }
+
   public IReadConnector getReadConnector() {
     return this.delegate;
   }
