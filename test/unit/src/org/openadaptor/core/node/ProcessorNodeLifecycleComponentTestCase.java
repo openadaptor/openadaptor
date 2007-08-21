@@ -24,48 +24,20 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-package org.openadaptor.core;
+package org.openadaptor.core.node;
 
-import org.jmock.MockObjectTestCase;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
- * Created Aug 16, 2007 by oa3 Core Team
+ * Created Aug 20, 2007 by oa3 Core Team
  */
 
 /**
- * Abstract test class that should be extended by test classes for IMessageProcessor implementations.
+ * Concrete test of ProcessorNode as an ILifecycleComponent implementation.
  */
-public abstract class AbstractTestIMessageProcessor extends MockObjectTestCase {
-
-  protected IMessageProcessor testMessageProcessor;
-
-  protected void setUp() throws Exception {
-    super.setUp();
-    testMessageProcessor = instantiateTestMessageProcessor();
+public class ProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
+  protected ILifecycleComponent instantiateTestLifecycleComponent() {
+    return new ProcessorNode("ProcessorNode as ILifecycle test");
   }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testMessageProcessor = null;
-  }
-
-  /**
-   * Instantiate a test object. Basic assumption here is the component is well enough
-   * configured that "process" can be  invoked on it.
-   *
-   * @return IMessageProcessor  The component being tested.
-   */
-  protected abstract IMessageProcessor instantiateTestMessageProcessor();
-
-  /**
-   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
-   */
-  public void testProcess() {
-    Message message = new Message(new Object[] {}, null, null);
-    Response response = testMessageProcessor.process(message);
-    assertTrue("Expected a real response object", response != null);
-  }
-
-
 }

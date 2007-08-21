@@ -26,11 +26,11 @@
 */
 package org.openadaptor.core.node;
 
-import org.openadaptor.core.*;
 import org.jmock.Mock;
-
-import java.util.List;
-import java.util.ArrayList;
+import org.openadaptor.core.AbstractTestIMessageProcessor;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -38,13 +38,10 @@ import java.util.ArrayList;
  */
 
 /**
- * Concrete test case for a Node as an IMessageProcessor.
+ * Abstract test case for a Node as an IMessageProcessor.
  */
-public class NodeTestCase extends AbstractTestIMessageProcessor {
+abstract public class AbstractTestNodeMessageProcessor extends AbstractTestIMessageProcessor {
 
-  protected IMessageProcessor instantiateTestMessageProcessor() {
-    return new Node("test");
-  }
 
   /**
    * text with a Mock Processor configured to produce a specific result.
@@ -67,24 +64,4 @@ public class NodeTestCase extends AbstractTestIMessageProcessor {
     assertTrue("Response value wasn't as expected", response.getCollatedOutput()[0] == returnOne);
   }
 
-  // Validation Tests. Not really IMessageProcessor's responsibility but I want some tests somewhere.
-
-  public void testValidation() {
-    List exceptions = new ArrayList();
-    ((Node)testMessageProcessor).validate(exceptions);
-    assertTrue("Unexpected exceptions", exceptions.size() == 0);
-  }
-
-  public void testValidationWithProcessor() {
-    Mock testProcessorMock = mock(IDataProcessor.class);
-    IDataProcessor testProcessor = (IDataProcessor)testProcessorMock.proxy();
-
-    List exceptions = new ArrayList();
-    testProcessorMock.expects(once()).method("validate").with(eq(exceptions));
-
-    ((Node)testMessageProcessor).setProcessor(testProcessor);
-    ((Node)testMessageProcessor).validate(exceptions);
-
-    assertTrue("Unexpected exceptions", exceptions.size() == 0);
-  }
 }

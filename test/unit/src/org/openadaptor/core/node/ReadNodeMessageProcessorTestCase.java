@@ -24,48 +24,36 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-package org.openadaptor.core;
+package org.openadaptor.core.node;
 
-import org.jmock.MockObjectTestCase;
+import org.jmock.Mock;
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
  * Created Aug 16, 2007 by oa3 Core Team
  */
 
-/**
- * Abstract test class that should be extended by test classes for IMessageProcessor implementations.
- */
-public abstract class AbstractTestIMessageProcessor extends MockObjectTestCase {
+public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
 
-  protected IMessageProcessor testMessageProcessor;
-
-  protected void setUp() throws Exception {
-    super.setUp();
-    testMessageProcessor = instantiateTestMessageProcessor();
+  protected IMessageProcessor instantiateTestMessageProcessor() {
+    return new ReadNode("test");
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testMessageProcessor = null;
-  }
+  /** Ensure that a response object is returned when a connector is configured */
+  public void testProcessWithReadConnector() {
+    Mock readConnectorMock = mock(IReadConnector.class);
+    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
 
-  /**
-   * Instantiate a test object. Basic assumption here is the component is well enough
-   * configured that "process" can be  invoked on it.
-   *
-   * @return IMessageProcessor  The component being tested.
-   */
-  protected abstract IMessageProcessor instantiateTestMessageProcessor();
+    ((ReadNode) testMessageProcessor).setConnector(readConnector);
 
-  /**
-   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
-   */
-  public void testProcess() {
-    Message message = new Message(new Object[] {}, null, null);
+    Message message = new Message(new Object[]{}, null, null);
     Response response = testMessageProcessor.process(message);
-    assertTrue("Expected a real response object", response != null);
-  }
 
+    assertTrue("Expected a Response", response != null);
+  }
 
 }

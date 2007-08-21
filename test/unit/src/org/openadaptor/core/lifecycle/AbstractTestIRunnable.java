@@ -24,48 +24,19 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-package org.openadaptor.core;
+package org.openadaptor.core.lifecycle;
 
 import org.jmock.MockObjectTestCase;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
- * Created Aug 16, 2007 by oa3 Core Team
+ * Created Aug 20, 2007 by oa3 Core Team
  */
 
-/**
- * Abstract test class that should be extended by test classes for IMessageProcessor implementations.
- */
-public abstract class AbstractTestIMessageProcessor extends MockObjectTestCase {
+public abstract class AbstractTestIRunnable extends MockObjectTestCase {
+  protected IRunnable testRunnable;
 
-  protected IMessageProcessor testMessageProcessor;
+  protected abstract IRunnable instantiateTestRunnable();
 
-  protected void setUp() throws Exception {
-    super.setUp();
-    testMessageProcessor = instantiateTestMessageProcessor();
-  }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testMessageProcessor = null;
-  }
-
-  /**
-   * Instantiate a test object. Basic assumption here is the component is well enough
-   * configured that "process" can be  invoked on it.
-   *
-   * @return IMessageProcessor  The component being tested.
-   */
-  protected abstract IMessageProcessor instantiateTestMessageProcessor();
-
-  /**
-   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
-   */
-  public void testProcess() {
-    Message message = new Message(new Object[] {}, null, null);
-    Response response = testMessageProcessor.process(message);
-    assertTrue("Expected a real response object", response != null);
-  }
-
-
+  public abstract void testRun();
 }
