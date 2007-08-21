@@ -43,6 +43,7 @@ import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.node.Node;
 
 
+
 /**
  * The default implementation of {@link IRoutingMap}.
  * 
@@ -78,11 +79,18 @@ public class RoutingMap implements IRoutingMap {
 	private Map discardMap = new HashMap();
 
 	private Map exceptionMap = new HashMap();
-	
+    
 	private IAutoboxer autoboxer;
     
-    private Object boxedExceptionProcessor = null;
+    private IMessageProcessor entryExceptionProcessor = null;
 	
+    /**
+     * A set of message processors that can participate in exception handling.
+     * Exceptions thrown by any of these processors will not be handled regardless
+     * of the exceptionProcessor being set up. 
+     */
+    private Set exceptionProcessors = new HashSet();
+    
 	public RoutingMap(final IAutoboxer autoboxer) {
 		this.autoboxer = autoboxer;
 	}
@@ -186,6 +194,27 @@ public class RoutingMap implements IRoutingMap {
 		return l != null ? l : Collections.EMPTY_LIST;
 	}
 
+    private void findExceptionProcessors(){
+       if(this.entryExceptionProcessor != null){
+         exceptionProcessors.add(entryExceptionProcessor);
+         IMessageProcessor exceptionProcessor = (IMessageProcessor) entryExceptionProcessor;
+         findExceptionProcessorsRecurs(exceptionProcessor, exceptionProcessors);
+       }
+    }
+    
+    private void findExceptionProcessorsRecurs(IMessageProcessor exceptionProcessor, Set exceptionProcessors){
+      List destinations = getProcessDestinations(exceptionProcessor);
+      if(destinations != null && !destinations.isEmpty()){
+        Iterator it = destinations.iterator();
+        while(it.hasNext()){
+          IMessageProcessor nextExceptionProcessor = ((IMessageProcessor) it.next());
+          exceptionProcessors.add(nextExceptionProcessor);
+          /* Recursion */
+          findExceptionProcessorsRecurs(nextExceptionProcessor, exceptionProcessors);
+        }
+      }
+    }
+    
     /**
      * Gets destinations (a list of message processors) for a given processor and exception.
      * 
@@ -193,12 +222,21 @@ public class RoutingMap implements IRoutingMap {
      */
 	public List getExceptionDestinations(IMessageProcessor processor, Throwable exception) {
 		OrderedExceptionToProcessorsMap map = (OrderedExceptionToProcessorsMap) exceptionMap.get(processor);
-		
-        /* Exceptions thrown from the exceptionProcessor will not be processed */
-        if(processor.equals(this.boxedExceptionProcessor)){
-            return Collections.EMPTY_LIST;
-        }
         
+        /* 
+         * Exceptions thrown from any of the nodes that can participate in exception handling
+         * won't be handled. 
+         */   
+        if( entryExceptionProcessor!=null ){
+          if(exceptionProcessors.isEmpty()){
+            findExceptionProcessors();
+          }
+          if(exceptionProcessors.contains(processor)){
+            return Collections.EMPTY_LIST;
+          }
+        }
+       
+      
         if (map == null ) {
 			map = (OrderedExceptionToProcessorsMap) exceptionMap.get(DEFAULT_KEY);
 		}
@@ -217,7 +255,7 @@ public class RoutingMap implements IRoutingMap {
      * @param processor a processor
      * @return boxed processor if any can be found
      */
-    protected Object getIfAlreadyAutoboxed(Object processor){
+    protected IMessageProcessor getIfAlreadyAutoboxed(Object processor){
       Object boxed = null;
       Iterator ite = processMap.keySet().iterator();
       while(ite.hasNext()){
@@ -229,7 +267,7 @@ public class RoutingMap implements IRoutingMap {
            break;
         }
       }
-      return boxed;  
+      return (IMessageProcessor) boxed;  
     }
 
 	/**
@@ -338,8 +376,8 @@ public class RoutingMap implements IRoutingMap {
     } //ExceptionMap
 
 
-    public void setBoxedExceptionProcessor(Object boxedExceptionProcessor) {
-      this.boxedExceptionProcessor = boxedExceptionProcessor;
+    public void setBoxedExceptionProcessor(IMessageProcessor boxedExceptionProcessor) {
+      this.entryExceptionProcessor = boxedExceptionProcessor;
     }
 
  

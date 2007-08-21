@@ -36,9 +36,7 @@ import java.util.Map;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.IExceptionHandler;
 import org.openadaptor.core.exception.MessageException;
-import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.node.Node;
-
 
 /**
  * An {@link IMessageProcessor} implementation that uses an {@link IRoutingMap} to
@@ -49,9 +47,7 @@ import org.openadaptor.core.node.Node;
  */
 public class Router extends AbstractRouter implements IMessageProcessor { 
 
-
-  
-  private static final String DEFAULT_EXCEPTION_CLASSNAME=Exception.class.getName();
+  private static final String DEFAULT_EXCEPTION_CLASSNAME = Exception.class.getName();
 
   /**
    * This contains the list of exceptions for which an ExceptionHandler,
@@ -191,17 +187,13 @@ public class Router extends AbstractRouter implements IMessageProcessor {
      * Autobox but first check if it hasn't already been boxed in 
      * the processMap.
      */
-    Object boxed = routingMap.getIfAlreadyAutoboxed(exceptionProcessor);
+    IMessageProcessor boxed = routingMap.getIfAlreadyAutoboxed(exceptionProcessor);
     if(null == boxed){
-       boxed = autoboxer.autobox(exceptionProcessor);
+       boxed = (IMessageProcessor) autoboxer.autobox(exceptionProcessor);
     }
     routingMap.setBoxedExceptionProcessor(boxed);
-    if (!(boxed instanceof IMessageProcessor)) {
-      throw new RuntimeException("exception processor must be an instance of IMessageProcessor");
-      //todo - do we have to do this? it can also be a read or write connector or a data processor 
-    }
     
-    /* Set exceptionMap - check if a custom map was defined on the ExceptionHandler. */
+    /* Set exceptionMap - check if a custom map was defined on the IExceptionHandler. */
     if( exceptionProcessor instanceof IExceptionHandler ){
       IExceptionHandler exceptionHandler = (IExceptionHandler) exceptionProcessor;
       Map exceptionMap = exceptionHandler.getExceptionMap();

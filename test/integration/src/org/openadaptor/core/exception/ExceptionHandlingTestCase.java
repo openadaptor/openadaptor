@@ -117,23 +117,23 @@ public class ExceptionHandlingTestCase extends TestCase {
     assertTrue(eHandler.counter == 1);
   }
   
-//  /**
-//   * Same as testNoEndlessExceptionThrowingLoop but uses an the exception
-//   * handler made up of multiple rather than a single node.
-//   */
-//  public void testNoEndlessExceptionThrowingLoop3(){
-//    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
-//    //normal flow
-//    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
-//    //exception handling flow
-//    processMap.put(eHandler, testComponent.new ExceptionThrowingWriteConnector());
-//    
-//    router.setProcessMap(processMap);
-//    assertTrue(eHandler.counter == 0);
-//    router.setExceptionProcessor(eHandler);
-//    adaptor.run();
-//    assertTrue(eHandler.counter == 1);
-//  }
+  /**
+   * Same as testNoEndlessExceptionThrowingLoop but uses an the exception
+   * handler made up of multiple rather than a single node.
+   */
+  public void testNoEndlessExceptionThrowingLoop3(){
+    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
+    /* normal flow */
+    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    /* exception handling flow */
+    processMap.put(eHandler, testComponent.new ExceptionThrowingWriteConnector());
+    
+    router.setProcessMap(processMap);
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    adaptor.run();
+    assertTrue(eHandler.counter == 1);
+  }
   
   
   /**

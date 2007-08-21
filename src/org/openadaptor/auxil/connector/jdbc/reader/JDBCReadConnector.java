@@ -47,7 +47,7 @@ import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 
 /**
- * Generic JDBC polling read connector created to replace:
+ * Generic JDBC polling read connector that replaced:
  * {@link JDBCPollConnector}, {@link JDBCReadConnector}, {@link JDBCEventReadConnector}.
  * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingStrategy 
  * with no parameters.
