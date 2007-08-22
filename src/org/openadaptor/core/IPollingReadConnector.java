@@ -30,8 +30,8 @@ package org.openadaptor.core;
 import org.openadaptor.core.IReadConnector;
 
 /*
-* Interface for polling strategies. A polling strategy will define an algorithm 
-* for polling the underlying resources by read connectors. The simplest strategy might be for
+* Interface for polling strategies. A polling read connector will define an algorithm 
+* for polling the underlying resources by read connectors. The simplest read connector might be for
 * the read connector to execute one call for data and exit, a more complex one might involve
 * multimple calls with a specified time interval in between, with the interval perhaps 
 * different for when the previous call returned data and when it did not return.
@@ -43,16 +43,7 @@ import org.openadaptor.core.IReadConnector;
  * @author Kris Lachor
  */
 public interface IPollingReadConnector extends IReadConnector {
-  
-  //
-  // might need a variable (enum) that states if we need the all result set in one call, 
-  // only one row - or perhaps something custom
-  //
-  int CONVERT_NEXT_ONLY = 0;
-  int CONVERT_ALL = 1;
-  int CONVERT_CUSTOM = 2;
-  
-  
+    
   /**
    * @return the underlying polling read connector.
    */
@@ -63,11 +54,5 @@ public interface IPollingReadConnector extends IReadConnector {
    * @param readConnector
    */
   void setDelegate(IReadConnector readConnector);
-    
-  /**
-   * @return one of the conversion modes.
-   * @todo this is specific to JDBC and needs to be implemented in the result set converter instead 
-   */
-  int getConvertMode();
 
 }

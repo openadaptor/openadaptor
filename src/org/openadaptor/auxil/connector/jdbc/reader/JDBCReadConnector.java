@@ -49,11 +49,11 @@ import org.openadaptor.util.JDBCUtil;
 /**
  * Generic JDBC polling read connector that replaced:
  * {@link JDBCPollConnector}, {@link JDBCReadConnector}, {@link JDBCEventReadConnector}.
- * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingStrategy 
+ * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
  * with no parameters.
- * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingStrategy 
+ * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
  * with pollLimit and pollInterval parameters set.
- * The legacy JDBCEventReadConnector is equivalent to this connector with the DBEventDrivenPollingStrategy. 
+ * The legacy JDBCEventReadConnector is equivalent to this connector with the DBEventDrivenPollingReadConnector. 
  * 
  * Associates a ResultSetConvertor with the connector, by default this is DEFAULT_CONVERTOR.
  * 

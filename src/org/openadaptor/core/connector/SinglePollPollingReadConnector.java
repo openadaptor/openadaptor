@@ -26,18 +26,12 @@
  */
 package org.openadaptor.core.connector;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.IPollingReadConnector;
-
 /**
  * Performs a single poll.
  * 
  * @author Kris Lachor
  */
-public class SinglePollPollingStrategy extends AbstractPollingReadConnector {
-
-  private static final Log log = LogFactory.getLog(SinglePollPollingStrategy.class);
+public class SinglePollPollingReadConnector extends AbstractPollingReadConnector {
 
   boolean executed = false;
   
@@ -47,23 +41,8 @@ public class SinglePollPollingStrategy extends AbstractPollingReadConnector {
     return getReadConnector().next(timeoutMs);
   }
   
-  /**
-   * @todo this isn't necessarily the best method to let the caller 
-   *   know.. this could perhaps be renamed to hasStrategyFinished() or something,
-   *   for the meaning of isDry() here and in underlying connector could be different 
-   *   and hence confusing.
-   */
   public boolean isDry(){
     return executed && super.isDry();
   }
-
-
-  //one shot needs to get everything with one call
-  public int getConvertMode() {
-    return IPollingReadConnector.CONVERT_ALL;
-  }
-  
-  // need to have a validate method there that'd check if the delegate has been set up.
-
   
 }

@@ -40,7 +40,7 @@ import org.openadaptor.core.exception.ConnectionException;
 /**
  * Unit tests for {@link JDBCReadConnector}. 
  * These tests verify the  {@link JDBCReadConnector} combined with the 
- * {@LoopingPollingStrategy} is fully compatible with {@link OldJDBCReadConnector},
+ * {@LoopingPollingReadConnector} is fully compatible with {@link OldJDBCReadConnector},
  * {@link JDBCPollConnector} and {@link JDBCEventReadConnector} which
  * it is replacing.
  * 
@@ -221,7 +221,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * Ported from the legacy JDBCEventReadConnector unit tests.
    * Stored procedure that polls returns nothing (no new events).
    */
-  public void testNext4() {
+  public void testNextEventDriven1() {
     DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
     pollingReadConnector.setEventServiceID("10");
     pollingReadConnector.setEventTypeID("20");
@@ -251,7 +251,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * Stored procesure that polls returns one new event. Query constructed based on this
    * event returns an empty result set.
    */
-  public void testNext5(){
+  public void testNextEventDriven2(){
     DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
     pollingReadConnector.setEventServiceID("10");
     pollingReadConnector.setEventTypeID("20");
@@ -290,7 +290,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
    * Stored procesure that polls returns one new event. Query constructed based on this
    * event returns a result set with one row.
    */
-  public void testNext6() {
+  public void testNextEventDriven3() {
     DBEventDrivenPollingReadConnector pollingReadConnector = new DBEventDrivenPollingReadConnector();
     pollingReadConnector.setEventServiceID("10");
     pollingReadConnector.setEventTypeID("20");
@@ -334,7 +334,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   }
   
   private void connectDBEventDrivenConnector(Mock mockStatement, IReadConnector readConnector){
-    /* Callable statement for the pollingStrategy */
+    /* Callable statement for the pollingReadConnector */
     mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
     
     /* 'Plain' statement for the underlying connector */

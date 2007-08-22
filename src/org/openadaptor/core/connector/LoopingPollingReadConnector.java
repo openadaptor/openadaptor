@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A polling strategy that repeatedly calls to underlying read connector. 
- * The strategy allows for these parameters:
+ * A polling read connector that repeatedly calls to underlying read connector. 
+ * It allows for these parameters:
  * 
  * interval - interval between two subsequent calls (in milliseconds)
  * 
@@ -101,7 +101,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   
   private void calculateReconnectTime() {
     reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
-    log.info("Looping polling strategy: next poll time = " + reconnectTime.toString());
+    log.info("next poll time = " + reconnectTime.toString());
   }
   
 //  /**

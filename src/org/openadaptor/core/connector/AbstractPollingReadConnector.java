@@ -142,9 +142,9 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
 
-  public int getConvertMode() {
-    return IPollingReadConnector.CONVERT_NEXT_ONLY;
-  }
+//  public int getConvertMode() {
+//    return IPollingReadConnector.CONVERT_NEXT_ONLY;
+//  }
 
   public void disconnect() {
     log.debug("Forwarding to the delegate.");

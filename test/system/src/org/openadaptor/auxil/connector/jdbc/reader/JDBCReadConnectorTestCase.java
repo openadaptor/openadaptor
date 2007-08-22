@@ -35,7 +35,7 @@ import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrdered
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.LoopingPollingReadConnector;
-import org.openadaptor.core.connector.SinglePollPollingStrategy;
+import org.openadaptor.core.connector.SinglePollPollingReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
 import org.openadaptor.util.TestComponent;
@@ -44,7 +44,7 @@ import org.openadaptor.util.TestComponent;
 /**
  * System tests for {@link JDBCReadConnector} that uses different polling
  * strategies:
- * {@link SinglePollPollingStrategy}
+ * {@link SinglePollPollingReadConnector}
  * {@link LoopingPollingReadConnector}
  * 
  * Uses a test table with two columns and two rows.
@@ -60,7 +60,8 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
   protected static String COL2 = "COL2";
   
   private static String SCHEMA = "CREATE MEMORY TABLE OA_TEST(" + COL1 + " CHAR(32)," + COL2 + " CHAR(32)); "
-    + "INSERT INTO OA_TEST VALUES ('foo', 'bar'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2')";
+    + "INSERT INTO OA_TEST VALUES ('foo1', 'bar1'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2');"
+    + "INSERT INTO OA_TEST VALUES ('foo3', 'bar3')";
   
   protected static String SELECT_STMT_1 = "SELECT " + COL1 + ", " +  COL2 + " FROM OA_TEST";
   
@@ -81,11 +82,11 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
   
   /**
    * Runs an adaptor that reads from the test table.
-   * Uses one shot polling strategy. 
+   * Uses one shot polling read connector. 
    * Ensures the writer received two records in one call.
    */
-  public void testOneShotPollingStrategy() throws Exception{
-    IPollingReadConnector pollingReadConnector = new SinglePollPollingStrategy();
+  public void testOneShotPollingReadConnector() throws Exception{
+    IPollingReadConnector pollingReadConnector = new SinglePollPollingReadConnector();
     reader.setBatchSize(0);
     pollingReadConnector.setDelegate(reader);
     processMap.put(pollingReadConnector, writer);
@@ -101,24 +102,72 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     //Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
     Object [] data =  (Object []) writer.dataCollection.get(0);
     
-    assertTrue(data.length == 2);
-    HashMap row1 = (HashMap) data[0];
-    assertNotNull(row1.get(COL1));
-    assertEquals(row1.get(COL1), "foo");
-    assertEquals(row1.get(COL2), "bar");
-    HashMap row2 = (HashMap) data[1];
-    assertNotNull(row2.get(COL1));
-    assertEquals(row2.get(COL1), "foo2");
-    assertEquals(row2.get(COL2), "bar2");
+    assertTrue(data.length == 3);
+    for(int i=0; i<data.length; i++){
+      HashMap row = (HashMap) data[i];
+      String rowNo = new Integer(i+1).toString();
+      assertNotNull(row.get(COL1));
+      assertEquals(row.get(COL1), "foo" + rowNo);
+      assertEquals(row.get(COL2), "bar" + rowNo);
+    }
   }
 
   /**
    * Runs an adaptor that reads from the test table.
-   * Uses looping polling strategy.
+   * Uses looping polling read connector. Doesn't use batches (batch size == 1 elem).
    * Ensures the writer received two records in one call.
    */
-  public void testLoopingPollingStrategy()throws Exception{
+  public void testLoopingPollingReadConnectorBatchOne()throws Exception{
     IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
+    pollingReadConnector.setDelegate(reader);
+    processMap.put(pollingReadConnector, writer);
+    router.setProcessMap(processMap);
+    assertTrue(writer.counter==0);
+    adaptor.run();
+    assertTrue(adaptor.getExitCode()==0);
+    assertTrue(writer.counter==3);
+    assertTrue(writer.dataCollection.size()==3);
+    for(int i=0; i<writer.dataCollection.size(); i++){
+      Map row = (Map)((Object [])writer.dataCollection.get(i))[0];
+      String rowNo = new Integer(i+1).toString();
+      assertNotNull(row.get(COL1));
+      assertEquals(row.get(COL1), "foo" + rowNo);
+      assertEquals(row.get(COL2), "bar" + rowNo);
+    }
+  }
+  
+  /**
+   * Runs an adaptor that reads from the test table.
+   * Uses looping polling read connector. Reads all elements in one batch.
+   */
+  public void testLoopingPollingReadConnectorBatchAll()throws Exception{
+    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
+    reader.setBatchSize(0);
+    pollingReadConnector.setDelegate(reader);
+    processMap.put(pollingReadConnector, writer);
+    router.setProcessMap(processMap);
+    assertTrue(writer.counter==0);
+    adaptor.run();
+    assertTrue(adaptor.getExitCode()==0);
+    assertTrue(writer.counter==1);
+    assertTrue(writer.dataCollection.size()==1);
+    Object [] rows = (Object []) writer.dataCollection.get(0);
+    for(int i=0; i<rows.length; i++){
+      Map row = (Map)rows[i];
+      String rowNo = new Integer(i+1).toString();
+      assertNotNull(row.get(COL1));
+      assertEquals(row.get(COL1), "foo" + rowNo);
+      assertEquals(row.get(COL2), "bar" + rowNo);
+    }
+  }
+  
+  /**
+   * Runs an adaptor that reads from the test table.
+   * Uses looping polling read connector. Reads in batches of two elements.
+   */
+  public void testLoopingPollingReadConnectorBatchTwo()throws Exception{
+    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
+    reader.setBatchSize(2);
     pollingReadConnector.setDelegate(reader);
     processMap.put(pollingReadConnector, writer);
     router.setProcessMap(processMap);
@@ -127,14 +176,20 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==2);
     assertTrue(writer.dataCollection.size()==2);
-    Map row1 = (Map) ((Object []) writer.dataCollection.get(0))[0];
-    assertNotNull(row1.get(COL1));
-    assertEquals(row1.get(COL1), "foo");
-    assertEquals(row1.get(COL2), "bar");
-    Map row2 = (Map) ((Object []) writer.dataCollection.get(1))[0];
-    assertNotNull(row2.get(COL1));
-    assertEquals(row2.get(COL1), "foo2");
-    assertEquals(row2.get(COL2), "bar2");
+    /* First message should contain two records */
+    Object [] firstTwoRows = (Object []) writer.dataCollection.get(0);
+    for(int i=0; i<firstTwoRows.length; i++){
+      Map row = (Map)firstTwoRows[i];
+      String rowNo = new Integer(i+1).toString();
+      assertNotNull(row.get(COL1));
+      assertEquals(row.get(COL1), "foo" + rowNo);
+      assertEquals(row.get(COL2), "bar" + rowNo);
+    }
+    Object [] lastRow = (Object []) writer.dataCollection.get(1);    
+    Map row = (Map)lastRow[0];
+    assertNotNull(row.get(COL1));
+    assertEquals(row.get(COL1), "foo3");
+    assertEquals(row.get(COL2), "bar3");
   }
   
   

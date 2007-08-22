@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-//import org.openadaptor.core.IPollingStrategy;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
@@ -45,7 +44,7 @@ import org.openadaptor.util.ThreadUtil;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /** 
- * A polling strategy that uses a stored proc to poll for database events, these
+ * A polling read connector that uses a stored proc to poll for database events, these
  * events must be in a specific format and this component will convert that into
  * a call to underlying connector to query the data that relates to the event. 
  * By default it calls a predefined stored procedure called OA3_GetNextQueuedEvent. 
@@ -127,7 +126,7 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
     } else {
       //
       // @todo - eventually this sleeping should be removed from here. The same effect could be
-      // achieved by wrapping this strategy in the LoopingPollingStrategy and defining poll
+      // achieved by wrapping this polling connector in the LoopingPollingReadConnector and defining poll
       // interval there
       //
       ThreadUtil.sleepNoThrow(timeoutMs);
@@ -187,10 +186,6 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
-  }
-
-  public int getConvertMode() {
-    return IPollingReadConnector.CONVERT_ALL;
   }
   
 }
