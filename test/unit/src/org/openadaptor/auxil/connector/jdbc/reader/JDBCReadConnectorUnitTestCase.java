@@ -113,18 +113,13 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   
   /**
    * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
-   * Initialises mock interfaces to result a result set with one column and one row.
+   * Initialises mock interfaces to return a result set with one column and one row.
    * One call to the {@link JDBCReadConnector#next(long)} method.
    * Ported from the legacy OldJDBCReadConnectorUnitTestCase.
    */
-  public void testNext() {
-    mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
-    mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
-    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+  public void testNextOneRow1() {
+    setMocksToReturnNumberOfRows(1);
     mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
-    mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
-    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
-    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
     jdbcReadConnector.connect();
     assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
     Object [] arr = (Object []) jdbcReadConnector.next(10);
@@ -137,20 +132,15 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   
   /**
    * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
-   * Initialises mock interfaces to result a result set with one column and one row.
+   * Initialises mock interfaces to return a result set with one column and one row.
    * Two calls to the {@link JDBCReadConnector#next(long)} method.
    * Checks value {@link JDBCReadConnector#isDry()}.
    * Ported from the legacy OldJDBCReadConnectorUnitTestCase.
    */
-  public void testNext2() {
-    mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
-    mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
-    mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+  public void testNextOneRow2() {
+    setMocksToReturnNumberOfRows(1);
     mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
-    mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
     mockResultSet.expects(once()).method("close"); 
-    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
-    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
     jdbcReadConnector.connect();
     assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
     Object [] arr = (Object []) jdbcReadConnector.next(10);
@@ -164,37 +154,67 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
   }
   
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
-//   * Initialises mock interfaces to a result set with one column and one row.
-//   * One call to the {@link JDBCReadConnector#next(long)} method.
-//   * This connector will never become dry.
-//   * Test ported from JDBCPollConnectorUnitTestCase.
-//   */
-//  public void testNext3() {
-////    mockSqlConnection.expects(once()).method("prepareCall").with(eq(sql)).will(returnValue(mockStatement.proxy()));
-//    //JDBCReadConnector would execute the query passing SQL. This has already passed the sql when creating 
-//    //the statement
-//    mockStatement.expects(once()).method("executeQuery").will(returnValue(mockResultSet.proxy()));
-//    mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
-//    
-//    mockResultSet.expects(once()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
-//    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
-//    mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
-//    mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
-//    mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
-//    jdbcReadConnector.connect();
-//    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
-//    Object [] arr = (Object []) jdbcReadConnector.next(10);
-//    assertTrue("Unexpected result type", arr[0] instanceof Map);
-//    assertTrue("Unexpected result count", arr.length == 1);
-//    Map map = (Map) arr[0];
-//    String s = (String) map.get(COL1);
-//    assertTrue("Unexpected result", s.equals(TEST_STRING));
-//    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
-//  
-//  }
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
+   * Initialises mock interfaces to return a result set with one column and three rows.
+   * Batch size is set to 0 (= return all records in one batch).
+   * Checks value {@link JDBCReadConnector#isDry()}.
+   */
+  public void testNextBatchAll() {
+    setMocksToReturnNumberOfRows(3);
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(true), returnValue(true), returnValue(false)));
+    mockResultSet.expects(once()).method("close");  
+    jdbcReadConnector.setBatchSize(0);
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
+    assertTrue("Unexpected result type", arr[0] instanceof Map);
+    assertTrue("Unexpected result count", arr.length == 3);
+    Map map = (Map) arr[0];
+    String s = (String) map.get(COL1);
+    assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
+  }
   
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
+   * Initialises mock interfaces to return a result set with one column and three rows.
+   * Batch size is set to 2 (= next() should return one batch with two elements and the second batch with one 
+   * element). Checks value {@link JDBCReadConnector#isDry()}.
+   */
+  public void testNextBatchTwo() {
+    setMocksToReturnNumberOfRows(3);
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(true), returnValue(true), returnValue(false)));
+    mockResultSet.expects(once()).method("close");  
+    jdbcReadConnector.setBatchSize(2);
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
+    assertTrue("Unexpected result type", arr[0] instanceof Map);
+    assertTrue("Unexpected result count", arr.length == 2);
+    Map map = (Map) arr[0];
+    String s = (String) map.get(COL1);
+    assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    arr = (Object []) jdbcReadConnector.next(10);
+    assertTrue("Unexpected result type", arr[0] instanceof Map);
+    assertTrue("Unexpected result count", arr.length == 1);
+    map = (Map) arr[0];
+    s = (String) map.get(COL1);
+    assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
+  }
+  
+  private void setMocksToReturnNumberOfRows(int numRows){
+    mockStatement.expects(once()).method("executeQuery").with(eq(sql)).will(returnValue(mockResultSet.proxy()));
+    mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
+    mockResultSet.expects(atLeastOnce()).method("getMetaData").will(returnValue(mockResultSetMetaData.proxy()));
+    for(int i=0; i<numRows; i++){
+      mockResultSetMetaData.expects(once()).method("getColumnCount").will(returnValue(1));
+      mockResultSetMetaData.expects(once()).method("getColumnName").will(returnValue(COL1)); 
+      mockResultSet.expects(once()).method("getObject").with(eq(1)).will(returnValue(TEST_STRING)); 
+    }
+  }
   
   /**
    * Test method for {@link JDBCReadConnector#next(long)}.

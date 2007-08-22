@@ -174,16 +174,20 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
       }
       Object [] data = null;
       
-      /* Converts all records in the result set or only a certain subset, depending on batchSize value */
+      /* 
+       * Converts certain number of records from the result set, depending on batchSize value.
+       * If the result set had fewer records than expected, closes the result set and turns 
+       * the connector dry. 
+       */
       data = resultSetConverter.convert(rs, batchSize);          
-      if(data.length==0 ||  batchSize==IResultSetConverter.CONVERT_ALL){
+      if( data.length==0 ||  batchSize==IResultSetConverter.CONVERT_ALL
+          || (batchSize!=IResultSetConverter.CONVERT_ALL && data.length < batchSize)){
         JDBCUtil.closeNoThrow(rs);
         rs = null;
         dry = true;
       }
-      
-      /* wraps data in object array only when necessary */       
-      return  data instanceof Object [] ? (Object[]) data : new Object[] {data};
+        
+      return data;
     }
     catch (SQLException e) {
       handleException(e);
