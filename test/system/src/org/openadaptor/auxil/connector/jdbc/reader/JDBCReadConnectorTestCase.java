@@ -32,23 +32,16 @@ import java.util.Map;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.connector.LoopingPollingReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
 import org.openadaptor.util.TestComponent;
 
-
 /**
- * System tests for {@link JDBCReadConnector} that uses different polling
- * strategies:
- * {@link SinglePollPollingReadConnector}
- * {@link LoopingPollingReadConnector}
- * 
- * Uses a test table with two columns and two rows.
- * 
+ * System tests for {@link JDBCReadConnector}.
+ * Uses a test table with two columns and three rows.
  * Extends {@link JDBCConnectionTestCase} that starts up HSQL with appropriate schema. 
+ * Tests reader with different batch sizes.
  * 
  * @author Kris Lachor
  */
@@ -78,52 +71,14 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     super.setUp();
     adaptor.setMessageProcessor(router);
   }
-  
-//  /**
-//   * Runs an adaptor that reads from the test table.
-//   * Uses {@link LoopingPollingReadConnector} with batch size = 0 (CONVERT_ALL). 
-//   * Ensures the writer received two records in one call.
-//   * 
-//   * commented out as it's essencially the same as 
-//   * testLoopingPollingReadConnectorBatchAll
-//   * 
-//   */
-//  public void testOneShotPollingReadConnector() throws Exception{
-//    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
-//    reader.setBatchSize(0);
-//    pollingReadConnector.setDelegate(reader);
-//    processMap.put(pollingReadConnector, writer);
-//    router.setProcessMap(processMap);
-//    assertTrue(writer.counter==0);
-//    adaptor.run();
-//    assertTrue(adaptor.getExitCode()==0);
-//    assertTrue(writer.counter==1);
-//    assertTrue(writer.dataCollection.size()==1);
-//    
-//    //change in the returned type from next() when converting all rows from 
-//    //the result set 
-//    //Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
-//    Object [] data =  (Object []) writer.dataCollection.get(0);
-//    
-//    assertTrue(data.length == 3);
-//    for(int i=0; i<data.length; i++){
-//      HashMap row = (HashMap) data[i];
-//      String rowNo = new Integer(i+1).toString();
-//      assertNotNull(row.get(COL1));
-//      assertEquals(row.get(COL1), "foo" + rowNo);
-//      assertEquals(row.get(COL2), "bar" + rowNo);
-//    }
-//  }
-
+ 
   /**
    * Runs an adaptor that reads from the test table.
-   * Uses looping polling read connector. Doesn't use batches (batch size == 1 elem).
+   * Doesn't use batches (batch size == 1 elem).
    * Ensures the writer received two records in one call.
    */
   public void testLoopingPollingReadConnectorBatchOne()throws Exception{
-    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
-    pollingReadConnector.setDelegate(reader);
-    processMap.put(pollingReadConnector, writer);
+    processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
     adaptor.run();
@@ -144,16 +99,17 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
    * Uses looping polling read connector. Reads all elements in one batch.
    */
   public void testLoopingPollingReadConnectorBatchAll()throws Exception{
-    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
     reader.setBatchSize(0);
-    pollingReadConnector.setDelegate(reader);
-    processMap.put(pollingReadConnector, writer);
+    processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
     adaptor.run();
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==1);
     assertTrue(writer.dataCollection.size()==1);
+//  //change in the returned type from next() when converting all rows from 
+//  //the result set 
+//  //Object [] rows = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
     Object [] rows = (Object []) writer.dataCollection.get(0);
     for(int i=0; i<rows.length; i++){
       Map row = (Map)rows[i];
@@ -169,10 +125,8 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
    * Uses looping polling read connector. Reads in batches of two elements.
    */
   public void testLoopingPollingReadConnectorBatchTwo()throws Exception{
-    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
     reader.setBatchSize(2);
-    pollingReadConnector.setDelegate(reader);
-    processMap.put(pollingReadConnector, writer);
+    processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
     adaptor.run();

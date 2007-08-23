@@ -30,6 +30,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 import org.quartz.CronExpression;
@@ -59,6 +61,8 @@ import org.quartz.CronTrigger;
  */
 
 public class CronnablePollingReadConnector extends AbstractPollingReadConnector {
+  
+  private static final Log log = LogFactory.getLog(CronnablePollingReadConnector.class);
   
   private boolean forceInitialPoll;
   
@@ -137,17 +141,22 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
     limit = 0;
   }
   
-//  private void initTimes() {
-//    if (startTime == null) {
-//      startTime = new Date();
-//      if (cron != null && !forceInitialPoll) {
-//        startTime = cron.getFireTimeAfter(startTime);
-//      }
-//    }
-//    if (reconnectTime == null) {
-//      reconnectTime = new Date();
-//    }
-//  }
+  protected void initTimes() {
+    if (startTime == null) {
+      startTime = new Date();
+      if (!forceInitialPoll) {
+        startTime = cron.getFireTimeAfter(startTime);
+      }
+    }
+    if (reconnectTime == null) {
+      reconnectTime = new Date();
+    }
+  }
+  
+  protected void calculateReconnectTime() {
+    reconnectTime = cron.getFireTimeAfter(reconnectTime);
+    log.info(getId() + " next poll time = " + reconnectTime.toString());
+  }
   
   /**
    * Checks that the mandatory properties have been set

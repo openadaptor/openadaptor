@@ -48,11 +48,13 @@ public abstract class AbstractPollingReadConnector extends Component implements 
 
   private static final Log log = LogFactory.getLog(AbstractPollingReadConnector.class);
   
+  private static final int DEFAULT_RECONNECT_INTERVAL = 1000;
+  
   IReadConnector delegate;
   
   protected Date reconnectTime;
 
-  private Date startTime;
+  protected Date startTime;
   
   protected int limit = 1;
   
@@ -74,16 +76,16 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     super(id);
   }
 
-  public IReadConnector getReadConnector() {
-    return this.delegate;
-  }
   
-  public void setDelegate(IReadConnector delegate) {
-    this.delegate = delegate;
+  public void connect() {
+    initTimes();
+    delegate.connect();
+    count++;
+    calculateReconnectTime();
   }
+
   
   public Object[] next(long timeoutMs) throws ComponentException {
-
     Date now = new Date();
 
     if (delegate.isDry() && now.after(reconnectTime)) {
@@ -99,7 +101,11 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
   
-  private void initTimes() {
+  /**
+   * Initialises connect and reconnect times in a connector
+   * specific way.
+   */
+  protected void initTimes() {
     if (startTime == null) {
       startTime = new Date();
     }
@@ -108,6 +114,15 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
   
+
+  /**
+   * Calculates reconnect time.
+   */
+  protected void calculateReconnectTime() {
+    reconnectTime = new Date(reconnectTime.getTime() + DEFAULT_RECONNECT_INTERVAL);
+    log.info(getId() + " next poll time = " + reconnectTime.toString());
+  }
+
   private void sleepNoThrow(long timeoutMs) {
     try {
       Thread.sleep(timeoutMs);
@@ -115,13 +130,6 @@ public abstract class AbstractPollingReadConnector extends Component implements 
       /* ignores errors */
     }
   }
-  
-  public void connect() {
-    initTimes();
-    delegate.connect();
-    count++;
-  }
-
   
   public boolean isDry() {
     return delegate.isDry() && limit > 0 && count >= limit;
@@ -174,6 +182,14 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     else{
       return null;
     }
+  }
+
+  public IReadConnector getReadConnector() {
+    return this.delegate;
+  }
+  
+  public void setDelegate(IReadConnector delegate) {
+    this.delegate = delegate;
   }
 
   public IReadConnector getDelegate() {

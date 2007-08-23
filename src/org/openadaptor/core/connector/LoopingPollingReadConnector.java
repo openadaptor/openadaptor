@@ -46,6 +46,20 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   
   private long intervalMs = -1;
   
+  /**
+   * Constructor.
+   */
+  public LoopingPollingReadConnector() {
+    super();
+  }
+
+  /**
+   * Constructor.
+   */
+  public LoopingPollingReadConnector(String id) {
+    super(id);
+  }
+
   public Object[] next(long timeoutMs) {
     Object [] result =  super.next(timeoutMs);
     return result;
@@ -67,6 +81,19 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
    */
   public void setPollIntervalMs(long intervalMs) {
     this.intervalMs = intervalMs;
+  }
+
+  /**
+   * Optional
+   * 
+   * @param interval
+   *          set the adaptor to poll ever X seconds
+   */
+  public void setPollIntervalSecs(final int interval) {
+    if (intervalMs > -1)
+      log.warn("Multiple poll interval property settings detected. " + "[pollIntervalSecs] will take precedence");
+
+    this.intervalMs = interval * 1000;
   }
   
   
@@ -97,7 +124,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   }
 
   
-  private void calculateReconnectTime() {
+  protected void calculateReconnectTime() {
     reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
     log.info("next poll time = " + reconnectTime.toString());
   }

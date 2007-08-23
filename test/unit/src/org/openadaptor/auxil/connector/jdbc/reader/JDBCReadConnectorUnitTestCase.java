@@ -39,10 +39,14 @@ import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * Unit tests for {@link JDBCReadConnector}. 
- * These tests verify the  {@link JDBCReadConnector} combined with the 
- * {@LoopingPollingReadConnector} is fully compatible with {@link OldJDBCReadConnector},
- * {@link JDBCPollConnector} and {@link JDBCEventReadConnector} which
- * it is replacing.
+ * These tests verify this connector, perhaps in a combination with an {@link IPollingReadConnector}
+ * implementation is compatible with the legacy JDBC read connector it has replaced:
+ * {@OldJDBCReadConnector)
+ * {@JDBCPollConnector}
+ * {@JDBCEventReadConnector}
+ * 
+ * Additionally some tests verify new functionality, such as batching, that didn't exist in
+ * any of the legacy connectors.
  * 
  * @author Kris Lachor
  */
