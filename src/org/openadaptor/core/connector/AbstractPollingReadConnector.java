@@ -36,6 +36,7 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -142,10 +143,6 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
 
-//  public int getConvertMode() {
-//    return IPollingReadConnector.CONVERT_NEXT_ONLY;
-//  }
-
   public void disconnect() {
     log.debug("Forwarding to the delegate.");
     this.delegate.disconnect();  
@@ -163,6 +160,10 @@ public abstract class AbstractPollingReadConnector extends Component implements 
 
   public void validate(List exceptions) {
     log.debug("Forwarding to the delegate.");
+    if (delegate == null) {
+      exceptions.add(new ValidationException("[delegate] property not set. " 
+        + "Please supply an instance of " + IReadConnector.class.getName() + " for it", this));
+    }
     this.delegate.validate(exceptions);
   }
 

@@ -71,6 +71,8 @@ import org.quartz.CronTrigger;
  * for cron expression format
  * 
  * @author Fred Perry
+ * @deprecated replaced by more fine grained polling read connectors: {@link LoopingPollingReadConnector},
+ *             {@link CronnablePollingReadConnector}.
  */
 public class PollingReadConnector extends Component implements IReadConnector, ITransactional {
 

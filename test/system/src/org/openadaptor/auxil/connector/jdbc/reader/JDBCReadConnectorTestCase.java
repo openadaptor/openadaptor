@@ -35,7 +35,6 @@ import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrdered
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.LoopingPollingReadConnector;
-import org.openadaptor.core.connector.SinglePollPollingReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
 import org.openadaptor.util.TestComponent;
@@ -80,37 +79,41 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     adaptor.setMessageProcessor(router);
   }
   
-  /**
-   * Runs an adaptor that reads from the test table.
-   * Uses one shot polling read connector. 
-   * Ensures the writer received two records in one call.
-   */
-  public void testOneShotPollingReadConnector() throws Exception{
-    IPollingReadConnector pollingReadConnector = new SinglePollPollingReadConnector();
-    reader.setBatchSize(0);
-    pollingReadConnector.setDelegate(reader);
-    processMap.put(pollingReadConnector, writer);
-    router.setProcessMap(processMap);
-    assertTrue(writer.counter==0);
-    adaptor.run();
-    assertTrue(adaptor.getExitCode()==0);
-    assertTrue(writer.counter==1);
-    assertTrue(writer.dataCollection.size()==1);
-    
-    //change in the returned type from next() when converting all rows from 
-    //the result set 
-    //Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
-    Object [] data =  (Object []) writer.dataCollection.get(0);
-    
-    assertTrue(data.length == 3);
-    for(int i=0; i<data.length; i++){
-      HashMap row = (HashMap) data[i];
-      String rowNo = new Integer(i+1).toString();
-      assertNotNull(row.get(COL1));
-      assertEquals(row.get(COL1), "foo" + rowNo);
-      assertEquals(row.get(COL2), "bar" + rowNo);
-    }
-  }
+//  /**
+//   * Runs an adaptor that reads from the test table.
+//   * Uses {@link LoopingPollingReadConnector} with batch size = 0 (CONVERT_ALL). 
+//   * Ensures the writer received two records in one call.
+//   * 
+//   * commented out as it's essencially the same as 
+//   * testLoopingPollingReadConnectorBatchAll
+//   * 
+//   */
+//  public void testOneShotPollingReadConnector() throws Exception{
+//    IPollingReadConnector pollingReadConnector = new LoopingPollingReadConnector();
+//    reader.setBatchSize(0);
+//    pollingReadConnector.setDelegate(reader);
+//    processMap.put(pollingReadConnector, writer);
+//    router.setProcessMap(processMap);
+//    assertTrue(writer.counter==0);
+//    adaptor.run();
+//    assertTrue(adaptor.getExitCode()==0);
+//    assertTrue(writer.counter==1);
+//    assertTrue(writer.dataCollection.size()==1);
+//    
+//    //change in the returned type from next() when converting all rows from 
+//    //the result set 
+//    //Object [] data = (Object[]) ((Object []) writer.dataCollection.get(0))[0];
+//    Object [] data =  (Object []) writer.dataCollection.get(0);
+//    
+//    assertTrue(data.length == 3);
+//    for(int i=0; i<data.length; i++){
+//      HashMap row = (HashMap) data[i];
+//      String rowNo = new Integer(i+1).toString();
+//      assertNotNull(row.get(COL1));
+//      assertEquals(row.get(COL1), "foo" + rowNo);
+//      assertEquals(row.get(COL2), "bar" + rowNo);
+//    }
+//  }
 
   /**
    * Runs an adaptor that reads from the test table.

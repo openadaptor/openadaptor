@@ -55,10 +55,8 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
     return intervalMs;
   }
 
- 
   public void connect() {
     super.connect();
-//  log.debug(getReadConnector().getId() + " poll count = " + count);
     calculateReconnectTime();
   }
 
@@ -104,32 +102,4 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
     log.info("next poll time = " + reconnectTime.toString());
   }
   
-//  /**
-//   * Checks that the mandatory properties have been set
-//   * 
-//   * @param exceptions
-//   *          list of exceptions that any validation errors will be appended to
-//   */
-//  public void validate(List exceptions) {
-//    if (delegate == null) {
-//      exceptions.add(new ValidationException("[delegate] property not set. " 
-//          + "Please supply an instance of " + IReadConnector.class.getName() + " for it", this));
-//    }
-//
-//    if (cron != null) {
-//      if (intervalMs > -1) {
-//        log.warn("[cronExpression] takes precedence over [pollIntervalX] which will be ignored");
-//      }
-//
-//      if (limit > 0) {
-//        log.warn("[cronExpression] takes precedence over [pollLimit] which will be ignored");
-//      }
-//    }
-//
-//    if (cron == null && forceInitialPoll) {
-//      log.warn("Property [forceInitialPoll] is only applicable when using the [cronExpression]. "
-//          + "It will be ignored");
-//    }
-//  }
-
 }
