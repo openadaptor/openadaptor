@@ -851,11 +851,12 @@ Here is the bean.</p>
 <h2>Step 11</h2>
 <p>This example demonstrates OA exception handling capabilities.</p>
  
-<p>Exception handling refers to adaptor's behaviour when any of its components produces a Java error or a Java exception.
-By default exception handling is disabled and the first exception that occurs will will be logged to the standard log4j logs and won't
-be propagated outside of the OA scope. The adaptor to shut down. The only way to enable exception handling is via the exceptionProcessor property on the Router class.  
-Any valid node, for example a data processor or a write connector, can be set as an exceptionProcessor. Typically 
-though it'll be a simple file writer connector:</p>
+<p>Exception handling refers to adaptor's behaviour when one of its components produces a Java error or a Java exception.
+By default the exception handling is disabled. This means that the first exception that occurs will be logged to the standard log4j logs and will not
+be propagated outside of the OA scope. The adaptor will shut down. 
+To enable exception handling the exceptionProcessor property needs to be set on the Router class.  
+Any valid node, for example a data processor or a write connector, can be used as an exceptionProcessor. Typically 
+though, it'll be a simple file writer connector:</p>
 
 <textarea cols="110" rows="12" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
@@ -872,16 +873,15 @@ though it'll be a simple file writer connector:</p>
 </textarea>    
 
 <p>This set up is staightforward and likely to be sufficient for the majority of adaptors. 
-It will cause all exceptions (instances of java.lang.Exception and its subclasses) thrown in any 
-of the adaptor's nodes to be caught and processed by the node defined here as the ExceptionHandler - a file write connector, which simply means 
-the exception will be written to a log file at the specified location. When that's done the adaptor will continue to work 
+It will cause all exceptions (instances of java.lang.Exception and subclasses) thrown in any 
+of the adaptor nodes to be caught and processed by the node defined here as the ExceptionHandler - a file write connector, which simply means 
+the exception will be written to a log file at the specified location. When that's been done the adaptor will continue to work 
 and to process subsequent data records. The role of the log file is informative only - it can be viewed but 
-does not provide a way of refeeding the erroneous data back into the OA.</p>
+does not provide a way of refeeding the erroneous data back into the adaptor.</p>
 
 
 <p>If for some reason this basic exception handler isn't enough, OA provides more advanced ways of defining an 
 exceptionProcessor:</p>
-
 
 <ul>
 
@@ -893,9 +893,9 @@ handled to avoid a potential indefinite exception catch-rethrow cycle, they'll b
 when the exception handling is disabled (they'll be logged in standard logs, the adaptor will then shut down). </li>
 
 
-<br/>Branching in the exception handler may be useful in situations when information about errors needs to be sent to multiple destinations.
+<br/>Branching in the exception handler may be useful in situations when information about errors is to be sent to multiple destinations.
 For example, it needs to be logged but also an e-mail alert to application owners sent 
-and a warning 'chatted' to the organisation's instant messaging system. <br/><br/>
+and a warning 'chatted' to the organisation's instant messaging system. Let's look at a sample: <br/><br/>
 
 <textarea cols="110" rows="20" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
@@ -998,28 +998,36 @@ other errors will go to OtherExceptionsLog.
 </pre></div>
 
 <br/><br/>
-<li>A special exception handler called the Hospital can be used for writing exceptions to a predefined table in the database. 
+<li>Lastly, an exception handler conventionally called The Hospital can be used to write exceptions to a predefined table in the database. 
+Other than The Hospital respects the format of the table it is writing to, there is nothing special about it. It is using 
+two standard components - ExceptionToOrderedMapConverter and JDBCWriteConnector.
 The Hostpital stores information such as exception class name, originating component name, exception timestamp and 
 - most importantly - the user data which caused the exception. The table can either be used for informative purpose 
 only or as a staging area where the user data can be fixed and then read back to OA for another attempt of processing. 
-Another predefined node - HospitalDBReader can be used to read the data from 'the hospital' back to the OA.
+The HospitalReader can be used to read the data from The Hospital back to the OA. Again, HospitalReader is nothing more 
+than a plain JDBCReadConnector that reads from the hospital schema.
 OA does not provide any ready-to-use tools for editing user data in the hospital at present.
-Although any RDMS can be used for the hospital, HospitalDBWriter and HospitalDBReader connectors assume certain 
+Although any RDMS can be used for the hospital, HospitalWriter and HospitalReader connectors assume certain 
 structure of the table which needs to be created beforehand - SQL scripts are provided for the major RDMS engines.
 
 <br/><br/>
 <textarea cols="150" rows="20" readonly="true">
-  <bean id="Router" class="org.openadaptor.core.router.Router">
-    <property name="processors">
-       ....
-       <entry key-ref="exceptionConvertor" value-ref="dbHospitalWriter"/> 
+   <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <!-- Normal flow -->
+        ...
+      
+        <!-- Exception processors -->
+        <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
+      </map>
     </property>
-    <property name="exceptionProcessor" ref="exceptionConvertor"/>
+    <property name="exceptionProcessor" ref="ExceptionConvertor"/>
   </bean>
   
-   <bean id="exceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
-   <bean id="dbHospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="jdbcConnection"/>
     <property name="statementConverter">
@@ -1027,14 +1035,14 @@ structure of the table which needs to be created beforehand - SQL scripts are pr
         <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
       </bean>
     </property>
-   </bean>
+  </bean>
 </textarea> 
 </li>
 <br/><br/>
 
 
 
-<p>A sample adaptor that shows this behaviour can be run like this:</p>
+<p>There's a sample file that demonstrates this behaviour (look into the file for instructions on setting up the hostpital schema):</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringAdaptor -config step11c.xml 

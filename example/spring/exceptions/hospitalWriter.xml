@@ -16,8 +16,10 @@
   This adaptor does the following...
     
     * reads XML from stdin
+    * validates XML against schema.xsd (located in the same folder as this file)
     * writes correct XML to stdout
-    * writes anything that isn't XML to the hostpital
+    * writes anything that didn't validate to the hostpital
+    * example of a valid XML: <Trade><buySell>1</buySell><price>1</price></Trade>
     
   It is designed to illustrate the basic of the Hospital as an exception handler.
   
@@ -67,7 +69,7 @@
   <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
-    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
     <property name="password" value=""/>
   </bean>

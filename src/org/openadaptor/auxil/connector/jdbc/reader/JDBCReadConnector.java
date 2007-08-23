@@ -43,6 +43,7 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 
@@ -289,8 +290,17 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
   public Object getReaderContext() {
     return null;
   }
-
+  
+  /**
+   * Checks that the mandatory properties have been set
+   * 
+   * @param exceptions list of exceptions that any validation errors will be appended to
+   */
   public void validate(List exceptions) {
+    if (jdbcConnection == null) {
+      exceptions.add(new ValidationException("[jdbcConnection] property not set. " 
+          + "Please supply an instance of " + JDBCConnection.class.getName(), this));   
+    }
   }
 
 }

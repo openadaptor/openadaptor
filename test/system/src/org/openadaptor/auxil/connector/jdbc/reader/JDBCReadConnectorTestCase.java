@@ -160,6 +160,22 @@ public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
     return jdbcReader;
   }
 
+
+  /**
+   * No connection set, should cause a validation exception.
+   */
+  public void testValidation() {
+    JDBCReadConnector jdbcReader = new JDBCReadConnector();
+    ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
+    jdbcReader.setResultSetConverter(resultSetConverter);
+    jdbcReader.setSql("test");
+    processMap.put(jdbcReader, writer);
+    router.setProcessMap(processMap);
+    assertTrue(writer.counter==0);
+    adaptor.run();
+    assertTrue(adaptor.getExitCode()==1);
+  }
+  
   /**
    * @return test table definition.
    */

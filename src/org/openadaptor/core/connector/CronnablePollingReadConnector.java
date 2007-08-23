@@ -165,7 +165,7 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
    *          list of exceptions that any validation errors will be appended to
    */
   public void validate(List exceptions) {
-    if (cron != null) {
+    if (cron == null) {
       exceptions.add(new ValidationException("[cron] property not set. " 
           + "Please supply an instance of " + CronTrigger.class.getName(), this));   
     }

@@ -1,14 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id: step10.xml 696 2007-06-27 13:04:36Z higginse $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step10.xml $
+  $Id: hospitalWriter.xml 760 2007-08-15 11:10:26Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/exceptions/hospitalWriter.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
-  <description><![CDATA[
+   <description><![CDATA[    
+   
   Adaptor for step 11c of the tutorial.
+  
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+   
+  This adaptor does the following...
+    
+    * reads XML from stdin
+    * validates XML against schema.xsd (located in the same folder as this file)
+    * writes correct XML to stdout
+    * writes anything that didn't validate to the hostpital
+    * example of a valid XML: <Trade><buySell>1</buySell><ticker>1</ticker><price>1</price></Trade>
+    
+  It is designed to illustrate the basic of the Hospital as an exception handler.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config hospitalWriter.xml -bean Adaptor
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
+    
+  once running any data read from std will be validated as XML.
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -19,9 +49,9 @@
     <property name="processMap">
       <map>
         <!-- Normal flow -->
-        <entry key-ref="Servlet" value-ref="CustomProcessor"/> 
-        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
-     
+        <entry key-ref="ConsoleReader" value-ref="Validator"/> 
+        <entry key-ref="Validator" value-ref="ConsoleWriter"/> 
+      
         <!-- Exception processors -->
         <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
       
@@ -31,20 +61,20 @@
     <property name="exceptionProcessor" ref="ExceptionConvertor"/>
   </bean>
   
-  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="port" value="9999"/>
-  </bean>
+  <bean id="ConsoleReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
    
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
-  <bean id="CustomProcessor" class="CustomProcessor2">
-    <property name="field" value="/Trade/buySell"/>
-    <property name="map">
-      <map>
-        <entry key="BUY" value="B"/>
-        <entry key="SELL" value="S"/>
-      </map>
-    </property>
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+  
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
   </bean>
   
   <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
