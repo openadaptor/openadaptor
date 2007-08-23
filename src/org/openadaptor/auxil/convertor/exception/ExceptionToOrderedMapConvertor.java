@@ -27,6 +27,8 @@
 
 package org.openadaptor.auxil.convertor.exception;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
@@ -48,6 +50,10 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private static final String EXCEPTION_CLASS = "exceptionClass";
   private static final String COMPONENT = "originatingComponent";
   private static final String DATA = "data";
+  
+  // the format the exception timestamp will have in the ordered map
+  // default to the java.util.Date().toString() value
+  private SimpleDateFormat timestampFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
 
   public ExceptionToOrderedMapConvertor() {
     super();
@@ -55,6 +61,10 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
 
   public ExceptionToOrderedMapConvertor(String id) {
     super(id);
+  }
+  
+  public void setTimestampFormat(String timestampFormat) { 
+	  this.timestampFormat = new SimpleDateFormat(timestampFormat);
   }
 
   /**
@@ -70,7 +80,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       }
       MessageException messageException = (MessageException) record;
       IOrderedMap map = new OrderedHashMap();
-      map.put(TIMESTAMP, new java.util.Date().toString());
+      map.put(TIMESTAMP, timestampFormat.format(new java.util.Date()));
       map.put(EXCEPTION_CLASS, messageException.getException().getClass().getName());
       String component = messageException.getOriginatingModule();
       map.put(COMPONENT, null==component ? "Unknown" : component);

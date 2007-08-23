@@ -60,6 +60,7 @@ public class SQLStatementConverter extends AbstractStatementConverter {
 
   private String sql="";
   private String delimiter="$";
+  private boolean escapeParameters = false;
 
   public void setDelimiter(final String delimiter) {
     this.delimiter = delimiter;
@@ -69,6 +70,9 @@ public class SQLStatementConverter extends AbstractStatementConverter {
     this.sql = sql;
   }
 
+  public void setEscapeParameters(boolean escapeParameters) {
+	  this.escapeParameters = escapeParameters;
+  }
   public void initialise(Connection connection) {
   }
 
@@ -194,11 +198,16 @@ public class SQLStatementConverter extends AbstractStatementConverter {
     while (st.hasMoreTokens()) {
       String w = st.nextToken();
       if (w.equals(matchString)) {
+    	  if (escapeParameters) replacementString = sqlEscape(replacementString);
         result = result + replacementString;
       } else {
         result = result + w;
       }
     }
     return result;
+  }
+  
+  protected static String sqlEscape(String str) {
+	  return str.replaceAll("'", "''");
   }
 }
