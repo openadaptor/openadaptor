@@ -44,7 +44,16 @@ import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.Component;
 
-
+/**
+ * The SQLStatementConvertor is a class to transform an input
+ * SQL template into an executable SQL statement.
+ * It takes a <code>sql</code> and for each <code>deliver</code>
+ * method call on its <code>JDBCWriteConnector</code> it runs
+ * the <code>convert</code> method.
+ * 
+ * This class effectively performs the same function as the
+ * <code>javax.sql.PreparedStatement</code>
+ */
 public class SQLStatementConverter extends AbstractStatementConverter {
 
   private static final Log log = LogFactory.getLog(SQLStatementConverter.class);
@@ -77,6 +86,18 @@ public class SQLStatementConverter extends AbstractStatementConverter {
   }
 
 
+  /**
+   * Converts the <code>sql</code> to a valid statement and
+   * returns as a <code>PreparedStatement</code> on the given
+   * <code>connection</code>.
+   * The values in the given {@link IOrderedMap} <code>om</code>
+   * are substituted where the keys match in <code>sql</code>.
+   * @param om the map containing the keys representing the 
+   * placeholders and the values to be substituted in the sql.
+   * @param connection the <code>Connection</code> to prepare the
+   * statement against.
+   * @return the <code>PreparedStatement</code>
+   */
   public PreparedStatement convert(IOrderedMap om, Connection connection) {
     try {
       String resolvedSql = parseSqlStatement(sql,om);
@@ -155,6 +176,18 @@ public class SQLStatementConverter extends AbstractStatementConverter {
     return buf.toString();
   }
 
+  /**
+   * Replaces all occurrences of the given <code>matchString</code> with
+   * the given <code>replacementString</code> in the given <code>inputString</code>.
+   * Note the <code>matchString</code> must be surrounded by the <code>delimiter</code>
+   * character.
+   * This method makes no effort to perform SQL escaping, nor does it treat
+   * <code>matchString</code> as a regular expression. 
+   * @param inputString
+   * @param matchString
+   * @param replacementString
+   * @return the <code>inputString</code> with the replacements made.
+   */
   protected String replacePlaceHolder(String inputString, String matchString, String replacementString) {
     String result = "";
     StringTokenizer st = new StringTokenizer(inputString, delimiter, true);
