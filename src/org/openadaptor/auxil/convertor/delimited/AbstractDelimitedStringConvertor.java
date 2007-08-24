@@ -30,6 +30,8 @@ package org.openadaptor.auxil.convertor.delimited;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +41,7 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Base Converter for delimited string records
@@ -219,6 +222,41 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   // END implementation of IRecordProcessor interface
 
   /**
+   * Validate the parameters of this bean.
+   * @param exceptions the list of exceptions to append to if validation
+   * of this bean fails due to invalid or inconsistent parameters. 
+   * E.g. both <code>delimiterAlwaysRegExp</code> and 
+   * <code>delimiterAlwaysLiteralString</code> are true.
+   */
+  public void validate(List exceptions) {
+	  String delimiter = this.getDelimiter();
+	  String quoteChar = String.valueOf(this.getQuoteChar());
+	  
+	  if (delimiter == null || delimiter.length() == 0) {
+		  exceptions.add(new ValidationException("The delimiter must be set", this));
+	  }
+	  if (this.isDelimiterAlwaysRegExp() && this.isDelimiterAlwaysLiteralString()) {
+		  exceptions.add(new ValidationException("Cannot set both delimiterAlwaysRegExp and delimiterAlwaysLiteralString to true", this));
+	  }
+	  if (this.treatDelimiterAsRegExp()) {
+		  // interpret the delimiter as a regular expression
+		  try {
+			  Pattern.compile(delimiter);
+			  if (Pattern.matches(delimiter, quoteChar)) {
+				  exceptions.add(new ValidationException("Quote character cannot match delimiter pattern", this));
+			  }
+		  } catch (PatternSyntaxException e) {
+			  exceptions.add(new ValidationException("Invalid regular expression delimiter: " + delimiter, e, this));
+		  }
+	  } else {
+		  // interpret the delimiter as a string literal
+		  if (quoteChar.equals(delimiter)) {
+			  exceptions.add(new ValidationException("Quote character cannot be the same as the delimiter", this));
+		  }
+	  }
+  }
+  
+  /**
    * Takes the supplied delimited string and chops it via the <code>delimiter</code> character. Each field is then
    * added as an attribute to a map. The attribute name are generated either from the <code>fieldNames</code> list or
    * if this is not defined then automatically generated.
@@ -242,7 +280,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     String[] values = extractValues(delimitedString);
     int received = values.length;
     // If the delimited String has field names specified, then use them.
-    // If insufficient fields are provied to match the names - throw an exception.
+    // If insufficient fields are provided to match the names - throw an exception.
     // If too many fields are supplied, keep them, but give them auto-generated names.
     if (fieldNames != null) {
       int count = fieldNames.length;
@@ -272,21 +310,10 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected String[] extractValues(String delimitedString) {
     String[] values = null;
     
-    if( delimiterAlwaysRegExp ){ 
+    if( this.treatDelimiterAsRegExp() ){ 
        values = splitByRegularExpression(delimitedString);
-    }else if( delimiterAlwaysLiteralString ){
+    } else {
        values = splitByLiteralString(delimitedString);
-    }
-    /* default behaviour (user specified no extra properties) */
-    else{
-      /* single char delimiters are treated as literal strings */
-      if(delimiter.length()==1){
-        values = splitByLiteralString(delimitedString);
-      }
-      /* multi char delimiters are treated as regular expressions */
-      else{
-        values = splitByRegularExpression(delimitedString);
-      }
     }
     
     if (stripEnclosingQuotes) {
@@ -294,13 +321,24 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     }
     return values;
   }
+  
+  /**
+   * Determines whether to treat the <code>delimiter</code> as a regular
+   * expression (rather than a literal string)
+   * @return true if the delimiter should be interpreted as a regular expression
+   * @see <code>java.util.regex.Pattern</code>
+   */
+  protected boolean treatDelimiterAsRegExp() {
+	  return this.isDelimiterAlwaysRegExp() || 
+	  (!this.isDelimiterAlwaysLiteralString() && this.getDelimiter().length() > 1);
+  }
 
   private String [] splitByLiteralString(String delimitedString){
     String[] values = null;
     if (!protectQuotedFields || delimitedString.indexOf(quoteChar) == -1) {
       values = extractValuesLiteralString(delimitedString, delimiter);
     }else {
-      values = extractQuotedValuesLiteralString(delimitedString, delimiter, quoteChar);
+      values = extractQuotedValuesLiteralString(delimitedString, this.delimiter, this.quoteChar);
     }
     return values;
   }
@@ -388,7 +426,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * but operating on chars rather than Strings/StringBuffers. This seemed 
    * unnecessary and was replaced by a simple char->String conversion and forward
    * to the method taking a String. Code is cleaner & easier to test
-   * at a certain performance cost (approx. 50% longer to execute).   
+   * at a certain performance cost (approx. 50% longer to execute).
    */
   protected String[] extractQuotedValuesLiteralString(String delimitedString, char d, char quoteChar) {
     return extractQuotedValuesLiteralString(delimitedString, new Character(d).toString(), quoteChar);
@@ -420,31 +458,88 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   /**
    * Splits a string using a literal string delimiter. Preserves blocks of characters
    * between quoteChars.
-   * 
-   * @param delimitedString
-   * @param d
-   * @param quoteChar
-   * @return
+   * <p>
+   * This method is quite forgiving of poorly formatted data and will allow a mixture
+   * of quoted and unquoted values and <i>partially</i> quoted values, such as:
+   * <p>
+   * <ul>
+   * <li>one,two"two",three,four<br>
+   * 	will return an array containing<ul>
+   * 		<li>one</li>
+   * 		<li>two"two"</li>
+   * 		<li>three</li>
+   * 		<li>four</li>
+   * 	</ul>
+   * </li>
+   * <li>"one,one"one,two,three,four<br>
+   * 	will return an array containing<ul>
+   * 		<li>"one,one"one</li>
+   * 		<li>two</li>
+   * 		<li>three</li>
+   * 		<li>four</li>
+   * 	</ul>
+   * </li>
+   * <li>"one,one"one,"two,three",four<br>
+   * 	will return an array containing<ul>
+   * 		<li>"one,one"one</li>
+   * 		<li>"two,three"</li>
+   * 		<li>four</li>
+   * 	</ul>
+   * </li>
+   * <li>"one,"two,"three",four<br>
+   * 	will return an array containing<ul>
+   * 		<li>"one,"two</li>
+   * 		<li>"three"</li>
+   * 		<li>four</li>
+   * 	</ul>
+   * </li>
+   * <li>"one,"two"three","four"<br>
+   * 	will return an array containing<ul>
+   * 		<li>"one,"two"three"</li>
+   * 		<li>"four"</li>
+   * 	</ul>
+   * </li>
+   * <li>one,"two,three,four<br>
+   * 	will return an array containing<ul>
+   * 		<li>one</li>
+   * 		<li>"two</li>
+   * 		<li>three</li>
+   * 		<li>four</li>
+   * 	</ul>
+   * </li>
+   * </ul> 
+   * Note there is currently no means of escaping quote characters.
+   * @param str the string to split
+   * @return a string array containing the (optionally) quoted values delimited by the
+   * given delimiter string.
+   * @todo enable escaping of quote characters.
    */
-  protected String[] extractQuotedValuesLiteralString(String delimitedString, String d, char quoteChar) {
-    char[] chars = delimitedString.toCharArray();
+  protected String[] extractQuotedValuesLiteralString(String str, String delimiter, char quoteChar) {
+    char[] chars = str.toCharArray();
     List strings = new ArrayList();
+    
+    // tracks whether the currently parsed string is inside a quote
     boolean inQuotes = false;
-    StringBuffer buffer = new StringBuffer();
+    
+    String parsed = "";
     for (int i = 0; i < chars.length; i++) {
-      buffer.append(chars[i]);
+      parsed += chars[i];
       if (inQuotes) {
-        inQuotes = chars[i] != quoteChar;
+    	  // we are (still) in quotes unless the current character is the quote character
+    	  inQuotes = chars[i] != quoteChar;
       } else if (chars[i] == quoteChar) {
-        inQuotes = delimitedString.indexOf(quoteChar, i+1) != -1;
-      } else {
-        if (buffer.toString().endsWith(d)) {
-          strings.add(buffer.substring(0, buffer.length() - d.length()));
-          buffer.setLength(0);
-        }
+    	  // we are in quotes if this character is a quote and there are more quote
+    	  // character to parse
+    	  inQuotes = str.indexOf(quoteChar, i+1) != -1;
+      } else if (parsed.endsWith(delimiter)) {
+    	  // we are not in quotes and we've parsed a delimiter
+    	  // so add the parsed string
+          strings.add(parsed.substring(0, parsed.length() - delimiter.length()));
+          parsed = "";
       }
     }
-    strings.add(buffer.toString());
+    // add whatever's left at the end
+    strings.add(parsed);
     return (String[]) strings.toArray(new String[strings.size()]);
   }
 
@@ -586,18 +681,19 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
 
     int lastIndex = s.length() - 1;
     if ((lastIndex > 0) && (s.charAt(0) == quoteChar) && (s.charAt(lastIndex) == quoteChar))
-      s = s.substring(1, lastIndex);
+    	s = s.substring(1, lastIndex);
 
     return s;
   }
 
   /**
-   * Wraps the field in <code>quoteChar</code>.
+   * Wraps the field in <code>quoteChar</code> if 
+   * <code>addNeededEnclosingQuotes</code> is set to true
+   * and the field contains the delimiter string.
    * 
    * @param field
    * 
-   * @return the quoted string
-   * 
+   * @return the quoted string if necessary
    */
   private Object addEnclosingQuotes(Object field) throws RecordFormatException {
     // #SC11 - No longer check that field is a charSequence (hence no longer throws RecordFormatException if not)

@@ -54,7 +54,7 @@ import org.openadaptor.core.exception.RecordFormatException;
  * of mappedSlashValue. If this property hasn't been explicitly set,
  * a warning issues each time a conversion is made. If it is set, no
  * warning will issue.
- * The default value for mappedSlashValue is DEFAULT_SLASH_SUBSTITE
+ * The default value for mappedSlashValue is DEFAULT_SLASH_SUBSTITUTE
  * @author Eddy Higgins
  */
 public class OrderedMapToXmlConvertor extends AbstractConvertor {

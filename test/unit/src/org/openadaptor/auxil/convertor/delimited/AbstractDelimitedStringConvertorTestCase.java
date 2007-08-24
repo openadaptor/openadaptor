@@ -1,5 +1,7 @@
 package org.openadaptor.auxil.convertor.delimited;
 
+import java.util.ArrayList;
+
 import junit.framework.TestCase;
 
 /**
@@ -212,24 +214,78 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
     convertor.setDelimiterAlwaysRegExp(true);
     unclosedQuotes();
   }
-  
-  private void unclosedQuotes(){
-    convertor.setDelimiter(",");
-    check(convertor.extractValues("foo\",bar"),  //foo",bar
-        new String[] {"foo\"", "bar"});
-    check(convertor.extractValues("foo,\" ,bar"),//foo," ,bar
-        new String[] {"foo", "\" ", "bar"});
-    convertor.setDelimiter("::");
-    check(convertor.extractValues("\"a::1\"::\"b\"::\"c::2"), //"a::1"::"b"::"c::2
-        new String[] {"\"a::1\"", "\"b\"", "\"c", "2"});
-  }
-  
 
-  private void check(String[] strings, String[] strings2) {
-    assertTrue(strings.length == strings2.length);
-    for (int i = 0; i < strings2.length; i++) {
-      assertTrue(strings[i].equals(strings2[i]));
-    }
-  }
+  private void unclosedQuotes(){
+	    convertor.setDelimiter(",");
+		ArrayList exceptions = new ArrayList();
+		convertor.validate(exceptions);
+		assertEquals("Unexpected validation error", exceptions.size(), 0);
+	    check(convertor.extractValues("foo\",bar"),  //foo",bar
+	        new String[] {"foo\"", "bar"});
+	    check(convertor.extractValues("foo,\" ,bar"),//foo," ,bar
+	        new String[] {"foo", "\" ", "bar"});
+	    check(convertor.extractValues("foo,\" ,bar,\" ,flub"),//foo," ,bar," ,flub
+		        new String[] {"foo", "\" ,bar,\" ","flub"});
+	    convertor.setDelimiter("::");
+		exceptions = new ArrayList();
+		convertor.validate(exceptions);
+		assertEquals("Unexpected validation error", exceptions.size(), 0);
+	    check(convertor.extractValues("\"a::1\"::\"b\"::\"c::2"), //"a::1"::"b"::"c::2
+	        new String[] {"\"a::1\"", "\"b\"", "\"c", "2"});
+	  }
+	  
+  	private static void assertArraysEqual(String[] expected, String[] actual) {
+  		if (expected.length != actual.length) {
+  			String got = "Array length mismatch. Here's what we got:";
+  			for (int i = 0; i < actual.length; i++) {
+  				got += " {" + actual[i] + "}";
+  			}
+  			fail(got);
+  		}
+  		for (int i = 0; i < expected.length; i++) {
+  			assertEquals("Array parameter mismatch at " + i, expected[i], actual[i]);
+  		}
+  	}
+  	
+  	public void testExtractValuesRegExp() {
+  		String record = "one1..ttee..";
+  		String[] expected = {"on", "1..tt", ".."};
+  		String[] result = convertor.extractValuesRegExp(record, "e+");
+  		assertArraysEqual(expected, result);
+  	}
   
+  	public void testExtractValuesNumberRegExp() {
+  		String record = "one1t..t2two0three9";
+  		String[] expected = {"one","t..t", "two", "three", ""};
+  		String[] result = convertor.extractValuesRegExp(record, "[0-9]");
+  		assertArraysEqual(expected, result);
+  	}
+  
+  	public void testQuotedExtractValuesRegExp() {
+  		String record = "'oe'e'en'e'1'ee'tee'eee'.'e'.'eeeee'eet'";
+  		String[] expected = {"'oe'","'en'","'1'","'tee'","'.'","'.'","'eet'"};
+  		String[] result = convertor.extractQuotedValuesRegExp(record, "e+", '\'');
+  		assertArraysEqual(expected, result);
+  	}
+  
+  	public void testQuotedExtractValuesNumberRegExp() {
+  		String record = "/one/1/t.00.t/2/t2wo/0/three33/9//";
+  		String[] expected = {"/one/","/t.00.t/", "/t2wo/", "/three33/", "//"};
+  		String[] result = convertor.extractQuotedValuesRegExp(record, "[0-9]", '/');
+  		assertArraysEqual(expected, result);
+  	}
+  
+  	private static void check(String[] actual, String[] expected) {
+  		assertNotNull("String array should not be null", actual);
+  		if (expected.length != actual.length) {
+  			String got = "Array length mismatch (expected " + expected.length + " but got " + actual.length + ". Here's the data we got:";
+  			for (int i = 0; i < actual.length; i++) {
+  				got += " {" + actual[i] + "}";
+  			}
+  			fail(got);
+  		}
+  		for (int i = 0; i < expected.length; i++) {
+  			assertEquals("Array parameter mismatch at " + i, expected[i], actual[i]);
+  		}
+  	}
 }
