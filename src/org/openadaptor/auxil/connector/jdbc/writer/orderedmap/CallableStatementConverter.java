@@ -84,7 +84,11 @@ public class CallableStatementConverter extends AbstractStatementConverter {
       for (int i=0;i<mappedOM.size();i++) {
         Object value=mappedOM.get(i);
         log.debug("Value to be written is "+value);
-        cs.setObject(i+1,value,paramTypes[i]);
+        //EH 2007_08_24 This doesn't work properly, but more importantly isn't necessary.
+        //openadaptor3 should be delegating type conversion completely to the database driver,
+        //i.e. pure call to setObject without specifying the sql type.
+        //cs.setObject(i+1,value,paramTypes[i]);
+        cs.setObject(i+1,value);
         if (log.isDebugEnabled()) {
           generatedSql = generatedSql.replaceFirst("\\?", getDebugValueString(value, paramTypes[i]));
         }
