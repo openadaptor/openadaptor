@@ -55,7 +55,7 @@
     <property name="password" value=""/>
   </bean>
 
-  <bean id="Poller" class="org.openadaptor.core.connector.PollingReadConnector">
+  <bean id="Poller" class="org.openadaptor.core.connector.CronnablePollingReadConnector">
     <description>Poller which wraps JDBC Reader below, polls immediately and then every fifth second.</description>
     <property name="delegate" ref="Reader"/>
     <property name="forceInitialPoll" value="true"/>

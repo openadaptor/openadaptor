@@ -126,7 +126,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   
   protected void calculateReconnectTime() {
     reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
-    log.info("next poll time = " + reconnectTime.toString());
+    log.debug("next poll time = " + reconnectTime.toString());
   }
   
 }

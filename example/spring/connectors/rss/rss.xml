@@ -40,7 +40,7 @@
   </bean>
 
 
-  <bean id="RSS_Reader" class="org.openadaptor.core.connector.PollingReadConnector">
+  <bean id="RSS_Reader" class="org.openadaptor.core.connector.LoopingPollingReadConnector">
     <description>Poll twice with 5 min interval.</description>
     <property name="pollLimit" value="2"/>
     <property name="pollIntervalMins" value="5"/>
