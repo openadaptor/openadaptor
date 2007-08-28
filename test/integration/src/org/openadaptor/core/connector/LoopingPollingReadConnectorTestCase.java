@@ -20,6 +20,9 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
     poller.setDelegate(reader);
   }
 
+  /**
+   * Tests 'out of the box' behaviour.
+   */
   public void testDefault() {    
     assertTrue(runPoller(poller, reader.getDataString()) == 1);
   }
@@ -33,13 +36,13 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
     poller.setPollLimit(2);
     poller.setPollIntervalSecs(1);
     Date start = new Date();
-    System.out.println("Start: " + new Date());
     assertTrue(runPoller(poller, reader.getDataString()) == 2);
     Date stop = new Date();
     long durationMs = stop.getTime() - start.getTime();
     /* Polling should've taken at least 2 secs */
     assertTrue(durationMs >= 2000);
   }
+
   
   private int runPoller(LoopingPollingReadConnector poller, String dataString) {
     int count = 0;

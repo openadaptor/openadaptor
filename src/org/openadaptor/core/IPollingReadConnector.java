@@ -24,21 +24,17 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-
 package org.openadaptor.core;
 
 import org.openadaptor.core.IReadConnector;
 
-/*
-* Interface for polling strategies. A polling read connector will define an algorithm 
-* for polling the underlying resources by read connectors. The simplest read connector might be for
-* the read connector to execute one call for data and exit, a more complex one might involve
-* multimple calls with a specified time interval in between, with the interval perhaps 
-* different for when the previous call returned data and when it did not return.
-*/
-
 /**
- * Interface for a read connector that polls. 
+ * Interface for polling read connectors. A polling read connector will define an algorithm 
+ * for polling external resources by the underlying read connector (delegate). The simplest behaviour
+ * might be for the underlying read connector to execute one call for data and exit, a more 
+ * complex one might involve multimple calls with a specified time interval in between, 
+ * with the interval perhaps different for when the previous call returned data and when it 
+ * did not return.
  * 
  * @author Kris Lachor
  */
@@ -48,11 +44,5 @@ public interface IPollingReadConnector extends IReadConnector {
    * @return the underlying polling read connector.
    */
   IReadConnector getDelegate();
-  
-  /**
-   * @todo should not be part of the interface
-   * @param readConnector
-   */
-  void setDelegate(IReadConnector readConnector);
 
 }

@@ -41,6 +41,14 @@ import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * An abstract implementation of {@link IPollingReadConnector}.
+ * When this connector polls it calls the following on the IReadConnector it is
+ * wrapping...
+ * <ul>
+ * <li>{@link IReadConnector#connect()}
+ * <li>{@link IReadConnector#next(long)}, until {@link IReadConnector#isDry()}
+ * returns true
+ * <li>{@link IReadConnector#disconnect()}
+ * </ul>
  * 
  * @author Kris Lachor
  */
@@ -76,7 +84,6 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     super(id);
   }
 
-  
   public void connect() {
     initTimes();
     delegate.connect();
@@ -84,7 +91,6 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     calculateReconnectTime();
   }
 
-  
   public Object[] next(long timeoutMs) throws ComponentException {
     Date now = new Date();
 

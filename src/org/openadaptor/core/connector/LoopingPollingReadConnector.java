@@ -31,19 +31,30 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IReadConnector;
 
 /**
  * A polling read connector that repeatedly calls to underlying read connector. 
- * It allows for these parameters:
+ * It can be configured to poll at fixed intervals. 
+ * When this connector polls it calls the following on the IReadConnector it is
+ * wrapping...
+ * <ul>
+ * <li>{@link IReadConnector#connect()}
+ * <li>{@link IReadConnector#next(long)}, until {@link IReadConnector#isDry()}
+ * returns true
+ * <li>{@link IReadConnector#disconnect()}
+ * </ul>
  * 
- * interval - interval between two subsequent calls (in milliseconds)
+ * Out of the box, without setting any polling intervals the adaptor will perform 
+ * a single poll and then exit</li>.
  * 
- * @author Kris Lachor
+ * @author Fred Perry, Kris Lachor
  */
 public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(LoopingPollingReadConnector.class);
   
+  /** Interval between two subsequent calls (in milliseconds) */
   private long intervalMs = -1;
   
   /**

@@ -1,5 +1,7 @@
 package org.openadaptor.core.connector;
 
+import java.util.Date;
+
 import org.openadaptor.core.connector.CronnablePollingReadConnector;
 
 import junit.framework.TestCase;
@@ -11,25 +13,39 @@ import junit.framework.TestCase;
  */
 public class CronnablePollingReadConnectorTestCase extends TestCase {
 
-  public void testCron() {
-    TestReadConnector reader = new TestReadConnector("reader");
+  TestReadConnector reader = new TestReadConnector("reader");
+  
+  CronnablePollingReadConnector poller = new CronnablePollingReadConnector("poller");
+  
+  protected void setUp() throws Exception {
+    super.setUp();
     reader.setDataString("foobar");
-    CronnablePollingReadConnector poller = new CronnablePollingReadConnector("poller");
     poller.setDelegate(reader);
+  }
+  
+  /**
+   * Tests 'out of the box' behaviour.
+   */
+//  public void testDefault() {    
+//    assertTrue(runPoller(poller, reader.getDataString()) == 1);
+//  }
+  
+  public void testCron() {
     poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
-    poller.setPollLimit(6);
-    poller.setForceInitialPoll(true);
-    assertTrue(runPoller(poller, reader.getDataString()) == 6);
+    poller.setPollLimit(2);
+    poller.setForceInitialPoll(false);
+//    Date start = new Date();
+    assertTrue(runPoller(poller, reader.getDataString()) == 2);
+//    Date stop = new Date();
+//    long durationMs = stop.getTime() - start.getTime();
+//    /* Polling should've taken at least 2 secs */
+//    assertTrue(durationMs >= 5000);
   }
 
   public void testCronForceInitialPoll() {
-    TestReadConnector reader = new TestReadConnector("reader");
-    reader.setDataString("foobar");
-    CronnablePollingReadConnector poller = new CronnablePollingReadConnector("poller");
-    poller.setDelegate(reader);
     poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
-    poller.setForceInitialPoll(true);
     poller.setPollLimit(2);
+    poller.setForceInitialPoll(true);
     assertTrue(runPoller(poller, reader.getDataString()) == 2);
   }
 
