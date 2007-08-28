@@ -50,14 +50,30 @@ import java.util.List;
  */
 public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
 
+  protected Mock readConnectorMock;
+
   protected ILifecycleComponent instantiateTestLifecycleComponent() {
     ReadNode testInstance = new ReadNode("ReadNode LifeCycleComponentTest");
-    // Simple well behaved ConnectorMock
-    Mock connectorMock = mock(IReadConnector.class);
-    testInstance.setConnector((IReadConnector) connectorMock.proxy());
-    // Expectations of a well behaved connector
-    connectorMock.stubs().method("connect");
+    // Add a mock Connector. Expectations should be set by the individual tests.
+    readConnectorMock = mock(IReadConnector.class);
+    testInstance.setConnector((IReadConnector) readConnectorMock.proxy());
     return testInstance;
+  }
+
+  protected void instantiateMocksFor(ILifecycleComponent lifecycleComponent) {
+    super.instantiateMocksFor(lifecycleComponent);
+    readConnectorMock = mock(IReadConnector.class);
+    ((ReadNode)lifecycleComponent).setConnector((IReadConnector) readConnectorMock.proxy());
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    readConnectorMock = null;
+  }
+
+  public void testStart() {
+    readConnectorMock.expects(once()).method("connect");
+    super.testStart();
   }
 
   /**
@@ -67,13 +83,14 @@ public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycl
    * is tested for aa switch to "STOPPING" instead.
    */
   public void testStartStop() {
+    // Set Connector expectations
+    readConnectorMock.stubs().method("connect");
     assertTrue("Component should be in a stopped state initially.", testLifecycleComponent.isState(State.STOPPED));
     try {
       testLifecycleComponent.start();
     } catch (Exception e) {
       fail("Unexpected Exception while starting [" + e + "]");
     }
-
     assertTrue("Component should now be started.", testLifecycleComponent.isState(State.STARTED));
     try {
       testLifecycleComponent.stop();
@@ -87,30 +104,15 @@ public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycl
 
   public void testValidation() {
     List exceptions = new ArrayList();
-    // Use a mock connector which is configured to expect a validate method invocation.
-    Mock readConnectorMock = mock(IReadConnector.class);
-    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
+    // Configure the mock connector to expect a validate method invocation.
     readConnectorMock.expects(once()).method("validate").with(eq(exceptions));
-   ((ReadNode) testLifecycleComponent).setConnector(readConnector);
-
-    testLifecycleComponent.validate(exceptions);
-
-    assertTrue("Unexpected exceptions", exceptions.size() == 0);
+    super.testValidation();
   }
 
-  public void testValidationWithProcessor() {
+  public void testValidationWithNullProcessor() {
     List exceptions = new ArrayList();
-    // Use a mock connector which is configured to expect a validate method invocation
-    Mock readConnectorMock = mock(IReadConnector.class);
-    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
-    // Add a mock processor which is configured to expect a validate method invocation.
-    Mock testProcessorMock = mock(IDataProcessor.class);
-    IDataProcessor testProcessor = (IDataProcessor) testProcessorMock.proxy();
-    readConnectorMock.expects(once()).method("validate").with(eq(exceptions));
-    testProcessorMock.expects(once()).method("validate").with(eq(exceptions));
-
-    ((ReadNode) testLifecycleComponent).setConnector(readConnector);
-    ((Node) testLifecycleComponent).setProcessor(testProcessor);
+    readConnectorMock.expects(once()).method("validate").with(eq(exceptions));    
+    ((Node) testLifecycleComponent).setProcessor(IDataProcessor.NULL_PROCESSOR);
 
     testLifecycleComponent.validate(exceptions);
 
@@ -120,6 +122,7 @@ public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycl
   /** Should fail validation if there is no connector set */
   public void testFailValidationWithNoConnector() {
     List exceptions = new ArrayList();
+    testProcessorMock.stubs().method("validate").with(eq(exceptions));
     ((ReadNode) testLifecycleComponent).setConnector(null);
     testLifecycleComponent.validate(exceptions);
 

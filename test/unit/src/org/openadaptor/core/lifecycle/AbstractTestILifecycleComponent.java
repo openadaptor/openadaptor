@@ -33,15 +33,24 @@ import org.jmock.MockObjectTestCase;
  * Created Aug 20, 2007 by oa3 Core Team
  */
 
+/**
+ * Absttract test class which should be extended by tests for classes that
+ * implement ILifecycleComponent.
+ */
 abstract public class AbstractTestILifecycleComponent extends MockObjectTestCase {
 
+  /** Real object being tested */
   protected ILifecycleComponent testLifecycleComponent;
 
+  /** Override to instantiate object to be tested */
   protected abstract ILifecycleComponent instantiateTestLifecycleComponent();
+
+  protected abstract void instantiateMocksFor(ILifecycleComponent lifecycleComponent);
 
   protected void setUp() throws Exception {
     super.setUp();
     testLifecycleComponent = instantiateTestLifecycleComponent();
+    instantiateMocksFor(testLifecycleComponent);
   }
 
   protected void tearDown() throws Exception {

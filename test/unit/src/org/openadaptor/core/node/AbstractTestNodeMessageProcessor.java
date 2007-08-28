@@ -27,10 +27,7 @@
 package org.openadaptor.core.node;
 
 import org.jmock.Mock;
-import org.openadaptor.core.AbstractTestIMessageProcessor;
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.Message;
-import org.openadaptor.core.Response;
+import org.openadaptor.core.*;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -42,26 +39,37 @@ import org.openadaptor.core.Response;
  */
 abstract public class AbstractTestNodeMessageProcessor extends AbstractTestIMessageProcessor {
 
+  protected Mock testProcessorMock;
+
+  protected void instantiateMocksFor(IMessageProcessor messageProcessor) {
+    // Add the ProcessorMock
+    testProcessorMock = mock(IDataProcessor.class);
+    IDataProcessor testProcessor = (IDataProcessor)testProcessorMock.proxy();
+    ((Node)messageProcessor).setProcessor(testProcessor);
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    testProcessorMock = null;
+  }
 
   /**
-   * text with a Mock Processor configured to produce a specific result.
+   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
    */
-  public void testProcessWithProcessor() {
-    Mock testProcessorMock = mock(IDataProcessor.class);
-    IDataProcessor testProcessor = (IDataProcessor)testProcessorMock.proxy();
+  public void testProcess() {
+    // Set processor expectations
+    testProcessorMock.stubs().method("reset");
+    testProcessorMock.expects(once()).method("process").with(eq(inputPayload)).will(returnValue(new Object[] {responsePayload}));
+    super.testProcess();
+  }
 
-    String inputOne = "inputone";
-    String returnOne = "returnone";
-    testProcessorMock.expects(once()).method("process").with(eq(inputOne)).will(returnValue(new Object[] {returnOne}));
-
-    ((Node)testMessageProcessor).setProcessor(testProcessor);
-
-    Message message = new Message(new Object[] {inputOne}, null, null);
+  public void testProcessWithNoProcessorSet() {
+    ((Node)testMessageProcessor).setProcessor(IDataProcessor.NULL_PROCESSOR); // this seems to be the default unset value
+    Message message = new Message(new Object[] {inputPayload}, null, null);
     Response response = testMessageProcessor.process(message);
-
-    assertTrue("Expected a Response", response != null);
-    assertTrue("Expected one batch in the response", response.getBatches().size() == 1);
-    assertTrue("Response value wasn't as expected", response.getCollatedOutput()[0] == returnOne);
+    assertTrue("Expected a real response object", response != null);
+    assertTrue("Expected Batch size of one in the response", response.getBatches().size() == 1);
+    assertTrue("Did not get expected data in the response", response.getCollatedOutput()[0] == responsePayload);
   }
 
 }

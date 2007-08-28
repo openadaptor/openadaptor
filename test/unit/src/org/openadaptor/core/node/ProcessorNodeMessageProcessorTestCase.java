@@ -37,39 +37,60 @@ import org.openadaptor.core.exception.MessageException;
  */
 
 public class ProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
+  
+  protected Object[] data;
+  protected Object[] exceptionData;
 
   protected IMessageProcessor instantiateTestMessageProcessor() {
     return new ProcessorNode("Test as IMessageProcessor");
   }
 
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    data = null;
+    exceptionData = null;
+  }
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    data = new Object[]{"foo", "bar", "foobar"};
+    exceptionData = new Object[]{
+      new MessageException(data[0], new RuntimeException("test"), "test"),
+      data[1],
+      new MessageException(data[2], new RuntimeException("test"), "test")
+    };
+  }
+
+  public void testProcessWithNoProcessorSet() {
+    responsePayload = inputPayload;
+    super.testProcessWithNoProcessorSet();
+  }
+
   public void testProcessWithBatch() {
-    Object[] data = new Object[]{"foo", "bar", "foobar"};
+    Message message = new Message(data, null, null);
+    for (int i=0; i < data.length; i++) {
+      testProcessorMock.expects(once()).method("process").with(eq(data[i])).will(returnValue(new Object[] { data[i] }));
+    }
     {
-      Response response = testMessageProcessor.process(new Message(data, null, null));
+      Response response = testMessageProcessor.process(message);
       Object[] output = response.getCollatedOutput();
       assertTrue(equals(data, output));
     }
   }
 
   public void testProcessWithExceptions() {
-    Object[] data = new Object[]{"foo", "bar", "foobar"};
-    Object[] exceptionData = new Object[]{
-      new MessageException(data[0], new RuntimeException("test"), "test"),
-      data[1],
-      new MessageException(data[2], new RuntimeException("test"), "test")
-    };
+    for (int i=0; i < data.length; i++) {
+      testProcessorMock.expects(once()).method("process").with(eq(exceptionData[i])).will(returnValue(new Object[] { exceptionData[i] }));
+    }
     Response response = testMessageProcessor.process(new Message(exceptionData, null, null));
     Object[] output = response.getCollatedOutput();
     assertFalse(equals(data, output));
   }
 
   public void testProcessWithStripOutExceptionsSet() {
-  Object[] data = new Object[]{"foo", "bar", "foobar"};
-    Object[] exceptionData = new Object[]{
-      new MessageException(data[0], new RuntimeException("test"), "test"),
-      data[1],
-      new MessageException(data[2], new RuntimeException("test"), "test")
-    };
+    for (int i=0; i < data.length; i++) {
+      testProcessorMock.expects(once()).method("process").with(eq(data[i])).will(returnValue(new Object[] { data[i] }));
+    }
     ((ProcessorNode)testMessageProcessor).setStripOutExceptions(true);
     Response response = testMessageProcessor.process(new Message(exceptionData, null, null));
     Object[] output = response.getCollatedOutput();

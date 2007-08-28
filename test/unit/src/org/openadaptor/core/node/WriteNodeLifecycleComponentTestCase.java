@@ -26,63 +26,67 @@
 */
 package org.openadaptor.core.node;
 
-import org.jmock.Mock;
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.lifecycle.AbstractTestILifecycleComponent;
-import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.IWriteConnector;
+import org.jmock.Mock;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
- * Created Aug 20, 2007 by oa3 Core Team
+ * Created Aug 23, 2007 by oa3 Core Team
  */
 
-abstract public class AbstractTestNodeLifecycleComponent extends AbstractTestILifecycleComponent {
-  protected Mock testProcessorMock;
+public class WriteNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
+  protected Mock writeConnectorMock;
+
+  /**
+   * Override to instantiate object to be tested
+   */
+  protected ILifecycleComponent instantiateTestLifecycleComponent() {
+    return new WriteNode("WriteNode as ILifecyleComponent Test");
+  }
 
   protected void instantiateMocksFor(ILifecycleComponent lifecycleComponent) {
-    testProcessorMock = mock(IDataProcessor.class);
-    IDataProcessor testProcessor = (IDataProcessor) testProcessorMock.proxy();
-    ((Node) lifecycleComponent).setProcessor(testProcessor);
+    super.instantiateMocksFor(lifecycleComponent);
+    writeConnectorMock = mock(IWriteConnector.class);
+    ((WriteNode)lifecycleComponent).setConnector((IWriteConnector)writeConnectorMock.proxy());
   }
 
   protected void tearDown() throws Exception {
     super.tearDown();
-    testProcessorMock = null;
+    writeConnectorMock = null;
   }
 
   public void testValidation() {
-    List exceptions = new ArrayList();
-    testProcessorMock.expects(once()).method("validate").with(eq(exceptions));
-    testLifecycleComponent.validate(exceptions);
-    assertTrue("Unexpected exceptions", exceptions.size() == 0);
+    writeConnectorMock.expects(once()).method("validate");
+    super.testValidation();
   }
 
   public void testValidationWithNullProcessor() {
-    List exceptions = new ArrayList();
-    ((Node)testLifecycleComponent).setProcessor(IDataProcessor.NULL_PROCESSOR);
+    writeConnectorMock.expects(once()).method("validate");
+    super.testValidationWithNullProcessor();
+  }
 
+  /** Should fail validation if there is no connector set */
+  public void testFailValidationWithNoConnector() {
+    List exceptions = new ArrayList();
+    testProcessorMock.stubs().method("validate").with(eq(exceptions));
+    ((WriteNode) testLifecycleComponent).setConnector(null);
     testLifecycleComponent.validate(exceptions);
-    assertTrue("Unexpected exceptions", exceptions.size() == 0);
+
+    assertTrue("Unexpected exceptions", exceptions.size() == 1);
+  }
+
+  public void testStart() {
+    writeConnectorMock.expects(once()).method("connect");
+    super.testStart();
   }
 
   public void testStartStop() {
-    assertTrue("Component should be in a stopped state initially.", testLifecycleComponent.isState(State.STOPPED));
-    try {
-      testLifecycleComponent.start();
-    } catch (Exception e) {
-      fail("Unexpected Exception while starting [" + e + "]");
-    }
-    assertTrue("Component should now be started.", testLifecycleComponent.isState(State.STARTED));
-    try {
-      testLifecycleComponent.stop();
-      testLifecycleComponent.waitForState(State.STOPPED);
-    } catch (Exception e) {
-      fail("Unexpected Exception while stopping [" + e + "]");
-    }
-    assertTrue("Component should now be stopped.", testLifecycleComponent.isState(State.STOPPED));
+    writeConnectorMock.expects(once()).method("connect");
+    writeConnectorMock.expects(once()).method("disconnect");
+    super.testStartStop();
   }
 }

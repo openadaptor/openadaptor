@@ -39,14 +39,21 @@ import org.jmock.MockObjectTestCase;
 public abstract class AbstractTestIMessageProcessor extends MockObjectTestCase {
 
   protected IMessageProcessor testMessageProcessor;
+  protected String inputPayload = "inputone";
+  protected String responsePayload = "returnone";
 
   protected void setUp() throws Exception {
     super.setUp();
+    inputPayload = "inputone";
+    responsePayload = "returnone";
     testMessageProcessor = instantiateTestMessageProcessor();
+    instantiateMocksFor(testMessageProcessor);
   }
 
   protected void tearDown() throws Exception {
     super.tearDown();
+    inputPayload = null;
+    responsePayload = null;
     testMessageProcessor = null;
   }
 
@@ -58,13 +65,18 @@ public abstract class AbstractTestIMessageProcessor extends MockObjectTestCase {
    */
   protected abstract IMessageProcessor instantiateTestMessageProcessor();
 
+  protected abstract void instantiateMocksFor(IMessageProcessor messageProcessor);
+
   /**
    * Test invoking 'process' on a correctly configured IMessageProcessor instance.
    */
   public void testProcess() {
-    Message message = new Message(new Object[] {}, null, null);
+    Message message = new Message(new Object[] { inputPayload }, null, null);
     Response response = testMessageProcessor.process(message);
     assertTrue("Expected a real response object", response != null);
+    assertTrue("Expected Batch size of one in the response", response.getBatches().size() == 1);
+    assertTrue("Did not get expected data in the response", response.getCollatedOutput()[0] == responsePayload);
+
   }
 
 

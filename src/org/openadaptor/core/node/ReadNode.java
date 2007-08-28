@@ -150,7 +150,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
           if (transaction == null) {
             transaction = transactionManager.getTransaction();
             enlistConnector(transaction);
-          }
+          }          
           if (getNextAndProcess(transaction)) {
             if (transaction.getErrorOrException() == null) {
               log.debug(getId() + " committing transaction");
@@ -193,12 +193,21 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         prevReaderContext = connector.getReaderContext();
       }
       Message msg = new Message(data, this, transaction);
-      process(msg);
+      super.process(msg);   // Am in the proxess of rewriting process. Not yet complete.
     }
     return data != null;
   }
 
   public Response process(Message msg) {
+    Object[] data = getNext();
+    if (data != null && data.length != 0) {
+      if (connector.getReaderContext() == prevReaderContext) {
+        resetProcessor(connector.getReaderContext());
+        prevReaderContext = connector.getReaderContext();
+      }
+      Message newMessage = new Message(data, this, msg.getTransaction());
+      return super.process(newMessage);
+    }
     return super.process(msg);
   }
 

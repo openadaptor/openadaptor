@@ -27,10 +27,7 @@
 package org.openadaptor.core.node;
 
 import org.jmock.Mock;
-import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.Message;
-import org.openadaptor.core.Response;
+import org.openadaptor.core.*;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -39,21 +36,59 @@ import org.openadaptor.core.Response;
 
 public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
 
+  protected Mock readConnectorMock;
+
   protected IMessageProcessor instantiateTestMessageProcessor() {
-    return new ReadNode("test");
+    ReadNode testNode =  new ReadNode("Test ReadNode as MessageProcessor");
+    return testNode;
   }
 
-  /** Ensure that a response object is returned when a connector is configured */
-  public void testProcessWithReadConnector() {
-    Mock readConnectorMock = mock(IReadConnector.class);
-    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
+  protected void instantiateMocksFor(IMessageProcessor messageProcessor) {
+    super.instantiateMocksFor(messageProcessor);
+    readConnectorMock = mock(IReadConnector.class);
+    IReadConnector mockReadConnector = (IReadConnector) readConnectorMock.proxy();
+    ((ReadNode)messageProcessor).setConnector(mockReadConnector);
+  }
 
-    ((ReadNode) testMessageProcessor).setConnector(readConnector);
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    readConnectorMock = null;
+  }
 
+  /**
+   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
+   */
+  public void testProcess() {
+    readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {inputPayload}));
+    readConnectorMock.stubs().method("getReaderContext");
+    super.testProcess();
+  }
+
+  /**
+   * Test with no explicitly configured IDataProcessor. This is the normal case
+   * for a ReadNode and the Response should contain the output from the ReadConnector.
+   */
+  public void testProcessWithNoProcessorSet() {
+    readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {responsePayload}));
+    readConnectorMock.stubs().method("getReaderContext");
+    super.testProcessWithNoProcessorSet();
+  }
+
+
+  public void testNullFromConnector() {
+    readConnectorMock.expects(once()).method("next").will(returnValue(null));
     Message message = new Message(new Object[]{}, null, null);
     Response response = testMessageProcessor.process(message);
-
     assertTrue("Expected a Response", response != null);
+    assertTrue("Expected no data", response.getCollatedOutput().length == 0);
+  }
+
+  public void testNoDataFromConnector() {
+    readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {}));
+    Message message = new Message(new Object[]{}, null, null);
+    Response response = testMessageProcessor.process(message);
+    assertTrue("Expected a Response", response != null);
+    assertTrue("Expected no data", response.getCollatedOutput().length == 0);
   }
 
 }

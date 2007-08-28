@@ -35,47 +35,50 @@ import org.jmock.Mock;
  */
 
 public class WriteNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
+
+  protected Mock writeConnectorMock;
+
   /**
    * Instantiate a test object. Add a well behaved Mock WriteConnector.
    *
    * @return IMessageProcessor  The component being tested.
    */
   protected IMessageProcessor instantiateTestMessageProcessor() {
-    WriteNode testInstance = new WriteNode("WriteNode as IMessageProcessor");
-    // Simple well behaved ConnectorMock
-    Mock connectorMock = mock(IWriteConnector.class);
-    testInstance.setConnector((IWriteConnector)connectorMock.proxy());
-    // Expectations of a well behaved connector
-    connectorMock.stubs().method("deliver");
-    return testInstance;
+    return new WriteNode("WriteNode as IMessageProcessor");
+  }
+
+  /** Add a mock IWriteConnector */
+  protected void instantiateMocksFor(IMessageProcessor messageProcessor) {
+    super.instantiateMocksFor(messageProcessor);
+    // Add a mock IWriteConnector
+    writeConnectorMock = mock(IWriteConnector.class);
+    ((WriteNode)testMessageProcessor).setConnector((IWriteConnector)writeConnectorMock.proxy());
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    writeConnectorMock = null;
   }
 
   /**
-   * Test with a Mock Processor configured to produce a specific result.
-   * Overridden as Connector expectations need to be set as well.
+   * Test invoking 'process' on a correctly configured IMessageProcessor instance.
    */
-  public void testProcessWithProcessor() {
-    String inputOne = "inputone";
-    String returnOne = "returnone";
+  public void testProcess() {
+    // Connector will expect the output of any processor to be its input
+    // We set it up so that if it receives the expected input it simple echoes it.
+    // Since a mock IDataProcessor is configured, the expected input is its output
+    writeConnectorMock.expects(once()).method("deliver").with(eq(new Object[] {responsePayload})).will(returnValue(responsePayload));
+    super.testProcess();
+  }
 
-    Mock testProcessorMock = mock(IDataProcessor.class);
-    IDataProcessor testProcessor = (IDataProcessor)testProcessorMock.proxy();
-
-    Object[] processedValue = new Object[]{returnOne};
-    testProcessorMock.expects(once()).method("process").with(eq(inputOne)).will(returnValue(processedValue));
-
-    Mock connectorMock = mock(IWriteConnector.class);
-    ((WriteNode)testMessageProcessor).setConnector((IWriteConnector)connectorMock.proxy());
-    // Expectations of a well behaved connector
-    connectorMock.expects(once()).method("deliver").will(returnValue(returnOne));
-
-    ((Node)testMessageProcessor).setProcessor(testProcessor);
-
-    Message message = new Message(new Object[] {inputOne}, null, null);
-    Response response = testMessageProcessor.process(message);
-
-    assertTrue("Expected a Response", response != null);
-    assertTrue("Expected one batch in the response", response.getBatches().size() == 1);
-    assertTrue("Response value wasn't as expected", response.getCollatedOutput()[0] == returnOne);
+  /**
+   * Test behaviour when no DataProcessor is explicitly configured.
+   * For a WriteNode this is the normal case.
+   */
+  public void testProcessWithNoProcessorSet() {
+    // Connector will expect the output of any processor to be its input
+    // We set it up so that if it receives the expected input it simply echoes the response payload.
+    writeConnectorMock.expects(once()).method("deliver").with(eq(new Object[] {inputPayload})).will(returnValue(responsePayload));
+    super.testProcessWithNoProcessorSet();
   }
 }
