@@ -34,9 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
 
 /**
- * A polling read connector that repeatedly calls to underlying read connector. 
- * It can be configured to poll at fixed intervals. 
- * When this connector polls it calls the following on the IReadConnector it is
+ * A polling read connector that calls to underlying read connector at fixed time 
+ * intervals. When this connector polls it calls the following on the IReadConnector it is
  * wrapping...
  * <ul>
  * <li>{@link IReadConnector#connect()}
@@ -54,7 +53,6 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
   private static final Log log = LogFactory.getLog(LoopingPollingReadConnector.class);
   
-  /** Interval between two subsequent calls (in milliseconds) */
   private long intervalMs = -1;
   
   /**
@@ -66,25 +64,32 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
   /**
    * Constructor.
+   * 
+   * @param id a descriptive identifier for this connector.
    */
   public LoopingPollingReadConnector(String id) {
     super(id);
   }
 
-  public Object[] next(long timeoutMs) {
-    Object [] result =  super.next(timeoutMs);
-    return result;
-  }
-
-  public long getPollIntervalMs() {
-    return intervalMs;
-  }
-
+  /**
+   * Delegates to the super class, then recalculates the <code>reconnectTime</code>.
+   * 
+   * @see AbstractPollingReadConnector#connect()
+   */
   public void connect() {
     super.connect();
     calculateReconnectTime();
   }
 
+  /**
+   * Recalculates <code>reconnectTime</code> as the currect <code>reconnectTime</code> 
+   * plus <code>intervalMs</code>.
+   */
+  protected void calculateReconnectTime() {
+    reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
+    log.debug("next poll time = " + reconnectTime.toString());
+  }
+  
   /**
    * Optional.
    * 
@@ -106,7 +111,6 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
     this.intervalMs = interval * 1000;
   }
-  
   
   /**
    * Optional
@@ -133,11 +137,13 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
     this.intervalMs = interval * 60 * 60 * 1000;
   }
-
   
-  protected void calculateReconnectTime() {
-    reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
-    log.debug("next poll time = " + reconnectTime.toString());
+  /**
+   * @return time interval between two subsequent calls to the underlying connector 
+   *         #next() (in milliseconds)
+   */
+  public long getPollIntervalMs() {
+    return intervalMs;
   }
   
 }

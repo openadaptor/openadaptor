@@ -247,6 +247,11 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     return getId();
   }
 
+  /**
+   * @return an unhandled exception, if any occured, from one of the nodes linked
+   *         to this read node. Null if no exceptions in downstream nodes occured 
+   *         or if all those that did occur were handled by the exception handler.
+   */
   public Throwable getExitError() {
     return exitThrowable;
   }

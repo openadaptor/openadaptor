@@ -40,7 +40,8 @@ import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
- * An abstract implementation of {@link IPollingReadConnector}.
+ * An abstract implementation of {@link IPollingReadConnector}. Based on the legacy
+ * <code>PollingReadConnector</code>.
  * When this connector polls it calls the following on the IReadConnector it is
  * wrapping...
  * <ul>
@@ -50,7 +51,7 @@ import org.openadaptor.core.transaction.ITransactional;
  * <li>{@link IReadConnector#disconnect()}
  * </ul>
  * 
- * @author Kris Lachor
+ * @author Fred Perry, Kris Lachor
  */
 public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector {
 
@@ -58,7 +59,7 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   
   private static final int DEFAULT_RECONNECT_INTERVAL = 1000;
   
-  IReadConnector delegate;
+  private IReadConnector delegate;
   
   protected Date reconnectTime;
 
@@ -84,13 +85,27 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     super(id);
   }
 
+  /**
+   * Initialises start and reconnect times. Calls {@link #connect()} on the delegate.
+   * Keeps count of the number of calls.
+   */
   public void connect() {
     initTimes();
     delegate.connect();
     count++;
+    log.debug(getId() + " delegate #connect count = " + count);
     calculateReconnectTime();
   }
 
+  /**
+   * Calls to {@link #next(long)} on the <code>delegate</code>, but first makes
+   * sure the time is right, i.e. we're past the <code>startTime</code> and 
+   * the delegate isn't dry. 
+   * If the delegate *is* dry, and we're past the <code>reconnectTime</code>
+   * the delegate is disconnectoed and connected again.
+   * If despite the reconnection the delegate is still dry, it sleeps for 
+   * the length of the <code>timeout</code>. 
+   */
   public Object[] next(long timeoutMs) throws ComponentException {
     Date now = new Date();
 
@@ -103,13 +118,14 @@ public abstract class AbstractPollingReadConnector extends Component implements 
       return delegate.next(timeoutMs);
     } else {
       sleepNoThrow(timeoutMs);
+//      return new Object[0];
       return null;
     }
   }
   
   /**
-   * Initialises connect and reconnect times in a connector
-   * specific way.
+   * Initialises connect and reconnect times to current time. 
+   * This method will typically be overridden to init times in a connector specific way.
    */
   protected void initTimes() {
     if (startTime == null) {
@@ -120,23 +136,21 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
   
-
   /**
-   * Calculates reconnect time.
+   * Recalculates reconnect time but adding <code>DEFAULT_RECONNECT_INTERVAL</code> to 
+   * the current <code>reconnectTime<code>.
+   * This method will typically be overridden to init times in a connector specific way.
    */
   protected void calculateReconnectTime() {
     reconnectTime = new Date(reconnectTime.getTime() + DEFAULT_RECONNECT_INTERVAL);
     log.info(getId() + " next poll time = " + reconnectTime.toString());
   }
-
-  private void sleepNoThrow(long timeoutMs) {
-    try {
-      Thread.sleep(timeoutMs);
-    } catch (InterruptedException e) {
-      /* ignores errors */
-    }
-  }
   
+  /**
+   * @return true if either the <code>delegate</code> is dry or the number of calls to
+   *         the <code>delegate</code> has exceeded the max limit.
+   * @see IReadConnector#isDry()
+   */
   public boolean isDry() {
     return delegate.isDry() && limit > 0 && count >= limit;
   }
@@ -144,8 +158,7 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   /**
    * Optional. Defaults to 1
    * 
-   * @param limit
-   *          the number of polls to perform before exiting the adaptor. A limit
+   * @param limit the number of polls to perform before exiting the adaptor. A limit
    *          of less than 1 indicates an infinte loop and the adaptor will
    *          never exit!
    */
@@ -157,21 +170,46 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
   }
 
+  private void sleepNoThrow(long timeoutMs) {
+    try {
+      Thread.sleep(timeoutMs);
+    } catch (InterruptedException e) {
+      /* ignores errors */
+    }
+  }
+  
+  /**
+   * Forwards to the <code>delegate<code>.
+   * 
+   * @see IReadConnector#disconnect()
+   */
   public void disconnect() {
-    log.debug("Forwarding to the delegate.");
     this.delegate.disconnect();  
   }
 
+  /**
+   * Forwards to the <code>delegate<code>.
+   * 
+   * @see IReadConnector#getReaderContext()
+   */
   public Object getReaderContext() {
-    log.debug("Forwarding to the delegate.");
     return this.delegate.getReaderContext();
   }
   
+  /**
+   * Forwards to the <code>delegate<code>.
+   * 
+   * @see IReadConnector#setReaderConext(Object)
+   */
   public void setReaderConext(Object context) {
-    log.debug("Forwarding to the delegate.");
     this.delegate.setReaderConext(context);
   }
 
+  /**
+   * Makes sure that the <code>delegate</code> has been set.
+   * 
+   * @see IReadConnector#validate(List)
+   */
   public void validate(List exceptions) {
     log.debug("Forwarding to the delegate.");
     if (delegate == null) {
@@ -180,7 +218,11 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     }
     this.delegate.validate(exceptions);
   }
-
+  
+  /**
+   * @return the delegate#getResource() if the delegate is an ITransactional, null otherwise.
+   * @see ITransactional#getResource()
+   */
   public Object getResource() {
     if( this.delegate instanceof ITransactional){
       return ((ITransactional) this.delegate).getResource();
@@ -189,15 +231,20 @@ public abstract class AbstractPollingReadConnector extends Component implements 
       return null;
     }
   }
-
-  public IReadConnector getReadConnector() {
-    return this.delegate;
-  }
   
+  /**
+   * Sets the delegate IReadConnector.
+   * 
+   * @param delegate the delegate IReadConnector
+   * @see IPollingReadConnector#getDelegate()
+   */
   public void setDelegate(IReadConnector delegate) {
     this.delegate = delegate;
   }
 
+  /**
+   * @see IPollingReadConnector#getDelegate()
+   */
   public IReadConnector getDelegate() {
     return delegate;
   }

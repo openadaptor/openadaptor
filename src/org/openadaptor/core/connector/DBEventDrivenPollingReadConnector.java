@@ -43,8 +43,8 @@ import org.openadaptor.util.ThreadUtil;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /** 
- * A polling read connector that uses a stored proc to poll for database events, these
- * events must be in a specific format and this component will convert that into
+ * A polling read connector that uses a stored procedure to poll for database events. 
+ * These events must be in a specific format and this component will convert that into
  * a call to underlying connector to query the data that relates to the event. 
  * By default it calls a predefined stored procedure called OA3_GetNextQueuedEvent. 
  * Refer to openadaptor resources for the schema it is associated with.
@@ -80,35 +80,11 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   
   /**
    * Constructor.
-   * @param id the id
+   * @param id a descriptive identifier for this connector.
    */
   public DBEventDrivenPollingReadConnector(String id) {
     super(id);
   }
-
-  /**
-   * sets the stored procedure used to poll for data events
-   */
-  public void setEventPollStoredProcedure(String eventPollSP) {
-    this.eventPollSP = eventPollSP;
-  }
-
-  /**
-   * Set service id for data events we are polling for
-   */
-  public void setEventServiceID(final String eventServiceID) {
-    this.eventServiceID = eventServiceID;
-  }
-
-  /**
-   * Set event type id for data events we are polling for, if unset
-   * then all event types will be polled
-   * @param eventTypeID
-   */
-  public void setEventTypeID(final String eventTypeID) {
-    this.eventTypeID = eventTypeID;
-  }
-
  
   /**
    * polls for the data that relates to the next event in the database
@@ -116,18 +92,13 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
    * null if there are no outstanding events to process.
    */
   public Object[] next(long timeoutMs) throws ComponentException {
-    log.info("Polling..");
+    log.debug("Polling for events..");
     Object[] data = null;
     IOrderedMap event = getNextEvent();
     if (event != null) {      
-      delegate.setReaderConext(event);
-      data = delegate.next(timeoutMs);
+      getDelegate().setReaderConext(event);
+      data = getDelegate().next(timeoutMs);
     } else {
-      //
-      // @todo - eventually this sleeping should be removed from here. The same effect could be
-      // achieved by wrapping this polling connector in the LoopingPollingReadConnector and defining poll
-      // interval there
-      //
       ThreadUtil.sleepNoThrow(timeoutMs);
     }
     return data;
@@ -150,10 +121,9 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
     } catch (SQLException e) {
       throw new ConnectionException("failed to create poll callable statement, " + e.getMessage(), e, null);
     }
-    delegate.connect();
+    super.connect();
   }
 
-  
   /**
    * gets next statement to execute against the database, by calling
    * the eventPollSP and converting its ResultSet to a CallableStatement
@@ -185,6 +155,29 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
+  }
+  
+  /**
+   * sets the stored procedure used to poll for data events
+   */
+  public void setEventPollStoredProcedure(String eventPollSP) {
+    this.eventPollSP = eventPollSP;
+  }
+
+  /**
+   * Set service id for data events we are polling for
+   */
+  public void setEventServiceID(final String eventServiceID) {
+    this.eventServiceID = eventServiceID;
+  }
+
+  /**
+   * Set event type id for data events we are polling for, if unset
+   * then all event types will be polled
+   * @param eventTypeID
+   */
+  public void setEventTypeID(final String eventTypeID) {
+    this.eventTypeID = eventTypeID;
   }
   
 }

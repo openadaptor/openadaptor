@@ -27,7 +27,6 @@
 package org.openadaptor.core.connector;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -77,6 +76,8 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
 
   /**
    * Constructor.
+   * 
+   * @param id a descriptive identifier for this connector.
    */
   public CronnablePollingReadConnector(String id) {
     super(id);
@@ -141,16 +142,16 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
     limit = 0;
   }
   
+  /**
+   * If <code>forceInitialPoll</code> is not set, initialises the <code>startTime</code>
+   * to the first event scheduled in cron.
+   * The delegates the initialisation to the super class. 
+   */
   protected void initTimes() {
-    if (startTime == null) {
-      startTime = new Date();
-      if (!forceInitialPoll) {
-        startTime = cron.getFireTimeAfter(startTime);
-      }
+    if (startTime == null && !forceInitialPoll) {
+       startTime = cron.getFireTimeAfter(startTime);
     }
-    if (reconnectTime == null) {
-      reconnectTime = new Date();
-    }
+    super.initTimes();
   }
   
   protected void calculateReconnectTime() {

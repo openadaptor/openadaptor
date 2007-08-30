@@ -44,7 +44,6 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.node.ReadNode;
-import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
@@ -336,16 +335,17 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       IRunnable runnable = (IRunnable) iter.next();
       exitCode += runnable.getExitCode();
     }
-    System.out.println("Exit code: " + exitCode);
     return exitCode;
   }
   
   /**
-   * Returns a list of exit errors (instances of Throwable) from all
-   * Runnables in the adaptor. The list will be empty if none of the nodes (connectors, processors)
-   * in the adaptor produced an error, or if the adaptor has an exceptionProcessor set up.
+   * Returns a list of exit errors (instances of Throwable) from all Runnables in this adaptor. 
+   * The list will be empty if none of the nodes (connectors, processors) in the adaptor 
+   * produced an error, or if the adaptor has an exception handler set up (via the 
+   * <code>exceptionProcessor</code> property on the <code>Router</code>).
    * 
-   * @return a list of exit errors from all Runnables in the adaptor.
+   * @return a list of exit errors from all Runnables in the adaptor. Empty list if no unhandled 
+   *         errors occured in any of the runnables.
    */
   public List getExitErrors(){
     List exitErrors = new ArrayList();
