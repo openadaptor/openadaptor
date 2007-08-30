@@ -118,7 +118,7 @@ public class WriteNode extends Node {
 	public Response process(Message msg) {
     
     Object resource = null;
-    if (connector instanceof ITransactional) {
+    if ((connector instanceof ITransactional) && (msg.getTransaction() != null)) {
       resource = ((ITransactional)connector).getResource();
       if (resource != null) {
         log.debug(getId() + " enlisting in transaction");
@@ -141,7 +141,6 @@ public class WriteNode extends Node {
 				response.addExceptions(batch);
 			}
 		}
-
 		// the output from the processor forms the input to the connector
 		// so call the connector and update the response with the results
 		Object[] inputs = processorResponse.getCollatedOutput();
@@ -163,11 +162,9 @@ public class WriteNode extends Node {
 				response.addOutput(output);
 			}
 		}
-
-    if (resource != null) {
+    if ((resource != null) && (msg.getTransaction() != null)) {
       msg.getTransaction().delistForCommit(resource);
     }
-    
 		return response;
 	}
 

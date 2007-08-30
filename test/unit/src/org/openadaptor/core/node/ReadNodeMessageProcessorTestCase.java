@@ -59,6 +59,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
    * Test invoking 'process' on a correctly configured IMessageProcessor instance.
    */
   public void testProcess() {
+    readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {inputPayload}));
     readConnectorMock.stubs().method("getReaderContext");
     super.testProcess();
@@ -69,6 +70,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
    * for a ReadNode and the Response should contain the output from the ReadConnector.
    */
   public void testProcessWithNoProcessorSet() {
+    readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {responsePayload}));
     readConnectorMock.stubs().method("getReaderContext");
     super.testProcessWithNoProcessorSet();
@@ -76,6 +78,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
 
 
   public void testNullFromConnector() {
+    readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(null));
     Message message = new Message(new Object[]{}, null, null);
     Response response = testMessageProcessor.process(message);
@@ -84,6 +87,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
   }
 
   public void testNoDataFromConnector() {
+    readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {}));
     Message message = new Message(new Object[]{}, null, null);
     Response response = testMessageProcessor.process(message);

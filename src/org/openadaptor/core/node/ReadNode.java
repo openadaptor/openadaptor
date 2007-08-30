@@ -27,8 +27,6 @@
 
 package org.openadaptor.core.node;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.*;
@@ -41,6 +39,8 @@ import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.ITransactional;
+
+import java.util.List;
 
 /**
  * This class should be used to "wrap" an {@link IReadConnector}. It handles
@@ -109,6 +109,10 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     this.transactionManager = transactionManager;
   }
 
+  public ITransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+
   public void validate(List exceptions) {
     super.validate(exceptions);
     if (connector == null) {
@@ -142,36 +146,39 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       log.warn(getId() + " has not been started");
       exitCode = 0;
     }
+    ITransaction transaction = null;
     try {
       log.info(getId() + " running");
-      ITransaction transaction = null;
-      while (isState(State.STARTED) && !connector.isDry()) {
-        try {
-          if (transaction == null) {
-            transaction = transactionManager.getTransaction();
-            enlistConnector(transaction);
-          }          
-          if (getNextAndProcess(transaction)) {
-            if (transaction.getErrorOrException() == null) {
-              log.debug(getId() + " committing transaction");
-              transaction.commit();
-            } else {
-              log.info(getId() + " rolling back transaction");
-              transaction.rollback();
-            }
-            transaction = null;
+      while (isState(State.STARTED)) {
+        if ((transaction == null) && (getTransactionManager() != null)) {
+          transaction = getTransactionManager().getTransaction();
+        }
+        Response response = process(new Message(new Object[]{}, null, transaction));
+        log.debug("Response is: " + response);
+        if (transaction != null) {
+          if (transaction.getErrorOrException() == null) {
+            log.debug(getId() + " committing transaction");
+            transaction.commit();
+          } else {
+            log.info(getId() + " rolling back transaction");
+            transaction.rollback();
           }
-        } catch (Throwable e) {
-          transaction.setErrorOrException(e);
-          exitCode = 1;
-          exitThrowable = e;
-          log.error(getId() + " uncaught exception, rolling back transaction and stopping", e);
-          transaction.rollback();
           transaction = null;
-          stop();
         }
       }
-    } finally {
+    }
+    catch (Throwable e) {
+      exitCode = 1;
+      exitThrowable = e;
+      log.error(getId() + " uncaught exception, rolling back transaction and stopping", e);
+      if (transaction != null) {
+        transaction.setErrorOrException(e);
+        transaction.rollback();
+        transaction = null;
+      }
+      stop();
+    }
+    finally {
       log.info(getId() + " no longer running");
       disconnectNoThrow();
       super.stop();
@@ -185,20 +192,15 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     }
   }
 
-  private boolean getNextAndProcess(ITransaction transaction) {
-    Object[] data = getNext();
-    if (data != null && data.length != 0) {
-      if (connector.getReaderContext() == prevReaderContext) {
-        resetProcessor(connector.getReaderContext());
-        prevReaderContext = connector.getReaderContext();
-      }
-      Message msg = new Message(data, this, transaction);
-      super.process(msg);   // Am in the proxess of rewriting process. Not yet complete.
-    }
-    return data != null;
-  }
-
   public Response process(Message msg) {
+    Response response = new Response();
+    if (connector.isDry()) {
+      stop();
+      return response;
+    }
+    if (msg.getTransaction() != null) {
+      enlistConnector(msg.getTransaction());
+    }
     Object[] data = getNext();
     if (data != null && data.length != 0) {
       if (connector.getReaderContext() == prevReaderContext) {
@@ -206,9 +208,13 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         prevReaderContext = connector.getReaderContext();
       }
       Message newMessage = new Message(data, this, msg.getTransaction());
-      return super.process(newMessage);
+      response = super.process(newMessage);
+    } else {
+      // Ideally we should still process through the IDataProcessor.
+      // Unfortunately this does not match previously existing behaviour.
+      return super.process(msg);
     }
-    return super.process(msg);
+    return response;
   }
 
   private Object[] getNext() {

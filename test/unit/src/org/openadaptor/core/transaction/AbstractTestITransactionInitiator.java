@@ -24,17 +24,36 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-
 package org.openadaptor.core.transaction;
 
-/**
- * represents a component that will be initiating transactions and thus needs to create
- * them using an {@link ITransactionManager}.
- * 
- * @author perryj
- *
+import org.jmock.MockObjectTestCase;
+import org.jmock.Mock;
+
+/*
+ * File: $Header: $
+ * Rev:  $Revision: $
+ * Created Aug 30, 2007 by oa3 Core Team
  */
-public interface ITransactionInitiator {
-  void setTransactionManager(ITransactionManager transactionManager);
-  public ITransactionManager getTransactionManager();
+
+public abstract class AbstractTestITransactionInitiator extends MockObjectTestCase {
+  protected ITransactionInitiator testTransactionInitiator;
+  protected Mock transactionManagerMock;
+
+  abstract protected ITransactionInitiator instantiateTestTransactionInitiator();
+
+  protected void instantiateMocksFor(ITransactionInitiator transactionInitiator) {
+    transactionManagerMock = mock(ITransactionManager.class);
+    transactionInitiator.setTransactionManager((ITransactionManager)transactionManagerMock.proxy());
+  }
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    testTransactionInitiator = instantiateTestTransactionInitiator();
+    instantiateMocksFor(testTransactionInitiator);
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    testTransactionInitiator = null;
+  }
 }

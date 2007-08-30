@@ -140,9 +140,11 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 		
 		if (messageProcessor != null) {
 			if (!response.containsExceptions()) {
-        msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
-				response = callChainedMessageProcessor(msg);
-			} else {
+        if (!response.isEmpty()) {  // Don't pass on the message if there is no data
+          msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
+				  response = callChainedMessageProcessor(msg);
+        }
+      } else {
 				MessageException[] exceptions = (MessageException[])response.getCollatedExceptions();
 				throw new RuntimeException(exceptions[0].getException());
 			}
