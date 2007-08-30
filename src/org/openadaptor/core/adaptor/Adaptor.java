@@ -532,9 +532,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * Returns the state of this adaptor.
    * Method primarily for JMX use.
    * 
-   * @return the state of the adaptor
+   * @return the state of the adaptor as a String
    */
-  public State getState() {
-    return state;
+  public String getState() {
+    return state.toString();
   }
 }
