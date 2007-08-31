@@ -57,9 +57,11 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   
   private static final String DEFAULT_SP_NAME = "OA_GetNextEvent";
 
+  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+  
   private String eventPollSP = DEFAULT_SP_NAME;
 
-  private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
   
   private String eventServiceID = null;
   
@@ -68,8 +70,6 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
   private CallableStatement pollStatement;
   
   private JDBCConnection jdbcConnection;
-  
-  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
   /**
    * Constructor.
