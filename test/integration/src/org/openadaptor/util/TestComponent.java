@@ -98,7 +98,7 @@ public class TestComponent {
   /**
    * A dummy data processor.
    */
-  public final class DummyDataProcessor extends Component implements IDataProcessor {
+  public static final class DummyDataProcessor extends Component implements IDataProcessor {
     public int counter = 0;
     
     public Object[] process(Object data) {

@@ -881,9 +881,9 @@ when the exception handling is disabled, which means they'll be logged in standa
 
 <br/>Branching in the exception handler may be useful in situations when information about errors is to be sent to multiple destinations.
 For example, it needs to be logged but also generate an an e-mail alert to application owners
-and 'chat' a warning to the organisation's instant messaging system. Let's look at an admittedly somewhat contrived example: <br/><br/>
+and 'chat' a warning to the organisation's instant messaging system. Let's look at an admittedly contrived example: <br/><br/>
 
-<textarea cols="110" rows="20" readonly="true">
+<textarea cols="110" rows="22" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processors">
       <!-- Normal flow path -->
@@ -1007,10 +1007,10 @@ structure of the table which needs to be created beforehand. SQL scripts are pro
 <br/><br/>
 
 
-<p>Here is how to run sample adaptors for paragraphs a, b and c above. For example c look into the file for instructions on setting up the hostpital schema.</p>
+<p>Here is how to run sample adaptors for paragraphs a and c above. For example c look into the file for instructions on setting up the hostpital schema.</p>
 
 <div class="shell"><pre>
-  java org.openadaptor.spring.SpringAdaptor -config step11[a|b|c].xml 
+  java org.openadaptor.spring.SpringAdaptor -config step11[a|c].xml 
 </pre></div>
 
 <br/><br/>

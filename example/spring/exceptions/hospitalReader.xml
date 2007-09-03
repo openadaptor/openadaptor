@@ -36,61 +36,43 @@
   
     insert into testoutput values ('hello mum')
   ]]></description>
-    
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Router"/>
-  </bean>
   
-  <bean id="Router" class="org.openadaptor.core.router.Router">
+   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor" ref="router"/>
+   </bean>
+  
+   <bean id="router" class="org.openadaptor.core.router.Router">
     <property name="processMap">
       <map>
-        <!-- Normal flow -->
-        <entry key-ref="Servlet" value-ref="ConsoleWriter"/> 
-      
-     
-        <!-- Exception processors -->
-        <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
-      
+        <entry key-ref="hospitalReader" value-ref="consoleWriter"/> 
       </map>
     </property>
-  
-    <property name="exceptionProcessor" ref="ExceptionConvertor"/>
   </bean>
   
-  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="port" value="9999"/>
-  </bean>
-   
-  <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
-  
-  <!--  bean id="CustomProcessor" class="CustomProcessor2">
-    <property name="field" value="/Trade/buySell"/>
-    <property name="map">
-      <map>
-        <entry key="BUY" value="B"/>
-        <entry key="SELL" value="S"/>
-      </map>
-    </property>
-  </bean-->
-  
-  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
-    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
     <property name="username" value="sa"/>
     <property name="password" value=""/>
   </bean>
-  
-  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
-  
-  <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
-    <description>Writer which inserts data into test table.</description>
-    <property name="jdbcConnection" ref="jdbcConnection"/>
-    <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
-        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
-      </bean>
-    </property>
+
+  <bean id="hospitalReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+	  <description>Reader which polls database using configured SQL.</description>
+	  <property name="jdbcConnection" ref="JdbcConnection"/>
+	  <property name="resultSetConverter">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+	  </property>
+	  <property name="sql">
+	    <value>
+	      SELECT id, timestamp, data, exception_class_name, originating_component
+	      FROM error_log
+	      WHERE fixed = 'true' AND REPROCESSED = 'false' 
+	    </value>
+	  </property>
+	  <!--  property name="postambleSQL" value="UPDATE ERROR_LOG SET REPROCESSED='true'"/ -->
   </bean>
+       
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
   
 </beans>

@@ -44,7 +44,6 @@ import junit.framework.TestCase;
  * Tests different types of exceptionProcessors.
  * 
  * @author Kris Lachor
- * @todo missing test cases for when the exception handler is a plain IDataProcessor.
  */
 public class ExceptionHandlingTestCase extends TestCase {
   
@@ -53,9 +52,7 @@ public class ExceptionHandlingTestCase extends TestCase {
   private Map processMap = new HashMap();
   
   private Adaptor adaptor = new Adaptor();
-  
-  private TestComponent testComponent = new TestComponent();
-  
+ 
   protected void setUp() throws Exception {
     adaptor.setMessageProcessor(router);
   }
@@ -103,7 +100,7 @@ public class ExceptionHandlingTestCase extends TestCase {
     processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     checkOneException();
   }
-
+  
   private void checkOneException(){
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
@@ -113,6 +110,23 @@ public class ExceptionHandlingTestCase extends TestCase {
     assertTrue(eHandler.counter == 1);
   }
   
+  /**
+   * Starts a simple adaptor with a write node that throws a RuntimeException.
+   * Ensures the exceptionProcessor {@link IDataProcessor + IWriteConnector} was used one time.
+   */
+  public void testOneExceptionFromWriteConnector2(){
+    /* normal flow */
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
+    /* exception handling flow */
+    TestComponent.DummyDataProcessor eHandler = new TestComponent.DummyDataProcessor();
+    processMap.put(eHandler, new TestComponent.TestWriteConnector());
+    router.setProcessMap(processMap);
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    adaptor.run();
+    assertTrue(eHandler.counter == 1);
+  }
+
   /**
    * Starts a simple adaptor with a node that throws a RuntimeException.
    * The exceptionProcessor (perhaps clumsily written or assembled) throws another Exception itself.
@@ -161,7 +175,6 @@ public class ExceptionHandlingTestCase extends TestCase {
     adaptor.run();
     assertTrue(eHandler.counter == 1);
   }
-  
   
   /**
    * Sets {@link ExceptionHandlerProxy} with a custom exception map as the exceptionProcessor.

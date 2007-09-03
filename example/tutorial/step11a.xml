@@ -7,8 +7,41 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
-  <description><![CDATA[
+    <description><![CDATA[    
+   
   Adaptor for step 11a of the tutorial.
+  
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+   
+  This adaptor does the following...
+    
+    * reads XML from stdin
+    * validates XML against schema.xsd (located in the same folder as this file)
+    * writes correct XML to stdout
+    * writes anything that didn't validate to the exception handler (ExceptionHandlerProxy) which
+      here branches off to a FileWriter (writes exceptions to the output/puberror.txt file) and 
+      ExceptionConverter. The ExceptionConverter converts exception to an ordered map, which is then
+      converted to XML with the XMLConverter. Eventually, the XML is printed to the console
+    * example of a valid XML: <Trade><buySell>1</buySell><ticker>1</ticker><price>1</price></Trade>
+    
+  It is designed to illustrate the basic of the Hospital as an exception handler.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config hospitalWriter.xml -bean Adaptor
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
+    
+  once running any data read from std will be validated as XML.
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -19,8 +52,8 @@
     <property name="processMap">
       <map>
         <!-- Normal flow -->
-        <entry key-ref="Servlet" value-ref="CustomProcessor"/> 
-        <entry key-ref="CustomProcessor" value-ref="ConsoleWriter"/> 
+        <entry key-ref="ConsoleReader" value-ref="Validator"/> 
+        <entry key-ref="Validator" value-ref="ConsoleWriter"/> 
      
         <!-- Exception processors -->
         <entry key-ref="ExceptionHandlerProxy">
@@ -35,26 +68,15 @@
       </map>
     </property>
   
+    <!--  Entry point to exception handling. --> 
     <property name="exceptionProcessor" ref="ExceptionHandlerProxy"/>
   </bean>
   
-  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="port" value="9999"/>
-   </bean>
+  <bean id="ExceptionHandlerProxy" class="org.openadaptor.core.exception.ExceptionHandlerProxy"/>
+  
+  <bean id="ConsoleReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="ExceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
-  
-  <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
-  
-  <bean id="CustomProcessor" class="CustomProcessor2">
-    <property name="field" value="/Trade/buySell"/>
-    <property name="map">
-      <map>
-        <entry key="BUY" value="B"/>
-        <entry key="SELL" value="S"/>
-      </map>
-    </property>
-  </bean>
   
   <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
     <property name="rootElementTag" value="Exception"/>
@@ -63,7 +85,11 @@
   <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
     <property name="filename" value="output/puberror.txt"/>
   </bean>
+   
+  <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
-  <bean id="ExceptionHandlerProxy" class="org.openadaptor.core.exception.ExceptionHandlerProxy"/>
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
   
 </beans>
