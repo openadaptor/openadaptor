@@ -33,9 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.IExceptionHandler;
-import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.node.Node;
 
 /**
@@ -134,31 +134,7 @@ public class Router extends AbstractRouter implements IMessageProcessor {
     routingMap.setDiscardMap(map);
   }
   
-  /**
-   * Sets the exceptionMap which defines how to route MessageExceptions from one
-   * adaptor component to anothers. 
-   * The keys must be IMessageProcessors and the values Maps of Maps. Where the keys
-   * are exception classnames and the values List of IMessageProcessors
-   * However this setter will do a fair amount of autoboxing to make the caller's life 
-   * slightly easier. Non list values will automatically be boxed into a list. 
-   * Values which are not actually IMessageProcessors but are Connectors or Processors will
-   * be automatically boxed in a Node. 
-   * If the parameters is not a map of maps then value is interpreted as the exceptin map
-   * for all components.
-   * There is a default Autoboxer but this can be overriden.
-   * 
-   * @param map
-   * @see MessageException
-   * @see IMessageProcessor
-   * @see Node
-   */
-  private void setExceptionMap(Map map) {
-    if (exceptionMapConfigured) {
-      throw new RuntimeException("Only one of exceptionMap and exceptionProcessor properties may be configured");
-    }
-    routingMap.setExceptionMap(map);
-  }
-
+  
   public void setProcessors(List processorList){
     // create process map from list of processors
     if ((processorList==null) || (processorList.isEmpty())) { 
@@ -176,41 +152,50 @@ public class Router extends AbstractRouter implements IMessageProcessor {
   /**
    * This allows configuration of a single 'catch-all' processor for exceptions.
    * <p>
-   * the list of exceptions may be configured via the exceptionList property.
-   * If not it will default to the single exception DEFAULT_EXCEPTION_CLASSNAME
+   * Populates the exceptionMap on the {@link RoutingMap} with either the custom
+   * exceptionMap from the {@link IExceptionHandler} (if found) or the default 
+   * <code>exceptinList</code>. 
    * 
-   * @param exceptionProcessor
+   * @param exceptionProcessor this can be any of:
+   *      <ul>
+   *      <li>{@link IDataProcessor}</li>
+   *      <li>{@link IWriteConnector}</li>
+   *      <li>{@link IExceptionHandler}</li>
+   *      </ul>
+   * @see IExceptionHandler#setExceptionMap(Map)
    */
   public void setExceptionProcessor(Object exceptionProcessor){
     
-    /* 
-     * Autobox but first check if it hasn't already been boxed in 
-     * the processMap.
-     */
+    /* Autobox but first check if already hasn't been boxed in the processMap */
     IMessageProcessor boxed = routingMap.getIfAlreadyAutoboxed(exceptionProcessor);
     if(null == boxed){
        boxed = (IMessageProcessor) autoboxer.autobox(exceptionProcessor);
     }
     routingMap.setBoxedExceptionProcessor(boxed);
     
-    /* Set exceptionMap - check if a custom map was defined on the IExceptionHandler. */
+    /* 
+     * Check if a custom exceptionMap was defined on the IExceptionHandler and
+     * set it on the routingMap if necessary
+     */
     if( exceptionProcessor instanceof IExceptionHandler ){
       IExceptionHandler exceptionHandler = (IExceptionHandler) exceptionProcessor;
       Map exceptionMap = exceptionHandler.getExceptionMap();
       if(null != exceptionMap){
-        setExceptionMap(exceptionMap);
+        routingMap.setExceptionMap(exceptionMap);
         return;
       }
     }
     
-    /* If not then populate the exceptionMap from the default exceptionList. */
+    /* 
+     * If no custom exceptionMap found in the IExceptionHandler, populate the 
+     * exceptionMap from the default exceptionList. 
+     */
     Map exceptionMap=new HashMap();
     Iterator it=exceptionList.iterator();
     while(it.hasNext()) {
       exceptionMap.put(it.next(), boxed);
     }
-    setExceptionMap(exceptionMap);
+    routingMap.setExceptionMap(exceptionMap);
   }
-
 
 }

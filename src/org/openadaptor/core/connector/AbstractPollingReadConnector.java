@@ -51,6 +51,7 @@ import org.openadaptor.core.transaction.ITransactional;
  * <li>{@link IReadConnector#disconnect()}
  * </ul>
  * 
+ * @see {@link IPollingReadConnector}, {@link IReadConnector}.
  * @author Fred Perry, Kris Lachor
  */
 public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector {

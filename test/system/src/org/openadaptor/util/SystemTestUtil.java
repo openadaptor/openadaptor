@@ -37,7 +37,7 @@ import org.springframework.core.io.UrlResource;
 public class SystemTestUtil {
   
   /**
-   * Runs adaptor using a Spring config file.
+   * Runs adaptor using a given Spring config file.
    * 
    * @param caller calling object
    * @param resourceLocation path to the config file.

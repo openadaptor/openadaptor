@@ -44,6 +44,7 @@ import junit.framework.TestCase;
  * Tests different types of exceptionProcessors.
  * 
  * @author Kris Lachor
+ * @todo missing test cases for when the exception handler is a plain IDataProcessor.
  */
 public class ExceptionHandlingTestCase extends TestCase {
   
@@ -61,10 +62,10 @@ public class ExceptionHandlingTestCase extends TestCase {
 
   /**
    * Starts a simple adaptor that does not throw exceptions,
-   * ensures the exceptionProcessor wasn't used.
+   * ensures there were no calls to the exceptionProcessor.
    */
   public void testNoException(){
-    processMap.put(testComponent.new TestReadConnector(), new TestComponent.TestWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.TestWriteConnector());
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -72,13 +73,38 @@ public class ExceptionHandlingTestCase extends TestCase {
     adaptor.run();
     assertTrue(eHandler.counter == 0);
   }
+
+//  Test commented out, pending a fix in ReadNode and enabling exception handling for read
+//  connectors.
+//  
+//  /**
+//   * Starts a simple adaptor with a read connector node that throws a RuntimeException.
+//   * Ensures the exceptionProcessor {@link IExceptionHandler} was used one time.
+//   */
+//  public void testOneExceptionFromReadConnector(){
+//    processMap.put(new TestComponent.ExceptionThrowingReadConnector(), new TestComponent.TestWriteConnector());
+//    checkOneException();
+//  }
   
   /**
-   * Starts a simple adaptor with a write node that throws a RuntimeException,
-   * ensures the exceptionProcessor was used one time.
+   * Starts a simple adaptor with a data processor node that throws a RuntimeException.
+   * Ensures the exceptionProcessor {@link IExceptionHandler} was used one time.
    */
-  public void testOneException(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+  public void testOneExceptionFromDataProcessor(){
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingDataProcessor());
+    checkOneException();
+  }
+  
+  /**
+   * Starts a simple adaptor with a write node that throws a RuntimeException.
+   * Ensures the exceptionProcessor {@link IExceptionHandler} was used one time.
+   */
+  public void testOneExceptionFromWriteConnector(){
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
+    checkOneException();
+  }
+
+  private void checkOneException(){
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -89,14 +115,14 @@ public class ExceptionHandlingTestCase extends TestCase {
   
   /**
    * Starts a simple adaptor with a node that throws a RuntimeException.
-   * The exceptionProcessor was badly written or assembled - itself it throws another Exception.
-   * Ensures the exceptionProcessor was used one time, and that it was *not* used
-   * to handle the exception it threw itself (would cause an endless catch - rethrow loop).
+   * The exceptionProcessor (perhaps clumsily written or assembled) throws another Exception itself.
+   * The test ensures the exceptionProcessor  {@link IExceptionHandler} was used one time, and that it 
+   * was *not* used to handle the exception it threw itself (would cause an endless catch - rethrow loop).
    */
   public void testNoEndlessExceptionThrowingLoop(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     router.setProcessMap(processMap);
-    TestComponent.ExceptionThrowingExceptionHandler eHandler = new TestComponent.ExceptionThrowingExceptionHandler();
+    ExceptionThrowingExceptionHandler eHandler = new ExceptionThrowingExceptionHandler();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
     adaptor.run();
@@ -104,29 +130,30 @@ public class ExceptionHandlingTestCase extends TestCase {
   }
   
   /**
-   * Same as testNoEndlessExceptionThrowingLoop but uses IWriteConnector for the exception
+   * Same as testNoEndlessExceptionThrowingLoop but uses {@link IWriteConnector} for the exception
    * handler.
    */
   public void testNoEndlessExceptionThrowingLoop2(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     router.setProcessMap(processMap);
-    TestComponent.ExceptionThrowingWriteConnector eHandler = testComponent.new ExceptionThrowingWriteConnector();
+    TestComponent.ExceptionThrowingWriteConnector eHandler = new TestComponent.ExceptionThrowingWriteConnector();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
   }
-  
+   
   /**
    * Same as testNoEndlessExceptionThrowingLoop but uses an the exception
-   * handler made up of multiple rather than a single node.
+   * handler made up of multiple rather than a single node. Uses {@link IWriteConnector} for the exception
+   * handler.
    */
   public void testNoEndlessExceptionThrowingLoop3(){
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     /* normal flow */
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     /* exception handling flow */
-    processMap.put(eHandler, testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(eHandler, new TestComponent.ExceptionThrowingWriteConnector());
     
     router.setProcessMap(processMap);
     assertTrue(eHandler.counter == 0);
@@ -137,10 +164,10 @@ public class ExceptionHandlingTestCase extends TestCase {
   
   
   /**
-   * Sets ExceptionHandlerProxy with a custom exception map as the exceptionProcessor.
+   * Sets {@link ExceptionHandlerProxy} with a custom exception map as the exceptionProcessor.
    */
   public void testExceptionHandlerProxy(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     router.setProcessMap(processMap);
     ExceptionHandlerProxy exceptionHandlerProxy = new ExceptionHandlerProxy();
     TestComponent.DummyExceptionHandler handler1 = new TestComponent.DummyExceptionHandler();
@@ -156,12 +183,12 @@ public class ExceptionHandlingTestCase extends TestCase {
   }
   
   /**
-   * Starts an adapter without exceptionProcessor. One of the nodes
+   * Starts an adapter with no exceptionProcessor set. One of the nodes
    * throws an exception. This verifies the errorCode is non-zero and exception is 
    * available in the adapter. 
    */
   public void testNoExceptionProcessorWithOneReader(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
     router.setProcessMap(processMap);
     assertTrue(adaptor.getExitCode()==0);
     assertNotNull(adaptor.getExitErrors());
@@ -181,8 +208,8 @@ public class ExceptionHandlingTestCase extends TestCase {
    * @todo sometimes fails with the adaptor returning exitCode==1, need to investigate.
    */
 //  public void testNoExceptionProcessorWithTwoReaders1() throws Exception {
-//    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
-//    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+//    processMap.put(new TestComponent.TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
+//    processMap.put(new TestComponent.TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
 //    router.setProcessMap(processMap);
 //    assertTrue(adaptor.getExitCode()==0);
 //    assertNotNull(adaptor.getExitErrors());
@@ -202,8 +229,8 @@ public class ExceptionHandlingTestCase extends TestCase {
    * one of which deals with an exception. Expects one exception after the adapter completes.  
    */
   public void testNoExceptionProcessorWithTwoReaders2(){
-    processMap.put(testComponent.new TestReadConnector(), testComponent.new ExceptionThrowingWriteConnector());
-    processMap.put(testComponent.new TestReadConnector(), new TestComponent.TestWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.TestWriteConnector());
     router.setProcessMap(processMap);
     assertTrue(adaptor.getExitCode()==0);
     assertNotNull(adaptor.getExitErrors());
@@ -216,4 +243,18 @@ public class ExceptionHandlingTestCase extends TestCase {
     assertTrue(re.getMessage().indexOf(TestComponent.TEST_ERROR_MESSAGE) != -1);
   }
 
+  /**
+   * An exception handler that throws an exception itself. Has a calls counter.
+   */
+  public static final class ExceptionThrowingExceptionHandler extends ExceptionHandlerProxy {
+    public int counter = 0;
+    
+    public Object[] process(Object data) {
+      counter++;
+      throw new RuntimeException("Test exception from the exception handler");
+    }
+  }
 }
+
+
+

@@ -31,17 +31,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
 import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.spring.SpringAdaptor;
@@ -82,6 +77,8 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
   
   private static final String HOSPITAL_READER = "hospital_db_reader.xml";
  
+  TestComponent testComponent = new TestComponent();
+  
   /**
    * @return hospital table definition.
    */
@@ -266,94 +263,5 @@ public class HospitalTestCase extends JDBCConnectionTestCase {
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(FIX_ALL_RECORDS_SQL);
     preparedStmt.executeUpdate();
     preparedStmt.close();
-  }
- 
-  
-  //
-  // Helper read and write connectors, referenced from Spring XML config files.
-  //
-  
-  /**
-   * Simple read connector that returns one item of data then becomes dry.
-   */
-  public static final class TestReadConnector implements IReadConnector {
-    private boolean isDry = false;
-    
-    public void connect() {}
-    public void disconnect() {}
-    public Object getReaderContext() {return null;}
-    public void setReaderConext(Object context) {}
-   
-    public boolean isDry() { 
-      boolean result = isDry;
-      isDry = true;
-      return result;
-    }
-   
-    public Object[] next(long timeoutMs) { 
-      return new String[]{"Dummy read connector test data"}; 
-    }
-    
-    public void validate(List exceptions) {}
-  }
-  
-  /**
-   * Simple read connector that throws an exception.
-   */
-  public static final class ExceptionThrowingReadConnector implements IReadConnector {
-    private boolean isDry = false;
-    
-    public void connect() {}
-    public void disconnect() {}
-    public Object getReaderContext() {return null;}
-    public void setReaderConext(Object context) {}
-   
-    public boolean isDry() { 
-      boolean result = isDry;
-      isDry = true;
-      return result;
-    }
-   
-    public Object[] next(long timeoutMs) { 
-      throw new RuntimeException("Test read connector exception");
-    }
-    
-    public void validate(List exceptions) {}
-  }
-   
-  /**
-   * Dummy write connector - does nothing.
-   */
-  public static final class DummyWriteConnector extends Component implements IWriteConnector {
-    public void connect() {}
-    public void disconnect() {}
-    public Object deliver(Object[] data) {return null;}
-    public void validate(List exceptions) {}
-  }
-  
-  /**
-   * Simple write connector that throws an exception.
-   */
-  public static final class ExceptionThrowingWriteConnector extends Component implements IWriteConnector {
-    public void connect() {}
-    public void disconnect() {}
-    public Object deliver(Object[] data) {
-       throw new RuntimeException();
-    }
-    public void validate(List exceptions) {}
-  }
- 
-  /**
-   * A data processor connector that throws an exception.
-   */
-  public static final class ExceptionThrowingDataProcessor extends Component implements IDataProcessor {
-
-    public Object[] process(Object data) {
-      throw new RuntimeException("Sample exception from test data processor.");
-    }
-
-    public void reset(Object context) {}
-
-    public void validate(List exceptions) {}
   }
 }

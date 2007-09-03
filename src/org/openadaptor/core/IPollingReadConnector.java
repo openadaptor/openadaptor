@@ -33,14 +33,17 @@ import org.openadaptor.core.IReadConnector;
  * for polling external resources by the underlying read connector (delegate). The simplest behaviour
  * might be for the underlying read connector to execute one call for data and exit, a more 
  * complex one might involve multimple calls with a specified time interval in between, 
- * with the interval perhaps different for when the previous call returned data and when it 
- * did not return.
+ * with the interval perhaps different for when the previous call returned or did not return data.
  * 
  * @author Kris Lachor
  */
 public interface IPollingReadConnector extends IReadConnector {
     
   /**
+   * Returns the underlying read connector for which the polling strategy
+   * is defined. The underlying connector can either be a 'concrete' IReadConnector
+   * (jms, jdbc, file, ...) or another IPollingReadConnector.
+   * 
    * @return the underlying polling read connector.
    */
   IReadConnector getDelegate();

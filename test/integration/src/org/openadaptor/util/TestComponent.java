@@ -31,20 +31,106 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ExceptionHandlerProxy;
 
-
 /**
- * Util class provides several components - connectors, processors, for the use
- * in integration tests. 
+ * Utility class provides several components - connectors, processors, for the use
+ * in integration/system tests. 
+ * 
+ * Test components are defined as *static* inner so that they can be easily instantiated via 
+ * Spring, where bean names are binary class names, e.g.:
+ * org.openadaptor.util.TestComponent$ExceptionThrowingDataProcessor
  * 
  * @author Kris Lachor
  */
 public class TestComponent {
   
   public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION AND SHOULD BE IGNORED.";
+  
+  //
+  // IReadConnectors
+  //
+  //
+  
+  /**
+   * A read connector that returns one item of data (a String) then becomes dry.
+   */
+  public static class TestReadConnector implements IReadConnector {
+    private boolean isDry = false;
+    
+    public void connect() {}
+    public void disconnect() {}
+    public Object getReaderContext() {return null;}
+    public void setReaderConext(Object context) {}
+   
+    public boolean isDry() { 
+      boolean result = isDry;
+      isDry = true;
+      return result;
+    }
+   
+    public Object[] next(long timeoutMs) { 
+      return new String[]{"Dummy read connector test data"}; 
+    }
+    
+    public void validate(List exceptions) {}
+  }
+  
+  
+  /**
+   * A write connector that throws a RuntimeException whenever it receives 
+   * data to write.
+   */
+  public static final class ExceptionThrowingReadConnector extends TestReadConnector {  
+    public Object[] next(long timeoutMs) { 
+      throw new RuntimeException(TEST_ERROR_MESSAGE);
+    }
+  }
+  
+  //
+  // IDataProcessors
+  //
+  //
+  
+  /**
+   * A dummy data processor.
+   */
+  public final class DummyDataProcessor extends Component implements IDataProcessor {
+    public int counter = 0;
+    
+    public Object[] process(Object data) {
+      counter++;
+      return new Object[]{data};
+    }
+    
+    public void validate(List exceptions) {}
+    public void reset(Object context) {}
+  }
+  
+  /**
+   * A data processor that throws a RuntimeException whenever it receives 
+   * data to write.
+   */
+  public static final class ExceptionThrowingDataProcessor extends Component implements IDataProcessor {
+    public int counter = 0;
+    
+    public Object[] process(Object data) {
+      counter++;
+      throw new RuntimeException(TEST_ERROR_MESSAGE);
+    }
+    
+    public void validate(List exceptions) {}
+    public void reset(Object context) {}
+  }
+  
+  
+  //
+  // IWriteConnectors
+  //
+  //
   
   /**
    * A write connector that checks the data it receives is not empty. Does nothing
@@ -72,35 +158,10 @@ public class TestComponent {
   }
   
   /**
-   * A read connector that returns one item of data (a String) then becomes dry.
-   */
-  public final class TestReadConnector implements IReadConnector {
-    private boolean isDry = false;
-    
-    public void connect() {}
-    public void disconnect() {}
-    public Object getReaderContext() {return null;}
-    public void setReaderConext(Object context) {}
-   
-    public boolean isDry() { 
-      boolean result = isDry;
-      isDry = true;
-      return result;
-    }
-   
-    public Object[] next(long timeoutMs) { 
-      return new String[]{"Dummy read connector test data"}; 
-    }
-    
-    public void validate(List exceptions) {}
-  }
-  
- 
-  /**
    * A write connector that throws a RuntimeException whenever it receives 
    * data to write.
    */
-  public final class ExceptionThrowingWriteConnector extends Component implements IWriteConnector {
+  public static final class ExceptionThrowingWriteConnector extends Component implements IWriteConnector {
     public int counter = 0;
     public void connect() {}
     public void disconnect() {}
@@ -110,6 +171,12 @@ public class TestComponent {
     }
     public void validate(List exceptions) {}
   }
+  
+  
+  //
+  // IExceptionHandlers
+  //
+  //
   
   /**
    * An exception handler with a calls counter.
@@ -122,19 +189,4 @@ public class TestComponent {
       return super.process(data);
     } 
   }
-  
-  /**
-   * An exception handler that throws an exception itself. Has a calls counter.
-   * 
-   * @todo unlikely to be used from many test cases - move from here to the calling class
-   */
-  public static final class ExceptionThrowingExceptionHandler extends ExceptionHandlerProxy {
-    public int counter = 0;
-    
-    public Object[] process(Object data) {
-      counter++;
-      throw new RuntimeException("Test exception from the exception handler");
-    }
-  }
-
 }

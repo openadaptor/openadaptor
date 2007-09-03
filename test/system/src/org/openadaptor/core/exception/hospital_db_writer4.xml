@@ -40,11 +40,10 @@
     <property name="password" value=""/>
   </bean>
   
-  <bean id="reader" class="org.openadaptor.core.exception.HospitalTestCase$TestReadConnector"/>
+  <bean id="reader" class="org.openadaptor.util.TestComponent$TestReadConnector"/>
     
-  <bean id="writer" class="org.openadaptor.core.exception.HospitalTestCase$DummyWriteConnector"/>
+  <bean id="writer" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
   
-  <bean id="exceptionThrowingProcessor" class="org.openadaptor.core.exception.HospitalTestCase$ExceptionThrowingDataProcessor"/>
+  <bean id="exceptionThrowingProcessor" class="org.openadaptor.util.TestComponent$ExceptionThrowingDataProcessor"/>
  
-  
 </beans>

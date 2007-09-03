@@ -31,6 +31,7 @@ import java.util.Map;
 
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.node.Node;
 
 /**
  * Interface for OA exception handler that allows for setting a custom
@@ -41,14 +42,29 @@ import org.openadaptor.core.IMessageProcessor;
 public interface IExceptionHandler extends IDataProcessor{
   
   /**
-   * Sets a bespoke exception map.
+   * Sets the exceptionMap which defines how to route MessageExceptions from one
+   * adaptor component to anothers. 
+   * The keys must be IMessageProcessors and the values Maps of Maps. Where the keys
+   * are exception classnames and the values List of IMessageProcessors
+   * However this setter will do a fair amount of autoboxing to make the caller's life 
+   * slightly easier. Non list values will automatically be boxed into a list. 
+   * Values which are not actually IMessageProcessors but are Connectors or Processors will
+   * be automatically boxed in a Node. 
+   * If the parameters is not a map of maps then value is interpreted as the exceptin map
+   * for all components.
+   * There is a default Autoboxer but this can be overriden.
    * 
-   * @param map a bespoke exception map
+   * @param map
+   * @see MessageException
+   * @see IMessageProcessor
+   * @see Node
    */
   void setExceptionMap(Map map);
 
   /** 
-   * @return a bespoke exception map
+   * Returns the exceptionMap.
+   * 
+   * @see #setExceptionMap(Map)
    */
   Map getExceptionMap();
   

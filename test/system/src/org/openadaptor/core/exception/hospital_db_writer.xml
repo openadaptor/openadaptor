@@ -38,8 +38,8 @@
     <property name="password" value=""/>
   </bean>
   
-  <bean id="reader" class="org.openadaptor.core.exception.HospitalTestCase$TestReadConnector"/>
+  <bean id="reader" class="org.openadaptor.util.TestComponent$TestReadConnector"/>
   
-  <bean id="dummyWriter" class="org.openadaptor.core.exception.HospitalTestCase$DummyWriteConnector"/>
+  <bean id="dummyWriter" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
  
 </beans>

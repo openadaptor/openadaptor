@@ -35,17 +35,16 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 
 /**
- * A class that can be used for one of or both:
+ * A class that can be used for either of:
+ * <ul>
+ * <li>redefining the <code>exceptionMap</code> to route different exception types to 
+ *     different handlers. This is done via </li>
+ * <li>a proxy to other exception processing nodes allowing for fun-outs. As a 
+ *     message processor this will simply do nothing - the sole purpose of the node
+ *     is to be an entry point for exception handling from which exceptions are directed
+ *     to two or more 'parallel' nodes.</li>
+ * </ul>
  * 
- * -redefining exceptionMap to route different exception types to different handlers
- * 
- * -a proxy to other exception processing nodes allowing for fun-outs. As a 
- *  message processor this will simply do nothing - the sole purpose of the node
- *  is to be an entry point for exception handling from which exceptions are directed
- *  to two or more 'parallel' nodes.
- * 
- * 
- * @todo html friendly javadoc
  * @author Kris Lachor
  */
 public class ExceptionHandlerProxy extends Component implements IExceptionHandler{
@@ -55,8 +54,7 @@ public class ExceptionHandlerProxy extends Component implements IExceptionHandle
   private Map exceptionMap = null;
   
   /**
-   * @return exception map if one was defined, null otherwise (null doesn't mean no exceptionMap exists
-   *         - the Router will have a default one)
+   * @see org.openadaptor.core.exception.IExceptionHandler#getExceptionMap()
    */
   public Map getExceptionMap() {
     return exceptionMap;
@@ -67,17 +65,16 @@ public class ExceptionHandlerProxy extends Component implements IExceptionHandle
    */
   public void setExceptionMap(Map exceptionMap) {
     if(null != exceptionMap){
-      logger.info("Setting user defined exceptionMap. Size = " + exceptionMap.size());
+      logger.info("Setting a user defined exceptionMap. Size = " + exceptionMap.size());
       this.exceptionMap = exceptionMap;
     }
   }
 
-  
- /**
-  * The class is a proxy and itself doesn't do any processing.
-  * 
-  * @return null
-  */
+  /**
+   * The class is a proxy only, doesn't do any processing.
+   * 
+   * @return the received data as an array
+   */
   public Object[] process(Object data) {
     return new Object[]{data};
   }
