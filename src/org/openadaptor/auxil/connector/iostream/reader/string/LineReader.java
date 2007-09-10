@@ -33,15 +33,26 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
 import org.openadaptor.auxil.connector.iostream.reader.IDataReader;
 
 public class LineReader extends EncodingAwareObject implements IDataReader {
 
+  private static final Log log = LogFactory.getLog(LineReader.class);
+
+  // State:
   private BufferedReader reader;
+  private boolean inBlockOfRecords;
   
+  // Properties:
   private Matcher[] includeMatchers = new Matcher[0];
   private Matcher[] excludeMatchers = new Matcher[0];
+
+  private Matcher startBlockOfRecordsMatcher;
+  private Matcher endBlockOfRecordsMatcher;
+  private boolean includeBlockOfRecordsDelimiters = false;
 
   public void setIncludeRegex(String regex) {
     includeMatchers = new Matcher[1];
@@ -67,11 +78,39 @@ public class LineReader extends EncodingAwareObject implements IDataReader {
     }
   }
 
+  public void setStartBlockOfRecordsRegex(String regex) {
+    startBlockOfRecordsMatcher = Pattern.compile(regex).matcher("");
+  }
+
+  public void setEndBlockOfRecordsRegex(String regex) {
+    endBlockOfRecordsMatcher = Pattern.compile(regex).matcher("");
+  }
+
+  public void setIncludeBlockOfRecordsDelimiters(boolean include) {
+    this.includeBlockOfRecordsDelimiters = include;
+  }
+
   public Object read() throws IOException {
     String line;
     while ((line = reader.readLine()) != null) {
-      if (match(line)) {
-        return line;
+      if (inBlockOfRecords) {
+        if (endBlockOfRecordsMatcher != null && endBlockOfRecordsMatcher.reset(line).matches()) {
+          inBlockOfRecords = false;  // look for another block of records later in inputstream.
+          if (includeBlockOfRecordsDelimiters && match(line)) {
+            return line;
+          }
+        } else if (match(line)) {
+          return line;
+        }
+      } else {
+        if (startBlockOfRecordsMatcher != null && startBlockOfRecordsMatcher.reset(line).matches()) {
+          inBlockOfRecords = true;  // look for a record in this block of records
+          if (includeBlockOfRecordsDelimiters && match(line)) {
+            return line;
+          }
+        } else {
+          log.debug("discarding line " + line);
+        }
       }
     }
     return null;
@@ -79,6 +118,8 @@ public class LineReader extends EncodingAwareObject implements IDataReader {
 
   public void setInputStream(final InputStream inputStream) {
     reader = new BufferedReader(createInputStreamReader(inputStream));
+    // we are implicitly inside a block of records if they have not set a pattern: 
+    inBlockOfRecords = (startBlockOfRecordsMatcher == null);
   }
 
   public boolean match(String string) {
