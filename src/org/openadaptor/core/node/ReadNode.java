@@ -133,6 +133,24 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     super.start();
   }
 
+  protected void stopping() {
+    log.info(getId() + " stopping invoked");
+    if (isState(State.STARTED)) {
+      log.info(getId() + " is stopping");
+      setState(State.STOPPING);
+    }
+  }
+
+  public void stop() {
+    log.info(getId() + " stop invoked");
+    if (!isState(State.STOPPING)) {
+      stopping();
+    }
+    log.info(getId() + " no longer running");
+    disconnectNoThrow();
+    super.stop();
+  }
+
   private void disconnectNoThrow() {
     try {
       connector.disconnect();
@@ -149,8 +167,9 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     ITransaction transaction = null;
     try {
       log.info(getId() + " running");
+      //while ((isState(State.STARTED)) && !connector.isDry() ) {
       while (isState(State.STARTED)) {
-        if ((transaction == null) && (getTransactionManager() != null)) {
+        if (getTransactionManager() != null) {
           transaction = getTransactionManager().getTransaction();
         }
         Response response = process(new Message(new Object[]{}, null, transaction));
@@ -174,28 +193,18 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       if (transaction != null) {
         transaction.setErrorOrException(e);
         transaction.rollback();
-        transaction = null;
       }
-      stop();
+      stopping();
     }
     finally {
-      log.info(getId() + " no longer running");
-      disconnectNoThrow();
-      super.stop();
-    }
-  }
-
-  public void stop() {
-    if (isState(State.STARTED)) {
-      log.info(getId() + " is stopping");
-      setState(State.STOPPING);
+      stop();
     }
   }
 
   public Response process(Message msg) {
     Response response = new Response();
     if (connector.isDry()) {
-      stop();
+      stopping();
       return response;
     }
     if (msg.getTransaction() != null) {
@@ -249,7 +258,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   /**
    * @return an unhandled exception, if any occured, from one of the nodes linked
-   *         to this read node. Null if no exceptions in downstream nodes occured 
+   *         to this read node. Null if no exceptions in downstream nodes occured
    *         or if all those that did occur were handled by the exception handler.
    */
   public Throwable getExitError() {

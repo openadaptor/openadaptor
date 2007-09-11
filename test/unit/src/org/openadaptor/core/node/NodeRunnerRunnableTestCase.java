@@ -24,34 +24,48 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-package org.openadaptor.core.lifecycle;
+package org.openadaptor.core.node;
 
-import org.jmock.MockObjectTestCase;
+import org.openadaptor.core.lifecycle.AbstractTestIRunnable;
+import org.openadaptor.core.lifecycle.IRunnable;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.IMessageProcessor;
+import org.jmock.Mock;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
- * Created Aug 20, 2007 by oa3 Core Team
+ * Created Sep 5, 2007 by oa3 Core Team
  */
 
-public abstract class AbstractTestIRunnable extends MockObjectTestCase {
-  protected IRunnable testRunnable;
+public class NodeRunnerRunnableTestCase extends AbstractTestIRunnable {
+  private Mock mockMessageProcessor;
+  private Mock mockManagedComponent;
 
-  protected abstract IRunnable instantiateTestRunnable();
-
-  protected abstract void setMocksFor(IRunnable runnable);
-
-  public abstract void testRun();
-
-  protected void setUp() throws Exception {
-    super.setUp();
-    testRunnable = instantiateTestRunnable();
-    setMocksFor(testRunnable);
+  protected IRunnable instantiateTestRunnable() {
+    return new NodeRunner();
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testRunnable = null;
+  protected void setMocksFor(IRunnable runnable) {
+    mockManagedComponent = mock(ILifecycleComponent.class);
+    mockMessageProcessor = mock(IMessageProcessor.class);
+
+    ((AbstractNodeRunner)runnable).setManagedComponent((ILifecycleComponent)mockManagedComponent.proxy());
+    ((AbstractNodeRunner)runnable).setMessageProcessorDelegate((IMessageProcessor)mockMessageProcessor.proxy());
   }
 
+  public void testRun() {
+    mockMessageProcessor.stubs().method("process");
 
+    mockManagedComponent.stubs().method("start");
+    mockManagedComponent.stubs().method("stop");
+
+    mockManagedComponent.expects(atLeastOnce()).method("isState").with(eq(State.STARTED)).will(
+      onConsecutiveCalls(returnValue(true), returnValue(true), returnValue(false)));
+
+    testRunnable.start();
+    testRunnable.run();
+
+    assertTrue(testRunnable.getExitCode() == 0);
+  }
 }

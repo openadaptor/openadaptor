@@ -42,19 +42,18 @@ import org.openadaptor.core.transaction.TransactionManager;
 
 /** Test ReadNode as an IRunnable implementation */
 public class ReadNodeRunnableTestCase extends AbstractTestIRunnable {
+  private Mock readConnectorMock;
+  private Mock messageRouterMock;
 
   protected IRunnable instantiateTestRunnable() {
     return new ReadNode("test");
   }
 
-  protected void setUp() throws Exception {
-    super.setUp();
-    testRunnable = instantiateTestRunnable();
-  }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testRunnable = null;
+  protected void setMocksFor(IRunnable runnable) {
+    readConnectorMock = mock(IReadConnector.class);
+    messageRouterMock = mock(IMessageProcessor.class);
+    ((ReadNode)runnable).setConnector((IReadConnector)readConnectorMock.proxy());
+     testRunnable.setMessageProcessor((IMessageProcessor) messageRouterMock.proxy());
   }
 
   /**
@@ -65,20 +64,12 @@ public class ReadNodeRunnableTestCase extends AbstractTestIRunnable {
    * to manage property setting.
    */
   public void testRun() {
-    Mock readConnectorMock = mock(IReadConnector.class);
-    IReadConnector readConnector = (IReadConnector) readConnectorMock.proxy();
 
-    Mock messageRouterMock = mock(IMessageProcessor.class);
-    IMessageProcessor messageRouter = (IMessageProcessor) messageRouterMock.proxy();
 
     Response testResponse = new Response();
     testResponse.addOutput("Test Output");
 
     messageRouterMock.stubs().method("process").will(returnValue(testResponse));
-
-    testRunnable.setMessageProcessor(messageRouter);
-
-    ((ReadNode)testRunnable).setConnector(readConnector);
     ((ITransactionInitiator)testRunnable).setTransactionManager(new TransactionManager()); // Using the default implementation for now 'cos I'm too lazy to stub.
     readConnectorMock.expects(once()).method("connect");
     readConnectorMock.expects(once()).method("disconnect");

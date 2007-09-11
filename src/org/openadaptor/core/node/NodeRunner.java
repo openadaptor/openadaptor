@@ -24,34 +24,43 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-package org.openadaptor.core.lifecycle;
+package org.openadaptor.core.node;
 
-import org.jmock.MockObjectTestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
- * Created Aug 20, 2007 by oa3 Core Team
+ * Created Sep 4, 2007 by oa3 Core Team
  */
 
-public abstract class AbstractTestIRunnable extends MockObjectTestCase {
-  protected IRunnable testRunnable;
+public class NodeRunner extends AbstractNodeRunner {
+  private static final Log log = LogFactory.getLog(NodeRunner.class);
 
-  protected abstract IRunnable instantiateTestRunnable();
-
-  protected abstract void setMocksFor(IRunnable runnable);
-
-  public abstract void testRun();
-
-  protected void setUp() throws Exception {
-    super.setUp();
-    testRunnable = instantiateTestRunnable();
-    setMocksFor(testRunnable);
+  public void run() {
+    if (!isStillRunning()) {
+      log.warn(getId() + " has not been started");
+      exitCode = 0;
+    }
+    try {
+      log.info(getId() + " running");
+      while (isStillRunning()) {
+        Response response = messageProcessorDelegate.process(new Message(new Object[]{}, null, null));
+        log.debug("Response is: " + response);
+      }
+    }
+    catch (Throwable e) {
+      exitCode = 1;
+      exitThrowable = e;
+      log.error(getId() + " uncaught exception, stopping", e);
+      stop();
+    }
+    finally {
+      log.info(getId() + " no longer running");
+      stop();
+    }
   }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    testRunnable = null;
-  }
-
 
 }

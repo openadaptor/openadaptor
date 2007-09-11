@@ -27,28 +27,22 @@
 
 package org.openadaptor.core.adaptor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
-import org.openadaptor.core.lifecycle.ILifecycleComponent;
-import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
-import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
-import org.openadaptor.core.lifecycle.ILifecycleListener;
-import org.openadaptor.core.lifecycle.IRunnable;
-import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.lifecycle.*;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An Adaptor is a core framework class that serves as the "top level" Runnable
@@ -58,7 +52,7 @@ import org.openadaptor.util.Application;
  * interface then the Adaptor will call their TransactionManager setter. Once
  * running it receives data from the {@link IRunnable}s that it manages and
  * delegates these to another {@link IMessageProcessor}, typically this
- * delegate is a {@link Router} or {@link Pipeline}.
+ * delegate is a {@link Router}.
  * 
  * <br/>An Adaptor implements {@link Runnable} and will return when all the
  * {@link IRunnable} components it manages have exited. If an {@link IRunnable}
@@ -87,7 +81,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   /**
    * IMessageProcessor that this adaptor delegates message processing to
-   * typically a {@link Router} or {@link Pipeline}
+   * typically a {@link Router}
    */
   private IMessageProcessor processor;
 
@@ -232,7 +226,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   /**
    * delegates processing to the configured delegate, typically a {@link Router}
-   * or {@link Pipeline}
    */
   public Response process(Message msg) {
     return processor.process(msg);
@@ -481,7 +474,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
 
   public void stateChanged(ILifecycleComponent component, State newState) {
     if (state == State.STARTED && runnables.contains(component) && newState == State.STOPPED) {
-      if (((ReadNode) component).getExitCode() != 0) {
+      if (((IRunnable) component).getExitCode() != 0) {
         log.warn(component.getId() + " has exited with non zero exit code, stopping adaptor");
         stopNoWait();
       }

@@ -78,8 +78,7 @@ abstract public class AbstractTestNodeLifecycleComponent extends AbstractTestILi
     }
     assertTrue("Component should now be started.", testLifecycleComponent.isState(State.STARTED));
     try {
-      testLifecycleComponent.stop();
-      testLifecycleComponent.waitForState(State.STOPPED);
+      testLifecycleComponent.stop();     
     } catch (Exception e) {
       fail("Unexpected Exception while stopping [" + e + "]");
     }
