@@ -45,7 +45,10 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.core.exception.ValidationException;
 
-
+/**
+ * 
+ * @deprecated Use MapTableWriter instead
+ */
 public class TableStatementConverter extends AbstractStatementConverter {
 
   private static final Log log = LogFactory.getLog(TableStatementConverter.class);

@@ -51,7 +51,7 @@ import org.openadaptor.core.exception.ValidationException;
  * 
  * 
  * @author higginse
- *
+ * @deprecated Use MapTableWriter instead
  */
 public class PreparedStatementTableConverter extends AbstractStatementConverter {
 

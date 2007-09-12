@@ -33,6 +33,9 @@ import java.sql.PreparedStatement;
 import org.openadaptor.auxil.connector.jdbc.writer.IStatementConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
+/** 
+ * @deprecated Use implementations of ISQLWriter instead
+ */
 public abstract class AbstractStatementConverter implements IStatementConverter {
 
   protected static final int DB_COLUMN_OFFSET=1;

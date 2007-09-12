@@ -37,7 +37,7 @@ import java.util.List;
  * trivial implementation of IStatementConverter, calls toString() on data and
  * creates a PreparedStatement with that String.
  * @author perryj
- *
+ * @deprecated Use RawSQLWriter instead
  */
 public class StatementConverter implements IStatementConverter {
 

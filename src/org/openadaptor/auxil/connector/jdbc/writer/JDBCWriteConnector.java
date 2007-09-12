@@ -53,6 +53,7 @@ import org.openadaptor.core.transaction.ITransactional;
  *
  * @see IStatementConverter
  * @see JDBCConnection
+ * @deprecated Use NewJDBCWriteConnector instead
  */
 public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional {
 

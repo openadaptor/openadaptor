@@ -38,7 +38,10 @@ import java.sql.*;
 import java.util.Iterator;
 import java.util.List;
 
-
+/**
+ * 
+ * @deprecated Use MapCallableStatementWriter instead
+ */
 public class CallableStatementConverter extends AbstractStatementConverter {
 
   private static final Log log = LogFactory.getLog(CallableStatementConverter.class);

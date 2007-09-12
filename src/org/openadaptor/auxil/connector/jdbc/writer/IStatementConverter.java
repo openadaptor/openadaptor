@@ -39,6 +39,7 @@ import java.util.List;
  * @author perryj
  *
  * @see JDBCWriteConnector
+ * @deprecated Use (implementations of) ISQLWriter instead
  */
 public interface IStatementConverter {
 

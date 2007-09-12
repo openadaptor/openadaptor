@@ -53,6 +53,8 @@ import org.openadaptor.core.Component;
  * 
  * This class effectively performs the same function as the
  * <code>javax.sql.PreparedStatement</code>
+ * @deprecated Use stored procedure calls and MapCallableStatementWriter instead
+ *       
  */
 public class SQLStatementConverter extends AbstractStatementConverter {
 

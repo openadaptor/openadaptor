@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id$
+  $HeadURL$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  
+  This adaptor does the following...
+    
+    * reads data from stdin
+    * writes the data via a stored procedure call
+    
+  It is designed to illustrate the basic structure of an adaptor that writes to a database.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config storedprocwriter.xml -bean Adaptor -props db.props
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <database jar>
+    
+  once running any data that read from std input is written into the test table.
+  
+  NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
+        database with "sp_insert" procedure available in it.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <description>
+         This creates the simple router: Reader -> MapConverter -> Writer.
+       </description>
+       <property name="processors">
+         <list>
+           <ref bean="Reader"/>
+           <ref bean="MapConverter"/>
+           <ref bean="Writer"/>
+         </list>
+       </property>
+     </bean>
+    </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Converts input into an ordered map with two fields.</description>
+    <property name="fieldNames">
+      <list>
+        <value>id</value>
+        <value>name</value>
+      </list>
+    </property>
+  </bean>
+ 
+  <!-- 
+    The connection parameters referenced here should be defined in a separate properties file 
+      and referenced on the command line via -props <path-to-props-file> 
+    -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.NewJDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="writer">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapCallableStatementWriter">
+        <property name="callableStatement" value="sp_insert_example">
+          <description>The stored proc to call.</description>
+        </property>
+        <property name="outputColumns">
+          <description>Ordered list of ordered map attributes to call proc with.</description>
+          <list>
+            <value>id</value>
+            <value>name</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+
+  </bean>
+
+</beans>
