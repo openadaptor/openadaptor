@@ -46,7 +46,7 @@ import org.openadaptor.core.exception.ValidationException;
  *
  */
 public class MapTableWriter extends AbstractMapWriter {
-  private static final Log log = LogFactory.getLog(AbstractMapWriter.class);
+  private static final Log log = LogFactory.getLog(MapTableWriter.class);
 
   private String tableName;
   //private int[] outputTypes; //This will cache the output types for each column.
@@ -104,7 +104,7 @@ public class MapTableWriter extends AbstractMapWriter {
    *
    */
   public PreparedStatement createBatchStatement(Map[] maps) throws SQLException {
-    log.debug("Creating batch prepared statmente for "+maps.length+" records");
+    log.debug("Creating batch prepared statment for "+maps.length+" records");
     int outputColumnsLength=outputColumns.length;
     for (int m=0;m<maps.length;m++){
       reusablePreparedStatement.clearParameters();
