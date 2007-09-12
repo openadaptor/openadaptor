@@ -78,10 +78,15 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
     if (data==null) {
       throw new RuntimeException("Null data provided");
     }
-    if (! (data instanceof Map[])){
-      throw new RuntimeException("Expected Map[]. Got - "+data.getClass());
+    Map[] maps=new Map[data.length];
+    for (int i=0;i<maps.length;i++) {
+      Object datum=data[i];
+      if (! (datum instanceof Map)){
+        throw new RuntimeException("Batch element ["+i+"]. Expected Map. Got - "+data.getClass());
+      }
+      maps[i]=(Map)datum;
     }
-    return createBatchStatement((Map[])data);
+    return createBatchStatement(maps);
   }
 
   /**
