@@ -56,7 +56,7 @@ public abstract class AbstractResultSetConverter implements IResultSetConverter 
   public Object convertNext(ResultSet rs) throws SQLException {
     ResultSetMetaData rsmd = rs.getMetaData();
     if (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
+      //JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
       return convertNext(rs, rsmd);
     } else {
       return null;
@@ -73,7 +73,7 @@ public abstract class AbstractResultSetConverter implements IResultSetConverter 
     ArrayList rows = new ArrayList();
     ResultSetMetaData rsmd = rs.getMetaData();
     while (rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
+      //JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
       rows.add(convertNext(rs, rsmd));
     }
     return rows.toArray(new Object[rows.size()]);
@@ -91,7 +91,7 @@ public abstract class AbstractResultSetConverter implements IResultSetConverter 
     ResultSetMetaData rsmd = rs.getMetaData();
     int batchSize = 0;
     while ((maxBatchSize<=0 || batchSize<maxBatchSize) && rs.next()) {
-      JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
+      //JDBCUtil.logCurrentResultSetRow(log, "converting ResultSet", rs);
       rows.add(convertNext(rs, rsmd));
       batchSize++;
     }
