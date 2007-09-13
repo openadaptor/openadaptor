@@ -184,7 +184,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
     return null;
   }
   
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
 
   // ExceptionListener implementation

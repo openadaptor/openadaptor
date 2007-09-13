@@ -438,7 +438,7 @@ public class MailReadConnector extends Component implements IReadConnector {
     return null;
   }
   
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
 
   /**

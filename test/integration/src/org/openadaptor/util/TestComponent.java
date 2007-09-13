@@ -64,7 +64,7 @@ public class TestComponent {
     public void connect() {}
     public void disconnect() {}
     public Object getReaderContext() {return null;}
-    public void setReaderConext(Object context) {}
+    public void setReaderContext(Object context) {}
    
     public boolean isDry() { 
       boolean result = isDry;

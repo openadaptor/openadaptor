@@ -167,7 +167,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
     return null;
   }
   
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
  
 }

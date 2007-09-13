@@ -61,7 +61,7 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
     }
   }
 
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
   
 }

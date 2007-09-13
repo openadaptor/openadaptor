@@ -200,10 +200,10 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   /**
    * Forwards to the <code>delegate<code>.
    * 
-   * @see IReadConnector#setReaderConext(Object)
+   * @see IReadConnector#setReaderContext(Object)
    */
-  public void setReaderConext(Object context) {
-    this.delegate.setReaderConext(context);
+  public void setReaderContext(Object context) {
+    this.delegate.setReaderContext(context);
   }
 
   /**

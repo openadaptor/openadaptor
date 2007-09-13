@@ -107,7 +107,7 @@ public class MqReadConnector extends Component implements IReadConnector, ITrans
     return null;
   }
   
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
 
   public boolean isDry() {

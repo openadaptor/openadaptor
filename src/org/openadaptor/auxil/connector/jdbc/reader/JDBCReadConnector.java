@@ -235,9 +235,9 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
    * If successfull, the callable statement will be used for polling the database.
    * Otherwise, the context will be ingored. 
    */
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
     if(! (context instanceof IOrderedMap)){
-      setReaderConext(context);
+      setReaderContext(context);
       return;
     }
     IOrderedMap event = (IOrderedMap) context;

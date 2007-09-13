@@ -307,8 +307,8 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     return delegate.getReaderContext();
   }
   
-  public void setReaderConext(Object context) {
-    delegate.setReaderConext(context);
+  public void setReaderContext(Object context) {
+    delegate.setReaderContext(context);
   }
 
   public final Object getResource() {

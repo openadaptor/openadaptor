@@ -116,5 +116,5 @@ public interface IReadConnector {
    * 
    * @param data that can be used by the connector to construct queries or enrich returned data.
    */
-  void setReaderConext(Object context);
+  void setReaderContext(Object context);
 }

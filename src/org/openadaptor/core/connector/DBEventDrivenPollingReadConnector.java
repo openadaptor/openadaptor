@@ -96,7 +96,7 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
     Object[] data = null;
     IOrderedMap event = getNextEvent();
     if (event != null) {      
-      getDelegate().setReaderConext(event);
+      getDelegate().setReaderContext(event);
       data = getDelegate().next(timeoutMs);
     } else {
       ThreadUtil.sleepNoThrow(timeoutMs);

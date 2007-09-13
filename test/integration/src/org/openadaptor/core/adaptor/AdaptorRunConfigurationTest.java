@@ -253,7 +253,7 @@ public class AdaptorRunConfigurationTest extends TestCase {
       return null;
     }
 
-    public void setReaderConext(Object context) {
+    public void setReaderContext(Object context) {
     }
     
     public boolean isDry() {

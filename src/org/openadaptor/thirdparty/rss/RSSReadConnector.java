@@ -160,7 +160,7 @@ public class RSSReadConnector extends Component implements IReadConnector {
     return null;
   }
   
-  public void setReaderConext(Object context) {
+  public void setReaderContext(Object context) {
   }
 
   public boolean isDry() {
