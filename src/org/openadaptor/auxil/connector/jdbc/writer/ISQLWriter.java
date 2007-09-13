@@ -55,6 +55,10 @@ public interface ISQLWriter {
   public boolean hasBatchSupport();
   /**
    * Write a batch of records to a database.
+   * If the writer can allows batch writes, it will attempt to write
+   * all records in a single batch.
+   * Otherwise, it will perform successive writes, one for each record in
+   * the batch.
    * @param dataBatch Object[] containing records to be written.
    * @throws SQLException
    */
