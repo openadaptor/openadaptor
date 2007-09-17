@@ -236,13 +236,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * components "exit".
    * 
    */
-  public void start() {
-    exitCode = 0;
-    registerComponents();
+  public void start() {    
 
     if (state != State.STOPPED) {
       throw new RuntimeException("adaptor is currently " + state.toString());
     }
+
+    exitCode = 0;
+    registerComponents();
 
     try {
       Runtime.getRuntime().addShutdownHook(shutdownHook);
