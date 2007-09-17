@@ -41,20 +41,37 @@ import org.openadaptor.core.lifecycle.State;
  * Created Sep 4, 2007 by oa3 Core Team
  */
 
+/**
+ * Abstract Superclass for IRunnables that can embed any IMessageProcessor.
+ * NodeRunners themselves implement IMessageProcessor and can be used participate
+ * in Adaptor Routing just like any other IMessageProcessor.
+ *
+ * NodeRunners exist to allow the seperation of the IRunnable role from the
+ * IMessageProcessor role. This is often desirable when embedding Adaptors
+ * in a larger context or when handing off transaction management to an
+ * enclosing container.
+ */
 public abstract class AbstractNodeRunner extends LifecycleComponent implements IMessageProcessor, IRunnable {
 
   private static final Log log = LogFactory.getLog(AbstractNodeRunner.class);
 
-  protected int exitCode;
   private IMessageProcessor messageProcessor;
+  private ILifecycleComponent managedComponent;
+
+  protected int exitCode;
   protected IMessageProcessor messageProcessorDelegate;
   protected Throwable exitThrowable;
-  private ILifecycleComponent managedComponent;
 
   public Response process(Message msg) {
     return messageProcessor.process(msg);
   }
 
+  /**
+   * For an {@link IRunnable} the MessageProcessor is used to "plug in" the rest of the
+   * adaptor or other downstream component.
+   *
+   * @param processor
+   */
   public void setMessageProcessor(IMessageProcessor processor) {
     messageProcessor = processor;
   }

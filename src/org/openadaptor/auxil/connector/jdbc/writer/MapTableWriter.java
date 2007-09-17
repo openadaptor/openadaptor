@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
@@ -121,7 +121,7 @@ public class MapTableWriter extends AbstractMapWriter {
   /**
    * Check that tableName has been assigned.
    */
-  public void validate(List exceptions, Component comp) {
+  public void validate(List exceptions, IComponent comp) {
     super.validate(exceptions,comp);
     if ( (tableName==null) || ("".equals(tableName.trim())) ) {
       log.debug("Mandatory property tableName has not been supplied");

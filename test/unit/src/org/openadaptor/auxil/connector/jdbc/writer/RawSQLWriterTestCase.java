@@ -23,52 +23,67 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
- */
-
+*/
 package org.openadaptor.auxil.connector.jdbc.writer;
+
+import org.jmock.Mock;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IComponent;
-
-/**
- * Interface for classes which write records to JDBC databases.
- * @author higginse
- * @see NewJDBCWriteConnector
- * @since 3.2.2
+import java.sql.PreparedStatement;
+/*
+ * File: $Header: $
+ * Rev:  $Revision: $
+ * Created Sep 13, 2007 by oa3 Core Team
  */
-public interface ISQLWriter {
 
-  /**
-   * Initialise writer with given JDBC Connection object.
-   * @param connection Connection which the writer should use.
-   */
-  public void initialise(Connection connection);
+public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
+  protected Mock preparedStatementMock;
 
-  /**
-   * Returns true if the connection has batchSupport, and
-   * the writer can also support batch writes.
-   * @return
-   */
-  public boolean hasBatchSupport();
-  /**
-   * Write a batch of records to a database.
-   * If the writer can allows batch writes, it will attempt to write
-   * all records in a single batch.
-   * Otherwise, it will perform successive writes, one for each record in
-   * the batch.
-   * @param dataBatch Object[] containing records to be written.
-   * @throws SQLException
-   */
-  public void writeBatch(Object[] dataBatch) throws SQLException;
+  protected ISQLWriter instantiateTestWriter() {
+    RawSQLWriter writer = new RawSQLWriter();
+    return writer;
+  }
 
-  /**
-   * validate the state of the writer.
-   * @param exceptions list of validation exceptions to append to.
-   * @param comp
-   */
-  public void validate(List exceptions, IComponent comp);
+  protected void setMocksFor(ISQLWriter writer) {
+  }
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    preparedStatementMock = mock(PreparedStatement.class);
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    preparedStatementMock = null;
+  }
+
+  public void testHasBatchSupport() {
+    assertFalse("Does not support batching", testWriter.hasBatchSupport());
+  }
+
+  public void testWriteEmptyBatch() {
+    Object[] data = new Object [] {};
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  public void testWriteSingleton() {
+    testWriter.initialise((Connection)connectionMock.proxy());
+    Object singleton = "this should really be sql";
+    Object[] data = new Object [] {singleton};
+    connectionMock.expects(once()).method("prepareStatement").with(eq(singleton)).will(returnValue(preparedStatementMock.proxy()));
+    preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
+    preparedStatementMock.expects(once()).method("close");
+    
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
 }

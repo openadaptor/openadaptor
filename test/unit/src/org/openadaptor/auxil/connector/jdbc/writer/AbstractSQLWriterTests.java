@@ -23,52 +23,57 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
- */
-
+*/
 package org.openadaptor.auxil.connector.jdbc.writer;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-import org.openadaptor.core.Component;
+import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
 import org.openadaptor.core.IComponent;
 
-/**
- * Interface for classes which write records to JDBC databases.
- * @author higginse
- * @see NewJDBCWriteConnector
- * @since 3.2.2
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+/*
+ * File: $Header: $
+ * Rev:  $Revision: $
+ * Created Sep 13, 2007 by oa3 Core Team
  */
-public interface ISQLWriter {
 
-  /**
-   * Initialise writer with given JDBC Connection object.
-   * @param connection Connection which the writer should use.
-   */
-  public void initialise(Connection connection);
+abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
 
-  /**
-   * Returns true if the connection has batchSupport, and
-   * the writer can also support batch writes.
-   * @return
-   */
-  public boolean hasBatchSupport();
-  /**
-   * Write a batch of records to a database.
-   * If the writer can allows batch writes, it will attempt to write
-   * all records in a single batch.
-   * Otherwise, it will perform successive writes, one for each record in
-   * the batch.
-   * @param dataBatch Object[] containing records to be written.
-   * @throws SQLException
-   */
-  public void writeBatch(Object[] dataBatch) throws SQLException;
+  protected ISQLWriter testWriter;
+  protected Mock connectionMock;
+  protected Mock componentMock;
 
-  /**
-   * validate the state of the writer.
-   * @param exceptions list of validation exceptions to append to.
-   * @param comp
-   */
-  public void validate(List exceptions, IComponent comp);
+  abstract protected ISQLWriter instantiateTestWriter();
+
+  abstract protected void setMocksFor(ISQLWriter writer);
+
+  protected void setUp() throws Exception {
+    super.setUp();
+    testWriter = instantiateTestWriter();
+    setMocksFor(testWriter);
+    connectionMock = mock(Connection.class);
+    componentMock = mock(IComponent.class);
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    testWriter = null;
+    connectionMock = null;
+  }
+
+  public void testInitialise() {
+    try {
+      testWriter.initialise((Connection)connectionMock.proxy());
+    } catch (Exception e) {
+      fail("Did not expect an exception here." + e);
+    }
+  }
+
+  public void testValidate() {
+    List exceptions = new ArrayList();
+    testWriter.validate(exceptions, (IComponent)componentMock.proxy());
+    assertTrue("Should be no validation errors", exceptions.size() == 0);
+  }
 }

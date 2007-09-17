@@ -40,7 +40,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
+import org.openadaptor.core.IComponent;
+
 /**
  * 
  * Base implementation of ISQLWriter. 
@@ -71,7 +72,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       batchSupport=checkBatchSupport();
       log.info("Writer does "+(batchSupport?"":"NOT ")+"have batch support");
       reusablePreparedStatement=initialiseReusablePreparedStatement();
-      
+
     } catch (SQLException e) {
       throw new RuntimeException("Failed to initialise" + e.toString(), e);
     }
@@ -132,7 +133,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * @throws SQLException if the batch cannot be written.
    */
   public void writeBatch(Object[] data) throws SQLException {
-    try { 
+    try {
       int len=data.length;
       if ((len>1) && (batchSupport)) {
         log.debug("Constructing a batch, size="+len);
@@ -188,7 +189,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   /**
    * Validate configuration.
    */
-  public void validate(List exceptions, Component comp) {}
+  public void validate(List exceptions, IComponent comp) {}
 
   //DB Utility methods
 
@@ -202,10 +203,10 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * @param tableName the name of the table to insert into
    * @param columnNames String[] of the table column names
    */
-  
+
   protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,String[] columnNames) throws SQLException {
     StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
-    StringBuffer params=new StringBuffer(); 
+    StringBuffer params=new StringBuffer();
     for (int i=0;i<columnNames.length;i++) {
       sql.append(columnNames[i]+",");
       params.append("?,");
@@ -234,7 +235,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 //    return connection.prepareStatement(sql.toString());
 //  }
 
-  
+
   /**
    * Determine the types of the columns in a table.
    * <br>
@@ -333,7 +334,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   protected int getStoredProcArgumentCount(String storedProcName,Connection connection) throws SQLException {
     DatabaseMetaData dmd = connection.getMetaData();
     int argCount=-1;
-    ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");  
+    ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");
     if (!rs.next()) { //First rs is return value.
       rs.close();
       log.warn("Failed to lookup stored procedure " +storedProcName);

@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ValidationException;
-import org.openadaptor.core.Component;
+import org.openadaptor.core.IComponent;
 
 import java.sql.*;
 import java.util.List;
@@ -68,7 +68,7 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
    * @param exceptions list of exceptions that any validation errors will be appended to
    * @param comp       the component that this converter is connected to
    */
-  public void validate(List exceptions, Component comp) {
+  public void validate(List exceptions, IComponent comp) {
     if ( procName == null || procName.equals("") ){
       exceptions.add(new ValidationException("The [procName] property must be supplied", comp));
     }
