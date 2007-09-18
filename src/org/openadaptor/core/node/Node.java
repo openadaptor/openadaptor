@@ -145,8 +145,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 				  response = callChainedMessageProcessor(msg);
         }
       } else {
-				MessageException[] exceptions = (MessageException[])response.getCollatedExceptions();
-				throw new RuntimeException(exceptions[0].getException());
+        //Fix for SC22: Invalid cast
+        Object[] exceptions=response.getCollatedExceptions();
+        MessageException exception=(MessageException)exceptions[0];
+        throw new RuntimeException(exception);
 			}
 		}
 		
