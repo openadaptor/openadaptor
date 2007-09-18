@@ -51,15 +51,25 @@ public class JDBCConnection extends Component {
   private static final Log log = LogFactory.getLog(JDBCConnection.class);
 
   private String driver;
+  
   private String url;
+  
   private String username;
+  
   private String password;
+  
   private Connection connection = null;
+  
   private XADataSource xaDataSource = null;
+  
   private boolean isTransacted = false;
+  
   private Properties properties;
+  
   private int deadlockCount;
+  
   private int deadlockLimit = 3;
+  
   private int refCount = 0;
 
   /** 

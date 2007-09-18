@@ -35,33 +35,50 @@ import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Abstract base class for connectors which use JNDI searches.
+ * Holds the mandatory JNDISearch property (validates it is set).
  */
 public abstract class AbstractJNDIReadConnector extends Component implements IReadConnector {
 
+  protected JNDISearch search;
+
+  /**
+   * Constructor.
+   */
   protected AbstractJNDIReadConnector() {
   }
 
+  /**
+   * Constructor.
+   */
   protected AbstractJNDIReadConnector(String id) {
     super(id);
   }
-
-  protected JNDISearch search;
-
+ 
+  /**
+   * @return the <code>search</code>.
+   */
   public JNDISearch getSearch() {
     return search;
   }
 
+  /**
+   * Sets the <code>search</code>.
+   * 
+   * @param search the <code>search</code>.
+   */
   public void setSearch(JNDISearch search) {
     this.search = search;
   }
 
+  /**
+   * Validates the JNDISearch property was set.
+   * 
+   * @see {@link IReadConnector#validate(List)}
+   */
   public void validate(List exceptions) {
     if (search == null) {
       exceptions.add(new ValidationException("search property not set", this));
     }
-  }
-
-  public void setReaderContext(Object context) {
   }
   
 }

@@ -41,7 +41,7 @@ import org.openadaptor.core.exception.ValidationException;
 /**
  * WebServicePollingReadConnector calls a web service with a specified name and specified
  * endpoint. Returns web service's result for processing in subsequent nodes. At the moment 
- * it has fairly limitted capability - passing arguments to web services and http proxy 
+ * it has fairly limitted capability - passing arguments to web services and using HTTP proxy 
  * server are not supported. 
  * 
  * @author Kris Lachor
@@ -162,11 +162,17 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
     return serviceName;
   }
   
-
+  /**
+   * @see {@link IReadConnector#getReaderContext()}
+   * @return null
+   */
   public Object getReaderContext() {
     return null;
   }
   
+  /**
+   * @see {@link IReadConnector#setReaderContext(Object)}
+   */
   public void setReaderContext(Object context) {
   }
  

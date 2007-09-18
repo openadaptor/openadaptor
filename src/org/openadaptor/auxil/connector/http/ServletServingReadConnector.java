@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Base class for read connectors that require an http server with servlet container.
+ * Base class for read connectors that require a http server with a servlet container.
  * 
  * @see {@link WebServiceListeningReadConnector}
  * @author perryj
@@ -44,7 +44,9 @@ public abstract class ServletServingReadConnector extends QueuingReadConnector {
   private static final Log log = LogFactory.getLog(ServletServingReadConnector.class);
   
   private ServletContainer servletContainer = new ServletContainer();
+  
   private String path = "/*";
+  
   private Servlet servlet;
   
   protected ServletServingReadConnector() {}

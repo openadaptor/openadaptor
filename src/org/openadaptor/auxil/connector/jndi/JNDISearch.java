@@ -44,13 +44,13 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * Notes: It differs from a vanilla JNDI search as follows:
  * <UL>
- * <LI> A search may configured against multiple search bases. The actual search will execute against each, in order,
- * and consolidate the results.
+ * <LI> A search may configured against multiple search bases. The actual search will execute against each, 
+ * in order, and consolidate the results.
  * <LI> The <tt>dn</tt> of each object found in a search may be included as an attribute of the object itself, by
- * assigning an attribute name via the <code>returnedDNAttribute</code> property. Note that behaviour is undefined if
- * the chosen name conflicts with an existing attribute of the object.
- * <LI> Retrieved multi-valued attributes can be treated in two ways - by retrieving the first value of the attribute,
- * or by returning an array containing all of the values. This behaviour is configured via the
+ * assigning an attribute name via the <code>returnedDNAttribute</code> property. Note that behaviour is undefined 
+ * if the chosen name conflicts with an existing attribute of the object.
+ * <LI> Retrieved multi-valued attributes can be treated in two ways - by retrieving the first value of the 
+ * attribute, or by returning an array containing all of the values. This behaviour is configured via the
  * <code>treatMultiValuedAttributesAsArray</code> property.
  * </UL>
  * <p>

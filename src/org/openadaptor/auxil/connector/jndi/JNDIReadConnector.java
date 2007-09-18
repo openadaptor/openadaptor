@@ -226,4 +226,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
   public Object getReaderContext() {
     return null;
   }
+  
+  public void setReaderContext(Object context) {
+  }
 }

@@ -47,8 +47,8 @@ public class JNDIUtils {
   
   //private static final Log log = LogFactory.getLog(JNDIUtils.class);
 
-  public static Object getAttributeValue(Attribute attribute, boolean multiValuedAsArray, String joinArraysWithSeparator)
-      throws NamingException {
+  public static Object getAttributeValue(Attribute attribute, boolean multiValuedAsArray, 
+      String joinArraysWithSeparator) throws NamingException {
     Object result = null;
     if (attribute != null) {
       if (multiValuedAsArray) {

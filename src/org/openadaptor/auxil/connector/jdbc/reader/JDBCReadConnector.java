@@ -234,6 +234,9 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
    * a predefined format, such as that returned by {@link DBEventDrivenPollingReadConnector}.
    * If successfull, the callable statement will be used for polling the database.
    * Otherwise, the context will be ingored. 
+   * 
+   * @see {@link IReadConnector#setReaderContext()}
+   * @param context - context as an IOrderedMap
    */
   public void setReaderContext(Object context) {
     if(! (context instanceof IOrderedMap)){
@@ -249,6 +252,14 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
       return;
     }
     setCallableStatement(callableStatement); 
+  }
+  
+  /**
+   * @see {@link IReadConnector#getReaderContext()}
+   * @return null
+   */
+  public Object getReaderContext() {
+    return null;
   }
 
   /**
@@ -285,10 +296,6 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
     } else {
       return null;
     }
-  }
-  
-  public Object getReaderContext() {
-    return null;
   }
   
   /**
