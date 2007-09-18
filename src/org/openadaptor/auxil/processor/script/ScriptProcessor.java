@@ -61,7 +61,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public static final String DEFAULT_LANGUAGE="js"; //Javascript is the default language.
   public static final String DEFAULT_DATA_BINDING="data"; //Bound name for data records
 
-  private ScriptEngine scriptEngine;
+  protected ScriptEngine scriptEngine;
   private String language=DEFAULT_LANGUAGE;
   private String script;
   private String scriptFilename;
