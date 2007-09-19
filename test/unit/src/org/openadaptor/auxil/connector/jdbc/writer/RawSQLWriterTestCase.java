@@ -26,11 +26,8 @@
 */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
-import org.jmock.Mock;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -38,7 +35,6 @@ import java.sql.PreparedStatement;
  */
 
 public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
-  protected Mock preparedStatementMock;
 
   protected ISQLWriter instantiateTestWriter() {
     RawSQLWriter writer = new RawSQLWriter();
@@ -48,27 +44,17 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
   protected void setMocksFor(ISQLWriter writer) {
   }
 
-  protected void setUp() throws Exception {
-    super.setUp();
-    preparedStatementMock = mock(PreparedStatement.class);
-  }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    preparedStatementMock = null;
-  }
-
+  /**
+   * Since RawSQLWriter does not support batching this shaould always be false.
+   */
   public void testHasBatchSupport() {
+    // To check batch support the meta data must be first retrieved.
+    // RawSQLWriter doesn't look up meta data during initialisation so setting
+    // this expectation to "never" is a crude check. If this changes then
+    // more serious testing is needed.
+    connectionMock.expects(never()).method("getMetaData");
+    testWriter.initialise((Connection)connectionMock.proxy());
     assertFalse("Does not support batching", testWriter.hasBatchSupport());
-  }
-
-  public void testWriteEmptyBatch() {
-    Object[] data = new Object [] {};
-    try {
-      testWriter.writeBatch(data);
-    } catch (SQLException e) {
-      fail("Unexpected Exception: " + e);
-    }
   }
 
   public void testWriteSingleton() {
@@ -78,7 +64,7 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
     connectionMock.expects(once()).method("prepareStatement").with(eq(singleton)).will(returnValue(preparedStatementMock.proxy()));
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
     preparedStatementMock.expects(once()).method("close");
-    
+
     try {
       testWriter.writeBatch(data);
     } catch (SQLException e) {
@@ -86,4 +72,52 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
     }
   }
 
+  public void testWriteBatch() {
+    testWriter.initialise((Connection) connectionMock.proxy());
+    Object[] data = new Object []{"this should really be sql", "so should this", "and this"};
+    if (testWriter.hasBatchSupport()) {
+
+    } else {
+      connectionMock.expects(once()).method("prepareStatement").with(eq(data[0])).will(returnValue(preparedStatementMock.proxy()));
+      connectionMock.expects(once()).method("prepareStatement").with(eq(data[1])).will(returnValue(preparedStatementMock.proxy()));
+      connectionMock.expects(once()).method("prepareStatement").with(eq(data[2])).will(returnValue(preparedStatementMock.proxy()));
+      preparedStatementMock.expects(atLeastOnce()).method("executeUpdate").will(returnValue(1));
+      preparedStatementMock.expects(atLeastOnce()).method("close");
+    }
+
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  public void testWriteNullData() {
+    testWriter.initialise((Connection)connectionMock.proxy());
+    Object[] data = new Object [] { null };
+    connectionMock.expects(never()).method("prepareStatement");
+    preparedStatementMock.expects(never()).method("executeUpdate");
+    preparedStatementMock.expects(never()).method("close");
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      return;
+    }
+    fail("Expected an SQLException");
+  }
+
+  public void testWriteNotInitialised() {
+    Object[] data = new Object [] { "test" };
+    connectionMock.expects(never()).method("prepareStatement");
+    preparedStatementMock.expects(never()).method("executeUpdate");
+    preparedStatementMock.expects(never()).method("close");
+    try {
+      testWriter.writeBatch(data);
+    } catch (NullPointerException e) {
+      return;
+    } catch (SQLException e) {
+      fail("Expected a NullPointerException");
+    }
+    fail("Expected a NullPointerException");
+  }
 }

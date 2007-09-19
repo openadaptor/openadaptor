@@ -31,6 +31,8 @@ import org.jmock.MockObjectTestCase;
 import org.openadaptor.core.IComponent;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 /*
@@ -44,6 +46,7 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
   protected ISQLWriter testWriter;
   protected Mock connectionMock;
   protected Mock componentMock;
+  protected Mock preparedStatementMock;
 
   abstract protected ISQLWriter instantiateTestWriter();
 
@@ -55,14 +58,20 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
     setMocksFor(testWriter);
     connectionMock = mock(Connection.class);
     componentMock = mock(IComponent.class);
+    preparedStatementMock = mock(PreparedStatement.class);
   }
 
   protected void tearDown() throws Exception {
     super.tearDown();
     testWriter = null;
     connectionMock = null;
+    preparedStatementMock = null;
   }
 
+  /**
+   * Test initialisation. Specific subclasses should set expectations
+   * appropriately.
+   */
   public void testInitialise() {
     try {
       testWriter.initialise((Connection)connectionMock.proxy());
@@ -71,9 +80,49 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
     }
   }
 
+  /**
+   * The test writer instantiated in setUp should validate.
+   */
   public void testValidate() {
     List exceptions = new ArrayList();
     testWriter.validate(exceptions, (IComponent)componentMock.proxy());
     assertTrue("Should be no validation errors", exceptions.size() == 0);
   }
+
+  /**
+   * Check that hasBatchSupport is set correctly
+   */
+  public abstract void testHasBatchSupport();
+
+  /**
+   * Test writing an empty batch. Should just be ignored.
+   */
+  public void testWriteEmptyBatch() {
+    Object[] data = new Object [] {};
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  /**
+   * Test writing a batch of one with default configuration.
+   */
+  public abstract void testWriteSingleton();
+
+  /**
+   * Test writing a batch with default configuration.
+   */
+  public abstract void testWriteBatch();
+
+  /**
+   * Test writing a batch of one null element with default configuration.
+   */
+  public abstract void testWriteNullData();
+
+  /**
+   * Test writing a batch of one with without initialising the writer.
+   */
+  public abstract void testWriteNotInitialised();
 }
