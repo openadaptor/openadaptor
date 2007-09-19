@@ -86,7 +86,15 @@ public class HttpReadConnector extends Component implements IReadConnector {
    * @see IReadConnector#connect()
    */
   public void connect(){
-    log.info("HttpReadConnector#connect - no action");
+    if(proxyHost!=null && proxyPort!=null){
+      log.info("Setting Proxy: " + proxyHost + ":" + proxyPort);
+      client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+    }else{
+      log.info("Proxy not specified, using direct connection");
+    }
+    method = new GetMethod(url);
+    /* Provide custom retry handler */
+    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
   }
   
   /**
@@ -104,18 +112,6 @@ public class HttpReadConnector extends Component implements IReadConnector {
    * @see IReadConnector#next(long)
    */
   public Object[] next(long timeoutMs) {
-    if(proxyHost!=null && proxyPort!=null){
-      log.info("Setting Proxy: " + proxyHost + ":" + proxyPort);
-      client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
-    }else{
-      log.info("Proxy not specified, using direct connection");
-    }
-
-    method = new GetMethod(url);
-
-    /* Provide custom retry handler */
-    method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
-
     Object [] result = null;
     try {
       
@@ -123,6 +119,7 @@ public class HttpReadConnector extends Component implements IReadConnector {
       int statusCode = client.executeMethod(method);
       if (statusCode != HttpStatus.SC_OK) {
         log.error("Method failed: " + method.getStatusLine());
+        return new Object[]{};
       }
 
       /* 
@@ -131,9 +128,6 @@ public class HttpReadConnector extends Component implements IReadConnector {
        */
       byte[] responseBody = method.getResponseBody();
       result = new String [] {new String(responseBody)};
-//      if( responseBody==null || responseBody.length==0){
-//        isDry = true;
-//      }
             
     } catch (HttpException e) {
       log.error("Fatal protocol violation.", e);
@@ -142,10 +136,11 @@ public class HttpReadConnector extends Component implements IReadConnector {
       log.error("Fatal transport error.", e);
       isDry = true;
     } finally {
+      isDry = true;
+      
       /* Release the connection */
       method.releaseConnection();
     }  
-    isDry = true;
     return result;
   }
 
@@ -209,4 +204,21 @@ public class HttpReadConnector extends Component implements IReadConnector {
   public void setProxyPort(String proxyPort) {
     this.proxyPort = proxyPort;
   }
+
+  /*
+   * protected accessors for unit testing:
+   */
+  
+  protected void setMethod(HttpMethod method) {
+    this.method = method;
+  }
+
+  protected HttpMethod getMethod() {
+    return method;
+  }
+
+  protected void setClient(HttpClient client) {
+    this.client = client;
+  }
+  
 }
