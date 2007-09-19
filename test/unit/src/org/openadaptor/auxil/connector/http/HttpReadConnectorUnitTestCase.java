@@ -68,11 +68,13 @@ public class HttpReadConnectorUnitTestCase extends MockObjectTestCase{
    * With no proxy params set.
    */
   public void testConnect(){
+    assertFalse(httpReadConnector.isDry());
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
     assertTrue(httpReadConnector.getMethod()==null);
     httpReadConnector.connect();
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
     assertTrue(httpReadConnector.getMethod()!=null);
+    assertFalse(httpReadConnector.isDry());
   }
   
   /**
@@ -147,6 +149,20 @@ public class HttpReadConnectorUnitTestCase extends MockObjectTestCase{
     httpReadConnector.next(1000);
     assertTrue(mockHttpClient.executeMethodCounter==1);
     assertTrue(httpReadConnector.isDry());
+  }
+  
+  /**
+   * Tests {@link HttpReadConnector#next}.
+   * Tests the isDry property after calling to #connect, #next, #disconnect and #connect again.
+   */
+  public void testConnectNextAndReconnect(){
+    testConnect();
+    testNextCorrectReturnStatus();
+    assertTrue(httpReadConnector.isDry());
+    httpReadConnector.disconnect();
+    assertTrue(httpReadConnector.isDry());
+    httpReadConnector.connect();
+    assertFalse(httpReadConnector.isDry());
   }
   
 }

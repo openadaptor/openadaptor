@@ -95,6 +95,7 @@ public class HttpReadConnector extends Component implements IReadConnector {
     method = new GetMethod(url);
     /* Provide custom retry handler */
     method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
+    isDry=false;
   }
   
   /**
