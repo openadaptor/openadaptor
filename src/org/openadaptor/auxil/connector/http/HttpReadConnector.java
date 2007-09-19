@@ -28,10 +28,8 @@
 package org.openadaptor.auxil.connector.http;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -39,30 +37,28 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Makes a HTTP GET call to the specified URL.
  * 
+ * HTTP specifications give the usage recommendation that (in a simplification) "GET" is 
+ * for just getting (retrieving) data whereas "POST" may involve anything, like storing or updating data.
+ * 
+ * At present the verbatim content of the retrieved page is returns as a result.
+ * Future extentions might attempt to parse certain elements from the returned page (header, body, ...).
+ * 
+ * The reader allows for optional setting of an HTTP proxy.
+ * 
  * @author Kris Lachor
  */
-public class HttpReadConnector extends Component implements IReadConnector {
+public class HttpReadConnector extends AbstractHttpConnector implements IReadConnector {
 
   private static final Log log = LogFactory.getLog(HttpReadConnector.class);
   
-  private String url = null;
-  
-  private String proxyHost = null;
-  
-  private String proxyPort = null;
-  
-  private HttpClient client = new HttpClient();
-  
-  private HttpMethod method = null;
-  
   private boolean isDry = false;
+  
+  protected HttpMethod method = null;
   
   /**
    * Default constructor.
@@ -78,6 +74,7 @@ public class HttpReadConnector extends Component implements IReadConnector {
    */
   public HttpReadConnector(String id) {
     super(id);
+    log.info("Created new HTTP read connector");
   }
 
   /**
@@ -86,12 +83,7 @@ public class HttpReadConnector extends Component implements IReadConnector {
    * @see IReadConnector#connect()
    */
   public void connect(){
-    if(proxyHost!=null && proxyPort!=null){
-      log.info("Setting Proxy: " + proxyHost + ":" + proxyPort);
-      client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
-    }else{
-      log.info("Proxy not specified, using direct connection");
-    }
+    setHostConfiguration();
     method = new GetMethod(url);
     /* Provide custom retry handler */
     method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false));
@@ -108,19 +100,21 @@ public class HttpReadConnector extends Component implements IReadConnector {
   }
   
   /**
-   * Makes an HTTP GET call.
+   * Makes an HTTP GET call. If the status of the returned page equates to an error, an 
+   * empty array is returned. The same happens if an Exception is throws during page retrieval.
+   * If the return status is correct, the verbatim result is returned.
    * 
    * @see IReadConnector#next(long)
    */
   public Object[] next(long timeoutMs) {
-    Object [] result = null;
+    Object [] result = new Object []{};
     try {
       
       /* Execute the method and check the status */ 
       int statusCode = client.executeMethod(method);
       if (statusCode != HttpStatus.SC_OK) {
         log.error("Method failed: " + method.getStatusLine());
-        return new Object[]{};
+        return result;
       }
 
       /* 
@@ -132,10 +126,8 @@ public class HttpReadConnector extends Component implements IReadConnector {
             
     } catch (HttpException e) {
       log.error("Fatal protocol violation.", e);
-      isDry = true;
     } catch (IOException e) {
       log.error("Fatal transport error.", e);
-      isDry = true;
     } finally {
       isDry = true;
       
@@ -152,18 +144,6 @@ public class HttpReadConnector extends Component implements IReadConnector {
   public boolean isDry() {
     return isDry;
   }
-
-  /**
-   * Validates mandatory properties: <code>url</code>.
-   * 
-   * @see {@link IReadConnector#validate(List)}
-   */
-  public void validate(List exceptions) {
-    log.debug("Validating url: " + url);
-    if(null==url || url.indexOf("http")==-1){
-      exceptions.add(new ValidationException("Unknown URL", this));
-    }
-  }
   
   /**
    * @see {@link IReadConnector#getReaderContext()}
@@ -179,33 +159,6 @@ public class HttpReadConnector extends Component implements IReadConnector {
   public void setReaderContext(Object context) {
   }
   
-  /**
-   * Sets the <code>url</code> (mandatory).
-   * 
-   * @param url a valid URL of an HTTP resource
-   */
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
-  /**
-   * Sets the proxy host (optional).
-   * 
-   * @param proxyHost the proxy host name
-   */
-  public void setProxyHost(String proxyHost) {
-    this.proxyHost = proxyHost;
-  }
-
-  /**
-   * Sets the proxy port (optional).
-   * 
-   * @param proxyPort the proxy port number
-   */
-  public void setProxyPort(String proxyPort) {
-    this.proxyPort = proxyPort;
-  }
-
   /*
    * protected accessors for unit testing:
    */
@@ -216,10 +169,6 @@ public class HttpReadConnector extends Component implements IReadConnector {
 
   protected HttpMethod getMethod() {
     return method;
-  }
-
-  protected void setClient(HttpClient client) {
-    this.client = client;
   }
   
 }

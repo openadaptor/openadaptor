@@ -64,7 +64,7 @@ public class HttpReadConnectorUnitTestCase extends MockObjectTestCase{
   }
 
   /**
-   * Tests {@link JDBCReadConnector#connect}.
+   * Tests {@link HttpReadConnector#connect}.
    * With no proxy params set.
    */
   public void testConnect(){
@@ -78,7 +78,7 @@ public class HttpReadConnectorUnitTestCase extends MockObjectTestCase{
   }
   
   /**
-   * Tests {@link JDBCReadConnector#connect}.
+   * Tests {@link HttpReadConnector#connect}.
    * With not all proxy params set.
    */
   public void testConnect2(){
@@ -92,7 +92,7 @@ public class HttpReadConnectorUnitTestCase extends MockObjectTestCase{
   }
   
   /**
-   * Tests {@link JDBCReadConnector#connect}.
+   * Tests {@link HttpReadConnector#connect}.
    * With proxy params set.
    */
   public void testConnectWithProxy(){
