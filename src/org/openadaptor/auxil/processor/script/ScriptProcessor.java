@@ -62,13 +62,13 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public static final String DEFAULT_DATA_BINDING="data"; //Bound name for data records
 
   protected ScriptEngine scriptEngine;
-  private String language=DEFAULT_LANGUAGE;
-  private String script;
-  private String scriptFilename;
-  private CompiledScript compiledScript;
-  private boolean compile = true;
-  private Object lastResult = null;
-  private String dataBinding = DEFAULT_DATA_BINDING;
+  protected String language=DEFAULT_LANGUAGE;
+  protected String script;
+  protected String scriptFilename;
+  protected CompiledScript compiledScript;
+  protected boolean compile = true;
+  protected Object lastResult = null;
+  protected String dataBinding = DEFAULT_DATA_BINDING;
 
   public ScriptProcessor() {
     super();
