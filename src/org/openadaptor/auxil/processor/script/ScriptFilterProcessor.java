@@ -23,16 +23,33 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.processor.script;
 
-import org.openadaptor.core.exception.ProcessingException;
+import java.util.List;
 
-public class ScriptFilterProcessor extends ScriptProcessor {
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.ValidationException;
+
+/**
+ * Wrapper around a ScriptProcessor which allows filtering based
+ * on the result of execution of the script.
+ * 
+ * Note: This has been changed to use delegation rather than
+ * inheritance to allow the use of alternate ScriptProcessor types,
+ * such as MapFilterProcessor.
+ * 
+ * @author higginse
+ * 
+ */
+public class ScriptFilterProcessor extends Component implements IDataProcessor {
 
   private boolean filterOnMatch = true;
-  
+  private ScriptProcessor scriptProcessor; //Delegate ScriptProcessor
+
   public ScriptFilterProcessor() {
     super();
   }
@@ -41,16 +58,50 @@ public class ScriptFilterProcessor extends ScriptProcessor {
     super(id);
   }
 
+  /**
+   * Assign the delegate ScriptProcessor which while actually
+   * execute the script.
+   * 
+   * @param scriptProcessor
+   */
+  public void setScriptProcessor(ScriptProcessor scriptProcessor) {
+    this.scriptProcessor=scriptProcessor;
+  }
+  public ScriptProcessor getScriptProcessor() {
+    return scriptProcessor;
+  }
+
   public void setFilterOnMatch(boolean filterOnMatch) {
     this.filterOnMatch = filterOnMatch;
   }
 
+  /**
+   * get scriptProcessor to process data, and filter based on
+   * result.
+   */
   public synchronized Object[] process(Object data) {
-    Object[] result = super.process(data);
-    if (getLastResult() instanceof Boolean) {
-      return ((Boolean)getLastResult()).booleanValue() == filterOnMatch ? new Object[0] : result;
+    Object[] output = scriptProcessor.process(data);
+    Object result=scriptProcessor.getLastResult();
+    if (result instanceof Boolean) { 
+      if (((Boolean)result).booleanValue() == filterOnMatch) {
+        output=new Object[] {}; //filter out the result and return empty array. 
+      }
     } else {
       throw new ProcessingException("script result is not boolean", this);
+    }
+    return output;
+  }
+
+  public void reset(Object context) {
+    scriptProcessor.reset(context);   
+  }
+
+  public void validate(List exceptions) {
+    if (scriptProcessor == null) {
+      exceptions.add(new ValidationException("Property scriptProcessor must be configured", this));
+    }
+    else {
+      scriptProcessor.validate(exceptions);
     }
   }
 }

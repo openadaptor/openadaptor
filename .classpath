@@ -29,7 +29,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jta-spec.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/jmock.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/spring-mock.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
 		<attributes>
@@ -82,5 +81,6 @@
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/script.jar"/>
 	<classpathentry kind="lib" path="lib/xstream.jar"/>
+	<classpathentry kind="lib" path="test/lib/jmock-core-1.2.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -29,12 +29,29 @@ package org.openadaptor.auxil.processor.script;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
 
-public class ScriptConditionProcessor extends ScriptProcessor {
+/**
+ * Wrapper around a ScriptProcessor which allows alternate processing
+ * depending on the result of the executed script
+ * 
+ * Note: This has been changed to use delegation rather than
+ * inheritance to allow the use of alternate ScriptProcessor types,
+ * such as MapFilterProcessor.
+ * 
+ * @author higginse
+ * 
+ */
 
+public class ScriptConditionProcessor extends Component implements IDataProcessor {
+  private static final Log log =LogFactory.getLog(ScriptConditionProcessor.class);
+
+  private ScriptProcessor scriptProcessor; //Delegate ScriptProcessor
   private IDataProcessor ifProcessor;
   private IDataProcessor thenProcessor;
 
@@ -44,6 +61,19 @@ public class ScriptConditionProcessor extends ScriptProcessor {
 
   public ScriptConditionProcessor(String id) {
     super(id);
+  }
+  
+  /**
+   * Assign the delegate ScriptProcessor which while actually
+   * execute the script.
+   * 
+   * @param scriptProcessor
+   */
+  public void setScriptProcessor(ScriptProcessor scriptProcessor) {
+    this.scriptProcessor=scriptProcessor;
+  }
+  public ScriptProcessor getScriptProcessor() {
+    return scriptProcessor;
   }
 
   public void setIfProcessor(IDataProcessor ifProcessor) {
@@ -55,21 +85,37 @@ public class ScriptConditionProcessor extends ScriptProcessor {
   }
   
   public synchronized Object[] process(Object data) {
-    super.process(data);
-    if (getLastResult() instanceof Boolean) {
-      return ((Boolean)getLastResult()).booleanValue() ? ifProcessor.process(data) : thenProcessor.process(data);
+    Object[] output=null;
+    scriptProcessor.process(data);//ToDo: Don't care about the result. Is this sensible?
+    Object result=scriptProcessor.getLastResult();
+    if (result instanceof Boolean) {
+      boolean choice=((Boolean)result).booleanValue();
+      if (log.isDebugEnabled()) {
+        log.debug((choice?"if":"then")+" processor has been chosen");
+      }
+      output=choice ? ifProcessor.process(data) : thenProcessor.process(data);
     } else {
       throw new ProcessingException("script result is not boolean", this);
     }
+    return output;
   }
   
   public void validate(List exceptions) {
-    super.validate(exceptions);
-    if (ifProcessor == null) {
+    if (scriptProcessor == null) {
+      exceptions.add(new ValidationException("Property scriptProcessor must be configured", this));
+    }
+    else {
+      scriptProcessor.validate(exceptions);
+    }
+   if (ifProcessor == null) {
       exceptions.add(new ValidationException("ifProcessor property not set", this));
     }
     if (thenProcessor == null) {
       exceptions.add(new ValidationException("thenProcessor property not set", this));
     }
   }
+  public void reset(Object context) {
+    scriptProcessor.reset(context);   
+  }
+
 }
