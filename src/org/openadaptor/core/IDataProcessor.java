@@ -73,6 +73,7 @@ public interface IDataProcessor {
    * {@link IComponent} then this should be a subclass of {@link ComponentException}.
    * 
    * @return output, zero length array or null indicates that data was discarded
+   * @throws NullRecordException if supplied record is <code>null</code>
    */
   Object[] process(Object data);
 
