@@ -62,7 +62,7 @@ public class MapScriptProcessor extends ScriptProcessor {
       throwRecordFormatException("data may not be null");
     }
     if (!(data instanceof Map)) {
-      throwRecordFormatException(getClass().getSimpleName()+" expects Map data, but got "+data.getClass().getName());
+      throwRecordFormatException(getClass().getName()+" expects Map data, but got "+data.getClass().getName());
     }
     Map map=(Map)data;
 
