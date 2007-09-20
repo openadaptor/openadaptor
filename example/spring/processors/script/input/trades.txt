@@ -1,0 +1,7 @@
+# delimited test file
+# Contains ficticious trade examples
+# Side,Qty,SecurityId,Counterparty,Price
+BUY,100,BT.L,Mr. Palin,325
+SELL,500,BT.L,Mr. Jones,324
+SELL,250,BT.L,Mr. Cleese,321
+BUY,200,BT.L,Mr. Idle,316
