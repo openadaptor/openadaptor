@@ -209,6 +209,43 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
         new String[] {"a,1", "b\'1", "c,2"});
   }
   
+  
+  /**
+   * Test AbstractDelimitedStringConvertor#extractValues 
+   * Quoted blocks, quoted single char delimiter. 
+   * 
+   * @see comments in {@link #quotedCommaDelimiterWithSmartEscapeCharacter()}
+   */
+  public void testQuotedFields_QuotedSingleCharDelimiterWithSmartEscapedQuotes(){
+    convertor.setDelimiter(",");
+    convertor.setQuoteChar('\'');
+    convertor.setProtectQuotedFields(true);
+    convertor.setDelimiterAlwaysLiteralString(true);
+    convertor.setDelimiterAlwaysRegExp(false);
+    convertor.setStripEnclosingQuotes(true);
+    convertor.setSmartEscapeQuoteCharacters(true);
+    quotedCommaDelimiterWithSmartQuoteEscaping();
+  }
+  
+  private void quotedCommaDelimiterWithSmartQuoteEscaping(){
+    /* 
+     * Smart escaping the quote character inside quoted block generates the correct output.
+     * No escape character per se is used, the converter is guessing which quotes need
+     * to be escaped.
+     */
+    check(convertor.extractValues("\'a,1\',\'b\'1\',\'c,2\'"),  //'a,1','b'1','c,2'
+        //                                                                ^-this quote needs to be 'smart-escaped'
+        new String[] {"a,1", "b\'1", "c,2"});
+   
+    check(convertor.extractValues("\'a,1\',\'b\'\'\'\'\'1\',\'c,2\'"),  //'a,1','b'''''1','c,2'
+        //                                                                        ^^^^^
+        new String[] {"a,1", "b\'\'\'\'\'1", "c,2"});
+    check(convertor.extractValues("\'a,1\',\'b\'1\'\'\',\'c,2\'"),  //'a,1','b'1''','c,2'
+        //                                                                ^ ^^ 
+        new String[] {"a,1", "b\'1\'\'", "c,2"});
+  }
+  
+  
   /**
    * Test AbstractDelimitedStringConvertor#extractValues.
    * Quoted and unquoted fields, quoted and unquoted multi char delimiter.

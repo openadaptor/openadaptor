@@ -82,10 +82,18 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   private boolean delimiterAlwaysLiteralString = false;
   
   private boolean escapeQuoteCharacters = false;
+  
+  private boolean smartEscapeQuoteCharacters = false;
 
+  /**
+   * Default constructor.
+   */
   protected AbstractDelimitedStringConvertor() {
   }
 
+  /**
+   * Constructor. 
+   */
   protected AbstractDelimitedStringConvertor(String id) {
     super(id);
   }
@@ -254,6 +262,25 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     this.quoteEscapeChar = quoteEscapeChar;
   }
   
+  /**
+   * If set to true, the converter will attempt to auto-escape certain quote characters,
+   * namely those that occur between two other quote characters but there's no delimiter
+   * occurring between the quote char in question and either of the quotes on its sides.
+   * 
+   * For example (, -the delimiter  ' -the quote):
+   * 'abc','de'f','ghj'
+   * 
+   * The quote char before the letter f will be auto-escaped. 
+   * This setting will only take effect if the protectQuotedFields flag is set to true.
+   * The flat is self-exclusive with the escapeQuoteCharacters flag.
+   * Smart-escaping quoted chars only works when the delimiter is a literal string. 
+   * 
+   * @see #setProtectQuotedFields(boolean)
+   */
+  public void setSmartEscapeQuoteCharacters(boolean smartEscapeQuoteCharacters) {
+    this.smartEscapeQuoteCharacters = smartEscapeQuoteCharacters;
+  }
+  
   // END Bean getters/setters
 
   // BEGIN implementation IRecordProcessor interface
@@ -301,6 +328,15 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
 			  exceptions.add(new ValidationException("Quote character cannot be the same as the delimiter", this));
 		  }
 	  }
+      if (this.escapeQuoteCharacters && this.smartEscapeQuoteCharacters) {
+          exceptions.add(new ValidationException("Cannot set both escapeQuoteCharacters and smartEscapeQuoteCharacters to true", this));
+      }
+      if (this.escapeQuoteCharacters && !this.protectQuotedFields) {
+        exceptions.add(new ValidationException("Cannot set escapeQuoteCharacters to true when protectQuotedFields is set to false", this));
+      }
+      if (this.smartEscapeQuoteCharacters && !this.protectQuotedFields) {
+        exceptions.add(new ValidationException("Cannot set smartEscapeQuoteCharacters to true when protectQuotedFields is set to false", this));
+      }
   }
   
   /**
@@ -560,6 +596,8 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @param str the string to split
    * @return a string array containing the (optionally) quoted values delimited by the
    * given delimiter string.
+   * @see #setEscapeQuoteCharacters(boolean)
+   * @see #setSmartEscapeQuoteCharacters(boolean)
    */
   protected String[] extractQuotedValuesLiteralString(String str, String delimiter, char quoteChar) {
     char[] chars = str.toCharArray();
@@ -576,6 +614,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
       if (inQuotes) {
         
     	  /* 
+           * deal with quote escaping if necessary.
            * we are (still) in quotes unless the current character is the quote character, 
            * and not an escaped quote character at that
            */
@@ -583,6 +622,24 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
             continue;
           }
     	  inQuotes = chars[i] != quoteChar;
+          
+          /* deal with smart quote escaping if necessary */
+          if(smartEscapeQuoteCharacters && chars[i]==quoteChar){
+            String remainder = "";
+            for(int j=i+1; j<chars.length; j++){
+              remainder += chars[j];
+              if(chars[j]==quoteChar && remainder.indexOf(delimiter)==-1){
+                
+                /* 
+                 * We're dealing with a quote char that is in between two other quote chars
+                 * but the succeeding quote char occurs *before* the delimiter.. we're remaining
+                 * inQuotes, basically treating the quote in question as a normal character.
+                 */ 
+                inQuotes = true;
+                break;
+              }
+            }
+          }
       } else if (chars[i] == quoteChar) {
     	
           /*
@@ -592,7 +649,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     	  inQuotes = str.indexOf(quoteChar, i+1) != -1;
           if(i !=0 && escapeQuoteCharacters){
             inQuotes = inQuotes && !(chars[i-1] == quoteEscapeChar);
-          }
+          }       
       } else if (parsed.endsWith(delimiter)) {
     	 
           /*
