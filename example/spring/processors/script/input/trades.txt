@@ -4,4 +4,5 @@
 BUY,100,BT.L,Mr. Palin,325
 SELL,500,BT.L,Mr. Jones,324
 SELL,250,BT.L,Mr. Cleese,321
+BUY,500,BT.L,Mr Jones,10
 BUY,200,BT.L,Mr. Idle,316
