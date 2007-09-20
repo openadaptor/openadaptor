@@ -47,23 +47,6 @@ public class DelimitedStringToOrderedMapConvertor extends AbstractDelimitedStrin
   }
 
   /**
-   * Set flag to remove enclosing quotes from fields where necessary. This is applied to all fields
-   * 
-   * @param stripQuotes
-   *          true to remove quotes
-   */
-  public void setStripEnclosingQuotes(boolean stripQuotes) {
-    stripEnclosingQuotes = stripQuotes;
-  }
-
-  /**
-   * @return true if enclosing quotes are to be removed from all fields
-   */
-  public boolean getStripEnclosingQuotes() {
-    return stripEnclosingQuotes;
-  }
-
-  /**
    * Uses the convertDelimitedStringToOrderedMap() call in the super class to convert the supplied string.
    * 
    * @param record

@@ -163,6 +163,53 @@ public class AbstractDelimitedStringConvertorTestCase extends TestCase {
   
   
   /**
+   * Test AbstractDelimitedStringConvertor#extractValues 
+   * Quoted blocks, quoted single char delimiter. Tests escaping the quote character 
+   * inside a quoted block.
+   */
+  public void testQuotedFields_QuotedSingleCharDelimiterWithEscapedQuotes(){
+    /* Comma delimiter, default quote escaping character  */
+    convertor.setDelimiter(",");
+    convertor.setQuoteChar('\'');
+    convertor.setProtectQuotedFields(true);
+    convertor.setDelimiterAlwaysLiteralString(true);
+    convertor.setDelimiterAlwaysRegExp(false);
+    convertor.setStripEnclosingQuotes(true);
+    convertor.setEscapeQuoteCharacters(true);
+    quotedCommaDelimiterWithEscapeCharacter();
+    
+    /* Similar tests but with overriden quote escaping character */
+    convertor.setQuoteEscapeChar('@');
+    quotedCommaDelimiterWithEscapeCharacter2();
+  }
+  
+  private void quotedCommaDelimiterWithEscapeCharacter(){
+    /* unescaped quote character inside quoted block - a problem reported by the user */
+    check(convertor.extractValues("\'a,1\',\'b\'1\',\'c,2\'"),  //'a,1','b'1','c,2'
+        new String[] {"a,1", "\'b\'1\',\'c", "2\'"});
+    
+    /* 
+     * Escaping the quote character inside quoted block generates the correct output.
+     * The escape character is removed and will not occur in the output.
+     */
+    check(convertor.extractValues("\'a,1\',\'b\\'1\',\'c,2\'"),  //'a,1','b\'1','c,2'
+        new String[] {"a,1", "b\'1", "c,2"});
+  }
+  
+  private void quotedCommaDelimiterWithEscapeCharacter2(){
+    /* unescaped quote character inside quoted block - a problem reported by the user */
+    check(convertor.extractValues("\'a,1\',\'b\'1\',\'c,2\'"),  //'a,1','b'1','c,2'
+        new String[] {"a,1", "\'b\'1\',\'c", "2\'"});
+    
+    /* 
+     * Escaping the quote character inside quoted block generates the correct output.
+     * The escape character is removed and will not occur in the output.
+     */
+    check(convertor.extractValues("\'a,1\',\'b@\'1\',\'c,2\'"),  //'a,1','b@'1','c,2'
+        new String[] {"a,1", "b\'1", "c,2"});
+  }
+  
+  /**
    * Test AbstractDelimitedStringConvertor#extractValues.
    * Quoted and unquoted fields, quoted and unquoted multi char delimiter.
    */

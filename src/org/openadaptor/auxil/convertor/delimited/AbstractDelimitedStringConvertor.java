@@ -46,14 +46,16 @@ import org.openadaptor.core.exception.ValidationException;
 /**
  * Base Converter for delimited string records
  * 
- * @author Eddy Higgins
+ * @author Eddy Higgins, Kris Lachor
  */
 public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor {
 
   private final static Log log = LogFactory.getLog(AbstractDelimitedStringConvertor.class);
 
   public static final String DEFAULT_DELIMITER = ",";
-
+  
+  public static final char DEFAULT_QUOTE_ESCAPE_CHARACTER ='\\';
+  
   // Internal state:
   protected boolean nextRecordContainsFieldNames = false;
 
@@ -70,12 +72,16 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected String delimiter = AbstractDelimitedStringConvertor.DEFAULT_DELIMITER;
 
   protected char quoteChar = '\"'; // actually used to hold a char.
+  
+  private char quoteEscapeChar = DEFAULT_QUOTE_ESCAPE_CHARACTER;
 
   protected boolean firstRecordContainsFieldNames = false;
   
   private boolean delimiterAlwaysRegExp = false;
   
   private boolean delimiterAlwaysLiteralString = false;
+  
+  private boolean escapeQuoteCharacters = false;
 
   protected AbstractDelimitedStringConvertor() {
   }
@@ -205,6 +211,47 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    */
   public void setDelimiterAlwaysRegExp(boolean delimiterAlwaysRegExp) {
     this.delimiterAlwaysRegExp = delimiterAlwaysRegExp;
+  }
+  
+  /**
+   * Set flag to remove enclosing quotes from fields where necessary. This is applied to all fields
+   * 
+   * @param stripQuotes
+   *          true to remove quotes
+   */
+  public void setStripEnclosingQuotes(boolean stripQuotes) {
+    stripEnclosingQuotes = stripQuotes;
+  }
+
+  /**
+   * @return true if enclosing quotes are to be removed from all fields
+   */
+  public boolean getStripEnclosingQuotes() {
+    return stripEnclosingQuotes;
+  }
+
+  /**
+   * If set to true every quote character will be checked for being preceded with an escape
+   * character. If it is escaped, it won't be treated as a boundary of a quoted block.
+   * If set to false (default), quote characters will never be escaped.
+   * The flag takes effect only when <code>protectQuotedFields</code> flat is enabled.
+   * Escaping quoted chars only works when the delimiter is a literal string. 
+   * 
+   * @todo implement escaping quoted chars when the delimiter is a regular expression
+   * @see AbstractDelimitedStringConvertor#setQuoteEscapeChar(char)
+   */
+  public void setEscapeQuoteCharacters(boolean escapeQuoteCharacters) {
+    this.escapeQuoteCharacters = escapeQuoteCharacters;
+  }
+  
+  /**
+   * Setter that allows of overriding of the default quote escaping character 
+   * {@link AbstractDelimitedStringConvertor#DEFAULT_QUOTE_ESCAPE_CHARACTER}.
+   * 
+   * @param quoteEscapeChar new quote escaping character.
+   */
+  public void setQuoteEscapeChar(char quoteEscapeChar) {
+    this.quoteEscapeChar = quoteEscapeChar;
   }
   
   // END Bean getters/setters
@@ -373,6 +420,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @param regexp a regular expression delimiter
    * @param quoteChar quote character
    * @return an array of strings corresponding to the fields in the string supplied
+   * @todo add escaping of quote characters
    */
   protected String[] extractQuotedValuesRegExp(String delimitedString, String regexp, char quoteChar) {
     char[] chars = delimitedString.toCharArray();
@@ -512,33 +560,51 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @param str the string to split
    * @return a string array containing the (optionally) quoted values delimited by the
    * given delimiter string.
-   * @todo enable escaping of quote characters.
    */
   protected String[] extractQuotedValuesLiteralString(String str, String delimiter, char quoteChar) {
     char[] chars = str.toCharArray();
     List strings = new ArrayList();
     
-    // tracks whether the currently parsed string is inside a quote
+    /* Tracks whether the currently parsed string is inside a quote */
     boolean inQuotes = false;
     
     String parsed = "";
     for (int i = 0; i < chars.length; i++) {
-      parsed += chars[i];
+      if(!escapeQuoteCharacters || chars[i]!= quoteEscapeChar){
+        parsed += chars[i];
+      }
       if (inQuotes) {
-    	  // we are (still) in quotes unless the current character is the quote character
+        
+    	  /* 
+           * we are (still) in quotes unless the current character is the quote character, 
+           * and not an escaped quote character at that
+           */
+          if(escapeQuoteCharacters && (chars[i-1] == quoteEscapeChar)){
+            continue;
+          }
     	  inQuotes = chars[i] != quoteChar;
       } else if (chars[i] == quoteChar) {
-    	  // we are in quotes if this character is a quote and there are more quote
-    	  // character to parse
+    	
+          /*
+    	   * we are entering a quoted block there are more quote characters to parse, 
+           * and if this quote character is not escaped
+           */
     	  inQuotes = str.indexOf(quoteChar, i+1) != -1;
+          if(i !=0 && escapeQuoteCharacters){
+            inQuotes = inQuotes && !(chars[i-1] == quoteEscapeChar);
+          }
       } else if (parsed.endsWith(delimiter)) {
-    	  // we are not in quotes and we've parsed a delimiter
-    	  // so add the parsed string
+    	 
+          /*
+           * we are not in quotes and we've parsed a delimiter
+           * so add the parsed string
+    	   */
           strings.add(parsed.substring(0, parsed.length() - delimiter.length()));
           parsed = "";
       }
     }
-    // add whatever's left at the end
+    
+    /* add whatever's left at the end */
     strings.add(parsed);
     return (String[]) strings.toArray(new String[strings.size()]);
   }
@@ -716,4 +782,5 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     }
     return result;
   }
+
 }
