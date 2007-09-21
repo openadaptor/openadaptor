@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
 /**
@@ -164,6 +165,9 @@ public class ScriptProcessor extends Component implements IDataProcessor {
    * should be avoided for obvious reasons :-)
    */
   public synchronized Object[] process(Object data) {
+    if (data==null) { //conform to IDataProcessor contract.
+      throw new NullRecordException("Null record not permitted");
+    }
     try {
       scriptEngine.put(dataBinding, data);
       if (compiledScript != null) {

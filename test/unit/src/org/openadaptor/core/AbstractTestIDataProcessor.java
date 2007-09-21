@@ -65,9 +65,9 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
   /**
    * Abstract method overridden to create any required mock objects.
    */
-  protected abstract void createMocks();
+  protected void createMocks() {} //Default implementation doesn't do anything.
 
-  protected abstract void deleteMocks();
+  protected void deleteMocks() {} //Default implementation doesn't do anything.
 
   /**
    * Override to create the basic test processor instance.
@@ -80,6 +80,8 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
    * Implement to perform the basic process record functionality.
    */
   abstract public void testProcessRecord();
+  
+  //abstract public void testValidation();
 
   /**
    * All IDataProcessors are implemented to expect a non-null record instance.
