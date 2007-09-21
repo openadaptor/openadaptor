@@ -3,10 +3,13 @@ package org.openadaptor.auxil.processor.script;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.AbstractTestIDataProcessor;
 import org.openadaptor.core.IDataProcessor;
 
 public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
+  private static final Log log =LogFactory.getLog(ScriptProcessorTestCase.class);
 
   private static String FOOBAR="foobar";
   protected IDataProcessor createProcessor() {
@@ -14,7 +17,8 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
   }
 
   public void testProcessRecord() {
-    ScriptProcessor processor=(ScriptProcessor)testProcessor;
+    log.debug("--- BEGIN testProcessRecord ---");
+   ScriptProcessor processor=(ScriptProcessor)testProcessor;
     processor.setScript("data;");
     processor.validate(new ArrayList()); //Validation also initialised the script engine.
     checkResult(FOOBAR,processor.process(FOOBAR));
@@ -36,7 +40,8 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
 
     checkResult("bar",processor.process("foo"));
     checkResult("FOO",processor.process("FOO"));
-  }
+    log.debug("--- END testProcessRecord ---");
+ }
 
   public void testValidation() {
     ScriptProcessor processor=(ScriptProcessor)testProcessor;

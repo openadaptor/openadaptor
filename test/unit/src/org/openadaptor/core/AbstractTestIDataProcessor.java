@@ -32,7 +32,10 @@
  */
 package org.openadaptor.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jmock.MockObjectTestCase;
+import org.openadaptor.auxil.processor.script.ScriptProcessorTestCase;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
@@ -43,6 +46,7 @@ import org.openadaptor.core.exception.RecordException;
  * @author Kevin Scully
  */
 public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
+  private static final Log log =LogFactory.getLog(ScriptProcessorTestCase.class);
 
   /**
    * The test processor.
@@ -80,7 +84,7 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
    * Implement to perform the basic process record functionality.
    */
   abstract public void testProcessRecord();
-  
+
   //abstract public void testValidation();
 
   /**
@@ -89,13 +93,17 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
    * This test ensures that the correct NullRecordException is thrown when that is not the case.
    */
   public void testProcessNullRecord() {
+    log.debug("--- BEGIN testProcessNullRecord ---");
     try {
       testProcessor.process(null);
     } catch (NullRecordException e) {
+      log.debug("--- END testProcessNullRecord ---");
       return;
     } catch (RecordException e) {
       fail("Unexpected RecordException [" + e + "]");
     }
     fail("Did not catch expected NullRecordException");
+
+    log.debug("--- END testProcessNullRecord ---");
   }
 }

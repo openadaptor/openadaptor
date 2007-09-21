@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 /**
  * ScriptProcessor which executes scripts in the context of a Map data record.
@@ -59,7 +60,7 @@ public class MapScriptProcessor extends ScriptProcessor {
    */
   public synchronized Object[] process(Object data) {
     if (data==null) {
-      throwRecordFormatException("data may not be null");
+      throwNullRecordException();
     }
     if (!(data instanceof Map)) {
       throwRecordFormatException(getClass().getName()+" expects Map data, but got "+data.getClass().getName());
@@ -98,13 +99,15 @@ public class MapScriptProcessor extends ScriptProcessor {
   private void updateValues(Map outputMap,Object[] keys) { 
     for (int i=0;i<keys.length;i++) {
       Object key=keys[i];
-      if (key!=null) {
-        String boundName=key.toString();
-        Object value=scriptEngine.get(boundName);
-        scriptEngine.put(boundName,value);
-        outputMap.put(key,value);
-        if (log.isDebugEnabled()) {
-          log.debug("updated "+boundName+" -> "+value);
+      if (key!=null) { //Check if we need to extract an updated value.
+        if (outputMap.containsKey(key)) { //Only update keys that still exist!
+          String boundName=key.toString();
+          Object value=scriptEngine.get(boundName);
+          scriptEngine.put(boundName,value);
+          outputMap.put(key,value);
+          if (log.isDebugEnabled()) {
+            log.debug("updated "+boundName+" -> "+value);
+          }
         }
       }
       else {
@@ -116,6 +119,12 @@ public class MapScriptProcessor extends ScriptProcessor {
   private void throwRecordFormatException(String msg) {
     log.warn(msg);
     throw new RecordFormatException(msg);
+  }
+
+  private void throwNullRecordException() {
+    String msg="Record may not be null";
+    log.warn(msg);
+    throw new NullRecordException(msg);
   }
 
 }
