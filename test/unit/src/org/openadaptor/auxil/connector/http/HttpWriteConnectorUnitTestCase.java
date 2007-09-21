@@ -27,12 +27,16 @@
 package org.openadaptor.auxil.connector.http;
 
 import org.apache.commons.httpclient.HttpMethod;
+//import org.apache.commons.httpclient.NameValuePair;
 
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
 /**
  * Unit tests for {@link HttpWriteConnector}. 
+ * 
+ * The {@link HttpWriteConnector#validate(java.util.List)} method is unit tested 
+ * in {@link HttpReadConnectorUnitTestCase#testValidate()} as validation for both connectors is identical.
  * 
  * @author Kris Lachor
  */
@@ -69,7 +73,7 @@ public class HttpWriteConnectorUnitTestCase extends MockObjectTestCase{
   
   /**
    * Tests {@link HttpWriteConnector#connect}.
-   * With not all proxy params set.
+   * With one proxy param set, one missing.
    */
   public void testConnect2(){
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
@@ -93,6 +97,20 @@ public class HttpWriteConnectorUnitTestCase extends MockObjectTestCase{
     httpWriteConnector.connect();
     assertTrue(mockHttpClient.hostConfigurationCounter==1);
     assertTrue(httpWriteConnector.getPostMethod()!=null);
+  }
+  
+  /**
+   * Tests {@link HttpWriteConnector#deliver(Object[])}.
+   */
+  public void testDeliverWithCorrectReturnStatus(){
+    httpWriteConnector.connect();
+    assertTrue(mockHttpClient.executeMethodCounter==0);
+// can't easily test here as PostMethod is a concrete class...
+//    NameValuePair [] nameValuePairs = { new NameValuePair(HttpWriteConnector.RESPONSE_KEY, "test")};
+//    mockHttpMethod.expects(once()).method("setRequestBody").with(eq(nameValuePairs));
+//    httpWriteConnector.setPostMethod((HttpMethod) mockHttpMethod.proxy()); 
+    httpWriteConnector.deliver(new String[]{"test"});
+    assertTrue(mockHttpClient.executeMethodCounter==1);
   }
      
 }

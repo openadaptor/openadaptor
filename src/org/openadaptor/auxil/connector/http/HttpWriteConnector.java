@@ -40,12 +40,11 @@ import org.openadaptor.core.IWriteConnector;
 /**
  * Makes a HTTP POST call to the specified URL.
  * 
- * The POST method is used to request that the origin server accept the data enclosed in the request 
- * as a new child of the request URL. POST is designed to allow a uniform method to cover a variety 
- * of functions such as appending to a database, providing data to a data-handling process or posting 
- * to a message board.
+ * The POST method is used to request that the destination server accept the data enclosed in the request. 
+ * POST is designed to allow a uniform method to cover a variety of functions such as appending to a database, 
+ * providing data to a data-handling process or posting to a message board.
  * It is generally expected that a POST request will have some side effect on the server such as writing 
- * to a database
+ * to a database.
  * 
  * The writer allows for optional setting of an HTTP proxy.
  * 
@@ -55,7 +54,7 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
 
   private static final Log log = LogFactory.getLog(HttpWriteConnector.class);
   
-  private static final String RESPONSE_KEY = "DATA";
+  protected static final String RESPONSE_KEY = "data";
   
   private PostMethod postMethod = null;
   
@@ -97,8 +96,11 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
 
   /**
    * @see {@link IWriteConnector#deliver(Object[])}
+   * @todo handling of the response
+   * @todo javadoc comments
    */
   public Object deliver(Object[] data) {
+    log.info("HTTP write connector, delivering data..");
     Object result = new Object[data.length];
     for(int i=0; i<data.length; i++){
       NameValuePair [] nameValuePairs = { new NameValuePair(RESPONSE_KEY, data[i].toString())};
@@ -125,6 +127,10 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
 
   protected PostMethod getPostMethod() {
     return postMethod;
+  }
+
+  protected void setPostMethod(PostMethod postMethod) {
+    this.postMethod = postMethod;
   }
   
 }
