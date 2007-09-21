@@ -30,7 +30,7 @@
  * Software with other software or hardware.
  * ]]
  */
-package org.openadaptor.core.processor;
+package org.openadaptor.core;
 
 import org.jmock.MockObjectTestCase;
 import org.openadaptor.core.IDataProcessor;

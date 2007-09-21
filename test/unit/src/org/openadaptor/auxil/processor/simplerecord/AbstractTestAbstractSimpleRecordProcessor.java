@@ -36,9 +36,9 @@ import org.jmock.Mock;
 import org.openadaptor.auxil.simplerecord.AbstractSimpleRecordProcessor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.core.AbstractTestIDataProcessor;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
-import org.openadaptor.core.processor.AbstractTestIDataProcessor;
 
 /**
  * Abstracts what's common to testing SimpleRecordProcessors.
