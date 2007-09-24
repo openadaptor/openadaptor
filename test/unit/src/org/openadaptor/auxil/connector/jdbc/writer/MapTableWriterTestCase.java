@@ -37,7 +37,7 @@ import java.util.Map;
  * Created Sep 18, 2007 by oa3 Core Team
  */
 
-public class NewMapTableWriterTestCase  extends AbstractMapWriterTests {
+public class MapTableWriterTestCase  extends AbstractMapWriterTests {
 
   protected static String MockTableName = "MockTableName";
   protected static String InitialiseQuery = "SELECT * FROM " + MockTableName + " WHERE 1=2";
