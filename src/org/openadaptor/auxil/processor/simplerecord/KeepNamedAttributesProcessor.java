@@ -90,6 +90,7 @@ public class KeepNamedAttributesProcessor extends AbstractSimpleRecordProcessor 
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
     Exception e = checkMandatoryProperty("attributesToKeep", attributesToKeep != null);
     if (e != null)
       exceptions.add(e);

@@ -169,6 +169,8 @@ public class ConditionProcessor extends AbstractSimpleRecordProcessor {
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
+
     Exception e = checkMandatoryProperty("ifExpression", ifExpression != null);
     if (e != null) {
       exceptions.add(e);

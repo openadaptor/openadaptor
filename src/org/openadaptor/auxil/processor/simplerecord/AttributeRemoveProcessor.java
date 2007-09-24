@@ -72,6 +72,7 @@ public class AttributeRemoveProcessor extends AttributeModifyProcessor {
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
     // /Make sure either attributeName or expression are set.
     Exception e = checkExactlyOneOfProperty(new String[] { attributeName, "expression" }, new boolean[] {
         attributeName != null, expression != null });

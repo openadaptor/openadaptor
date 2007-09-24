@@ -225,6 +225,7 @@ public class SimpleRecordAttributeExistsProcessor extends AbstractSimpleRecordPr
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
     Exception e = checkMandatoryProperty("mandatoryAttributes", mandatoryAttributes != null);
     if (e != null) {
       exceptions.add(e);

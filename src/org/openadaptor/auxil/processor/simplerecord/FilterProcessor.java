@@ -147,14 +147,7 @@ public class FilterProcessor extends AbstractSimpleRecordProcessor {
     }
   }
 
-  /*
-   * public Object[] processSimpleRecord(ISimpleRecord simpleRecord,boolean alreadyCloned) throws RecordException {
-   * Object result=filterExpression.evaluate(simpleRecord); Object[] outgoing; if (result instanceof Boolean) { if
-   * (discardMatches!=((Boolean)result).booleanValue()) { //Pass the record. log.debug("Passing record"); outgoing=new
-   * Object[] {simpleRecord.getRecord()}; } else { log.debug("Discarding record"); outgoing=new Object[] {}; } } else {
-   * throw new ExpressionException("Expression failed to return a Boolean. Evaluation result was: "+result); } return
-   * outgoing; }
-   */
+
   /**
    * Test the filter expression against an <code>ISimpleRecord</code>.
    * <p>
@@ -176,6 +169,7 @@ public class FilterProcessor extends AbstractSimpleRecordProcessor {
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
     Exception e = checkMandatoryProperty("filterExpression", filterExpression != null);
     if (e != null) {
       exceptions.add(e);

@@ -51,8 +51,8 @@ public interface IDataProcessor {
    * the exceptions. If the implementation is an {@link IComponent} then the exceptions
    * should be a {@link ValidationException}.
    *
-   * @param exceptions
-   *          collection to which exceptions should be added
+   * @param exceptions collection to which exceptions should be added. Must not be null
+   * @throws IllegalArgumentException if null argument provided
    */
   void validate(List exceptions);
 
@@ -94,5 +94,4 @@ public interface IDataProcessor {
     public void validate(List exceptions) {
     }
   };
-
 }

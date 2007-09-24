@@ -63,6 +63,8 @@ public class AttributeSetProcessor extends AttributeModifyProcessor {
   }
 
   public void validate(List exceptions) {
+    super.validate(exceptions);
+
     Exception e = checkMandatoryProperty(attributeName, attributeName != null);
     if (e != null) {
       exceptions.add(e);

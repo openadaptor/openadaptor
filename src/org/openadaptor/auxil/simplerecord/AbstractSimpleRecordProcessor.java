@@ -125,6 +125,9 @@ public abstract class AbstractSimpleRecordProcessor extends Component implements
       throws RecordException;
 
   public void validate(List exceptions) {
+    if (exceptions==null) { //IDataProcessor requires a non-null List
+      throw new IllegalArgumentException("exceptions List may not be null");
+    }
   }
 
   /**

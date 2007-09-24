@@ -101,6 +101,9 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
   }
   
   public void validate(List exceptions) {
+    if (exceptions==null) { //IDataProcessor requires a non-null List
+      throw new IllegalArgumentException("exceptions List may not be null");
+    }
     if (scriptProcessor == null) {
       exceptions.add(new ValidationException("Property scriptProcessor must be configured", this));
     }

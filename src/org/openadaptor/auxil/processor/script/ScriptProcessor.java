@@ -204,6 +204,9 @@ public class ScriptProcessor extends Component implements IDataProcessor {
    * a call to initialise()
    */
   public void validate(List exceptions) {
+    if (exceptions==null) { //IDataProcessor requires a non-null List
+      throw new IllegalArgumentException("exceptions List may not be null");
+    }
     if (language == null || language.trim().length()==0) {
       exceptions.add(new ValidationException("Property scriptName may not be <null> or empty", this));
     }
