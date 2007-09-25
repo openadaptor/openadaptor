@@ -32,9 +32,7 @@
  */
 package org.openadaptor.auxil.convertor.simplerecord;
 
-import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
-import org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
 import org.openadaptor.core.AbstractTestIDataProcessor;
