@@ -32,7 +32,7 @@ package org.openadaptor.core.exception;
  * 
  * @author OA3 Core Team
  */
-public class RecordException extends RuntimeException {
+public class RecordException extends ProcessingException {
 
   private static final long serialVersionUID = 1L;
 

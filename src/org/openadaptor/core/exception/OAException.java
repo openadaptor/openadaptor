@@ -24,27 +24,55 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
-
 package org.openadaptor.core.exception;
 
 import org.openadaptor.core.IComponent;
+/*
+ * File: $Header: $
+ * Rev:  $Revision: $
+ * Created Sep 24, 2007 by oa3 Core Team
+ */
 
 /**
- * OAException that relates to incomplete or incorrect configured state. This
- * excption is typically thrown by validate methods.
- * @author perryj
+ * Base class extended by all openadaptor unchecked exceptions.
  *
+ * 
  */
-public class ValidationException extends OAException {
+public class OAException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
+  protected IComponent component = null;
 
-  public ValidationException(String msg, IComponent c) {
-    super(msg, c);
+  public OAException() {
+    super();
   }
 
-  public ValidationException(String msg, Throwable cause, IComponent c) {
-    super(msg, cause, c);
+  public OAException(String string) {
+    super(string);
   }
-  
+
+  public OAException(String string, Throwable throwable) {
+    super(string, throwable);
+  }
+
+  public OAException(Throwable throwable) {
+    super(throwable);
+  }
+
+  public OAException(String msg, Throwable cause, IComponent c) {
+    super(msg, cause);
+    component = c;
+  }
+
+  public OAException(String msg, IComponent c) {
+    this(msg, null, c);
+  }
+
+  public IComponent getComponent() {
+    return component;
+  }
+
+  public String getMessage() {
+    return (component != null ? component.getId() : "") + " : " + super.getMessage();
+  }
 }

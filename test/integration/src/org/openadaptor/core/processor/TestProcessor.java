@@ -33,16 +33,16 @@
 
 package org.openadaptor.core.processor;
 
-import java.util.List;
-
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ProcessingException;
+
+import java.util.List;
 
 public class TestProcessor extends Component implements IDataProcessor {
 
-  private ComponentException exception = new ProcessingException("test", this);
+  private OAException exception = new ProcessingException("test", this);
 
   private int exceptionFrequency = 0;
 
@@ -63,10 +63,10 @@ public class TestProcessor extends Component implements IDataProcessor {
     this.exceptionFrequency = frequency;
   }
 
-  public void setException(ComponentException exception) {
+  public void setException(OAException exception) {
     this.exception = exception;
   }
-  
+
   public void setDiscardFrequency(int frequency) {
     this.discardFrequency = frequency;
   }

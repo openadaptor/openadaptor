@@ -32,19 +32,18 @@
  */
 package org.openadaptor.auxil.processor.simplerecord;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.Mock;
 import org.openadaptor.auxil.expression.Expression;
 import org.openadaptor.auxil.expression.ExpressionException;
 import org.openadaptor.auxil.expression.IExpression;
-import org.openadaptor.auxil.processor.simplerecord.FilterProcessor;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.ValidationException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Basic tests for NewFilterProcessor.
@@ -308,7 +307,7 @@ public class FilterProcessorTestCase extends AbstractTestAbstractSimpleRecordPro
     testProcessor.validate(exceptions);
     assertTrue("Expected one validate exceptions.", exceptions.size() == 1);
     Exception e = (Exception) exceptions.get(0);
-    assertTrue("Expect validate to return one OAException", e instanceof ComponentException);
+    assertTrue("Expect validate to return one OAException", e instanceof ValidationException);
   }
 
 }

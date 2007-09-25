@@ -29,18 +29,18 @@
 */
 package org.openadaptor.auxil.connector.jms;
 
-import org.jmock.MockObjectTestCase;
-import org.jmock.Mock;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.core.exception.ConnectionException;
 
-import javax.naming.directory.DirContext;
-import javax.naming.NamingException;
 import javax.jms.*;
-import java.util.List;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import java.util.ArrayList;
+import java.util.List;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -124,12 +124,12 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
   public void testConnectFailureComponentException() {
     mockJMSConnection.setMockSession((Session)sessionMock.proxy());
-    mockJMSConnection.setThrowComponentExceptionOnConnect(true);
+    mockJMSConnection.setThrowConnectionExceptionOnConnect(true);
     try {
       testReadConnector.connect();
-      fail("Expected a ComponentException to be thrown.");
+      fail("Expected a ConnectionException to be thrown.");
     }
-    catch (ComponentException ce) { /* This is expected */ }
+    catch (ConnectionException ce) { /* This is expected */ }
     catch (Exception e) {
       fail("Unexpected exception: " + e);
     }
@@ -180,7 +180,7 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testDisconnectFailureCE() {
-    mockJMSConnection.setThrowComponentExceptionOnDisconnect(true);
+    mockJMSConnection.setThrowConnectionExceptionOnDisconnect(true);
 
     setupConnectExpectations();
 
@@ -189,8 +189,8 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     try {
       testReadConnector.connect();
       testReadConnector.disconnect();
-      fail("Expected a ComponentException to be thrown.");
-    } catch (ComponentException ce) {
+      fail("Expected a ConnectionException to be thrown.");
+    } catch (ConnectionException ce) {
     }
     catch (Exception e) {
       fail("Unexpected Exception: " + e);
@@ -233,10 +233,10 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   public void testNextDisconnected() {
     try {
       testReadConnector.next(10);
-      fail("Expected a ComponentException to be thrown");
+      fail("Expected a ConnectionException to be thrown");
     }
-    catch (ComponentException ce) {
-      log.debug("Expected ComponentException raised." + ce);
+    catch (ConnectionException ce) {
+      log.debug("Expected ConnectionException raised." + ce);
     }
     catch (Exception e) {fail("Unexpected Exception: " + e); }
   }
@@ -251,9 +251,9 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
 
     try {
       testReadConnector.next(10);
-      fail("Expected ComponentException");
-    } catch (ComponentException e) {
-      log.debug("Expected ComponentException raised." + e);
+      fail("Expected ConnectionException");
+    } catch (ConnectionException e) {
+      log.debug("Expected ConnectionException raised." + e);
     }
     catch (Exception e) {
       fail("Unexpected exception: " + e);

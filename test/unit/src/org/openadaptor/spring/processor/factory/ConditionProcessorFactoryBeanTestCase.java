@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 import org.openadaptor.auxil.processor.simplerecord.AttributeSetProcessor;
 import org.openadaptor.auxil.processor.simplerecord.ConditionProcessor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor;
 
 import java.util.ArrayList;
@@ -174,6 +174,6 @@ public class ConditionProcessorFactoryBeanTestCase extends TestCase {
     List exceptionList = new ArrayList();
     testProcessor.validate(exceptionList);
     assertTrue("Expected one validation problem.", exceptionList.size() == 1);
-    assertTrue("Expected it to be a ComponentException", exceptionList.get(0) instanceof ComponentException);
+    assertTrue("Expected it to be a ComponentException", exceptionList.get(0) instanceof ValidationException);
   }
 }

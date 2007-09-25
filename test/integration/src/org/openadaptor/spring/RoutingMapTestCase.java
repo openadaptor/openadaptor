@@ -148,13 +148,13 @@ public class RoutingMapTestCase extends TestCase {
       IRoutingMap map = getRoutingMap("testExceptionRouting1");
       List destinations = map.getExceptionDestinations(getNode("Processor3"), new Exception("foo"));
       assertTrue(destinations.size() == 0);
-      destinations = map.getExceptionDestinations(getNode("Processor3"), new ProcessingException("foo", null));
+      destinations = map.getExceptionDestinations(getNode("Processor3"), new ProcessingException("foo"));
       assertTrue(destinations.size() == 1);
       assertTrue(destinations.get(0).toString().equals("Error"));
       
       destinations = map.getExceptionDestinations(getNode("ReadNode"), new Exception("foo"));
       assertTrue(destinations.size() == 0);
-      destinations = map.getExceptionDestinations(getNode("ReadNode"), new ProcessingException("foo", null));
+      destinations = map.getExceptionDestinations(getNode("ReadNode"), new ProcessingException("foo"));
       assertTrue(destinations.size() == 0);
       destinations = map.getExceptionDestinations(getNode("ReadNode"), new NullPointerException("foo"));
       assertTrue(destinations.size() == 1);
@@ -169,7 +169,7 @@ public class RoutingMapTestCase extends TestCase {
       /* MessageException directly extends Throwable and therefore won't be caught by the Exception handler */
       destinations = map.getExceptionDestinations(getNode("WriteNode"), new MessageException("foo", null, null));
       assertTrue(destinations.size() == 0);
-      destinations = map.getExceptionDestinations(getNode("WriteNode"), new ProcessingException("foo", null));
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new ProcessingException("foo"));
       assertTrue(destinations.size() == 2);
       assertTrue(destinations.get(0).toString().equals("Discard"));
       assertTrue(destinations.get(1).toString().equals("Error")); 

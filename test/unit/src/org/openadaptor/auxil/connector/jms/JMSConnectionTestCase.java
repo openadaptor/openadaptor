@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 
 import javax.jms.*;
 import javax.naming.NamingException;
@@ -157,8 +157,8 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
 
     try {
       testConnection.createConnection();
-      fail("Expected ComponentException not thrown.");
-    } catch (ComponentException e) {
+      fail("Expected ConnectionException not thrown.");
+    } catch (ConnectionException e) {
       // expected
     } catch (Exception e) {
       fail("Unexpected exception: " + e);

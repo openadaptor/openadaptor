@@ -39,10 +39,10 @@ import org.openadaptor.core.exception.ValidationException;
 
 public class MockJMSConnection extends JMSConnection {
 
-  private boolean throwComponentExceptionOnConnect = false;
+  private boolean throwConnectionExceptionOnConnect = false;
   private boolean throwNPEOnConnect = false;
   private boolean passValidate = true;
-  private boolean throwComponentExceptionOnDisconnect = false;
+  private boolean throwConnectionExceptionOnDisconnect = false;
   private boolean throwNPEOnDisconnect = false;
 
   private Session mockSession;
@@ -61,7 +61,7 @@ public class MockJMSConnection extends JMSConnection {
    */
   public void disconnect() {
     try {
-      if (throwComponentExceptionOnDisconnect)
+      if (throwConnectionExceptionOnDisconnect)
         throw new ConnectionException("Test disconnect ComponentException.", this);
       if (throwNPEOnDisconnect) throw new NullPointerException();
     }
@@ -84,7 +84,7 @@ public class MockJMSConnection extends JMSConnection {
    */
   public Session createSessionFor(JMSReadConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
+    if (throwConnectionExceptionOnConnect) throw new ConnectionException("Test Exception", this);
     return mockSession;
   }
 
@@ -96,7 +96,7 @@ public class MockJMSConnection extends JMSConnection {
    */
   public Session createSessionFor(JMSWriteConnector connector) {
     if (throwNPEOnConnect) throw new NullPointerException();
-    if (throwComponentExceptionOnConnect) throw new ConnectionException("Test Exception", this);
+    if (throwConnectionExceptionOnConnect) throw new ConnectionException("Test Exception", this);
     return mockSession;
   }
 
@@ -106,8 +106,8 @@ public class MockJMSConnection extends JMSConnection {
     mockSession = session;
   }
 
-  public void setThrowComponentExceptionOnConnect(boolean throwComponentExceptionOnConnect) {
-    this.throwComponentExceptionOnConnect = throwComponentExceptionOnConnect;
+  public void setThrowConnectionExceptionOnConnect(boolean throwConnectionExceptionOnConnect) {
+    this.throwConnectionExceptionOnConnect = throwConnectionExceptionOnConnect;
   }
 
   public void setThrowNPEOnConnect(boolean throwNPEOnConnect) {
@@ -118,8 +118,8 @@ public class MockJMSConnection extends JMSConnection {
     this.passValidate = passValidate;
   }
 
-  public void setThrowComponentExceptionOnDisconnect(boolean throwComponentExceptionOnDisconnect) {
-    this.throwComponentExceptionOnDisconnect = throwComponentExceptionOnDisconnect;
+  public void setThrowConnectionExceptionOnDisconnect(boolean throwConnectionExceptionOnDisconnect) {
+    this.throwConnectionExceptionOnDisconnect = throwConnectionExceptionOnDisconnect;
   }
 
   public void setThrowNPEOnDisconnect(boolean throwNPEOnDisconnect) {

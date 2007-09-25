@@ -30,14 +30,30 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * ComponentException that relates to processing problem i.e. data specific NOT
+ * OAException that relates to processing problem i.e. data specific NOT
  * transport or resource specific.
  * @author perryj
  *
  */
-public class ProcessingException extends ComponentException {
+public class ProcessingException extends OAException {
 
   private static final long serialVersionUID = 1L;
+
+  public ProcessingException() {
+    super();
+  }
+
+  public ProcessingException(String string) {
+    super(string);
+  }
+
+  public ProcessingException(String string, Throwable throwable) {
+    super(string, throwable);
+  }
+
+  public ProcessingException(Throwable throwable) {
+    super(throwable);
+  }
 
   public ProcessingException(String msg, Throwable cause, IComponent c) {
     super(msg, cause, c);

@@ -37,26 +37,16 @@ import org.openadaptor.core.IComponent;
  * @author Kevin Scully
  */
 
-public abstract class ComponentException extends RuntimeException {
+public abstract class ComponentException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
-  private IComponent component = null;
-
   public ComponentException(String msg, Throwable cause, IComponent c) {
-    super(msg, cause);
-    component = c;
+    super(msg, cause, c);
   }
 
   public ComponentException(String msg, IComponent c) {
-    this(msg, null, c);
+    super(msg, c);
   }
 
-  public IComponent getComponent() {
-    return component;
-  }
-  
-  public String getMessage() {
-    return (component != null ? component.getId() : "") + " : " + super.getMessage(); 
-  }
 }

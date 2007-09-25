@@ -30,16 +30,16 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * ComponentException that relates to connection problem i.e. not data specific but
+ * OAException for external resource problems i.e. not data specific but
  * transport or resource specific. Such as Database Server is down.
  * @author perryj
  *
  */
-public class ConnectionException extends ComponentException {
+public class ConnectionException extends OAException {
 
   private static final long serialVersionUID = 1;
 
-  public ConnectionException(String msg, IComponent c) {
+   public ConnectionException(String msg, IComponent c) {
     super(msg, c);
   }
 

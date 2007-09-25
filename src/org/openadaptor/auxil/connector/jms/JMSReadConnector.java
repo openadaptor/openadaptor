@@ -216,7 +216,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
       // If we have been sent a JMSException via the ExceptionListener registration mechanism.
       // We treat the exception as if it had been thrown by the receive method by throwing it now.
       if (listenerException != null) {
-        ComponentException ce = new ConnectionException("onException called during receive.", listenerException, this);
+        ConnectionException ce = new ConnectionException("onException called during receive.", listenerException, this);
         listenerException = null;
         throw ce;
       }

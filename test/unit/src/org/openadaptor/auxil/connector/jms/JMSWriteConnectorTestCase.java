@@ -31,7 +31,7 @@ package org.openadaptor.auxil.connector.jms;
 
 import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 
 import javax.naming.directory.DirContext;
@@ -116,13 +116,13 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     }
   }
 
-  public void testConnectFailureComponentException() {
-    mockJMSConnection.setThrowComponentExceptionOnConnect(true);
+  public void testConnectFailureConnectionException() {
+    mockJMSConnection.setThrowConnectionExceptionOnConnect(true);
     try {
       testWriteConnector.connect();
-      fail("Expected a ComponentException to be thrown.");
+      fail("Expected a ConnectionException to be thrown.");
     }
-    catch (ComponentException ce) { /* This is expected */ }
+    catch (ConnectionException ce) { /* This is expected */ }
     catch (Exception e) {
       fail("Unexpected exception: " + e);
     }
@@ -171,14 +171,14 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
 
   public void testDisconnectFailureCE() {
     setupConnectExpectations();
-    mockJMSConnection.setThrowComponentExceptionOnDisconnect(true);
+    mockJMSConnection.setThrowConnectionExceptionOnDisconnect(true);
     sessionMock.expects(once()).method("close");
     messageProducerMock.expects(once()).method("close");
     try {
       testWriteConnector.connect();
       testWriteConnector.disconnect();
-      fail("Expected a ComponentException to be thrown.");
-    } catch (ComponentException ce) {
+      fail("Expected a ConnectionException to be thrown.");
+    } catch (ConnectionException ce) {
     }
     catch (Exception e) {
       fail("Unexpected Exception: " + e);
@@ -211,9 +211,9 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     try {
       Object testMessage = new Object();
       testWriteConnector.deliver(new Object[] { testMessage } );
-      fail("Expected a ComponentException to be thrown");
+      fail("Expected a ConnectionException to be thrown");
     }
-    catch (ComponentException ce) { /* Expected */ }
+    catch (ConnectionException ce) { /* Expected */ }
     catch (Exception e) {fail("Unexpected Exception: " + e); }
   }
 
@@ -229,8 +229,8 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     messageProducerMock.expects(once()).method("send").will(throwException(testException));
     try {
       testWriteConnector.deliver(new Object[] { testMessage } );
-      fail("Expected ComponentException");
-    } catch (ComponentException e) {
+      fail("Expected ConnectionException");
+    } catch (ConnectionException e) {
       // expected this to be thrown.
     }
     catch (Exception e) { fail("Unexpected exception: " + e); }
