@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 
 /**
@@ -70,6 +71,9 @@ public abstract class AbstractConvertor extends Component implements IDataProces
    * @throws RecordException
    */
   public Object[] process(Object record) {
+    if (record == null) { //Enforce IDataProcessor contract 
+      throw new NullRecordException("Null record not permitted.");
+    }
     Object result = convert(record);
 
     if (result == null) { // Never return null - just return an empty array.
@@ -84,6 +88,9 @@ public abstract class AbstractConvertor extends Component implements IDataProces
   }
 
   public void validate(List exceptions) {
+    if (exceptions==null) { //IDataProcessor requires a non-null List
+      throw new IllegalArgumentException("exceptions List may not be null");
+    }
   }
 
   public void reset(Object context) {

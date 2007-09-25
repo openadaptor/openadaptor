@@ -112,13 +112,13 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
     try {
       testProcessor.validate(null);
     } catch (IllegalArgumentException e) {
-      log.debug("--- END testValidate(null) ---");
       return;
     } catch (Throwable t) {
-      fail("Unexpected Exceptione [" + t + "]");
+      fail("Unexpected Exception [" + t + "]");
+    }
+    finally {
+      log.debug("--- END testValidate(null) ---");
     }
     fail("Did not catch expected IllegalArgumentException");
-
-    log.debug("--- END testValidate(null) ---");
   }
 }

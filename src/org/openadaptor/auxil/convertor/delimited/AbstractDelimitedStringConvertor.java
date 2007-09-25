@@ -303,6 +303,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * <code>delimiterAlwaysLiteralString</code> are true.
    */
   public void validate(List exceptions) {
+    super.validate(exceptions);
 	  String delimiter = this.getDelimiter();
 	  String quoteChar = String.valueOf(this.getQuoteChar());
 	  
