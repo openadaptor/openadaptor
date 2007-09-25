@@ -35,6 +35,10 @@ package org.openadaptor.core;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.MockObjectTestCase;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.processor.script.ScriptProcessorTestCase;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.NullRecordException;
@@ -47,6 +51,9 @@ import org.openadaptor.core.exception.RecordException;
  */
 public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
   private static final Log log =LogFactory.getLog(ScriptProcessorTestCase.class);
+
+  protected static final String[] TEST_NAMES = { "F-1", "F-2", "F-3", "F-4" };
+  protected static final String[] TEST_VALUES = { "Apples", "Oranges", "Bananas", "Pears" };
 
   /**
    * The test processor.
@@ -120,5 +127,59 @@ public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
       log.debug("--- END testValidate(null) ---");
     }
     fail("Did not catch expected IllegalArgumentException");
+  }
+  //Utility methods
+  
+  /**
+   * Utility method to generate a DelimitedString from supplied data
+   */
+  protected static String generateDelimitedString(String delimiter, Object[] data) {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < data.length; i++) {
+      sb.append(data[i]);
+      if (i < data.length - 1) {
+        sb.append(delimiter);
+      }
+    }
+    return sb.toString();
+  }
+
+  protected static String generateTestDelimitedString(String delimiter) {
+    return generateDelimitedString(delimiter, TEST_VALUES);
+  }
+
+  /**
+   * Utility to generate OrderedMaps from supplied data
+   */
+  protected static IOrderedMap generateOrderedMap(Object[] names, Object[] values) {
+    // Create using Map add(key, value)
+    IOrderedMap map = new OrderedHashMap(values.length);
+    for (int i = 0; i < values.length; i++) {
+      map.put(names[i], values[i]);
+    }
+    return map;
+  }
+  protected static IOrderedMap generateFlatOrderedMap() {
+    return generateOrderedMap(TEST_NAMES,TEST_VALUES);
+  }
+ 
+  protected static JSONObject generateJSON(Object[] names, Object[] values) {
+    StringBuffer sb=new StringBuffer("{");
+    for (int i=0;i<names.length;i++) {
+      sb.append('"').append(names[i]).append('"');
+      sb.append(":").append('"').append(values[i]).append('"');
+      sb.append(",");
+    }
+    sb.setCharAt(sb.length()-1, '}');
+    try {
+    return new JSONObject(sb.toString());
+    }
+    catch (JSONException je) {
+      throw new RuntimeException(je);
+    }
+  }
+  
+  protected static JSONObject generateTestJSON() {
+    return generateJSON(TEST_NAMES, TEST_VALUES);
   }
 }

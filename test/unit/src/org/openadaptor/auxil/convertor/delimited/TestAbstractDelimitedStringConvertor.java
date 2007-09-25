@@ -15,8 +15,6 @@ public abstract class TestAbstractDelimitedStringConvertor extends AbstractTestI
   private AbstractDelimitedStringConvertor adsc;
   
   
-  protected static final String[] NAMES = { "F-1", "F-2", "F-3", "F-4" };
-  protected static final String[] VALUES = { "Apples", "Oranges", "Bananas", "Pears" };
   protected static final String[] NAMES_FOR_TRAILING_EMPTY_ELEMENTS = { "F-1", "F-2", "F-3", "F-4", "F-5", "F-6", "F-7" };
   protected static final String[] VALUES_TRAILING_EMPTY_ELEMENTS = { "Apples", "Oranges", "Bananas", "Pears", "", "", "" };
   protected static final String DELIMITER = ",";
@@ -32,8 +30,8 @@ public abstract class TestAbstractDelimitedStringConvertor extends AbstractTestI
     //Cast testProcessor for our purposes.
     adsc=(AbstractDelimitedStringConvertor)testProcessor;
     
-    ds = generateDelimitedString(DELIMITER, VALUES);
-    om = generateOrderedMap(NAMES, VALUES);
+    ds = generateTestDelimitedString(DELIMITER);
+    om = generateFlatOrderedMap(); 
 
     om2 = generateOrderedMap(NON_STRING_NAMES,NON_STRING_VALUES);
     ds2= generateDelimitedString(DELIMITER,NON_STRING_VALUES);
@@ -400,25 +398,6 @@ public abstract class TestAbstractDelimitedStringConvertor extends AbstractTestI
   	}
   
     //Utility methods
-    protected static String generateDelimitedString(String delimiter, Object[] data) {
-      StringBuffer sb = new StringBuffer();
-      for (int i = 0; i < data.length; i++) {
-        sb.append(data[i]);
-        if (i < data.length - 1) {
-          sb.append(delimiter);
-        }
-      }
-      return sb.toString();
-    }
-
-    protected static IOrderedMap generateOrderedMap(Object[] names, Object[] values) {
-      // Create using Map add(key, value)
-      IOrderedMap map = new OrderedHashMap(values.length);
-      for (int i = 0; i < values.length; i++) {
-        map.put(names[i], values[i]);
-      }
-      return map;
-    }
 
   	protected static void check(String[] actual, String[] expected) {
   		assertNotNull("String array should not be null", actual);

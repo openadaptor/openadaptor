@@ -25,7 +25,7 @@ public class DelimitedStringToOrderedMapConvertorTestCase extends TestAbstractDe
   
   // Test conversion from Delimited String to Ordered Map
   public void testDelimitedStringToOrderedMapConversion() {
-    convertor.setFieldNames(NAMES);
+    convertor.setFieldNames(TEST_NAMES);
     convertor.validate(new ArrayList());
     try {
       Object[] maps = convertor.process(ds);
@@ -40,8 +40,8 @@ public class DelimitedStringToOrderedMapConvertorTestCase extends TestAbstractDe
     convertor.validate(new ArrayList());
     try {
       convertor.setFirstRecordContainsFieldNames(true);
-
-      String headerDS = generateDelimitedString(DELIMITER, NAMES);
+   
+      String headerDS = generateDelimitedString(DELIMITER,TEST_NAMES);
       Object[] maps = convertor.process(headerDS);
       assertEquals(maps.length, 0);
       assertEquals(headerDS, generateDelimitedString(DELIMITER, convertor.getFieldNames()));

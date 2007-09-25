@@ -71,14 +71,14 @@ public class OrderedMapToDelimitedStringConvertorTestCase extends TestAbstractDe
     try {
       convertor.setDelimiter(DELIMITER);
       convertor.setOutputHeader(true);
-      convertor.setFieldNames(NAMES);
+      convertor.setFieldNames(TEST_NAMES);
       convertor.validate(new ArrayList());
 
 
       Object[] dsList = convertor.process(om);
       assertEquals(dsList.length, 2);
-
-      assertEquals(generateDelimitedString(DELIMITER, NAMES), (String) dsList[0]);
+      //Check the header
+      assertEquals(generateDelimitedString(DELIMITER,TEST_NAMES), (String) dsList[0]);
 
       assertEquals(ds, (String) dsList[1]);
     } catch (RecordException re) {
@@ -97,7 +97,8 @@ public class OrderedMapToDelimitedStringConvertorTestCase extends TestAbstractDe
       Object[] dsList = convertor.process(om);
       assertEquals(dsList.length, 2);
 
-      assertEquals(generateDelimitedString(DELIMITER, NAMES), (String) dsList[0]);
+      //Check the header
+      assertEquals(generateDelimitedString(DELIMITER,TEST_NAMES), (String) dsList[0]);
 
       assertEquals(ds, (String) dsList[1]);
     } catch (RecordException re) {
