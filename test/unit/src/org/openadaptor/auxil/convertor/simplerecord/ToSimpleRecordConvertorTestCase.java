@@ -37,9 +37,11 @@ import org.jmock.Mock;
 import org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.auxil.simplerecord.ISimpleRecordAccessor;
+import org.openadaptor.core.AbstractTestIDataProcessor;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.RecordFormatException;
 
-public class ToSimpleRecordConvertorTestCase extends MockObjectTestCase {
+public class ToSimpleRecordConvertorTestCase extends AbstractTestIDataProcessor {
 
   protected ToSimpleRecordConvertor testSubject;
   protected Mock mockOutgoingSimpleRecord;
@@ -52,7 +54,7 @@ public class ToSimpleRecordConvertorTestCase extends MockObjectTestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
-    testSubject = createTestSubject();
+    testSubject = (ToSimpleRecordConvertor) createProcessor();
     mockAccessor = new Mock(ISimpleRecordAccessor.class);
     accessor = (ISimpleRecordAccessor)mockAccessor.proxy();
     mockOutgoingSimpleRecord = new Mock(ISimpleRecord.class);
@@ -68,14 +70,13 @@ public class ToSimpleRecordConvertorTestCase extends MockObjectTestCase {
     mockAccessor = null;
   }
 
-  protected ToSimpleRecordConvertor createTestSubject() {
-    ToSimpleRecordConvertor convertor = new ToSimpleRecordConvertor();
-    return convertor;
+  protected IDataProcessor createProcessor() {
+    return new  ToSimpleRecordConvertor();
   }
 
   // Tests
 
-  public void testConvert() {
+  public void testProcessRecord() {
     Object testObject = new Object();
     testSubject.setSimpleRecordAccessor(accessor);
     mockAccessor.expects(once()).method("asSimpleRecord").with(eq(testObject)).will(returnValue(outgoingSimpleRecord));
@@ -117,4 +118,7 @@ public class ToSimpleRecordConvertorTestCase extends MockObjectTestCase {
     }
     assertEquals("Data should be passed through unchanged.", testObject, convertedObject);
   }
+
+ 
+ 
 }

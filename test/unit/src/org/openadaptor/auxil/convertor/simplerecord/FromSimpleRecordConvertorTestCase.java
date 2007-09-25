@@ -32,20 +32,19 @@
  */
 package org.openadaptor.auxil.convertor.simplerecord;
 
-import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
-import org.openadaptor.auxil.convertor.simplerecord.FromSimpleRecordConvertor;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
+import org.openadaptor.core.AbstractTestIDataProcessor;
+import org.openadaptor.core.IDataProcessor;
 
-public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
+public class FromSimpleRecordConvertorTestCase extends AbstractTestIDataProcessor {
 
   protected FromSimpleRecordConvertor testSubject;
   protected Mock mockIncomingSimpleRecord;
 
-
   protected void setUp() throws Exception {
     super.setUp();
-    testSubject = createTestSubject();
+    testSubject = (FromSimpleRecordConvertor) createProcessor();
     mockIncomingSimpleRecord = new Mock(ISimpleRecord.class);
   }
 
@@ -54,14 +53,13 @@ public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
     testSubject = null;
     mockIncomingSimpleRecord = null;
   }
-
-  protected FromSimpleRecordConvertor createTestSubject() {
-    FromSimpleRecordConvertor convertor = new FromSimpleRecordConvertor();
-    return convertor;
+  
+  protected IDataProcessor createProcessor() {
+    return new FromSimpleRecordConvertor();
   }
 
   // Tests
-  public void testConvert() {
+  public void testProcessRecord() {
     Object convertedObject = new Object();
     mockIncomingSimpleRecord.expects(once()).method("getRecord").will(returnValue(convertedObject));
 
@@ -72,7 +70,6 @@ public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
       fail("Unexpected Exception: " + e);
     }
 
-
     try {
       Object result = testSubject.convert(null);
       assertEquals(null, result);
@@ -80,4 +77,5 @@ public class FromSimpleRecordConvertorTestCase extends MockObjectTestCase {
       fail("Failed to convert null record [" + e.getMessage() + "]");
     }
   }
-}
+
+ }
