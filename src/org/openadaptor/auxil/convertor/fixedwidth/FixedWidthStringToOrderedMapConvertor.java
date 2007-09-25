@@ -155,6 +155,7 @@ public class FixedWidthStringToOrderedMapConvertor extends AbstractFixedWidthStr
 
 
   public void validate(List exceptions) {
+    super.validate(exceptions); 
     if (fieldDetails == null) {
       exceptions.add(new ValidationException("Failed validation - no field details defined. ", this));
     }
