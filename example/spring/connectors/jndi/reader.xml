@@ -32,17 +32,17 @@
 
     <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
         <property name="messageProcessor">
-        <bean id="Pipeline" class="org.openadaptor.core.router.Router">
-            <description>
-                This creates the simple pipeline Reader -> Writer.
-            </description>
-            <property name="processors">
-                <list>
-                    <ref bean="Reader"/>
-                    <ref bean="Writer"/>
-                </list>
-            </property>
-        </bean>
+	        <bean id="Router" class="org.openadaptor.core.router.Router">
+	            <description>
+	                This creates the simple router Reader -> Writer.
+	            </description>
+	            <property name="processors">
+	                <list>
+	                    <ref bean="Reader"/>
+	                    <ref bean="Writer"/>
+	                </list>
+	            </property>
+	        </bean>
         </property>
     </bean>
 
