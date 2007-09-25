@@ -87,7 +87,7 @@ public class JNDISearch {
   /**
    * SearchControls to govern the search.
    */
-  private SearchControls searchControls;
+  protected SearchControls searchControls;
 
   /**
    * Flag to specify how to treat multi-valued attributes.
