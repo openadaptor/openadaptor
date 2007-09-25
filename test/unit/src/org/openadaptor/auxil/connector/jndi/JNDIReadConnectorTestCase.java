@@ -37,7 +37,7 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
 /**
- * Unit tests for {@link JNDIReadConnector}.
+ * Unit tests for {@link JNDIReadConnector} and {@link AbstractJNDIReadConnector}.
  * 
  * @author Kris Lachor
  */
