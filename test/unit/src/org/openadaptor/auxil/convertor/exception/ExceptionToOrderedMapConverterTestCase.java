@@ -2,16 +2,27 @@ package org.openadaptor.auxil.convertor.exception;
 
 import java.text.SimpleDateFormat;
 
-import junit.framework.TestCase;
-
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.AbstractTestIDataProcessor;
+import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.MessageException;
 
-public class ExceptionToOrderedMapConverterTestCase extends TestCase {
+public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataProcessor {
 
-	ExceptionToOrderedMapConvertor convertor = new ExceptionToOrderedMapConvertor();
-	
-	public void testConvert() {
+	private ExceptionToOrderedMapConvertor convertor;
+
+   public void setUp() throws Exception {
+     super.setUp();
+     convertor=(ExceptionToOrderedMapConvertor)testProcessor;
+   }
+   public void tearDown() throws Exception {
+     super.tearDown();
+   }
+   protected IDataProcessor createProcessor() {
+      return new ExceptionToOrderedMapConvertor();
+    }
+
+	public void testProcessRecord() {
 		MessageException exception = new MessageException("EEEE", new RuntimeException("RUNTIME"), "SOURCE");
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
@@ -50,4 +61,5 @@ public class ExceptionToOrderedMapConverterTestCase extends TestCase {
 		assertEquals("...", map.get("originatingComponent"));
 		assertEquals("''", map.get("data"));
 	}
+
 }
