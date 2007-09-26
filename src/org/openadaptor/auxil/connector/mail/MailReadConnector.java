@@ -39,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -271,7 +270,7 @@ public class MailReadConnector extends Component implements IReadConnector {
    * Creates a connection to the remote mail server. Dumps out message reading
    * properties to the log.
    *
-   * @throws ComponentException if there was a problem or if the MailConnection
+   * @throws ConnectionException if there was a problem or if the MailConnection
    * properties have not been set
    */
   public void connect() {
@@ -290,7 +289,7 @@ public class MailReadConnector extends Component implements IReadConnector {
   /**
    * Disconnects from the mail server
    *
-   * @throws ComponentException if there was a problem
+   * @throws ConnectionException if there was a problem
    */
   public void disconnect() {
     log.info("Disconnecting from mail server");
@@ -331,7 +330,7 @@ public class MailReadConnector extends Component implements IReadConnector {
    * @return  an array containing a single records corresponding to the data contained in
    * body of the first "new" message.
    *
-   * @throws ComponentException if there is a comms error when opening the mailbox or the
+   * @throws ConnectionException if there is a comms error when opening the mailbox or the
    * data could not be processed
    */
   public Object[] next(long timeoutMs) {
@@ -570,7 +569,7 @@ public class MailReadConnector extends Component implements IReadConnector {
   /**
    * Opens the inbox as defined by the Folder property
    *
-   * @throws ComponentException if there was a problem which is just a wrapper around
+   * @throws ConnectionException if there was a problem which is just a wrapper around
    * the underlying MessagingException
    */
   private void openInbox() {
@@ -585,7 +584,7 @@ public class MailReadConnector extends Component implements IReadConnector {
    * Closes the inbox. Will expunge messages if either the [deleteWhenRead] or
    * [moveToFolder] properties are set.
    *
-   * @throws ComponentException if there was a problem which is just a wrapper around
+   * @throws ConnectionException if there was a problem which is just a wrapper around
    * the underlying MessagingException
    */
   private void closeInbox() {

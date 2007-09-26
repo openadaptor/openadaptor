@@ -41,6 +41,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
+import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * 
@@ -65,7 +66,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * Determines if batch handling is supported by the databse.
    * 
    */
-  public void initialise(Connection connection) {
+  public void initialise(Connection connection) throws ConnectionException {
     log.info("Initialising writer");
     try {
       this.connection=connection;
@@ -74,7 +75,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       reusablePreparedStatement=initialiseReusablePreparedStatement();
 
     } catch (SQLException e) {
-      throw new RuntimeException("Failed to initialise" + e.toString(), e);
+      throw new ConnectionException("Failed to initialise" + e.toString(), e);
     }
   }
 

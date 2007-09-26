@@ -94,7 +94,7 @@ public class MqWriteConnector extends AbstractWriteConnector implements ITransac
    * Establish a connection to external message transport without starting the
    * externalconnector. If already connected then do nothing.
    * 
-   * @throws org.openadaptor.core.exception.ComponentException
+   * @throws org.openadaptor.core.exception.ConnectionException
    */
   public void connect() {
     if (!connected) {

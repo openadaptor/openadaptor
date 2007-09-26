@@ -26,16 +26,15 @@
 */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
-import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
+import org.jmock.MockObjectTestCase;
+import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 
-import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 /*
@@ -75,7 +74,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
 
   protected void setMocksFor(IWriteConnector writeConnector) {
     sqlConnectionMock = new Mock(Connection.class);
-    ((NewJDBCWriteConnector)writeConnector).setJdbcConnection(new MockJDBCConnection((Connection)sqlConnectionMock.proxy()));
+    ((NewJDBCWriteConnector) writeConnector).setJdbcConnection(new MockJDBCConnection((Connection) sqlConnectionMock.proxy()));
   }
 
   // Tests
@@ -104,23 +103,22 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
     }
   }
 
-  public void xxtestConnectWithExceptionFromWriter() {
-    ((NewJDBCWriteConnector)testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
-    sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy())).will(throwException(new RuntimeException("Mock Exception")));
+  public void testConnectWithExceptionFromWriter() {
+    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy())).will(throwException(new ConnectionException("Mock Exception")));
 
     try {
       testWriteConnector.connect();
-    } catch (ComponentException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (ConnectionException e) {
       return;
-    } catch(RuntimeException re) {
-      fail("RuntimeException should have been wrapped in a ComponentException");
+    } catch (RuntimeException re) {
+      fail("RuntimeException should have been wrapped in a ConnectionException");
     }
-    fail("Expected a ComponentException.");
+    fail("Expected a ConnectionException.");
   }
 
   public void testConnectWithExceptionFromConnection() {
-    ((NewJDBCWriteConnector)testWriteConnector).setJdbcConnection(new MockJDBCConnection(true));
+    ((NewJDBCWriteConnector) testWriteConnector).setJdbcConnection(new MockJDBCConnection(true));
     sqlWriterMock.expects(never()).method("initialise").with(eq(sqlConnectionMock.proxy()));
 
     try {
@@ -129,10 +127,10 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
       // Expection the cause to have been an SQLException
       assertTrue(e.getCause() instanceof SQLException);
       return;
-    } catch(RuntimeException re) {
+    } catch (RuntimeException re) {
       fail("RuntimeException should have been wrapped in a ConnectionException");
     }
-    fail("Expected a ComponentException.");
+    fail("Expected a ConnectionException.");
   }
 
   public void testDisconnect() {
@@ -143,8 +141,12 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
       fail("Unexpected exception connecting for the disconnect test : " + e);
     }
     sqlConnectionMock.expects(once()).method("close");
-    try{ testWriteConnector.disconnect();}
-    catch(Exception e) {fail("Unexpected exception disconnecting");}
+    try {
+      testWriteConnector.disconnect();
+    }
+    catch (Exception e) {
+      fail("Unexpected exception disconnecting");
+    }
   }
 
   public void testDisconnectWithException() {
@@ -172,7 +174,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
    */
   public void testDeliver() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
-    Object[] testData = new Object[] { "hello" };
+    Object[] testData = new Object[]{"hello"};
 
     sqlConnectionMock.expects(once()).method("prepareStatement").with(eq(testData[0])).will(returnValue(preparedStatementMock.proxy()));
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
@@ -182,10 +184,12 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
     testWriteConnector.deliver(testData);
   }
 
-    /** This test uses a mock ISQLWriter to force an SQLException */
+  /**
+   * This test uses a mock ISQLWriter to force an SQLException
+   */
   public void testDeliverWithException() {
-    ((NewJDBCWriteConnector)testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
-    Object[] testData = new Object[] { "I cause an exception" };
+    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    Object[] testData = new Object[]{"I cause an exception"};
     String dummyExceptionMessage = "Thrown deliberately by a mock ISQLWriter.";
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy()));
     sqlWriterMock.expects(once()).method("writeBatch").will(throwException(new SQLException(dummyExceptionMessage)));
@@ -196,7 +200,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
     } catch (ConnectionException e) {
       // We expect a ConnectionException to be thrown by the Connector as a result of the SQLException from the Writer.
       // Just making sure that the message from the SQLExcepioon is in the ConnectionException Message.
-      assertTrue("ConnectionException Message should contain :["+ dummyExceptionMessage + "]", (e.getMessage().indexOf(dummyExceptionMessage) >= 0));
+      assertTrue("ConnectionException Message should contain :[" + dummyExceptionMessage + "]", (e.getMessage().indexOf(dummyExceptionMessage) >= 0));
       return;
     }
     fail("Expected a ConnectionException");
@@ -208,7 +212,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
    * assumes that.
    */
   public void testDeliverBatch() {
-    Object[] testData = new Object[] { "hello", "world", "leaders" };
+    Object[] testData = new Object[]{"hello", "world", "leaders"};
 
     sqlConnectionMock.expects(once()).method("prepareStatement").with(eq(testData[0])).will(returnValue(preparedStatementMock.proxy()));
     sqlConnectionMock.expects(once()).method("prepareStatement").with((eq(testData[1]))).will(returnValue(preparedStatementMock.proxy()));
@@ -226,19 +230,19 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
    * assumes that.
    */
   public void testDeliverBatchWithException() {
-    Object[] testData = new Object[] { "hello", "world", "leaders" };
+    Object[] testData = new Object[]{"hello", "world", "leaders"};
 
     String dummyExceptionMessage = "Thrown deliberately by a mock ISQLWriter.";
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy()));
     sqlWriterMock.expects(once()).method("writeBatch").with(eq(testData)).will(throwException(new SQLException(dummyExceptionMessage)));
-    ((NewJDBCWriteConnector)testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
     testWriteConnector.connect();
     try {
       testWriteConnector.deliver(testData);
     } catch (ConnectionException e) {
       // We expect a ConnectionException to be thrown by the Connector as a result of the SQLException from the Writer.
       // Just making sure that the message from the SQLExcepioon is in the ConnectionException Message.
-      assertTrue("ConnectionException Message should contain :["+ dummyExceptionMessage + "]", (e.getMessage().indexOf(dummyExceptionMessage) >= 0));
+      assertTrue("ConnectionException Message should contain :[" + dummyExceptionMessage + "]", (e.getMessage().indexOf(dummyExceptionMessage) >= 0));
       return;
     }
     fail("Expected a ConnectionException");
@@ -249,7 +253,6 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
    * directly as it is a class not an interface. We get around this by
    * mocking the java.sql.Connection that it wraps and setting its
    * expectations instead
-   *
    */
   class MockJDBCConnection extends JDBCConnection {
     private boolean failConnection = false;

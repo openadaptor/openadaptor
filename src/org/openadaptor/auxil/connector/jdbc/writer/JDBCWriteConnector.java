@@ -36,8 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -135,10 +136,10 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    *
    * @return null
    *
-   * @throws ComponentException just a wrapper around any SQLExceptions that may be thrown
+   * @throws OAException just a wrapper around any SQLExceptions that may be thrown
    * or if the jdbcConnection details have not been set
    */
-  public Object deliver(Object[] data) throws ComponentException {
+  public Object deliver(Object[] data) throws OAException {
 
     boolean sucess = false;
     while (!sucess) {
@@ -164,10 +165,10 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * Creates a connection to the database. If a connection already exists then we use it
    * rather than creating a new one.
    *
-   * @throws ComponentException just a wrapper around a SQLException or thrown if the
+   * @throws ConnectionException just a wrapper around a SQLException or thrown if the
    * jdbcConnection property has not been set
    */
-  public void connect() throws ComponentException {
+  public void connect() throws ConnectionException {
     log.debug("Connector: [" + getId() + "] connecting ....");
 
     if (!jdbcConnection.isConnected() ) {
@@ -201,9 +202,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   /**
    * Closes the connection to the database
    *
-   * @throws ComponentException just a wrapper around any SQLexception that may be thrown
+   * @throws ConnectionException just a wrapper around any SQLexception that may be thrown
    */
-  public void disconnect() throws ComponentException {
+  public void disconnect() throws ConnectionException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
 
     if ( jdbcConnection == null ) {

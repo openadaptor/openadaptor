@@ -33,7 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
+//import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
@@ -98,7 +98,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    * @param details
    *          list of field details mappings
    * 
-   * @throws ComponentException
+   * @throws ValidationException
    *           if the fieldWidths have already been set
    * 
    * @see FixedWidthFieldDetail
@@ -125,7 +125,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    * @param widths
    *          list of the field widths
    * 
-   * @throws ComponentException
+   * @throws ValidationException
    *           if the field details have already been set or if you define both field details and widths
    */
   public void setFieldWidths(Integer[] widths) {
@@ -229,7 +229,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
   /**
    * @return false if the field name supplied is null or an empty string
    * 
-   * @throws ComponentException
+   * @throws ValidationException
    *           if there are multiple fields defined with the same name
    */
   public boolean isValidFieldName(String name) {

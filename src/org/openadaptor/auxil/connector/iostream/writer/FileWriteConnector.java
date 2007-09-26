@@ -27,16 +27,16 @@
 
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.util.FileUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.util.FileUtils;
 
 /**
  * A Write Connector that write data to a file (or stdout if the filename property
@@ -64,7 +64,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     setDataWriter(new LineWriter());
   }
 
-  public void setFilename(String path) throws ComponentException {
+  public void setFilename(String path) throws ConnectionException {
     this.filename = path;
   }
 

@@ -36,7 +36,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 
 import sun.net.TelnetInputStream;
@@ -76,7 +75,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we failed to create the client
    */
   public void connect() {
@@ -110,7 +109,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we failed to log into the remote serevr or if we fail to set the transfer mode
    */
   public void logon() {
@@ -153,7 +152,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we cannot open the transfer stream with the remote server
    */
   public InputStream get(String fileName) {
@@ -191,7 +190,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -229,7 +228,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the SunFTP output stream cannot be
    *           created (eg. does not have permission)
    */
@@ -254,10 +253,10 @@ public class SunFTPConnection extends AbstractFTPLibrary {
   /**
    * Close the connection to the remote server
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we failed to close to connection
    */
-  public void close() throws ComponentException {
+  public void close() throws ConnectionException {
     try {
       _ftpClient.closeServer();
       _connected = false;
@@ -300,7 +299,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName) {
@@ -339,7 +338,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * 
    * @return array of the file names or null if none found
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if there was an communications error
    */
   public String[] fileList(String filePattern) {
@@ -382,7 +381,7 @@ public class SunFTPConnection extends AbstractFTPLibrary {
    * @param directoryName -
    *          the new directory
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we fail to change directory or it does not exist
    */
   public void cd(String directoryName) {

@@ -27,19 +27,19 @@
 
 package org.openadaptor.core.connector;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * This is a IReadConnector that wraps another IReadConnector, it can be
@@ -253,7 +253,7 @@ public class PollingReadConnector extends Component implements IReadConnector, I
     delegate.disconnect();
   }
 
-  public final Object[] next(long timeoutMs) throws ComponentException {
+  public final Object[] next(long timeoutMs) throws OAException {
 
     Date now = new Date();
 

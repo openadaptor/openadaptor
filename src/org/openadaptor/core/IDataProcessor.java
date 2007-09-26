@@ -28,9 +28,10 @@
 package org.openadaptor.core;
 
 import java.util.List;
-
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.exception.ProcessingException;
+import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.OAException;
 
 /**
  * Implemented by classes that are capable of doing some sort of processing.
@@ -70,9 +71,14 @@ public interface IDataProcessor {
    * values include null and empty arrays which indicate that the data is to be discarded.
    * It is assumed that implementations will cast the incoming data to an expected type(s).
    * Exceptions should be thrown as RuntimeException. If the implementation is an
-   * {@link IComponent} then this should be a subclass of {@link ComponentException}.
+   * {@link IComponent} then this should be a subclass of
+   * {@link OAException}. Generally this will be a
+   * ProcessingException as the most likey problems are going to be with processing message
+   * data.
+   *
    * 
    * @return output, zero length array or null indicates that data was discarded
+   * @throws ProcessingException If the message data cannot be processed.
    * @throws NullRecordException if supplied record is <code>null</code>
    */
   Object[] process(Object data);

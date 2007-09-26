@@ -30,15 +30,15 @@ package org.openadaptor.thirdparty.mq;
 /*
  * File: $Header$ Rev: $Revision$
  */
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.transaction.ITransactional;
+
+import java.util.List;
 
 /**
  * Read Connector that gets data from an IBM MQ Series queue. Needs to be configured with an
@@ -95,7 +95,7 @@ public class MqReadConnector extends Component implements IReadConnector, ITrans
     return getConnection().getResource();
   }
 
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     Object data = getConnection().nextRecord(timeoutMs);
     if (data != null) {
       log.debug(getId() + " got jms message");

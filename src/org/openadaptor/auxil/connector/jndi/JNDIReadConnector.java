@@ -27,23 +27,15 @@
 
 package org.openadaptor.auxil.connector.jndi;
 
-import java.util.List;
-
-import javax.naming.AuthenticationException;
-import javax.naming.CommunicationException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.ServiceUnavailableException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.SearchResult;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.ProcessingException;
-import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.exception.*;
+
+import javax.naming.*;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.SearchResult;
+import java.util.List;
 
 /**
  * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
@@ -140,7 +132,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p/>
    * If already connected, do nothing.
    *
-   * @throws ComponentException if an AuthenticationException or NamingException occurs
+   * @throws ConnectionException if an AuthenticationException or NamingException occurs
    */
   public void connect() {
     try {
@@ -160,7 +152,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * <p/>
    * If already disconnected, do nothing.
    *
-   * @throws ComponentException if a NamingException occurs.
+   * @throws ConnectionException if a NamingException occurs.
    */
   public void disconnect() {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
@@ -182,9 +174,9 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    * If the result set is empty, then it returns <tt>null</tt> indicating that the reader is exhausted.
    *
    * @return Object[] containing an IOrderedMap of results, or <tt>null</tt>
-   * @throws ComponentException
+   * @throws OAException
    */
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     Object[] result = null;
     try {
       if (!_searchHasExecuted) {
@@ -230,11 +222,11 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
   public Object getReaderContext() {
     return null;
   }
-  
+
   /**
    * Takes no action.
    * 
-   * @see {@link org.openadaptor.core.IReadConnector#setReaderContext()}
+   * @see {@link org.openadaptor.core.IReadConnector#setReaderContext(Object)}
    */
   public void setReaderContext(Object context) {
   }

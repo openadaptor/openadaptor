@@ -31,10 +31,6 @@ package org.openadaptor.thirdparty.apache;
  * File: $Header$ Rev: $Revision$
  */
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
@@ -42,8 +38,11 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.openadaptor.auxil.connector.ftp.AbstractFTPLibrary;
 import org.openadaptor.auxil.connector.ftp.IFTPConnection;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This component will provide basic File Transfer Protocol (FTP) connunication to allow the adaptor to GET a file from
@@ -94,10 +93,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set. Sets the file transfer mode.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we fail to connect to the remote server or we fail to set BINARY mode (if required)
    */
-  public void connect() throws ComponentException {
+  public void connect() throws ConnectionException {
     log.debug("Connecting to " + hostName + " on port " + port);
 
     try {
@@ -154,10 +153,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we failt o log into the remote server
    */
-  public void logon() throws ComponentException {
+  public void logon() throws ConnectionException {
     log.debug("Logging in " + userName);
 
     try {
@@ -188,10 +187,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we cannot open the remote stream
    */
-  public InputStream get(String fileName) throws ComponentException {
+  public InputStream get(String fileName) throws ConnectionException {
 
     InputStream in;
 
@@ -227,11 +226,11 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStream put(String fileName) throws ComponentException {
+  public OutputStream put(String fileName) throws ConnectionException {
     log.debug("put() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
     OutputStream out;
 
@@ -266,11 +265,11 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return OutputStreamWriter that the caller can use to write the file
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not conected and logged into the remote server or the FTP output stream cannot be
    *           created (eg. does not have permission)
    */
-  public OutputStream append(String fileName) throws ComponentException {
+  public OutputStream append(String fileName) throws ConnectionException {
     log.debug("append() called: directory=" + getCurrentWorkingDirectory() + "; file=" + fileName);
     OutputStream out;
 
@@ -296,10 +295,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
   /**
    * Close the connection to the remote server
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if the connection fails to close
    */
-  public void close() throws ComponentException {
+  public void close() throws ConnectionException {
     try {
       if (_ftpClient.isConnected()) {
         // You must logout as a deadlock can occur in some VM's (if the
@@ -322,10 +321,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return boolean to indicate the presence of the directory
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not connected and logged into the remote server
    */
-  public boolean directoryExists(String dirName) throws ComponentException {
+  public boolean directoryExists(String dirName) throws ConnectionException {
     boolean _isPresent = false;
 
     checkLoggedIn();
@@ -353,10 +352,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
-  public void delete(String fileName) throws ComponentException {
+  public void delete(String fileName) throws ConnectionException {
     log.debug("Deleting " + fileName);
 
     checkLoggedIn();
@@ -378,10 +377,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return - array of the file names or null if none found
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if there was an communications error
    */
-  public String[] fileList(String filePattern) throws ComponentException {
+  public String[] fileList(String filePattern) throws ConnectionException {
     log.debug("Getting directory listing: dir=" + getCurrentWorkingDirectory() + ", file pattern=" + filePattern);
 
     checkLoggedIn();
@@ -438,10 +437,10 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
    * 
    * @return true if the transfer has been successful
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    *           if we fail to verify the transfer
    */
-  public boolean verifyFileTransfer() throws ComponentException {
+  public boolean verifyFileTransfer() throws ConnectionException {
     boolean success = false;
     try {
       if (_ftpClient.completePendingCommand())

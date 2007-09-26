@@ -32,8 +32,8 @@ import org.openadaptor.core.IComponent;
 /**
  * OAException that relates to processing problem i.e. data specific NOT
  * transport or resource specific.
+ * 
  * @author perryj
- *
  */
 public class ProcessingException extends OAException {
 

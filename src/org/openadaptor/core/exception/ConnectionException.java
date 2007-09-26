@@ -39,8 +39,16 @@ public class ConnectionException extends OAException {
 
   private static final long serialVersionUID = 1;
 
-   public ConnectionException(String msg, IComponent c) {
+  public ConnectionException(String string) {
+    super(string);
+  }
+
+  public ConnectionException(String msg, IComponent c) {
     super(msg, c);
+  }
+
+  public ConnectionException(String string, Throwable throwable) {
+    super(string, throwable);
   }
 
   public ConnectionException(String msg, Throwable cause, IComponent c) {

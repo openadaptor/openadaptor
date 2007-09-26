@@ -27,14 +27,14 @@
 
 package org.openadaptor.auxil.connector.smtp;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.AbstractWriteConnector;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ProcessingException;
+
+import javax.mail.MessagingException;
 
 /**
  * This Write Connector will deliver data by sending it as an email using the SMTP protocol.
@@ -60,9 +60,9 @@ public class SMTPWriteConnector extends AbstractWriteConnector {
    *
    * @param data an array of objects to be processed.
    * @return result string confirming that the email was sucessfully sent.
-   * @throws org.openadaptor.core.exception.ComponentException
+   * @throws OAException
    */
-  public Object deliver(Object[] data) throws ComponentException {
+  public Object deliver(Object[] data) throws OAException {
     String result=null;
     String body="";
 

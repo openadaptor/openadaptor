@@ -32,8 +32,8 @@ import org.openadaptor.core.IComponent;
 /**
  * OAException that relates to incomplete or incorrect configured state. This
  * excption is typically thrown by validate methods.
- * @author perryj
  *
+ * @author perryj
  */
 public class ValidationException extends OAException {
 

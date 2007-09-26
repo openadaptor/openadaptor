@@ -27,20 +27,20 @@
 
 package org.openadaptor.core.connector;
 
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
+
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /** 
  * A polling read connector that uses a stored procedure to poll for database events. 
@@ -90,8 +90,10 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
    * polls for the data that relates to the next event in the database
    * the format of the data is controlled by the resultSetConverter returns
    * null if there are no outstanding events to process.
+   *
+   * @throws OAException
    */
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     log.debug("Polling for events..");
     Object[] data = null;
     IOrderedMap event = getNextEvent();

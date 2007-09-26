@@ -27,8 +27,10 @@
 
 package org.openadaptor.auxil.connector.smtp;
 
-import java.util.Date;
-import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ConnectionException;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -38,12 +40,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ConnectionException;
+import java.util.Date;
+import java.util.Properties;
 
 public class SMTPConnection extends Component {
 
@@ -269,8 +267,9 @@ public class SMTPConnection extends Component {
 
   /**
    * Set up javamail objects required to create connection to smtp server.
+   * @throws ConnectionException
    */
-  protected void createConnection() throws ComponentException {
+  protected void createConnection() throws ConnectionException {
     Session session;
 
     try {

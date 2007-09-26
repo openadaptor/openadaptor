@@ -27,13 +27,6 @@
 
 package org.openadaptor.auxil.connector.jdbc.reader;
 
-import java.sql.CallableStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
@@ -42,14 +35,18 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 
+import java.sql.*;
+import java.util.List;
+
 /**
  * Generic JDBC polling read connector that replaced:
- * {@link JDBCPollConnector}, {@link JDBCReadConnector}, {@link JDBCEventReadConnector}.
+ *
  * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
  * with no parameters.
  * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
@@ -110,7 +107,7 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
   /**
    * Sets a prepared or callable (ready to execute) statement on this connector.
    * 
-   * @param statement a ready to execute statement
+   * @param callableStatement a ready to execute statement
    */
   public void setCallableStatement(CallableStatement callableStatement) {
     this.callableStatement = callableStatement;
@@ -133,9 +130,9 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
   /**
    * Disconnect JDBC connection
    *
-   * @throws ComponentException
+   * @throws ConnectionException
    */
-  public void disconnect() throws ComponentException {
+  public void disconnect() throws ConnectionException {
     JDBCUtil.closeNoThrow(statement);
     try {
       jdbcConnection.disconnect();
@@ -159,9 +156,9 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
    *
    * @param timeoutMs Ignored as this implementation is non-blocking.
    * @return Object[] array of objects from resultset
-   * @throws ComponentException
+   * @throws OAException
    */
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     log.info("Call for next record(s)");
     try {
       if (rs == null) {
@@ -235,7 +232,7 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
    * If successfull, the callable statement will be used for polling the database.
    * Otherwise, the context will be ingored. 
    * 
-   * @see {@link IReadConnector#setReaderContext()}
+   * @see {@link IReadConnector#setReaderContext(Object)}
    * @param context - context as an IOrderedMap
    */
   public void setReaderContext(Object context) {
@@ -268,7 +265,7 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
    * {@link IResultSetConverter#CONVERT_ONE}, which'll fetch the next records from the result set
    * on every call to {@link #next(long)}.
    * 
-   * @param convertMode the batch size
+   * @param batchSize the batch size
    */
   public void setBatchSize(int batchSize) {
     this.batchSize = batchSize;

@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -190,7 +189,7 @@ public class SkipFilterProcessor extends Component implements IDataProcessor {
    * 
    * Check pre-condition of properties required to be set, and compile pattern.
    * 
-   * @throws ComponentException
+   * @throws org.openadaptor.core.exception.OAException
    *           if the preconditions are not met
    */
 

@@ -27,6 +27,19 @@
 
 package org.openadaptor.thirdparty.rss;
 
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
+
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,20 +47,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
-import org.openadaptor.core.exception.ConnectionException;
-
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
 
 /**
  * This class implements a simple RSS aggregator. Originally contibuted with the name FeedAggregator. Renamed
@@ -124,7 +123,7 @@ public class RSSReadConnector extends Component implements IReadConnector {
   /**
    * Poll for updates
    */
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     Object[] result = null;
     List list = getLatestEntries();
     if (!list.isEmpty()) {

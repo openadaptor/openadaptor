@@ -31,8 +31,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.core.transaction.ITransactional;
@@ -163,7 +163,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
     return (session != null);
   }
 
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     if (!isConnected()) throw new ConnectionException("Attempt to read from disconnected JMSReadConnector", this);
     Object data = receive(timeoutMs);
     if (data != null) {

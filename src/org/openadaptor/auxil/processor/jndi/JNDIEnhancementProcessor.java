@@ -43,7 +43,6 @@ import org.openadaptor.auxil.connector.jndi.JNDISearch;
 import org.openadaptor.auxil.connector.jndi.JNDIUtils;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -297,7 +296,7 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
   }
 
   /**
-   * @throws ComponentException
+   * @throws ValidationException
    */
   public void validate(List exceptions) {
     // relied on to allow this class to be subclassed by code that repeats the following with a different reader:

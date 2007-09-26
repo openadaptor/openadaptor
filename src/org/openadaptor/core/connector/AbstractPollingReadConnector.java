@@ -27,17 +27,17 @@
 
 package org.openadaptor.core.connector;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ComponentException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * An abstract implementation of {@link IPollingReadConnector}. Based on the legacy
@@ -105,9 +105,11 @@ public abstract class AbstractPollingReadConnector extends Component implements 
    * If the delegate *is* dry, and we're past the <code>reconnectTime</code>
    * the delegate is disconnectoed and connected again.
    * If despite the reconnection the delegate is still dry, it sleeps for 
-   * the length of the <code>timeout</code>. 
+   * the length of the <code>timeout</code>.
+   *
+   * @throws OAException
    */
-  public Object[] next(long timeoutMs) throws ComponentException {
+  public Object[] next(long timeoutMs) throws OAException {
     Date now = new Date();
 
     if (delegate.isDry() && now.after(reconnectTime)) {

@@ -30,7 +30,6 @@ package org.openadaptor.auxil.connector.ftp;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
@@ -44,7 +43,7 @@ public interface IFTPConnection {
    * Takes the supplied hostname and port of the target machine and attempts to connect to it. If successful the
    * isConnected() flag is set.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    */
   public void connect() throws ConnectionException;
 
@@ -62,7 +61,7 @@ public interface IFTPConnection {
    * Attempt to log into the remote server using the supplied credentials. This method checks to make saure that the
    * client has been successfully connected to the remote server before attempting to log in.
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    */
   public void logon() throws ConnectionException;
 
@@ -77,7 +76,7 @@ public interface IFTPConnection {
    * 
    * @return An InputStreamReader object containing the file contents
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    */
   public InputStream get(String fileName) throws ConnectionException;
 
@@ -143,7 +142,7 @@ public interface IFTPConnection {
    * @param fileName -
    *          the file to delete
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if the client is not logged into the remote server or there was a problem with the deletion
    */
   public void delete(String fileName) throws ConnectionException;
@@ -156,7 +155,7 @@ public interface IFTPConnection {
    * 
    * @return - array of the file names or null if none found
    * 
-   * @throws ComponentException -
+   * @throws ConnectionException -
    *           if there was an communications error
    */
   public String[] fileList(String filePattern) throws ConnectionException;
@@ -190,7 +189,7 @@ public interface IFTPConnection {
    * 
    * @return true if the transfer has been successful
    * 
-   * @throws ComponentException
+   * @throws ConnectionException
    */
   public boolean verifyFileTransfer() throws ConnectionException;
 }

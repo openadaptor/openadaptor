@@ -27,12 +27,12 @@
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.exception.ConnectionException;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IComponent;
 
 /**
  * Interface for classes which write records to JDBC databases.
@@ -44,14 +44,16 @@ public interface ISQLWriter {
 
   /**
    * Initialise writer with given JDBC Connection object.
+   *
    * @param connection Connection which the writer should use.
+   * @throws ConnectionException If there is any problem using the Connection
    */
-  public void initialise(Connection connection);
+  public void initialise(Connection connection) throws ConnectionException;
 
   /**
    * Returns true if the connection has batchSupport, and
    * the writer can also support batch writes.
-   * @return
+   * @return true batch updates are supported
    */
   public boolean hasBatchSupport();
   /**

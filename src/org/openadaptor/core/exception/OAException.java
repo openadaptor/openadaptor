@@ -34,9 +34,10 @@ import org.openadaptor.core.IComponent;
  */
 
 /**
- * Base class extended by all openadaptor unchecked exceptions.
+ * Base class extended by all openadaptor unchecked exceptions. If thrown
+ * by an IComponent implementation this can be recorded.
  *
- * 
+ * @author Kevin Scully
  */
 public class OAException extends RuntimeException {
 

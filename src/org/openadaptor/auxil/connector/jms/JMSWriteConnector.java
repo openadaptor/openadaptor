@@ -124,9 +124,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @param records -
    *                an Array of records to be processed.
    * @return result information if any. May well be null.
-   * @throws ComponentException
+   * @throws OAException
    */
-  public Object deliver(Object[] records) throws ComponentException {
+  public Object deliver(Object[] records) throws OAException {
     if (!isConnected())
       throw new ConnectionException("Attempting to deliver via a disconnected Connector", this);
     if (isConnected()) {
