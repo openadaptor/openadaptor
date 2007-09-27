@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.writer.orderedmap;
+package org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

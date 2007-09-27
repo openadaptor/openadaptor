@@ -13,8 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter;
-import org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter;
-import org.openadaptor.auxil.connector.jdbc.writer.orderedmap.TableStatementConverter;
+import org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter;
+import org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
 public class JDBCWriteConnectorTestCase extends TestCase {

@@ -1,6 +1,8 @@
-package org.openadaptor.auxil.connector.jdbc.writer.orderedmap;
+package org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap;
 
 import java.sql.Connection;
+
+import org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter;
 
 import junit.framework.TestCase;
 

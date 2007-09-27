@@ -82,5 +82,7 @@
 	<classpathentry kind="lib" path="lib/script.jar"/>
 	<classpathentry kind="lib" path="lib/xstream.jar"/>
 	<classpathentry kind="lib" path="test/lib/jmock-core-1.2.0.jar"/>
+	<classpathentry kind="lib" path="test/lib/jmock-cglib-1.2.0.jar"/>
+	<classpathentry kind="lib" path="test/lib/cglib-nodep.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
