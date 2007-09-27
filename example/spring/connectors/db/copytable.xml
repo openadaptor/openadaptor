@@ -83,7 +83,7 @@
   </bean>
 
   <!-- Writer which inserts rows into a test table -->
- <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.NewJDBCWriteConnector">
+ <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="OutputJdbcConnectionSQLServer"/>
     <property name="writer">
