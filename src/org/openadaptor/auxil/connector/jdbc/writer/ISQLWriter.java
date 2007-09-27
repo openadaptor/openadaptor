@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Interface for classes which write records to JDBC databases.
  * @author higginse
- * @see NewJDBCWriteConnector
+ * @see JDBCWriteConnector
  * @since 3.2.2
  */
 public interface ISQLWriter {

@@ -51,8 +51,8 @@ import java.util.List;
  *
  * @see JDBCConnection
  */
-public class NewJDBCWriteConnector extends AbstractWriteConnector implements ITransactional {
-  private static final Log log = LogFactory.getLog(NewJDBCWriteConnector.class);
+public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional {
+  private static final Log log = LogFactory.getLog(JDBCWriteConnector.class);
 
   //Provide a default writer delegate.
   private ISQLWriter sqlWriter = new RawSQLWriter();
@@ -62,11 +62,11 @@ public class NewJDBCWriteConnector extends AbstractWriteConnector implements ITr
   private String postambleSQL=null;
 
 
-  public NewJDBCWriteConnector() {
+  public JDBCWriteConnector() {
     super();
   }
 
-  public NewJDBCWriteConnector(String id) {
+  public JDBCWriteConnector(String id) {
     super(id);
   }
 

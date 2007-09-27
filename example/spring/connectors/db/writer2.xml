@@ -71,7 +71,7 @@
     <property name="password" value=""/>
   </bean>
 
-  <!-- Writer which inserts a row into a test table, uses SQLStatementConverter to map ordred map into a db table -->
+  <!-- Writer which inserts a row into a test table, uses SQLStatementConverter to map ordered map into a db table -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>

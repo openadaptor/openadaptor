@@ -1,4 +1,4 @@
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.deprecated;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

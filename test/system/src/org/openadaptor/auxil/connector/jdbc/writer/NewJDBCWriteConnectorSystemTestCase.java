@@ -136,7 +136,7 @@ public class NewJDBCWriteConnectorSystemTestCase extends TestCase {
   }
   
   public void testJDBCWriter() throws Exception {
-    NewJDBCWriteConnector writer = new NewJDBCWriteConnector("jdbcWriter");
+    JDBCWriteConnector writer = new JDBCWriteConnector("jdbcWriter");
     writer.setJdbcConnection(jdbcConnection);
     writer.connect();
     writer.deliver(new Object[] {ROWS[0]});
@@ -159,7 +159,7 @@ public class NewJDBCWriteConnectorSystemTestCase extends TestCase {
   }
 */
   public void testJDBCWriterWithOMTableConverter() throws Exception {
-    NewJDBCWriteConnector writer = new NewJDBCWriteConnector("jdbcWriter");
+    JDBCWriteConnector writer = new JDBCWriteConnector("jdbcWriter");
     writer.setJdbcConnection(jdbcConnection);
     MapTableWriter sqlWriter=new MapTableWriter();
     sqlWriter.setTableName("TRADE");
@@ -179,7 +179,7 @@ public class NewJDBCWriteConnectorSystemTestCase extends TestCase {
     outputColumns.add("PARTYID");
     outputColumns.add("QTY");
     outputColumns.add("PRICE");
-    NewJDBCWriteConnector writer = new NewJDBCWriteConnector("jdbcWriter");
+    JDBCWriteConnector writer = new JDBCWriteConnector("jdbcWriter");
     writer.setJdbcConnection(jdbcConnection);
  
     MapTableWriter sqlWriter=new MapTableWriter();

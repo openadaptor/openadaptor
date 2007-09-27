@@ -67,14 +67,14 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   protected IWriteConnector instantiateTestObject() {
-    NewJDBCWriteConnector writeConnector = new NewJDBCWriteConnector();
+    JDBCWriteConnector writeConnector = new JDBCWriteConnector();
     writeConnector.setId("Test Write Connector");
     return writeConnector;
   }
 
   protected void setMocksFor(IWriteConnector writeConnector) {
     sqlConnectionMock = new Mock(Connection.class);
-    ((NewJDBCWriteConnector) writeConnector).setJdbcConnection(new MockJDBCConnection((Connection) sqlConnectionMock.proxy()));
+    ((JDBCWriteConnector) writeConnector).setJdbcConnection(new MockJDBCConnection((Connection) sqlConnectionMock.proxy()));
   }
 
   // Tests
@@ -104,7 +104,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnectWithExceptionFromWriter() {
-    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    ((JDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy())).will(throwException(new ConnectionException("Mock Exception")));
 
     try {
@@ -118,7 +118,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
   }
 
   public void testConnectWithExceptionFromConnection() {
-    ((NewJDBCWriteConnector) testWriteConnector).setJdbcConnection(new MockJDBCConnection(true));
+    ((JDBCWriteConnector) testWriteConnector).setJdbcConnection(new MockJDBCConnection(true));
     sqlWriterMock.expects(never()).method("initialise").with(eq(sqlConnectionMock.proxy()));
 
     try {
@@ -188,7 +188,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
    * This test uses a mock ISQLWriter to force an SQLException
    */
   public void testDeliverWithException() {
-    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    ((JDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
     Object[] testData = new Object[]{"I cause an exception"};
     String dummyExceptionMessage = "Thrown deliberately by a mock ISQLWriter.";
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy()));
@@ -235,7 +235,7 @@ public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
     String dummyExceptionMessage = "Thrown deliberately by a mock ISQLWriter.";
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy()));
     sqlWriterMock.expects(once()).method("writeBatch").with(eq(testData)).will(throwException(new SQLException(dummyExceptionMessage)));
-    ((NewJDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
+    ((JDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
     testWriteConnector.connect();
     try {
       testWriteConnector.deliver(testData);
