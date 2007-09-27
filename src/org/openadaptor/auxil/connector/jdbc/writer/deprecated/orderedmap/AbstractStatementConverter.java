@@ -30,7 +30,7 @@ package org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-import org.openadaptor.auxil.connector.jdbc.writer.IStatementConverter;
+import org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /** 

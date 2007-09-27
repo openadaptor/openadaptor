@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.deprecated;
 
 import org.openadaptor.core.Component;
 
@@ -34,40 +34,46 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 /**
- * trivial implementation of IStatementConverter, calls toString() on data and
- * creates a PreparedStatement with that String.
+ * Converts some data into a PreparedStatement.
+ *
  * @author perryj
- * @deprecated Use RawSQLWriter instead
+ *
+ * @see JDBCWriteConnector
+ * @deprecated Use (implementations of) ISQLWriter instead
  */
-public class StatementConverter implements IStatementConverter {
+public interface IStatementConverter {
 
-  public PreparedStatement convert(Object data, Connection connection) {
-    try {
-      return connection.prepareStatement(data.toString());
-    } catch (Exception e) {
-      throw new RuntimeException("failed to convert data to PreparedStatement, " + e.getMessage(), e);
-    }
-  }
+  /**
+   * Do any initialisation required. Called with a valid connection once before convert is called.
+   * Calling this method again should reset and state.
+   * @param connection
+   */
+  void initialise(Connection connection);
 
-  public void initialise(Connection connection) {
-  }
+  /**
+   * Convert data into a fully resolved PreparedStatement
+   * @param data
+   * @param connection
+   * @return fully resolved PreparedStatement
+   */
+  PreparedStatement convert(Object data, Connection connection);
 
 
   /**
    * Checks that the properties for the statement converter are valid. If any problems are found
    * then an exception is raised and added to the supplied list.
-   * <p/>
-   *
-   * In this case, there is nothing to check as there are no properties
    *
    * @param exceptions list of exceptions that any validation errors will be appended to
-   * @param comp       the component that this converter is connected to
+   * @param comp the component that this converter is connected to. We need to pass this as any
+   * exceptions raised require it as part of their constructor!
    */
-  public void validate(List exceptions, Component comp) {
-  }
+  public void validate(List exceptions, Component comp);
   
-  public boolean preparedStatementIsReusable() {
-    return false;
-  }
-
+  /**
+   * Indicates whether returned PreparedStatement (from convert) can be reused multiple times.
+   * Default is false.
+   * It should return true if, for example a prepared statement is to be reused multiple times.
+   * @return false if ps must be closed each time
+   */
+  public boolean preparedStatementIsReusable();
 }

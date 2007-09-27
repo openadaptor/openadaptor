@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
  */
 
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.deprecated;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
