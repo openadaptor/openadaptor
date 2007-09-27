@@ -71,10 +71,10 @@
   </bean>
 
   <!-- Writer which inserts a row into a test table, uses TableStatementConverter to map ordred map into a db table -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector">
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.TableStatementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter">
         <!-- the table name we want to insert a row for -->
         <property name="tableName" value="TESTOUTPUT"/>
         <!-- mapping between incoming ordered map attribubtes and table column names -->

@@ -82,14 +82,13 @@
     </property>
   </bean>
 
-  <!-- Writer which inserts a row into a test table -->
-
-  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <!-- Writer which inserts rows into a test table -->
+ <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.NewJDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="OutputJdbcConnectionSQLServer"/>
-
-    <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.PreparedStatementTableConverter">
-        <property name="tableName" value="${outputTable}"/>
+    <property name="writer">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+        <property name="tableName" value="WriterExample"/>
         <!-- Uncomment to restrict the written columns to those listed
         <property name="outputColumns">
          <list>
@@ -100,8 +99,7 @@
         -->
       </bean>
     </property>
-
-  </bean>
+ </bean>
 
   <!-- Just log failures to stdout -->
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>

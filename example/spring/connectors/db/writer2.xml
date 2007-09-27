@@ -72,11 +72,11 @@
   </bean>
 
   <!-- Writer which inserts a row into a test table, uses SQLStatementConverter to map ordred map into a db table -->
-  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter">
         <property name="sql" value="INSERT INTO TESTOUTPUT VALUES ('$data$')"/>
       </bean>
     </property>

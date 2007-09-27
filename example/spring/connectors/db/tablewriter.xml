@@ -29,9 +29,7 @@
     
   once running any data that read from std input is written into the test table.
   
-  NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
-        database with "sp_insert" procedure available in it.
-  ]]></description>
+   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor">

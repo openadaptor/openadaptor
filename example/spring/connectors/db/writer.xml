@@ -63,7 +63,7 @@
     <property name="password" value=""/>
   </bean>
 
-  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.NewJDBCWriteConnector">
     <description>Writer which inserts data into test table.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
   </bean>
