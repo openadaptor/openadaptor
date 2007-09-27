@@ -60,6 +60,7 @@ public class SMTPConnection extends Component {
   private boolean recordsAsAttachment = false;
   private Message message;
   private boolean connected=false;
+  private String mimeContentType;
 
   //BEGIN Bean getters/setters
 
@@ -231,6 +232,22 @@ public class SMTPConnection extends Component {
     this.recordsAsAttachment = recordsAsAttachment;
   }
 
+  /**
+   * Returns MIME  content type (if any was set).
+   *
+   * @return MIME content type.
+   */
+  public String getMimeContentType() {
+    return mimeContentType;
+  }
+
+  /**
+   * Optional. Sets MIME content type.
+   */
+  public void setMimeContentType(String mimeContentType) {
+    this.mimeContentType = mimeContentType;
+  }
+
   //END   Bean getters/setters
 
   // Connection Support
@@ -331,12 +348,18 @@ public class SMTPConnection extends Component {
         mbpPrefaceBody = new MimeBodyPart();
         mbpPrefaceBody.setText(bodyPreface);
         mbpBody = new MimeBodyPart();
-        mbpBody.setText(body);
+        if (mimeContentType != null && !(mimeContentType.length()==0)) {
+          mbpBody.setContent(body, mimeContentType);
+        } else {
+          mbpBody.setText(body);
+        }
         //Create mime message
         mmp = new MimeMultipart();
         mmp.addBodyPart(mbpPrefaceBody);
         mmp.addBodyPart(mbpBody);
         message.setContent(mmp);
+      } else if (mimeContentType != null && !(mimeContentType.length()==0)) {
+    	message.setContent(bodyPreface + "\n\n" + body, mimeContentType);
       } else {
         message.setText(bodyPreface + "\n\n" + body);
       }
