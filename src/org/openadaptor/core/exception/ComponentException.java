@@ -43,12 +43,14 @@ public abstract class ComponentException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
+  public ComponentException(String msg, IComponent c) {
+    super(msg, c);
+  }
+
   public ComponentException(String msg, Throwable cause, IComponent c) {
     super(msg, cause, c);
   }
 
-  public ComponentException(String msg, IComponent c) {
-    super(msg, c);
-  }
+
 
 }

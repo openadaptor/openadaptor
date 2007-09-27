@@ -31,7 +31,7 @@ import org.openadaptor.core.IComponent;
 
 /**
  * OAException that relates to incomplete or incorrect configured state. This
- * excption is typically thrown by validate methods.
+ * excption is typically thrown by validate methods during adaptor startup.
  *
  * @author perryj
  */
@@ -39,10 +39,23 @@ public class ValidationException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Include both message and original Component that raised the exception.
+   *
+   * @param msg The error message.
+   * @param c   Component that raised the exception.
+   */
   public ValidationException(String msg, IComponent c) {
     super(msg, c);
   }
 
+  /**
+   * Include the message, cause and component.
+   *
+   * @param msg   The error message.
+   * @param cause Original exception thrown.
+   * @param c     Component that raised the exception.
+   */
   public ValidationException(String msg, Throwable cause, IComponent c) {
     super(msg, cause, c);
   }

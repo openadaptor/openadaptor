@@ -32,35 +32,59 @@ import org.openadaptor.core.IComponent;
 /**
  * OAException that relates to processing problem i.e. data specific NOT
  * transport or resource specific.
- * 
+ *
+ * <p>ProcessingExceptions are most commonly raised by DataProcessor implementations
+ * but can be raised by any component that manipulates data or requires a
+ * specific data format.</p>
+ *
  * @author perryj
  */
 public class ProcessingException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
+  /** Default Constructor */
   public ProcessingException() {
     super();
   }
 
-  public ProcessingException(String string) {
-    super(string);
+  /**
+   * Supply just the Exception Message.
+   *
+   * @param msg   The error message.
+   */
+  public ProcessingException(String msg) {
+    super(msg);
   }
 
-  public ProcessingException(String string, Throwable throwable) {
-    super(string, throwable);
+  /**
+   * Include both message and original cause.
+   *
+   * @param msg     The error message.
+   * @param cause   Original exception thrown.
+   */
+  public ProcessingException(String msg, Throwable cause) {
+    super(msg, cause);
   }
 
-  public ProcessingException(Throwable throwable) {
-    super(throwable);
-  }
-
-  public ProcessingException(String msg, Throwable cause, IComponent c) {
-    super(msg, cause, c);
-  }
-
+  /**
+   * Include both message and original Component that raised the exception.
+   *
+   * @param msg The error message.
+   * @param c   Component that raised the exception.
+   */
   public ProcessingException(String msg, IComponent c) {
     super(msg, c);
   }
 
+  /**
+   * Include the message, cause and component.
+   *
+   * @param msg   The error message.
+   * @param cause Original exception thrown.
+   * @param c     Component that raised the exception.
+   */
+  public ProcessingException(String msg, Throwable cause, IComponent c) {
+    super(msg, cause, c);
+  }
 }

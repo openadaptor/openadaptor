@@ -34,8 +34,22 @@ import org.openadaptor.core.IComponent;
  */
 
 /**
- * Base class extended by all openadaptor unchecked exceptions. If thrown
- * by an IComponent implementation this can be recorded.
+ * Base class extended by all openadaptor unchecked exceptions.
+ *
+ * <p>RuntimeExceptions raised by openadaptor components should always be an
+ * instance of this class or it's subclasses. This allows the Exception
+ * Management System to easily distinguish openadaptor specific exceptions.</p>
+ *
+ * <p>As this extends RuntimeException this exception can be used to wrap
+ * other exceptions. It is strongly reccomended that all third party exceptions
+ * raised by Connectors or DataProcessors are wrapped by the appropriate
+ * OAException subclass. This makes it much easier to configure openadaptor's
+ * exception management correctly.</p>
+ *
+ * <p>OAException extends RuntimeException to add the ability to record the
+ * IComponent that raised the exception. This is an optional feature. There
+ * is no need to supply this if the exception is not being raised by an
+ * IComponent implementation.</p>
  *
  * @author Kevin Scully
  */
@@ -44,35 +58,69 @@ public class OAException extends RuntimeException {
   private static final long serialVersionUID = 1L;
   protected IComponent component = null;
 
+  // Constructors
+
   public OAException() {
     super();
   }
 
-  public OAException(String string) {
-    super(string);
+  /**
+   * Supply just the Exception Message.
+   *
+   * @param msg   The error message.
+   */
+  public OAException(String msg) {
+    super(msg);
   }
 
-  public OAException(String string, Throwable throwable) {
-    super(string, throwable);
+  /**
+   * Include both message and original cause.
+   *
+   * @param msg     The error message.
+   * @param cause   Original exception thrown.
+   */
+  public OAException(String msg, Throwable cause) {
+    super(msg, cause);
   }
 
-  public OAException(Throwable throwable) {
-    super(throwable);
+  /**
+   * Include both message and original Component that raised the exception.
+   *
+   * @param msg The error message.
+   * @param c   Component that raised the exception.
+   */
+  public OAException(String msg, IComponent c) {
+    super(msg);
+    component = c;
   }
 
+  /**
+   * Include the message, cause and component.
+   *
+   * @param msg   The error message.
+   * @param cause Original exception thrown.
+   * @param c     Component that raised the exception.
+   */
   public OAException(String msg, Throwable cause, IComponent c) {
     super(msg, cause);
     component = c;
   }
 
-  public OAException(String msg, IComponent c) {
-    this(msg, null, c);
-  }
-
+  /**
+   * Accessor for component that raised the exception.
+   *
+   * @return IComponent
+   */
   public IComponent getComponent() {
     return component;
   }
 
+  /**
+   * Return the error message. If the component is populated then the message
+   * will be prefixed with the component id.
+   *
+   * @return String   The error message.
+   */
   public String getMessage() {
     return (component != null ? component.getId() : "") + " : " + super.getMessage();
   }

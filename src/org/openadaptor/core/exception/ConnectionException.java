@@ -31,26 +31,54 @@ import org.openadaptor.core.IComponent;
 
 /**
  * OAException for external resource problems i.e. not data specific but
- * transport or resource specific. Such as Database Server is down.
- * @author perryj
+ * transport or resource specific. Such as Database Server is down etc.
  *
+ * <p>ConnectionException's are most commonly raised by Connector implementations
+ * but can be raised by any component that accesses external resources.</p>
+ *
+ * @author perryj
  */
 public class ConnectionException extends OAException {
 
   private static final long serialVersionUID = 1;
 
-  public ConnectionException(String string) {
-    super(string);
+  // Constructors
+
+  /**
+   * Supply just the Exception Message.
+   *
+   * @param msg   The error message.
+   */
+  public ConnectionException(String msg) {
+    super(msg);
   }
 
+  /**
+   * Include both message and original cause.
+   *
+   * @param msg     The error message.
+   * @param cause   Original exception thrown.
+   */
+  public ConnectionException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
+  /**
+   * Include both message and original Component that raised the exception.
+   *
+   * @param msg The error message.
+   * @param c   Component that raised the exception.
+   */
   public ConnectionException(String msg, IComponent c) {
     super(msg, c);
   }
 
-  public ConnectionException(String string, Throwable throwable) {
-    super(string, throwable);
-  }
-
+  /**
+   * Include the message, cause and component.
+   *
+   * @param msg   The error message.
+   * @param cause Original exception thrown.
+   * @param c     Component that raised the exception.
+   */
   public ConnectionException(String msg, Throwable cause, IComponent c) {
     super(msg, cause, c);
   }
