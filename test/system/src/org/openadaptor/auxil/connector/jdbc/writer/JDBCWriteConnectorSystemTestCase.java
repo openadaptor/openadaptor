@@ -16,9 +16,9 @@ import org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
-public class NewJDBCWriteConnectorSystemTestCase extends TestCase {
+public class JDBCWriteConnectorSystemTestCase extends TestCase {
 
-  private static final Log log = LogFactory.getLog(NewJDBCWriteConnectorSystemTestCase.class);
+  private static final Log log = LogFactory.getLog(JDBCWriteConnectorSystemTestCase.class);
   
   private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
   private static final String DB_URL="jdbc:hsqldb:mem:test";

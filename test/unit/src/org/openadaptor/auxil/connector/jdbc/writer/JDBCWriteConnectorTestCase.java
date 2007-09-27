@@ -43,7 +43,7 @@ import java.util.List;
  * Created Sep 17, 2007 by oa3 Core Team
  */
 
-public class NewJDBCWriteConnectorTestCase extends MockObjectTestCase {
+public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
 
   protected IWriteConnector testWriteConnector;
   protected Mock sqlConnectionMock;
