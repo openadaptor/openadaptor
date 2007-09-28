@@ -82,10 +82,10 @@
 		class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
 		<description>
 		  Illustrates use of the map elements directly. Note that new map entries
-		  may be added by using data.put(key,value)
+		  may be added by using oa_data.put(key,value)
 		</description>
 		<property name="script">
-			<value>data.put("Value",Qty * Price);</value>
+			<value>oa_data.put("Value",Qty * Price);</value>
 		</property>
 	</bean>
 

@@ -20,7 +20,7 @@
     
     java org.openadaptor.spring.SpringAdaptor -config script.xml
     
-  You need the following in your classpath
+  You need the followinDJg in your classpath
   
     lib
     lib/openadaptor.jar
@@ -64,7 +64,7 @@
     <property name="language" value="js"/>
     <property name="script">
       <value>
-        data = "Hello " + data + "!";
+        oa_data = "Hello " + oa_data + "!";
       </value>
     </property>
   </bean>
