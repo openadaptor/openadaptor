@@ -40,16 +40,41 @@ import org.openadaptor.core.exception.MessageException;
  * Converts a MessageException to an ordered map.
  * 
  * @author Kris Lachor
+ * TODO java doc
  */
 public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
-  /* JDBC mapping constants */
-  private static final String TIMESTAMP = "timestamp";
-  private static final String EXCEPTION_CLASS = "exceptionClass";
-  private static final String COMPONENT = "originatingComponent";
-  private static final String DATA = "data";
+  /* Default field names */
+  
+  static final String TIMESTAMP = "TIMESTAMP";
+  
+  static final String EXCEPTION_CLASS = "EXCEPTION_CLASS_NAME";
+  
+  static final String COMPONENT = "ORIGINATING_COMPONENT";
+  
+  static final String DATA = "DATA";
+  
+  static final String FIXED = "FIXED";
+  
+  static final String REPROCESSED = "REPROCESSED";
+  
+  
+  /* Field names, initialised to defaults */
+  
+  private String timestampColName = TIMESTAMP;
+  
+  private String exceptionClassColName = EXCEPTION_CLASS;
+  
+  private String componentColName = COMPONENT;
+  
+  private String dataColName = DATA;
+  
+  private String fixedColName = FIXED;
+  
+  private String reprocessedColName = REPROCESSED;
+  
   
   // the format the exception timestamp will have in the ordered map
   // default to the java.util.Date().toString() value
@@ -63,10 +88,6 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
     super(id);
   }
   
-  public void setTimestampFormat(String timestampFormat) { 
-	  this.timestampFormat = new SimpleDateFormat(timestampFormat);
-  }
-
   /**
    * Converts the <code>record</code> into an <code>IOrderedMap</code> .
    *
@@ -80,11 +101,42 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       }
       MessageException messageException = (MessageException) record;
       IOrderedMap map = new OrderedHashMap();
-      map.put(TIMESTAMP, timestampFormat.format(new java.util.Date()));
-      map.put(EXCEPTION_CLASS, messageException.getException().getClass().getName());
+      map.put(timestampColName, timestampFormat.format(new java.util.Date()));
+      map.put(exceptionClassColName, messageException.getException().getClass().getName());
       String component = messageException.getOriginatingModule();
-      map.put(COMPONENT, null==component ? "Unknown" : component);
-      map.put(DATA, messageException.getData());
+      map.put(componentColName, null==component ? "Unknown" : component);
+      map.put(dataColName, messageException.getData());
+      map.put(fixedColName, "false");
+      map.put(reprocessedColName, "false");
       return map;       
   }
+  
+  public void setTimestampFormat(String timestampFormat) { 
+    this.timestampFormat = new SimpleDateFormat(timestampFormat);
+  }
+
+  public void setComponentColName(String componentColName) {
+    this.componentColName = componentColName;
+  }
+
+  public void setDataColName(String dataColName) {
+    this.dataColName = dataColName;
+  }
+
+  public void setExceptionClassColName(String exceptionClassColName) {
+    this.exceptionClassColName = exceptionClassColName;
+  }
+
+  public void setFixedColName(String fixedColName) {
+    this.fixedColName = fixedColName;
+  }
+
+  public void setReprocessedColName(String reprocessedColName) {
+    this.reprocessedColName = reprocessedColName;
+  }
+
+  public void setTimestampColName(String timestampColName) {
+    this.timestampColName = timestampColName;
+  }
+
 }

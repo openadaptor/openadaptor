@@ -80,13 +80,13 @@
   <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
   <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
-    <description>Writer which inserts data into test table.</description>
-    <property name="jdbcConnection" ref="jdbcConnection"/>
-    <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.orderedmap.SQLStatementConverter">
-        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
-      </bean>
-    </property>
+		<property name="jdbcConnection" ref="jdbcConnection" />
+		<property name="writer">
+			<bean
+				class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+				<property name="tableName" value="ERROR_LOG" />
+			</bean>
+		</property>
   </bean>
   
 </beans>

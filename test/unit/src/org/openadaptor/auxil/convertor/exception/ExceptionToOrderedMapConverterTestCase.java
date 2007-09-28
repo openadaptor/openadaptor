@@ -27,14 +27,14 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
 		OrderedHashMap map = (OrderedHashMap)result;
-		assertTrue(map.containsKey("timestamp"));
-		assertTrue(map.containsKey("exceptionClass"));
-		assertTrue(map.containsKey("originatingComponent"));
-		assertTrue(map.containsKey("data"));
+		assertTrue(map.containsKey(convertor.TIMESTAMP));
+		assertTrue(map.containsKey(convertor.EXCEPTION_CLASS));
+		assertTrue(map.containsKey(convertor.COMPONENT));
+		assertTrue(map.containsKey(convertor.DATA));
 		
-		assertEquals("java.lang.RuntimeException", map.get("exceptionClass"));
-		assertEquals("SOURCE", map.get("originatingComponent"));
-		assertEquals("EEEE", map.get("data"));
+		assertEquals("java.lang.RuntimeException", map.get(convertor.EXCEPTION_CLASS));
+		assertEquals("SOURCE", map.get(convertor.COMPONENT));
+		assertEquals("EEEE", map.get(convertor.DATA));
 	}
 
 	public void testWithDateFormatConvert() {
@@ -44,22 +44,22 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
 		OrderedHashMap map = (OrderedHashMap)result;
-		assertTrue(map.containsKey("timestamp"));
-		assertTrue(map.containsKey("exceptionClass"));
-		assertTrue(map.containsKey("originatingComponent"));
-		assertTrue(map.containsKey("data"));
+		assertTrue(map.containsKey(convertor.TIMESTAMP));
+		assertTrue(map.containsKey(convertor.EXCEPTION_CLASS));
+		assertTrue(map.containsKey(convertor.COMPONENT));
+		assertTrue(map.containsKey(convertor.DATA));
 		
-		if (!now.equals(map.get("timestamp"))) {
+		if (!now.equals(map.get(convertor.TIMESTAMP))) {
 			// possible but very unlikely we clicked over to the next minute
 			// between getting the current date and making the conversion
 			// but we can handle that
 			now = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date());
-			assertEquals(now, map.get("timestamp"));
+			assertEquals(now, map.get(convertor.TIMESTAMP));
 		}
 		
-		assertEquals("java.sql.SQLException", map.get("exceptionClass"));
-		assertEquals("...", map.get("originatingComponent"));
-		assertEquals("''", map.get("data"));
+		assertEquals("java.sql.SQLException", map.get(convertor.EXCEPTION_CLASS));
+		assertEquals("...", map.get(convertor.COMPONENT));
+		assertEquals("''", map.get(convertor.DATA));
 	}
 
 }

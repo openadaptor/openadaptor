@@ -21,14 +21,13 @@
   
   <bean id="exceptionConverter" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
-  <bean id="jdbcWriter" class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector">
-    <description>Writer which inserts data into test table.</description>
-    <property name="jdbcConnection" ref="jdbcConnection"/>
-    <property name="statementConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter">
-        <property name="sql" value="INSERT INTO ERROR_LOG VALUES (NULL,'$timestamp$','$exceptionClass$','$originatingComponent$','$data$','false', 'false')"/>
-      </bean>
-    </property>
+  <bean id="jdbcWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="jdbcConnection" />
+	<property name="writer">
+	   <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+		  <property name="tableName" value="ERROR_LOG" />
+	   </bean>
+	</property>
   </bean>
   
   <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
