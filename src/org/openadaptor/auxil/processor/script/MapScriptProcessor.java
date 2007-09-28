@@ -33,12 +33,17 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.NullRecordException;
+import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 /**
  * ScriptProcessor which executes scripts in the context of a Map data record.
  * 
+ * Scripts may reference fields in the record directly by name.
+ * If new fields are added then use oa_data.put() (substituting an alternate
+ * dataBinding if it has been changed)
  * @author higginse
- *
+ * 
+ * @since 3.3
  */
 public class MapScriptProcessor extends ScriptProcessor {
   private static final Log log =LogFactory.getLog(MapScriptProcessor.class);
@@ -73,6 +78,12 @@ public class MapScriptProcessor extends ScriptProcessor {
       Object key=keys[i];
       if (key!=null) {
         String boundName=key.toString();
+        //Check we don't have a field name that clashes with the dataBinding.
+        if (dataBinding==boundName) {
+          String msg="Field "+boundName+"conflichts with databinding: "+dataBinding;
+          log.warn(msg+". Modifying the dataBindingProperty may resolve this");
+          throw new RecordException(msg);
+        }
         Object value=map.get(key);
         scriptEngine.put(boundName,value);
         if (log.isDebugEnabled()) {

@@ -55,12 +55,12 @@ import org.openadaptor.core.exception.ValidationException;
  * <br>
  * 
  * @author higginse
- *
+ * 
  */
 public class ScriptProcessor extends Component implements IDataProcessor {
   private static final Log log =LogFactory.getLog(ScriptProcessor.class);
   public static final String DEFAULT_LANGUAGE="js"; //Javascript is the default language.
-  public static final String DEFAULT_DATA_BINDING="data"; //Bound name for data records
+  public static final String DEFAULT_DATA_BINDING="oa_data"; //Bound name for data records
 
   protected ScriptEngine scriptEngine;
   protected String language=DEFAULT_LANGUAGE;
@@ -110,10 +110,6 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     this.compile = compile;
   }
 
-//  public void setCompiledScript(CompiledScript compiledScript) {
-//    this.compiledScript = compiledScript;
-//  }
-
   /**
    * Assign the script to be executed.
    * @param script
@@ -121,9 +117,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public void setScript(String script) {
     this.script = script;
   }
-
- 
-
+  
   /**
    * Set the name of a file which contains the script to run.
    * <br>

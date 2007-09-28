@@ -8,6 +8,9 @@ import org.openadaptor.core.IDataProcessor;
 
 public class ScriptFilterProcessorTestCase extends AbstractTestIDataProcessor {
 
+  //Pick up default binding for most examples.
+  protected String binding=ScriptProcessor.DEFAULT_DATA_BINDING;
+
   protected IDataProcessor createProcessor() {
     ScriptFilterProcessor processor=new ScriptFilterProcessor();
     processor.setScriptProcessor(generateScriptProcessor());
@@ -49,7 +52,7 @@ public class ScriptFilterProcessorTestCase extends AbstractTestIDataProcessor {
   private ScriptProcessor generateScriptProcessor() {
     ScriptProcessor scriptProcessor=new ScriptProcessor();
     scriptProcessor.setLanguage("js");
-    scriptProcessor.setScript("/[fF]oo/.test(data);");
+    scriptProcessor.setScript("/[fF]oo/.test("+binding+");");
     return scriptProcessor;   
   }
 

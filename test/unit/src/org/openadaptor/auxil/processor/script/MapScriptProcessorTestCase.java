@@ -14,6 +14,9 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
   private static final Log log =LogFactory.getLog(MapScriptProcessorTestCase.class);
 
   protected HashMap inputMap;
+  
+  //Pick up default binding for most examples.
+  protected String binding=MapScriptProcessor.DEFAULT_DATA_BINDING;
 
   public void setUp() throws Exception {
     super.setUp();
@@ -32,7 +35,7 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
   public void testValidMap() {
     log.debug("--- BEGIN testValidMap ---");
     MapScriptProcessor processor=(MapScriptProcessor)testProcessor;
-    processor.setScript("data;");
+    processor.setScript(binding+";");
     try {
       processor.process("Not a map");
       fail("Non Map data should have caused a RecordFormatException");
@@ -45,7 +48,7 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
     log.debug("--- BEGIN testProcessRecord ---");
     ArrayList exceptions=new ArrayList();
     MapScriptProcessor processor=(MapScriptProcessor)testProcessor;
-    processor.setScript("data;");
+    processor.setScript(binding+";");
     processor.validate(exceptions);//This also implicitly initialises the script engine.
     //First script leaves it untouched;
     checkResult(inputMap, processor.process(inputMap.clone()));
@@ -53,7 +56,7 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
     //Calculate a result, add as new field
     Map expected=(Map)inputMap.clone();
     expected.put("FooBar","foobar");
-    processor.setScript("data.put('FooBar',Foo+Bar);");
+    processor.setScript(binding+".put('FooBar',Foo+Bar);");
     processor.validate(exceptions);
     checkResult(expected,processor.process(inputMap));
     
@@ -65,7 +68,7 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
     
     //Delete field
     expected.remove("Foo");
-    processor.setScript("data.remove('Foo');");
+    processor.setScript(binding+".remove('Foo');");
     processor.validate(exceptions);
     checkResult(expected,processor.process(inputMap));  
     log.debug("--- END testProcessRecord ---");

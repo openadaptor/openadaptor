@@ -12,6 +12,10 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
   private static final Log log =LogFactory.getLog(ScriptProcessorTestCase.class);
 
   private static String FOOBAR="foobar";
+  
+  //Pick up default binding for most examples.
+  protected String binding=ScriptProcessor.DEFAULT_DATA_BINDING;
+
   protected IDataProcessor createProcessor() {
     return new ScriptProcessor();
   }
@@ -19,7 +23,7 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
   public void testProcessRecord() {
     log.debug("--- BEGIN testProcessRecord ---");
    ScriptProcessor processor=(ScriptProcessor)testProcessor;
-    processor.setScript("data;");
+    processor.setScript(binding+";");
     processor.validate(new ArrayList()); //Validation also initialised the script engine.
     checkResult(FOOBAR,processor.process(FOOBAR));
     Object[] result = processor.process("hello world");
@@ -27,15 +31,15 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
     assertFalse(result[0].equals(FOOBAR));
 
 
-    processor.setScript("data = \"hello \" + data;");
+    processor.setScript(binding+" = \"hello \" + "+binding+";");
     processor.validate(new ArrayList());
     checkResult("hello foobar",processor.process(FOOBAR));
 
-    processor.setScript("data = null;");
+    processor.setScript(binding+"= null;");
     processor.validate(new ArrayList());
     assertTrue(processor.process(FOOBAR).length == 0);
 
-    processor.setScript("if (data == \"foo\") { data = \"bar\";}");
+    processor.setScript("if ("+binding+" == \"foo\") { "+binding+" = \"bar\";}");
     processor.validate(new ArrayList());
 
     checkResult("bar",processor.process("foo"));
@@ -59,7 +63,7 @@ public class ScriptProcessorTestCase extends AbstractTestIDataProcessor {
 
     //Good script
     exceptions.clear();
-    processor.setScript("data;");
+    processor.setScript(binding+";");
     processor.validate(exceptions);
     assertTrue(exceptions.isEmpty());
 
