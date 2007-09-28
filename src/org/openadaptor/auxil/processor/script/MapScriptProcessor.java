@@ -80,7 +80,7 @@ public class MapScriptProcessor extends ScriptProcessor {
         String boundName=key.toString();
         //Check we don't have a field name that clashes with the dataBinding.
         if (dataBinding==boundName) {
-          String msg="Field "+boundName+"conflichts with databinding: "+dataBinding;
+          String msg="Field "+boundName+" conflicts with databinding: "+dataBinding;
           log.warn(msg+". Modifying the dataBindingProperty may resolve this");
           throw new RecordException(msg);
         }
