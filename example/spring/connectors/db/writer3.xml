@@ -38,7 +38,7 @@
    <property name="messageProcessor">
      <bean class="org.openadaptor.core.router.Router">
        <description>
-         This creates the simple pipeline Reader -> MapConverter -> Writer.
+         This creates the simple Router: Reader -> MapConverter -> Writer.
        </description>
        <property name="processors">
          <list>
