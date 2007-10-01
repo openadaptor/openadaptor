@@ -56,8 +56,6 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
   
   protected static final String RESPONSE_KEY = "data";
   
-  private PostMethod postMethod = null;
-  
   /**
    * Default constructor.
    */
@@ -82,7 +80,6 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
    */
   public void connect(){
     setHostConfiguration();
-    postMethod = new PostMethod(url);
   }
 
   /**
@@ -102,8 +99,10 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
   public Object deliver(Object[] data) {
     log.info("HTTP write connector, delivering data..");
     Object result = new Object[data.length];
+    PostMethod postMethod = null;
     for(int i=0; i<data.length; i++){
       NameValuePair [] nameValuePairs = { new NameValuePair(RESPONSE_KEY, data[i].toString())};
+      postMethod = new PostMethod(url);
       postMethod.setRequestBody(nameValuePairs);   
       try {
         
@@ -120,17 +119,11 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
  
       } catch (IOException e) {
         log.error("Error while reading response from HTTP POST", e);
+      } finally {
+        postMethod.releaseConnection();
       }
     }
     return result;
-  }
-
-  protected PostMethod getPostMethod() {
-    return postMethod;
-  }
-
-  protected void setPostMethod(PostMethod postMethod) {
-    this.postMethod = postMethod;
   }
   
 }

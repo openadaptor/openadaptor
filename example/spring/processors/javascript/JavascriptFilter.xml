@@ -11,7 +11,7 @@
   This adaptor does the following...
     
     * reads all data in input/delim.txt
-    * converts to ordered
+    * converts to orderedmaps
     * applies a simple filter to records
     * outputs to stdout
     

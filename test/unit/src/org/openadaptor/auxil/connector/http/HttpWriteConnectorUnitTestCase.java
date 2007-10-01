@@ -65,10 +65,8 @@ public class HttpWriteConnectorUnitTestCase extends MockObjectTestCase{
    */
   public void testConnect(){
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
-    assertTrue(httpWriteConnector.getPostMethod()==null);
     httpWriteConnector.connect();
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
-    assertTrue(httpWriteConnector.getPostMethod()!=null);
   }
   
   /**
@@ -77,12 +75,10 @@ public class HttpWriteConnectorUnitTestCase extends MockObjectTestCase{
    */
   public void testConnect2(){
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
-    assertTrue(httpWriteConnector.getPostMethod()==null);
     httpWriteConnector.setProxyHost("testProxyHost");
     /* no proxy port set, should igore proxy */
     httpWriteConnector.connect();
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
-    assertTrue(httpWriteConnector.getPostMethod()!=null);
   }
   
   /**
@@ -91,12 +87,10 @@ public class HttpWriteConnectorUnitTestCase extends MockObjectTestCase{
    */
   public void testConnectWithProxy(){
     assertTrue(mockHttpClient.hostConfigurationCounter==0);
-    assertTrue(httpWriteConnector.getPostMethod()==null);
     httpWriteConnector.setProxyHost("testProxyHost");
     httpWriteConnector.setProxyPort("1111");
     httpWriteConnector.connect();
     assertTrue(mockHttpClient.hostConfigurationCounter==1);
-    assertTrue(httpWriteConnector.getPostMethod()!=null);
   }
   
   /**
