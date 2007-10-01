@@ -15,14 +15,15 @@
     * writes to stdout
     
   It is designed to illustrate the basic structure of an adaptor router configuration.
-  The previous example sets an adaptor pipeline property, to the ordered list of components
-  that make up the adaptor. In this example we show an equivalent adaptor that that defines
-  the linkage between the component using a RoutingMap and a Router. Explicitly using the
-  RoutingMap and Router allows more sophisticated configurations such as
+  Example simple.xml configures a pipeline of components as an ordered list of
+  components which constitute the Adaptor. 
+  This example inllustrates an equivalent adaptor which defines the linkage between
+  components using a processMap within Router. This permits more sophisticated 
+  configurations such as:
   
-  Branching - the output of a component is routed to multiple processors
+  Branching (fanout)- the output of a component is routed to multiple processors
   Exception Management - specific exceptions can be trapped at any point in the processing
-                         (see exceptions2 example).
+                         (see exceptions example).
   
   Run it like this...
     
