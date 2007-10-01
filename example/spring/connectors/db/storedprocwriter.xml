@@ -18,6 +18,8 @@
   Run it like this...
     
     java org.openadaptor.spring.SpringAdaptor -config storedprocwriter.xml -bean Adaptor -props db.props
+
+  You must supply db.props populated appropriately for your environment.
     
   You need the following in your classpath
   
@@ -30,7 +32,7 @@
   once running any data that read from std input is written into the test table.
   
   NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
-        database with "sp_insert" procedure available in it.
+        database with an "sp_insert_example" procedure available in it.
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
