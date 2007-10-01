@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config script.xml
+    java org.openadaptor.spring.SpringAdaptor -config javascript.xml
     
   You need the followinDJg in your classpath
   
