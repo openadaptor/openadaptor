@@ -60,9 +60,9 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <description>Reader which polls database using configured SQL.</description>
     <property name="jdbcConnection" ref="JdbcConnection"/>
-    <!-- Untested dev property
-    <property name="maxBatchSize" value="0"/> 
-    -->
+    <!-- batch size of 0 or less means process all rows in one message batch. -->
+    <!-- batch size of one means process one row per message and so on -->
+    <property name="batchSize" value="0"/>
     <property name="resultSetConverter">
       <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
     </property>
