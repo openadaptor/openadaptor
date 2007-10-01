@@ -18,6 +18,8 @@
   Run it like this...
     
     java org.openadaptor.spring.SpringAdaptor -config storedprocwriter.xml -bean Adaptor -props db.props
+
+  You must supply db.props populated appropriately for your environment.
     
   You need the following in your classpath
   
@@ -35,7 +37,7 @@
     <property name="messageProcessor">
      <bean class="org.openadaptor.core.router.Router">
        <description>
-         This creates the simple router: Reader -> MapConverter -> Writer.
+         This creates the simple router: Reader -> MapConverter -> ScriptProcessor -> Writer.
        </description>
        <property name="processors">
          <list>
