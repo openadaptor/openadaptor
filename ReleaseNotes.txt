@@ -1,4 +1,377 @@
 =================================================
+openadaptor3 production 3.3 Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 5th October 2007
+Author: openadaptor Core Team
+
+openadaptor 3.3
+=======
+
+Summary
+=======
+This is the second third release of openadaptor 3
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+This release focuses on stabilization. A number of areas have been reworked
+or significantly enhanced.
+
+==============================================================================
+
+Documentation
+
+No major changes. Ongoing improvements to JavaDocs and to Examples.
+
+Configuration
+
+No major changes. Some detail changes have been made to the configuration of 
+individual components. See these separately for details.
+
+Database
+
+JDBC READ CONNECTORS & POLLING READ CONNECTORS
+
+JDBC read connectors and polling read connectors have undergone a significant 
+rework: 
+
+  * a concept of an IPollingReadConnector that wraps another read connector 
+    has been introduced.An IPollingReadConnector basically defines the way the 
+    underlying read connector will poll its resource. The idea follows the 
+    Decorator design pattern and is similar to how input and output streams 
+    can be 'wrapped' in the Java I/O API
+
+  * three implementations of IPollingReadConnector have been implemented: 
+    LoopingPollingReadConnector, CronnablePollingReadConnector and 
+    DBEventDrivenPollingReadConnector. The first two were based on the legacy 
+    (now depricated) PollingReadConnector. The last was based on 
+    JDBCEventReadConnector.
+
+  * JDBCPollConnector has been merged with JDBCReadConnector and deleted.
+
+  * JDBCEventReadConnector was partly merged to JDBCReadConnector, partly 
+    factored out to DBEventDrivenPollingReadConnector, and deleted.
+
+  * JDBCReadConnector now has the batching capability - result sets can be read 
+    in batches of say, a 1000 records, rather than one by one, which should 
+    increase performance. Batching is available via the batchSize property 
+    (maxSize=0 means the entire result set is read in one batch, maxSize=1 means
+    a batch will hold one element, maxSize=1000 means one batch = thousand 
+    elements etc).
+
+  * XML and orderedmap ResultSetConverters were renamed to 
+    ResultSetToXMLConverter and ResultSetToOrderedMapConverter respectively.
+
+Since some of the classes were deleted and some renamed, certain changes need 
+to be done to the existing deployed adaptors in versions 3.2.1 and 3.2.1.1 when 
+upgrading them to version 3.3. The following table shows which classes need to 
+be replaced in adaptors config files and how to replace them:
+
+|------------------------------------------------------------------------------|
+|     OA 3.2.1.1                 |            OA 3.3                           |    
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| JDBCPollConnector (deleted)    | JDBCReadConnector wrapped in                |  
+|                                | LoopingPollingReadConnector with pollLimit  |
+|                                | property set to 0 and pollIntervalSecs set  | 
+|                                | to 1 (see EX 1)                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|JDBCEventReadConnector (deleted)| JDBCReadConnector wrapped in                | 
+|                                | DBEventDrivenPollingReadConnector (EX 2)    |  
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|PollingReadConnector            | either LoopingPollingReadConnector or       |
+|         (deprecated)           | CronnablePollingReadConnector depending on  |
+|                                | which mode (interval or cron) the           |
+|                                | PollingReadConnector  was used in .         |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| ResultSetConverter             | ResultSetToOrderedMapConverter              |
+| in orderedmap package (renamed)|                                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| ResultSetConverter             | ResultSetToXMLConverter                     |
+| in xml package (renamed)       |                                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+
+EXAMPLE 1.
+
+OA 3.2.1.1:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCPollConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="sqlStatement" value="{ call PollTradeEvent () }"/>
+ <property name="resultSetConverter">
+  <bean 
+   class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="sql" value="{ call PollTradeEvent () }"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+  
+<bean id="PollingReader" 
+      class="org.openadaptor.core.connector.LoopingPollingReadConnector">
+ <property name="pollLimit" value="3"/>
+ <property name="pollIntervalMs" value="1000"/>
+ <property name="delegate" ref="Reader"/>
+</bean>
+
+EXAMPLE 2.
+
+OA 3.2.1.1:
+
+<bean id="Reader" 
+    class="org.openadaptor.auxil.connector.jdbc.reader.JDBCEventReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="eventServiceID" value="1"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+  
+<bean id="PollingReader" 
+      class="org.openadaptor.core.connector.DBEventDrivenPollingReadConnector">
+ <property name="eventServiceID" value="1"/>
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="delegate" ref="Reader"/>
+</bean>	
+
+JDBCWriteConnector refactor
+
+JDBC write connector has been completely refactored.
+The old JDBCWriteConnector has been deprecated, and moved
+into a deprecated package, along with all of its supporting
+classes.
+
+1. JDBC writer components now support database batching.
+2. Prepared statements are reused where possible.
+3. Behaviour has been expanded to permit the use of java.util.Maps
+    (subject to some limitations)
+4. The components now pass data transparently to the jdbc drivers
+    (i.e. no artificial type-conversion)
+
+Users should migrate existing usages as follows:
+
+JDBCWriteConnector (deprecated) -> JDBCWriteConnector
+
+Implementations of IStatementConvertor have been refactored (as
+ISQLWriter) as follows:
+
+SQLConvertor                    -> RawSQLWriter
+PreparedStatementTableConvertor -> MapTableWriter
+TableStatementConvertor         -> MapTableWriter
+CallableStatementConvertor      -> MapCallableStatementWriter
+SQLStatementConvertor           -> MapCallableStatementWriter + stored proc
+
+The pre-existing implementations have all been marked as deprecated;
+further use is actively discouraged.
+
+Processors
+
+ScriptProcessor refactor
+
+ScriptProcessor has been refactored. It should now be used in place of
+the deprecated javascript variants.
+
+1. Compiled Script property has been removed (it is dependent on
+   the ScriptEngine)
+
+2. Script language now defaults to javascript ("js")
+
+3. ScriptEngine is no longer settable. It is generated automatically
+   during the validate() method. Subclasses may override generation
+   through the createScriptEngine() method.
+
+4. Comments and logging have been added.
+
+MapScriptProcessor added
+
+This allows direct access to entries in Map records from scripts. Again
+this should prove more useful than the javascript equivalents (which
+have been marked deprecated)
+
+ScriptFilterProcessor & ScriptConditionProcessor refactoring
+
+Both of these have been changed to use delegation rather than
+inheritance from ScriptProcessor. This means that other ScriptProcessor
+instances (e.g. MapScriptProcessor) may be uses with them.
+
+Thus existing usage of thes processors will have to have their configs
+altered to match - i.e. the ScriptProcessor becomes a property of the
+filter/condition one. Behaviour should be unchanged.
+
+Core
+
+EXCEPTION HANDLING
+
+The exception handling mechanism was revised:
+
+  * setting the exceptionProcessor property on the Router is now the only of 
+    manipulation of exception handling
+
+  * exceptionMap, that allows for 'fine-grained' mapping between exception types
+    and exception processing nodes is now set on ExceptionHandlerProxy class 
+    rather than the Router.
+
+  * exceptionList property setter has been removed from the Router (using 
+    exceptionMap achieves the same purpose)
+
+  * exception handler can now be made up of any number of nodes rather than a 
+    single node
+
+  * a concept of a message hospital has been introduced 
+
+  * new section titled 'Step 11: Exception Handling' was added to the tutorial. 
+    It explains the exception handling interface, different ways of configuring 
+    the exceptionProcessor (including the message hospital) and provides 
+    pointers to examples.
+
+The following changes in adaptor configuration files are necessary to migrate 
+from OA 3.2.1.x to 3.3:
+
+|------------------------------------------------------------------------------|
+|      OA 3.2.1.1                   |                 OA 3.3                   |    
+|------------------------------------------------------------------------------|
+|                                   |                                          |
+| setting 'exceptionMap'  property  | setting 'exceptionMap' property on the   |
+| on the Router                     | ExceptionHandlerProxy which is then set  |
+|                                   | as exceptionProcessor on the Router      | 
+|                                   | (see EX 1)                               |
+|                                   |                                          |
+|------------------------------------------------------------------------------|
+
+EXAMPLE 1.
+
+OA 3.2.1.1:
+
+<bean class="org.openadaptor.core.router.Router">
+ ...
+ <property name="exceptionMap">
+  <map>
+   <entry key="java.lang.Exception" value-ref="FileWriter"/>
+  </map>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean class="org.openadaptor.core.router.Router">
+ ...
+ <property name="exceptionProcessor" ref="ExceptionHandler"/>
+</bean>
+
+<bean id="ExceptionHandler" 
+      class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+ <property name="exceptionMap">
+   <map>
+     <entry key="java.lang.Exception" value-ref="FileWriter"/>
+   </map>
+ </property>
+</bean>
+
+Pipeline Deprecated
+
+The Pipeline class (org.openadaptor.core.router) has been
+deprecated, and it's functionality promoted to the Router class.
+(There was considerable confusion over the use of both classes,
+and inconsistencies in the dual implementations.
+
+It is still possible to define a pipeline, through the use
+of the 'processors' property (this now delegates to a true
+process map implementation).
+
+ReadNode Refactored
+
+ReadNode has been refactored so that its IMessageProcessor implementation is
+used by its IRunnable incarnation. This allows the two roles to be decoupled.
+In future releases this will make the integration of openadaptor with container
+managed resources much simpler.
+
+
+Tests
+
+A move towards interface based unit tests has been made. This is still ongoing.
+
+IDataProcessor interface testing
+
+The tests for this have been moved to the matching package (in the test
+tree). Additionally, ScriptProcessor, ScriptFilterProcessor,
+ScriptConditionProcessor & MapScriptProcessor now all extend the interface test.
+Several other IDataProcessor implementations now include the interface testing 
+(A few still remain to be modified however)
+
+Interface tests also exist in less complete form for IMessageProcessor, 
+ILifecycleComponent, and ITransactionInitiator.
+
+MISCELLENEOUS 
+
+ * a public String getState() method added on the 
+   org.openadaptor.core.adaptor.Adaptor class for JMX use  
+
+ * a public List getExitErrors() method added on the 
+   org.openadaptor.core.adaptor.Adaptor class to allow for easier system testing
+   of adaptors assembled 'by hand', i.e. not using Spring. The IRunnable 
+   interface was extended by a new method: Throwable getExitError(). The method 
+   was implemented in the only implementation that exists in OA: ReadNode.
+
+ * an HTTP write connector and a HTTP read connector that polls an HTTP server 
+   were added
+
+ * SMTPConnection - added an optional mimeContentType property that allows to 
+   configure the MIME type for the body  of the message, or the attached body. 
+   They allow for more fine-grained configuration of behaviour when the 
+   protectQuotedFields flag is set to true 
+
+ * AbstractDeilmitedStringConvertor - new optional properties for escaping 
+   quoted characters were added: escapeQuoteCharacters, quoteEscapeChar and 
+   smartEscapeQuoteCharacters
+
+
+...... THIS SECTION IS INCOMPLETE! ......
+
+Bug Fixes
+
+SC22: Node attempts invalid cast when processing Exceptions
+
+
+
+
+
+=================================================
 openadaptor3 production 3.2.1.1 Release Notes
 
 See licences/licence.txt for Licence information.
