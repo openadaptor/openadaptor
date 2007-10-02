@@ -10,10 +10,10 @@
   This adaptor does the following...
     
     * reads data from stdin
-    * calls an rmi servuice
+    * calls an RMI servuice
     
   It is designed to illustrate the basic structure of an adaptor that processes
-  data by calling an rmi service.
+  data by calling an RMI service.
 
   Run it like this...
     

@@ -22,6 +22,9 @@
   Once it is running you need to type some data into the command line. To
   verify that this is working you need to be running the corresponding
   subscriber example.
+  
+  The transaction in which the publisher participates has certain timeout (default = 1 min).
+  If no data is typed after that period the transaction rolls back.
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

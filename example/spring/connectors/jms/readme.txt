@@ -18,3 +18,10 @@ Suggested Classpath
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     jbossall-client.jar (this is not distributed with openadaptor)
+    
+For all XA examples the Classpath should also include:
+
+    lib/3rdparty/jonas_timer.jar
+    lib/3rdparty/carol.jar
+
+        
