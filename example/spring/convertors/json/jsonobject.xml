@@ -12,7 +12,7 @@
 
     * reads all data in sample_json_object.txt
     * converts it to a JSONObject
-    * Wraps the Oject with an ISimpleRecordAccessor
+    * Wraps the JSONObject with an ISimpleRecordAccessor
     * Passes it to a JavaScriptProcessor which changes the value of one of the attributes
     * Unwraps the JSONObject
     * Writes it to stdout relying on "asString" to do the right thing.

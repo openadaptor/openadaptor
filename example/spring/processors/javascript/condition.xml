@@ -34,7 +34,7 @@
     <description>
       This adaptor is designed to illustrate a simple use of a JavascriptConditionProcessor
         * reads all data in input/delim.txt
-        * converts to ordered
+        * converts to orderedmaps
         * outputs to stdout
     </description>
     <property name="messageProcessor">
