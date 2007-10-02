@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id$
-  $HeadURL$
- --> 
+	$Id$
+	$HeadURL$
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-  <description><![CDATA[    
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
   This adaptor does the following...
     
     * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
@@ -26,37 +27,40 @@
     lib/openadaptor-depends.jar
     
   writes to stdout
-  ]]></description>
-  
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
-    <description>
-      Illustrate a basic directory reader adaptor.
-        * reads all files in a directory input/inputs whose flenames match the regex stuff[0-9].txt
-        * outputs to stdout
-    </description>
-    <property name="messageProcessor">
-      <bean class="org.openadaptor.core.router.Router">
-        <description>
-          This creates the simple pipeline DirectoryReader -> Writer.
-        </description>
-        <property name="processors">
-          <list>
-            <ref bean="DirectoryReader"/>
-            <ref bean="Writer"/>
-          </list>
-        </property>
-      </bean>  
-    </property>
-  </bean>
-  
-  
-  <bean id="DirectoryReader" class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">    
-    <property name="dirname" value="input/inputs"/>
-    <property name="filenameRegex" value="stuff[0-9].txt"/>
-  </bean>
-  
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <description>This writer writes data to stdout.</description>
-  </bean>
-    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+			Illustrate a basic directory reader adaptor. * reads all
+			files in a directory input/inputs whose filenames match the
+			regex stuff[0-9].txt * outputs to stdout
+		</description>
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline DirectoryReader ->
+					Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="DirectoryReader" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="DirectoryReader"
+		class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">
+		<property name="dirname" value="input/inputs" />
+		<property name="filenameRegex" value="stuff[0-9].txt" />
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to stdout.</description>
+	</bean>
+
 </beans>
