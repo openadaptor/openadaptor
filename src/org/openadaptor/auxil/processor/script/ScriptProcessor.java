@@ -45,6 +45,7 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.util.ObjectCloner;
 /**
  * Processor which executes scripts in the context of a data record.
  * <br>
@@ -70,6 +71,12 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected boolean compile = true;
   protected Object lastResult = null;
   protected String dataBinding = DEFAULT_DATA_BINDING;
+  
+  //Mechanism by which Objects are cloned.
+  //This is due to change when a more general-purpose 
+  //cloning strategy has been devised
+  //ToDo: Remove this (promote to Router or similar)
+  private ObjectCloner cloner=new ObjectCloner();
 
   public ScriptProcessor() {
     super();
@@ -162,6 +169,9 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     if (data==null) { //conform to IDataProcessor contract.
       throw new NullRecordException("Null record not permitted");
     }
+    //Clone it if possible.
+    //data=ReflectionUtils.clone(data);
+    data=cloner.clone(data);
     try {
       scriptEngine.put(dataBinding, data);
       if (compiledScript != null) {

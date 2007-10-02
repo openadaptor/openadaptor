@@ -60,10 +60,11 @@ public class MapScriptProcessorTestCase extends AbstractTestIDataProcessor {
     processor.setScript(binding+".put('FooBar',Foo+Bar);");
     processor.validate(exceptions);
     checkResult(expected,processor.process(inputMap));
+    expected.remove("FooBar");
 
     //Modify existing field
-    expected.put("FooBar","foobar_foobar");
-    processor.setScript("FooBar=FooBar+'_'+Foo+Bar;");
+    expected.put("Foo","foo_foobar");
+    processor.setScript("Foo=Foo+'_'+Foo+Bar;");
     processor.validate(exceptions);
     checkResult(expected,processor.process(inputMap));
 
