@@ -15,10 +15,10 @@
    
   This adaptor does the following...
     
-    * reads SQL from stdin
-    * executes SQL against a database
+    * connects to a hypersonic instance with a hospital schema
+    * queries for hospital messages
     
-  It is designed to illustrate the basic structure of an adaptor that writes to a database
+  It is designed to illustrate the basic structure of an adaptor that reads from the hospital.
   
   Run it like this...
     
@@ -32,7 +32,8 @@
     lib/openadaptor-depends.jar
     lib/3rdparty/hsqldb.jar
     
-  once running any data read from std input executed against the database, like this...
+  once running any data in the hospital with the flag fixed set to true, and reprocessed to false,
+  will be printed to stdout.
   
     insert into testoutput values ('hello mum')
   ]]></description>

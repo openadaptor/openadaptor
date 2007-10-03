@@ -20,7 +20,6 @@
     * validates XML against schema.xsd (located in the same folder as this file)
     * writes correct XML to stdout
     * writes anything that didn't validate to the hostpital
-    * example of a valid XML: <Trade><buySell>1</buySell><ticker>1</ticker><price>1</price></Trade>
     
   It is designed to illustrate the basic of the Hospital as an exception handler.
   
@@ -36,7 +35,8 @@
     lib/openadaptor-depends.jar
     lib/3rdparty/hsqldb.jar
     
-  once running any data read from std will be validated as XML.
+  once running any data read from std will be validated as XML. A valid XML contains a 'data' element,
+  e.g: <data>hello world</data>.
   ]]></description>
     
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
