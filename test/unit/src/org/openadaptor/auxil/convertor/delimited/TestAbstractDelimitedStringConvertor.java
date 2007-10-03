@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.AbstractTestIDataProcessor;
 /**
  * Common unit tests for {@link AbstractDelimitedStringConvertor}.

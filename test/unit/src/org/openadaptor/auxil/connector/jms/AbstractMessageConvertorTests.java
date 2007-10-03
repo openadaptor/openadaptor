@@ -93,5 +93,9 @@ public abstract class AbstractMessageConvertorTests extends MockObjectTestCase {
     assertEquals("Didn't get the expected object. ", expectedObject, receivedObject);
   }
 
-  protected class TestObject implements Serializable {}
+  protected class TestObject implements Serializable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;}
 }

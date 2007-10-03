@@ -26,18 +26,15 @@
 */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+
 import org.jmock.Mock;
 import org.jmock.core.Stub;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-
-import java.sql.*;
-import java.util.Map;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Sep 20, 2007 by oa3 Core Team
- */
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
 public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
 

@@ -96,5 +96,10 @@ public abstract class AbstractMessageGeneratorTests extends MockObjectTestCase {
     assertEquals("Didn't return the expected ObjectMessage.", message, generatedMessage );
   }
 
-  protected class TestObject implements Serializable {}
+  protected class TestObject implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;}
 }
