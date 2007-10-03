@@ -20,7 +20,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config file.xml
+    java org.openadaptor.spring.SpringAdaptor -config MapTransformation.xml
    
   You need the following in your classpath
   
@@ -28,6 +28,15 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    
+  Once it is running it will wait for a delimited string input
+    
+  type something like this...
+    
+    a, b, c
+    
+  ...and you should see it echo-ed in XML, with element names as defined in MapConverter and AttributeMapper.
+    
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

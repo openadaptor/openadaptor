@@ -35,7 +35,7 @@
     
   ...and you should see it echo-ed
   
-  type something which is not an xml doc with a element called data and the validation
+  type something which is not an XML doc with an element called data and the validation
   exception will be thrown
   ]]></description>
 

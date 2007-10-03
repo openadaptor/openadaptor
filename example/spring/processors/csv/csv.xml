@@ -27,6 +27,14 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    
+  Once it is running it will wait for a delimited string input
+    
+  type something like this...
+    
+    a, b, c
+    
+  ...and you should see it echo-ed in XML.
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

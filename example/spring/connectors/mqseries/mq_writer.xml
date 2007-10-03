@@ -17,6 +17,18 @@
 
   mq.properties is a properties format file which should be edited to supply specific mq property
   values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
+  
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    mq.jar  (this is not distributed with openadaptor)
+    
+  Once it is running you need to type some data into the command line. To verify that this is working you 
+  need to be running the corresponding mq_reader example.
+    
   ]]></description>
  
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
