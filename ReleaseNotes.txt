@@ -12,7 +12,7 @@ openadaptor 3.3
 
 Summary
 =======
-This is the second third release of openadaptor 3
+This is the third release of openadaptor 3
 
 The openadaptor white paper can be downloaded from:
 
@@ -24,38 +24,48 @@ or significantly enhanced.
 
 ==============================================================================
 
+Major Changes
+=============
+
+This section details the main changes and enhancements in openadaptor 3.3
+
 Documentation
+=============
 
 No major changes. Ongoing improvements to JavaDocs and to Examples.
 
 Configuration
+=============
 
 No major changes. Some detail changes have been made to the configuration of 
 individual components. See these separately for details.
 
 Database
+========
 
-JDBC READ CONNECTORS & POLLING READ CONNECTORS
+JDBC Read Connectors & Polling Read Connectors
+----------------------------------------------
 
 JDBC read connectors and polling read connectors have undergone a significant 
 rework: 
 
-  * a concept of an IPollingReadConnector that wraps another read connector 
-    has been introduced.An IPollingReadConnector basically defines the way the 
+  * The concept of an IPollingReadConnector that wraps another read connector 
+    has been introduced. An IPollingReadConnector basically defines the way the 
     underlying read connector will poll its resource. The idea follows the 
     Decorator design pattern and is similar to how input and output streams 
     can be 'wrapped' in the Java I/O API
 
-  * three implementations of IPollingReadConnector have been implemented: 
+  * Three implementations of IPollingReadConnector have been implemented: 
     LoopingPollingReadConnector, CronnablePollingReadConnector and 
     DBEventDrivenPollingReadConnector. The first two were based on the legacy 
     (now depricated) PollingReadConnector. The last was based on 
     JDBCEventReadConnector.
 
-  * JDBCPollConnector has been merged with JDBCReadConnector and deleted.
+  * JDBCPollConnector has been deleted and its role subsumed by 
+    JDBCReadConnector.
 
-  * JDBCEventReadConnector was partly merged to JDBCReadConnector, partly 
-    factored out to DBEventDrivenPollingReadConnector, and deleted.
+  * JDBCEventReadConnector has been deleted. Its role is now shared between
+    JDBCReadConnector and DBEventDrivenPollingReadConnector.
 
   * JDBCReadConnector now has the batching capability - result sets can be read 
     in batches of say, a 1000 records, rather than one by one, which should 
@@ -171,6 +181,7 @@ OA 3.3:
 </bean>	
 
 JDBCWriteConnector refactor
+---------------------------
 
 JDBC write connector has been completely refactored.
 The old JDBCWriteConnector has been deprecated, and moved
@@ -201,8 +212,10 @@ The pre-existing implementations have all been marked as deprecated;
 further use is actively discouraged.
 
 Processors
+==========
 
 ScriptProcessor refactor
+------------------------
 
 ScriptProcessor has been refactored. It should now be used in place of
 the deprecated javascript variants.
@@ -226,6 +239,7 @@ the deprecated javascript variants.
    in scripts).
 
 MapScriptProcessor added
+------------------------
 
 This allows direct access to entries in Map records from scripts. Again
 this should prove more useful than the javascript equivalents (which
@@ -242,10 +256,12 @@ altered to match - i.e. the ScriptProcessor becomes a property of the
 filter/condition one. Behaviour should be unchanged.
 
 Core
+====
 
-EXCEPTION HANDLING
+Exception Handling
+------------------
 
-The exception handling mechanism was revised:
+The exception handling mechanism has been revised:
 
   * setting the exceptionProcessor property on the Router is now the only of 
     manipulation of exception handling
@@ -311,6 +327,7 @@ OA 3.3:
 </bean>
 
 Pipeline Deprecated
+-------------------
 
 The Pipeline class (org.openadaptor.core.router) has been
 deprecated, and it's functionality promoted to the Router class.
@@ -322,18 +339,20 @@ of the 'processors' property (this now delegates to a true
 process map implementation).
 
 ReadNode Refactored
+-------------------
 
 ReadNode has been refactored so that its IMessageProcessor implementation is
 used by its IRunnable incarnation. This allows the two roles to be decoupled.
 In future releases this will make the integration of openadaptor with container
 managed resources much simpler.
 
-
 Tests
+=====
 
 A move towards interface based unit tests has been made. This is still ongoing.
 
 IDataProcessor interface testing
+--------------------------------
 
 The tests for this have been moved to the matching package (in the test
 tree). Additionally, ScriptProcessor, ScriptFilterProcessor,
@@ -341,10 +360,14 @@ ScriptConditionProcessor & MapScriptProcessor now all extend the interface test.
 Several other IDataProcessor implementations now include the interface testing 
 (A few still remain to be modified however)
 
+Other Interface tests
+---------------------
+
 Interface tests also exist in less complete form for IMessageProcessor, 
 ILifecycleComponent, and ITransactionInitiator.
 
-MISCELLENEOUS 
+Miscellaneous
+============== 
 
  * a public String getState() method added on the 
    org.openadaptor.core.adaptor.Adaptor class for JMX use  
@@ -371,9 +394,29 @@ MISCELLENEOUS
 ...... THIS SECTION IS INCOMPLETE! ......
 
 Bug Fixes
+=========
 
+Specifically bugs mentioned in Project Tracker.
+
+SC20: JDBCReadConnector fails when participating in a JTA Transaction
 SC22: Node attempts invalid cast when processing Exceptions
 
+
+Known Issues
+============
+
+In addition to issues already noted in openadaptor.org's project tracker a 
+number of issues have shown up in testing for this release. 
+
+JTA Two phase commit
+--------------------
+
+There seems to be a problem configuring an adaptor with an xa transacted reader
+and writer using JOTM and Jboss MQ. This problem does not occur when JMS Grid 
+is used in place of Jboss. The issue manifests as a forced rollback due to an
+End Of File Exception. Its not known if this is merely a configuration issue
+with the adaptor configuration file or a symptom of a deeper problem. More
+investigation is needed to qualify this.
 
 
 
