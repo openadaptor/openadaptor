@@ -32,10 +32,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
-import org.openadaptor.util.JDBCUtil;
 /**
  * Abstract base class which converts a SQL ResultSet into a format
  * for use within an adaptor.
@@ -43,8 +39,6 @@ import org.openadaptor.util.JDBCUtil;
  * @author higginse
  */
 public abstract class AbstractResultSetConverter implements IResultSetConverter {
-  
-  private static final Log log = LogFactory.getLog(ResultSetToOrderedMapConverter.class);
 
   /**
    * Convert the next row in the result set into an Object.

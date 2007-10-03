@@ -42,7 +42,6 @@ import org.openadaptor.core.Response.ExceptionBatch;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactional;
 
