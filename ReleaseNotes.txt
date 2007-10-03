@@ -218,6 +218,13 @@ the deprecated javascript variants.
 
 4. Comments and logging have been added.
 
+5. The default binding for records has been changed from 'data' to
+   'oa_data'. This reduces the likelihood of a conflict between field
+   names and the record itself, particularly for MapScriptProcessor
+   (see next section). Note that this may require some changes to existing
+   adaptors which use ScriptProcessors (e.g. change data to oa_data 
+   in scripts).
+
 MapScriptProcessor added
 
 This allows direct access to entries in Map records from scripts. Again
