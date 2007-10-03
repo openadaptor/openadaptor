@@ -22,7 +22,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config writer.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config hospitalReader.xml -bean Adaptor
     
   You need the following in your classpath
   
@@ -37,7 +37,7 @@
     insert into testoutput values ('hello mum')
   ]]></description>
   
-   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
      <property name="messageProcessor" ref="router"/>
    </bean>
   

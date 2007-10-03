@@ -11,7 +11,7 @@
   This adaptor does the following...
     
     * reads xml from stdin
-    * validates the xml
+    * validates the xml (against a schema)
     * writes to stdout
     
   Validation failures are trapped and send to a discard file
@@ -67,7 +67,7 @@
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
   <bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="discards.txt"/>
+    <property name="filename" value="output/discards.txt"/>
     <property name="append" value="false"/>
   </bean>
   
