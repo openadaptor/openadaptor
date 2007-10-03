@@ -61,12 +61,26 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * Used to avoid using both setProcessMap and setProcessors simultaneously.
    */
   private boolean processMapConfigured=false;
+//  /**
+//   * Flag to indicate that the exceptionMap has already been configured.
+//   * <p>
+//   * Used to avoid using both setExceptionMap and setExceptionProcessor simultaneously.
+//   */
+//  private boolean exceptionMapConfigured=false;
+  
   /**
-   * Flag to indicate that the exceptionMap has already been configured.
-   * <p>
-   * Used to avoid using both setExceptionMap and setExceptionProcessor simultaneously.
+   * Public accessor: intended for read-only use (returns a clone).
    */
-  private boolean exceptionMapConfigured=false;
+  public RoutingMap getRoutingMap() {
+    RoutingMap map = null;
+    try {
+      map = (RoutingMap) routingMap.clone();
+    } catch (CloneNotSupportedException e) {
+      map = null;  // should never happen (TM)
+    }
+    return map;
+  }
+
 
   public Router() {
     super();
