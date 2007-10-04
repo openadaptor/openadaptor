@@ -439,6 +439,11 @@ trace to stdout and terminate. As a precaution only minimal read-specific
 functionality should be handled by ReadNodes, with all data processing 
 behaviour delegated to separate ProcessorNodes.
 
+SC27: Documentation is out of date & needs to be revisited
+----------------------------------------------------------
+
+The documentation doesn't properly reflect the significant changes made
+in the last releases, and needs to be revisited.
 
 
 =================================================
