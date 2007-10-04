@@ -70,9 +70,9 @@ rework:
   * JDBCReadConnector now has the batching capability - result sets can be read 
     in batches of say, a 1000 records, rather than one by one, which should 
     increase performance. Batching is available via the batchSize property 
-    (maxSize=0 means the entire result set is read in one batch, maxSize=1 means
-    a batch will hold one element, maxSize=1000 means one batch = thousand 
-    elements etc).
+    (batchSize=0 means the entire result set is read in one batch, batchSize=1 
+    means a batch will hold one element, batchSize=1000 means one batch holds 
+    thousand elements etc).
 
   * XML and orderedmap ResultSetConverters were renamed to 
     ResultSetToXMLConverter and ResultSetToOrderedMapConverter respectively.
@@ -263,8 +263,8 @@ Exception Handling
 
 The exception handling mechanism has been revised:
 
-  * setting the exceptionProcessor property on the Router is now the only of 
-    manipulation of exception handling
+  * setting the exceptionProcessor property on the Router is now the only way 
+    of manipulation of exception handling
 
   * exceptionMap, that allows for 'fine-grained' mapping between exception types
     and exception processing nodes is now set on ExceptionHandlerProxy class 
@@ -273,8 +273,8 @@ The exception handling mechanism has been revised:
   * exceptionList property setter has been removed from the Router (using 
     exceptionMap achieves the same purpose)
 
-  * exception handler can now be made up of any number of nodes rather than a 
-    single node
+  * exception handler can now be made up of any number of nodes rather than
+    always a single node
 
   * a concept of a message hospital has been introduced 
 
@@ -428,6 +428,17 @@ Input records may be modified by processors; in certain
 circumstances this may cause unexpected behaviour in fanout/exception
 handling situations. where a 'peer' component is incorrectly supplied
 with a modified input record, rather than the expected 'unmodified' one.
+
+
+Handling of exceptions from ReadNodes
+-------------------------------------
+
+Exceptions thrown in ReadNodes are currently beyond the reach of OA exception
+handlers. Even with an exceptionProcessor set, the adaptor will print stack 
+trace to stdout and terminate. As a precaution only minimal read-specific 
+functionality should be handled by ReadNodes, with all data processing 
+behaviour delegated to separate ProcessorNodes.
+
 
 
 =================================================
