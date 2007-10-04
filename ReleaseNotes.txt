@@ -384,7 +384,7 @@ Miscellaneous & forum
  * SMTPConnection - added an optional mimeContentType property that allows to 
    configure the MIME type for the body of the message, or the attached body (tnd). 
 
- * AbstractDeilmitedStringConvertor - new optional properties for escaping 
+ * AbstractDelimitedStringConvertor - new optional properties for escaping 
    quoted characters were added: escapeQuoteCharacters, quoteEscapeChar and 
    smartEscapeQuoteCharacters. 
    They allow for more fine-grained configuration of behaviour when the 
