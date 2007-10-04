@@ -410,8 +410,8 @@ Known Issues
 In addition to issues already noted in openadaptor.org's project tracker a 
 number of issues have shown up in testing for this release. 
 
-JTA Two phase commit
---------------------
+SC24: JTA Two phase commit
+--------------------------
 
 There seems to be a problem configuring an adaptor with an xa transacted reader
 and writer using JOTM and Jboss MQ. This problem does not occur when JMS Grid 
@@ -421,8 +421,8 @@ with the adaptor configuration file or a symptom of a deeper problem. More
 investigation is needed to qualify this.
 
 
-Unexpected fanout behaviour
---------------------------
+SC25: Unexpected fanout behaviour
+---------------------------------
 
 Input records may be modified by processors; in certain
 circumstances this may cause unexpected behaviour in fanout/exception
@@ -430,8 +430,8 @@ handling situations. where a 'peer' component is incorrectly supplied
 with a modified input record, rather than the expected 'unmodified' one.
 
 
-Handling of exceptions from ReadNodes
--------------------------------------
+SC26: Handling of exceptions from ReadNodes
+-------------------------------------------
 
 Exceptions thrown in ReadNodes are currently beyond the reach of OA exception
 handlers. Even with an exceptionProcessor set, the adaptor will print stack 
