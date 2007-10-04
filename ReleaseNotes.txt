@@ -366,11 +366,11 @@ Other Interface tests
 Interface tests also exist in less complete form for IMessageProcessor, 
 ILifecycleComponent, and ITransactionInitiator.
 
-Miscellaneous
-============== 
+Miscellaneous & forum
+===================== 
 
  * a public String getState() method added on the 
-   org.openadaptor.core.adaptor.Adaptor class for JMX use  
+   org.openadaptor.core.adaptor.Adaptor class for JMX use (rwallsch).  
 
  * a public List getExitErrors() method added on the 
    org.openadaptor.core.adaptor.Adaptor class to allow for easier system testing
@@ -382,16 +382,18 @@ Miscellaneous
    were added
 
  * SMTPConnection - added an optional mimeContentType property that allows to 
-   configure the MIME type for the body  of the message, or the attached body. 
-   They allow for more fine-grained configuration of behaviour when the 
-   protectQuotedFields flag is set to true 
+   configure the MIME type for the body of the message, or the attached body (tnd). 
 
  * AbstractDeilmitedStringConvertor - new optional properties for escaping 
    quoted characters were added: escapeQuoteCharacters, quoteEscapeChar and 
-   smartEscapeQuoteCharacters
+   smartEscapeQuoteCharacters. 
+   They allow for more fine-grained configuration of behaviour when the 
+   protectQuotedFields flag is set to true
 
-
-...... THIS SECTION IS INCOMPLETE! ......
+ * registerComponents call in Adaptor moved following feedback (rwallsch).
+ 
+ * MqConnection.nextRecord bug (return immediately rather than wait for the 
+   specified timeout)fixed (erik).
 
 Bug Fixes
 =========
@@ -419,6 +421,13 @@ with the adaptor configuration file or a symptom of a deeper problem. More
 investigation is needed to qualify this.
 
 
+Unexpected fanout behaviour
+--------------------------
+
+Input records may be modified by processors; in certain
+circumstances this may cause unexpected behaviour in fanout/exception
+handling situations. where a 'peer' component is incorrectly supplied
+with a modified input record, rather than the expected 'unmodified' one.
 
 
 =================================================
