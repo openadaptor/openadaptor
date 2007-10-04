@@ -83,6 +83,12 @@
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
     <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
   </path>
+	
+  <path id="classpath.javadoc">
+  	<path refid="classpath"/>
+    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/> 
+  </path>
+	
 
   <path id="classpath.test">
     <pathelement path="${dir.classes}"/>
@@ -220,7 +226,6 @@
     </delete>
   </target>
 
-
   <!-- Test targets -->
 
   <target name="test.all" depends="test.unit, test.integration, test.system" description="Run combined tests (currently unit, integration and system tests)"/>
@@ -341,7 +346,7 @@
     <mkdir dir="${dir.javadocs}"/>
     <javadoc
       destdir="${dir.javadocs}"
-      classpathref="classpath"
+      classpathref="classpath.javadoc"
       doctitle="openadaptor ${tag}"
       verbose="false"
       additionalparam="-quiet">
