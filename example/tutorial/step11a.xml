@@ -31,7 +31,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config hospitalWriter.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config step11a.xml -bean Adaptor
     
   You need the following in your classpath
   
