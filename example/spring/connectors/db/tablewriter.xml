@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id$
-  $HeadURL$
+   $Id: tablewriter.xml 877 2007-10-01 14:52:36Z kscully $
+   $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/db/tablewriter.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
