@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.NamingEnumeration;
+
 //import org.jmock.MockObjectTestCase;
 
 import org.jmock.Mock;
@@ -62,6 +64,8 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   
   Mock mockJNDISearch;
   
+  Mock mockNamingEnumeration;
+  
   Map incomingMap = new HashMap();
   {
     incomingMap.put("incomingMapKey1", "incomingMapValue1");
@@ -74,49 +78,17 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     outgoingMap.put("outgoingMapKey2", "outgoingMapValue2");
   }
   
+  
   /**
    * @see junit.framework.TestCase#setUp()
    */
   protected void setUp() throws Exception {
     super.setUp();
     processor.setReader(mockReadConnector);
+    mockNamingEnumeration = new Mock(NamingEnumeration.class);
   }
 
-  /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
-   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
-   * No search filter set (all of: recordKeyUsedAsSearchBase, configDefinedSearchFilter, incomingMap are empty).
-   */
-  public void testProcessOrderedMap1() {
-    IOrderedMap map = new OrderedHashMap();
-    map.put("foo1", "bar1");
-    try{
-      processor.processOrderedMap(map);
-    }catch(RecordException re){
-      return;
-    }
-    assertTrue(false);
-  }
   
-  /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
-   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
-   * Sets recordKeyUsedAsSearchBase property.
-   * recordKeyUsedAsSearchBase not in the input map.
-   */
-  public void testProcessOrderedMap2() {
-    IOrderedMap map = new OrderedHashMap();
-    map.put("foo1", "bar1");
-    processor.setRecordKeyUsedAsSearchBase("test");
-    try{
-      processor.processOrderedMap(map);
-    }catch(RecordException re){
-      return;
-    }
-    assertTrue(false);
-  }
-  
-
   private void setValidateExpectations(){
     mockJNDISearch.expects(once()).method("getSearchBases");
     mockJNDISearch.expects(atLeastOnce()).method("getFilter");
@@ -124,6 +96,13 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     mockJNDISearch.expects(once()).method("setAttributes");
   }
 
+  private void validate(){
+    setValidateExpectations();
+    List exceptions = new ArrayList();
+    processor.validate(exceptions);  
+    assertTrue(exceptions.isEmpty());
+  }
+  
   /**
    * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#validate
    * (java.util.List)}.
@@ -132,14 +111,12 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
    * 
    */
   public void testValidate1() {
-    setValidateExpectations();
     processor.setRecordKeyUsedAsSearchBase("foo1");
     processor.setRecordKeySetByExistence(recordKeySetByExistence);
     processor.setIncomingMap(incomingMap);
-    List exceptions = new ArrayList();
-    processor.validate(exceptions);  
-    assertTrue(exceptions.isEmpty());
+    validate();
   }
+  
   
   /**
    * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#validate
@@ -156,6 +133,7 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     processor.validate(exceptions);  
     assertTrue(exceptions.size() == 2);
   }
+  
   
   /**
    * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#validate
@@ -185,68 +163,113 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     processor.validate(exceptions);  
     assertTrue(exceptions.size() == 1);
   }
-  
-  
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
-//   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
-//   * Sets recordKeyUsedAsSearchBase.
-//   * recordKeyUsedAsSearchBase in the input map.
-//   */
-//  public void testProcessOrderedMap3() {
-//    setValidateExpectations();
-//    IOrderedMap map = new OrderedHashMap();
-//    map.put("foo1", "bar1");
-//    mockJNDISearch.expects(expectation)
-//    processor.setRecordKeyUsedAsSearchBase("foo1");
-//    processor.validate(new ArrayList());
-//    processor.processOrderedMap(map);
-//  }
 
-//
-///**
-//* Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap(org.openadaptor.auxil.orderedmap.IOrderedMap)}.
-//* Set incommingMap.
-//*/
-//public void testProcessOrderedMap5() {
-// IOrderedMap map = new OrderedHashMap();
-// map.put("foo1", "bar1");
-// processor.setIncomingMap(incomingMap);
-// processor.processOrderedMap(map);
-//}
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
+   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
+   * No search filter set (all of: recordKeyUsedAsSearchBase, configDefinedSearchFilter, incomingMap are empty).
+   */
+  public void testProcessOrderedMap1() {
+    IOrderedMap map = new OrderedHashMap();
+    map.put("foo1", "bar1");
+    try{
+      processor.processOrderedMap(map);
+    }catch(RecordException re){
+      return;
+    }
+    assertTrue(false);
+  }
+
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
+   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
+   * Sets recordKeyUsedAsSearchBase property.
+   * recordKeyUsedAsSearchBase not in the input map.
+   */
+  public void testProcessOrderedMap2() {
+    IOrderedMap map = new OrderedHashMap();
+    map.put("foo1", "bar1");
+    processor.setRecordKeyUsedAsSearchBase("test");
+    try{
+      processor.processOrderedMap(map);
+    }catch(RecordException re){
+      return;
+    }
+    assertTrue(false);
+  }
   
   
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#setReader(org.openadaptor.auxil.connector.jndi.JNDIReadConnector)}.
-//   */
-//  public void testSetReader() {
-//    fail("Not yet implemented");
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#getMatches()}.
-//   */
-//  public void testGetMatches() {
-//    fail("Not yet implemented");
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#
-//   * tailorSearchToThisRecord(org.openadaptor.auxil.orderedmap.IOrderedMap)}.
-//   */
-//  public void testTailorSearchToThisRecord() {
-//    processor.setRecordKeyUsedAsSearchBase("foo1");
-//    processor.setRecordKeySetByExistence(recordKeySetByExistence);
-//    processor.setIncomingMap(incomingMap);
-//    List exceptions = new ArrayList();
-//    processor.validate(exceptions);  
-//    assertTrue(exceptions.isEmpty());
-//    IOrderedMap map = new OrderedHashMap();
-//    map.put("foo1", "bar1");
-//    processor.tailorSearchToThisRecord(map);
-//  }
-//
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#processOrderedMap
+   * (org.openadaptor.auxil.orderedmap.IOrderedMap)}.
+   * 
+   * getTreatMultiValuedAttributesAsArray = false
+   * Search returns no results.
+   */
+  public void testProcessOrderedMap3() {
+    IOrderedMap map = new OrderedHashMap();
+    map.put("foo1", "bar1");
+    processor.setIncomingMap(incomingMap);
+    processor.setRecordKeyUsedAsSearchBase("foo1");
+    processor.setRecordKeySetByExistence(recordKeySetByExistence);
+    mockJNDISearch.expects(once()).method("setSearchBases").with(eq(new String[]{"bar1"}));
+    mockJNDISearch.expects(once()).method("setFilter");
+    mockJNDISearch.expects(once()).method("getTreatMultiValuedAttributesAsArray").will(returnValue(false));
+    mockJNDISearch.expects(once()).method("getJoinArraysWithSeparator");
+    mockJNDISearch.expects(once()).method("execute").will(returnValue(mockNamingEnumeration.proxy()));
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    validate();
+    processor.processOrderedMap(map);
+  }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#
+   * tailorSearchToThisRecord(org.openadaptor.auxil.orderedmap.IOrderedMap)}.
+   * 
+   * 'normal' flow
+   */
+  public void testTailorSearchToThisRecord1() {
+    IOrderedMap map = new OrderedHashMap();
+    map.put("foo1", "bar1");
+    
+    processor.setIncomingMap(incomingMap);
+    processor.setRecordKeyUsedAsSearchBase("foo1");
+    processor.setRecordKeySetByExistence(recordKeySetByExistence);
+
+    mockJNDISearch.expects(once()).method("setSearchBases").with(eq(new String[]{"bar1"}));
+    mockJNDISearch.expects(once()).method("setFilter");
+   
+    validate();
+    processor.tailorSearchToThisRecord(map);
+  }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#
+   * tailorSearchToThisRecord(org.openadaptor.auxil.orderedmap.IOrderedMap)}.
+   * 
+   * recordKeyUsedAsSearchBase not occuring in input iorderedmap
+   */
+  public void testTailorSearchToThisRecord2() {
+    IOrderedMap map = new OrderedHashMap();
+    map.put("foo1", "bar1");
+    
+    processor.setIncomingMap(incomingMap);
+    processor.setRecordKeyUsedAsSearchBase("foo2");
+    processor.setRecordKeySetByExistence(recordKeySetByExistence);
+   
+    validate();
+    try{
+      processor.tailorSearchToThisRecord(map);
+    }catch(RecordException re){
+      return;
+    }
+    assertTrue(false);
+  }
+  
 
   /**
    * Inner mock. 
