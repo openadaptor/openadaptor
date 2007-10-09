@@ -26,6 +26,8 @@
  */
 package org.openadaptor.auxil.connector.jndi;
 
+import java.util.NoSuchElementException;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
@@ -34,10 +36,9 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
 /**
- * Unit tests for {@link JNDISearch}.
+ * Unit tests for {@link JNDISearch} and {@link MultiBaseJNDISearchResults}.
  * 
  * @author Kris Lachor
- * @todo unit test the inner {@link MultiBaseJNDISearchResults}.
  */
 public class JNDISearchTestCase extends MockObjectTestCase {
   
@@ -57,6 +58,10 @@ public class JNDISearchTestCase extends MockObjectTestCase {
   
   private Mock mockNamingEnumeration = new Mock(NamingEnumeration.class);
   
+  private Mock mockNamingEnumeration2 = new Mock(NamingEnumeration.class);
+  
+  MultiBaseJNDISearchResults multiBaseJNDISearchResults = null;
+  
   /**
    * @see junit.framework.TestCase#setUp()
    */
@@ -64,6 +69,8 @@ public class JNDISearchTestCase extends MockObjectTestCase {
     super.setUp();
     search.setSearchBases(searchBases);
     search.setFilter(filter);
+    multiBaseJNDISearchResults = new MultiBaseJNDISearchResults(search, new NamingEnumeration[]{
+      (NamingEnumeration) mockNamingEnumeration.proxy(), (NamingEnumeration) mockNamingEnumeration2.proxy()} );
   }
 
   /**
@@ -118,5 +125,110 @@ public class JNDISearchTestCase extends MockObjectTestCase {
     assertTrue(result instanceof MultiBaseJNDISearchResults);
     assertNull(search.searchControls.getReturningAttributes());
   }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#hasMoreElements().
+   */
+  public void testHasMoreElements1(){
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(false));
+    assertFalse(multiBaseJNDISearchResults.hasMoreElements());
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#hasMoreElements().
+   */
+  public void testHasMoreElements2(){
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(true));
+    assertTrue(multiBaseJNDISearchResults.hasMoreElements());
+  }
 
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#hasMoreElements().
+   */
+  public void testHasMoreElements3(){
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(true));
+    assertTrue(multiBaseJNDISearchResults.hasMoreElements());
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#hasMore()
+   */
+  public void testHasMore1() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(false));
+    assertFalse(multiBaseJNDISearchResults.hasMore());
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#hasMore()
+   */
+  public void testHasMore2() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(true));
+    assertTrue(multiBaseJNDISearchResults.hasMore());
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#close()
+   */
+  public void testClose() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("close");
+    mockNamingEnumeration2.expects(once()).method("close");
+    multiBaseJNDISearchResults.close();
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#next()
+   */
+  public void testNext1() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(false));
+    try{
+      multiBaseJNDISearchResults.next();
+    }catch(NoSuchElementException ne){
+      return;
+    }
+    assertTrue(false);
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#next()
+   */
+  public void testNext2() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(true));
+    mockNamingEnumeration2.expects(once()).method("next");
+    multiBaseJNDISearchResults.next(); 
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#nextElement()
+   * 
+   * Behaviour identical to MultiBaseJNDISearchResults#next()
+   */
+  public void testNextElement1() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(false));
+    try{
+      multiBaseJNDISearchResults.nextElement();
+    }catch(NoSuchElementException ne){
+      return;
+    }
+    assertTrue(false);
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.MultiBaseJNDISearchResults#nextElement()
+   * 
+   * Behaviour identical to MultiBaseJNDISearchResults#next()
+   */
+  public void testNextElement2() throws NamingException{
+    mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
+    mockNamingEnumeration2.expects(once()).method("hasMore").will(returnValue(true));
+    mockNamingEnumeration2.expects(once()).method("next");
+    multiBaseJNDISearchResults.nextElement(); 
+  }
+  
 }
