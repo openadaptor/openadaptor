@@ -29,6 +29,7 @@ package org.openadaptor.thirdparty.dom4j;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -170,11 +171,11 @@ public class Dom4jSimpleRecordAccessor implements ISimpleRecordAccessor, ISimple
         Element element = (Element) node;
         //If the element is a leaf, use element.getText(), otherwise use element.getName()
         value = Dom4jUtils.getTypedValue(element, valueTypeAttributeName, !element.elements().isEmpty());
-      } else {
+      } else if( node instanceof Attribute ) {
         if (valueTypeAttributeName != null) {
           log.warn("Cannot get type attribute of non-element node");
-          value = node.getText();
         }
+        value = node.getText();
       }
     }
     return (value);
