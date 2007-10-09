@@ -27,54 +27,70 @@
 
 package org.openadaptor.thirdparty.velocity;
 
-import java.io.StringWriter;
-import java.util.List;
-
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
 
+import java.io.StringWriter;
+import java.util.List;
+
+/**
+ * Simple Processor that uses a Velocity Template to format data.
+ */
 public class VelocityProcessor extends Component implements IDataProcessor {
 
   private VelocityEngine engine;
 
+    private Template template;
+
+  /**
+   * String used as Velocity Template
+   */
   private String templateString;
 
+  /**
+   * Name of file that contains the Velocity Template.
+   */
   private String templateFile;
 
-  private Template template;
+  /**
+   * The logging category used when setting Velocity to use Log4J for logging.
+   */
+  protected String category = "velocity";
+
+  /**
+   * True if using Log4j for Velocity logging.
+   */
+  protected boolean mergeLogging = true;
 
   public VelocityProcessor() {
     super();
   }
 
   public VelocityProcessor(String id) {
-    super();
+    super(id);
   }
 
   private void init() {
     if (engine == null) {
       try {
         engine = new VelocityEngine();
+        if (isMergeLogging()) {
+          engine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
+          engine.setProperty("runtime.log.logsystem.log4j.category", getCategory());
+        }
         engine.init();
         template = templateFile != null ? engine.getTemplate(templateFile) : null;
       } catch (Exception e) {
         throw new ConnectionException("failed to init velocity engine", e, this);
       }
     }
-  }
-
-  public void setTemplateString(String s) {
-    templateString = s;
-  }
-
-  public void setTemplateFile(String fileName) {
-    templateFile = fileName;
   }
 
   public Object[] process(Object data) {
@@ -94,7 +110,7 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     } catch (Exception e) {
       throw new ProcessingException("process exception", e, this);
     }
-    return new Object[] { sw.toString() };
+    return new Object[]{sw.toString()};
   }
 
   public void reset(Object context) {
@@ -105,6 +121,58 @@ public class VelocityProcessor extends Component implements IDataProcessor {
     if (template == null && templateString == null) {
       exceptions.add(new ValidationException("neither template nor templateString have been set", this));
     }
+  }
+
+  /**
+   * String used as Velocity Template.
+   * @param template
+   */
+  public void setTemplateString(String template) {
+    templateString = template;
+  }
+
+  /**
+   * Name of file that contains the Velocity Template.
+   * @param fileName
+   */
+  public void setTemplateFile(String fileName) {
+    templateFile = fileName;
+  }
+
+  /**
+   * The logging category used when setting Velocity to use Log4J for logging.
+   *
+   * @return String The Category that will appear in the log.
+   */
+  public String getCategory() {
+    return category;
+  }
+
+  /**
+   * The logging category used when setting Velocity to use Log4J for logging.
+   *
+   * @param category The Category that will appear in the log.
+   */
+  public void setCategory(String category) {
+    this.category = category;
+  }
+
+  /**
+   * True if using Log4j for Velocity logging.
+   *
+   * @return boolean
+   */
+  public boolean isMergeLogging() {
+    return mergeLogging;
+  }
+
+  /**
+   * True if using Log4j for Velocity logging.
+   *
+   * @param mergeLogging
+   */
+  public void setMergeLogging(boolean mergeLogging) {
+    this.mergeLogging = mergeLogging;
   }
 
 }
