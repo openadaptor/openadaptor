@@ -252,7 +252,11 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
         if (durable) {
           newConsumer = connectorSession.createDurableSubscriber((Topic)destination, getDurableSubscriptionName(), getMessageSelector(), isNoLocal());
         } else {
-          newConsumer = connectorSession.createConsumer(destination, getMessageSelector(), isNoLocal());
+          if (isNoLocal()) {  // The value of noLocal only seems to matter if it's true.
+            newConsumer = connectorSession.createConsumer(destination, getMessageSelector(), isNoLocal());
+          } else {
+            newConsumer = connectorSession.createConsumer(destination, getMessageSelector());
+          }
         }
       } catch (JMSException e) {
         throw new ConnectionException("Unable to subscribe to Destination: [" + getDestinationName() + "]", e, this);

@@ -266,9 +266,16 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
   protected void setupConnectExpectations() {
     mockJMSConnection.setMockSession((Session)sessionMock.proxy());
     dirContextMock.expects(once()).method("lookup").with(eq(DESTINATION_NAME)).will(returnValue(destinationMock.proxy()));
+    if (testReadConnector.isNoLocal()) {
     sessionMock.expects(once()).method("createConsumer")
       .with(eq(destinationMock.proxy()), eq(testReadConnector.getMessageSelector()), eq(testReadConnector.isNoLocal()))
       .will(returnValue(messageConsumerMock.proxy()));
+    } else {
+      sessionMock.expects(once()).method("createConsumer")
+      .with(eq(destinationMock.proxy()), eq(testReadConnector.getMessageSelector()))
+      .will(returnValue(messageConsumerMock.proxy()));
+    }
+
   }
 
     // My Inner Mocks
