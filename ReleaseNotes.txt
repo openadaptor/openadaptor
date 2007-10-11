@@ -1,4 +1,28 @@
 =================================================
+openadaptor3 production 3.3.1 Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: TBD
+Author: openadaptor Core Team
+
+openadaptor 3.3.1
+=======
+
+Summary
+=======
+
+TBD
+
+Bug Fixes
+=========
+ *Application now logs the jvm version near the beginning
+  of adaptor startup (in case adaptor dies before reporting 
+  it).
+
+
+=================================================
 openadaptor3 production 3.3 Release Notes
 
 See licences/licence.txt for Licence information.
