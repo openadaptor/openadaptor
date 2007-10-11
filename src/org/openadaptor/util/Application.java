@@ -94,6 +94,7 @@ public class Application implements IComponent {
   protected Application() {
 
     log.info("classpath = " + System.getProperty("java.class.path", "not set"));
+    log.info("java.version = "+System.getProperty("java.version","<unable to determine>"));
     // get system props
     props = new Properties();
     props.putAll(System.getProperties());
