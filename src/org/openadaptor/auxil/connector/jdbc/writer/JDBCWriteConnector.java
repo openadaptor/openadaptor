@@ -55,7 +55,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   private static final Log log = LogFactory.getLog(JDBCWriteConnector.class);
 
   //Provide a default writer delegate.
-  private ISQLWriter sqlWriter = new RawSQLWriter();
+  private ISQLWriter sqlWriter;// = new RawSQLWriter();
   private JDBCConnection jdbcConnection;
 
   private String preambleSQL=null;
@@ -121,6 +121,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   public void validate(List exceptions) {
     if ( jdbcConnection == null ) {
       exceptions.add(new ValidationException("jdbcConnection property not set", this));
+    }
+    //If an sqlWriter has not been configured, use RawSQLWriter as a default.
+    if (sqlWriter==null) {
+      sqlWriter=new RawSQLWriter();
+      log.info("sqlWriter not configured (defaulting to "+sqlWriter.getClass().getName()+")");
     }
     sqlWriter.validate(exceptions, this);
   }

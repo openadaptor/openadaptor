@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
  * @since 3.2.2
  */
 public class RawSQLWriter extends AbstractSQLWriter {
-  private static final Log log = LogFactory.getLog(AbstractSQLWriter.class);
+  private static final Log log = LogFactory.getLog(RawSQLWriter.class);
  
   /**
    * This writer does not support batch writes.

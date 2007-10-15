@@ -97,6 +97,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
   public void testConnect() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
     try {
+      testValidate();
       testWriteConnector.connect();
     } catch (Exception e) {
       fail("Unexpected exception: " + e);
@@ -136,6 +137,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
   public void testDisconnect() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
     try {
+      testValidate();
       testWriteConnector.connect();
     } catch (Exception e) {
       fail("Unexpected exception connecting for the disconnect test : " + e);
@@ -152,6 +154,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
   public void testDisconnectWithException() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
     try {
+      testValidate();
       testWriteConnector.connect();
     } catch (Exception e) {
       fail("Unexpected exception connecting for the disconnect test : " + e);
@@ -179,7 +182,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
     sqlConnectionMock.expects(once()).method("prepareStatement").with(eq(testData[0])).will(returnValue(preparedStatementMock.proxy()));
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
     preparedStatementMock.expects(once()).method("close");
-
+    testValidate();
     testWriteConnector.connect();
     testWriteConnector.deliver(testData);
   }
@@ -191,9 +194,11 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
     ((JDBCWriteConnector) testWriteConnector).setWriter((ISQLWriter) sqlWriterMock.proxy());
     Object[] testData = new Object[]{"I cause an exception"};
     String dummyExceptionMessage = "Thrown deliberately by a mock ISQLWriter.";
+    sqlWriterMock.expects(once()).method("validate");
     sqlWriterMock.expects(once()).method("initialise").with(eq(sqlConnectionMock.proxy()));
     sqlWriterMock.expects(once()).method("writeBatch").will(throwException(new SQLException(dummyExceptionMessage)));
-
+    
+    testValidate();
     testWriteConnector.connect();
     try {
       testWriteConnector.deliver(testData);
@@ -220,6 +225,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
     preparedStatementMock.expects(atLeastOnce()).method("executeUpdate").will(returnValue(1));
     preparedStatementMock.expects(atLeastOnce()).method("close");
 
+    testValidate();
     testWriteConnector.connect();
     testWriteConnector.deliver(testData);
   }

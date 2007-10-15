@@ -134,10 +134,20 @@ public class JDBCWriteConnectorSystemTestCase extends TestCase {
     super.tearDown();
     jdbcConnection.disconnect();
   }
-  
+ 
+  /**
+   * Ensure a WriteConnector validates correctly.
+   */
+  private void checkValidate(JDBCWriteConnector connector) {
+    List exceptions = new ArrayList();
+    connector.validate(exceptions);
+    assertTrue("There should be no exceptions", exceptions.size() == 0);
+  }
+
   public void testJDBCWriter() throws Exception {
     JDBCWriteConnector writer = new JDBCWriteConnector("jdbcWriter");
     writer.setJdbcConnection(jdbcConnection);
+    checkValidate(writer);
     writer.connect();
     writer.deliver(new Object[] {ROWS[0]});
     writer.deliver(new Object[] {ROWS[1], ROWS[2], ROWS[3], ROWS[4]});
