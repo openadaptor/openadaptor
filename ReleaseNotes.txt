@@ -15,11 +15,16 @@ Summary
 
 TBD
 
+Minor changes
+=============
+  * JDBCWriteConnector now defaults the sqlWriter in validate() instead of constructor.
+    It also issues an INFO log message that it has done so.
+    
 Bug Fixes
 =========
- *Application now logs the jvm version near the beginning
-  of adaptor startup (in case adaptor dies before reporting 
-  it).
+  * Application now logs the jvm version near the beginning of adaptor 
+    startup (in case adaptor dies before reporting it).
+ 
 
 
 =================================================
