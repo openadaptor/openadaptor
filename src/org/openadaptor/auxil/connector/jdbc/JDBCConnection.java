@@ -32,11 +32,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ConnectionException;
 
@@ -45,6 +49,8 @@ import org.openadaptor.core.exception.ConnectionException;
  * This is a bean which provides access to a JDBC connection.
  * It is little more than a thin wrapper around a java.sql.Connection.
  * @author Eddy Higgins.
+ * 
+ * TODO validation of params
  */
 public class JDBCConnection extends Component {
 
@@ -59,6 +65,12 @@ public class JDBCConnection extends Component {
   private String password;
   
   private Connection connection = null;
+  
+  /* Attributes for obtaining connection from DataSource looked up in JNDI */
+  private DataSource dataSource = null;
+  private String dataSourceName;
+  private JNDIConnection jndiConnection;
+  private Context ctx;
   
   private XADataSource xaDataSource = null;
   
@@ -78,6 +90,15 @@ public class JDBCConnection extends Component {
   private Object transactionalResource = null;
 
   /**
+   * Non-arg constructor.
+   *
+   */
+  public JDBCConnection() {
+  }
+  
+  /**
+   * Constructor.
+   * 
    * create JDBC connection based on the following parameters
    * @param driver
    * @param url
@@ -93,6 +114,8 @@ public class JDBCConnection extends Component {
   }
 
   /**
+   * Constructor.
+   * 
    * create JDBC connection based on an XADataSource
    * @param xaDataSource
    */
@@ -101,9 +124,19 @@ public class JDBCConnection extends Component {
     this.xaDataSource = xaDataSource;
   }
   
-  public JDBCConnection() {
+  /**
+   * Constructor.
+   * 
+   * create JDBC connection based on an JNDIConnection and DataSource
+   * @param jndiConnection
+   * @param dataSourceName 
+   */
+  public JDBCConnection(JNDIConnection jndiConnection, String dataSourceName) {
+    this();
+    this.jndiConnection = jndiConnection;
+    this.dataSourceName = dataSourceName;
   }
-
+  
   public void setDriver(String driver) {this.driver = driver;}
 
   public void setUrl(String url) {this.url = url;}
@@ -111,15 +144,23 @@ public class JDBCConnection extends Component {
   public void setUsername(String username) {this.username = username;}
 
   public void setPassword(String password) {this.password = password;}
-
+  
+  public void setJndiConnection(JNDIConnection jndiConnection) {
+    this.jndiConnection = jndiConnection;
+  }
+  
   public void setXaDataSource(XADataSource xaDataSource) {
     this.xaDataSource = xaDataSource;
-  }
+  }  
   
   public void setConnection(Connection connection) {
     this.connection = connection;
   }
 
+  public void setDataSourceName(String dataSourceName) {
+    this.dataSourceName = dataSourceName;
+  }
+  
   public String getDriver() { return driver; }
 
   public String getUrl() { return url; }
@@ -155,18 +196,34 @@ public class JDBCConnection extends Component {
   /**
    * depending on how this object/bean as been constructed/initialise this will
    * either create a connection directly from the jdbc connection parameters, or
-   * create a connection from using an XADataSource. If the component is
-   * transacted then this will set the transaction resource.
+   * or get a connection from DataSource, or create a connection from using an XADataSource. 
+   * If the component is transacted then this will set the transaction resource.
    * 
    * @throws SQLException
    */
   public void connect() throws SQLException {
     if (xaDataSource != null) {
       connectViaXADataSource();
+    } else if(jndiConnection != null) {
+      connectViaDataSource();
     } else {
       connectDirectly();
     }
   }
+  
+  /**
+   * Looks up DataSource in JNDI. Gets connection from DataSource.
+   * 
+   * @throws SQLException
+   */
+  private void connectViaDataSource() throws SQLException {
+    dataSource = lookupDataSource(dataSourceName);
+    log.debug("DataSource looked up in JNDI: " + dataSource);
+    connection = dataSource.getConnection();
+    log.debug("Connection obtained from DataSource: " + connection);
+    connection.setAutoCommit(false);
+  }
+  
   
   /**
    * Create connection and set transactional resource from XADataSource
@@ -329,6 +386,28 @@ public class JDBCConnection extends Component {
           + ", SQLException, " + e.getMessage() 
           + ", Error Code = " + e.getErrorCode()
           + ", State = " + e.getSQLState(), e, this);
+  }
+
+  private Context getCtx() throws NamingException {
+    if (ctx == null) {
+      ctx = jndiConnection.connect();
+    }
+    return ctx;
+  }
+  
+  private DataSource lookupDataSource( String dataSourceName ) {
+    try {
+      Object o = getCtx().lookup(dataSourceName);   
+      return (DataSource) o;
+    } catch (NamingException e) {
+      String msg = "Unable to resolve DataSource for [" + dataSourceName + "]";
+      log.error(msg, e);
+      throw new ConnectionException(msg, e, this);
+    } catch (ClassCastException cce) {
+      String msg = "Object looked up at [" + dataSourceName + "] is not a DataSource. ";
+      log.error(msg, cce);
+      throw new ConnectionException(msg, cce, this);
+    }
   }
 
 }
