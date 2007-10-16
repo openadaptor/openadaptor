@@ -41,18 +41,25 @@ import org.springframework.beans.factory.ListableBeanFactory;
 public class SpringAdaptor extends SpringApplication {
 
   public static void main(String[] args) {
+    SpringAdaptor springAdaptor = new SpringAdaptor();
+    springAdaptor.execute(args);
+    System.exit(0);
+  }
+  
+  
+  public void execute(String [] args){
     try {
       SpringAdaptor app = new SpringAdaptor();
       app.parseArgs(args);
-      app.run();
-      System.exit(0);
+      app.run();   
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
       usage(System.err);
       System.exit(1);
-    }
+    } 
   }
+
   
   protected Runnable getRunnableBean(ListableBeanFactory factory) {
     if (getBeanId() == null) {

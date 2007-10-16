@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+ Descriptor of JMX managed spring adaptor bean, used to kick off openadaptor.
+ OA jars needs to be made available to JBoss (by being copied to the appropriate JBoss server lib area). 
+ This file needs to be copied to an auto-deploy area of JBoss.
+-->
+
+<server>
+  <mbean code="org.openadaptor.spring.jmx.JMXManagedSpringAdaptor" name="openadaptor.org:service=openadaptor"/>
+</server>

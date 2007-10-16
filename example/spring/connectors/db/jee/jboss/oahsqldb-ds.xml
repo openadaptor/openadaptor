@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--  
+ JBoss deployment descriptor for creating Hypersonic SQL DataSource with a reference stored
+ in JNDI tree.
+ 
+ This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+ up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    
+ This file needs to be copied to an auto-deploy area of JBoss.   
+-->
+
+<datasources>
+    <local-tx-datasource>
+
+      <jndi-name>openadaptorDS</jndi-name>
+      <connection-url>jdbc:hsqldb:hsql://localhost/xdb</connection-url>
+      <driver-class>org.hsqldb.jdbcDriver</driver-class>
+      <user-name>sa</user-name>
+      <password></password>
+
+      <!-- The minimum connections in a pool/sub-pool. Pools are lazily constructed on first use -->
+      <min-pool-size>5</min-pool-size>
+
+      <!-- The maximum connections in a pool/sub-pool -->
+      <max-pool-size>20</max-pool-size>
+
+      <!-- The time before an unused connection is destroyed -->
+      <!-- NOTE: This is the check period. It will be destroyed somewhere between 1x and 2x this timeout after last use -->
+      <!-- TEMPORARY FIX! - Disable idle connection removal, HSQLDB has a problem with not reaping threads on closed connections -->
+      <idle-timeout-minutes>0</idle-timeout-minutes>
+
+      <!-- Use the security domain defined in conf/login-config.xml -->
+      <!-- security-domain>HsqlDbRealm</security-domain -->
+
+       <!-- HSQL DB benefits from prepared statement caching -->
+      <prepared-statement-cache-size>32</prepared-statement-cache-size>
+
+      <mbean code="org.jboss.jdbc.HypersonicDatabase" name="jboss:service=Hypersonic">
+        <attribute name="Port">1701</attribute>
+        <attribute name="BindAddress">localhost</attribute>     
+        <attribute name="Silent">true</attribute>
+        <attribute name="Database">default</attribute>
+        <attribute name="Trace">false</attribute>
+        <attribute name="No_system_exit">true</attribute>
+      </mbean>
+
+    </local-tx-datasource>
+</datasources>
+
