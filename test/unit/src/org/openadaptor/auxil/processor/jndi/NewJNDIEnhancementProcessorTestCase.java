@@ -27,30 +27,50 @@
 package org.openadaptor.auxil.processor.jndi;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jmock.Mock;
 
-import org.jmock.MockObjectTestCase;
+import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.auxil.connector.jndi.JNDISearch;
+import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.OAException;
+import org.jmock.cglib.MockObjectTestCase;
 
 /**
  * Draft of unit tests for {@link NewJNDIEnhancementProcessor}.
  * 
  * @author Kris Lachor
+ * @todo ported only testValidatex() methods from JNDIEnhancementProcessorTestCase,
+ *   all other are remaining
  */
 public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
 
   NewJNDIEnhancementProcessor processor = new NewJNDIEnhancementProcessor();
   
-  Mock mockReadConnector = new Mock(IReadConnector.class);
+  NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
+  
+  String recordKeySetByExistence = "testRecordKeySetByExistence";
+  
+  Map incomingMap = new HashMap();
+  {
+    incomingMap.put("incomingMapKey1", "incomingMapValue1");
+    incomingMap.put("incomingMapKey2", "incomingMapValue2");
+  }
+  
+  Mock mockJNDISearch;
+  
+  Mock mockJNDIConnection;
 
   /**
    * @see junit.framework.TestCase#setUp()
    */
   protected void setUp() throws Exception {
     super.setUp();
-    processor.setReadConnector((IReadConnector) mockReadConnector.proxy());
+    processor.setReadConnector(mockReadConnector);
   }
 
   /**
@@ -62,13 +82,107 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     processor.setReadConnector(null);
     assertNull(processor.getReadConnector());
   }
+  
+  
+  /**
+   * copy of {@link JNDIEnhancementProcessorTestCase#setValidateExpectations}
+   */
+  private void setValidateExpectations(){
+    mockJNDISearch.expects(once()).method("getSearchBases");
+    mockJNDISearch.expects(atLeastOnce()).method("getFilter");
+    mockJNDISearch.expects(once()).method("getAttributes");
+    mockJNDISearch.expects(once()).method("setAttributes");
+  }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate(java.util.List)}.
+   * copy of {@link JNDIEnhancementProcessorTestCase#validate}
    */
-  public void testValidate() {
+  private void validate(){
+    setValidateExpectations();
     List exceptions = new ArrayList();
+    processor.validate(exceptions);  
+    assertTrue(exceptions.isEmpty());
   }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate
+   * (java.util.List)}.
+   * 
+   * ported from {@link JNDIEnhancementProcessorTestCase#testValidate1()
+   */
+  public void testValidate1() {
+//  the previously set directly on enhancementprocessor will now be set
+//  on the JNDIReadConnector
+//-    processor.setRecordKeyUsedAsSearchBase("foo1");
+//-    processor.setRecordKeySetByExistence(recordKeySetByExistence);
+//-    processor.setIncomingMap(incomingMap);
+    
+    mockReadConnector.setRecordKeyUsedAsSearchBase("foo1");
+    mockReadConnector.setRecordKeySetByExistence(recordKeySetByExistence);
+    mockReadConnector.setIncomingMap(incomingMap);
+    validate();
+  }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate
+   * (java.util.List)}.
+   * Missing (incomingMap and recordKeyUsedAsSearchBase), and missing (outgoingMap and recordKeySetByExistence)
+   * 
+   * ported from {@link JNDIEnhancementProcessorTestCase#testValidate2()
+   * 
+   */
+  public void testValidate2() {
+    setValidateExpectations();
+    List exceptions = new ArrayList();
+    processor.validate(exceptions);  
+    assertTrue(exceptions.size() == 3);
+  }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#validate
+   * (java.util.List)}.
+   * Missing (outgoingMap and recordKeySetByExistence), incomingMap and fiter
+   * 
+   * ported from {@link JNDIEnhancementProcessorTestCase#testValidate3()
+   */
+  public void testValidate3() {
+    setValidateExpectations();
+//-    processor.setRecordKeyUsedAsSearchBase("foo1");
+    mockReadConnector.setRecordKeyUsedAsSearchBase("foo1");
+    List exceptions = new ArrayList();
+    processor.validate(exceptions);  
+    assertTrue(exceptions.size() == 2);
+  }
+  
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor#validate
+   * (java.util.List)}.
+   * Missing (incomingMap and filter), and missing (outgoingMap and recordKeySetByExistence)
+   * 
+   * ported from {@link JNDIEnhancementProcessorTestCase#testValidate4()
+   */
+  public void testValidate4() {
+    setValidateExpectations();
+//-    processor.setRecordKeyUsedAsSearchBase("foo1");
+//-    processor.setRecordKeySetByExistence(recordKeySetByExistence);
+    mockReadConnector.setRecordKeyUsedAsSearchBase("foo1");
+    mockReadConnector.setRecordKeySetByExistence(recordKeySetByExistence);
+    List exceptions = new ArrayList();
+    processor.validate(exceptions);  
+    assertTrue(exceptions.size() == 1);
+  }
+  
+
+//  /**
+//   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate(java.util.List)}.
+//   */
+//  public void testValidate() {
+//    List exceptions = new ArrayList();
+//  }
 
 
   /**
@@ -86,4 +200,30 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
 //  }
 //
 
+  /**
+   * Inner mock. 
+   * The only difference between this and the equivalent in JNDIEnhancementProcessorTestCase
+   * is this extends NewJNDIReadConnector rather than JNDIReadConnector.
+   */
+  class MockNewJNDIReadConnector extends NewJNDIReadConnector{
+    
+    public MockNewJNDIReadConnector() {
+      mockJNDISearch = mock(JNDISearch.class, "mockJNDISearch");
+      mockJNDIConnection = mock(JNDIConnection.class, "mockJNDIConnection");
+      setSearch((JNDISearch)mockJNDISearch.proxy());
+      setJndiConnection((JNDIConnection) mockJNDIConnection.proxy());
+      setEnhancementProcessorMode(true);
+    }
+
+    public void connect() {}
+    
+    public Object[] next(long timeoutMs) throws OAException {
+       return null;
+    }
+
+    public JNDISearch getSearch() {
+      return this.search;
+    }        
+  }
+  
 }

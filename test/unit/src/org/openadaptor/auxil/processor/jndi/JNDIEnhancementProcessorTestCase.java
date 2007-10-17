@@ -33,8 +33,6 @@ import java.util.Map;
 
 import javax.naming.NamingEnumeration;
 
-//import org.jmock.MockObjectTestCase;
-
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.openadaptor.auxil.connector.jndi.JNDIReadConnector;
@@ -128,10 +126,9 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
    */
   public void testValidate2() {
     setValidateExpectations();
-    processor.setRecordKeyUsedAsSearchBase("foo1");
     List exceptions = new ArrayList();
     processor.validate(exceptions);  
-    assertTrue(exceptions.size() == 2);
+    assertTrue(exceptions.size() == 3);
   }
   
   
