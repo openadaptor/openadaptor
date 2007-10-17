@@ -23,9 +23,12 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
+
+import java.lang.reflect.Method;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,9 +44,32 @@ import org.openadaptor.dataobjects.DataObject;
  * to and array of objects that implement {@link IOrderedMap}.
  * 
  * @author Russ Fennell
+ * @author higginse
  */
 public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
   private static Log log = LogFactory.getLog(DataObjectToOrderedMapConvertor.class);
+  private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
+  private static final Method DATE_HOLDER_METHOD=getMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
+
+  private boolean convertDateHolderToDate=true;
+
+  public void setConvertDateHolderToDate(boolean convertDateHolderToDate) {
+    this.convertDateHolderToDate=convertDateHolderToDate;
+  }
+
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+
+    if (convertDateHolderToDate) {
+      if (DATE_HOLDER_METHOD!=null){
+        log.info("Legacy DateHolder instances (including subclasses) will be converted to java.util.Date");
+      }
+      else { 
+        log.warn("Unable to get asDate() method from DateHolderClass - DateHolder instances will NOT be converted to java.util.date");
+        setConvertDateHolderToDate(false); //Force it to false.
+      }
+    }
+  }
 
   /**
    * Takes an array of DataObjects and converts them into an Ordered Map
@@ -60,7 +86,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
 
     if (record instanceof DataObject[])
       dobs = (DataObject[]) record;
-    else if (record instanceof DataObject)
+    else if (record instanceof DataObject)                         
       dobs = new DataObject[] { (DataObject) record };
     else
       throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
@@ -118,13 +144,16 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
         }
         // Not a structural part - must be an actual value.
         else {
-          if (value == null) {
+          if (value==null) {
             log.debug("Attribute value : <null>");
-          } else {
-            if (value instanceof String) {
+          }
+          else {
+            if (log.isDebugEnabled()) {
               log.debug("Attribute value :" + value + " [" + value.getClass().getName() + "]");
-            } else {
-              log.debug("Attribute value :" + value);
+            }  
+            //Need to check if it's a legacy dataobject type - if so we need to 'clean' it.
+            if (convertDateHolderToDate) {
+              value=clean(value);
             }
           }
           map.put(attr, value); // Might be null
@@ -136,4 +165,67 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
 
     return map;
   }
+  /**
+   * Change DateHolder types to Date.
+   * Remove proprietary DataObjects Date types.
+   * @param incoming
+   * @return 
+   */
+  private static Object clean(Object incoming) {
+    Object outgoing=incoming;
+    Class cl=incoming.getClass();
+    //Catches DateHolder (and DateTimeHolder subclass)
+    if (DATE_HOLDER_CLASS.isAssignableFrom(cl)){
+      try {
+        outgoing=DATE_HOLDER_METHOD.invoke(incoming, (Object[])null);
+      } catch (Exception e) {
+        String msg="Failed to convert DateHolder to java.util.Date";
+        log.warn(msg+". Exception: "+e);
+      }
+    }
+    return outgoing;
+  }
+  /**
+   * Use reflection to derive legacy class.
+   * <br>
+   * Don't want to pollute openadaptor3 build with requirement for legacy jar.
+   * If it fails, it will just return null.
+   * @param className
+   * @return
+   */
+  private static Class getLegacyClass(String className) {
+    Class result=null;
+    try {
+      result= Class.forName(className);
+    } catch (ClassNotFoundException e) {
+      String msg="Unable to resolve "+className+". Is legacy openadaptor jar available on the classpath?";
+      log.warn(msg+". Exception: "+e);
+    } 
+    return result;
+  }
+  /**
+   * Reflection to get a legacy method without requiring openadaptor3 to know about it.
+   * <br>
+   * If class is null, then it won't bother trying.
+   * @param cl
+   * @param methodName
+   * @param argTypes
+   * @return
+   */
+  private static Method getMethod(Class cl,String methodName,Class[] argTypes) {
+    Method method=null;
+    if (cl!=null) {
+      try {
+        method= cl.getMethod(methodName, argTypes);
+      } catch (SecurityException e) {
+        String msg="Unable to resolve "+methodName+". Is legacy openadaptor jar available on the classpath?";
+        log.warn(msg+". Exception: "+e);
+      } catch (NoSuchMethodException e) {
+        String msg="Unable to resolve "+methodName+". Is legacy openadaptor jar available on the classpath?";
+        log.warn(msg+". Exception: "+e);
+      }
+    }
+    return method;
+  }
+
 }
