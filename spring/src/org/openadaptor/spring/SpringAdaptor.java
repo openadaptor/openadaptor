@@ -48,10 +48,9 @@ public class SpringAdaptor extends SpringApplication {
   
   
   public void execute(String [] args){
-    try {
-      SpringAdaptor app = new SpringAdaptor();
-      app.parseArgs(args);
-      app.run();   
+    try {  
+      parseArgs(args);
+      run();
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
