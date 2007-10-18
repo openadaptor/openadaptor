@@ -34,12 +34,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Base class for writing Maps to JDBC databases
  * @author higginse
  * @since 3.2.2
  */
 public abstract class AbstractMapWriter extends AbstractSQLWriter {
+  private static final Log log = LogFactory.getLog(AbstractMapWriter.class);
 
   protected String[] outputColumns;
 
@@ -122,5 +126,27 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
    */
   protected abstract PreparedStatement createStatement(Map datum) throws SQLException;
 
+  /**
+   * Setup arguments for a prepared statement.
+   * <br>
+   * Note that it only requires the SQL type as setObject(x,null) cannot be used.
+   * Seems silly, since the driver must be able to determine the type itself
+   * for the null call.
+   * @throws SQLException
+   */
+  protected static void setArguments(PreparedStatement ps,Map map,String[]colNames,int[]sqlTypes) throws SQLException{
+    for (int i=1;i<=colNames.length;i++) { 
+      Object value=map.get(colNames[i-1]); //Loop isn't zero based
+      if (value!=null || (sqlTypes==null)) { //Worth a try if sqlTypes ain't available! 
+        ps.setObject(i, value); //Don't need type here
+      }
+      else {
+        ps.setNull(i, sqlTypes[i-1]);
+      }
+      if (log.isDebugEnabled()) {
+        log.debug("PreparedStatement arg ["+i+"] "+value);
+      }
+    }
+  }
 
 }

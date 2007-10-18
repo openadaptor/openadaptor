@@ -49,7 +49,7 @@ public class MapTableWriter extends AbstractMapWriter {
   private static final Log log = LogFactory.getLog(MapTableWriter.class);
 
   private String tableName;
-  //private int[] outputTypes; //This will cache the output types for each column.
+  private int[] outputTypes; //Cache the output types for null columns.                            
 
   /**
    * Set the name of the database table to which data rows are to be inserted.
@@ -84,6 +84,7 @@ public class MapTableWriter extends AbstractMapWriter {
     } catch (SQLException e) {
       throw new RuntimeException("Failed to initialise information for target table, " + e.toString(), e);
     }
+
     return reusablePreparedStatement;
   }
 
@@ -92,10 +93,7 @@ public class MapTableWriter extends AbstractMapWriter {
    */
   protected PreparedStatement createStatement(Map map) throws SQLException {
     reusablePreparedStatement.clearParameters();
-    for (int i=0;i<outputColumns.length;i++) {
-      Object value=map.get(outputColumns[i]);
-      reusablePreparedStatement.setObject(i+1, value);//,outputTypes[i]);
-    }
+    setArguments(reusablePreparedStatement, map, outputColumns, outputTypes);
     return reusablePreparedStatement;
   }
 
@@ -105,14 +103,9 @@ public class MapTableWriter extends AbstractMapWriter {
    */
   public PreparedStatement createBatchStatement(Map[] maps) throws SQLException {
     log.debug("Creating batch prepared statment for "+maps.length+" records");
-    int outputColumnsLength=outputColumns.length;
     for (int m=0;m<maps.length;m++){
       reusablePreparedStatement.clearParameters();
-      Map map=maps[m];
-      for (int i=0;i<outputColumnsLength;i++) {
-        Object value=map.get(outputColumns[i]);//ToDo: Convert to Array instead of list.
-        reusablePreparedStatement.setObject(i+1, value);//,outputTypes[i]);
-      }
+      setArguments(reusablePreparedStatement, maps[m], outputColumns, outputTypes);
       reusablePreparedStatement.addBatch();
     }
     return reusablePreparedStatement;
