@@ -60,7 +60,7 @@
   <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
     <description>jms connection for queue we wish to publish to.</description>
     <property name="jndiConnection" ref="JndiConnection"/>
-    <property name="connectionFactoryName" value="${jms.ts.connectionFactoryName.1}"/>
+    <property name="connectionFactoryName" value="${jms.tp.connectionFactoryName.1}"/>
     <property name="username" value="${jms.username}"/>
     <property name="password" value="${jms.password}"/>
   </bean>
