@@ -28,11 +28,10 @@ package org.openadaptor.auxil.processor.jndi;
 
 import java.util.List;
 
-import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
-import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -43,20 +42,20 @@ import org.openadaptor.core.exception.ValidationException;
  * Early draft version, do not use.
  * 
  * @author Kris Lachor
+ * @TODO rename to OrderedMapEnhancementProcessor? 
  */
 public class NewJNDIEnhancementProcessor extends AbstractOrderedMapProcessor implements IEnhancementProcessor {
 
-  IReadConnector readConnector;
+  IEnhancementReadConnector readConnector;
   
   /**
    * @see org.openadaptor.core.IEnhancementProcessor#getReadConnector()
    */
-  public IReadConnector getReadConnector() {
+  public IEnhancementReadConnector getReadConnector() {
     return readConnector;
   }
 
- 
-  public void setReadConnector(IReadConnector readConnector) {
+  public void setReadConnector(IEnhancementReadConnector readConnector) {
     this.readConnector = readConnector;
   }
 
@@ -78,9 +77,27 @@ public class NewJNDIEnhancementProcessor extends AbstractOrderedMapProcessor imp
   /**
    * @see AbstractOrderedMapProcessor#processOrderedMap(IOrderedMap)
    * @TODO remove downcasting
+   * @TODO fix the timeout
    */
   public Object[] processOrderedMap(IOrderedMap orderedMap) throws RecordException {
-    return ((NewJNDIReadConnector) readConnector).processOrderedMap(orderedMap);
+//    return ((NewJNDIReadConnector) readConnector).processOrderedMap(orderedMap);
+    Object [] additionalData = readConnector.next(orderedMap, 1000);
+    return  enhance(orderedMap, additionalData);
+  }
+
+  
+  public Object [] enhance(Object input, Object[] additionalData) {
+    Object [] result = null;
+    if(null == additionalData){
+      result = new Object[]{input};
+    }else{
+      result = new Object[additionalData.length + 1];
+      result[0] = input;
+      for(int i=1; i<additionalData.length; i++){
+        result[i]=additionalData[i-1];
+      }
+    }
+    return result;
   }
 
 }

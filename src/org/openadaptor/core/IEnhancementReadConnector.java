@@ -26,27 +26,26 @@
  */
 package org.openadaptor.core;
 
+import org.openadaptor.core.exception.ConnectionException;
+
 /**
- * Draft of the new interface that represents a generic
- * enhancement processor. Not quite ready for use yet.
+ * Draft: interface of an IReadConnector that can be plugged-in to 
+ * an IEhancementProcessor (needs to be able to do next() with input params
  * 
  * @author Kris Lachor
  */
-public interface IEnhancementProcessor extends IDataProcessor {
+public interface IEnhancementReadConnector extends IReadConnector {
   
   /**
-   * Underlying read connector.
+   * Polls the internal resource for some data. Exceptions should be thrown as RuntimeExceptions.
+   * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
-   * @return the underlying read connector.
+   * @param input data used to construct a parametrised query
+   * @param timeoutMs
+   *          the maximum time in milli-seconds to wait for data is none is
+   *          available immediately
+   * @return null or an array of data with one or more element.
    */
-  IEnhancementReadConnector getReadConnector();
-  
-  /**
-   * Merges original input with additional data retrieved by the underlying IEnhancementReadConnector.
-   * 
-   * @param input original input record used to parametrise query in IEnhancementReadConnector
-   * @param additionalData data returned by IEnhancementReadConnector
-   */
-  Object [] enhance(Object input, Object [] additionalData);
+  Object[] next(Object inputRecord, long timeoutMs);
 
 }

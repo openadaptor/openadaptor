@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.jndi;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.exception.*;
 
 import javax.naming.*;
@@ -50,7 +51,7 @@ import java.util.Map;
  * @see JNDIConnection
  * @see JNDISearch
  */
-public class NewJNDIReadConnector extends AbstractJNDIReadConnector {
+public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnhancementReadConnector {
 
   private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
 
@@ -526,5 +527,15 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector {
    * @see {@link org.openadaptor.core.IReadConnector#setReaderContext(Object)}
    */
   public void setReaderContext(Object context) {
+  }
+
+
+  /**
+   * 
+   */
+  public Object[] next(Object inputRecord, long timeoutMs) {
+    IOrderedMap inputOrderedMap = (IOrderedMap) inputRecord;
+//    return next(timeoutMs);
+    return processOrderedMap(inputOrderedMap);
   }
 }
