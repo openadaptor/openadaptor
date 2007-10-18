@@ -28,6 +28,7 @@ package org.openadaptor.auxil.processor.jndi;
 
 import java.util.List;
 
+import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
@@ -76,9 +77,10 @@ public class NewJNDIEnhancementProcessor extends AbstractOrderedMapProcessor imp
 
   /**
    * @see AbstractOrderedMapProcessor#processOrderedMap(IOrderedMap)
+   * @TODO remove downcasting
    */
   public Object[] processOrderedMap(IOrderedMap orderedMap) throws RecordException {
-    return null;
+    return ((NewJNDIReadConnector) readConnector).processOrderedMap(orderedMap);
   }
 
 }

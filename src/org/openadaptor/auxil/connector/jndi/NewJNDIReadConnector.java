@@ -35,6 +35,9 @@ import org.openadaptor.core.exception.*;
 import javax.naming.*;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchResult;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +127,10 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector {
   protected String[] configDefinedSearchAttributes; // derived from attributes property of embedded search property
   
   protected String configDefinedSearchFilter; // derived from filter property of embedded search property
+  
+  protected String valueIfExists = "true";
+
+  protected String valueIfDoesNotExist = "false";
   
   /********* ported from JNDIEnhancementProcessor END ************/
   
@@ -271,6 +278,151 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector {
       connect();
     }
   }
+  
+  
+  public Object[] processOrderedMap(IOrderedMap orderedMap) throws RecordException {
+    Object[] result = null;
+
+    tailorSearchToThisRecord(orderedMap);
+
+    try {
+      IOrderedMap[] matches = getMatches(); //This should now have an array of IOrderedMaps to work with
+      if (matches == null) {
+        log.debug("Enrichment search returned no results");
+
+        // So simply pass original data through un-enhanced:
+        result = new IOrderedMap[1];
+        result[0] = (IOrderedMap) orderedMap.clone();
+
+        // And set existence flag to does not exist:
+        if (recordKeySetByExistence != null) {
+          ((IOrderedMap) result[0]).put(recordKeySetByExistence, valueIfDoesNotExist);
+        }
+      } else {
+        int size = matches.length;
+        log.debug("Enrichment search returned " + size + " results");
+        result = new IOrderedMap[size];
+        for (int i = 0; i < size; i++) {
+          IOrderedMap outgoing = (IOrderedMap) orderedMap.clone();
+
+          // Enrich outgoing record according to outgoingMap:
+          if (outgoingMap != null && outgoingMap.size() > 0) {
+            Iterator outgoingMapIterator = outgoingMap.entrySet().iterator();
+            while (outgoingMapIterator.hasNext()) {
+              Map.Entry entry = (Map.Entry) outgoingMapIterator.next();
+              Object outKeyValue = matches[i].get(entry.getKey());
+              if (outKeyValue == null) {
+                // attribute has a null value, only write it if that is because attribute is present:
+                if (matches[i].containsKey(entry.getKey())) {
+                  outgoing.put(entry.getValue(), outKeyValue);
+                }
+              } else {
+                // attribute has a real value, so use it (may be an array of strings):
+                if (outKeyValue instanceof Object[]) {
+                  // If it is an array of objects, convert it to an array of strings:
+                  Object[] outKeyValueArray = (Object[]) outKeyValue;
+                  String[] outKeyStringArray = new String[outKeyValueArray.length];
+                  for (int k=0; k<outKeyValueArray.length; k++) {
+                    outKeyStringArray[k] = outKeyValueArray[k].toString(); 
+                  }
+                  outgoing.put(entry.getValue(), outKeyStringArray);
+                } else {
+                  // Otherwise simply convert object to a string:
+                  outgoing.put(entry.getValue(), outKeyValue.toString());
+                }
+              }
+            }
+          }
+
+          // And set existence flag to exists:
+          if (recordKeySetByExistence != null) {
+            outgoing.put(recordKeySetByExistence, valueIfExists);
+          }
+
+          log.debug("OutputMap: " + outgoing);
+          result[i] = outgoing;
+        }
+      }
+    } catch (Exception e) {
+      log.info("RecordException of " + e.getMessage());
+      if (log.isDebugEnabled())
+        e.printStackTrace();
+      throw new RecordException(e.getMessage(), e);
+    }
+    return result;
+  }
+  
+  
+  public void tailorSearchToThisRecord(IOrderedMap orderedMapRecord) throws RecordException {
+    // Use a dynamic search base from the incoming record?
+    if (recordKeyUsedAsSearchBase != null) {
+      Object incomingBase = orderedMapRecord.get(recordKeyUsedAsSearchBase);
+      if ((incomingBase == null) || !(incomingBase instanceof CharSequence)) {
+        log.warn("Empty search base produced: recordKeyUsedAsSearchBase missing from this record: " + orderedMapRecord);
+        throw new RecordException("Empty search base produced: recordKeyUsedAsSearchBase missing from this record.");
+      }
+      if (!(incomingBase instanceof String)) {
+        incomingBase = incomingBase.toString();
+      }
+      search.setSearchBases(new String[] { (String) incomingBase });
+    }
+
+    // Set up the search filter to use all incomingMap values (GDS attribute names) with
+    // any corresponding record values (if null then use "*").
+    StringBuffer searchFilter = new StringBuffer();
+    if (incomingMap != null) {
+      if (incomingMap.size() > 1) {
+        searchFilter.append("(&");
+      }
+      Iterator incomingMapIterator = incomingMap.entrySet().iterator();
+      while (incomingMapIterator.hasNext()) {
+        Map.Entry entry = (Map.Entry) incomingMapIterator.next();
+        Object recordValue = orderedMapRecord.get(entry.getKey());
+        if (recordValue != null) {
+          searchFilter.append("(").append(entry.getValue()).append("=").append(recordValue).append(")");
+        }
+      }
+      if (incomingMap.size() > 1) {
+        searchFilter.append(")");
+      }
+    }
+    // Combine it with any config defined search filter (e.g. it might restrict objectclass)
+    if (configDefinedSearchFilter != null && configDefinedSearchFilter.length() > 0) {
+      if (incomingMap != null) {
+        searchFilter.insert(0, "(&");
+      }
+      searchFilter.append(configDefinedSearchFilter);
+      if (incomingMap != null) {
+        searchFilter.append(")");
+      }
+    }
+    // Sanity check (don't want to do unconstrained searches):
+    if (searchFilter.length() == 0) {
+      log.warn("Empty search filter produced: probably missing incomingMap keys in record: " + orderedMapRecord);
+      throw new RecordException("Empty search filter produced: probably missing incomingMap keys in tbis record.");
+    }
+    // Set this updated filter:
+    search.setFilter(searchFilter.toString());
+  }
+  
+  
+  private IOrderedMap[] getMatches() throws Exception {
+    IOrderedMap[] results = null;
+    boolean treatMultiValuedAttributesAsArray = search.getTreatMultiValuedAttributesAsArray();
+    String joinArraysWithSeparator = search.getJoinArraysWithSeparator();
+//    NamingEnumeration current = search.execute(((JNDIReadConnector) reader).getContext());
+    NamingEnumeration current = search.execute(this.getContext());
+    ArrayList resultList = new ArrayList();
+    while (current.hasMore()) {
+      resultList.add(JNDIUtils.getOrderedMap((SearchResult) current.next(), treatMultiValuedAttributesAsArray,
+          joinArraysWithSeparator));
+    }
+    if (resultList.size() > 0) {
+      results = (IOrderedMap[]) resultList.toArray(new IOrderedMap[resultList.size()]);
+    }
+    return results;
+  }
+  
 
   /**
    * Establish an external JNDI connection.
