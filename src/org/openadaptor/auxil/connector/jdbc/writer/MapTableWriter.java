@@ -48,8 +48,7 @@ import org.openadaptor.core.exception.ValidationException;
 public class MapTableWriter extends AbstractMapWriter {
   private static final Log log = LogFactory.getLog(MapTableWriter.class);
 
-  private String tableName;
-  private int[] outputTypes; //Cache the output types for null columns.                            
+  private String tableName;                          
 
   /**
    * Set the name of the database table to which data rows are to be inserted.
@@ -79,7 +78,7 @@ public class MapTableWriter extends AbstractMapWriter {
       if (outputColumns==null) {
         setOutputColumns(getTableColumnNames(tableName, connection));
       }
-      //outputTypes=getPreparedStatementTypes(tableName, connection, outputColumns);
+      argSqlTypes=getPreparedStatementTypes(tableName, connection, outputColumns);
       reusablePreparedStatement=generatePreparedStatement(connection, tableName, outputColumns);
     } catch (SQLException e) {
       throw new RuntimeException("Failed to initialise information for target table, " + e.toString(), e);
@@ -93,7 +92,7 @@ public class MapTableWriter extends AbstractMapWriter {
    */
   protected PreparedStatement createStatement(Map map) throws SQLException {
     reusablePreparedStatement.clearParameters();
-    setArguments(reusablePreparedStatement, map, outputColumns, outputTypes);
+    setArguments(reusablePreparedStatement, map, outputColumns, argSqlTypes);
     return reusablePreparedStatement;
   }
 
@@ -105,7 +104,7 @@ public class MapTableWriter extends AbstractMapWriter {
     log.debug("Creating batch prepared statment for "+maps.length+" records");
     for (int m=0;m<maps.length;m++){
       reusablePreparedStatement.clearParameters();
-      setArguments(reusablePreparedStatement, maps[m], outputColumns, outputTypes);
+      setArguments(reusablePreparedStatement, maps[m], outputColumns, argSqlTypes);
       reusablePreparedStatement.addBatch();
     }
     return reusablePreparedStatement;

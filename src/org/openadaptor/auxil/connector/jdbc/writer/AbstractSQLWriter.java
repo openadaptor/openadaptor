@@ -59,6 +59,8 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 
   protected Connection connection;
   protected PreparedStatement reusablePreparedStatement=null;
+  protected int[] argSqlTypes; //Might need the sql types for null columns.  
+
   private boolean batchSupport;
 
   /**
@@ -73,6 +75,11 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       batchSupport=checkBatchSupport();
       log.info("Writer does "+(batchSupport?"":"NOT ")+"have batch support");
       reusablePreparedStatement=initialiseReusablePreparedStatement();
+      if ((reusablePreparedStatement!=null) && (argSqlTypes==null)){ //Subclass didn't setup the argument types!
+        String msg="Argument types not set for PreparedStatement calls. This may not work with null values!";
+        log.warn(msg);
+        throw new RuntimeException("OH BOLLOCKS");
+      }
 
     } catch (SQLException e) {
       throw new ConnectionException("Failed to initialise" + e.toString(), e);
@@ -220,21 +227,21 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     return connection.prepareStatement(sql.toString());
   }
-//  protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,List columnNames) throws SQLException {
-//    StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
-//    StringBuffer params=new StringBuffer(); 
-//    for (int i=0;i<columnNames.size();i++) {
-//      sql.append(columnNames.get(i)+",");
-//      params.append("?,");
-//    }
-//    sql.setCharAt(sql.length()-1, ')'); //Swap last comma for a bracket.
-//    params.setCharAt(params.length()-1, ')');//Ditto
-//    sql.append(" VALUES (").append(params);
-//    if (log.isDebugEnabled()) {
-//      log.debug("Generated Prepared stmt: "+sql.toString());
-//    }
-//    return connection.prepareStatement(sql.toString());
-//  }
+//protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,List columnNames) throws SQLException {
+//StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
+//StringBuffer params=new StringBuffer(); 
+//for (int i=0;i<columnNames.size();i++) {
+//sql.append(columnNames.get(i)+",");
+//params.append("?,");
+//}
+//sql.setCharAt(sql.length()-1, ')'); //Swap last comma for a bracket.
+//params.setCharAt(params.length()-1, ')');//Ditto
+//sql.append(" VALUES (").append(params);
+//if (log.isDebugEnabled()) {
+//log.debug("Generated Prepared stmt: "+sql.toString());
+//}
+//return connection.prepareStatement(sql.toString());
+//}
 
 
   /**
@@ -279,36 +286,36 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     return types;
   }
-//  protected int[] getPreparedStatementTypes(String tableName, Connection connection,List columnNames) throws SQLException {
-//    //Execute a dummy sql statement against database purely to collect table metadata
-//    String sql= "SELECT * FROM "+tableName+" WHERE 1=2";
-//    Statement s = connection.createStatement();
-//    log.debug("Executing SQL: " + sql);
-//    ResultSet rs=s.executeQuery(sql);
-//    int[] types;
-//    ResultSetMetaData rsmd=rs.getMetaData();
-//    int cols=rsmd.getColumnCount();
-//    types=new int[columnNames.size()];
-//    int mapped=0;
-//    for (int i=0;i<cols;i++) {
-//      int type=rsmd.getColumnType(i+1);
-//      String name=rsmd.getColumnName(i+1);
-//      int location=columnNames.indexOf(name);
-//      if (location >=0) {
-//        types[location]=type;
-//        mapped++;
-//      }
-//      else {
-//        if (log.isDebugEnabled()) {
-//          log.debug("Ignoring column "+i+"["+name+" ("+rsmd.getColumnTypeName(i+1)+")]");
-//        }
-//      }
-//    }
-//    if (mapped<types.length) {
-//      log.warn("Not all column names were mapped. This is probably a configuration error");
-//    }
-//    return types;
-//  }
+//protected int[] getPreparedStatementTypes(String tableName, Connection connection,List columnNames) throws SQLException {
+////Execute a dummy sql statement against database purely to collect table metadata
+//String sql= "SELECT * FROM "+tableName+" WHERE 1=2";
+//Statement s = connection.createStatement();
+//log.debug("Executing SQL: " + sql);
+//ResultSet rs=s.executeQuery(sql);
+//int[] types;
+//ResultSetMetaData rsmd=rs.getMetaData();
+//int cols=rsmd.getColumnCount();
+//types=new int[columnNames.size()];
+//int mapped=0;
+//for (int i=0;i<cols;i++) {
+//int type=rsmd.getColumnType(i+1);
+//String name=rsmd.getColumnName(i+1);
+//int location=columnNames.indexOf(name);
+//if (location >=0) {
+//types[location]=type;
+//mapped++;
+//}
+//else {
+//if (log.isDebugEnabled()) {
+//log.debug("Ignoring column "+i+"["+name+" ("+rsmd.getColumnTypeName(i+1)+")]");
+//}
+//}
+//}
+//if (mapped<types.length) {
+//log.warn("Not all column names were mapped. This is probably a configuration error");
+//}
+//return types;
+//}
 
   /**
    * Get the names of the columns of a given table.
@@ -332,6 +339,58 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     return names;
   }
 
+  /**
+   * Get the types of the args of a stored proc.
+   * <br>
+   * From javadoc on DatabaseMetaData.getProcedureColumns()
+   * 
+   * 1. PROCEDURE_CAT String => procedure catalog (may be null)
+   * 2. PROCEDURE_SCHEM String => procedure schema (may be null)
+   * 3. PROCEDURE_NAME String => procedure name
+   * 4. COLUMN_NAME String => column/parameter name
+   * 5. COLUMN_TYPE Short => kind of column/parameter:
+   *        * procedureColumnUnknown - nobody knows
+   *        * procedureColumnIn - IN parameter
+   *        * procedureColumnInOut - INOUT parameter
+   *        * procedureColumnOut - OUT parameter
+   *        * procedureColumnReturn - procedure return value
+   *        * procedureColumnResult - result column in ResultSet 
+   * 6. DATA_TYPE int => SQL type from java.sql.Types
+   * 7. TYPE_NAME String => SQL type name, for a UDT type the type name is fully qualified
+   * 8. PRECISION int => precision
+   * 9. LENGTH int => length in bytes of data
+   *10. SCALE short => scale
+   *11. RADIX short => radix
+   *12. NULLABLE short => can it contain NULL.
+   *        * procedureNoNulls - does not allow NULL values
+   *        * procedureNullable - allows NULL values
+   *        * procedureNullableUnknown - nullability unknown 
+   *13. REMARKS String => comment describing parameter/column 
+   */
+  protected int[] getStoredProcArgumentTypes(String storedProcName,Connection connection) throws SQLException {
+    DatabaseMetaData dmd = connection.getMetaData();
+    List sqlTypeList=new ArrayList();
+    ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");
+    if (!rs.next()) { //First rs is return value.
+      rs.close();
+      log.warn("Failed to lookup stored procedure " +storedProcName);
+      throw new SQLException("failed to lookup stored procedure "+storedProcName);
+    }
+    while (rs.next()) {
+      sqlTypeList.add(new Integer(rs.getInt(6))); // DATA_TYPE is column six!
+      if (log.isDebugEnabled()) {
+        log.debug("Catalog=" + rs.getString(1) + ", Schema=" + rs.getString(2) + ", Proc=" + rs.getString(3) + ", Column=" + rs.getString(4) + ",Type=" + rs.getString(6) + "TypeName=" + rs.getString(7));
+      }
+    }
+    log.debug("Number of stored procedure parameters found: " + sqlTypeList.size());
+    int[] sqlTypes=new int[sqlTypeList.size()];
+    for (int i=0;i<sqlTypes.length;i++) {
+      sqlTypes[i]=((Integer)sqlTypeList.get(i)).intValue();
+    }
+    rs.close(); 
+    return sqlTypes;
+  }
+  
   protected int getStoredProcArgumentCount(String storedProcName,Connection connection) throws SQLException {
     DatabaseMetaData dmd = connection.getMetaData();
     int argCount=-1;

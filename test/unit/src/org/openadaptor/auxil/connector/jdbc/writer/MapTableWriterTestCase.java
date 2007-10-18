@@ -77,9 +77,12 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
   }
 
   protected Mock metaDataMock;
+  protected Mock typeGetStatementMock;
   protected Mock statementMock;
+  protected Mock typeResultSetMock;
   protected Mock resultSetMock;
   protected Mock resultSetMetaDataMock;
+  protected Mock typeResultSetMetaDataMock;
 
 
   protected ISQLWriter instantiateTestWriter() {
@@ -94,8 +97,12 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
   protected void setUp() throws Exception {
     super.setUp();
     metaDataMock = mock(DatabaseMetaData.class);
+    typeGetStatementMock=mock(Statement.class); //This is the call to get the arg types.
+    
     statementMock = mock(Statement.class);
     resultSetMock = mock(ResultSet.class);
+    typeResultSetMock=mock(ResultSet.class);
+    typeResultSetMetaDataMock=mock(ResultSetMetaData.class);
     resultSetMetaDataMock = mock(ResultSetMetaData.class);
   }
 
@@ -115,16 +122,32 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
    * @param supportsBatch Set batch support on the JDBC Layer
    */
   protected void setupInitialiseExpectations(boolean supportsBatch) {
+    setupTypeGetMock();
     connectionMock.expects(once()).method("getMetaData").will(returnValue(metaDataMock.proxy()));
     metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
-    connectionMock.expects(once()).method("createStatement").will(returnValue(statementMock.proxy()));
-    statementMock.expects(once()).method("executeQuery").with(eq(InitialiseQuery)).will(returnValue(resultSetMock.proxy()));
-    resultSetMock.expects(once()).method("getMetaData").will(returnValue(resultSetMetaDataMock.proxy()));
-    resultSetMetaDataMock.stubs().method("getColumnCount").will(returnValue(ColumnCount));
-    for (int i = 0; i < ColumnCount ; i++) {
-      resultSetMetaDataMock.expects(once()).method("getColumnName").with(eq(i+1)).will(returnValue(ColumnNames[i]));
-    }
+    connectionMock.expects(atLeastOnce()).method("createStatement").will(
+        onConsecutiveCalls(returnValue(typeGetStatementMock.proxy()), returnValue(typeGetStatementMock.proxy()),
+            returnValue(statementMock.proxy())));
+ 
+    //statementMock.expects(once()).method("executeQuery").with(eq(InitialiseQuery)).will(returnValue(resultSetMock.proxy()));
+    //resultSetMock.expects(once()).method("getMetaData").will(returnValue(resultSetMetaDataMock.proxy()));
+    //resultSetMetaDataMock.stubs().method("getColumnCount").will(returnValue(ColumnCount));
+    //for (int i = 0; i < ColumnCount ; i++) {
+    //  resultSetMetaDataMock.expects(once()).method("getColumnName").with(eq(i+1)).will(returnValue(ColumnNames[i]));
+    //}
     connectionMock.expects(once()).method("prepareStatement").with(eq(PreparedStatementSQL)).will(returnValue(preparedStatementMock.proxy()));
+  }
+  
+  private void setupTypeGetMock() {
+    typeGetStatementMock.expects(atLeastOnce()).method("executeQuery").will(returnValue(typeResultSetMock.proxy()));
+    typeResultSetMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(typeResultSetMetaDataMock.proxy()));
+    typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnCount").will(returnValue(ColumnCount));
+
+    for (int i = 0; i < ColumnCount ; i++) {
+      typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnType").with(eq(i+1)).will(returnValue(java.sql.Types.VARCHAR));
+      typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnName").with(eq(i+1)).will(returnValue(ColumnNames[i]));
+    }
+      //typeResultSetMetaDataMock.expects(atLeastOnce()).method("getInt").will(returnValue(java.sql.Types.NUMERIC));
   }
 
   /**

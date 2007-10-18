@@ -117,6 +117,7 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     connectionMock.expects(once()).method("getCatalog").will(returnValue(CatalogName));
     metaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
     resultSetMock.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(new Stub[] {returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(false)}));
+    resultSetMock.stubs().method("getInt").will(returnValue(java.sql.Types.NUMERIC));;//Any type will do?
     resultSetMock.stubs().method("getString").will(returnValue("Dummy ResultSet Info")); // Not being specific here as this only happens when logging set to debug
     resultSetMock.expects(atLeastOnce()).method("close");
     connectionMock.expects(once()).method("prepareStatement").with(eq(PreparedStatementSQL)).will(returnValue(preparedStatementMock.proxy()));

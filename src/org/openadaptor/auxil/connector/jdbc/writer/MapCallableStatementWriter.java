@@ -37,7 +37,6 @@ import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Writer which will call a stored procedure to write records to a 
  * database.
@@ -55,7 +54,6 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
   private static final Log log = LogFactory.getLog(MapCallableStatementWriter.class);
 
   private String procName;
-  private int argCount=0;
 
   public void setCallableStatement(String procName) {
     this.procName = procName;
@@ -85,13 +83,13 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
     PreparedStatement reusablePreparedStatement=null;
     log.info("Initialising prepared statement for "+procName);
     try {
-      argCount=getStoredProcArgumentCount(procName, connection);
+      argSqlTypes=getStoredProcArgumentTypes(procName, connection);
       if (outputColumns!=null) {
-        if (argCount != outputColumns.length){
-          throw new SQLException("Proc expects "+argCount+" arguments, but outputColumns contains "+outputColumns.length);
+        if (argSqlTypes.length != outputColumns.length){
+          throw new SQLException("Proc expects "+argSqlTypes.length+" arguments, but outputColumns contains "+outputColumns.length);
         }
       }
-      String sql=generateStoredProcSQL(procName,argCount);
+      String sql=generateStoredProcSQL(procName,argSqlTypes);
       reusablePreparedStatement=connection.prepareStatement(sql);
       log.debug("Reusable prepared statement is: " +sql);
       //Load bean properties with database metadata values
@@ -139,14 +137,14 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
         throw new SQLException("Map is not an IOrderedMap instance - outputColumns must be specified");
       }
       int mapSize=map.size();
-      if (argCount!=mapSize) {
-        throw new SQLException("Expected "+argCount+" arguments, but map contains "+mapSize);
+      if (argSqlTypes.length !=mapSize) {
+        throw new SQLException("Expected "+argSqlTypes.length+" arguments, but map contains "+mapSize);
       }
+      
       IOrderedMap om=(IOrderedMap)map;
-      for (int i=0;i<mapSize;i++) {
-        Object value=om.get(i);
-        ps.setObject(i+1, value);
-      }
+      String[] colNames=(String[])om.keys().toArray(new String[om.size()]);
+      setArguments(ps,map,colNames,argSqlTypes);
+  
     }
     else {//Use output columns fram map. Expects them to match.
       for (int i=0;i<outputColumns.length;i++) {
@@ -162,13 +160,13 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
    * @param argCount The number of arguments expected by the proc.
    * @return String containing an SQL call ready for compilation as a PreparedStatement
    */
-  private String generateStoredProcSQL(String procName,int argCount) {
+  private String generateStoredProcSQL(String procName,int[] sqlTypes) {
     StringBuffer sqlString=new StringBuffer("{ CALL "+ procName + "(");
-    for (int i=0;i<argCount;i++) {
+    int args=sqlTypes.length;// Only need the number of args.
+    for (int i=0;i<args;i++) {
       sqlString.append("?,");
     }
-    if (argCount>0) {
-      
+    if (args>0) { //Drop the last comma.
       sqlString.deleteCharAt(sqlString.length()-1);
     }
     sqlString.append(")}");

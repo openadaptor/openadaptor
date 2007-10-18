@@ -46,7 +46,6 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
   private static final Log log = LogFactory.getLog(AbstractMapWriter.class);
 
   protected String[] outputColumns;
-
   /**
    * Set the names of the columns to be used when writing output rows.
    * <br>
