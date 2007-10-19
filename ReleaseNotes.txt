@@ -25,6 +25,8 @@ Minor changes
     The default value for this property is 'true' which means default behaviour will 
     differ from 3.3
     
+  * Removed need for constructor-arg on MBeanServer.
+    
 Bug Fixes
 =========
 
