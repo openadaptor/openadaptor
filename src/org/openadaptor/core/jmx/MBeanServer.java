@@ -60,40 +60,72 @@ import com.sun.jdmk.comm.HtmlAdaptorServer;
 /**
  * Implementation of MBeanServer that delegates to sun reference impl
  * @author perryj
+ * @author higginse
  *
  */
 public class MBeanServer implements javax.management.MBeanServer {
-
 	private static Log log = LogFactory.getLog(MBeanServer.class);
-
-	private javax.management.MBeanServer mServer;
-
-	public MBeanServer() {
-		this(0);
+  
+  public static final String OBJECT_NAME_STRING="jmx:id=http";
+  private static final int UNSET_PORT=-1; 
     
-	}
-	
-	public MBeanServer(int httpPort) {
+	private javax.management.MBeanServer mServer;
+  private HtmlAdaptorServer html=null;
+  
+  /**
+   * set the httpPort for this MBeanServer.
+   * <br>
+   * This isn't perfect. Strictly, setting a bean property shouldn't
+   * have unexpected side effects; this will, however, start the
+   * http server on the supplied port.
+   * 
+   * @param httpPort
+   */
+  public void setPort(int httpPort) {
+    if (html!=null) { //It's already configured.
+      int port=html.getPort();
+      String msg="HtmlAdaptorServer is already configured for http port "+port;
+      if (httpPort!=port) { //Trying to change port - not allowd if already running.
+        throw new RuntimeException(msg+"; cannot change http port");
+      }
+      else {
+        log.warn(msg+"; port will not change");
+      }
+    }
+    else { 
+      if (httpPort>=0) { //Need to create one and start it
+        html=new HtmlAdaptorServer(httpPort);
+        startHtmlServerAdaptor(html);
+      }
+    }
+  }  
+  
+	public MBeanServer() {
     //Use the jvm-neutral 'Factory' to get at the real mbean server.
     //For 1.5+ it should yield the same as: 
     //mServer = javax.management.MBeanServerFactory.createMBeanServer();
     //
+    log.info("Getting MBeanServer (note: Http server will not start unless property 'port' is configured)");
+ 
     mServer=JVMNeutralMBeanServerFactory.getMBeanServer();
-
-    if (httpPort > 0) {
-			startHtmlConnectorServer(httpPort);
-		}
 	}
-
-  private void startHtmlConnectorServer(int port){
-    HtmlAdaptorServer html = new HtmlAdaptorServer(port);
+	
+	public MBeanServer(int httpPort) {
+    this();
+    //This will have the side effect of starting the http server.
+    setPort(httpPort);
+	}
+  
+  private void startHtmlServerAdaptor(HtmlAdaptorServer html) {
     try {
-			mServer.registerMBean(html, new ObjectName("jmx:id=http"));
-      log.info("starting jmx http adaptor on port " + port);
-			html.start();
+      ObjectName name=new ObjectName(OBJECT_NAME_STRING);
+      log.info("Registering MBean for htmlAdaptorServer with name "+name.getCanonicalName());
+      mServer.registerMBean(html, name);
+      log.info("starting jmx http adaptor on port " + html.getPort());
+      html.start();
     } catch(Exception e) {
-    	log.error("failed to start HtmlAdaptorServer", e);
-    }
+      log.error("failed to start HtmlAdaptorServer", e);
+    }   
   }
 
 	public void addNotificationListener(ObjectName arg0,

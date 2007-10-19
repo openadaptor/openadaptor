@@ -48,7 +48,7 @@ Run it like this...
   
   <bean class="org.openadaptor.core.jmx.MBeanServer">
     <description>Embed this in your config to expose jmx interface via http and rmi.</description>
-    <constructor-arg value="8082"/>
+    <property name="port" value="8082"/>
   </bean>
   
   <bean id="SystemUtil" class="org.openadaptor.util.SystemUtil">
