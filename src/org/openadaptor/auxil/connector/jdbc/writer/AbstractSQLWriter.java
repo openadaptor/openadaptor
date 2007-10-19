@@ -227,22 +227,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     return connection.prepareStatement(sql.toString());
   }
-//protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,List columnNames) throws SQLException {
-//StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
-//StringBuffer params=new StringBuffer(); 
-//for (int i=0;i<columnNames.size();i++) {
-//sql.append(columnNames.get(i)+",");
-//params.append("?,");
-//}
-//sql.setCharAt(sql.length()-1, ')'); //Swap last comma for a bracket.
-//params.setCharAt(params.length()-1, ')');//Ditto
-//sql.append(" VALUES (").append(params);
-//if (log.isDebugEnabled()) {
-//log.debug("Generated Prepared stmt: "+sql.toString());
-//}
-//return connection.prepareStatement(sql.toString());
-//}
-
 
   /**
    * Determine the types of the columns in a table.
@@ -286,36 +270,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     return types;
   }
-//protected int[] getPreparedStatementTypes(String tableName, Connection connection,List columnNames) throws SQLException {
-////Execute a dummy sql statement against database purely to collect table metadata
-//String sql= "SELECT * FROM "+tableName+" WHERE 1=2";
-//Statement s = connection.createStatement();
-//log.debug("Executing SQL: " + sql);
-//ResultSet rs=s.executeQuery(sql);
-//int[] types;
-//ResultSetMetaData rsmd=rs.getMetaData();
-//int cols=rsmd.getColumnCount();
-//types=new int[columnNames.size()];
-//int mapped=0;
-//for (int i=0;i<cols;i++) {
-//int type=rsmd.getColumnType(i+1);
-//String name=rsmd.getColumnName(i+1);
-//int location=columnNames.indexOf(name);
-//if (location >=0) {
-//types[location]=type;
-//mapped++;
-//}
-//else {
-//if (log.isDebugEnabled()) {
-//log.debug("Ignoring column "+i+"["+name+" ("+rsmd.getColumnTypeName(i+1)+")]");
-//}
-//}
-//}
-//if (mapped<types.length) {
-//log.warn("Not all column names were mapped. This is probably a configuration error");
-//}
-//return types;
-//}
 
   /**
    * Get the names of the columns of a given table.
@@ -404,7 +358,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     while (rs.next()) {
       argCount++;
       if (log.isDebugEnabled()) {
-        log.debug("Catalog=" + rs.getString(1) + ", Schema=" + rs.getString(2) + ", Proc=" + rs.getString(3) + ", Column=" + rs.getString(4) + ",Type=" + rs.getString(6) + "TypeName=" + rs.getString(7));
+        log.debug("Cat="+rs.getString(1)+", Schema=" + rs.getString(2) + ", Proc=" + rs.getString(3) + ", Col=" + rs.getString(4) + ", Type=" + rs.getString(6) + "[" + rs.getString(7)+"]");
       }
     }
     log.debug("Number of stored procedure parameters found: " + argCount);

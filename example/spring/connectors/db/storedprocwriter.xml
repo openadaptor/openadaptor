@@ -92,6 +92,7 @@
           <list>
             <value>id</value>
             <value>name</value>
+            <value>description</value>
           </list>
         </property>
       </bean>

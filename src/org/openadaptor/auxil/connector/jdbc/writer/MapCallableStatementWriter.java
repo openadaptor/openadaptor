@@ -132,7 +132,8 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
    * @throws SQLException
    */
   private void setArguments(PreparedStatement ps,Map map) throws SQLException {
-    if (outputColumns==null) { //Expect Map to contain correct args.
+    String[] colNames=outputColumns;
+    if (colNames==null) { //Expect Map to contain correct args.
       if (!(map instanceof IOrderedMap)) { //Only OrderedMaps will work
         throw new SQLException("Map is not an IOrderedMap instance - outputColumns must be specified");
       }
@@ -140,18 +141,11 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
       if (argSqlTypes.length !=mapSize) {
         throw new SQLException("Expected "+argSqlTypes.length+" arguments, but map contains "+mapSize);
       }
-      
+
       IOrderedMap om=(IOrderedMap)map;
-      String[] colNames=(String[])om.keys().toArray(new String[om.size()]);
-      setArguments(ps,map,colNames,argSqlTypes);
-  
+      colNames=(String[])om.keys().toArray(new String[om.size()]); 
     }
-    else {//Use output columns fram map. Expects them to match.
-      for (int i=0;i<outputColumns.length;i++) {
-        String colName=outputColumns[i];
-        ps.setObject(i+1, colName==null?null:map.get(colName));
-      }
-    }
+    setArguments(ps,map,colNames,argSqlTypes);
   }
   /**
    * Generate the SQL for a stored procedure call.
