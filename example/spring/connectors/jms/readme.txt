@@ -1,11 +1,13 @@
 Examples in this section are intended to illustrate basic usage of the JMS
 connectors.
 
+The properties are in jms.properties and are setup to work with jboss. These
+should be edited as required to work with other jms providers.
+
 These examples rely on a default instance of jboss (http://www.jboss.org)
 running on the same machine that the example is being run.
 
-The properties are in jms.properties and are setup to work with jboss. These
-should be edited as required to work with other jms providers.
+Please ensure that the jboss client and server jars used are from compatible releases.
 
 Run these examples like this...
 
