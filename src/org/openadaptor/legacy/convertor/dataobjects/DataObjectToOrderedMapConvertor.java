@@ -72,42 +72,63 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
   }
 
   /**
-   * Takes an array of DataObjects and converts them into an Ordered Map
+   * Convert a single DataObject into a Single OrderedMap
    * 
-   * @return an array of one or more IOrderedMaps
+   * @return an IOrderedMaps
    * 
    * @throws RecordException
    * 
    */
   protected Object convert(Object record) throws RecordException {
-
-    DataObject[] dobs;
-    // todo: does the transport strip out DO arrays into individual DO's
-
-    if (record instanceof DataObject[])
-      dobs = (DataObject[]) record;
-    else if (record instanceof DataObject)                         
-      dobs = new DataObject[] { (DataObject) record };
-    else
-      throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
-
-    int mapSize = dobs.length;
-    IOrderedMap maps = new OrderedHashMap(mapSize);
-    log.debug("Processing " + mapSize + " DataObject(s)");
-
-    for (int i = 0; i < mapSize; i++) {
-      DataObject dob = dobs[i];
-      String name = dob.getType().getName();
-      log.debug("DataObject " + i + ": " + name);
-
-      maps.put(name, asOrderedMap(dob));
+    if (! (record instanceof DataObject)) {                        
+      throw new RecordFormatException("Expected DataObject - Supplied record:" + record);
     }
-
-    log.debug("Map contains " + maps.size() + " sub-maps");
-
-    return maps;
+    IOrderedMap map=new OrderedHashMap();
+    DataObject dataObject= (DataObject)record;
+    String name = dataObject.getType().getName();
+    map.put(name, asOrderedMap(dataObject));
+    return map;
   }
 
+// Old convert would fail for an array of DataObjects.
+//  /**
+//   * Takes an array of DataObjects and converts them into an Ordered Map
+//   * 
+//   * @return an array of one or more IOrderedMaps
+//   * 
+//   * @throws RecordException
+//   * 
+//   */
+//  protected Object convertOld(Object record) throws RecordException {
+//
+//    DataObject[] dobs;
+//    // todo: does the transport strip out DO arrays into individual DO's
+//
+//    if (record instanceof DataObject[])
+//      dobs = (DataObject[]) record;
+//    else if (record instanceof DataObject)                         
+//      dobs = new DataObject[] { (DataObject) record };
+//    else
+//      throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
+//
+//    int mapSize = dobs.length;
+//    IOrderedMap maps = new OrderedHashMap(mapSize);
+//    log.debug("Processing " + mapSize + " DataObject(s)");
+//
+//    for (int i = 0; i < mapSize; i++) {
+//      DataObject dob = dobs[i];
+//      String name = dob.getType().getName();
+//      log.debug("DataObject " + i + ": " + name);
+//
+//      maps.put(name, asOrderedMap(dob));
+//    }
+//
+//    log.debug("Map contains " + maps.size() + " sub-maps");
+//
+//    return maps;
+//  }
+
+  
   /**
    * Renderers the supplied DataObject as an OrderedMap. Loops through all the attributes and adds them to the map. If
    * the attribute is anything other than a Java primitive then we recursively create another OrderedMap and add it. In

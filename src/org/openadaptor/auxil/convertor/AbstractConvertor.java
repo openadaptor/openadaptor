@@ -52,6 +52,24 @@ public abstract class AbstractConvertor extends Component implements IDataProces
   }
   
   protected boolean boxReturnedArrays = true;
+  
+  /**
+   * Flag to wrap returned values in an enclosing Object[].
+   * If true, and the incoming value is not an Object[],
+   * then the converted result will be wrapped in an Object[]
+   * @param boxReturnedArrays
+   */
+  public void setBoxReturnedArrays(boolean boxReturnedArrays) {
+    this.boxReturnedArrays=boxReturnedArrays;
+  }
+  
+  /**
+   * Gets flag indicating if returned arrays will be wrapped in an Object[]
+   * @return
+   */
+  public boolean getBoxReturnedArrays() {
+    return boxReturnedArrays;
+  }
 
   // IRecordPrcessor implementation
   /**

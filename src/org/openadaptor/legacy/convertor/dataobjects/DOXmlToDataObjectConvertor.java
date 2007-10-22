@@ -41,6 +41,11 @@ import org.openadaptor.core.exception.RecordFormatException;
 public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
 
   private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
+  
+  public DOXmlToDataObjectConvertor() {
+    super();
+    //super.setBoxReturnedArrays(false); //Don't box by default,as output is already an Object[].
+  }
 
   protected Object convert(Object record) throws RecordException {
     Object[] result = null;
