@@ -99,8 +99,15 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
     IOrderedMap event = getNextEvent();
     if (event != null) {      
       getDelegate().setReaderContext(event);
+      try {
       data = getDelegate().next(timeoutMs);
-    } else {
+      }
+      catch(OAException oae) { //Will be an SQLException.
+        log.warn("Delegate failed to process event. Does event refer to an invalid SPROC?");
+        throw oae;
+      }
+    } 
+    else {
       ThreadUtil.sleepNoThrow(timeoutMs);
     }
     return data;

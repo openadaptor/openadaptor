@@ -32,12 +32,13 @@ Bug Fixes
 
 SC28: JDBC PreparedStatement writers should not use setObject(null), but setNull().
 
+SC29: DB Event Mechanism error message for invalid SPROC is unclear
+
   * Application now logs the jvm version near the beginning of adaptor 
     startup (in case adaptor dies before reporting it).
   * Modifying JDBC writers to use setNull() instead of setObject() where
     incoming parameter is null - it will break on Sybase.
  
-
 
 =================================================
 openadaptor3 production 3.3 Release Notes
