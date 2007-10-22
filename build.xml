@@ -274,8 +274,7 @@
       <formatter type="xml"/>
       <batchtest fork="yes" todir="${dir.test.output}" errorProperty="test.failed" failureProperty="test.failed">
         <fileset dir="${dir.test.system.src}">
-          <include name="**/*TestCase.java"/>
-          <exclude name="**/JBoss*.java"/>
+          <include name="**/*TestCase.java"/>          
           <exclude name="**/MQ*.java"/>
           <exclude name="**/TIBCO*.java"/>
           <!-- -->
