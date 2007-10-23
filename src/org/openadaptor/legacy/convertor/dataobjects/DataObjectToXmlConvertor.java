@@ -41,11 +41,8 @@ import java.util.Map;
 
 /**
  * Convert Data Objects into XML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
- * the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
- * DOXML.
- * <p>
- * Note that it extends DOXmlToDataObjectConvertorProcessor as it needs access to the DataObject 'class' to find the
- * correct method on the writer, i.e toString(DataObject[] dataObjects);
+ * the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support 
+ * DataObjects
  * 
  * @author Eddy Higgins
  */
@@ -67,15 +64,15 @@ public class DataObjectToXmlConvertor extends AbstractConvertor {
   }
 
   /**
-   * This converts a supplied DataObject XML String into XML <B>Note</B>: Usage of this method depends on the
-   * availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
-   * DOXML.
+   * This converts a supplied DataObject[] into XML.
+   * <br>
+   * <B>Note</B>: Usage of this method depends on the
+   * availability of a legacy openadaptor jar to do the conversions, as openadaptor3 
+   * does not directly support DataObjects
    * 
-   * @param record
-   *          containing DOXML
+   * @param record containing a DataObject[]
    * @return XMl representation of the data
-   * @throws RecordException
-   *           if conversion fails
+   * @throws RecordException if conversion fails
    */
   protected Object convert(Object record) throws RecordException {
     String result = null;
@@ -89,9 +86,8 @@ public class DataObjectToXmlConvertor extends AbstractConvertor {
         throw new RecordException(reason, e);
       }
     } else {
-      throw new RecordFormatException("Record is not an Object[]. Record: " + record);
+      throw new RecordFormatException("Record is not a DataObject[]. Record: " + record);
     }
-
     return result;
   }
   // END Abstract Convertor Processor implementation
