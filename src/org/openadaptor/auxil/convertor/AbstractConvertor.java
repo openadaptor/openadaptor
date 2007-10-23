@@ -51,12 +51,24 @@ public abstract class AbstractConvertor extends Component implements IDataProces
     super(id);
   }
   
-  protected boolean boxReturnedArrays = true;
+  /**
+   * If true, then converted values will always be wrapped
+   * in an enclosing Object[], even if the result is already
+   * an array.
+   * The default value for this have been changed (after 3.3)
+   * to false.
+   * Note: Individual subclasses may well override this default
+   * for their own purposes.
+   * 
+   */
+  protected boolean boxReturnedArrays = false;
   
   /**
-   * Flag to wrap returned values in an enclosing Object[].
-   * If true, and the incoming value is not an Object[],
-   * then the converted result will be wrapped in an Object[]
+   * Flag to wrap returned Arrays in an enclosing Object[].
+   * If true, converted result will be wrapped in an Object[]
+   * even if it is already an array.
+   * Note: The default value has been changed from true to
+   * false after release 3.3
    * @param boxReturnedArrays
    */
   public void setBoxReturnedArrays(boolean boxReturnedArrays) {
@@ -64,7 +76,8 @@ public abstract class AbstractConvertor extends Component implements IDataProces
   }
   
   /**
-   * Gets flag indicating if returned arrays will be wrapped in an Object[]
+   * Gets flag indicating if returned values must always be wrapped in an Object[].
+   * 
    * @return
    */
   public boolean getBoxReturnedArrays() {
@@ -95,11 +108,11 @@ public abstract class AbstractConvertor extends Component implements IDataProces
     Object result = convert(record);
 
     if (result == null) { // Never return null - just return an empty array.
-      result = new Object[0];
-
-    } else { // If it's already an array, do nothing
+      result = new Object[] {};
+    } 
+    else { // Wrap in Object[] unless boxReturnedArrays is false and result i
       if (boxReturnedArrays || (!(result instanceof Object[])))
-        result = new Object[] { result };
+        result = new Object[] { result }; //Wrap it in an Object array.
     }
 
     return (Object[]) result;

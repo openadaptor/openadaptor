@@ -91,15 +91,6 @@ public class OrderedMapToDelimitedStringConvertor extends AbstractDelimitedStrin
 
   // END Properties
 
-  /**
-   * Calls the super class constructor and sets the <code>boxReturnedArrays</code> to false. This is because we want
-   * multiple returned maps to become multiple records (for writing header line to work):
-   */
-  public OrderedMapToDelimitedStringConvertor() {
-    super();
-    boxReturnedArrays = false;
-  }
-
   // BEGIN IRecordProcessor implementation
 
   /**

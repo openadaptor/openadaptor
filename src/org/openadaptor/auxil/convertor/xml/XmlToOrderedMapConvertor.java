@@ -167,15 +167,6 @@ public class XmlToOrderedMapConvertor extends AbstractConvertor {
   }
 
   /**
-   * Calls the super class constructor and sets the <code>boxReturnedArrays</code> property
-   * to false as we want multiple returned maps to become multiple records.
-   */
-  public XmlToOrderedMapConvertor() {
-    super();
-    boxReturnedArrays = false;
-  }
-
-  /**
    * Converts the supplied DOM document or XML String into an ordered map(s). If the <code>
    * xpathExpression</code> property is set then this is used to select the elements to be
    * converted. Otherwise the entire document is used.
