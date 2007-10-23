@@ -48,11 +48,20 @@ import org.openadaptor.dataobjects.DataObject;
  */
 public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
   private static Log log = LogFactory.getLog(DataObjectToOrderedMapConvertor.class);
+  //Legacy DateHolder Class, obtained by reflection to avoid compile-time dependency.
   private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
+  //Legacy DateHolder asDate() method, by reflecation. As above.
   private static final Method DATE_HOLDER_METHOD=getMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
 
+  //Flag to indicate that DataHolders could be converted to java.util.Date instances.
   private boolean convertDateHolderToDate=true;
 
+  /**
+   * Flag to indicate that DateHolder instances should be converted to Date instances.
+   * <br>
+   * The default is 'true'.
+   * @param convertDateHolderToDate boolean flag
+   */
   public void setConvertDateHolderToDate(boolean convertDateHolderToDate) {
     this.convertDateHolderToDate=convertDateHolderToDate;
   }
@@ -71,6 +80,36 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     }
   }
 
+ 
+/**
+ * Converts DataObjects into IOrderedMaps.
+ * 
+ * @return an array of one or more IOrderedMaps
+ * 
+ * @throws RecordException
+ * 
+ */
+protected Object convert(Object record) throws RecordException {
+  DataObject[] dobs;
+  if (record instanceof DataObject[])
+    dobs = (DataObject[]) record;
+  else if (record instanceof DataObject)                         
+    dobs = new DataObject[] { (DataObject) record };
+  else
+    throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
+
+  int mapSize = dobs.length;
+  log.debug("Processing " + mapSize + " DataObject(s)");
+  IOrderedMap[] maps = new OrderedHashMap[mapSize];
+
+  for (int i = 0; i < mapSize; i++) {
+    maps[i]=convertDataObject(dobs[i]);
+  }
+  //If there's only a single map, don't wrap it in an array.
+  //The base class will do it for us.
+  return mapSize==1?maps[0]:maps;
+}
+  
   /**
    * Convert a single DataObject into a Single OrderedMap
    * 
@@ -79,12 +118,8 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
    * @throws RecordException
    * 
    */
-  protected Object convert(Object record) throws RecordException {
-    if (! (record instanceof DataObject)) {                        
-      throw new RecordFormatException("Expected DataObject - Supplied record:" + record);
-    }
+  protected IOrderedMap convertDataObject(DataObject dataObject)  {
     IOrderedMap map=new OrderedHashMap();
-    DataObject dataObject= (DataObject)record;
     String name = dataObject.getType().getName();
     map.put(name, asOrderedMap(dataObject));
     return map;
@@ -130,9 +165,16 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
 
   
   /**
-   * Renderers the supplied DataObject as an OrderedMap. Loops through all the attributes and adds them to the map. If
-   * the attribute is anything other than a Java primitive then we recursively create another OrderedMap and add it. In
-   * this way we get a tree of maps corresponding to the structure of the DataObject
+   * Recursively convert the supplied DataObject as an OrderedMap.
+   * <BR> 
+   * Traverses each attribute and adds them to the map. If attribute is:
+   * <UL>
+   *  <LI> A DataObject - recursively call this method with it.
+   *  <LI> A DataObject[] call this method for each, and add an array of results 
+   *  <LI> Anything else - add as a primitive attribute value.
+   * </UL>
+   * This should result in a hierarchy of ordered maps which reflects the original
+   * structure of the DataObject
    */
   private IOrderedMap asOrderedMap(DataObject dob) throws RecordException {
     IOrderedMap map = new OrderedHashMap();
@@ -144,38 +186,40 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
 
     for (int i = 0; i < attrs.length; i++) {
       String attr = attrs[i];
-      log.debug("  Processing attribute [" + attr + "]");
-
-      try {
+       try {
         Object value = dob.getAttributeValue(attr);
         // If it's a dataobject, then recurse call asOrderedMap recursively
         if (value instanceof DataObject) {
-          log.debug("  - Attribute is DataObject. Will traverse");
+          if (log.isDebugEnabled()){
+            log.debug(attr+"->"+((DataObject)value).getType().getName());
+          }
           map.put(attr, asOrderedMap((DataObject) value));
         }
         // If it's an array of DataObjects, then generate an array of ordered maps.
         else if (value instanceof DataObject[]) {
-          log.debug("  - Attribute is DataObject array. Will traverse each one");
           DataObject[] dobs = (DataObject[]) value;
+          if (log.isDebugEnabled()){
+            log.debug("BEGIN "+attr+"->DataObject["+dobs.length+"]");
+          }
           IOrderedMap[] maps = new IOrderedMap[dobs.length];
-          for (int j = 0; j < dobs.length; j++)
+          for (int j = 0; j < dobs.length; j++){
             maps[j] = asOrderedMap(dobs[j]);
+          }
+          if (log.isDebugEnabled()){
+            log.debug("END   "+attr);
+          }
 
           map.put(attr, maps);
         }
         // Not a structural part - must be an actual value.
         else {
-          if (value==null) {
-            log.debug("Attribute value : <null>");
+          if (convertDateHolderToDate && (value!=null)) {
+            value=clean(value);
           }
-          else {
-            if (log.isDebugEnabled()) {
-              log.debug("Attribute value :" + value + " [" + value.getClass().getName() + "]");
-            }  
-            //Need to check if it's a legacy dataobject type - if so we need to 'clean' it.
-            if (convertDateHolderToDate) {
-              value=clean(value);
-            }
+          
+          if (log.isDebugEnabled()) {
+            String valString=(value==null)?"<null>":value + " [" + value.getClass().getName() + "]";           
+            log.debug(attr+"->" + valString);
           }
           map.put(attr, value); // Might be null
         }
@@ -186,6 +230,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
 
     return map;
   }
+  
   /**
    * Change DateHolder types to Date.
    * Remove proprietary DataObjects Date types.
