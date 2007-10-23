@@ -34,8 +34,10 @@ import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 
 /**
- * Convert Data Objects into DOXML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
- * the availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
+ * Convert Data Objects into DOXML (using legacy openadaptor functionality).
+ * <BR>
+ * <B>Note</B>: Usage of this class depends on the availability of a legacy openadaptor jar 
+ * to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
  * DOXML.
  * 
  * @author Eddy Higgins
@@ -61,17 +63,18 @@ public class DataObjectToDOXmlConvertor extends AbstractDOXmlConvertor {
     if (record instanceof DataObject[]) {
       try {
         result = formatter.toString((DataObject[]) record);
-      } catch (Exception e) {
+      } 
+      catch (Exception e) {
         String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
         log.warn(reason);
         throw new RecordException(reason, e);
       }
-    } else {
-      throw new RecordFormatException("Record is not an Object[]. Record: " + record);
+    } 
+    else {
+      throw new RecordFormatException("Record is not a DataObject[]. Record: " + record);
     }
 
     return result;
   }
-  // END Abstract Convertor Processor implementation
 
 }
