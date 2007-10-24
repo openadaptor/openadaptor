@@ -80,36 +80,41 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     }
   }
 
- 
-/**
- * Converts DataObjects into IOrderedMaps.
- * 
- * @return an array of one or more IOrderedMaps
- * 
- * @throws RecordException
- * 
- */
-protected Object convert(Object record) throws RecordException {
-  DataObject[] dobs;
-  if (record instanceof DataObject[])
-    dobs = (DataObject[]) record;
-  else if (record instanceof DataObject)                         
-    dobs = new DataObject[] { (DataObject) record };
-  else
-    throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
 
-  int mapSize = dobs.length;
-  log.debug("Processing " + mapSize + " DataObject(s)");
-  IOrderedMap[] maps = new OrderedHashMap[mapSize];
+  /**
+   * Converts DataObjects into IOrderedMaps.
+   * 
+   * @return an array of one or more IOrderedMaps
+   * 
+   * @throws RecordException
+   * 
+   */
+  protected Object convert(Object record) throws RecordException {
+    DataObject[] dobs;
+    if (record instanceof DataObject[])
+      dobs = (DataObject[]) record;
+    else if (record instanceof DataObject)                         
+      dobs = new DataObject[] { (DataObject) record };
+    else
+      throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
 
-  for (int i = 0; i < mapSize; i++) {
-    maps[i]=convertDataObject(dobs[i]);
+    int mapSize = dobs.length;
+    log.debug("Processing " + mapSize + " DataObject(s)");
+    IOrderedMap[] maps = new OrderedHashMap[mapSize];
+
+    for (int i = 0; i < mapSize; i++) {
+      maps[i]=convertDataObject(dobs[i]);
+    }
+    //If there's only a single map, don't wrap it in an array.
+    //The base class will do it for us.
+    if (mapSize==1) {
+      return maps[0];
+    }
+    else {
+      return maps;
+    }
   }
-  //If there's only a single map, don't wrap it in an array.
-  //The base class will do it for us.
-  return mapSize==1?maps[0]:maps;
-}
-  
+
   /**
    * Convert a single DataObject into a Single OrderedMap
    * 
@@ -125,45 +130,45 @@ protected Object convert(Object record) throws RecordException {
     return map;
   }
 
-// Old convert would fail for an array of DataObjects.
-//  /**
-//   * Takes an array of DataObjects and converts them into an Ordered Map
-//   * 
-//   * @return an array of one or more IOrderedMaps
-//   * 
-//   * @throws RecordException
-//   * 
-//   */
-//  protected Object convertOld(Object record) throws RecordException {
-//
-//    DataObject[] dobs;
-//    // todo: does the transport strip out DO arrays into individual DO's
-//
-//    if (record instanceof DataObject[])
-//      dobs = (DataObject[]) record;
-//    else if (record instanceof DataObject)                         
-//      dobs = new DataObject[] { (DataObject) record };
-//    else
-//      throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
-//
-//    int mapSize = dobs.length;
-//    IOrderedMap maps = new OrderedHashMap(mapSize);
-//    log.debug("Processing " + mapSize + " DataObject(s)");
-//
-//    for (int i = 0; i < mapSize; i++) {
-//      DataObject dob = dobs[i];
-//      String name = dob.getType().getName();
-//      log.debug("DataObject " + i + ": " + name);
-//
-//      maps.put(name, asOrderedMap(dob));
-//    }
-//
-//    log.debug("Map contains " + maps.size() + " sub-maps");
-//
-//    return maps;
-//  }
+//Old convert would fail for an array of DataObjects.
+///**
+//* Takes an array of DataObjects and converts them into an Ordered Map
+//* 
+//* @return an array of one or more IOrderedMaps
+//* 
+//* @throws RecordException
+//* 
+//*/
+//protected Object convertOld(Object record) throws RecordException {
 
-  
+//DataObject[] dobs;
+//// todo: does the transport strip out DO arrays into individual DO's
+
+//if (record instanceof DataObject[])
+//dobs = (DataObject[]) record;
+//else if (record instanceof DataObject)                         
+//dobs = new DataObject[] { (DataObject) record };
+//else
+//throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
+
+//int mapSize = dobs.length;
+//IOrderedMap maps = new OrderedHashMap(mapSize);
+//log.debug("Processing " + mapSize + " DataObject(s)");
+
+//for (int i = 0; i < mapSize; i++) {
+//DataObject dob = dobs[i];
+//String name = dob.getType().getName();
+//log.debug("DataObject " + i + ": " + name);
+
+//maps.put(name, asOrderedMap(dob));
+//}
+
+//log.debug("Map contains " + maps.size() + " sub-maps");
+
+//return maps;
+//}
+
+
   /**
    * Recursively convert the supplied DataObject as an OrderedMap.
    * <BR> 
@@ -186,7 +191,7 @@ protected Object convert(Object record) throws RecordException {
 
     for (int i = 0; i < attrs.length; i++) {
       String attr = attrs[i];
-       try {
+      try {
         Object value = dob.getAttributeValue(attr);
         // If it's a dataobject, then recurse call asOrderedMap recursively
         if (value instanceof DataObject) {
@@ -216,7 +221,7 @@ protected Object convert(Object record) throws RecordException {
           if (convertDateHolderToDate && (value!=null)) {
             value=clean(value);
           }
-          
+
           if (log.isDebugEnabled()) {
             String valString=(value==null)?"<null>":value + " [" + value.getClass().getName() + "]";           
             log.debug(attr+"->" + valString);
@@ -230,7 +235,7 @@ protected Object convert(Object record) throws RecordException {
 
     return map;
   }
-  
+
   /**
    * Change DateHolder types to Date.
    * Remove proprietary DataObjects Date types.
