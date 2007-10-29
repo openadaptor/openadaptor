@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: step01.xml 696 2007-06-27 13:04:36Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step01.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  Adaptor for example 1 of overview documentation.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+  </bean>
+   
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
