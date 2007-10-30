@@ -33,6 +33,7 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
@@ -47,17 +48,18 @@ import java.util.List;
 /**
  * Generic JDBC polling read connector that replaced:
  *
- * The legacy JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
+ * The legacy (pre 3.3) JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
  * with no parameters.
- * The legacy JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
+ * The legacy (pre 3.3) JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
  * with pollLimit and pollInterval parameters set.
- * The legacy JDBCEventReadConnector is equivalent to this connector with the DBEventDrivenPollingReadConnector. 
+ * The legacy (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
+ * DBEventDrivenPollingReadConnector. 
  * 
  * Associates a ResultSetConvertor with the connector, by default this is DEFAULT_CONVERTOR.
  * 
  * @author Eddy Higgins, Kris Lachor
  */
-public class JDBCReadConnector extends Component implements IReadConnector, ITransactional {
+public class JDBCReadConnector extends Component implements IEnhancementReadConnector, ITransactional {
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
@@ -162,7 +164,7 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
     log.info("Call for next record(s)");
     try {
       if (rs == null) {
-        /* If a callable statement's been set, ingore the sql and the statement */
+        /* If a callable statement's been set, ignore the sql and the statement */
         if(callableStatement != null){
           rs = callableStatement.executeQuery(); 
         }
@@ -195,6 +197,40 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
   
   
   /**
+   * Sets parameters passed by ehnacement processor on the statement (or callableStatement,
+   * depending on which one is set).
+   */  
+  public Object[] next(IOrderedMap inputParameters, long timeoutMs) {    
+    for(int i=1; i<=inputParameters.size(); i++){
+      parametriseEnhancementQuery(i, inputParameters.get(i-1));
+    }    
+    return next(timeoutMs);
+  }
+  
+  
+  /**
+   * @TODO comments, fix content, unit test
+   */
+  private void parametriseEnhancementQuery(int parameterIndex, Object value){
+//    if(callableStatement != null){
+//      callableStatement.setObject(parameterIndex, value); 
+//    }
+//    else{
+         
+      int index = sql.indexOf("?");
+      if(index != -1){
+        StringBuffer newSql = new StringBuffer();
+        newSql.append(sql.substring(0, index));
+        newSql.append(value);
+        newSql.append(sql.substring(index + 1));
+        sql = newSql.toString();
+      }
+//    }
+  }
+
+  
+  
+  /**
    * convert event ResultSet into a statement to get the actual data
    */
   private CallableStatement convertEventToStatement(IOrderedMap row) throws SQLException {
@@ -208,7 +244,7 @@ public class JDBCReadConnector extends Component implements IReadConnector, ITra
     }
     String sql = buffer.append(")}").toString();
     
-    /* create a call and set in parameters */
+    /* create a callable statement and set 'in' parameters */
     CallableStatement callableStatement = jdbcConnection.getConnection().prepareCall(sql);
     
     String loggedSql = sql;
