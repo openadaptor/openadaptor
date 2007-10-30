@@ -533,9 +533,9 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   /**
    * 
    */
-  public Object[] next(Object inputRecord, long timeoutMs) {
-    IOrderedMap inputOrderedMap = (IOrderedMap) inputRecord;
+  public Object[] next(IOrderedMap inputRecord, long timeoutMs) {
+//    IOrderedMap inputOrderedMap = (IOrderedMap) inputRecord;
 //    return next(timeoutMs);
-    return processOrderedMap(inputOrderedMap);
+    return processOrderedMap(inputRecord);
   }
 }

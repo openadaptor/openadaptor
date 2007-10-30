@@ -195,7 +195,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     IOrderedMap map = new OrderedHashMap();
     map.put("foo1", "bar1");
     try{
-      processor.processOrderedMap(map);
+      processor.process(map);
     }catch(RecordException re){
       return;
     }
@@ -215,7 +215,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     map.put("foo1", "bar1");
     mockReadConnector.setRecordKeyUsedAsSearchBase("test");
     try{
-      processor.processOrderedMap(map);
+      processor.process(map);
     }catch(RecordException re){
       return;
     }
@@ -246,7 +246,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     mockJNDISearch.expects(once()).method("execute").will(returnValue(mockNamingEnumeration.proxy()));
     mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
     validate();
-    processor.processOrderedMap(map);
+    processor.process(map);
   }
   
   

@@ -24,42 +24,47 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.core;
+package org.openadaptor.auxil.processor;
 
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import junit.framework.TestCase;
 
 /**
- * Draft of the new interface that represents a generic
- * enhancement processor. Not quite ready for use yet.
+ * System tests for {@link NewJNDIEnhancementProcessor}.
  * 
  * @author Kris Lachor
- * @since Post 3.3
- * @TODO consider this not extending IDataProcessor (process method not needed)
+ * @TODO 
  */
-//public interface IEnhancementProcessor extends IDataProcessor {
-  public interface IEnhancementProcessor  {
-  
-  /**
-   * Underlying read connector.
-   * 
-   * @return the underlying read connector.
-   */
-  IEnhancementReadConnector getReadConnector();
-  
-  /**
-   * Merges original input with additional data retrieved by the underlying IEnhancementReadConnector.
-   * 
-   * @param input original input record used to parametrise query in IEnhancementReadConnector
-   * @param additionalData data returned by IEnhancementReadConnector
-   * @TODO rename to 'process'
-   */
-  Object [] enhance(Object input, Object [] additionalData);
+public class NewJNDIEnhancementProcessorSystemTestCase extends TestCase {
 
   /**
-   * Builds a map with data that IEnhancementReadConnector will use to parametrise the query.
-   *
-   * @return data to parametrise IEnhancementReadConnector query
+   * Creates an instance of an enhancement processor with a jdbc reader.
+   * 
+   * @see junit.framework.TestCase#setUp()
    */
-  IOrderedMap prepareParameters(Object input);
-  
+  protected void setUp() throws Exception {
+    super.setUp();
+  }
+
+  /**
+   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#prepareParameters(java.lang.Object)}.
+   */
+  public void testPrepareParameters() {
+      assertTrue(true);
+//    fail("Not yet implemented");
+  }
+
+//  /**
+//   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])}.
+//   */
+//  public void testEnhance() {
+//    fail("Not yet implemented");
+//  }
+//
+//  /**
+//   * Test method for {@link org.openadaptor.auxil.processor.AbstractEnhancementProcessor#getReadConnector()}.
+//   */
+//  public void testGetReadConnector() {
+//    fail("Not yet implemented");
+//  }
+
 }

@@ -26,13 +26,17 @@
  */
 package org.openadaptor.core;
 
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Draft: interface of an IReadConnector that can be plugged-in to 
- * an IEhancementProcessor (needs to be able to do next() with input params
+ * Interface of an IReadConnector that can be plugged-in to an IEhancementProcessor.
+ * Essentially, the only difference between a plain {@link IReadConnector} is this 
+ * connector also needs to be able to use parameters passed from the IEhancementProcessor.
  * 
  * @author Kris Lachor
+ * @since Post 3.3
+ * TODO comments
  */
 public interface IEnhancementReadConnector extends IReadConnector {
   
@@ -40,12 +44,16 @@ public interface IEnhancementReadConnector extends IReadConnector {
    * Polls the internal resource for some data. Exceptions should be thrown as RuntimeExceptions.
    * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
-   * @param input data used to construct a parametrised query
+   * @param extra parameters that this connector should use to adjust the query to the underlying
+   *        resource
    * @param timeoutMs
    *          the maximum time in milli-seconds to wait for data is none is
    *          available immediately
    * @return null or an array of data with one or more element.
+   * @see IReadConnector#next(long)
+   * TODO there's no need for a new next method. This shoul be renamed to 'setEnhancementParameters' 
+   * or something similar. After that, the next method would be called by the framework.
    */
-  Object[] next(Object inputRecord, long timeoutMs);
+  Object[] next(IOrderedMap inputParameters, long timeoutMs);
 
 }

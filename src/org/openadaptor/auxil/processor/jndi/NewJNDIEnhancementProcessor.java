@@ -26,14 +26,10 @@
  */
 package org.openadaptor.auxil.processor.jndi;
 
-import java.util.List;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.auxil.processor.orderedmap.AbstractOrderedMapProcessor;
-import org.openadaptor.core.IEnhancementProcessor;
-import org.openadaptor.core.IEnhancementReadConnector;
-import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
+
 
 /**
  * Skeleton of the new JNDI enhancement processor, eventually meant to 
@@ -42,62 +38,54 @@ import org.openadaptor.core.exception.ValidationException;
  * Early draft version, do not use.
  * 
  * @author Kris Lachor
- * @TODO rename to OrderedMapEnhancementProcessor? 
+ * @TODO javadocs
+ * @TODO unit tests, system tests
  */
-public class NewJNDIEnhancementProcessor extends AbstractOrderedMapProcessor implements IEnhancementProcessor {
-
-  IEnhancementReadConnector readConnector;
-  
-  /**
-   * @see org.openadaptor.core.IEnhancementProcessor#getReadConnector()
-   */
-  public IEnhancementReadConnector getReadConnector() {
-    return readConnector;
-  }
-
-  public void setReadConnector(IEnhancementReadConnector readConnector) {
-    this.readConnector = readConnector;
-  }
+public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
 
   /**
-   * Validates: 
-   * - is read connector set
-   * - does read connector itself validates
-   * 
-   * @see org.openadaptor.core.IDataProcessor#validate(java.util.List)
-   */
-  public void validate(List exceptions) {
-    if(readConnector==null){
-      throw new ValidationException("Set an IReadConnector", this);
-    }
-    readConnector.validate(exceptions);
-  }
-
-
-  /**
-   * @see AbstractOrderedMapProcessor#processOrderedMap(IOrderedMap)
-   * @TODO remove downcasting
    * @TODO fix the timeout
+   * @TODO consider moving this up to framework (e.g. ProcessorNode)
    */
-  public Object[] processOrderedMap(IOrderedMap orderedMap) throws RecordException {
-//    return ((NewJNDIReadConnector) readConnector).processOrderedMap(orderedMap);
-    Object [] additionalData = readConnector.next(orderedMap, 1000);
-    return  enhance(orderedMap, additionalData);
+  public Object[] process(Object data) {
+    IOrderedMap parameters = prepareParameters(data);
+    Object [] additionalData = getReadConnector().next(parameters, 1000);
+    return  enhance(data, additionalData);
   }
 
+  public IOrderedMap prepareParameters(Object input) {
+    if(input instanceof IOrderedMap){
+      return (IOrderedMap) input;
+    }
+    return null;
+  }
   
+  /**
+   * @TODO this needs to be an abstract method - no generic way of combining input data with additional    
+   */
   public Object [] enhance(Object input, Object[] additionalData) {
     Object [] result = null;
     if(null == additionalData){
       result = new Object[]{input};
     }else{
-      result = new Object[additionalData.length + 1];
-      result[0] = input;
-      for(int i=1; i<additionalData.length; i++){
-        result[i]=additionalData[i-1];
+     
+//      if(input instanceof IOrderedMap ){
+//        result = new Object[]{input};
+//        for(int i=1; i<=additionalData.length; i++){
+//          IOrderedMap addEl = (IOrderedMap)additionalData[i];
+//          ((IOrderedMap)input).put(addEl., value)
+//        }
+//      }else{
+        result = new Object[additionalData.length + 1];
+        result[0] = input;
+        for(int i=1; i<=additionalData.length; i++){
+          result[i]=additionalData[i-1];
+        }
       }
-    }
+      
+     
+//    }
     return result;
   }
-
+   
 }
