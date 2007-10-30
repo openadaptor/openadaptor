@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IEnhancementProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.node.Node;
@@ -40,6 +41,7 @@ import org.openadaptor.core.node.Node;
  * <li>{@link IReadConnector}
  * <li>{@link IDataProcessor}
  * <li>{@link IWriteConnector}
+ * <li>{@link IEnhancementProcessor}
  * 
  * <br/>as IMessageProcessor framework components. Also wraps single values as
  * unary element lists. The purpose of this is to simplify the configuration of
@@ -49,10 +51,11 @@ import org.openadaptor.core.node.Node;
  * 
  */
 public interface IAutoboxer {
-	Map autobox(Map map);
+  Map autobox(Map map);
   List autobox(List list);
   Object autobox(Object o);
-  Node autobox(IDataProcessor processor);
   Node autobox(IReadConnector connector);
   Node autobox(IWriteConnector connector);
+  Node autobox(IDataProcessor processor);
+  Node autobox(IEnhancementProcessor enhancementProcessor);
 }

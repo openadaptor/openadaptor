@@ -34,8 +34,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IEnhancementProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.node.EnhancementProcessorNode;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.Node;
 import org.openadaptor.core.node.WriteNode;
@@ -88,7 +90,9 @@ public class Autoboxer implements IAutoboxer {
 			o = autobox((IDataProcessor) o);
 		} else if (o instanceof IWriteConnector) {
 			o = autobox((IWriteConnector) o);
-		}
+        } else if (o instanceof IEnhancementProcessor) {
+            o = autobox((IEnhancementProcessor) o);
+        }
 		return o;
 	}
 
@@ -121,6 +125,16 @@ public class Autoboxer implements IAutoboxer {
 		}
 		return node;
 	}
+
+  public Node autobox(IEnhancementProcessor enhancementProcessor) {
+    EnhancementProcessorNode node = (EnhancementProcessorNode) nodeMap.get(enhancementProcessor);
+    if (node == null) {
+        node = new EnhancementProcessorNode();
+        node.setEnhancementProcessor(enhancementProcessor);
+        nodeMap.put(enhancementProcessor, node);
+    }
+    return node;
+  }
 
 
 
