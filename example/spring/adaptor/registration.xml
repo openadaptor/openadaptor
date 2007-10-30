@@ -34,7 +34,7 @@
     <property name="registrationUrl" value="http://foo.com/register.jsp"/> 
     <property name="additionalRegistrationProps">
       <props>
-        <prop key="version">3.2.1</prop>
+        <prop key="purpose">Registration Example</prop>
       </props>
     </property>
   </bean>
