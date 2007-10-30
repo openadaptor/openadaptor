@@ -43,16 +43,7 @@ import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
  */
 public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
 
-  /**
-   * @TODO fix the timeout
-   * @TODO consider moving this up to framework (e.g. ProcessorNode)
-   */
-  public Object[] process(Object data) {
-    IOrderedMap parameters = prepareParameters(data);
-    Object [] additionalData = getReadConnector().next(parameters, 1000);
-    return  enhance(data, additionalData);
-  }
-
+  
   public IOrderedMap prepareParameters(Object input) {
     if(input instanceof IOrderedMap){
       return (IOrderedMap) input;

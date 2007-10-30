@@ -43,6 +43,7 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.node.EnhancementProcessorNode;
 import org.jmock.cglib.MockObjectTestCase;
 
 /**
@@ -59,6 +60,13 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
   
   String recordKeySetByExistence = "testRecordKeySetByExistence";
+  
+  /* 
+   * This is included here since the node is now the only component aware of
+   * IEnhancementProcessor method call sequence - something that previously was 
+   * implemented in JNDIEnhancementProcessor#processOrderedMap
+   */
+  EnhancementProcessorNode enhancementProcessorNode = new EnhancementProcessorNode("testNode", processor);
   
   Map incomingMap = new HashMap();
   {
@@ -195,7 +203,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     IOrderedMap map = new OrderedHashMap();
     map.put("foo1", "bar1");
     try{
-      processor.process(map);
+      enhancementProcessorNode.processSingleInput(map);
     }catch(RecordException re){
       return;
     }
@@ -215,7 +223,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     map.put("foo1", "bar1");
     mockReadConnector.setRecordKeyUsedAsSearchBase("test");
     try{
-      processor.process(map);
+      enhancementProcessorNode.processSingleInput(map);
     }catch(RecordException re){
       return;
     }
@@ -246,7 +254,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
     mockJNDISearch.expects(once()).method("execute").will(returnValue(mockNamingEnumeration.proxy()));
     mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
     validate();
-    processor.process(map);
+    enhancementProcessorNode.processSingleInput(map);
   }
   
   
@@ -340,9 +348,9 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
 
     public void connect() {}
     
-    public Object[] next(long timeoutMs) throws OAException {
-       return null;
-    }
+//    public Object[] next(long timeoutMs) throws OAException {
+//       return null;
+//    }
 
     public JNDISearch getSearch() {
       return this.search;

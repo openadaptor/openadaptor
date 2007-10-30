@@ -200,13 +200,11 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * Sets parameters passed by ehnacement processor on the statement (or callableStatement,
    * depending on which one is set).
    */  
-  public Object[] next(IOrderedMap inputParameters, long timeoutMs) {    
+  public void setQueryParameters(IOrderedMap inputParameters) {    
     for(int i=1; i<=inputParameters.size(); i++){
       parametriseEnhancementQuery(i, inputParameters.get(i-1));
     }    
-    return next(timeoutMs);
   }
-  
   
   /**
    * @TODO comments, fix content, unit test

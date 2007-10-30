@@ -53,7 +53,8 @@ public interface IEnhancementReadConnector extends IReadConnector {
    * @see IReadConnector#next(long)
    * TODO there's no need for a new next method. This shoul be renamed to 'setEnhancementParameters' 
    * or something similar. After that, the next method would be called by the framework.
+   * TODO comments above not for this method
    */
-  Object[] next(IOrderedMap inputParameters, long timeoutMs);
+   void setQueryParameters(IOrderedMap inputParameters);
 
 }

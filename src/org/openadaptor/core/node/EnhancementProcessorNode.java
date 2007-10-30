@@ -40,6 +40,7 @@ import org.openadaptor.core.exception.MessageException;
  * 
  * @author Kris Lachor
  * @since Post 3.3
+ * TODO javadocs
  */
 public final class EnhancementProcessorNode extends Node  implements IMessageProcessor{
 
@@ -47,19 +48,48 @@ public final class EnhancementProcessorNode extends Node  implements IMessagePro
   
   IEnhancementProcessor enhancementProcessor;
   
+  /**
+   * 
+   *
+   */
   public EnhancementProcessorNode() {
     super();
   }
 
+  /**
+   * 
+   * @param id
+   */
   public EnhancementProcessorNode(String id) {
     super(id);
   }
   
+  /**
+   * 
+   * @param id
+   * @param processor
+   */
   public EnhancementProcessorNode(String id, IEnhancementProcessor processor) {
     super(id);
-    this.enhancementProcessor = enhancementProcessor;
+    this.enhancementProcessor = processor;
   }
 
+  /**
+   * 
+   * @param input
+   * @return
+   */
+  public Object [] processSingleInput(Object input){
+    IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)input);
+    enhancementProcessor.getReadConnector().setQueryParameters(parameters);
+    Object [] additionalData = enhancementProcessor.getReadConnector().next(1000);
+    Object [] outputs = enhancementProcessor.enhance((IOrderedMap)input, additionalData);
+    return outputs;
+  }
+  
+  /**
+   * 
+   */
   public Response process(Message msg) {
     
     Response response = new Response();
@@ -71,13 +101,8 @@ public final class EnhancementProcessorNode extends Node  implements IMessagePro
     
     for (int i = 0; i < inputs.length; i++) {
         try {
-          //enhancement processor needs more
-          Object[] outputs = null;
-          IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)inputs[i]);
-          Object [] additionalData = enhancementProcessor.getReadConnector().next(parameters, 1000);
-          outputs = enhancementProcessor.enhance((IOrderedMap)inputs[i], additionalData);
-         
-            
+            Object[] outputs = processSingleInput(inputs[i]);
+   
             if (outputs != null && outputs.length > 0) {
                 for (int j = 0; j < outputs.length; j++) {
                     response.addOutput(outputs[j]);

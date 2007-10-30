@@ -475,6 +475,13 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    * @throws OAException
    */
   public Object[] next(long timeoutMs) throws OAException {
+    //TODO
+    if(inputRecord!=null){
+      IOrderedMap tmp = inputRecord;
+      inputRecord = null;
+      return processOrderedMap(tmp);
+    }
+    
     Object[] result = null;
     try {
       if (!_searchHasExecuted) {
@@ -529,13 +536,16 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   public void setReaderContext(Object context) {
   }
 
+  private IOrderedMap inputRecord = null;
 
   /**
    * 
    */
-  public Object[] next(IOrderedMap inputRecord, long timeoutMs) {
+//  public Object[] next(IOrderedMap inputRecord, long timeoutMs) {
+   public void setQueryParameters(IOrderedMap inputRecord) {
 //    IOrderedMap inputOrderedMap = (IOrderedMap) inputRecord;
 //    return next(timeoutMs);
-    return processOrderedMap(inputRecord);
+    this.inputRecord = inputRecord;
+//    return processOrderedMap(inputRecord);
   }
 }

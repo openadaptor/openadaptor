@@ -80,11 +80,6 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
    */
   public abstract IOrderedMap prepareParameters(Object input);
 
-  /**
-   * @see org.openadaptor.core.IDataProcessor#process(java.lang.Object)
-   * @TODO may need to remove this and make IEnhancementProcessor an independent interface.
-   */
-  public abstract Object[] process(Object data);
 
   /**
    * @see org.openadaptor.core.IEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])
