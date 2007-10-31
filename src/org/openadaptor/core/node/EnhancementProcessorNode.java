@@ -96,7 +96,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
   public void setEnhancementProcessor(IEnhancementProcessor enhancementProcessor) {
     this.enhancementProcessor = enhancementProcessor;
     //TODO
-    this.enhancementProcessor.getReadConnector().connect();
+//    this.enhancementProcessor.getReadConnector().connect();
   }
 
   /**
