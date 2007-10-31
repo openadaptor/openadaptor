@@ -44,6 +44,10 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
 
   IEnhancementReadConnector readConnector;
   
+  private String commaSeparatedIndexes;
+  
+  private String commaSeparatedFieldNames;
+  
   /**
    * @see org.openadaptor.core.IEnhancementProcessor#getReadConnector()
    */
@@ -85,5 +89,27 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
    * @see org.openadaptor.core.IEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])
    */
   public abstract Object[] enhance(Object input, Object[] additionalData);
+  
+  /**
+   * Allows user to specify indexes of the input record (ordered map) that hold parameters
+   * to be passed to the reader.
+   */
+  public void setParameterIndexes(String commaSeparatedIndexes){
+    this.commaSeparatedIndexes = commaSeparatedIndexes;
+    //TODO
+  }
+  
+  /**
+   * Allows user to specify names of fields in the input record that hold parameters
+   * to be passed to the reader.
+   */
+  public void setParameterNames(String commaSeparatedFieldNames){
+    this.commaSeparatedFieldNames = commaSeparatedFieldNames;
+    //TODO
+  }
+
+  public String getCommaSeparatedFieldNames() {
+    return commaSeparatedFieldNames;
+  }
   
 }

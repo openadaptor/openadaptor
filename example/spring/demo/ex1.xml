@@ -1,33 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id: step01.xml 696 2007-06-27 13:04:36Z higginse $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step01.xml $
+  $Id: JavascriptFilter.xml 878 2007-10-01 15:13:56Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/javascript/JavascriptFilter.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
-  <description><![CDATA[
-  Adaptor for example 2 of overview documentation.
-  ]]></description>
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads all data in input/delim.txt
+    * converts to orderedmaps
+    * applies a simple filter to records
+    * outputs to stdout
+    
+  It is designed to illustrate a simple use of a JavascriptFilterProcessor
 
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-    <property name="messageProcessor" ref="Router"/>
-  </bean>
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config JavascriptFilter.xml -bean Adaptor
+    
+  You need the following in your classpath
   
-  <bean id="Router" class="org.openadaptor.core.router.Router">
-    <property name="processors">
-      <list>
-        <ref bean="Servlet"/>
-        <ref bean="Writer"/>
-      </list>
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes to stdout
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>
+      This adaptor is designed to illustrate a simple use of a JavascriptFilterProcessor
+        * reads all data in input/delim.txt
+        * converts to ordered
+        * applies a simple filter
+        * outputs to stdout
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="orderedmap"/>
+            <ref bean="js_filter"/>
+            <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
     </property>
   </bean>
-   
-  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
-    <property name="port" value="9999"/>
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/delim.txt"/>
   </bean>
   
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Convert to OrderedMap providing fields names</description>
+    <property name="fieldNames">
+        <list>
+            <value>username</value>
+            <value>fullname</value>
+            <value>uniqueid</value>
+            <value>dob</value>
+        </list>
+    </property>
+  </bean>
   
-</beans>
+  <bean id="js_filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
+    <description>
+      Simple use of a JavascriptFilterProcessor. 
+      Filter will discard any records with a fullname field starting with 'Terry'
+    </description>
+    <property name="script" value="record.get('fullname').indexOf('Terry') ==0"/>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>  

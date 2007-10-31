@@ -27,7 +27,11 @@
 package org.openadaptor.auxil.processor.jndi;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
 
 
@@ -45,10 +49,17 @@ public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
 
   
   public IOrderedMap prepareParameters(Object input) {
+    IOrderedMap params = new OrderedHashMap();
     if(input instanceof IOrderedMap){
-      return (IOrderedMap) input;
+      IOrderedMap inputMap = (IOrderedMap) input;
+      if(getCommaSeparatedFieldNames() != null){
+        Object value = inputMap.get(getCommaSeparatedFieldNames());
+        params.put(getCommaSeparatedFieldNames(), value);
+      }else{
+        params = inputMap;
+      }
     }
-    return null;
+    return params;
   }
   
   /**
