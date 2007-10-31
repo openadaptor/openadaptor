@@ -30,44 +30,58 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IEnhancementProcessor;
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.MessageException;
 
 /**
- * 
+ * Class that brings together {@link IEnhancementProcessor} and {@link IMessageProcessor}.
+ * Manages the lifecycle of {@link IEnhancementProcessor} and the lifecycle of 
+ * {@link IEnhancementReadConnector} embedded in it.
  * 
  * @author Kris Lachor
  * @since Post 3.3
+ * @see Node
+ * @see IMessageProcessor
  * TODO javadocs
+ * TODO solve the reader connection problem (currently in setProcessor)
+ * TODO process(Message) from superclass overridden, make sure no functionality loss
  */
-public final class EnhancementProcessorNode extends Node  implements IMessageProcessor{
+public final class EnhancementProcessorNode extends Node implements IMessageProcessor{
 
   private static final Log log = LogFactory.getLog(EnhancementProcessorNode.class);
   
-  IEnhancementProcessor enhancementProcessor;
+  private IEnhancementProcessor enhancementProcessor;
+  
+  private long readerTimeoutMs = ReadNode.DEFAULT_TIMEOUT_MS;
   
   /**
-   * 
+   * Constructor.
    *
+   * @see Node#Node()
    */
   public EnhancementProcessorNode() {
     super();
   }
 
   /**
+   * Constructor.
    * 
    * @param id
+   * @see Node#Node(String)
    */
   public EnhancementProcessorNode(String id) {
     super(id);
   }
   
   /**
+   * Constructor.
    * 
    * @param id
    * @param processor
+   * @see Node#Node(String)
    */
   public EnhancementProcessorNode(String id, IEnhancementProcessor processor) {
     super(id);
@@ -75,14 +89,29 @@ public final class EnhancementProcessorNode extends Node  implements IMessagePro
   }
 
   /**
+   * Sets the enhancement processor
    * 
-   * @param input
-   * @return
+   * TODO check if needed, same can be done via constructor.
+   */
+  public void setEnhancementProcessor(IEnhancementProcessor enhancementProcessor) {
+    this.enhancementProcessor = enhancementProcessor;
+    //TODO
+    this.enhancementProcessor.getReadConnector().connect();
+  }
+
+  /**
+   * Processes individual record of input data. First asks the enhancement processor to prepare
+   * query parameters for the reader, then sets the parameters on the reader and asks reader to
+   * call resource for more data. Last step in the actual 'enhancement' of input data with the
+   * additional data from the reader.
+   * 
+   * @param input input record
+   * @return result/additional data from the enhancement processor
    */
   public Object [] processSingleInput(Object input){
     IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)input);
     enhancementProcessor.getReadConnector().setQueryParameters(parameters);
-    Object [] additionalData = enhancementProcessor.getReadConnector().next(1000);
+    Object [] additionalData = enhancementProcessor.getReadConnector().next(readerTimeoutMs);
     Object [] outputs = enhancementProcessor.enhance((IOrderedMap)input, additionalData);
     return outputs;
   }
@@ -139,15 +168,4 @@ public final class EnhancementProcessorNode extends Node  implements IMessagePro
     return response;
   }
 
-  public IEnhancementProcessor getEnhancementProcessor() {
-    return enhancementProcessor;
-  }
-
-  public void setEnhancementProcessor(IEnhancementProcessor enhancementProcessor) {
-    this.enhancementProcessor = enhancementProcessor;
-    //TODO
-    this.enhancementProcessor.getReadConnector().connect();
-  }
-
-  
 }

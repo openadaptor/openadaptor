@@ -66,11 +66,13 @@ import java.util.List;
  */
 public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
+  public static long DEFAULT_TIMEOUT_MS = 1000;
+  
   private static final Log log = LogFactory.getLog(ReadNode.class);
 
   private IReadConnector connector;
 
-  private long timeoutMs = 1000;
+  private long timeoutMs = DEFAULT_TIMEOUT_MS;
 
   private int exitCode = 0;
   
