@@ -26,18 +26,16 @@
  */
 package org.openadaptor.auxil.processor.jndi;
 
-
-import java.util.HashMap;
 import java.util.Map;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
-
+import org.openadaptor.core.IEnhancementProcessor;
 
 /**
- * Skeleton of the new JNDI enhancement processor, eventually meant to 
- * replace the existing {@link JNDIEnhancementProcessor}.
+ * Skeleton of the new JNDI enhancement processor, eventually meant to replace the existing 
+ * {@link JNDIEnhancementProcessor}.
  * 
  * Early draft version, do not use.
  * 
@@ -46,7 +44,6 @@ import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
  * @TODO unit tests, system tests
  */
 public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
-
   
   public IOrderedMap prepareParameters(Object input) {
     IOrderedMap params = new OrderedHashMap();
@@ -63,31 +60,36 @@ public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
   }
   
   /**
-   * @TODO this needs to be an abstract method - no generic way of combining input data with additional    
+   * @see IEnhancementProcessor#enhance(Object, Object[]) 
    */
   public Object [] enhance(Object input, Object[] additionalData) {
     Object [] result = null;
+    
+    /* Retun original input if the reader didn't find anything */
     if(null == additionalData){
-      result = new Object[]{input};
-    }else{
+       result = new Object[]{input};
+    }
+    /* or added anhancement data as next element to input */
+    else{    
      
-//      if(input instanceof IOrderedMap ){
-//        result = new Object[]{input};
-//        for(int i=1; i<=additionalData.length; i++){
-//          IOrderedMap addEl = (IOrderedMap)additionalData[i];
-//          ((IOrderedMap)input).put(addEl., value)
-//        }
-//      }else{
-        result = new Object[additionalData.length + 1];
-        result[0] = input;
-        for(int i=1; i<=additionalData.length; i++){
-          result[i]=additionalData[i-1];
-        }
-      }
-      
+         result = new Object[additionalData.length + 1];
+         result[0] = input;
+         for(int i=1; i<=additionalData.length; i++){
+           result[i]=additionalData[i-1];
+         }
+         
+         if(input instanceof IOrderedMap && additionalData.length == 1){
+           Object additionalDataObj = additionalData[0];
+           if(additionalDataObj instanceof IOrderedMap){
+             Map additionalDataMap = (Map) additionalDataObj;
+             ((Map)input).putAll(additionalDataMap);
+             result = new Object[]{input};
+           }
+         }
+       
+    }
      
-//    }
     return result;
   }
-   
+  
 }

@@ -81,10 +81,6 @@
   <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <description>Reader which polls database using configured SQL.</description>
     <property name="jdbcConnection" ref="jdbcConnection"/>
-    <!--   property name="batchSize" value="0"/-->
-    <!--  property name="resultSetConverter">
-      <bean class="org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter"/>
-    </property -->
     <property name="sql">
       <value>
         SELECT u.Qty as Quantity
