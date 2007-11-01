@@ -24,7 +24,7 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.auxil.processor.jndi;
+package org.openadaptor.auxil.processor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,22 +40,23 @@ import org.openadaptor.auxil.connector.jndi.JNDISearch;
 import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.auxil.processor.GenericEnhancementProcessor;
+import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessorTestCase;
 import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.node.EnhancementProcessorNode;
 import org.jmock.cglib.MockObjectTestCase;
 
 /**
- * Draft of unit tests for {@link NewJNDIEnhancementProcessor}.
+ * Draft of unit tests for {@link GenericEnhancementProcessor}.
  * 
  * @author Kris Lachor
  * @todo ported only testValidatex() methods from JNDIEnhancementProcessorTestCase,
  *   all other are remaining
  */
-public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
+public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
 
-  NewJNDIEnhancementProcessor processor = new NewJNDIEnhancementProcessor();
+  GenericEnhancementProcessor processor = new GenericEnhancementProcessor();
   
   NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
   
@@ -90,7 +91,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#getReadConnector()}.
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#getReadConnector()}.
    */
   public void testGetReadConnector() {
     assertNotNull(processor.getReadConnector());
@@ -122,7 +123,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#validate
    * (java.util.List)}.
    * 
    * ported from {@link JNDIEnhancementProcessorTestCase#testValidate1()
@@ -142,7 +143,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#validate
    * (java.util.List)}.
    * Missing (incomingMap and recordKeyUsedAsSearchBase), and missing (outgoingMap and recordKeySetByExistence)
    * 
@@ -317,7 +318,7 @@ public class NewJNDIEnhancementProcessorTestCase extends MockObjectTestCase {
 
 
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#process(java.lang.Object)}.
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#process(java.lang.Object)}.
    */
   public void testProcess() {
   }

@@ -98,8 +98,7 @@
     <property name="password" value=""/>
   </bean>
   
-  <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor">
-     <!--  need a way of specifying  which values of odered map are to be used as -->
+  <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnhancementProcessor">
      <property name="readConnector" ref="dbReader"/>
      <property name="parameterNames" value="uniqueid"/>
   </bean>

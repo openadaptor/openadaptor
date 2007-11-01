@@ -24,13 +24,13 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.auxil.processor.jndi;
+package org.openadaptor.auxil.processor;
 
 import java.util.Map;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-import org.openadaptor.auxil.processor.AbstractEnhancementProcessor;
+import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
 
 /**
@@ -43,7 +43,7 @@ import org.openadaptor.core.IEnhancementProcessor;
  * @TODO javadocs
  * @TODO unit tests, system tests
  */
-public class NewJNDIEnhancementProcessor extends AbstractEnhancementProcessor {
+public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
   
   public IOrderedMap prepareParameters(Object input) {
     IOrderedMap params = new OrderedHashMap();

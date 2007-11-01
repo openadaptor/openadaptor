@@ -74,6 +74,9 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
   
   protected String sql;
   
+  /* Derived from <code>sql</code> by replacing paramter placeholders with concrete values*/
+  protected String postSubstitutionSql;
+  
   protected Statement statement = null;
   
   protected CallableStatement callableStatement = null;
@@ -111,7 +114,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * 
    * @param callableStatement a ready to execute statement
    */
-  public void setCallableStatement(CallableStatement callableStatement) {
+  private void setCallableStatement(CallableStatement callableStatement) {
     this.callableStatement = callableStatement;
   }
 
@@ -159,6 +162,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * @param timeoutMs Ignored as this implementation is non-blocking.
    * @return Object[] array of objects from resultset
    * @throws OAException
+   * TODO unit test usage of postSubstitutionSql
    */
   public Object[] next(long timeoutMs) throws OAException {
     log.info("Call for next record(s)");
@@ -169,7 +173,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
           rs = callableStatement.executeQuery(); 
         }
         else{
-          rs = statement.executeQuery(sql);
+          rs = statement.executeQuery(postSubstitutionSql==null ? sql : postSubstitutionSql);
         }
       }
       Object [] data = null;
@@ -221,7 +225,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
         newSql.append(sql.substring(0, index));
         newSql.append(value);
         newSql.append(sql.substring(index + 1));
-        sql = newSql.toString();
+        postSubstitutionSql = newSql.toString();
       }
 //    }
   }

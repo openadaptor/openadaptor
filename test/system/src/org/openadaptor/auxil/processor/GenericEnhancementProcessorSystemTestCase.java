@@ -29,12 +29,12 @@ package org.openadaptor.auxil.processor;
 import junit.framework.TestCase;
 
 /**
- * System tests for {@link NewJNDIEnhancementProcessor}.
+ * System tests for {@link GenericEnhancementProcessor}.
  * 
  * @author Kris Lachor
  * @TODO 
  */
-public class NewJNDIEnhancementProcessorSystemTestCase extends TestCase {
+public class GenericEnhancementProcessorSystemTestCase extends TestCase {
 
   /**
    * Creates an instance of an enhancement processor with a jdbc reader.
@@ -46,7 +46,7 @@ public class NewJNDIEnhancementProcessorSystemTestCase extends TestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#prepareParameters(java.lang.Object)}.
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#prepareParameters(java.lang.Object)}.
    */
   public void testPrepareParameters() {
       assertTrue(true);
