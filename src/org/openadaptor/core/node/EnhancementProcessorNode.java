@@ -35,6 +35,7 @@ import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 /**
  * Class that brings together {@link IEnhancementProcessor} and {@link IMessageProcessor}.
@@ -46,14 +47,15 @@ import org.openadaptor.core.exception.MessageException;
  * @see Node
  * @see IMessageProcessor
  * TODO javadocs
- * TODO solve the reader connection problem (currently in setProcessor)
- * TODO process(Message) from superclass overridden, make sure no functionality loss
+ * TODO process(Message) from superclass overridden, ensure no functionality loss
  */
 public final class EnhancementProcessorNode extends Node implements IMessageProcessor{
 
   private static final Log log = LogFactory.getLog(EnhancementProcessorNode.class);
   
   private IEnhancementProcessor enhancementProcessor;
+  
+  private IEnhancementReadConnector readConnector;
   
   private long readerTimeoutMs = ReadNode.DEFAULT_TIMEOUT_MS;
   
@@ -95,8 +97,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    */
   public void setEnhancementProcessor(IEnhancementProcessor enhancementProcessor) {
     this.enhancementProcessor = enhancementProcessor;
-    //TODO
-//    this.enhancementProcessor.getReadConnector().connect();
+    this.readConnector = enhancementProcessor.getReadConnector();
   }
 
   /**
@@ -110,11 +111,35 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    */
   public Object [] processSingleInput(Object input){
     IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)input);
-    enhancementProcessor.getReadConnector().setQueryParameters(parameters);
-    Object [] additionalData = enhancementProcessor.getReadConnector().next(readerTimeoutMs);
+    readConnector.setQueryParameters(parameters);
+    Object [] additionalData = readConnector.next(readerTimeoutMs);
     Object [] outputs = enhancementProcessor.enhance((IOrderedMap)input, additionalData);
     return outputs;
   }
+  
+
+  /**
+   * Connects the reader.
+   * 
+   * @see ILifecycleComponent#start
+   * @see Node#start()
+   */
+  public void start() {
+    readConnector.connect();
+    super.start();
+  }
+
+  /**
+   * Disconnects the reader.
+   * 
+   * @see ILifecycleComponent#stop
+   * @see Node#stop()
+   */
+  public void stop() {
+    readConnector.disconnect();
+    super.stop();
+  }
+  
   
   /**
    * 
