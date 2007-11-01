@@ -60,6 +60,10 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
   
+  {
+    processor.setReadConnector(mockReadConnector);
+  }
+  
   String recordKeySetByExistence = "testRecordKeySetByExistence";
   
   /* 
