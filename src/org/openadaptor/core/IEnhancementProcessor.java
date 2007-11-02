@@ -29,15 +29,13 @@ package org.openadaptor.core;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /**
- * Draft of the new interface that represents a generic
- * enhancement processor. Not quite ready for use yet.
+ * Interface represents an enhancement processor. The enhancement processor 
+ * has access to a read connector, which it will use to enrich the input data.
  * 
  * @author Kris Lachor
  * @since Post 3.3
- * @TODO consider this not extending IDataProcessor (process method not needed)
  */
-//public interface IEnhancementProcessor extends IDataProcessor {
-  public interface IEnhancementProcessor  {
+public interface IEnhancementProcessor  {
   
   /**
    * Underlying read connector.
@@ -45,21 +43,23 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
    * @return the underlying read connector.
    */
   IEnhancementReadConnector getReadConnector();
-  
+ 
   /**
-   * Merges original input with additional data retrieved by the underlying IEnhancementReadConnector.
-   * 
-   * @param input original input record used to parametrise query in IEnhancementReadConnector
-   * @param additionalData data returned by IEnhancementReadConnector
-   * @TODO rename to 'process'
-   */
-  Object [] enhance(Object input, Object [] additionalData);
-
-  /**
-   * Builds a map with data that IEnhancementReadConnector will use to parametrise the query.
+   * Builds a map with data that IEnhancementReadConnector will use to parameterise 
+   * the query.
    *
-   * @return data to parametrise IEnhancementReadConnector query
+   * @return data to parameterise IEnhancementReadConnector's query
    */
   IOrderedMap prepareParameters(Object input);
   
+  /**
+   * Merges original input with additional data obtained from the underlying 
+   * IEnhancementReadConnector.
+   * 
+   * @param input original input record used to parametrise query in
+   *        IEnhancementReadConnector
+   * @param additionalData data returned by IEnhancementReadConnector
+   */
+  Object [] enhance(Object input, Object [] additionalData);
+ 
 }

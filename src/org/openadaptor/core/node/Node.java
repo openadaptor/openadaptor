@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
@@ -107,6 +108,20 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
     public IDataProcessor getProcessor(){
         return this.processor;
     }
+    
+    
+    /**
+     * Processes individual record of input data. 
+     * This was put in a separate method since some Nodes (that extend from this one)
+     * may want to do it in a different way.
+     * 
+     * @param record input record
+     * @return result from the processor.
+     */
+    protected Object [] processSingleRecord(Object record){
+      return processor.process(record);
+    }
+    
 
 	public Response process(Message msg) {
 		
@@ -119,7 +134,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 		
 		for (int i = 0; i < inputs.length; i++) {
 			try {
-				Object[] outputs = processor.process(inputs[i]);
+                Object[] outputs = processSingleRecord(inputs[i]);
 				if (outputs != null && outputs.length > 0) {
 					for (int j = 0; j < outputs.length; j++) {
 						response.addOutput(outputs[j]);

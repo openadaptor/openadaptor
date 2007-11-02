@@ -32,9 +32,6 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IEnhancementProcessor;
 import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.IMessageProcessor;
-import org.openadaptor.core.Message;
-import org.openadaptor.core.Response;
-import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 /**
@@ -42,12 +39,15 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
  * Manages the lifecycle of {@link IEnhancementProcessor} and the lifecycle of 
  * {@link IEnhancementReadConnector} embedded in it.
  * 
+ * Essentially it is similar to {@link Node}, which it extends. The differences are
+ * firstly this node connects and disconnects the underlying reader, secondly 
+ * processing of a single record of data is different than in Node -
+ * this difference is implemented in {@link EnhancementProcessorNode#processSingleRecord(Object)}.
+ * 
  * @author Kris Lachor
  * @since Post 3.3
  * @see Node
  * @see IMessageProcessor
- * TODO javadocs
- * TODO process(Message) from superclass overridden, ensure no functionality loss
  */
 public final class EnhancementProcessorNode extends Node implements IMessageProcessor{
 
@@ -102,24 +102,6 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
   }
 
   /**
-   * Processes individual record of input data. First asks the enhancement processor to prepare
-   * query parameters for the reader, then sets the parameters on the reader and asks reader to
-   * call resource for more data. Last step in the actual 'enhancement' of input data with the
-   * additional data from the reader.
-   * 
-   * @param input input record
-   * @return result/additional data from the enhancement processor
-   */
-  public Object [] processSingleInput(Object input){
-    IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)input);
-    readConnector.setQueryParameters(parameters);
-    Object [] additionalData = readConnector.next(readerTimeoutMs);
-    Object [] outputs = enhancementProcessor.enhance((IOrderedMap)input, additionalData);
-    return outputs;
-  }
-  
-
-  /**
    * Connects the reader.
    * 
    * @see ILifecycleComponent#start
@@ -141,57 +123,36 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
     super.stop();
   }
   
-  
   /**
+   * Processes individual record of input data. First asks the enhancement processor to prepare
+   * query parameters for the reader, then sets the parameters on the reader and asks reader to
+   * call resource for more data. Last step is the actual enhancement of input data with the
+   * additional data from the reader.
    * 
+   * @param record input record
+   * @return result/additional data from the enhancement processor
+   * @see Node#processSingleRecord(Object)
    */
-  public Response process(Message msg) {
-    
-    Response response = new Response();
-    
-    Object[] inputs = msg.getData();
-    
-    // call processor for each element in the batch
-    // collate discarded data and exceptions
-    
-    for (int i = 0; i < inputs.length; i++) {
-        try {
-            Object[] outputs = processSingleInput(inputs[i]);
-   
-            if (outputs != null && outputs.length > 0) {
-                for (int j = 0; j < outputs.length; j++) {
-                    response.addOutput(outputs[j]);
-                }
-            } else {
-                response.addDiscardedInput(inputs[i]);
-            }
-        } catch (Exception e) {
-            response.addException(new MessageException(inputs[i], e, getId()));
-        }
+  public Object [] processSingleRecord(Object record){
+    IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)record);
+    if (log.isDebugEnabled() && parameters!=null){
+        log.debug("Parameters to set on the reader: " + parameters);
+        log.debug("Number of parameters: " +  parameters.size());
+      
     }
-        
-    if (log.isTraceEnabled()) {
-        log.trace(getId() + " processed " + inputs.length + " input(s) = [" + response.toString() + "]");
+    if(parameters == null){
+      log.warn("No parameters for reader");
     }
-    
-    // if node is chained and there are no exceptions then
-    // delegate to next IMessageProcessor in the chain
-//    
-//    if (messageProcessor != null) {
-//      if (!response.containsExceptions()) {
-//        if (!response.isEmpty()) {  // Don't pass on the message if there is no data
-//          msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
-//                  response = callChainedMessageProcessor(msg);
-//        }
-//    } else {
-//      //Fix for SC22: Invalid cast
-//      Object[] exceptions=response.getCollatedExceptions();
-//      MessageException exception=(MessageException)exceptions[0];
-//      throw new RuntimeException(exception);
-//          }
-//    }
-    
-    return response;
+    readConnector.setQueryParameters(parameters);
+    if (log.isDebugEnabled()) {
+      log.debug("Set parameters on the reader, calling for data...");
+    }
+    Object [] additionalData = readConnector.next(readerTimeoutMs);
+    if (log.isDebugEnabled()) {
+      log.debug("Reader returned: " + additionalData + ". Calling enhancer...");
+    }
+    Object [] outputs = enhancementProcessor.enhance((IOrderedMap)record, additionalData);
+    return outputs;
   }
 
 }
