@@ -45,7 +45,7 @@
           <list>
             <ref bean="reader"/>
             <ref bean="orderedmap"/>
-            <ref bean="js_filter"/>
+            <ref bean="xmlConverter"/>
             <ref bean="writer"/>
           </list>
         </property>
@@ -61,20 +61,16 @@
     <description>Convert to OrderedMap providing fields names</description>
     <property name="fieldNames">
         <list>
-            <value>username</value>
-            <value>fullname</value>
-            <value>uniqueid</value>
-            <value>dob</value>
+            <value>UserName</value>
+            <value>FullName</value>
+            <value>UniqueId</value>
+            <value>DOB</value>
         </list>
     </property>
   </bean>
   
-  <bean id="js_filter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
-    <description>
-      Simple use of a JavascriptFilterProcessor. 
-      Filter will discard any records with a fullname field starting with 'Terry'
-    </description>
-    <property name="script" value="record.get('fullname').indexOf('Terry') ==0"/>
+  <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="User"/>
   </bean>
   
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
