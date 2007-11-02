@@ -36,24 +36,18 @@ import org.openadaptor.core.exception.ConnectionException;
  * 
  * @author Kris Lachor
  * @since Post 3.3
- * TODO comments
  */
 public interface IEnhancementReadConnector extends IReadConnector {
   
   /**
-   * Polls the internal resource for some data. Exceptions should be thrown as RuntimeExceptions.
+   * Modifies the query to the underlying resource to use additional parameters. 
+   * Exceptions should be thrown as RuntimeExceptions.
    * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
-   * @param extra parameters that this connector should use to adjust the query to the underlying
+   * @param parameters that this connector can use to adjust the query to the underlying
    *        resource
-   * @param timeoutMs
-   *          the maximum time in milli-seconds to wait for data is none is
-   *          available immediately
-   * @return null or an array of data with one or more element.
    * @see IReadConnector#next(long)
-   * TODO there's no need for a new next method. This shoul be renamed to 'setEnhancementParameters' 
-   * or something similar. After that, the next method would be called by the framework.
-   * TODO comments above not for this method
+   * @see IEnhancementProcessor
    */
    void setQueryParameters(IOrderedMap inputParameters);
 
