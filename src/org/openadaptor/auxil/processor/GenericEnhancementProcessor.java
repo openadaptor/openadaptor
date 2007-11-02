@@ -34,10 +34,11 @@ import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
 
 /**
- * Skeleton of the new JNDI enhancement processor, eventually meant to replace the existing 
- * {@link JNDIEnhancementProcessor}.
+ * Skeleton of a generic enhancement processor.
  * 
- * Early draft version, do not use.
+ * Eventually this meant to replace the existing {@link JNDIEnhancementProcessor}.
+ * 
+ * Draft version.
  * 
  * @author Kris Lachor
  * @TODO javadocs
