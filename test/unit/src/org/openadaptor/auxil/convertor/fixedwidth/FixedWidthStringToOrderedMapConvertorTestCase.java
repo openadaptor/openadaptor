@@ -32,8 +32,6 @@
  */
 package org.openadaptor.auxil.convertor.fixedwidth;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
@@ -42,40 +40,50 @@ import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
+import java.util.List;
+
 /**
  * Suite of tests for the classes that handle fixed width string conversions.
- * 
+ *
  * @author Russ Fennell
  */
 public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestFixedWidthStringConvertor {
   public static final Log log = LogFactory.getLog(FixedWidthStringToOrderedMapConvertorTestCase.class);
 
   protected FixedWidthStringToOrderedMapConvertor convertor;
-  
+
   protected void setUp() throws Exception {
     super.setUp();
-    convertor=(FixedWidthStringToOrderedMapConvertor)testProcessor;
+    convertor = (FixedWidthStringToOrderedMapConvertor) testProcessor;
   }
-  
+
   protected void tearDown() throws Exception {
+    convertor = null;
     super.tearDown();
   }
-  
+
   protected IDataProcessor createProcessor() {
     return new FixedWidthStringToOrderedMapConvertor();
   }
- 
+
   /**
    * tests the fixed width to ordered map converter
    */
   public void testProcessRecord() {
-    details = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
-    IOrderedMap result;
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd3};
     String rec1 = "01 Russ      Riverbank House";
-    String rec2 = "02 Steve     Riverbank House, London, UK";
 
-    List keys = null;
+    try {
+      convertor = new FixedWidthStringToOrderedMapConvertor();
+      convertor.setFieldDetails(fieldDetails);
+      convertor.process(rec1);
 
+    } catch (Exception e) {
+      fail("Didn't expect any exceptions: " + e);
+    }
+  }
+
+  public void testProcessNullRecord() {
     // null record
     try {
       convertor.process(null);
@@ -85,6 +93,20 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
       fail("Wrong exception thrown [" + e + "]");
     }
 
+  }
+
+  public void testProcessNoDetailsDefined() {
+    // no details defined
+    String rec1 = "01 Russ      Riverbank House";
+    try {
+      convertor.process(rec1);
+      fail("Failed to detect that no field details were defined");
+    } catch (RecordException e) {
+    }
+
+  }
+
+  public void testProcessNonStringRecord() {
     // non-String record
     try {
       convertor.process(new Integer(42));
@@ -93,26 +115,29 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
     } catch (Exception e) {
       fail("Wrong exception thrown [" + e + "]");
     }
+  }
 
-    // no details defined
-    try {
-      convertor.process(rec1);
-      fail("Failed to detect that no field details were defined");
-    } catch (RecordException e) {
-    }
 
+  public void testProcessTooShort() {
     // record too short
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd3};
     try {
-      convertor.setFieldDetails(details);
+      convertor.setFieldDetails(fieldDetails);
       convertor.process("foo bar");
       fail("Failed to detect a null record");
     } catch (RecordFormatException e) {
-     } catch (Exception e) {
+    } catch (Exception e) {
       fail("Wrong exception thrown [" + e + "]");
     }
+  }
 
+  public void testProcessLastFieldTrimmed() {
     // record ok - as last field can be trimmed
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd3};
+    IOrderedMap result;
+    String rec1 = "01 Russ      Riverbank House";
     try {
+      convertor.setFieldDetails(fieldDetails);
       Object[] resultArray = convertor.process(rec1);
       assertTrue(resultArray.length == 1);
       result = (IOrderedMap) resultArray[0];
@@ -123,21 +148,30 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
+  }
 
+  public void testProcessLastFieldNotTrimmed() {
     // record fails as last field cannot be trimmed and is too short
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd4};
+    String rec1 = "01 Russ      Riverbank House";
     try {
-      details = new FixedWidthFieldDetail[] { fd1, fd2, fd4 };
-      convertor.setFieldDetails(details);
+      convertor.setFieldDetails(fieldDetails);
       convertor.process(rec1);
       fail("Failed to detect that the record was too short as the last field cannot be trimmed");
     } catch (RecordFormatException e) {
     } catch (Exception e) {
       fail("Wrong exception thrown [" + e + "]");
     }
+  }
 
+  public void testProcessTooLong() {
     // record too long - fd4: last field must be 25 chars long
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd4};
+    String rec2 = "02 Steve     Riverbank House, London, UK";
+    IOrderedMap result;
+    List keys = null;
     try {
-      convertor.setFieldDetails(details);
+      convertor.setFieldDetails(fieldDetails);
       Object[] resultArray = convertor.process(rec2);
       assertTrue(resultArray.length == 1);
       result = (IOrderedMap) resultArray[0];
@@ -155,19 +189,29 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
+  }
 
+  public void testProcessMissingFieldNames() {
     // some fields names are defined but not all - fd5: no name
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1, fd2, fd5};
+    String rec1 = "01 Russ      Riverbank House";
     try {
-      details = new FixedWidthFieldDetail[] { fd1, fd2, fd5 };
-      convertor.setFieldDetails(details);
+
+      convertor.setFieldDetails(fieldDetails);
       convertor.process(rec1);
       fail("Failed to detect that not all field names were defined");
     } catch (RecordException e) {
     }
+  }
 
+  public void testProcessNoFieldsDefined() {
     // no field names defined - that's ok
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd5};
+    String rec2 = "02 Steve     Riverbank House, London, UK";
+    IOrderedMap result;
+    List keys = null;
     try {
-      details = new FixedWidthFieldDetail[] { fd5 };
+      details = new FixedWidthFieldDetail[]{fd5};
       convertor.setFieldDetails(details);
       Object[] resultArray = convertor.process(rec2);
       assertTrue(resultArray.length == 1);
@@ -182,10 +226,14 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
+  }
 
+  public void testProcessWidthsOnlyDefined() {
     // only field widths defined - ok, uses default field attributes
     // (trim = false, name auto-generated)
-    Integer[] widths = new Integer[] { new Integer(3), new Integer(10), new Integer(15) };
+    String rec1 = "01 Russ      Riverbank House";
+    IOrderedMap result;
+    Integer[] widths = new Integer[]{new Integer(3), new Integer(10), new Integer(15)};
     try {
       convertor.setFieldDetails(null);
       convertor.setFieldWidths(widths);
@@ -199,21 +247,20 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
+  }
+
+  public void testProcessDetailsAndWidthsSet() {
+    Integer[] widths = new Integer[]{new Integer(3), new Integer(10), new Integer(15)};
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd5};
 
     // you can't have both fieldDetails and fieldWidths defined
     try {
-      convertor.setFieldDetails(details);
+      convertor.setFieldDetails(fieldDetails);
+      convertor.setFieldWidths(widths);
       fail("Failed to detect that both fieldDetails and fieldWidths have been defined");
     } catch (Exception e) {
     }
-
-    try {
-      convertor = new FixedWidthStringToOrderedMapConvertor();
-      convertor.setFieldDetails(details);
-      convertor.setFieldWidths(widths);
-      fail("Failed to detect that both fieldWidths and fieldDetails have been defined");
-    } catch (Exception e) {
-    }
   }
+
 
 }

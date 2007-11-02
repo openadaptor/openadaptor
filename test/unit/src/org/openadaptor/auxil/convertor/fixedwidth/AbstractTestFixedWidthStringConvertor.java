@@ -78,12 +78,7 @@ public abstract class AbstractTestFixedWidthStringConvertor extends AbstractTest
     super.tearDown();
   }
 
-  /**
-   * Tests the abstract fixed width convertor class. More specifically, the code that manipulates the
-   * FixedWidthFieldDetail list.
-   */
-  public void testAbstractFixedWidthStringConverter() {
-
+  public void testNoFieldDetailsDefined() {
     // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
     // as this will have the methods to test the FieldDetail class
     AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
@@ -91,58 +86,130 @@ public abstract class AbstractTestFixedWidthStringConvertor extends AbstractTest
     // no field details defined
     assertEquals(null, cnvtr.getFieldDetails());
     assertEquals(false, cnvtr.hasFieldNames());
-    assertEquals(0, cnvtr.getTotalFieldWidth());
+    assertEquals(0, cnvtr.getTotalFieldWidth());    
+  }
 
+  public void testFieldWidthsMinusOne() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
     // field widths - 1
-    details = new FixedWidthFieldDetail[] { fd1 };
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd1 };
+    
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(1, cnvtr.getFieldDetails().length);
     assertEquals(3, cnvtr.getTotalFieldWidth());
+  }
+
+  public void testFieldWidthsMultiple() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // field widths - multiple
-    details = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(3, cnvtr.getFieldDetails().length);
     assertEquals(213, cnvtr.getTotalFieldWidth());
+  }
+
+  public void testFieldNamesNone() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // field names - none
-    details = new FixedWidthFieldDetail[] { fd5 };
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd5 };
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(false, cnvtr.hasFieldNames());
     assertEquals(null, cnvtr.getFieldDetails()[0].getFieldName());
+  }
 
-    // field names - multiple
-    details = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
-    cnvtr.setFieldDetails(details);
+  public void testFieldNamesMultiple() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;    // field names - multiple
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(true, cnvtr.hasFieldNames());
     assertEquals("id", cnvtr.getFieldDetails()[0].getFieldName());
     assertEquals("name", cnvtr.getFieldDetails()[1].getFieldName());
     assertEquals("address", cnvtr.getFieldDetails()[2].getFieldName());
+  }
+
+  public void testTrimDefault() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // trim - default
-    details = new FixedWidthFieldDetail[] { fd4 };
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd4 };
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(false, cnvtr.getFieldDetails()[0].isTrim());
+  }
+
+  public void testTrimValuesSet() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // trim - values set
-    details = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd1, fd2, fd3 };
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(false, cnvtr.getFieldDetails()[0].isTrim());
     assertEquals(false, cnvtr.getFieldDetails()[1].isTrim());
-    assertEquals(true, cnvtr.getFieldDetails()[2].isTrim());
+    assertEquals(true, cnvtr.getFieldDetails()[2].isTrim());    
+  }
+
+  public void testFieldDetailsRightAlignDefault() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // right align - default
-    details = new FixedWidthFieldDetail[]{fd1};
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1};
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(false, cnvtr.getFieldDetails()[0].isRightAlign());
+  }
 
+  public void testFieldDetailsRightAlignValuesSet() {
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // right align - values set
     fd1.setRightAlign(true);
-    details = new FixedWidthFieldDetail[]{fd1};
-    cnvtr.setFieldDetails(details);
+    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd1};
+    cnvtr.setFieldDetails(fieldDetails);
     assertEquals(true, cnvtr.getFieldDetails()[0].isRightAlign());
     fd1.setRightAlign(false);
+  }
+
+  public void testFieldDetailsNotAllNamesDefined() {
+
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
+
+        // not all field names defined
+    try {
+      FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[] { fd1, fd5 };
+      cnvtr.setFieldDetails(fieldDetails);
+      cnvtr.process("");
+      fail("Failed to detect that not all field names were supplied");
+    } catch (RecordException e) {
+    }
+  }
+
+  /**
+   * Tests the abstract fixed width convertor class. More specifically, the code that manipulates the
+   * FixedWidthFieldDetail list.
+   */
+  public void testAbstractFixedWidthStringConverterNullRecord() {
+
+    // we need to use a concrete example of a AbstractFixedWidthStringConvertorProcessor
+    // as this will have the methods to test the FieldDetail class
+    AbstractFixedWidthStringConvertor cnvtr = (AbstractFixedWidthStringConvertor)testProcessor;
 
     // null field details
     // todo check for NullRecordException
@@ -153,14 +220,6 @@ public abstract class AbstractTestFixedWidthStringConvertor extends AbstractTest
     } catch (RecordException e) {
     }
 
-    // not all field names defined
-    try {
-      details = new FixedWidthFieldDetail[] { fd1, fd5 };
-      cnvtr.setFieldDetails(details);
-      cnvtr.process("");
-      fail("Failed to detect that not all field names were supplied");
-    } catch (RecordException e) {
-    }
   }
 
 

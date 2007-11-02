@@ -27,14 +27,13 @@
 
 package org.openadaptor.auxil.convertor.fixedwidth;
 
-import java.util.ArrayList;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.core.IDataProcessor;
-//import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ValidationException;
+
+import java.util.ArrayList;
 
 /**
  * Defines the common elements of a fixed width converter. <p/>
@@ -62,6 +61,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
   // Array of the field widths. Used instead of the FixedWidthFieldDetail's when you
   // just want to define the widths and don't care about the other attributes
   protected Integer[] fieldWidths;
+  private ArrayList cachedNames = null;
 
   /**
    * @return a list of the field details mappings
@@ -108,6 +108,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
       throw new ValidationException("You cannot define both fieldDetails and fieldWidths", this);
 
     this.fieldDetails = details;
+    cachedNames = null;
   }
 
   /**
@@ -140,6 +141,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
 
       // create new fieldDetails based on the widths
       fieldDetails = new FixedWidthFieldDetail[widths.length];
+      cachedNames = null;
       for (int i = 0; i < widths.length; i++) {
         Integer wdth = widths[i];
         FixedWidthFieldDetail fd = new FixedWidthFieldDetail();
@@ -175,6 +177,7 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
    * @return a list of the field names defined
    */
   public ArrayList getFieldNames() {
+    if (cachedNames == null) {
     ArrayList names = new ArrayList();
 
     if (fieldDetails != null)
@@ -183,8 +186,10 @@ public abstract class AbstractFixedWidthStringConvertor extends AbstractConverto
         if (name != null)
           names.add(name);
       }
-
-    return names;
+      cachedNames = names;
+    }
+    //return names;
+    return cachedNames;
   }
 
   /**
