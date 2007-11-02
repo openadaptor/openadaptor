@@ -208,7 +208,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
     IOrderedMap map = new OrderedHashMap();
     map.put("foo1", "bar1");
     try{
-      enhancementProcessorNode.processSingleInput(map);
+      enhancementProcessorNode.processSingleRecord(map);
     }catch(RecordException re){
       return;
     }
@@ -228,7 +228,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
     map.put("foo1", "bar1");
     mockReadConnector.setRecordKeyUsedAsSearchBase("test");
     try{
-      enhancementProcessorNode.processSingleInput(map);
+      enhancementProcessorNode.processSingleRecord(map);
     }catch(RecordException re){
       return;
     }
@@ -259,7 +259,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
     mockJNDISearch.expects(once()).method("execute").will(returnValue(mockNamingEnumeration.proxy()));
     mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
     validate();
-    enhancementProcessorNode.processSingleInput(map);
+    enhancementProcessorNode.processSingleRecord(map);
   }
   
   
