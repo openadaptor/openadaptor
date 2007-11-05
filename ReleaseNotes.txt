@@ -23,6 +23,9 @@ Minor changes
 
   * Application now logs the jvm version near the beginning of adaptor 
     startup (in case adaptor dies before reporting it).
+
+  * Minor improvement to the efficiency of AbstractFixedWidthStringConvertor. It now
+    caches the field names rather than trying to work them out each time its asked.
    
 Bug Fixes
 =========
