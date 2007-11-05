@@ -41,7 +41,12 @@ SC31: DateHolder types should become java Dates when converting legacy DataObjec
       into java.util.Dates.
       The default value for this property is 'true' which means default behaviour will 
       differ from 3.3  
-
+      
+SC32: The pipeline DOXmlToDataObject -> DataObjectToOrderedMap will fail if the incoming
+      DOXML contains more than one top-level data object. 
+      Note that as a side-efffect, the default value for 'box returned arrays' in the
+      AbstractConvertor class has changed from 3.3 (true) to 'false'.
+      
 =================================================
 openadaptor3 production 3.3 Release Notes
 
