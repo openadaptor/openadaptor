@@ -58,10 +58,35 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
 
   protected void tearDown() throws Exception {
     super.tearDown();
+    convertor = null;
   }
 
   protected IDataProcessor createProcessor() {
     return new OrderedMapToFixedWidthStringConvertor();
+  }
+
+
+  /**
+   * tests the ordered map to fixed width converter
+   */
+  public void testProcessRecord() {
+    IOrderedMap map;
+
+    // field widths defined only - correct
+    try {
+      map = new OrderedHashMap();
+      map.put("name", "1234567890");
+      map.put("id", "12345");
+      details = new FixedWidthFieldDetail[] { fd5, fd5 };
+      convertor.setFieldDetails(details);
+      Object[] resultArray = convertor.process(map);
+      assertTrue(resultArray.length == 1);
+      String s = (String) resultArray[0];
+      assertEquals(fd5.getFieldWidth() + fd5.getFieldWidth(), s.length());
+    }
+    catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }
   }
 
   /**
@@ -70,11 +95,9 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
    * This test ensures that the correct NullRecordException is thrown when that is not the case.
    */
   public void testProcessNullRecord() {
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
-
     // null record
     try {
-      cnvtr.process(null);
+      convertor.process(null);
       fail("Failed to detect null record");
     }
     catch (NullRecordException e) {
@@ -85,10 +108,9 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessNonOrderedMap() {
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
     // non-IOrderedMap record
     try {
-      cnvtr.process(new Integer(42));
+      convertor.process(new Integer(42));
       fail("Failed to detect that record wasn't an IOrderedMap");
     }
     catch (RecordFormatException e) {
@@ -100,11 +122,10 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
 
   public void testNoDetailsDefined() {
     IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
 
     // no details defined
     try {
-      cnvtr.process(map);
+      convertor.process(map);
       fail("Failed to detect that no field details were defined");
     }
     catch (RecordException e) {
@@ -113,16 +134,15 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
 
   public void testProcessFieldNameNotDefined() {
     IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     // field name not defined - output is blank string 10 chars long
     try {
       map.put("id", "01 ");
       details = new FixedWidthFieldDetail[] { fd2 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals(fd2.getFieldWidth(), s.length());
@@ -133,19 +153,18 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessSingleFieldName() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // single field name
       map = new OrderedHashMap();
       map.put("id", "01 ");
       details = new FixedWidthFieldDetail[] { fd1 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals("01 ", s);
@@ -156,11 +175,10 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessMultipleFieldNames() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // multiple field names
@@ -168,8 +186,8 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
       map.put("id", "01 ");
       map.put("name", "1234567890");
       details = new FixedWidthFieldDetail[] { fd1, fd2 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals("01 1234567890", s);
@@ -180,11 +198,10 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessMultipleFieldNamesOneDefined() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // multiple field names, only one defined - some output
@@ -192,8 +209,8 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
       map.put("id", "01 ");
       map.put("name", "1234567890");
       details = new FixedWidthFieldDetail[] { fd2 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals("1234567890", s);
@@ -204,11 +221,10 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessFieldDetailsPadding() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // padding
@@ -216,8 +232,8 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
       map.put("id", "01 ");
       map.put("name", "1234");
       details = new FixedWidthFieldDetail[] { fd2 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals(fd2.getFieldWidth(), s.length());
@@ -228,11 +244,10 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessFieldDetailsTrimming() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // trimming
@@ -240,8 +255,8 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
       map.put("name", "1234567890");
       map.put("id", "12345");
       details = new FixedWidthFieldDetail[] { fd1 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals(fd1.getFieldWidth(), s.length());
@@ -252,19 +267,18 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
   }
 
   public void testProcessMoreNamesThanData() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+    IOrderedMap map;
 
-    Object[] resultArray = null;
-    String s = null;
+    Object[] resultArray;
+    String s;
 
     try {
       // more field names than ordered map entries - should be spaces for second field
       map = new OrderedHashMap();
       map.put("id", "01 ");
       details = new FixedWidthFieldDetail[] { fd1, fd2 };
-      cnvtr.setFieldDetails(details);
-      resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       s = (String) resultArray[0];
       assertEquals(fd1.getFieldWidth() + fd2.getFieldWidth(), s.length());
@@ -274,52 +288,86 @@ public class OrderedMapToFixedWidthStringConvertorTestCase extends AbstractTestF
     }    
   }
 
-  /**
-   * tests the ordered map to fixed width converter
-   */
-  public void testProcessRecord() {
-    IOrderedMap map = new OrderedHashMap();
-    OrderedMapToFixedWidthStringConvertor cnvtr = new OrderedMapToFixedWidthStringConvertor();
+  public void testFieldNameCaching() {
+    // Ensure that getFieldNames() always returns the right answer if fieldDetails is reset a few times.
 
+    FixedWidthFieldDetail[] firstDetails = new FixedWidthFieldDetail[] { fd1, fd2 };
+    String[] firstNames = new String[] { fd1.getFieldName(), fd2.getFieldName() };
 
+    convertor.setFieldDetails(firstDetails);
+    String[] firstResultArray = (String[])convertor.getFieldNames().toArray(new String[convertor.getFieldNames().size()]);
+    assertTrue(firstResultArray.length == 2);
+    assertEquals(firstNames[0], firstResultArray[0]);
+    assertEquals(firstNames[1], firstResultArray[1]);
+
+    FixedWidthFieldDetail[] secondDetails = new FixedWidthFieldDetail[] { fd3, fd4 };
+    String[] secondNames = new String[] { fd3.getFieldName(), fd4.getFieldName() };
+
+    convertor.setFieldDetails(secondDetails);
+    String[] secondResultArray = (String[])convertor.getFieldNames().toArray(new String[convertor.getFieldNames().size()]);
+    assertTrue(secondResultArray.length == 2);
+    assertEquals(secondNames[0], secondResultArray[0]);
+    assertEquals(secondNames[1], secondResultArray[1]);
+
+    // fd5 has no name set so number of names is one less than number of fieldDetails.
+    FixedWidthFieldDetail[] thirdDetails = new FixedWidthFieldDetail[] { fd3, fd4, fd5 };
+    String[] thirdNames = new String[] { fd3.getFieldName(), fd4.getFieldName(), fd5.getFieldName() };
+
+    convertor.setFieldDetails(thirdDetails);
+    String[] thirdResultArray = (String[])convertor.getFieldNames().toArray(new String[convertor.getFieldNames().size()]);
+    assertTrue("Result is wrong length", thirdResultArray.length == 2);
+    assertEquals(thirdNames[0], thirdResultArray[0]);
+    assertEquals(thirdNames[1], thirdResultArray[1]);    
+  }
+
+  public void testTooFewFieldWidths() {
     // field widths defined only - too few
-    map = new OrderedHashMap();
+    IOrderedMap map = new OrderedHashMap();
     map.put("name", "1234567890");
     map.put("id", "12345");
     details = new FixedWidthFieldDetail[] { fd5 };
-    cnvtr.setFieldDetails(details);
+    convertor.setFieldDetails(details);
     try {
-      cnvtr.process(map);
+      convertor.process(map);
       fail("Failed to detect that not enough field widths were defined");
-    } 
-    catch (RecordException e) {}
+    }
+    catch (RecordException e) {}        
+  }
 
+  public void testProcessTooManyFieldWidths() {
     // field widths defined only - too many
-    map = new OrderedHashMap();
+    IOrderedMap map = new OrderedHashMap();
     map.put("name", "1234567890");
     map.put("id", "12345");
     details = new FixedWidthFieldDetail[] { fd5, fd5, fd5, fd5 };
-    cnvtr.setFieldDetails(details);
+    convertor.setFieldDetails(details);
     try {
-      cnvtr.process(map);
+      convertor.process(map);
       fail("Failed to detect that not enough field widths were defined");
-    } 
+    }
     catch (RecordException e) {}
+  }
 
+
+  /**
+   * tests the ordered map to fixed width converter
+   */
+  public void testProcessFieldWidthsDefined() {
     // field widths defined only - correct
     try {
-      map = new OrderedHashMap();
+      IOrderedMap map = new OrderedHashMap();
       map.put("name", "1234567890");
       map.put("id", "12345");
       details = new FixedWidthFieldDetail[] { fd5, fd5 };
-      cnvtr.setFieldDetails(details);
-      Object[] resultArray = cnvtr.process(map);
+      convertor.setFieldDetails(details);
+      Object[] resultArray = convertor.process(map);
       assertTrue(resultArray.length == 1);
       String s = (String) resultArray[0];
       assertEquals(fd5.getFieldWidth() + fd5.getFieldWidth(), s.length());
-    } 
+    }
     catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }
   }
+
 }
