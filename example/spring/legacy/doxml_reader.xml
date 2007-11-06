@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id$
-  $HeadURL$
- -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
- 
-  <description><![CDATA[  
+ $Id$
+ $HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[  
   This adaptor does the following...
     
     * reads DOXML from a file
@@ -37,45 +37,49 @@
     <legacy openadaptor>/openadaptor.jar
     
   writes output to stdout.
-  ]]></description>
+  ]]>
+ </description>
 
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-  	<property name="messageProcessor">
-  		<bean class="org.openadaptor.core.router.Router">
-  			<property name="processors">
-  				<list>
-  					<ref bean="Reader" />
-  					<ref bean="DOXmlConverter" />
-  					<ref bean="MapConverter" />
-  					<ref bean="XmlConverter" />
-  					<ref bean="Writer" />
-  				</list>
-  			</property>
-  		</bean>
-  	</property>
-  </bean>
-
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <description>This read connector contexts of a file as a single string.</description>
-    <property name="filename" value="input/doxml.txt"/>
-    <property name="dataReader">
-      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="DOXmlConverter" />
+      <ref bean="MapConverter" />
+      <ref bean="XmlConverter" />
+      <ref bean="Writer" />
+     </list>
     </property>
-  </bean>
-  
-  <bean id="DOXmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor">
-    <description>Converts this string to an array of DataObject[].</description>
-  </bean>
-  
-  <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
-    <description>Converts DataObject[] to IOrderedMap.</description>
-  </bean>
-  
-  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <description>Converts IOrderedMap to XML.</description>
-    <property name="rootElementTag" value="record"/>
-  </bean>
-  
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
-  
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <description>
+    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
+    the file to potentially contain multiple DOXML messages if necessary).
+  </description>
+  <property name="filename" value="input/doxml.txt" />
+  <property name="dataReader">
+   <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
+  </property>
+ </bean>
+
+ <bean id="DOXmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor">
+  <description>Converts this string to an array of DataObject[].</description>
+ </bean>
+
+ <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
+  <description>Converts DataObject[] to IOrderedMap.</description>
+ </bean>
+
+ <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <description>Converts IOrderedMap to XML.</description>
+  <property name="rootElementTag" value="record" />
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
 </beans>

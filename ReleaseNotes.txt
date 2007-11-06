@@ -26,6 +26,10 @@ Minor changes
 
   * Minor improvement to the efficiency of AbstractFixedWidthStringConvertor. It now
     caches the field names rather than trying to work them out each time its asked.
+    
+  * Added a convenience subclass of RegexMultiLineReader (DOXMLReader) for reading 
+    legacy DOXML which may contain multiple DOXML messages in sequence (the default 
+    StringReader would only process the first DOXML message received)
    
 Bug Fixes
 =========

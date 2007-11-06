@@ -57,9 +57,8 @@
 
  <bean id="FileReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
   <description>
-               Reader which reads from a pre-canned doxml input file.
-               The DOXML file may contain multiple DOXML messages, hence the
-               need for the DOXMLReader.
+    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
+    the file to potentially contain multiple DOXML messages if necessary).
   </description>
   <property name="filename" value="input/bike_multi-doxml.txt" />
   <property name="dataReader">
