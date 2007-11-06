@@ -13,7 +13,7 @@
 
 Run it like this...
 
-    java org.openadaptor.spring.SpringAdaptor -config jmx.xml -bean Adaptor
+    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config jmx.xml -bean Adaptor
 
   You need the following in your classpath
 
@@ -25,6 +25,9 @@ Run it like this...
   This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
   reference implementation and automatically runs a http adaptor which you can browse 
   at http://localhost:8082).
+  
+  The optional vm argument -Dcom.sun.management.jmxremote will also permit the adaptor to be monitored
+  locally via jconsole (1.5+).
     
   The actual adaptor, simply reads stdin and writes to stdout.
   ]]></description>
