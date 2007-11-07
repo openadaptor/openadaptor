@@ -30,6 +30,7 @@ package org.openadaptor.spring;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.util.Application;
 import org.openadaptor.util.ResourceUtil;
@@ -66,7 +67,7 @@ public class SpringApplication {
   private static Log log = LogFactory.getLog(SpringApplication.class);
 
   protected static final String NOPROPS = "-noprops";
-  protected static final String CONFIG = "-config";
+  public static final String CONFIG = "-config";
   protected static final String BEAN = "-bean";
   protected static final String JMXPORT = "-jmxport";
   protected static final String PROPS = "-props";
@@ -84,6 +85,7 @@ public class SpringApplication {
   /** If this is true we will not add a generated PropertyPlaceholderConfigurer. */
   private boolean suppressAutomaticPropsConfig = false; // default is false
 
+  private Adaptor adaptor;
 
   public static void main(String[] args) {
     try {
@@ -185,11 +187,14 @@ public class SpringApplication {
     }
     return buffer.toString();
   }
-
+  
   public void run() {
     Runnable bean = getRunnableBean(createBeanFactory());
     if (bean instanceof Application) {
       ((Application)bean).setConfigData(getConfigUrlsString());
+    }
+    if(bean instanceof Adaptor && adaptor==null){
+      adaptor = (Adaptor) bean;
     }
     Thread.currentThread().setName(beanId);
     bean.run();
@@ -406,5 +411,13 @@ public class SpringApplication {
     } else {
       throw new RuntimeException("Option " + args[index] + " requires a value, which has not been supplied");
     }
+  }
+
+  /** 
+   * @return the instance of Adaptor related to this application, for starting/stopping/dumping 
+   *         state via JMX console 
+   */
+  public Adaptor getAdaptor() {
+    return adaptor;
   }
 }

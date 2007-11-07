@@ -43,6 +43,18 @@ public interface JMXManagedSpringAdaptorMBean {
   public void runSpringAdaptor(String configFileName);
   
   /**
+   * Stops SpringAdaptor.
+   */
+  void stopSpringAdaptor();
+  
+  /**
+   * OA state
+   * 
+   * @return OA state
+   */
+  String dumpState();
+  
+  /**
    * A JMX management method required by JBoss service contract.
    * Exposes OA as a JBoss service (called by JBoss app server).
    */

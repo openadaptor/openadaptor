@@ -26,6 +26,9 @@
  */
 package org.openadaptor.spring.jmx;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.spring.SpringAdaptor;
 
 /**
@@ -35,20 +38,49 @@ import org.openadaptor.spring.SpringAdaptor;
  * 
  * @author Kris Lachor
  */
-public class JMXManagedSpringAdaptor extends SpringAdaptor implements JMXManagedSpringAdaptorMBean {
+public class JMXManagedSpringAdaptor implements JMXManagedSpringAdaptorMBean {
+  
+  private static Log log = LogFactory.getLog(JMXManagedSpringAdaptor.class);
   
   private boolean isStarted = false;
   
+  private SpringAdaptor springAdaptor = null;
+ 
   /**
    * @param name of the Spring config file that defines the adaptor
    * @see org.openadaptor.spring.jmx.JMXManagedSpringAdaptorMBean#runSpringAdaptor()
    */
   public void runSpringAdaptor(String configFileName){
-    String [] args = new String[] {CONFIG, configFileName};
-    SpringAdaptor app = new SpringAdaptor();
-    app.execute(args);
+    String [] args = new String[] {SpringAdaptor.CONFIG, configFileName};
+    log.info("starting adaptor (JMX)");
+    springAdaptor = new SpringAdaptor();
+    springAdaptor.execute(args);
   }
  
+  /**
+   * @see org.openadaptor.spring.jmx.JMXManagedSpringAdaptorMBean#stopSpringAdaptor()
+   */
+  public void stopSpringAdaptor(){
+    if(springAdaptor != null){
+      log.info("stopping adaptor (JMX)");
+      springAdaptor.getAdaptor().exit(true);
+    }else{
+      log.warn("attempt to stop adaptor that does not seem to be running (JMX)");
+    }
+  }
+  
+  /**
+   * @see org.openadaptor.spring.jmx.JMXManagedSpringAdaptorMBean#dumpState
+   */
+  public String dumpState() {
+    String result = null;
+    if(springAdaptor!=null){
+      Adaptor adaptor = springAdaptor.getAdaptor();
+      result = ((Adaptor.Admin) adaptor.getAdmin()).dumpState();
+    }
+    return result;
+  }
+  
   /**
    * @see org.openadaptor.spring.jmx.JMXManagedSpringAdaptorMBean#isStarted()
    */
@@ -69,4 +101,5 @@ public class JMXManagedSpringAdaptor extends SpringAdaptor implements JMXManaged
   public void stop() {
     isStarted = false;
   }
+
 }
