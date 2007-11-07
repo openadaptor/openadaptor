@@ -40,7 +40,7 @@ public class Message {
 
   /*
    * A reference to the object that initiated the processing, this is not necessarily the
-   * caller of {@link IMessageProcessor#process} not is it necessarily a IMessageProcessor.
+   * caller of {@link IMessageProcessor#process} nor is it necessarily a IMessageProcessor.
    */
   private Object sender;
   
@@ -59,18 +59,14 @@ public class Message {
     this.sender = sender;
     this.transaction = transaction;
   }
-  
+
   public Message(final List data, final Object sender, final ITransaction transaction) {
-    this.data = (Object[]) data.toArray(new Object[data.size()]);
-    this.sender = sender;
-    this.transaction = transaction;
+    this((Object[]) data.toArray(new Object[data.size()]),sender,transaction);
   }
   
   public Message(final Object data, final Object sender, final ITransaction transaction) {
-    this.data = new Object[] {data};
-    this.sender = sender;
-    this.transaction = transaction;
- }
+    this(new Object[] {data},sender,transaction);
+  }
   
 	public Object getSender() {
 		return sender;
