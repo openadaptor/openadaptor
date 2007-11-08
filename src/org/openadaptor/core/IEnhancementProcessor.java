@@ -29,8 +29,9 @@ package org.openadaptor.core;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /**
- * Interface represents an enhancement processor. The enhancement processor 
- * has access to a read connector, which it will use to enrich the input data.
+ * Interface that represents an enhancement processor. An enhancement processor 
+ * has access to a read connector that will query an external resource for 
+ * data that enhancement processor will then use to enrich its input data.
  * 
  * @author Kris Lachor
  * @since Post 3.3

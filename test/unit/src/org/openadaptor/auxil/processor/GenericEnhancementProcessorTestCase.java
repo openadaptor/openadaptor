@@ -68,7 +68,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   /* 
    * This is included here since the node is now the only component aware of
-   * IEnhancementProcessor method call sequence - something that previously was 
+   * IEnhancementProcessor method call sequence - this was previously  
    * implemented in JNDIEnhancementProcessor#processOrderedMap
    */
   EnhancementProcessorNode enhancementProcessorNode = new EnhancementProcessorNode("testNode", processor);
@@ -312,6 +312,143 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is null.
+   */
+  public void testPrepareParameters1(){
+    IOrderedMap params = processor.prepareParameters(null);
+    assertNotNull(params);
+    assertTrue(params.size()==0);
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is a non-IOrderedMap.
+   */
+  public void testPrepareParameters2(){
+    IOrderedMap params = processor.prepareParameters(new String("test"));
+    assertNotNull(params);
+    assertTrue(params.size()==0);
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap
+   */
+  public void testPrepareParameters3(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==2);
+    Object value1 = params.get("field1");
+    assertTrue(value1 instanceof String);
+    assertTrue(value1.equals("value1"));
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap.
+   * Parameter field names specified.
+   */
+  public void testPrepareParameters4(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    processor.setParameterNames("field1, field2");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==2);
+    for(int i=1; i<=params.size();i++){
+      Object value = params.get("field" + new Integer(i));
+      assertNotNull(value);
+      assertTrue(value instanceof String);
+      assertTrue(value.equals("value" + new Integer(i)));
+    }
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap.
+   * Parameter field names specified.
+   */
+  public void testPrepareParameters5(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    processor.setParameterNames("field1");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==1);
+    for(int i=1; i<=params.size();i++){
+      Object value = params.get("field" + new Integer(i));
+      assertNotNull(value);
+      assertTrue(value instanceof String);
+      assertTrue(value.equals("value" + new Integer(i)));
+    }
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap.
+   * Parameter field names specified.
+   */
+  public void testPrepareParameters6(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    processor.setParameterNames("field2");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==1);
+    Object value = params.get("field2");
+    assertNotNull(value);
+    assertTrue(value instanceof String);
+    assertTrue(value.equals("value2"));
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap.
+   * Parameter field names specified, but the field doesn't occur in input (expecting params map 
+   * with null values).
+   */
+  public void testPrepareParameters7(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    processor.setParameterNames("field3");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==1);
+    assertNull(params.get("field3"));
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Input is an IOrdredMap.
+   * Parameter field names specified, one of the fields doesn't occur in input (params map with
+   * only those fields that were in the input).
+   */
+  public void testPrepareParameters8(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("field1", "value1");
+    input.put("field2", "value2");
+    processor.setParameterNames("field1, field2, field3");
+    IOrderedMap params = processor.prepareParameters(input);
+    assertNotNull(params);
+    assertTrue(params.size()==3);
+    for(int i=1; i<=2;i++){
+      Object value = params.get("field" + new Integer(i));
+      assertNotNull(value);
+      assertTrue(value instanceof String);
+      assertTrue(value.equals("value" + new Integer(i)));
+    }
+    assertNull(params.get("field3"));
+  }
+  
   
 //  /**
 //   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate(java.util.List)}.
@@ -351,12 +488,12 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
       setEnhancementProcessorMode(true);
     }
 
-    public void connect() {}
+    public void fun(){
+      System.out.println();
+    }
     
-//    public Object[] next(long timeoutMs) throws OAException {
-//       return null;
-//    }
-
+    public void connect() {}
+   
     public JNDISearch getSearch() {
       return this.search;
     }        

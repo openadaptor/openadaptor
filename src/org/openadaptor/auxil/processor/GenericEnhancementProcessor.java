@@ -41,18 +41,29 @@ import org.openadaptor.core.IEnhancementProcessor;
  * Draft version.
  * 
  * @author Kris Lachor
+ * @since Post 3.3
  * @TODO javadocs
- * @TODO unit tests, system tests
+ * @TODO unit tests (prepareParameters - OK, enhance not tested), system tests
  */
 public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
   
+  /**
+   * If input is not an IOrderedMap, returns an empty list of parameters. 
+   * If input is an IOrderedMap, checks specific field names or field indexes
+   * have been requested (by setting properties on {@link AbstractEnhancementProcessor}.
+   * If no specific fields requested, return the whole input, otherwise returns
+   * an IOrderedMap with specified fields.
+   */
   public IOrderedMap prepareParameters(Object input) {
     IOrderedMap params = new OrderedHashMap();
     if(input instanceof IOrderedMap){
       IOrderedMap inputMap = (IOrderedMap) input;
-      if(getCommaSeparatedFieldNames() != null){
-        Object value = inputMap.get(getCommaSeparatedFieldNames());
-        params.put(getCommaSeparatedFieldNames(), value);
+      String [] paramsFieldNames = getParamsFieldNames();
+      if(paramsFieldNames != null){
+        for(int i=0; i<paramsFieldNames.length; i++){
+          Object value = inputMap.get(paramsFieldNames[i]);
+          params.put(paramsFieldNames[i], value);  
+        }
       }else{
         params = inputMap;
       }

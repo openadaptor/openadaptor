@@ -35,14 +35,18 @@ import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
- * Abstract implementation of {@link IEnhancementProcessor}.
+ * Abstract implementation of {@link IEnhancementProcessor}. Holds properties:
+ * <li> a read connector
+ * <li> names or indexes of fields to be used as parameters in the reader's query.
  * 
  * @author Kris Lachor
- * @TODO javadocs
+ * @since Post 3.3
  */
 public abstract class AbstractEnhancementProcessor extends Component implements IEnhancementProcessor {
 
-  IEnhancementReadConnector readConnector;
+  private static final String FIELD_SEPARATOR = ",";
+  
+  private IEnhancementReadConnector readConnector;
   
   private String commaSeparatedIndexes;
   
@@ -55,14 +59,64 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
     return readConnector;
   }
 
+  /**
+   * Sets the read connector.
+   * 
+   * @param readConnector the read connector.
+   */
   public void setReadConnector(IEnhancementReadConnector readConnector) {
     this.readConnector = readConnector;
   }
+  
+  /**
+   * Allows user to specify indexes of the input record (ordered map) that hold parameters
+   * to be passed to the reader.
+   */
+  public void setParameterIndexes(String commaSeparatedIndexes){
+    this.commaSeparatedIndexes = commaSeparatedIndexes;
+  }
 
   /**
-   * Validates: 
-   * - is read connector set
-   * - does read connector itself validates
+   * Allows user to specify names of fields in the input record that hold parameters
+   * to be passed to the reader.
+   */
+  public void setParameterNames(String commaSeparatedFieldNames){
+    this.commaSeparatedFieldNames = commaSeparatedFieldNames;
+  }
+
+  /**
+   * @return names of fields in the input record that are to be used 
+   *         as parameters in the reader's query
+   */
+  public String getCommaSeparatedFieldNames() {
+    return commaSeparatedFieldNames;
+  }
+  
+  /**
+   * Breaks commaSeparatedFieldNames (if set) to String array.
+   * 
+   * @return parameter field names as String array
+   */
+  protected String [] getParamsFieldNames(){
+    if(null == commaSeparatedFieldNames){
+      return null;
+    }
+    String [] result = commaSeparatedFieldNames.split(FIELD_SEPARATOR);
+    /* remove while spaces */
+    if(result != null){
+      for(int i=0; i<result.length; i++){
+        if(result[i]!=null){
+          result[i]=result[i].trim();
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Runs validation: 
+   * <li> a read connector is set
+   * <li> validation of the read connector
    * 
    * @see org.openadaptor.core.IDataProcessor#validate(java.util.List)
    */
@@ -74,6 +128,8 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
   }
   
   /**
+   * Does nothing.
+   * 
    * @see org.openadaptor.core.IDataProcessor#reset(java.lang.Object)
    */
   public void reset(Object context) {
@@ -89,27 +145,5 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
    * @see org.openadaptor.core.IEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])
    */
   public abstract Object[] enhance(Object input, Object[] additionalData);
-  
-  /**
-   * Allows user to specify indexes of the input record (ordered map) that hold parameters
-   * to be passed to the reader.
-   */
-  public void setParameterIndexes(String commaSeparatedIndexes){
-    this.commaSeparatedIndexes = commaSeparatedIndexes;
-    //TODO
-  }
-  
-  /**
-   * Allows user to specify names of fields in the input record that hold parameters
-   * to be passed to the reader.
-   */
-  public void setParameterNames(String commaSeparatedFieldNames){
-    this.commaSeparatedFieldNames = commaSeparatedFieldNames;
-    //TODO
-  }
-
-  public String getCommaSeparatedFieldNames() {
-    return commaSeparatedFieldNames;
-  }
-  
+    
 }
