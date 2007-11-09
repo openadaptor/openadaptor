@@ -283,7 +283,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * Get the names of the columns of a given table.
    * @param tableName
    * @param connection
-   * @return
+   * @return List containing the column names for a given table
    * @throws SQLException
    */
   protected List getTableColumnNames(String tableName, Connection connection) throws SQLException {

@@ -73,7 +73,7 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
   /**
    * Validates the JNDISearch property was set.
    * 
-   * @see {@link IReadConnector#validate(List)}
+   * @see IReadConnector#validate(List)
    */
   public void validate(List exceptions) {
     if (search == null) {

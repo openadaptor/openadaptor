@@ -135,10 +135,13 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
   }
 
   /**
-   * If we have reached the end of the current input stream (super.isDry())
-   * is true but we have more files to process then open the next file
-   * and set the input stream. returns true we have reached the end of current
-   * input stream.
+   * Flag which indicates that there is no more data available to read.
+   * <br>
+   * If the end of the current input stream (super.isDry()) is reached,
+   * but there are more files to process, it will then open the next file
+   * and set the input stream accordingly. 
+   * It will return true, only when there are no more files to process and
+   * the current (last) file has reached the end if its input stream.
    */
   public boolean isDry() {
     if (super.isDry() && !files.isEmpty()) {

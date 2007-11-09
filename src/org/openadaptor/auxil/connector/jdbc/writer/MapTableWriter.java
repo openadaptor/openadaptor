@@ -61,7 +61,7 @@ public class MapTableWriter extends AbstractMapWriter {
   }
   /**
    * Returns the name of the database table where data is to be written
-   * @return
+   * @return String containing the name of the table
    */
   public String getTableName() {
     return tableName;

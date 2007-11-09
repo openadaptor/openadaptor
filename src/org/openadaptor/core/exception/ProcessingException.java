@@ -30,14 +30,17 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * OAException that relates to processing problem i.e. data specific NOT
- * transport or resource specific.
+ * OAException relating to processing problems.
+ * <br>
+ * These exceptions should be data specific, and not for example relate to transport
+ * or resource issues.
  *
  * <p>ProcessingExceptions are most commonly raised by DataProcessor implementations
  * but can be raised by any component that manipulates data or requires a
  * specific data format.</p>
  *
  * @author perryj
+ * @author higginse
  */
 public class ProcessingException extends OAException {
 

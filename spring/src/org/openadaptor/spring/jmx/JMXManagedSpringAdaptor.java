@@ -48,7 +48,6 @@ public class JMXManagedSpringAdaptor implements JMXManagedSpringAdaptorMBean {
  
   /**
    * @param name of the Spring config file that defines the adaptor
-   * @see org.openadaptor.spring.jmx.JMXManagedSpringAdaptorMBean#runSpringAdaptor()
    */
   public void runSpringAdaptor(String configFileName){
     String [] args = new String[] {SpringAdaptor.CONFIG, configFileName};

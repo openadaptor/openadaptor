@@ -270,7 +270,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * If successfull, the callable statement will be used for polling the database.
    * Otherwise, the context will be ingored. 
    * 
-   * @see {@link IReadConnector#setReaderContext(Object)}
+   * @see IReadConnector#setReaderContext(Object)
    * @param context - context as an IOrderedMap
    */
   public void setReaderContext(Object context) {
@@ -290,7 +290,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
   }
   
   /**
-   * @see {@link IReadConnector#getReaderContext()}
+   * @see IReadConnector#getReaderContext()
    * @return null
    */
   public Object getReaderContext() {

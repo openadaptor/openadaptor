@@ -39,26 +39,28 @@ import org.openadaptor.dataobjects.InvalidParameterException;
 import org.openadaptor.dataobjects.SimpleDataObject;
 
 /**
- * Convert OrderedMaps to DataObjects
- * 
- * --- WARNING ----- TODO: This class is still at the prototype stage and should not be used, not least because it is
- * incomplete!
- * 
- * 
- * Note: It extends AbstractLegacyConvertor to keep it with similar legacy ones, even though it could
+ * Convert OrderedMaps to DataObjects.
+ * <BR>
+ * <B>WARNING This class is still at the prototype stage and should not be used, not least because it is
+ * incomplete!</B>
+ * <p>
+ * For now, users are encouraged instead to use {@link org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor} 
+ * coupled with {@link XmlToDataObjectConvertor}.
+ * <p>
+ * Note: It requires that the legacy openadaptor jar (usually openadaptor.jar) is available on the classpath.
+ * <br>
+ * Note: It extends AbstractLegacyConvertor to associate it with similar legacy ones, even though it could
  * just directly extend AbstractConvertor
  * @author Eddy Higgins
+ * @see org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor
+ * @see XmlToDataObjectConvertor
  */
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
-  // BEGIN Bean getters/setters
-  // END Bean getters/setters
-
-  // BEGIN Abstract Convertor Processor implementation
 
   public OrderedMapToDataObjectConvertor() {
-    log.warn("--- THIS CONVERTOR IS STILL IN DEVELOPMENT - DO NOT USE ---");
+    log.warn("THIS CONVERTOR IS STILL IN DEVELOPMENT - DO NOT USE. Use OrderedMapToXmlConvertor with XmlToDataObjectConvertor instead");
   }
 
   /**
@@ -83,8 +85,6 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   // END Abstract Convertor Processor implementation
 
   private Object convertOrderedMapToDataObject(IOrderedMap map) throws RecordException {
-
-    Object result = null;
 
     // Create a Document to hold the data.
     DataObject sdo = new SimpleDataObject();
@@ -114,7 +114,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     } catch (InvalidParameterException ipe) {
       throw new RecordException("Failed to process attribute [" + key + "]: " + ipe, ipe);
     }
-    return result;
+    return sdo;
   }
 
 }

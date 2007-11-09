@@ -163,7 +163,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
   }
   
   /**
-   * @see {@link IReadConnector#getReaderContext()}
+   * @see IReadConnector#getReaderContext()
    * @return null
    */
   public Object getReaderContext() {
@@ -171,7 +171,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
   }
   
   /**
-   * @see {@link IReadConnector#setReaderContext(Object)}
+   * @see IReadConnector#setReaderContext(Object)
    */
   public void setReaderContext(Object context) {
   }

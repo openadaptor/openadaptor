@@ -94,7 +94,7 @@ public class SocketWriteConnector extends AbstractStreamWriteConnector {
   }
 
   /**
-   * If the {@link #remoteHostname} property is set then connects to remote host
+   * If the {@link #setRemoteHostname remoteHostname} property is set then connects to remote host
    * and returns the OutputStream from that socket. Otherwise it creates a ServerSocket
    * and waits for a connection from a client, when this happens it returns the OutputStream
    * from that socket;

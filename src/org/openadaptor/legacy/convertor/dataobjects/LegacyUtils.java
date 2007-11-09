@@ -119,7 +119,7 @@ public class LegacyUtils  {
    * 
    * @param incoming an object which may contain a DateHolder instance
    * @return incoming, unless it was a DateHolder, in which case 
-   *         incoming.asDate() (i.e. a {@ling Date} instance)
+   *         incoming.asDate() (i.e. a <code>java.util.Date</code> instance)
    * @throws RecordFormatException if incoming object is not a DateHolderInstance.
    */
   public static Object convertDateHolderToDate(Object incoming) {

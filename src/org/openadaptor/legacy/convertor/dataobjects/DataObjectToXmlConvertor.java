@@ -63,7 +63,7 @@ public class DataObjectToXmlConvertor extends AbstractDataObjectConvertor {
    * availability of a legacy openadaptor jar to do the conversions, as openadaptor3 
    * does not directly support DataObjects
    * 
-   * @param record containing a DataObject[]
+   * @param dobs record as a DataObject[]
    * @return XMl representation of the data
    * @throws RecordException if conversion fails
    */

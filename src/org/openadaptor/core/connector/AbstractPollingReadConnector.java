@@ -101,12 +101,14 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   }
 
   /**
-   * Calls to {@link #next(long)} on the <code>delegate</code>, but first makes
+   * Fetch next data from delegate, subject to polling conditions.
+   * <br>
+   * It will call {@link #next(long)} on the <code>delegate</code>, but first makes
    * sure the time is right, i.e. we're past the <code>startTime</code> and 
    * the delegate isn't dry. 
-   * If the delegate *is* dry, and we're past the <code>reconnectTime</code>
-   * the delegate is disconnectoed and connected again.
-   * If despite the reconnection the delegate is still dry, it sleeps for 
+   * If the delegate <em>is</em dry, and we're past the <code>reconnectTime</code>
+   * the delegate is disconnected and (re)connected again.
+   * If the delegate is still dry despite a reconnection, it sleeps for 
    * the length of the <code>timeout</code>.
    *
    * @throws OAException

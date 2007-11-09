@@ -47,8 +47,8 @@ import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 
 /**
- * Converts {@link IOrderedMap}s to xml documents or xml strings
- * <p>
+ * Converts {@link IOrderedMap}s to XML documents or XML strings.
+ * <be>
  * Note that Map keys containing forward slashes are not permitted as
  * Element tags in XML. These will be mapped according to the value
  * of mappedSlashValue. If this property hasn't been explicitly set,

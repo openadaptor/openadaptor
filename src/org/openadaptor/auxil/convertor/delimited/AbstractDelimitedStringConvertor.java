@@ -192,7 +192,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   }
 
   /**
-   * @return 
+   * @return flag indicating that the delimiter is a literal string
    */
   public boolean isDelimiterAlwaysLiteralString() {
     return delimiterAlwaysLiteralString;
@@ -245,7 +245,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * The flag takes effect only when <code>protectQuotedFields</code> flat is enabled.
    * Escaping quoted chars only works when the delimiter is a literal string. 
    * 
-   * @todo implement escaping quoted chars when the delimiter is a regular expression
+   * ToDo: implement escaping quoted chars when the delimiter is a regular expression
    * @see AbstractDelimitedStringConvertor#setQuoteEscapeChar(char)
    */
   public void setEscapeQuoteCharacters(boolean escapeQuoteCharacters) {
@@ -457,7 +457,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * @param regexp a regular expression delimiter
    * @param quoteChar quote character
    * @return an array of strings corresponding to the fields in the string supplied
-   * @todo add escaping of quote characters
+   * ToDo: add escaping of quote characters
    */
   protected String[] extractQuotedValuesRegExp(String delimitedString, String regexp, char quoteChar) {
     char[] chars = delimitedString.toCharArray();

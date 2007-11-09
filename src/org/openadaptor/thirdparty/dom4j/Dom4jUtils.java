@@ -185,7 +185,8 @@ public class Dom4jUtils {
    * </UL>
    * 
    * @param o
-   * @return
+   * @return String representation of input value, or empty String
+   *         if input is null.
    */
   public static final String valueAsNonNullString(Object object) {
     if (object==null) {

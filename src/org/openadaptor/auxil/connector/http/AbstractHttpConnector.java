@@ -80,7 +80,7 @@ public abstract class AbstractHttpConnector extends Component {
   /**
    * Validates mandatory properties: <code>url</code>.
    * 
-   * @see {@link IReadConnector#validate(List)}
+   * @see IReadConnector#validate(List)
    */
   public void validate(List exceptions) {
     log.debug("Validating url: " + url);
