@@ -329,7 +329,7 @@
   </target>
   
   <target name="example.springcheck" depends="buildtools.taskdef" description="checks spring config examples are valid">
-    <springcheck classpathref="classpath.test">
+    <springcheck classpathref="classpath.test" ignorestubexceptions="true">
       <fileset dir="${dir.example}/spring">
         <include name="**/*.xml"/>
         <exclude name="**/input/*"/>

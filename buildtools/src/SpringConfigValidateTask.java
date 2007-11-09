@@ -48,6 +48,8 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
 public class SpringConfigValidateTask extends Task {
+  //If ignoreStubExceptions is set, then this system property will be set to true.
+  public static final String IGNORE_STUB_EXCEPTION_FLAG="openadaptor.exception.stub.ignore";
 
   private static String SPRING_FACTORY_CLASSNAME = "org.springframework.beans.factory.xml.XmlBeanFactory";
   private static String SPRING_RESOURCE_CLASSNAME = "org.springframework.core.io.Resource";
@@ -57,6 +59,7 @@ public class SpringConfigValidateTask extends Task {
   
   private List filesets = new ArrayList();
   private Path classpath;
+  private boolean ignoreStubExceptions=false;
 
   public void addFileset(FileSet set) {
     filesets.add(set);
@@ -65,6 +68,19 @@ public class SpringConfigValidateTask extends Task {
   public void setClasspathRef(Reference r) {
     classpath = new Path(getProject());
     classpath.setRefid(r);
+  }
+  
+  /**
+   * flag to indicate whether or not {@link StubException} can be ignored.
+   * <br>
+   * All it does in practice is set system property {@link IGNORE_STUB_EXCEPTION_FLAG} to
+   * the supplied value.
+   * It is the responsibility of the code itself to interpret this flag as it sees fit.
+   * @see LegacyUtils for an example.
+   * @param ignore
+   */
+  public void setIgnoreStubExceptions(boolean ignore) {
+    this.ignoreStubExceptions=ignore;
   }
 
   public void execute() throws BuildException {
@@ -103,10 +119,12 @@ public class SpringConfigValidateTask extends Task {
       throw new BuildException(t);
     }
 
+    //Set flag which indicates if stub exceptions may be ignored.
+    System.setProperty("openadaptor.exception.stub.ignore", Boolean.toString(ignoreStubExceptions));
+
     //
     // iterate thru spring config files, forcing named beans to be loaded
     //
-    
     ArrayList failedFiles = new ArrayList();
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
       FileSet fileSet = (FileSet) iter.next();
