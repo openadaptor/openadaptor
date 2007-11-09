@@ -35,7 +35,6 @@ import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.router.Pipeline;
 import org.openadaptor.core.router.Router;
 
 /**
