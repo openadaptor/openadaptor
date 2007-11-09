@@ -239,7 +239,7 @@ public class SpringApplication {
   }
 
   /**
-   * Configure the default PropertyPlaceholderConfigurer.<br>
+   * Configure the default PropertyPlaceholderConfigurer.
    * <br>
    * Unless suppressAutomaticPropsConfig is set true by supplying -noprops as a command line arg then
    * this method creates and installs a PropertyPlaceholderConfigurer which allows access to System Properties

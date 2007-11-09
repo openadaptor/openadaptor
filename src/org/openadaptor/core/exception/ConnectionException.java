@@ -30,13 +30,15 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * OAException for external resource problems i.e. not data specific but
- * transport or resource specific. Such as Database Server is down etc.
+ * OAException for external resource problems.
+ * <br>
+ * These exceptions are not data specific but transport or resource specific
+ * (e.g. Database Server is down etc.)
  *
  * <p>ConnectionException's are most commonly raised by Connector implementations
  * but can be raised by any component that accesses external resources.</p>
  *
- * @author perryj
+ * @author higginse, scullyk
  */
 public class ConnectionException extends OAException {
 

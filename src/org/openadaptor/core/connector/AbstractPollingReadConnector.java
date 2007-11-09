@@ -40,8 +40,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * An abstract implementation of {@link IPollingReadConnector}. Based on the legacy
- * <code>PollingReadConnector</code>.
+ * An abstract implementation of {@link IPollingReadConnector}. 
+ * <br>
+ * Based on the legacy <code>PollingReadConnector</code>.
  * When this connector polls it calls the following on the IReadConnector it is
  * wrapping...
  * <ul>
@@ -51,8 +52,9 @@ import java.util.List;
  * <li>{@link IReadConnector#disconnect()}
  * </ul>
  * 
- * @see {@link IPollingReadConnector}, {@link IReadConnector}.
- * @author Fred Perry, Kris Lachor
+ * @see IPollingReadConnector
+ * @see IReadConnector
+ * @author Fred Perry, Kris Lachor, Eddy Higgins
  */
 public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector {
 

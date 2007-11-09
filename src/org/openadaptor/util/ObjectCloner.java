@@ -165,7 +165,8 @@ public class ObjectCloner {
    * Set the <code>forgiving</code> property to false to force a
    * RuntimeException instead.
    * @param object
-   * @return
+   * @return clone of the original object, or the original object if forgiving
+   *         flag is set, and cloning is not possible.
    */
   public  Object clone(Object object) { 
     Object clone=object;

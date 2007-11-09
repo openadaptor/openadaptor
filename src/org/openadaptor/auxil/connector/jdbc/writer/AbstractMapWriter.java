@@ -64,7 +64,7 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
   }
   /**
    * Returns the names of the columns which are written on output.
-   * @return
+   * @return Unmodifiable List with names of the output columns.
    */
   public List getOutputColumns() {
     return Collections.unmodifiableList(Arrays.asList(outputColumns));

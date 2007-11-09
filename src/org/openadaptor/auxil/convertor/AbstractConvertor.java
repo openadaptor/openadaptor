@@ -78,7 +78,7 @@ public abstract class AbstractConvertor extends Component implements IDataProces
   /**
    * Gets flag indicating if returned values must always be wrapped in an Object[].
    * 
-   * @return
+   * @return true if boxing is enabled, or false otherwise
    */
   public boolean getBoxReturnedArrays() {
     return boxReturnedArrays;

@@ -51,6 +51,8 @@ public class LegacyUtils  {
   //It doesn't reference it as it would create a dependency on the build tools.
   public static final String IGNORE_STUB_EXCEPTION_FLAG="openadaptor.exception.stub.ignore";
   private static final Log log = LogFactory.getLog(LegacyUtils.class);
+  
+  private static final Object[] NULL_OBJECT_ARRAY=(Object[])null;
 
   private static final String LEGACY_SET_ATTRIBUTE_METHOD_NAME="setAttributeValue";
   private static final Class[] LEGACY_SET_ATTRIBUTE_METHOD_ARGS= {String.class,String.class};
@@ -59,14 +61,14 @@ public class LegacyUtils  {
   private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
   //Legacy DateHolder asDate() method, by reflecation. As above.
   private static final Method DATE_HOLDER_METHOD=getNonStubMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
+ 
 
 
   /**
    * Checks if dateHolder is available.
    * <br>
-   * More specifically, it checks that the 
-   * asDate() Method is available.
-   * @return
+   * More specifically, it checks that the <code>asDate()</code> Method is available.
+   * @return true if DateHolder.asDate() method is available.
    */
   public static boolean dateHolderAvailable() {
     return (null !=DATE_HOLDER_METHOD);
@@ -84,6 +86,7 @@ public class LegacyUtils  {
   /**
    * Box or cast supplied Object (DataObject, or DataObject[]) as DataObject[] 
    * 
+   * @return the input record either cast to, or wrapped in, a DataObject[] 
    * @throws RecordFormatException if record is anything but DataObject or DataObject[]
    */
   public static DataObject[] asDataObjectArray(Object record) throws RecordFormatException {
@@ -107,15 +110,16 @@ public class LegacyUtils  {
   }
 
   /**
-   * Try and convert a legacy dateHolder instance to a Date instance.
+   * Try and convert a legacy DateHolder instance to a Date instance.
    * <NB>
-   * It does <em>not</em> check that the DATE_HOLDER_CLASS is avaiable.
-   * The caller may check this via dateHolderAvailable()
+   * It does <em>not</em> check that the DATE_HOLDER_CLASS is available.
+   * The caller may check this via {@link #dateHolderAvailable()}
    * If the incoming object is not a DateHolder instance it will just 
    * return the incoming object.
    * 
-   * @param incoming
-   * @return
+   * @param incoming an object which may contain a DateHolder instance
+   * @return incoming, unless it was a DateHolder, in which case 
+   *         incoming.asDate() (i.e. a {@ling Date} instance)
    * @throws RecordFormatException if incoming object is not a DateHolderInstance.
    */
   public static Object convertDateHolderToDate(Object incoming) {
@@ -123,7 +127,7 @@ public class LegacyUtils  {
     //Catches DateHolder (and DateTimeHolder subclass)
     if (DATE_HOLDER_CLASS.isAssignableFrom(incoming.getClass())){
       try {
-        outgoing=DATE_HOLDER_METHOD.invoke(incoming, (Object[])null);
+        outgoing=DATE_HOLDER_METHOD.invoke(incoming, NULL_OBJECT_ARRAY);
       } catch (Exception e) {
         String msg="Failed to convert DateHolder to java.util.Date";
         log.warn(msg+". Exception: "+e);
@@ -185,7 +189,8 @@ public class LegacyUtils  {
    * Don't want to pollute openadaptor3 build with requirement for legacy jar.
    * If it fails, it will just return null.
    * @param className
-   * @return
+   * @return Class instance corresponding to supplied class name, or null if 
+   *         it could not be obtained.
    */
   public static Class getLegacyClass(String className) {
     Class result=null;

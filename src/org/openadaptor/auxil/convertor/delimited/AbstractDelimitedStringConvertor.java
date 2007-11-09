@@ -443,7 +443,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * 
    * @param delimitedString
    * @param regexp
-   * @return
+   * @return Array of Strings resulting from the regular explession split operation
    */
   protected String[] extractValuesRegExp(String delimitedString, String regexp) {
     return delimitedString.split(regexp, -1);
@@ -523,7 +523,7 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
    * 
    * @param delimitedString
    * @param delimiter
-   * @return
+   * @return extracted tokens resulting from split operation.
    */
   protected String[] extractValuesLiteralString(String delimitedString, String delimiter) {
     char[] chars = delimitedString.toCharArray();

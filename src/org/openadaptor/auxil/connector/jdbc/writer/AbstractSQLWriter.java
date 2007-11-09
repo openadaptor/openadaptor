@@ -45,14 +45,14 @@ import org.openadaptor.core.exception.ConnectionException;
 
 /**
  * 
- * Base implementation of ISQLWriter. 
+ * Abstract base implementation of ISQLWriter.
+ * <br> 
  * This handles common behaviour such as checking for batch handling support
- * in the undelying connection.
+ * in the underlying connection.
  * It is also responsible for managing a reusable PreparedStatement, if reuse
  * is possible.
  * 
  * @author higginse
- *
  */
 public abstract class AbstractSQLWriter implements ISQLWriter{
   private static final Log log = LogFactory.getLog(AbstractSQLWriter.class);
@@ -87,8 +87,11 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   }
 
   /**
-   * Check if connection has batch support.
-   * @return
+   * Check if this Writer's underlying connection has batch support.
+   * <br>
+   * This will query the underlying connection's metadata to see
+   * if it supports batch updates.
+   * @return <code>true</code> if the connection supports batch updates, <code>false</code> otherwise
    * @throws SQLException
    */
   protected boolean checkBatchSupport() throws SQLException {
@@ -96,6 +99,11 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   }
 
 
+  /**
+   * Flag indicating if this Writer can support batching.
+   * <br>
+   * @return <code>true</code> if it can support batching, or <code>false</code> otherwise.
+   */
   public boolean hasBatchSupport() {
     return batchSupport;
   }

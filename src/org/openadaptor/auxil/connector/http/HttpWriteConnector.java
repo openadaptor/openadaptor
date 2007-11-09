@@ -92,7 +92,7 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
   }
 
   /**
-   * @see {@link IWriteConnector#deliver(Object[])}
+   * @see IWriteConnector#deliver(Object[])
    * @todo handling of the response
    * @todo javadoc comments
    */

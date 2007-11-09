@@ -54,9 +54,11 @@ public abstract class AbstractDataObjectConvertor extends AbstractLegacyConverto
   }
 
   /**
-   * Convert the supplied dataobject array.
+   * Convert the supplied dataobject array into some other representation.
+   * <br>
+   * The output format is dictated by the implementing subclass.
    * @param dobs
-   * @return
+   * @return Object containing the result of conversion
    */
   protected abstract Object convert(DataObject[] dobs);
 

@@ -100,7 +100,9 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   
   /**
    * This holds the last result from script execution.
-   * @return
+   * 
+   * @return Object containing the result from last execution of the script,
+   *         or <code>null</code> if script has not yet executed.
    */
   protected Object getLastResult() {
     return lastResult;
