@@ -76,7 +76,7 @@ public class LegacyUtils  {
     boolean ignore=false;
     String flag=System.getProperty(IGNORE_STUB_EXCEPTION_FLAG);
     if (null != flag) {
-      ignore=Boolean.valueOf(flag);
+      ignore=Boolean.valueOf(flag).booleanValue();
     }
     return ignore;
   }
