@@ -33,7 +33,13 @@ Minor changes
    
   * Modified stub code to generate StubException when stub method is called. It still 
     extends RuntimeException but now can be distinguished if necessary.
-   
+  
+  * Significant refactor of legacy convertor code.
+    Convertors now subclass AbstractLegacyConvertor which optionally provides a generic 
+    mechanism to set attributes (properties) as spring bean properties on legacy convertors.
+    Currently this includes ( XMLFormatter,GenericXMLWriter, GenericXMLReader)
+    Added some extra legacy conversion examples also.
+
 Bug Fixes
 =========
 
