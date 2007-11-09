@@ -67,9 +67,7 @@ public class MBeanServer implements javax.management.MBeanServer {
 	private static Log log = LogFactory.getLog(MBeanServer.class);
   
   public static final String OBJECT_NAME_STRING="jmx:id=http";
-  private static final int UNSET_PORT=-1; 
-    
-	private javax.management.MBeanServer mServer;
+  private javax.management.MBeanServer mServer;
   private HtmlAdaptorServer html=null;
   
   /**

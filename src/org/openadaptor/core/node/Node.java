@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
