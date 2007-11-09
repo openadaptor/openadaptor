@@ -69,8 +69,8 @@ public interface JMXManagedSpringAdaptorMBean {
   /**
    * A JMX management method required by JBoss service contract.
    * 
-   * @true if this mbean has been started as a JBoss service (called by JBoss app server),
-   *       false otherwise
+   * @return true if this mbean has been started as a JBoss service 
+   *        (called by JBoss app server), false otherwise
    */
   boolean isStarted();
 

@@ -122,7 +122,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 
   /**
    * Create prepared statement to write a batch of records.
-   * @param Non-null data Object[] of records to be written.
+   * @param data Non-null data Object[] of records to be written.
    * @return PreparedStatement ready for execution.
    * @throws SQLException
    */
@@ -145,7 +145,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * each record in the batch. It delegates to createBatchStatement() or
    * createStatement accordingly.
    * 
-   * @param dataBatch Object[] containing records to be written.
+   * @param data Object[] containing records to be written.
    * @throws SQLException if the batch cannot be written.
    */
   public void writeBatch(Object[] data) throws SQLException {

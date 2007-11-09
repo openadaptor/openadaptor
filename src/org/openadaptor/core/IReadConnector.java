@@ -114,7 +114,7 @@ public interface IReadConnector {
    * This could be used by for example by polling readers or polling strategies that wrap 
    * the protocol specific readers.
    * 
-   * @param data that can be used by the connector to construct queries or enrich returned data.
+   * @param context data that can be used by the connector to construct queries or enrich returned data.
    */
   void setReaderContext(Object context);
 }

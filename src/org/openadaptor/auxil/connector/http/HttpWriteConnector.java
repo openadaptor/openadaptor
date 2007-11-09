@@ -93,8 +93,8 @@ public class HttpWriteConnector extends AbstractHttpConnector implements IWriteC
 
   /**
    * @see IWriteConnector#deliver(Object[])
-   * @todo handling of the response
-   * @todo javadoc comments
+   * ToDo: handling of the response
+   * ToDo: javadoc comments
    */
   public Object deliver(Object[] data) {
     log.info("HTTP write connector, delivering data..");

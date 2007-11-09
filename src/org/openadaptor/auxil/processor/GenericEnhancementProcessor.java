@@ -42,8 +42,8 @@ import org.openadaptor.core.IEnhancementProcessor;
  * 
  * @author Kris Lachor
  * @since Post 3.3
- * @TODO javadocs
- * @TODO unit tests (prepareParameters - OK, enhance not tested), system tests
+ * ToDo: javadocs
+ * ToDo: unit tests (prepareParameters - OK, enhance not tested), system tests
  */
 public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
   

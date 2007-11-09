@@ -50,7 +50,7 @@ import java.util.List;
  * aforementioned jar resides plus all the zips and jars and sub dirs.
  * openadaptor-depends.jar is deliberately excluded and openadptor-stub.jar
  * always comes last. If the user defines the following system property
- * {@value #SYSTEM_PROPERTY_OPENADAPTOR_LIB} then the contents of this dir (and
+ * {@link #SYSTEM_PROPERTY_OPENADAPTOR_LIB} then the contents of this dir (and
  * subdirs) will be prepended to the classpath too.
  * 
  * @author perryj

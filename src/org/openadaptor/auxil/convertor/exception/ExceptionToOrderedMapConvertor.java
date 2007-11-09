@@ -91,7 +91,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   /**
    * Converts the <code>record</code> into an <code>IOrderedMap</code> .
    *
-   * @param a record, expected to be a MessageException.
+   * @param record Object which should be a MessageException instance
    * @return an IOrderedMap representation of the MessageException contents
    */
   protected Object convert(Object record) {

@@ -89,7 +89,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
    * This associates the incoming data record with a bound name within
    * the script. 
    * <BR>
-   * Defaults to {@link DEFAULT_DATA_BINDING}
+   * Defaults to {@link #DEFAULT_DATA_BINDING}
    * @param dataBinding
    */
 
@@ -141,7 +141,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   /**
    * Sets the scripting language to be used.
    * <br>
-   * Defaults to {@link DEFAULT_LANGUAGE}
+   * Defaults to {@link #DEFAULT_LANGUAGE}
    * @param language
    */
   public void setLanguage(String language) {

@@ -39,7 +39,7 @@ import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Uses PBE (Password Based Encyrption) to encyrpt and decrypt data. Must be configured
- * with a password, the algorithm defaults to {@value #DEFAULT_ALGORITHM}. refer to
+ * with a password, the algorithm defaults to {@link #DEFAULT_ALGORITHM}. refer to
  * base class for other behaviour.
  * 
  * @author perryj
@@ -54,7 +54,7 @@ public class PasswordBasedEncryptionProcessor extends EncryptionProcessor {
   
   private static final int ITERATIONS = 20;
 
-  private static final String DEFAULT_ALGORITHM = "PBEWithMD5AndDES";
+  public static final String DEFAULT_ALGORITHM = "PBEWithMD5AndDES";
   
   private String password;
 

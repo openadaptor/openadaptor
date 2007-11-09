@@ -93,7 +93,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   /**
    * Optional.
    * 
-   * @param interval set the adaptor to poll every X milliseconds
+   * @param intervalMs set the adaptor to poll every X milliseconds
    */
   public void setPollIntervalMs(long intervalMs) {
     this.intervalMs = intervalMs;
@@ -102,8 +102,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   /**
    * Optional
    * 
-   * @param interval
-   *          set the adaptor to poll ever X seconds
+   * @param interval set the adaptor to poll ever X seconds
    */
   public void setPollIntervalSecs(final int interval) {
     if (intervalMs > -1)

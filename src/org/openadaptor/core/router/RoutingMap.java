@@ -338,7 +338,7 @@ public class RoutingMap implements IRoutingMap,Cloneable {
      * corresponding message processors (map's values) and stores the resulting
      * pair (key: exception classes, value: list of processors) in itself.
      * 
-     * @param a map; keys are exception class names (Strings), values are
+     * @param map Map where keys are exception class names (Strings), values are
      *          exception processors (anything that implements
      *          IMessageProcessor).
      */

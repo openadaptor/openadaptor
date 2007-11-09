@@ -94,7 +94,7 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
 
   /**
    * Create prepared statement to write a single ordered map.
-   * @param Object which should contain an IOrderedMap instance
+   * @param datum - an Object which should contain an IOrderedMap instance
    * @return PreparedStatement ready for execution
    * @throws RuntimeException if supplied Object is null or does not contain IOrderedMaps
    * @throws SQLException
@@ -111,7 +111,7 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
 
   /**
    * Create prepared statement to write a batch of ordered maps.
-   * @param Non-null IOrderedMap[]
+   * @param data Non-null IOrderedMap[]
    * @return PreparedStatement ready for execution.
    * @throws SQLException
    */
@@ -119,7 +119,7 @@ public abstract class AbstractMapWriter extends AbstractSQLWriter {
 
   /**
    * Create prepared statement to write a single ordered map.
-   * @param Non-null IOrderedMap instance
+   * @param datum Non-null IOrderedMap instance
    * @return PreparedStatement ready for execution
    * @throws SQLException
    */

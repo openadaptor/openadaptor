@@ -109,8 +109,7 @@ public abstract class AbstractMapProcessor extends Component implements IDataPro
   /**
    * Process a (Map) record.
    *
-   * @param simpleRecord the record to be processed
-   * @param alreadyCloned true if the record has been cloned
+   * @param mapRecord the record to be processed
    *
    * @return Object[] containing the results of processing the incoming record
    *

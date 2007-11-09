@@ -184,7 +184,7 @@ public class Dom4jUtils {
    *  <LI> Otherwise it returns object.toString().
    * </UL>
    * 
-   * @param o
+   * @param object
    * @return String representation of input value, or empty String
    *         if input is null.
    */

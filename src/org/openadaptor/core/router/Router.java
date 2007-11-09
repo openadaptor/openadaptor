@@ -173,7 +173,7 @@ public class Router extends AbstractRouter implements IMessageProcessor {
    * @param exceptionProcessor this can be any of:
    *      <ul>
    *      <li>{@link IDataProcessor}</li>
-   *      <li>{@link IWriteConnector}</li>
+   *      <li>{@link org.openadaptor.core.IWriteConnector}</li>
    *      <li>{@link IExceptionHandler}</li>
    *      </ul>
    * @see IExceptionHandler#setExceptionMap(Map)

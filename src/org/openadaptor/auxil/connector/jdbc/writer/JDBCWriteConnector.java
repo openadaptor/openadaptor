@@ -90,7 +90,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * This delegate will be used to write each batch of records received
    * by this connector.
    *
-   * @param ISQLWriter class which converts the incoming data into a PreparedStatement.
+   * @param sqlWriter {@link ISQLWriter} implementation which converts the incoming data into a PreparedStatement.
    */
   public void setWriter(final ISQLWriter sqlWriter) {
     this.sqlWriter = sqlWriter;

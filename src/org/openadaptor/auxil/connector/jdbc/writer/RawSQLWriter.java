@@ -59,7 +59,7 @@ public class RawSQLWriter extends AbstractSQLWriter {
 
   /**
    * Create prepared statement to write a batch of records.
-   * @param Non-null data Object[] of records to be written.
+   * @param data Non-null data Object[] of records to be written.
    * @return PreparedStatement ready for execution.
    * @throws SQLException
    */

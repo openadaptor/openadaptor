@@ -44,7 +44,7 @@ public interface IEnhancementReadConnector extends IReadConnector {
    * Exceptions should be thrown as RuntimeExceptions.
    * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
-   * @param parameters that this connector can use to adjust the query to the underlying
+   * @param inputParameters that this connector can use to adjust the query to the underlying
    *        resource
    * @see IReadConnector#next(long)
    * @see IEnhancementProcessor
