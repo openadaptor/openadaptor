@@ -31,7 +31,6 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
@@ -46,10 +45,11 @@ import org.openadaptor.dataobjects.SimpleDataObject;
  * incomplete!
  * 
  * 
- * 
+ * Note: It extends AbstractLegacyConvertor to keep it with similar legacy ones, even though it could
+ * just directly extend AbstractConvertor
  * @author Eddy Higgins
  */
-public class OrderedMapToDataObjectConvertor extends AbstractConvertor {
+public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
   // BEGIN Bean getters/setters

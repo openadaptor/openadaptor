@@ -33,6 +33,7 @@ import org.dom4j.Document;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObjectException;
+import org.openadaptor.doconverter.XMLFormatter;
 import org.openadaptor.doxml.GenericXMLReader;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 
@@ -45,10 +46,22 @@ import java.util.Map;
  *
  * @author Eddy Higgins
  */
-public class XmlToDataObjectConvertor extends AbstractConvertor {
+public class XmlToDataObjectConvertor extends AbstractLegacyConvertor {
 
   private static final Log log = LogFactory.getLog(XmlToDataObjectConvertor.class);
-  protected GenericXMLReader reader = new GenericXMLReader();
+ 
+  /**
+   * This is the class which does the work.
+   * <br>
+   * Attributes may be set via setAttributes().
+   */
+  protected GenericXMLReader reader;
+
+  public XmlToDataObjectConvertor() {
+    reader = new GenericXMLReader();
+    //Allow the base class to set attributes on it (where possible)
+    super.legacyConvertorComponent=reader;
+  }
 
   /**
    * This converts a supplied XML (String or dom4j Document) into a DataObject[] <B>Note</B>: Usage of this method
@@ -78,7 +91,8 @@ public class XmlToDataObjectConvertor extends AbstractConvertor {
         XmlToDataObjectConvertor.log.warn(reason);
         throw new RecordException(reason, e);
       }
-    } else {
+    } 
+    else {
       throw new RecordFormatException("Record is not an XML String (or dom4j Document). Record: " + record);
     }
     return result;

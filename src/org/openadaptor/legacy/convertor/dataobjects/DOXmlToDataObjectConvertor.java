@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
@@ -31,20 +31,31 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.doconverter.XMLFormatter;
 
 /**
- * Convert DataObject XML (DOXML) into DataObjects <B>Note</B>: Usage of this class depends on the availability of a
- * legacy openadaptor jar to do the conversions, as openadaptor doesn't directly support dataobjects, or DOXML.
+ * Convert DataObject XML (DOXML) into DataObjects.
+ * <br>
+ * <B>Note</B>: Usage of this class depends on the availability of a
+ * legacy openadaptor jar to do the conversions, as openadaptor doesn't directly support DataObjects, or DOXML.
  * 
  * @author Eddy Higgins
  */
-public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
+public class DOXmlToDataObjectConvertor extends AbstractLegacyConvertor {
 
   private static final Log log = LogFactory.getLog(DOXmlToDataObjectConvertor.class);
-  
+
+  /**
+   * This is the class which does the work.
+   * <br>
+   * Attributes may be set via setAttributes().
+   */
+  protected XMLFormatter formatter;
+
   public DOXmlToDataObjectConvertor() {
-    super();
-    //super.setBoxReturnedArrays(false); //Don't box by default,as output is already an Object[].
+    formatter = new XMLFormatter();
+    //Allow the base class to set attributes on it (where possible)
+    super.legacyConvertorComponent=formatter;
   }
 
   protected Object convert(Object record) throws RecordException {
@@ -53,7 +64,8 @@ public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
     if (record instanceof String) {
       try {
         result = formatter.fromString((String) record);
-      } catch (Exception e) {
+      } 
+      catch (Exception e) {
         String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
         log.warn(reason);
         throw new RecordException(reason, e);
@@ -64,6 +76,5 @@ public class DOXmlToDataObjectConvertor extends AbstractDOXmlConvertor {
 
     return result;
   }
-  // END Abstract Convertor Processor implementation
 
 }

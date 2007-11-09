@@ -23,21 +23,15 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
-import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doxml.GenericXMLWriter;
-import org.openadaptor.auxil.convertor.AbstractConvertor;
-
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Convert Data Objects into XML (using legacy openadaptor functionality) <B>Note</B>: Usage of this class depends on
@@ -46,21 +40,20 @@ import java.util.Map;
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToXmlConvertor extends AbstractConvertor {
-
+public class DataObjectToXmlConvertor extends AbstractDataObjectConvertor {
   private static final Log log = LogFactory.getLog(DataObjectToXmlConvertor.class);
 
-  protected GenericXMLWriter writer = new GenericXMLWriter();
-
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        writer.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
+  /**
+   * This is the class which does the work.
+   * <br>
+   * Attributes may be set via setAttributes().
+   */
+  private GenericXMLWriter writer;
+  
+  public DataObjectToXmlConvertor() {
+    writer=new GenericXMLWriter();
+    //Allow the base class to set attributes on it (if possible)
+    super.legacyConvertorComponent=writer;
   }
 
   /**
@@ -74,22 +67,15 @@ public class DataObjectToXmlConvertor extends AbstractConvertor {
    * @return XMl representation of the data
    * @throws RecordException if conversion fails
    */
-  protected Object convert(Object record) throws RecordException {
-    String result = null;
-
-    if (record instanceof DataObject[]) {
-      try {
-        result = writer.toString((DataObject[]) record);
-      } catch (Exception e) {
-        String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
-        DataObjectToXmlConvertor.log.warn(reason);
-        throw new RecordException(reason, e);
-      }
-    } else {
-      throw new RecordFormatException("Record is not a DataObject[]. Record: " + record);
+  protected Object convert(DataObject[] dobs) throws RecordException {
+    try {
+      return writer.toString(dobs);
+    } 
+    catch (Exception e) {
+      String reason = "Failed to convert " + dobs == null ? "<null>" : dobs + ". Exception - " + e;
+      DataObjectToXmlConvertor.log.warn(reason);
+      throw new RecordException(reason, e);
     }
-    return result;
-  }
-  // END Abstract Convertor Processor implementation
+  } 
 
 }

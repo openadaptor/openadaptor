@@ -23,15 +23,15 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
+import org.openadaptor.doconverter.XMLFormatter;
 
 /**
  * Convert Data Objects into DOXML (using legacy openadaptor functionality).
@@ -42,39 +42,43 @@ import org.openadaptor.dataobjects.DataObject;
  * 
  * @author Eddy Higgins
  */
-public class DataObjectToDOXmlConvertor extends AbstractDOXmlConvertor {
+public class DataObjectToDOXmlConvertor extends AbstractDataObjectConvertor {
 
   private static final Log log = LogFactory.getLog(DataObjectToDOXmlConvertor.class);
 
   /**
-   * This converts a supplied DataObjet[] into a DOXML String <B>Note</B>: Usage of this method depends on the
+   * This is the class which does the work.
+   * <br>
+   * Attributes may be set via setAttributes().
+   */
+  protected XMLFormatter formatter;
+ 
+  public DataObjectToDOXmlConvertor() {
+    formatter = new XMLFormatter();
+    //Allow the base class to set attributes on it (where possible)
+    super.legacyConvertorComponent=formatter;
+  }
+
+  /**
+   * This converts a supplied DataObject[] into a DOXML String
+   * <br>
+   * <B>Note</B>: Usage of this method depends on the
    * availability of a legacy openadaptor jar to do the conversions, as openadaptor 3 doesn't directly support dataobjects, or
    * DOXML.
    * 
-   * @param record
-   *          containing an Array of DataOBjects
+   * @param dobs contains an Array of DataObjects
    * @return XMl representation of the data
-   * @throws RecordException
-   *           if conversion fails
+   * @throws RecordException if conversion fails
    */
-  protected Object convert(Object record) throws RecordException {
-    String result = null;
-
-    if (record instanceof DataObject[]) {
-      try {
-        result = formatter.toString((DataObject[]) record);
-      } 
-      catch (Exception e) {
-        String reason = "Failed to convert " + record == null ? "<null>" : record + ". Exception - " + e;
-        log.warn(reason);
-        throw new RecordException(reason, e);
-      }
+  protected Object convert(DataObject[] dobs) throws RecordException {
+    try {
+      return formatter.toString(dobs);
     } 
-    else {
-      throw new RecordFormatException("Record is not a DataObject[]. Record: " + record);
+    catch (Exception e) {
+      String reason = "Failed to convert " + dobs == null ? "<null>" : dobs + ". Exception - " + e;
+      log.warn(reason);
+      throw new RecordException(reason, e);
     }
-
-    return result;
   }
-
+  
 }

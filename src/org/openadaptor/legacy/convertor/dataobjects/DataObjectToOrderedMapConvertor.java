@@ -27,16 +27,13 @@
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 
 /**
@@ -46,12 +43,8 @@ import org.openadaptor.dataobjects.DataObject;
  * @author Russ Fennell
  * @author higginse
  */
-public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
+public class DataObjectToOrderedMapConvertor extends AbstractDataObjectConvertor {
   private static Log log = LogFactory.getLog(DataObjectToOrderedMapConvertor.class);
-  //Legacy DateHolder Class, obtained by reflection to avoid compile-time dependency.
-  private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
-  //Legacy DateHolder asDate() method, by reflecation. As above.
-  private static final Method DATE_HOLDER_METHOD=getMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
 
   //Flag to indicate that DataHolders could be converted to java.util.Date instances.
   private boolean convertDateHolderToDate=true;
@@ -70,7 +63,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     super.validate(exceptions);
 
     if (convertDateHolderToDate) {
-      if (DATE_HOLDER_METHOD!=null){
+      if (LegacyUtils.dateHolderAvailable()){
         log.info("Legacy DateHolder instances (including subclasses) will be converted to java.util.Date");
       }
       else { 
@@ -80,7 +73,6 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     }
   }
 
-
   /**
    * Converts DataObjects into IOrderedMaps.
    * 
@@ -89,15 +81,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
    * @throws RecordException
    * 
    */
-  protected Object convert(Object record) throws RecordException {
-    DataObject[] dobs;
-    if (record instanceof DataObject[])
-      dobs = (DataObject[]) record;
-    else if (record instanceof DataObject)                         
-      dobs = new DataObject[] { (DataObject) record };
-    else
-      throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
-
+  protected Object convert(DataObject[] dobs) throws RecordException {
     int mapSize = dobs.length;
     log.debug("Processing " + mapSize + " DataObject(s)");
     IOrderedMap[] maps = new OrderedHashMap[mapSize];
@@ -112,7 +96,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     }
     else {
       return maps;
-    }
+    }  
   }
 
   /**
@@ -129,45 +113,6 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     map.put(name, asOrderedMap(dataObject));
     return map;
   }
-
-//Old convert would fail for an array of DataObjects.
-///**
-//* Takes an array of DataObjects and converts them into an Ordered Map
-//* 
-//* @return an array of one or more IOrderedMaps
-//* 
-//* @throws RecordException
-//* 
-//*/
-//protected Object convertOld(Object record) throws RecordException {
-
-//DataObject[] dobs;
-//// todo: does the transport strip out DO arrays into individual DO's
-
-//if (record instanceof DataObject[])
-//dobs = (DataObject[]) record;
-//else if (record instanceof DataObject)                         
-//dobs = new DataObject[] { (DataObject) record };
-//else
-//throw new RecordFormatException("Processor expects arrays of DataObjects - Supplied record:" + record);
-
-//int mapSize = dobs.length;
-//IOrderedMap maps = new OrderedHashMap(mapSize);
-//log.debug("Processing " + mapSize + " DataObject(s)");
-
-//for (int i = 0; i < mapSize; i++) {
-//DataObject dob = dobs[i];
-//String name = dob.getType().getName();
-//log.debug("DataObject " + i + ": " + name);
-
-//maps.put(name, asOrderedMap(dob));
-//}
-
-//log.debug("Map contains " + maps.size() + " sub-maps");
-
-//return maps;
-//}
-
 
   /**
    * Recursively convert the supplied DataObject as an OrderedMap.
@@ -219,7 +164,7 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
         // Not a structural part - must be an actual value.
         else {
           if (convertDateHolderToDate && (value!=null)) {
-            value=clean(value);
+            value=LegacyUtils.convertDateHolderToDate(value);
           }
 
           if (log.isDebugEnabled()) {
@@ -236,67 +181,5 @@ public class DataObjectToOrderedMapConvertor extends AbstractConvertor {
     return map;
   }
 
-  /**
-   * Change DateHolder types to Date.
-   * Remove proprietary DataObjects Date types.
-   * @param incoming
-   * @return 
-   */
-  private static Object clean(Object incoming) {
-    Object outgoing=incoming;
-    Class cl=incoming.getClass();
-    //Catches DateHolder (and DateTimeHolder subclass)
-    if (DATE_HOLDER_CLASS.isAssignableFrom(cl)){
-      try {
-        outgoing=DATE_HOLDER_METHOD.invoke(incoming, (Object[])null);
-      } catch (Exception e) {
-        String msg="Failed to convert DateHolder to java.util.Date";
-        log.warn(msg+". Exception: "+e);
-      }
-    }
-    return outgoing;
-  }
-  /**
-   * Use reflection to derive legacy class.
-   * <br>
-   * Don't want to pollute openadaptor3 build with requirement for legacy jar.
-   * If it fails, it will just return null.
-   * @param className
-   * @return
-   */
-  private static Class getLegacyClass(String className) {
-    Class result=null;
-    try {
-      result= Class.forName(className);
-    } catch (ClassNotFoundException e) {
-      String msg="Unable to resolve "+className+". Is legacy openadaptor jar available on the classpath?";
-      log.warn(msg+". Exception: "+e);
-    } 
-    return result;
-  }
-  /**
-   * Reflection to get a legacy method without requiring openadaptor3 to know about it.
-   * <br>
-   * If class is null, then it won't bother trying.
-   * @param cl
-   * @param methodName
-   * @param argTypes
-   * @return
-   */
-  private static Method getMethod(Class cl,String methodName,Class[] argTypes) {
-    Method method=null;
-    if (cl!=null) {
-      try {
-        method= cl.getMethod(methodName, argTypes);
-      } catch (SecurityException e) {
-        String msg="Unable to resolve "+methodName+". Is legacy openadaptor jar available on the classpath?";
-        log.warn(msg+". Exception: "+e);
-      } catch (NoSuchMethodException e) {
-        String msg="Unable to resolve "+methodName+". Is legacy openadaptor jar available on the classpath?";
-        log.warn(msg+". Exception: "+e);
-      }
-    }
-    return method;
-  }
-
+  
 }
