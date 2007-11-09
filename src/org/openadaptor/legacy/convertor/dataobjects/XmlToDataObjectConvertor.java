@@ -27,18 +27,16 @@
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObjectException;
-import org.openadaptor.doconverter.XMLFormatter;
 import org.openadaptor.doxml.GenericXMLReader;
-import org.openadaptor.auxil.convertor.AbstractConvertor;
-
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Convert XML into DataObjects <B>Note</B>: Usage of this class depends on the availability of a legacy openadaptor
