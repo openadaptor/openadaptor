@@ -1,13 +1,15 @@
 package com.tibco.tibrv;
 
+import org.openadaptor.StubException;
+
 public class TibrvListener {
 
   public TibrvListener(TibrvQueue q, TibrvMsgCallback callback, TibrvTransport transport, String topic, Object object2) {
-    throw new RuntimeException("this is stub code, you need the tibrv.jar in your classpath");
+    throw new StubException(StubException.WARN_TIBCO_JAR);
   }
 
   public void destroy() {
-    throw new RuntimeException("this is stub code, you need the tibrv.jar in your classpath");
+    throw new StubException(StubException.WARN_TIBCO_JAR);
   }
 
 }

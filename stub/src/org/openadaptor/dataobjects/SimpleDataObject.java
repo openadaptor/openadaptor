@@ -33,6 +33,8 @@
 
 package org.openadaptor.dataobjects;
 
+import org.openadaptor.StubException;
+
 /**
  * Stub for legacy openadaptor code so that legacy components can
  * be compiled and distributed
@@ -41,27 +43,27 @@ package org.openadaptor.dataobjects;
 public class SimpleDataObject implements DataObject {
 
   public DataObject cloneEmpty() {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public boolean equals(DataObject other) {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public Object getAttributeValue(String name) throws InvalidParameterException {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public DOType getType() {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public boolean isNullValue(String name) throws InvalidParameterException {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public void setAttributeValue(String name, Object value) throws InvalidParameterException {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
 }

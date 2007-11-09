@@ -39,6 +39,8 @@
 
 package org.openadaptor.dataobjects;
 
+import org.openadaptor.StubException;
+
 /**
  * Stub for legacy openadaptor code so that legacy components can
  * be compiled and distributed
@@ -47,6 +49,6 @@ package org.openadaptor.dataobjects;
 public class DataObjectException extends Exception {
   private static final long serialVersionUID = 1L;
   public DataObjectException(String s) {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 }

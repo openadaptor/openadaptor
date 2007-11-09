@@ -1,4 +1,7 @@
 package com.ibm.mq;
+
+import org.openadaptor.StubException;
+
 public class MQException extends Exception {
   
   public static final int MQRC_CONNECTION_BROKEN = 2009;
@@ -9,18 +12,18 @@ public class MQException extends Exception {
   private static final long serialVersionUID = 1L;
 
   public MQException() {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
 
   public MQException(String message, Throwable cause) {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
 
   public MQException(String message) {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
 
   public MQException(Throwable cause) {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }   
 }

@@ -1,27 +1,30 @@
 package com.ibm.mq;
+
+import org.openadaptor.StubException;
+
 public class MQMessage extends MQMD {
 
   public java.lang.String readString(int i) throws java.io.IOException, java.io.EOFException {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
   
   public void writeString(java.lang.String string) throws java.io.IOException {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
   
   public int getDataLength() throws java.io.IOException {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );   
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
   
   public void clearMessage() throws java.io.IOException {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
   
   public int getTotalMessageLength() {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" );
-  }
+    throw new StubException(StubException.WARN_MQ_JAR);
+ }
   
   public int getMessageLength() throws java.io.IOException {
-    throw new RuntimeException( "this is stub code, you need the MQ jar in your classpath" ); 
+    throw new StubException(StubException.WARN_MQ_JAR);
   }
 }

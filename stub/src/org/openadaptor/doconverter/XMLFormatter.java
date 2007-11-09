@@ -33,6 +33,7 @@
 
 package org.openadaptor.doconverter;
 
+import org.openadaptor.StubException;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.DataObjectException;
 
@@ -42,14 +43,14 @@ import org.openadaptor.dataobjects.DataObjectException;
 
 public class XMLFormatter {
   public String toString(DataObject[] dataObjectArray) {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
   public DataObject[] fromString(String doxml) {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
   
   public void setAttributeValue(String name, String value) throws DataObjectException {
-    throw new RuntimeException("this is stub code, you need the legacy openadaptor jar in your classpath");
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 }

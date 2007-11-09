@@ -31,6 +31,9 @@ Minor changes
     legacy DOXML which may contain multiple DOXML messages in sequence (the default 
     StringReader would only process the first DOXML message received)
    
+  * Modified stub code to generate StubException when stub method is called. It still 
+    extends RuntimeException but now can be distinguished if necessary.
+   
 Bug Fixes
 =========
 
