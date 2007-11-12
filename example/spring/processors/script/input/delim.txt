@@ -1,0 +1,6 @@
+palinm,Michael Palin,1,1978-01-21
+cleesej,John Cleese,2,1972-07-26
+chapmang,Graham Chapman,3,1960-12-10
+jonest,Terry Jones,4,1985-01-09
+gilliamt,Terry Gilliam,5,2006-01-28
+idlee,Eric Idle,6,1999-11-22
