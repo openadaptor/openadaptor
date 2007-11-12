@@ -51,9 +51,10 @@ import java.util.List;
  * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
  * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
  * <li><b>transacted</b>                If true then a transacted session is acquired and a TransactionalResource created even if XA resources are available.
- * <li><b>deliveryMode<b>               Set the delivery mode for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_DELIVERY_MODE</code>.
- * <li><b>priority<b>                   Set the priority for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_PRIORITY</code>.
- * <li><b>timeToLive<b>                 Set the time to live for messages published by the message messageProducer. Defaults to <code>Message.DEFAULT_TIME_TO_LIVE</code>.
+ * <li><b>deliveryMode</b>              Set the delivery mode for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_DELIVERY_MODE</code>.
+ * <li><b>priority</b>                  Set the priority for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_PRIORITY</code>.
+ * <li><b>timeToLive</b>                Set the time to live for messages published by the message messageProducer. Defaults to <code>Message.DEFAULT_TIME_TO_LIVE</code>.
+ * <li><b>messageGenerator</b>          The IMessageGenerator instance used to generate JMSMessage instances. Defaults to an instance of <code>DefaultMessageGenerator</code>.
  * </ul>
  * <p/>
  * @author OA3 Core Team
