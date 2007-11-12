@@ -10,8 +10,7 @@
   <description><![CDATA[  
   This adaptor does the following...
     
-    * reads all data in input/delim.txt
-    * converts to orderedmaps
+    * starts a servlet that listens for HTTP requests
     * applies a simple filter to records
     * outputs to stdout
     
@@ -31,7 +30,7 @@
   writes to stdout
   ]]></description>
   
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+  <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
     <description>
       This adaptor is designed to illustrate a simple use of a JavascriptFilterProcessor
         * reads all data in input/delim.txt
@@ -43,8 +42,7 @@
       <bean class="org.openadaptor.core.router.Router">
         <property name="processors">
           <list>
-            <ref bean="reader"/>
-            <ref bean="orderedmap"/>
+            <ref bean="servlet"/>
             <ref bean="xmlConverter"/>
             <ref bean="writer"/>
           </list>
@@ -53,20 +51,8 @@
     </property>
   </bean>
   
-  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-    <property name="filename" value="input/delim.txt"/>
-  </bean>
-  
-  <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
-    <description>Convert to OrderedMap providing fields names</description>
-    <property name="fieldNames">
-        <list>
-            <value>UserName</value>
-            <value>FullName</value>
-            <value>UniqueId</value>
-            <value>DOB</value>
-        </list>
-    </property>
+  <bean id="servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
   </bean>
   
   <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
