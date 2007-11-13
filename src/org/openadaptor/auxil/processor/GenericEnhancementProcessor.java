@@ -34,11 +34,10 @@ import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
 
 /**
- * Skeleton of a generic enhancement processor.
+ * A generic enhancement processor. Attempt at a 'generic' implementation
+ * of prepering parameters and enhancing input data.
  * 
- * Eventually this meant to replace the existing {@link JNDIEnhancementProcessor}.
- * 
- * Draft version.
+ * Written to eventually replace the {@link JNDIEnhancementProcessor}.
  * 
  * @author Kris Lachor
  * @since Post 3.3
@@ -53,6 +52,8 @@ public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
    * have been requested (by setting properties on {@link AbstractEnhancementProcessor}.
    * If no specific fields requested, return the whole input, otherwise returns
    * an IOrderedMap with specified fields.
+   * 
+   * @see IEnhancementProcessor#prepareParameters(Object)
    */
   public IOrderedMap prepareParameters(Object input) {
     IOrderedMap params = new OrderedHashMap();
@@ -72,6 +73,9 @@ public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
   }
   
   /**
+   * Enhances input data with extra data from the reader.
+   * If reader did not return any extra data, original data is not modified in any way.
+   * 
    * @see IEnhancementProcessor#enhance(Object, Object[]) 
    */
   public Object [] enhance(Object input, Object[] additionalData) {
@@ -81,9 +85,8 @@ public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
     if(null == additionalData){
        result = new Object[]{input};
     }
-    /* or added anhancement data as next element to input */
+    /* or add enhancement data as next element to input */
     else{    
-     
          result = new Object[additionalData.length + 1];
          result[0] = input;
          for(int i=1; i<=additionalData.length; i++){
@@ -97,10 +100,8 @@ public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
              ((Map)input).putAll(additionalDataMap);
              result = new Object[]{input};
            }
-         }
-       
+         }    
     }
-     
     return result;
   }
   
