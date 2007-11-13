@@ -52,7 +52,7 @@ import org.jmock.cglib.MockObjectTestCase;
  * 
  * @author Kris Lachor
  * @todo ported only testValidatex() methods from JNDIEnhancementProcessorTestCase,
- *   all other are remaining
+ *       all other are remaining
  */
 public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
 
@@ -449,29 +449,76 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
     assertNull(params.get("field3"));
   }
   
-  
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#validate(java.util.List)}.
-//   */
-//  public void testValidate() {
-//    List exceptions = new ArrayList();
-//  }
-
-
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#process(java.lang.Object)}.
+   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Reader returned no data.
    */
-  public void testProcess() {
+  public void testEnhance1(){
+    Object input = new Object();
+    
+    /* null */
+    Object [] result = processor.enhance(input, null);
+    assertNotNull(result);
+    assertTrue(result.length==1);
+    assertEquals(result[0], input);
+    
+    /* empty array */
+    result = processor.enhance(input, new Object[0]);
+    assertNotNull(result);
+    assertTrue(result.length==1);
+    assertEquals(result[0], input);
   }
   
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#reset(java.lang.Object)}.
-//   */
-//  public void testReset() {
-//    fail("Not yet implemented");
-//  }
-//
+  /**
+   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Reader returned an object.
+   */
+  public void testEnhance2(){
+    Object input = new Object();
+    Object extraData = new Object();
+    Object [] result = processor.enhance(input, new Object[]{extraData});
+    assertNotNull(result);
+    assertTrue(result.length==2);
+    assertEquals(result[0], input);
+    assertEquals(result[1], extraData); 
+  }
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Reader returned multiple objects.
+   */
+  public void testEnhance3(){
+    Object input = new Object();
+    Object data1 = new Object(), data2 = new Object(), data3 = new Object();
+    Object [] result = processor.enhance(input, new Object[]{data1, data2, data3});
+    assertNotNull(result);
+    assertTrue(result.length==4);
+    assertEquals(result[0], input);
+    assertEquals(result[1], data1); 
+    assertEquals(result[2], data2); 
+    assertEquals(result[3], data3); 
+  }
+  
+  
+  /**
+   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Input is an IOrdredMap. Reader returned an IOrdredMap.
+   */
+  public void testEnhance4(){
+    IOrderedMap input = new OrderedHashMap();
+    input.put("foo1", "bar1");
+    IOrderedMap data = new OrderedHashMap();
+    data.put("foo2", "bar2");
+    Object [] result = processor.enhance(input, new Object[]{data});
+    assertNotNull(result);
+    assertTrue(result.length==1);
+    assertTrue(result[0] instanceof IOrderedMap);
+    IOrderedMap resultMap = (IOrderedMap) result[0];
+    assertTrue(resultMap.size()==2);
+    assertEquals(resultMap.get("foo1"), "bar1");
+    assertEquals(resultMap.get("foo2"), "bar2");
+  }
+  
 
   /**
    * Inner mock. 
