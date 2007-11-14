@@ -133,8 +133,8 @@ public class JMSConnection extends Component {
     if ((getConnectionFactory() == null) && (connectionFactoryName == null)) {
       exceptions.add( new ValidationException("One of properties connectionFactory or connectionFactoryName must be set.", this));
     }
-    if(jndiConnection == null) {
-      exceptions.add(new ValidationException("Property jndiConnection is mandatory", this));
+    if((jndiConnection == null) && (connectionFactory == null)) {
+      exceptions.add(new ValidationException("Property jndiConnection is mandatory if connectionFactory not directly set.", this));
     }
   }
 
@@ -383,6 +383,13 @@ public class JMSConnection extends Component {
    */
   public void setJndiConnection(JNDIConnection jndiConnection) {
     this.jndiConnection = jndiConnection;
+  }
+
+  /**
+   * Return the JNDIConnection used to look up jndi managed resources.
+   */
+  public JNDIConnection getJndiConnection() {
+    return jndiConnection;
   }
 
   /**

@@ -29,16 +29,16 @@
 */
 package org.openadaptor.auxil.connector.jms;
 
-import org.jmock.MockObjectTestCase;
 import org.jmock.Mock;
-import org.openadaptor.core.exception.ConnectionException;
+import org.jmock.MockObjectTestCase;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
+import org.openadaptor.core.exception.ConnectionException;
 
-import javax.naming.directory.DirContext;
-import javax.naming.NamingException;
 import javax.jms.*;
-import java.util.List;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import java.util.ArrayList;
+import java.util.List;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -91,9 +91,38 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
   }
 
+  public void testValidateDestinationNameSet() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(null);
+    testWriteConnector.setDestinationName("Test");
+    testWriteConnector.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
+  }
+
+  public void testValidateDestinationSet() {
+    // Test instance should be set up to validate correctly
+    Destination mockDestination = (Destination)((new Mock(Destination.class)).proxy());
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(mockDestination);
+    testWriteConnector.setDestinationName(null);
+    testWriteConnector.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
+  }
+
+
   public void testFailValidate() {
     mockJMSConnection.setPassValidate(false);
     List validateExceptions = new ArrayList();
+    testWriteConnector.validate(validateExceptions);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+  }
+
+   public void testFailValidateNoDestinations() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(null);
+    testWriteConnector.setDestinationName(null);
     testWriteConnector.validate(validateExceptions);
     assertTrue("Should have failed validate.", validateExceptions.size() > 0);
   }
@@ -105,8 +134,36 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     assertTrue("Should have failed validate.", validateExceptions.size() > 0);
   }
 
+
+  public void testFailValidateDestinationNameSetNoJNDI() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(null);
+    testWriteConnector.setDestinationName("Test");
+    mockJMSConnection.setJndiConnection(null);
+    testWriteConnector.validate(validateExceptions);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+  }
+
   public void testConnect() {
     setupConnectExpectations();
+    try {
+      testWriteConnector.connect();
+      assertTrue("Should be connected.", testWriteConnector.isConnected());
+    }
+    catch (Exception e) {
+      fail("Unexpected exception." + e);
+    }
+  }
+
+  public void testConnectUsingDestination() {
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
+    Mock localDestinationMock = new Mock(Destination.class);
+    dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME));
+    sessionMock.expects(once()).method("createProducer")
+      .with(eq(localDestinationMock.proxy()))
+      .will(returnValue(messageProducerMock.proxy()));
+    testWriteConnector.setDestination((Destination) localDestinationMock.proxy());
     try {
       testWriteConnector.connect();
       assertTrue("Should be connected.", testWriteConnector.isConnected());

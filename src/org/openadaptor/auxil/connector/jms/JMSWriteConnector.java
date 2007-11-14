@@ -109,6 +109,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    */
   private IMessageGenerator messageGenerator = new DefaultMessageGenerator();
 
+  private Destination destination;
+
   // Constructors
 
   public JMSWriteConnector() {}
@@ -180,13 +182,18 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public void validate(List exceptions) {
-    if (getDestinationName() == null) {
-      exceptions.add(new ValidationException("Property destinationName is mandatory", this));
+    if ((getDestinationName() == null) && (getDestination() == null)) {
+      exceptions.add(new ValidationException("One of destinationName or destination must be set.", this));
     }
     if (jmsConnection == null) {
       exceptions.add(new ValidationException("Property jmsConnection is mandatory", this));
     } else {
       jmsConnection.validate(exceptions);
+    }
+    if ((getDestinationName() != null) && (jmsConnection != null)) {  // Null jmsConnection is already a validation failure
+      if(jmsConnection.getJndiConnection() == null) {
+        exceptions.add(new ValidationException("I destinationName is set then jmsConnection MUST have jndiConnection set.", this));  
+      }
     }
   }
 
@@ -209,7 +216,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
 
   protected MessageProducer createMessageProducer() {
     MessageProducer newProducer;
-    Destination destination = jmsConnection.lookupDestination(destinationName);
+    if (destination == null) {
+      destination = jmsConnection.lookupDestination(destinationName);
+    }
     try {
       newProducer = session.createProducer(destination);
     } catch (JMSException e) {
@@ -381,5 +390,13 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   /** Set the IMessageGenerator instance used to generate JMSMessage instances. Defaults to an instance of DefaultMessageGenerator. */
   public void setMessageGenerator(IMessageGenerator messageGenerator) {
     this.messageGenerator = messageGenerator;
+  }
+
+  public Destination getDestination() {
+    return destination;
+  }
+
+  public void setDestination(Destination destination) {
+    this.destination = destination;
   }
 }

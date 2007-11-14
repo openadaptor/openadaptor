@@ -102,12 +102,58 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
   }
 
+  public void testValidateDestinationNameSet() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testReadConnector.setDestination(null);
+    testReadConnector.setDestinationName("Test");
+    testReadConnector.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
+  }
+
+  public void testValidateDestinationSet() {
+    // Test instance should be set up to validate correctly
+    Destination mockDestination = (Destination)((new Mock(Destination.class)).proxy());
+    List validateExceptions = new ArrayList();
+    testReadConnector.setDestination(mockDestination);
+    testReadConnector.setDestinationName(null);
+    testReadConnector.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
+  }
+
   public void testFailValidate() {
     mockJMSConnection.setPassValidate(false);
     List validateExceptions = new ArrayList();
     testReadConnector.validate(validateExceptions);
     assertTrue("Should have failed validate.", validateExceptions.size() > 0);
   }
+
+  public void testFailValidateNoDestinations() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testReadConnector.setDestination(null);
+    testReadConnector.setDestinationName(null);
+    testReadConnector.validate(validateExceptions);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+  }
+
+  public void testFailValidateNoConnection() {
+    testReadConnector.setJmsConnection(null);
+    List validateExceptions = new ArrayList();
+    testReadConnector.validate(validateExceptions);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+  }
+
+  public void testFailValidateDestinationNameSetNoJNDI() {
+    // Test instance should be set up to validate correctly
+    List validateExceptions = new ArrayList();
+    testReadConnector.setDestination(null);
+    testReadConnector.setDestinationName("Test");
+    mockJMSConnection.setJndiConnection(null);
+    testReadConnector.validate(validateExceptions);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+  }
+
 
   public void testConnect() {
     setupConnectExpectations();
@@ -116,6 +162,31 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
       testReadConnector.connect();
       assertTrue("Should be connected.", testReadConnector.isConnected());
       assertEquals("Test Connector hould have been installed as an Exception Listener ", testReadConnector, mockJMSConnection.getListener());
+    }
+    catch (Exception e) {
+      fail("Unexpected exception." + e);
+    }
+  }
+
+
+  public void testConnectUsingDestination() {
+    Mock localDestinationMock = new Mock(Destination.class);
+    mockJMSConnection.setMockSession((Session)sessionMock.proxy());
+    dirContextMock.expects(never()).method("lookup").with(eq(DESTINATION_NAME));
+    if (testReadConnector.isNoLocal()) {
+    sessionMock.expects(once()).method("createConsumer")
+      .with(eq(localDestinationMock.proxy()), eq(testReadConnector.getMessageSelector()), eq(testReadConnector.isNoLocal()))
+      .will(returnValue(messageConsumerMock.proxy()));
+    } else {
+      sessionMock.expects(once()).method("createConsumer")
+      .with(eq(localDestinationMock.proxy()), eq(testReadConnector.getMessageSelector()))
+      .will(returnValue(messageConsumerMock.proxy()));
+    }
+    testReadConnector.setDestination((Destination) localDestinationMock.proxy());
+    testReadConnector.setDestinationName(null);
+    try {
+      testReadConnector.connect();
+      assertTrue("Should be connected.", testReadConnector.isConnected());
     }
     catch (Exception e) {
       fail("Unexpected exception." + e);

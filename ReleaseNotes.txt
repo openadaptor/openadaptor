@@ -59,6 +59,10 @@ SC32: The pipeline DOXmlToDataObject -> DataObjectToOrderedMap will fail if the 
       DOXML contains more than one top-level data object. 
       Note that as a side-efffect, the default value for 'box returned arrays' in the
       AbstractConvertor class has changed from 3.3 (true) to 'false'.
+
+SC33: JMSConnection cannot work without a valid JNDIConnection. This is because the
+      connectors need to always lookup the JMS Destination. The Connectors have now
+      changed to allow their destinations to be set directly if this is required.
       
 =================================================
 openadaptor3 production 3.3 Release Notes

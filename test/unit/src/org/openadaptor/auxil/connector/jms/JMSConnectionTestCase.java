@@ -132,7 +132,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testCreateConnection() {
-    log.debug("Running Test: ConnectReader");
+    log.debug("Running Test: CreateConnection");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
@@ -145,7 +145,7 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
   }
 
   public void testCreateConnectionException() {
-    log.debug("Running Test: ConnectReaderException");
+    log.debug("Running Test: CreateConnectionException");
     connectionFactoryMock.expects(once()).method("createConnection").will(throwException(new JMSException("test")));
 
     connectionMock.expects(never()).method("createSession");

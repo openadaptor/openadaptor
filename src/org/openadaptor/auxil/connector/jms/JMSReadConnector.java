@@ -112,6 +112,8 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   private IMessageConvertor messageConvertor = new DefaultMessageConvertor();
 
+  private Destination destination;
+
   // Constructors
 
   public JMSReadConnector() {}
@@ -148,14 +150,17 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   }
 
   public void validate(List exceptions) {
-    if(getDestinationName() == null) {
-      exceptions.add( new ConnectionException("Property destinationName is mandatory", this));
+    if((getDestinationName() == null) && (getDestination() == null))  {
+      exceptions.add( new ConnectionException("Either destinationName or destination must be set.", this));
     }
     if(jmsConnection == null) {
       exceptions.add(new ConnectionException("Property jmsConnection is mandatory", this));
     }
     else {
       jmsConnection.validate(exceptions);
+      if((destinationName != null) && (jmsConnection.getJndiConnection() == null)) {
+        exceptions.add(new ConnectionException("If destinationName is set then jmsConnection must have jndiConnection set.", this));  
+      }
     }
   }
 
@@ -247,10 +252,12 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   protected MessageConsumer createMessageConsumerFor(Session connectorSession) {
     if (messageConsumer == null) {
       MessageConsumer newConsumer;
-      Destination destination = jmsConnection.lookupDestination(getDestinationName());
+      if (destination == null) {
+        destination = jmsConnection.lookupDestination(getDestinationName());
+      }
       try {
         if (durable) {
-          newConsumer = connectorSession.createDurableSubscriber((Topic)destination, getDurableSubscriptionName(), getMessageSelector(), isNoLocal());
+          newConsumer = connectorSession.createDurableSubscriber((Topic) destination, getDurableSubscriptionName(), getMessageSelector(), isNoLocal());
         } else {
           if (isNoLocal()) {  // The value of noLocal only seems to matter if it's true.
             newConsumer = connectorSession.createConsumer(destination, getMessageSelector(), isNoLocal());
@@ -391,6 +398,15 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   public void setMessageConvertor(IMessageConvertor messageConvertor) {
     this.messageConvertor = messageConvertor;
   }
+
+  public Destination getDestination() {
+    return destination;
+  }
+
+  public void setDestination(Destination destination) {
+    this.destination = destination;
+  }
+
   // End Bean implementation
 
 }
