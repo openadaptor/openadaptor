@@ -205,33 +205,29 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * depending on which one is set).
    */  
   public void setQueryParameters(IOrderedMap inputParameters) {    
+    if(inputParameters == null){
+      log.info("No input parameters for enhancement call");
+      return;
+    }
     for(int i=1; i<=inputParameters.size(); i++){
       parametriseEnhancementQuery(i, inputParameters.get(i-1));
     }    
   }
   
   /**
-   * @TODO comments, fix content, unit test
+   * @see JDBCReadConnector#setQueryParameters(IOrderedMap)
    */
   private void parametriseEnhancementQuery(int parameterIndex, Object value){
-//    if(callableStatement != null){
-//      callableStatement.setObject(parameterIndex, value); 
-//    }
-//    else{
-         
-      int index = sql.indexOf("?");
-      if(index != -1){
-        StringBuffer newSql = new StringBuffer();
-        newSql.append(sql.substring(0, index));
-        newSql.append(value);
-        newSql.append(sql.substring(index + 1));
-        postSubstitutionSql = newSql.toString();
-      }
-//    }
+    int index = sql.indexOf("?");
+    if(index != -1){
+      StringBuffer newSql = new StringBuffer();
+      newSql.append(sql.substring(0, index));
+      newSql.append(value);
+      newSql.append(sql.substring(index + 1));
+      postSubstitutionSql = newSql.toString();
+    }
   }
 
-  
-  
   /**
    * convert event ResultSet into a statement to get the actual data
    */

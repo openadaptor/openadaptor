@@ -50,6 +50,7 @@
             <ref bean="writer"/>
           </list>
         </property>
+        <property name="exceptionProcessor" ref="exceptionWriter"/>
       </bean>
     </property>
   </bean>
@@ -104,5 +105,9 @@
   </bean>
   
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/errors.txt"/>
+  </bean>
   
 </beans>  

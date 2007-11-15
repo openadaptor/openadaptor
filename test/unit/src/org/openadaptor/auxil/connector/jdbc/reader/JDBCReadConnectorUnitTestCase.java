@@ -33,6 +33,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.jmock.Mock;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
@@ -335,6 +337,59 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     assertFalse("Read connector dry to soon.", pollingReadConnector.isDry());
     Object [] arr = (Object []) pollingReadConnector.next(10);
     assertTrue("Unexpected result count", arr.length == 1);
+  }
+  
+  /**
+   * Test for {@link JDBCReadConnector#setQueryParameters(org.openadaptor.auxil.orderedmap.IOrderedMap)}
+   */
+  public void testSetQueryParameters1(){
+    IOrderedMap inputParams = new OrderedHashMap();
+    inputParams.put("param1", "1");
+    String sql = "SELECT a FROM TABLE1 WHERE a=?";
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setQueryParameters(inputParams);
+    assertEquals(jdbcReadConnector.sql, sql);
+    assertEquals(jdbcReadConnector.postSubstitutionSql, "SELECT a FROM TABLE1 WHERE a=1");
+  }
+  
+  /**
+   * Test for {@link JDBCReadConnector#setQueryParameters(org.openadaptor.auxil.orderedmap.IOrderedMap)}
+   * No placeholders in the query.
+   */
+  public void testSetQueryParameters2(){
+    IOrderedMap inputParams = new OrderedHashMap();
+    inputParams.put("param1", "1");
+    String sql = "SELECT a FROM TABLE1 WHERE a=10";
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setQueryParameters(inputParams);
+    assertEquals(jdbcReadConnector.sql, sql);
+    assertNull(jdbcReadConnector.postSubstitutionSql);
+  }
+  
+  /**
+   * Test for {@link JDBCReadConnector#setQueryParameters(org.openadaptor.auxil.orderedmap.IOrderedMap)}
+   * More placeholders than params.
+   */
+  public void testSetQueryParameters3(){
+    IOrderedMap inputParams = new OrderedHashMap();
+    inputParams.put("param1", "1");
+    String sql = "SELECT a FROM TABLE1 WHERE a=? AND b=?";
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setQueryParameters(inputParams);
+    assertEquals(jdbcReadConnector.sql, sql);
+    assertEquals(jdbcReadConnector.postSubstitutionSql, "SELECT a FROM TABLE1 WHERE a=1 AND b=?");
+  }
+  
+  /**
+   * Test for {@link JDBCReadConnector#setQueryParameters(org.openadaptor.auxil.orderedmap.IOrderedMap)}
+   * Null input params;
+   */
+  public void testSetQueryParameters4(){
+    String sql = "SELECT a FROM TABLE1 WHERE a=?";
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setQueryParameters(null);
+    assertEquals(jdbcReadConnector.sql, sql);
+    assertEquals(jdbcReadConnector.postSubstitutionSql, null);
   }
   
   private void connectDBEventDrivenConnector(Mock mockStatement, IReadConnector readConnector){

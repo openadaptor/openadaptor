@@ -26,45 +26,43 @@
  */
 package org.openadaptor.auxil.processor;
 
-import junit.framework.TestCase;
+import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.spring.SpringAdaptor;
+import org.openadaptor.util.SystemTestUtil;
+
 
 /**
  * System tests for {@link GenericEnhancementProcessor}.
+ * Runs adaptor with a simple test reader, an enhancer. Verifies the writer gets 
+ * the expected data.
  * 
  * @author Kris Lachor
- * @TODO 
  */
-public class GenericEnhancementProcessorSystemTestCase extends TestCase {
-
+public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTestCase {
+  
+  private static String SCHEMA = "CREATE MEMORY TABLE TRADE(TRADEID INTEGER NOT NULL,BUYSELL CHAR(1) NOT NULL,SECID INTEGER NOT NULL,PARTYID INTEGER NOT NULL,QTY INTEGER NOT NULL,PRICE FLOAT NOT NULL); INSERT INTO TRADE VALUES(1,\'B\',1,1,1000000,3.25E0); INSERT INTO TRADE VALUES(2,\'B\',1,1,500000,3.21E0); INSERT INTO TRADE VALUES(3,\'S\',2,1,250000,1.01E0); INSERT INTO TRADE VALUES(4,\'B\',2,1,1000000,0.99E0);"
+                                + " INSERT INTO TRADE VALUES(5,\'S\',1,1,1000000,3.26E0)";
+  
+  private static final String RESOURCE_LOCATION = "test/system/src/";
+  
+  private static final String DB_ENHANCEMENT_PROCESSOR = "db_enhancement_processor.xml";
+  
   /**
-   * Creates an instance of an enhancement processor with a jdbc reader.
-   * 
-   * @see junit.framework.TestCase#setUp()
+   * @see JDBCConnectionTestCase#getSchemaDefinition()
    */
-  protected void setUp() throws Exception {
-    super.setUp();
+  public String getSchemaDefinition() {
+    return SCHEMA;
   }
-
+  
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#prepareParameters(java.lang.Object)}.
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor
+   * #prepareParameters(java.lang.Object)}.
    */
-  public void testPrepareParameters() {
-      assertTrue(true);
-//    fail("Not yet implemented");
+  public void testPrepareParameters() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENHANCEMENT_PROCESSOR);
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    assertEquals(adaptor.getExitCode(),0);
   }
-
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.jndi.NewJNDIEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])}.
-//   */
-//  public void testEnhance() {
-//    fail("Not yet implemented");
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.processor.AbstractEnhancementProcessor#getReadConnector()}.
-//   */
-//  public void testGetReadConnector() {
-//    fail("Not yet implemented");
-//  }
 
 }

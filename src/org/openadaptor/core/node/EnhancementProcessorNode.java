@@ -134,7 +134,13 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    * @see Node#processSingleRecord(Object)
    */
   public Object [] processSingleRecord(Object record){
-    IOrderedMap parameters = enhancementProcessor.prepareParameters((IOrderedMap)record);
+    IOrderedMap parameters = null;
+    if(! (record instanceof IOrderedMap)){
+      log.warn("Enhancement processor parameters not an IOrderedMap");
+    }
+    else{
+      parameters = enhancementProcessor.prepareParameters((IOrderedMap)record);
+    }
     if (log.isDebugEnabled() && parameters!=null){
         log.debug("Parameters to set on the reader: " + parameters);
         log.debug("Number of parameters: " +  parameters.size());

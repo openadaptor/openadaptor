@@ -30,6 +30,8 @@ package org.openadaptor.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
@@ -88,6 +90,32 @@ public class TestComponent {
     public Object[] next(long timeoutMs) { 
       throw new RuntimeException(TEST_ERROR_MESSAGE);
     }
+  }
+  
+  /**
+   * A read connector that returns one item of data (an OrdredMap) then becomes dry.
+   */
+  public static class TestReadConnectorOM implements IReadConnector {
+    private boolean isDry = false;
+    
+    public void connect() {}
+    public void disconnect() {}
+    public Object getReaderContext() {return null;}
+    public void setReaderContext(Object context) {}
+   
+    public boolean isDry() { 
+      boolean result = isDry;
+      isDry = true;
+      return result;
+    }
+   
+    public Object[] next(long timeoutMs) { 
+      IOrderedMap map = new OrderedHashMap();
+      map.put("element1", "Dummy read connector test data");
+      return new Object[]{map}; 
+    }
+    
+    public void validate(List exceptions) {}
   }
   
   //
