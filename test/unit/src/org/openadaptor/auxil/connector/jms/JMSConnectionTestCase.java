@@ -121,6 +121,15 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     assertTrue("Validated when it shouldn't have." + validateExceptions, validateExceptions.size() > 0);
   }
 
+  public void testValidatConnectionFactoryNoJndiConnectionSet() {
+    log.debug("Running Test: alidatConnectionFactoryeNoJndiConnectionSet");
+    testConnection.setJndiConnection(null);
+    testConnection.setConnectionFactory((ConnectionFactory)connectionFactoryMock.proxy());
+    List validateExceptions = new ArrayList();
+    testConnection.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have." + validateExceptions, validateExceptions.size() == 0);
+  }
+
   public void testValidateNothingSet() {
     log.debug("Running Test: ValidateNothingSet");
     testConnection.setConnectionFactory(null);
@@ -131,12 +140,33 @@ public class JMSConnectionTestCase extends MockObjectTestCase {
     assertTrue("Expected three validation exceptions. Got " + validateExceptions.size() + "." + validateExceptions, validateExceptions.size() == 2);
   }
 
+  // Connection Tests
+
   public void testCreateConnection() {
     log.debug("Running Test: CreateConnection");
     // Setup Connect expectations
     connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
     dirContextMock.expects(once()).method("lookup").with(eq(CONNECTION_FACTORY_LOOKUP_NAME)).will(returnValue(connectionFactoryMock.proxy()));
     try {
+      testConnection.createConnection();
+    }
+    catch (Exception e) {
+      fail("Unexpected Exception. " + e);
+    }
+  }
+
+  public void testCreateConnectionNoJNDIConnection() {
+    log.debug("Running Test: CreateConnectionNoJNDIConnection");
+    // Setup Connect expectations
+    connectionFactoryMock.expects(once()).method("createConnection").will(returnValue(connectionMock.proxy()));
+    dirContextMock.expects(never()).method("lookup");
+    try {
+      testConnection.setConnectionFactory((ConnectionFactory)connectionFactoryMock.proxy());
+      testConnection.setJndiConnection(null);
+      testConnection.setConnectionFactoryName(null);
+      List validateExceptions = new ArrayList();
+      testConnection.validate(validateExceptions);
+      assertTrue("Expected no validation exceptions.", validateExceptions.size() == 0);
       testConnection.createConnection();
     }
     catch (Exception e) {
