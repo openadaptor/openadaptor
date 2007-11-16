@@ -30,6 +30,7 @@ package org.openadaptor.legacy.convertor.dataobjects;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +63,9 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   /**
    * (Optional) suffix to apply when creating DOTypes from an attribute name.
    */
-  protected String typeSuffix="";
+  protected String typeSuffix="_t";
+  
+  protected Map typeNameMap;
 
   /**
    * Set the suffix to apply when generating DOTypes from attribute names
@@ -72,6 +75,10 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
    */
   public void setTypeSuffix(String suffix) {
     typeSuffix=(suffix==null)?"":suffix;
+  }
+  
+  public void setTypeNameMap(Map typeNameMap) {
+    this.typeNameMap=typeNameMap;
   }
 
 
@@ -168,10 +175,18 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     return dateHolder;
   }
 
-
+  /**
+   * Generate an SDOType from a supplied name.
+   * @param name
+   * @return
+   */
   private SDOType getSDOType(String name) {
-    return new SDOType(name+typeSuffix);
+    if ((typeNameMap!=null) &&(typeNameMap.containsKey(name))){
+      name=typeNameMap.get(name).toString();
+    }
+    else {
+      name+=typeSuffix;
+    }
+    return new SDOType(name); 
   }
-
-
 }

@@ -71,7 +71,9 @@
 
  <bean id="do_om" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
 
- <bean id="om_do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor"/>
+ <bean id="om_do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor">
+   <property name="typeNameMap"><map><entry key="Bike" value="Bike_t"/></map></property> 
+ </bean>
  
  <bean id="do_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor"/>
  
