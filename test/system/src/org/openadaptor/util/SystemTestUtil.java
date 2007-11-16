@@ -26,6 +26,18 @@
  */
 package org.openadaptor.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.node.WriteNode;
+import org.openadaptor.core.router.Router;
 import org.openadaptor.spring.SpringAdaptor;
 import org.springframework.core.io.UrlResource;
 
@@ -54,6 +66,31 @@ public class SystemTestUtil {
     adaptor.addConfigUrl(configPath);
     adaptor.run();
     return adaptor;
+  }
+  
+  /**
+   * Finds references to write connectors in a Spring adaptor that has been run.
+   * If passed a reference to SpringAdaptor that has not been run, the result
+   * will be an empty set.
+   * 
+   * @param springAdaptor an executed SpringAdaptor
+   * @return a set with write connectors
+   */
+  public static List getWriteConnectors(SpringAdaptor springAdaptor){
+	List writeConnectors = new ArrayList();
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    IMessageProcessor messageProcessor = adaptor.getMessageProcessor();
+    Router router = (Router) messageProcessor;
+    Collection messageProcessors = router.getMessageProcessors();
+    Iterator it = messageProcessors.iterator();
+    while(it.hasNext()){
+	  Object el = it.next();
+	  if(el instanceof WriteNode){
+		IWriteConnector writer = ((WriteNode) el).getConnector();
+		writeConnectors.add(writer);
+	  }
+    }
+	return writeConnectors;
   }
 
 }

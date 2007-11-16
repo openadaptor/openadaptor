@@ -146,6 +146,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
     this.processor = processor;
   }
+  
+  public IMessageProcessor getMessageProcessor() {
+    return this.processor;
+  }
 
   private void registerComponents() {
     if (processor != null && processor instanceof ILifecycleComponentContainer) {

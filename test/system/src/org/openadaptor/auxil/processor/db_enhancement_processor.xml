@@ -43,6 +43,6 @@
       </property>
     </bean>
 
-    <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+    <bean id="writer" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
 
 </beans>

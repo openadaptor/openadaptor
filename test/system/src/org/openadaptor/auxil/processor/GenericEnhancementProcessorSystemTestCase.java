@@ -26,11 +26,14 @@
  */
 package org.openadaptor.auxil.processor;
 
+import java.util.List;
+
 import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.spring.SpringAdaptor;
 import org.openadaptor.util.SystemTestUtil;
-
+import org.openadaptor.util.TestComponent;
 
 /**
  * System tests for {@link GenericEnhancementProcessor}.
@@ -58,11 +61,27 @@ public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTes
   /**
    * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor
    * #prepareParameters(java.lang.Object)}.
+   * 
+   * Executes an adaptor with an enhancement processor. Verifies there were no errors.
+   * Verifies the writer received one message.
    */
   public void testPrepareParameters() throws Exception {
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENHANCEMENT_PROCESSOR);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertEquals(adaptor.getExitCode(),0);
+    List writeConnectors = SystemTestUtil.getWriteConnectors(springAdaptor);
+    assertNotNull(writeConnectors);
+    assertTrue(writeConnectors.size()==1);
+    TestComponent.TestWriteConnector testWriter = (TestComponent.TestWriteConnector) 
+    	writeConnectors.get(0);
+    List data = testWriter.dataCollection;
+    assertNotNull(data);
+    /* It should hold one ordered map with two elements, that second being from the enhancer */
+    assertTrue(data.size()==1);
+    Object [] obj = (Object []) data.get(0);
+    assertTrue(obj[0] instanceof IOrderedMap);
+    IOrderedMap dataOM = (IOrderedMap) obj[0];
+    assertTrue(dataOM.size()==1);
   }
 
 }

@@ -90,6 +90,10 @@ public class WriteNode extends Node {
 		this.connector = connector;
 	}
 	
+	public IWriteConnector getConnector() {
+		return this.connector;
+	}
+	
 	public void setUnbatch(boolean unbatch) {
 		this.unbatch = unbatch;
 	}
