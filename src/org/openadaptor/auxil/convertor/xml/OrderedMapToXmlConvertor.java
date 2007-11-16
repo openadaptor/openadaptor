@@ -64,8 +64,11 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
   public static final String NULL_KEY_ELEMENT_TAG="nullKey";
   //Forward slash is not allowed in a an element name
   public static final char FORWARD_SLASH='/';
-  protected static final String FORWARD_SLASH_AS_STRING=new StringBuffer(FORWARD_SLASH).toString();
 
+  //Fix for #SC34 FORWARD_SLASH_AS_STRING was mistakenly using wrong SB constructor .
+  //protected static final String FORWARD_SLASH_AS_STRING=new StringBuffer(FORWARD_SLASH).toString();
+  protected static final String FORWARD_SLASH_AS_STRING=String.valueOf(FORWARD_SLASH);
+  
   public static final String DEFAULT_SLASH_SUBSTITUTE="_sl_";
 
   // name, if any for root element. See convert() for info on it's effect
@@ -235,7 +238,8 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
         rootTag = OrderedMapToXmlConvertor.DEFAULT_ROOT_ELEMENT_TAG;
       }
     }
-
+    //Fix for #SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag 
+    rootTag=generateElementName(rootTag);
     log.debug("Document root tag will be: " + rootTag);
 
     // Prime the root tag.
@@ -329,7 +333,7 @@ public class OrderedMapToXmlConvertor extends AbstractConvertor {
       }
       result= sb.toString();
       if (!slashMappedExplicitly) {
-        log.warn("Implict conversion of Element name from "+key+" -> "+result);
+        log.warn("Implicit conversion of Element name from "+key+" -> "+result);
       }
     }
     return result;

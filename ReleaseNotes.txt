@@ -63,7 +63,12 @@ SC32: The pipeline DOXmlToDataObject -> DataObjectToOrderedMap will fail if the 
 SC33: JMSConnection cannot work without a valid JNDIConnection. This is because the
       connectors need to always lookup the JMS Destination. The Connectors have now
       changed to allow their destinations to be set directly if this is required.
+
+SC34: (Bug (and patch for it) in OrderedMapToXMLConverter that does not allow to set a 
+      slash substitution value)
       
+SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag 
+    
 =================================================
 openadaptor3 production 3.3 Release Notes
 

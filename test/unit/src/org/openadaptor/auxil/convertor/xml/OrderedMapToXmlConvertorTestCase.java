@@ -88,13 +88,30 @@ public class OrderedMapToXmlConvertorTestCase extends AbstractTestXmlConvertor {
       String xml = (String) resultArray[0];
       System.out.println(xml);
       String expected="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+'\n'+
-      "<A/A><B_sl_B><Y_sl_Y>Y_VAL</Y_sl_Y><Z_sl_Z>Z_VAL</Z_sl_Z></B_sl_B>"+
+      "<A_sl_A><B_sl_B><Y_sl_Y>Y_VAL</Y_sl_Y><Z_sl_Z>Z_VAL</Z_sl_Z></B_sl_B>"+
       "<C_sl_C><Y_sl_Y>Y_VAL</Y_sl_Y><Z_sl_Z>Z_VAL</Z_sl_Z></C_sl_C><C_sl_C>"+
-      "<Y_sl_Y>Y_VAL2</Y_sl_Y><Z_sl_Z>Z_VAL2</Z_sl_Z></C_sl_C></A/A>";
+      "<Y_sl_Y>Y_VAL2</Y_sl_Y><Z_sl_Z>Z_VAL2</Z_sl_Z></C_sl_C></A_sl_A>";
       assertEquals(expected,xml);
     } catch (RecordException re) {
       fail("Unexpected RecordException - " + re);
     }    
+  }
+  
+  public void testMappedSlashValueProperty() {
+    try {
+      om2xml.setMappedSlashValue(".");
+      Object[] resultArray = om2xml.process(generateTestOrderedMapWithSlashes());
+      assertTrue(resultArray.length == 1);
+      String xml = (String) resultArray[0];
+      System.out.println(xml);
+      String expected="<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+'\n'+
+      "<A.A><B.B><Y.Y>Y_VAL</Y.Y><Z.Z>Z_VAL</Z.Z></B.B>"+
+      "<C.C><Y.Y>Y_VAL</Y.Y><Z.Z>Z_VAL</Z.Z></C.C><C.C>"+
+      "<Y.Y>Y_VAL2</Y.Y><Z.Z>Z_VAL2</Z.Z></C.C></A.A>";
+      assertEquals(expected,xml);
+    } catch (RecordException re) {
+      fail("Unexpected RecordException - " + re);
+    }      
   }
   
   public void testInvalidInputs() {
