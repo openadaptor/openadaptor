@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.omg.CORBA.portable.ValueInputStream;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordException;
@@ -165,9 +164,6 @@ public class DataObjectToOrderedMapConvertor extends AbstractDataObjectConvertor
         }
         // Not a structural part - must be an actual value.
         else {
-//          if (convertDateHolderToDate && (value!=null)) {
-//            value=LegacyUtils.convertDateHolderToDate(value);
-//          }
           if ((value instanceof DateHolder) && convertDateHolderToDate) {
             value=((DateHolder)value).asDate();
           }

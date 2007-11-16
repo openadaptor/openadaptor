@@ -27,9 +27,9 @@
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
-import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,15 +41,19 @@ import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.InvalidParameterException;
 import org.openadaptor.dataobjects.SDOType;
 import org.openadaptor.dataobjects.SimpleDataObject;
+import org.openadaptor.util.DateHolder;
 
 /**
  * Convert OrderedMaps to DataObjects.
  * <BR>
  * 
- * Note: It requires that the legacy openadaptor jar (usually openadaptor.jar) is available on the classpath.
+ * Notes:
+ *  <ul>
+ *   <li>It requires that the legacy openadaptor jar (usually openadaptor.jar) is available on the classpath</li>
+ *   <li>Date instances will convert to legacy DateHolder instances
+ *  </ul>
  * <br>
- * Note: It extends AbstractLegacyConvertor to associate it with similar legacy ones, even though it could
- * just directly extend AbstractConvertor
+ * 
  * @author Eddy Higgins
  */
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
@@ -70,9 +74,6 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     typeSuffix=(suffix==null)?"":suffix;
   }
 
-  public OrderedMapToDataObjectConvertor() {
-    log.warn("THIS CONVERTOR IS STILL IN DEVELOPMENT - DO NOT USE. Use OrderedMapToXmlConvertor with XmlToDataObjectConvertor instead");
-  }
 
   public Object convert(Object record) throws RecordException {
     Object result=null;
@@ -149,15 +150,22 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
         }
       }
       else { 
-        if (value instanceof Date) {log.warn("DATE FUDGE"); value=value.toString();}
+        if (value instanceof Date) {
+          log.debug("Converting Date->DateHolder"); 
+          value=asDateHolder((Date)value);
+        }
         attrType=SDOType.typeForValue(value);
         log.debug(type.getName()+": Setting DOType for name/value: "+attrName+"/"+value+" is: "+attrType);
       }  
       type.addAttribute(attrName, attrType); //Add attribute to the parent type first.
       sdo.setAttributeValue(attrName, value); //Then set the value.
     }   
-
     return sdo;
+  }
+
+  private DateHolder asDateHolder(Date date) {
+    DateHolder dateHolder=new DateHolder(date,null);
+    return dateHolder;
   }
 
 
