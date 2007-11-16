@@ -23,10 +23,12 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
+import java.util.List;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -34,8 +36,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.dataobjects.DOType;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.dataobjects.InvalidParameterException;
+import org.openadaptor.dataobjects.SDOType;
 import org.openadaptor.dataobjects.SimpleDataObject;
 
 /**
@@ -58,63 +62,106 @@ import org.openadaptor.dataobjects.SimpleDataObject;
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
+  protected String typeSuffix="";
+
+  public void setTypeSuffix(String suffix) {
+    typeSuffix=(suffix==null)?"":suffix;
+  }
 
   public OrderedMapToDataObjectConvertor() {
     log.warn("THIS CONVERTOR IS STILL IN DEVELOPMENT - DO NOT USE. Use OrderedMapToXmlConvertor with XmlToDataObjectConvertor instead");
   }
 
-  /**
-   * Convert an OrderedMap into a DataObject
-   * 
-   * 
-   * @param record
-   * 
-   * @return DataObject representation of the OrderedMap
-   * 
-   * @throws RecordException
-   *           if the conversion fails
-   */
-  protected Object convert(Object record) throws RecordException {
-    if (!(record instanceof IOrderedMap))
-      throw new RecordFormatException("Record is not an IOrderedMap. Record: " + record);
+  public Object convert(Object record) throws RecordException {
+    Object result=null;
+    try {
+      if (! (record instanceof IOrderedMap)) {
+        throw new RecordFormatException("Expected IOrderedMap, got "+record.getClass().getName());
+      }
+      IOrderedMap map=(IOrderedMap)record;
 
-    log.warn("--- USING PROTOTYPE OM->DO CONVERTOR IS UNWISE ---");
-    return convertOrderedMapToDataObject((IOrderedMap) record);
+      List keys=map.keys();
+      if (keys.size()!=1) {
+        String msg="Incoming map should have exactly one key, but has " +keys.size();
+        log.warn(msg);
+      }
+
+      Object key=keys.get(0);
+      SDOType doType=getSDOType(key.toString());
+      result=generate(doType,map.get(key));
+
+    } catch (InvalidParameterException ipe) {
+      log.error(ipe.getMessage());
+      throw new RecordException("Failed to convert "+ipe.getMessage(),ipe);
+    }
+
+    return result;
   }
 
-  // END Abstract Convertor Processor implementation
+  private Object generate(SDOType type,Object object) throws InvalidParameterException{
+    Object result=null;
+    if (object instanceof Object[]) {
+      log.debug("Data is Object[]");
+      Object[] objects=(Object[])object;
+      Object[] output=new Object[objects.length];
+      for (int i=0;i<objects.length;i++) {
+        output[i]=generate(type,objects[i]);
+      }
+    }
+    else {
+      if (object instanceof IOrderedMap) {
+        result=generate(type,(IOrderedMap)object);
+      }
+      else {
+        log.warn("Unexpected data: "+object);
+      }
+    }
+    return result;
+  }
 
-  private Object convertOrderedMapToDataObject(IOrderedMap map) throws RecordException {
+  private Object generate(SDOType type,IOrderedMap map) throws InvalidParameterException{
+    SimpleDataObject sdo=new SimpleDataObject(type);
+    Iterator it=map.keys().iterator(); 
 
-    // Create a Document to hold the data.
-    DataObject sdo = new SimpleDataObject();
-    String key = null;
-    try {
-      Iterator it = map.keys().iterator();
-      while (it.hasNext()) {
-        key = (String) it.next();
-        Object value = map.get(key);
-        if (value instanceof IOrderedMap) { // Recurse
-          sdo.setAttributeValue(key, convertOrderedMapToDataObject((IOrderedMap) value));
-        } else {
-          if (value instanceof IOrderedMap[]) {
-            IOrderedMap[] maps = (IOrderedMap[]) value;
-            DataObject[] dataObjects = new DataObject[maps.length];
-            for (int i = 0; i < maps.length; i++) {
-              dataObjects[i] = (DataObject) convertOrderedMapToDataObject(maps[i]);
-            }
-            sdo.setAttributeValue(key, dataObjects);
+    //Add each key/value
+    while (it.hasNext()) {
+      Object key=it.next();
+      String attrName=key.toString();
+      Object value=map.get(key);
+      DOType attrType;
+      log.debug("key="+key+"; value="+value);
+
+      if ((value instanceof IOrderedMap) || (value instanceof IOrderedMap[])) {
+        attrType=getSDOType(attrName);//new SDOType(attrName+"_t");
+        if (value instanceof IOrderedMap[]) {
+          //Need to generate a corresponding DataObject[]
+          IOrderedMap[] maps=(IOrderedMap[])value;
+          DataObject[] doArray=new DataObject[ maps.length];
+          for (int i=0;i<maps.length;i++) {
+            doArray[i]=(DataObject)generate((SDOType)attrType,maps[i]);
           }
-
-          else {
-            sdo.setAttributeValue(key, value);
-          }
+          value=doArray;
+        }
+        else { //Just an OM
+          value=generate((SDOType)attrType,(IOrderedMap)value);
         }
       }
-    } catch (InvalidParameterException ipe) {
-      throw new RecordException("Failed to process attribute [" + key + "]: " + ipe, ipe);
-    }
+      else { 
+        if (value instanceof Date) {log.warn("DATE FUDGE"); value=value.toString();}
+        attrType=SDOType.typeForValue(value);
+        log.debug(type.getName()+": Setting DOType for name/value: "+attrName+"/"+value+" is: "+attrType);
+      }  
+      type.addAttribute(attrName, attrType); //Add attribute to the parent type first.
+      sdo.setAttributeValue(attrName, value); //Then set the value.
+    }   
+
     return sdo;
   }
+
+
+  private SDOType getSDOType(String name) {
+    return new SDOType(name+typeSuffix);
+  }
+
 
 }

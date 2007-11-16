@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd">
+ <description>
+  <![CDATA[  
+  This adaptor does the following...
+    
+    * reads DOXML from a file
+    * converts to DataObjects (legacy data structures from previous openadaptor versions)
+    * converts DataObjects to map
+    * converts map to DataObjects
+    * converts DataObjects to DOXML
+    * writes to file
+    
+  It is designed to illustrate roundtrip legacy conversion (from, and back to, DOXML)
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config doxml_do_om_do_doxml.xml -bean Adaptor
+
+  For this example to run correctly you need to include the legacy openadaptor.jar from
+  openadaptor 1.7.2.2 or later in the classpath. 
+  This is available from http://www.openadaptor.org. 
+  Ensure that the that the classpath:
+  (1) does not include openadaptor-stub.jar
+  (2) has legacy openadaptor.jar is at the *end* of your classpath.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <legacy-openadaptor-jar>
+    
+  ]]>
+ </description>
+
+ <!-- OpenAdaptor beans -->
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates pipeline DOXML->DO->MAP->DO->DOXML</description>
+    <property name="processMap">
+     <map>
+      <entry key-ref="FileReader" value-ref="doxml_do" />
+      <entry key-ref="doxml_do" value-ref="do_om" />
+      <entry key-ref="do_om" value-ref="om_do" />
+      <entry key-ref="om_do" value-ref="do_doxml" />
+      <entry key-ref="do_doxml" value-ref="FileWriter" />
+     </map>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="FileReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <description>
+    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
+    the file to potentially contain multiple DOXML messages if necessary).
+  </description>
+  <property name="filename" value="input/bike_doxml.txt" />
+  <property name="dataReader">
+   <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
+  </property>
+ </bean>
+
+ <bean id="doxml_do" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor" />
+
+ <bean id="do_om" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
+
+ <bean id="om_do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor"/>
+ 
+ <bean id="do_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor"/>
+ 
+ <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+  <description>
+   Temporary file connector which generates ordered map dumps of output data. Note the data is purely a dump of the hierarchical ordered map
+  </description>
+  <!--  property name="filename" value="output.txt" / -->
+ </bean>
+
+</beans>

@@ -42,6 +42,19 @@ import org.openadaptor.StubException;
 
 public class SimpleDataObject implements DataObject {
 
+  public SimpleDataObject(String newTypename){
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
+
+  public SimpleDataObject(DOType type){
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
+
+// Haven't needed SDOType so far.
+//  public SimpleDataObject(SDOType type){
+//    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+//  }
+
   public DataObject cloneEmpty() {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
@@ -63,6 +76,13 @@ public class SimpleDataObject implements DataObject {
   }
 
   public void setAttributeValue(String name, Object value) throws InvalidParameterException {
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
+  
+  public void addAttributeValue(String attrName, Object value) throws InvalidParameterException {
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
+  public void addAttributeValue(String attrName, Object value, DOType valueType) throws InvalidParameterException {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
