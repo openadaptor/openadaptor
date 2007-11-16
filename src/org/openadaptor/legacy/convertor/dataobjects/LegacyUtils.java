@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.StubException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
+import org.openadaptor.util.DateHolder;
 
 /**
  * Utilities for conversion of legacy types.
@@ -52,26 +53,30 @@ public class LegacyUtils  {
   public static final String IGNORE_STUB_EXCEPTION_FLAG="openadaptor.exception.stub.ignore";
   private static final Log log = LogFactory.getLog(LegacyUtils.class);
   
-  private static final Object[] NULL_OBJECT_ARRAY=(Object[])null;
+  //private static final Object[] NULL_OBJECT_ARRAY=(Object[])null;
 
   private static final String LEGACY_SET_ATTRIBUTE_METHOD_NAME="setAttributeValue";
   private static final Class[] LEGACY_SET_ATTRIBUTE_METHOD_ARGS= {String.class,String.class};
 
   //Legacy DateHolder Class, obtained by reflection to avoid compile-time dependency.
-  private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
+  //private static final Class DATE_HOLDER_CLASS=getLegacyClass("org.openadaptor.util.DateHolder");
   //Legacy DateHolder asDate() method, by reflecation. As above.
-  private static final Method DATE_HOLDER_METHOD=getNonStubMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
+  //private static final Method DATE_HOLDER_METHOD=getNonStubMethod(DATE_HOLDER_CLASS,"asDate",(Class[])null);
  
-
-
+  
   /**
-   * Checks if dateHolder is available.
-   * <br>
-   * More specifically, it checks that the <code>asDate()</code> Method is available.
-   * @return true if DateHolder.asDate() method is available.
+   * Check if DateHolder class is a Stub class.
+   * @return true if it is a Stub, false otherwise;
    */
-  public static boolean dateHolderAvailable() {
-    return (null !=DATE_HOLDER_METHOD);
+  public static boolean dateHolderIsStub() {
+    boolean stub=false;
+    try {
+      new DateHolder(); //Try and create an instance
+    }
+    catch (StubException se) {
+      stub=true;
+    }
+    return stub;
   }
 
   public static boolean ignoreStubExceptions() {
@@ -109,32 +114,32 @@ public class LegacyUtils  {
     return dobs;
   }
 
-  /**
-   * Try and convert a legacy DateHolder instance to a Date instance.
-   * <NB>
-   * It does <em>not</em> check that the DATE_HOLDER_CLASS is available.
-   * The caller may check this via {@link #dateHolderAvailable()}
-   * If the incoming object is not a DateHolder instance it will just 
-   * return the incoming object.
-   * 
-   * @param incoming an object which may contain a DateHolder instance
-   * @return incoming, unless it was a DateHolder, in which case 
-   *         incoming.asDate() (i.e. a <code>java.util.Date</code> instance)
-   * @throws RecordFormatException if incoming object is not a DateHolderInstance.
-   */
-  public static Object convertDateHolderToDate(Object incoming) {
-    Object outgoing=incoming;
-    //Catches DateHolder (and DateTimeHolder subclass)
-    if (DATE_HOLDER_CLASS.isAssignableFrom(incoming.getClass())){
-      try {
-        outgoing=DATE_HOLDER_METHOD.invoke(incoming, NULL_OBJECT_ARRAY);
-      } catch (Exception e) {
-        String msg="Failed to convert DateHolder to java.util.Date";
-        log.warn(msg+". Exception: "+e);
-      }
-    }
-    return outgoing;
-  }
+//  /**
+//   * Try and convert a legacy DateHolder instance to a Date instance.
+//   * <NB>
+//   * It does <em>not</em> check that the DATE_HOLDER_CLASS is available.
+//   * The caller may check this via {@link #dateHolderAvailable()}
+//   * If the incoming object is not a DateHolder instance it will just 
+//   * return the incoming object.
+//   * 
+//   * @param incoming an object which may contain a DateHolder instance
+//   * @return incoming, unless it was a DateHolder, in which case 
+//   *         incoming.asDate() (i.e. a <code>java.util.Date</code> instance)
+//   * @throws RecordFormatException if incoming object is not a DateHolderInstance.
+//   */
+//  public static Object convertDateHolderToDate(Object incoming) {
+//    Object outgoing=incoming;
+//    //Catches DateHolder (and DateTimeHolder subclass)
+//    if (DATE_HOLDER_CLASS.isAssignableFrom(incoming.getClass())){
+//      try {
+//        outgoing=DATE_HOLDER_METHOD.invoke(incoming, NULL_OBJECT_ARRAY);
+//      } catch (Exception e) {
+//        String msg="Failed to convert DateHolder to java.util.Date";
+//        log.warn(msg+". Exception: "+e);
+//      }
+//    }
+//    return outgoing;
+//  }
 
 
 
@@ -228,19 +233,19 @@ public class LegacyUtils  {
   }
 
 
-  private static Method getNonStubMethod(Class cl, String methodName,Class[] argTypes) {
-    Method method=getMethod(cl, methodName, argTypes);
-    if (method!=null) {
-      try {
-        method.invoke(new Object(),new Object[argTypes.length]);
-      }    
-      catch (StubException se) {
-        log.warn(se);
-        method=null;
-      }
-      catch (Exception e) {} //Can ignore other invocation ones.
-    }
-    return method;
-  }
+//  private static Method getNonStubMethod(Class cl, String methodName,Class[] argTypes) {
+//    Method method=getMethod(cl, methodName, argTypes);
+//    if (method!=null) {
+//      try {
+//        method.invoke(new Object(),new Object[argTypes.length]);
+//      }    
+//      catch (StubException se) {
+//        log.warn(se);
+//        method=null;
+//      }
+//      catch (Exception e) {} //Can ignore other invocation ones.
+//    }
+//    return method;
+//  }
 }
 

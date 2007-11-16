@@ -45,25 +45,27 @@ import org.openadaptor.dataobjects.SimpleDataObject;
 /**
  * Convert OrderedMaps to DataObjects.
  * <BR>
- * <B>WARNING This class is still at the prototype stage and should not be used, not least because it is
- * incomplete!</B>
- * <p>
- * For now, users are encouraged instead to use {@link org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor} 
- * coupled with {@link XmlToDataObjectConvertor}.
- * <p>
+ * 
  * Note: It requires that the legacy openadaptor jar (usually openadaptor.jar) is available on the classpath.
  * <br>
  * Note: It extends AbstractLegacyConvertor to associate it with similar legacy ones, even though it could
  * just directly extend AbstractConvertor
  * @author Eddy Higgins
- * @see org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor
- * @see XmlToDataObjectConvertor
  */
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
+  /**
+   * (Optional) suffix to apply when creating DOTypes from an attribute name.
+   */
   protected String typeSuffix="";
 
+  /**
+   * Set the suffix to apply when generating DOTypes from attribute names
+   * <b>
+   * 
+   * @param suffix
+   */
   public void setTypeSuffix(String suffix) {
     typeSuffix=(suffix==null)?"":suffix;
   }

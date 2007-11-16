@@ -31,10 +31,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.omg.CORBA.portable.ValueInputStream;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.dataobjects.DataObject;
+import org.openadaptor.util.DateHolder;
 
 /**
  * Converts arrays of DataObjects (legacy data format from previous versions of openadaptor)
@@ -63,12 +65,12 @@ public class DataObjectToOrderedMapConvertor extends AbstractDataObjectConvertor
     super.validate(exceptions);
 
     if (convertDateHolderToDate) {
-      if (LegacyUtils.dateHolderAvailable()){
-        log.info("Legacy DateHolder instances (including subclasses) will be converted to java.util.Date");
+      if (LegacyUtils.dateHolderIsStub()){
+        log.warn("DateHolder is stub Class - DateHolder instances will NOT be converted to java.util.date");
+        setConvertDateHolderToDate(false); //Force it to false.
       }
       else { 
-        log.warn("Unable to get asDate() method from DateHolderClass - DateHolder instances will NOT be converted to java.util.date");
-        setConvertDateHolderToDate(false); //Force it to false.
+        log.info("Legacy DateHolder instances (including subclasses) will be converted to java.util.Date");
       }
     }
   }
@@ -163,10 +165,12 @@ public class DataObjectToOrderedMapConvertor extends AbstractDataObjectConvertor
         }
         // Not a structural part - must be an actual value.
         else {
-          if (convertDateHolderToDate && (value!=null)) {
-            value=LegacyUtils.convertDateHolderToDate(value);
+//          if (convertDateHolderToDate && (value!=null)) {
+//            value=LegacyUtils.convertDateHolderToDate(value);
+//          }
+          if ((value instanceof DateHolder) && convertDateHolderToDate) {
+            value=((DateHolder)value).asDate();
           }
-
           if (log.isDebugEnabled()) {
             String valString=(value==null)?"<null>":value + " [" + value.getClass().getName() + "]";           
             log.debug(attr+"->" + valString);
