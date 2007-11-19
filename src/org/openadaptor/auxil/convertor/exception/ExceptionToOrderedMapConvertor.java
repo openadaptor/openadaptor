@@ -37,16 +37,19 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.MessageException;
 
 /**
- * Converts a MessageException to an ordered map.
+ * Converts a MessageException to an ordered map. This is to allow for further
+ * custom processing of exceptions, such as persisting them in a database.
  * 
  * @author Kris Lachor
- * TODO java doc
  */
 public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
-  /* Default field names */
+  /* 
+   * Default ordered map field names. Ideally, these should correspond to column names
+   * in the database - public setters allow for overriding the defaults.
+   */
   
   static final String TIMESTAMP = "TIMESTAMP";
   
@@ -75,15 +78,23 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private String reprocessedColName = REPROCESSED;
   
-  
+ 
   // the format the exception timestamp will have in the ordered map
   // default to the java.util.Date().toString() value
   private SimpleDateFormat timestampFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
 
+  /**
+   * Default constructor.
+   */
   public ExceptionToOrderedMapConvertor() {
     super();
   }
 
+  /**
+   * Constructor. 
+   * 
+   * @param id the component id.
+   */
   public ExceptionToOrderedMapConvertor(String id) {
     super(id);
   }
@@ -115,26 +126,56 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
     this.timestampFormat = new SimpleDateFormat(timestampFormat);
   }
 
+  /**
+   * Overrides the default component column name.
+   * 
+   * @param componentColName the component column name.
+   */
   public void setComponentColName(String componentColName) {
     this.componentColName = componentColName;
   }
 
+  /**
+   * Overrides the default data column name.
+   * 
+   * @param dataColName the data column name.
+   */
   public void setDataColName(String dataColName) {
     this.dataColName = dataColName;
   }
 
+  /**
+   * Overrides the default exception class column name.
+   * 
+   * @param exceptionClassColName the exception class column name.
+   */
   public void setExceptionClassColName(String exceptionClassColName) {
     this.exceptionClassColName = exceptionClassColName;
   }
 
+  /**
+   * Overrides the default 'fixed' column name.
+   * 
+   * @param fixedColName the 'fixed' column name.
+   */
   public void setFixedColName(String fixedColName) {
     this.fixedColName = fixedColName;
   }
 
+  /**
+   * Overrides the default 'reprocessed' column name.
+   * 
+   * @param reprocessedColName the 'reprocessed' column name.
+   */
   public void setReprocessedColName(String reprocessedColName) {
     this.reprocessedColName = reprocessedColName;
   }
 
+  /**
+   * Overrides the default timestamp column name.
+   * 
+   * @param timestampColName the timestamp column name.
+   */
   public void setTimestampColName(String timestampColName) {
     this.timestampColName = timestampColName;
   }

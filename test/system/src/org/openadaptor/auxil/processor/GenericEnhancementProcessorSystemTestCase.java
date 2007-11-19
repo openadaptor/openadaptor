@@ -63,7 +63,8 @@ public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTes
    * #prepareParameters(java.lang.Object)}.
    * 
    * Executes an adaptor with an enhancement processor. Verifies there were no errors.
-   * Verifies the writer received one message.
+   * Verifies the writer received one message - an ordered map with two elements, one 
+   * of which comes from the enhancement processor.
    */
   public void testPrepareParameters() throws Exception {
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENHANCEMENT_PROCESSOR);
@@ -76,12 +77,15 @@ public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTes
     	writeConnectors.get(0);
     List data = testWriter.dataCollection;
     assertNotNull(data);
-    /* It should hold one ordered map with two elements, that second being from the enhancer */
+    
+    /* It should hold one ordered map with two elements, second element being from the enhancer */
     assertTrue(data.size()==1);
     Object [] obj = (Object []) data.get(0);
     assertTrue(obj[0] instanceof IOrderedMap);
     IOrderedMap dataOM = (IOrderedMap) obj[0];
-    assertTrue(dataOM.size()==1);
+    assertTrue(dataOM.size()==2);
+    Object enhanceElement = dataOM.get(1);
+    assertTrue(enhanceElement.equals(new Integer(500000))); 
   }
 
 }

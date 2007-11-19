@@ -111,7 +111,7 @@ public class TestComponent {
    
     public Object[] next(long timeoutMs) { 
       IOrderedMap map = new OrderedHashMap();
-      map.put("element1", "Dummy read connector test data");
+      map.put("element1", "2");
       return new Object[]{map}; 
     }
     

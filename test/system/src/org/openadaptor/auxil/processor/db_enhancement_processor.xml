@@ -29,7 +29,7 @@
 	
 	<bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnhancementProcessor">
       <property name="readConnector" ref="dbReader"/>
-      <property name="parameterNames" value="uniqueid"/>
+      <property name="parameterNames" value="element1"/>
     </bean>
 	
     <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">

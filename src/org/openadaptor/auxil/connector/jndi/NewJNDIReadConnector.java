@@ -50,6 +50,7 @@ import java.util.Map;
  * @author Eddy Higgins, Kris Lachor
  * @see JNDIConnection
  * @see JNDISearch
+ * @todo test, replace the old JNDIReadConnector
  */
 public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnhancementReadConnector {
 
@@ -71,14 +72,15 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    */
   protected boolean _searchHasExecuted = false;
 
+  /** To store internal state when used as IEnhancementReadConnector */
+  private IOrderedMap inputParameters = null;
+
   // bean properties:
   /**
    * JNDIConnection which this reader will use
    */
   protected JNDIConnection jndiConnection;
 
-    
-  
   /********* ported from JNDIEnhancementProcessor BEGIN ************/
   protected String recordKeyUsedAsSearchBase = null;
 
@@ -475,11 +477,12 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    * @throws OAException
    */
   public Object[] next(long timeoutMs) throws OAException {
-    //TODO
-    if(inputRecord!=null){
-      IOrderedMap tmp = inputRecord;
-      inputRecord = null;
-      return processOrderedMap(tmp);
+    
+    /* different processing path when used as IEnhancementReadConnector */
+    if(inputParameters!=null){
+      Object [] result = processOrderedMap(inputParameters);
+      inputParameters = null;
+      return result;
     }
     
     Object[] result = null;
@@ -521,6 +524,8 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   }
 
   /**
+   * Always returns null.
+   * 
    * @return null
    * @see org.openadaptor.core.IReadConnector#getReaderContext()
    */
@@ -536,16 +541,12 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   public void setReaderContext(Object context) {
   }
 
-  private IOrderedMap inputRecord = null;
-
   /**
+   * Sets parameters for customisation of the query.
    * 
+   * @see IEnhancementReadConnector#setQueryParameters(IOrderedMap)
    */
-//  public Object[] next(IOrderedMap inputRecord, long timeoutMs) {
-   public void setQueryParameters(IOrderedMap inputRecord) {
-//    IOrderedMap inputOrderedMap = (IOrderedMap) inputRecord;
-//    return next(timeoutMs);
-    this.inputRecord = inputRecord;
-//    return processOrderedMap(inputRecord);
+  public void setQueryParameters(IOrderedMap inputParameters) {
+    this.inputParameters = inputParameters;
   }
 }

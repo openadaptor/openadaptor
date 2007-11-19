@@ -39,7 +39,9 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 public interface IEnhancementProcessor  {
   
   /**
-   * Underlying read connector.
+   * Underlying read connector. The read connector must be capable of accepting parameters
+   * and use them to customise the query to the external resource. The {@link IEnhancementReadConnector}
+   * is an abstraction of this capability.
    * 
    * @return the underlying read connector.
    */
@@ -62,5 +64,5 @@ public interface IEnhancementProcessor  {
    * @param additionalData data returned by IEnhancementReadConnector
    */
   Object [] enhance(Object input, Object [] additionalData);
- 
+  
 }

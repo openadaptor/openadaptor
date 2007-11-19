@@ -49,7 +49,7 @@ public abstract class AbstractJDBCConnectorTest extends MockObjectTestCase {
   
   protected static final String COL2 = "COL2";
   
-  protected String sql = "Some SQL";
+  protected static final String SQL = "Some SQL";
   
   protected Mock mockStatement;
   

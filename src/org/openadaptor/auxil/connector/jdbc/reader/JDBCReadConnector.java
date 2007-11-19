@@ -90,12 +90,17 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
   protected int batchSize = IResultSetConverter.CONVERT_ONE;
 
   /**
-   * Default constructor
+   * Default constructor.
    */
   public JDBCReadConnector() {
     super();
   }
   
+  /**
+   * Constructor.
+   * 
+   * @param id component id.
+   */
   public JDBCReadConnector(String id) {
     super(id);
   }
@@ -162,7 +167,6 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    * @param timeoutMs Ignored as this implementation is non-blocking.
    * @return Object[] array of objects from resultset
    * @throws OAException
-   * TODO unit test usage of postSubstitutionSql
    */
   public Object[] next(long timeoutMs) throws OAException {
     log.info("Call for next record(s)");
@@ -173,6 +177,7 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
           rs = callableStatement.executeQuery(); 
         }
         else{
+          /* postSubstitutionSql takes precedence over sql */
           rs = statement.executeQuery(postSubstitutionSql==null ? sql : postSubstitutionSql);
         }
       }
@@ -305,6 +310,11 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
     this.batchSize = batchSize;
   }
   
+  /**
+   * Sets the jdbc connection.
+   * 
+   * @param connection a JDBCConnection
+   */
   public void setJdbcConnection(JDBCConnection connection) {
     jdbcConnection = connection;
   }
@@ -321,6 +331,10 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
     jdbcConnection.handleException(e, null);
   }
   
+  /**
+   * @see ITransactional#getResource()
+   * @see JDBCConnection#getTransactionalResource()
+   */
   public Object getResource() {
     if (jdbcConnection.isTransacted()) {
       return jdbcConnection.getTransactionalResource();
