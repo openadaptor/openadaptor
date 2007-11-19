@@ -81,4 +81,22 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
     }
   }
   
+  /**
+   * Always returns null.
+   * 
+   * @return null
+   * @see org.openadaptor.core.IReadConnector#getReaderContext()
+   */
+  public Object getReaderContext() {
+    return null;
+  }
+  
+  /**
+   * Takes no action.
+   * 
+   * @see org.openadaptor.core.IReadConnector#setReaderContext(Object)
+   */
+  public void setReaderContext(Object context) {
+  }
+  
 }

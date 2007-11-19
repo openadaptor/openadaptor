@@ -478,14 +478,16 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    */
   public Object[] next(long timeoutMs) throws OAException {
     
+    Object[] result = null;
+    
     /* different processing path when used as IEnhancementReadConnector */
     if(inputParameters!=null){
-      Object [] result = processOrderedMap(inputParameters);
+      result = processOrderedMap(inputParameters);
       inputParameters = null;
       return result;
     }
     
-    Object[] result = null;
+    /* non-enhancement processor */
     try {
       if (!_searchHasExecuted) {
         log.info("Executing JNDI search - " + search.toString());
@@ -521,24 +523,6 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     }
 
     return true;
-  }
-
-  /**
-   * Always returns null.
-   * 
-   * @return null
-   * @see org.openadaptor.core.IReadConnector#getReaderContext()
-   */
-  public Object getReaderContext() {
-    return null;
-  }
-
-  /**
-   * Takes no action.
-   * 
-   * @see org.openadaptor.core.IReadConnector#setReaderContext(Object)
-   */
-  public void setReaderContext(Object context) {
   }
 
   /**

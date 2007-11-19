@@ -215,19 +215,4 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
     return true;
   }
 
-  /**
-   * @return null
-   * @see org.openadaptor.core.IReadConnector#getReaderContext()
-   */
-  public Object getReaderContext() {
-    return null;
-  }
-
-  /**
-   * Takes no action.
-   * 
-   * @see org.openadaptor.core.IReadConnector#setReaderContext(Object)
-   */
-  public void setReaderContext(Object context) {
-  }
 }

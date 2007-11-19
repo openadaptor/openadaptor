@@ -112,7 +112,6 @@ public class JNDIReadConnectorTestCase extends MockObjectTestCase {
     readConnector.next(1000);
     assertTrue(mockSearch.executeCounter==1);
   }
-
   
   /* Inner mock of {@link JNDIConnection} */
   class MockJNDIConnection extends JNDIConnection {
