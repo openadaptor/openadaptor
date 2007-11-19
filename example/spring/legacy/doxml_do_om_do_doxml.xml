@@ -58,8 +58,8 @@
 
  <bean id="FileReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
   <description>
-    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
-    the file to potentially contain multiple DOXML messages if necessary).
+   Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow the file to potentially contain multiple DOXML messages if
+   necessary).
   </description>
   <property name="filename" value="input/bike_doxml.txt" />
   <property name="dataReader">
@@ -72,11 +72,16 @@
  <bean id="do_om" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
 
  <bean id="om_do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor">
-   <property name="typeNameMap"><map><entry key="Bike" value="Bike_t"/></map></property> 
+  <property name="typeNameMap">
+   <map>
+    <entry key="Bike" value="Bike_t" />
+    <entry key="Bike.Manufacturer" value="ManType"/>
+   </map>
+  </property>
  </bean>
- 
- <bean id="do_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor"/>
- 
+
+ <bean id="do_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor" />
+
  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
   <description>
    Temporary file connector which generates ordered map dumps of output data. Note the data is purely a dump of the hierarchical ordered map

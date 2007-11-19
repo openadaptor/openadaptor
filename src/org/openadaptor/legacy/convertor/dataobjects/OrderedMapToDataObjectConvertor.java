@@ -60,25 +60,16 @@ import org.openadaptor.util.DateHolder;
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
-  /**
-   * (Optional) suffix to apply when creating DOTypes from an attribute name.
-   */
-  protected String typeSuffix="_t";
-  
   protected Map typeNameMap;
-
-  /**
-   * Set the suffix to apply when generating DOTypes from attribute names
-   * <b>
-   * 
-   * @param suffix
-   */
-  public void setTypeSuffix(String suffix) {
-    typeSuffix=(suffix==null)?"":suffix;
-  }
   
+  protected boolean expandTypeNames=true;
+
   public void setTypeNameMap(Map typeNameMap) {
     this.typeNameMap=typeNameMap;
+  }
+  
+  public void setUseExpandedTypeNames(boolean expandTypeNames) {
+    this.expandTypeNames=expandTypeNames;
   }
 
 
@@ -97,8 +88,10 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
       }
 
       Object key=keys.get(0);
-      SDOType doType=getSDOType(key.toString());
-      result=generate(doType,map.get(key));
+      //This it the current path, for use when mapping names.
+      String path=key.toString();
+      SDOType doType=getSDOType(path);
+      result=generate(doType,map.get(key),path);
 
     } catch (InvalidParameterException ipe) {
       log.error(ipe.getMessage());
@@ -108,19 +101,19 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     return result;
   }
 
-  private Object generate(SDOType type,Object object) throws InvalidParameterException{
+  private Object generate(SDOType type,Object object,String path) throws InvalidParameterException{
     Object result=null;
     if (object instanceof Object[]) {
       log.debug("Data is Object[]");
       Object[] objects=(Object[])object;
       Object[] output=new Object[objects.length];
       for (int i=0;i<objects.length;i++) {
-        output[i]=generate(type,objects[i]);
+        output[i]=generate(type,objects[i],path);
       }
     }
     else {
       if (object instanceof IOrderedMap) {
-        result=generate(type,(IOrderedMap)object);
+        result=generate(type,(IOrderedMap)object,path);
       }
       else {
         log.warn("Unexpected data: "+object);
@@ -129,7 +122,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     return result;
   }
 
-  private Object generate(SDOType type,IOrderedMap map) throws InvalidParameterException{
+  private Object generate(SDOType type,IOrderedMap map,String path) throws InvalidParameterException{
     SimpleDataObject sdo=new SimpleDataObject(type);
     Iterator it=map.keys().iterator(); 
 
@@ -142,18 +135,19 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
       log.debug("key="+key+"; value="+value);
 
       if ((value instanceof IOrderedMap) || (value instanceof IOrderedMap[])) {
-        attrType=getSDOType(attrName);//new SDOType(attrName+"_t");
+        attrType=getSDOType(attrName,path);
+        String newPath=path+"."+attrName;
         if (value instanceof IOrderedMap[]) {
           //Need to generate a corresponding DataObject[]
           IOrderedMap[] maps=(IOrderedMap[])value;
           DataObject[] doArray=new DataObject[ maps.length];
           for (int i=0;i<maps.length;i++) {
-            doArray[i]=(DataObject)generate((SDOType)attrType,maps[i]);
+            doArray[i]=(DataObject)generate((SDOType)attrType,maps[i],newPath);
           }
           value=doArray;
         }
         else { //Just an OM
-          value=generate((SDOType)attrType,(IOrderedMap)value);
+          value=generate((SDOType)attrType,(IOrderedMap)value,newPath);
         }
       }
       else { 
@@ -181,11 +175,12 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
    * @return
    */
   private SDOType getSDOType(String name) {
-    if ((typeNameMap!=null) &&(typeNameMap.containsKey(name))){
-      name=typeNameMap.get(name).toString();
-    }
-    else {
-      name+=typeSuffix;
+    return getSDOType(name,null);
+  }
+  private SDOType getSDOType(String name,String path) {
+    String unmappedName=path==null?name:path+"."+name;
+    if ((typeNameMap!=null) &&(typeNameMap.containsKey(unmappedName))){
+      name=typeNameMap.get(unmappedName).toString();
     }
     return new SDOType(name); 
   }
