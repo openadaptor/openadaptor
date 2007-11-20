@@ -61,7 +61,8 @@
    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow the file to potentially contain multiple DOXML messages if
    necessary).
   </description>
-  <property name="filename" value="input/bike_doxml.txt" />
+    <property name="filename" value="input/bike_doxml.txt" />  
+
   <property name="dataReader">
    <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
   </property>
@@ -72,14 +73,16 @@
  <bean id="do_om" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
 
  <bean id="om_do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor">
+  <!-- <property name="useExpandedTypeNames" value="false"/> -->
+<!--  
   <property name="typeNameMap">
    <map>
     <entry key="Bike" value="Bike_t" />
     <entry key="Bike.Manufacturer" value="ManType"/>
    </map>
   </property>
+-->
  </bean>
-
  <bean id="do_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor" />
 
  <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">

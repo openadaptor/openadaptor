@@ -69,6 +69,10 @@ public class FixedDOType implements DOType, Serializable {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
 
+  public SDOAttribute getAttributeNamed(String attrName){
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
+
   public DOAttribute[] getAttributes() {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }

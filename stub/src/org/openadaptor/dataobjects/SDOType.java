@@ -63,6 +63,10 @@ public class SDOType extends FixedDOType implements Serializable {
   public void addAttribute(String name, DOType type) {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
+  
+  public static SDOType asSDOType(DOType type) {
+    throw new StubException(StubException.WARN_LEGACY_OA_JAR);
+  }
 
 
 }
