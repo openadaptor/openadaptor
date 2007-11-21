@@ -49,11 +49,39 @@ import org.openadaptor.util.DateTimeHolder;
 /**
  * Convert OrderedMaps to DataObjects.
  * <BR>
- * 
- * Notes:
+ * When generating a DataObject hierarchy from an incoming IOrderedMap it works as 
+ * follows:<br>
+ * <ul>
+ * <li>The incoming map is treated as a hierarchy of maps.</li>
+ * <li>The top level map is expected to have a single key/value pair. If more than
+ *     one key is provided, only the first will be used.
+ * </li>
+ * <li>The value for the top level Map is itself expected to be an OrderedMap</li>
+ * </ul>
+ * Entries at various levels within the incoming map hierarchy are identified (for
+ * the purpose of creating DataObject types) by the (dot separated) path from the 
+ * root map to the entry in question.
+ * <br>
+ * By default the path is used to name the DataObjectTypes, but this may be overridden 
+ * by providing a mapping of path entries to substitute names via the 
+ * {@link #setTypeNameMap typeNameMap} property.
+ * <br>
+ * The {@link #setUseExpandedTypeNames useExpandedTypeName} property may be used to 
+ * override the default behaviour. In this case DataObjectTypes will not include the 
+ * full path. Note that the full path may still be used when setting up mapped 
+ * substitution values, as this is checked first)
+ * <br>
+ * Limitations:
  *  <ul>
- *   <li>It requires that the legacy openadaptor jar (usually openadaptor.jar) is available on the classpath</li>
- *   <li>Date instances will convert to legacy DateTimeHolder instances
+ *   <li> It requires that the legacy openadaptor jar (usually openadaptor.jar) is 
+ *        available on the classpath</li>
+ *   <li> Date instances will always convert to legacy DateTimeHolder instances</li>
+ *   <li> If an incoming map has a null value for a field, a DOType cannot be derived
+ *        for it (obviously) </li>
+ *   <li> DataObject type will not be reused, but duplicated for different parts of 
+ *        the hierarchy (although it should be possible to override this by mapping 
+ *        multiple entries to same target name, or disabling expandedtypeName)
+ *   </li>
  *  </ul>
  * <br>
  * 
@@ -62,15 +90,17 @@ import org.openadaptor.util.DateTimeHolder;
 public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
   private static final char SEP='.'; //Separator for path entries in hierarchy.
+  private boolean debug;
 
   //Mapping between auto-generated 'element' name and values to substitute for them
   protected Map typeNameMap;
 
+  //Default is to use full path names for DOType names.
   protected boolean expandTypeNames=true;
 
   //Cache of already created type names.
   protected Map sdoTypeCache=new HashMap();
-  
+
   /**
    * Map to allow substitution of type names in outgoing DOTypes.
    * <p>
@@ -98,7 +128,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   }
 
   /**
-   * Flag to indicate if full hierarchical DOType names should be createed.
+   * Flag to indicate if full hierarchical DOType names should be created.
    * <p>
    * If true (the default), then DOTypes are created with names which correspond
    * to the location in the ordered map hierarchy where the type is being
@@ -114,73 +144,88 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     this.expandTypeNames=expandTypeNames;
   }
 
-
   /**
    * Convert an IOrderedMap into a DataObject.
    * <br>
    * The incoming ordered map is expected to have a single top level
    * entry, whose name will be used as the type for the output DataObject.
-   * 
+   * <br>
+   * See the class javadoc for more information on the conversion process.
    */
   public Object convert(Object record) throws RecordException {
     Object result=null;
+    //Cache the debug flag.
+    debug=log.isDebugEnabled();
     try {
-      if (! (record instanceof IOrderedMap)) {
+      if (! (record instanceof IOrderedMap)) { //Only OrderedMaps are permitted.
         throw new RecordFormatException("Expected IOrderedMap, got "+record.getClass().getName());
       }
       IOrderedMap map=(IOrderedMap)record;
 
       List keys=map.keys();
       if (keys.size()!=1) {
-        String msg="Incoming map should have exactly one key, but has " +keys.size();
+        String msg="Incoming map should have exactly one key, but has " +keys.size()+
+        " (all but first key/value pair will be ignored)";
         log.warn(msg);
       }
 
       Object key=keys.get(0);
       //This it the current path, for use when mapping names.
       String path=key.toString();
+
+      Object value=map.get(key);
+      //Value must be an IOrderedMap.
+      //ToDo: Might relax this to allow a primitive value, though this may be pointless.
+      if (! (value instanceof IOrderedMap) ) {
+        String msg="Top level map must have a key/value pair where the value is an IOrderedMap";
+        log.warn(msg);
+        throw new RecordFormatException(msg);
+      }
+      //Create a SimpleDataObject from the Map value.
       result=sdoFromMap(path,(IOrderedMap)map.get(key),null);
 
     } catch (InvalidParameterException ipe) {
-      log.error("InvalidParameter: "+ ipe);
-      ipe.printStackTrace();
-      throw new RecordException("Failed to convert "+ipe.getMessage(),ipe);
+      String msg="Legacy operation failed: "+ipe;
+      log.warn(ipe);
+      throw new RecordException("Failed to convert "+ipe+". Record was "+record,ipe);
     }
     return result;
   }
 
- /**
-  * Create a SimpleDataObject from an incoming ordered map.
-  * <br>
-  * Note: The legacy exceptions do not provide much in the way of diagnostic
-  * information.
-  * 
-  * @param name The type name for the SDO
-  * @param map the map to be converted.
-  * @param path Current path within the hierarchy 
-  * @return SimpleDataObject representation of the incoming map.
-  * @throws InvalidParameterException if legacy operations fail for some reason.
-  */
+  /**
+   * Create a SimpleDataObject from an incoming ordered map.
+   * <br>
+   * Note: The legacy exceptions do not provide much in the way of diagnostic
+   * information.
+   * 
+   * @param name The type name for the SDO
+   * @param map the map to be converted.
+   * @param path Current path within the hierarchy 
+   * @return SimpleDataObject representation of the incoming map.
+   * @throws InvalidParameterException if legacy operations fail for some reason.
+   */
   private SimpleDataObject sdoFromMap(String name,IOrderedMap map,String path) throws InvalidParameterException {
     String mapPath=path==null?name:path+SEP+name;
-    log.debug(mapPath+" sdoFromMap("+name+","+map+","+path+")");
+    if (debug) { log.debug(mapPath+" sdoFromMap("+name+","+map+","+path+")");}
+
+    //Get the DOType for this point in the hierarchy.
     SDOType mapType=getSDOType(mapPath);
-    log.debug(mapPath+" sdoFromMap() Creating new SDO with type= "+mapType.getName());
+
+    //Create a new DataObject for the determined type.
+    if (debug){log.debug(mapPath+" sdoFromMap() Creating new SDO with type= "+mapType.getName());}
     SimpleDataObject sdo=new SimpleDataObject(mapType);
 
-    Iterator it=map.keys().iterator(); 
-    //Add each key/value as an attributeValue.
-    log.debug(mapPath+" sdoFromMap() adding attributes...");
+    //Walk through the key/value pairs, adding each as an attribute (value) of the type.
+    if (debug) { log.debug(mapPath+" sdoFromMap() adding "+map.keys().size()+" attributes...");}
+    Iterator it=map.keys().iterator();    
     while (it.hasNext()) {
       Object key=it.next();
       String attrName=key.toString();
       Object value=map.get(key);
-      log.debug(mapPath+" sdoFromMap() adding attribute "+attrName+"->"+value);
+      if (debug) {log.debug(mapPath+" sdoFromMap() adding attribute "+attrName+"->"+value);}
       addAttribute(sdo,attrName,value,mapPath);
     }
-    //Now add it to the parent sdo.
-    //log.debug("sdoFromMap() returning sdo  "+sdo);
-    log.debug(mapPath+" sdoFromMap() returning sdo of type "+sdo.getType().getName());
+    if (debug) {log.debug(mapPath+" sdoFromMap() returning sdo of type "+sdo.getType().getName());}
     return sdo;
   }
 
@@ -200,17 +245,17 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
    * @throws InvalidParameterException on legacy exception.
    */
   private SimpleDataObject addAttribute(SimpleDataObject sdo,String name,Object value,String path) throws InvalidParameterException{
-    //log.debug("addAttribute("+sdo+","+name+","+value+","+path+")");
+    if (debug) { log.debug(path+" addAttribute("+name+","+value+","+path+")");}
     SDOType sdoType=SDOType.asSDOType(sdo.getType());
     if (!addAttributeAsPrimitive(sdo, sdoType, name, value)) { //It's a more complex type
       if (value instanceof IOrderedMap) { //Process an ordered map
-        //log.debug("addAttribute() processing OM: "+value);
+        if (debug){log.debug(path+" addAttribute() processing OM: "+value);}
         SimpleDataObject mapSdo=sdoFromMap(name,(IOrderedMap)value,path);
-        //log.debug("addAttribute() processed OM to sdo "+mapSdo);
 
-        //Need to use getAttributeNamed() or non-existent throws Exception.
+        //use getAttributeNamed() - getAttribute(name) throws Exception if it doesn't exist
         if (sdoType.getAttributeNamed(name)!=null) { //Already have a value!
-          log.debug("Adding value to existing attribute "+name);
+          if(debug) {log.debug("Adding value to existing attribute "+name);}
+          //ToDo: Legacy code might have a more elegant way to add an extra attribute value
           DataObject[] old=(DataObject[])sdo.getAttributeValue(name);
           int oldLength=old.length;
           DataObject[] modified=new DataObject[oldLength+1];
@@ -219,16 +264,16 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
           sdo.setAttributeValue(name, modified);
         }
         else { //No such attribute, but we need it now.
-          log.debug("Adding new attribute "+ name);
+          if(debug){log.debug("Adding new attribute "+ name);}
           sdoType.addAttribute(name, mapSdo.getType());
-          //Have to add it as a DataObject[]. Don't know why.
+          //Have to add it as a DataObject[]. Don't know why. That's just DataObjects!
           sdo.setAttributeValue(name, new DataObject[] {mapSdo});
         }
       }
       else { //Not OM, how about an Array of 'em?
         if (value instanceof IOrderedMap[]) {
           IOrderedMap[] maps=(IOrderedMap[])value;
-          log.debug(path+" addAttribute() processing DataObject["+maps.length+"]");
+          if(debug) {log.debug(path+" addAttribute() processing IOrderedMap["+maps.length+"]");}
           for (int i=0;i<maps.length;i++) {
             addAttribute(sdo,name,maps[i],path);
           }
@@ -241,39 +286,42 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
         }
       }
     }
-    //log.debug("addAttribute() returning sdo "+sdo);
-    log.debug(path+" addAttribute() returning sdo of type "+sdo.getType().getName());
+    if (debug){log.debug(path+" addAttribute() returning sdo of type "+sdo.getType().getName());}
     return sdo;
   }
 
   /**
    * This will attempt to add an attribute as a primitive value.
+   * <br>
    * If will return true if it succeeds, false otherwise.
+   * <br>
+   * It uses the legacy method SDOType.typeforValue(value) to try and
+   * get the primitiveType.
    * @param sdo SDO to which the attribute is to be added
    * @param sdoType ToDo - check if we still need this.
-   * @param name
-   * @param value
+   * @param name Attribute Name
+   * @param value Attribute value - possibly primitive.
    * @return true if it was primitive, and added, false otherwise.
    * @throws InvalidParameterException if legacy exception occurs.
    */
   private boolean addAttributeAsPrimitive(SimpleDataObject sdo,SDOType sdoType,String name,Object value) throws InvalidParameterException { 
     if (value==null) {
-      log.debug("Value is <null> - nothing to do here");
+      if(debug) {log.debug("Value is <null> - nothing to do here");}
       return true;
     }
     if (value instanceof Date) { //Date is special case.
-      log.debug("Converting Date->DateTimeHolder"); 
+      if (debug) {log.debug("Converting Date->DateTimeHolder"); }
       value=asDateTimeHolder((Date)value);
     }
     DOType primitiveType=SDOType.typeForValue(value);
     if (primitiveType!=null) {
-      log.debug("addAttribute() Setting primitive ("+primitiveType.getName()+") "+name+"="+value);
+      if (debug){log.debug("addAttributeAsPrimitive() setting ("+primitiveType.getName()+") "+name+"="+value);}
       if(sdoType.getAttributeNamed(name) ==null) {
-        log.debug("Adding new attribute "+name+" ("+primitiveType.getName()+") to type "+sdoType.getName());
+        if (debug){log.debug("addAttributeAsPrimitive() adding attribute "+name+" ("+primitiveType.getName()+") to type "+sdoType.getName());}
         sdoType.addAttribute(name, primitiveType);
       }
       else {
-        log.debug("Attribute "+name+" already exists in type "+sdoType.getName());
+        if (debug){log.debug("addAttributeAsPrimitive() attribute "+name+" already exists in type "+sdoType.getName());}
       }
       sdo.setAttributeValue(name, value);
       return true; //It was primitive, and has been processed.
@@ -281,11 +329,11 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
     return false; //Wasn't a primitive.
   }
 
- 
+
   protected DateHolder asDateHolder(Date date) {
     return new DateHolder(date,null);
   }
-  
+
 
   protected DateTimeHolder asDateTimeHolder(Date date) {
     return new DateTimeHolder(date,null);
@@ -293,8 +341,20 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
 
   /**
    * Generate an SDOType from a supplied name.
-   * @param name
-   * @return
+   * <br>
+   * It checks the typeNameMap to see if it contains a mapping.
+   * If it does, the mapped value is substituted in place of 
+   * the incoming path.
+   * <br>
+   * If not then check if expanded names should be used, and
+   * shorten if not.
+   * <br>
+   * Then check if we already have a type foe the target name.
+   * If so, return it, otherwise create it, and add to cache.
+   * @param path full hierarchical path name of type to be fetched
+   *             (or created)
+   * @return SDOType corresponding to the name after checking
+   *                 substitution and expansion.
    */
 
   private SDOType getSDOType(String path) {
@@ -311,6 +371,8 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
       } 
     }
     SDOType type;
+    //Check if we've already created (& cached) a type with this name,
+    //in which case it will be used.
     if (!sdoTypeCache.containsKey(typeName)) {
       log.debug("Creating new SDOType for "+typeName);
       type=new SDOType(typeName);

@@ -62,7 +62,7 @@
    necessary).
   </description>
     <property name="filename" value="input/bike_doxml.txt" />  
-
+ <!--   <property name="filename" value="input/OrcMessage.xml" /> -->
   <property name="dataReader">
    <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
   </property>
