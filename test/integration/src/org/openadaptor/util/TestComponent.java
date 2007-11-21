@@ -154,6 +154,21 @@ public class TestComponent {
     public void reset(Object context) {}
   }
   
+  /**
+   * A data processor that creates multiple output messages from a single input message.
+   */
+  public static final class MultipleOutputsDataProcessor extends Component implements IDataProcessor {
+    public int counter = 0;
+    
+    public Object[] process(Object data) {
+      counter++;
+      return new Object[]{data, "otherData1", "otherData2"};
+    }
+    
+    public void validate(List exceptions) {}
+    public void reset(Object context) {}
+  }
+  
   
   //
   // IWriteConnectors

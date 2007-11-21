@@ -30,7 +30,10 @@ package org.openadaptor.core.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.processor.ProcessorGroup;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.TestComponent;
 
@@ -254,6 +257,36 @@ public class ExceptionHandlingTestCase extends TestCase {
     assertTrue(adaptor.getExitErrors().get(0) instanceof RuntimeException);
     RuntimeException re = (RuntimeException) adaptor.getExitErrors().get(0);
     assertTrue(re.getMessage().indexOf(TestComponent.TEST_ERROR_MESSAGE) != -1);
+  }
+  
+  /**
+   * Tests exception handling when a ProcessorGroup is involved. A message that enters
+   * a processor group should be logically treated as one message.
+   * 
+   * Here the ProcessorGroup is made up of a processor that turns one messages into 
+   * multiple messages, followed by a processor that throws an exception. The exception 
+   * handler is set up. The exception handler should receive the original message that
+   * enters the processor group, although the actual exception happens futher down 
+   * the stream at a sub-message level.
+   */
+  public void testExceptionFromProcessorGroup(){
+    ProcessorGroup processorGroup = new ProcessorGroup();
+    IDataProcessor [] processors = new IDataProcessor[2];
+    processors[0] = new TestComponent.MultipleOutputsDataProcessor();
+    processors[1] = new TestComponent.ExceptionThrowingDataProcessor();
+    processorGroup.setProcessors(processors);
+    TestComponent.TestWriteConnector writeConnector = new TestComponent.TestWriteConnector();
+    processMap.put(new TestComponent.TestReadConnector(), processorGroup);
+    processMap.put(processorGroup, writeConnector);
+    router.setProcessMap(processMap);
+    
+    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    
+    adaptor.run();
+    assertTrue(eHandler.counter == 1);
+    assertTrue(writeConnector.counter == 0);
   }
 
   /**
