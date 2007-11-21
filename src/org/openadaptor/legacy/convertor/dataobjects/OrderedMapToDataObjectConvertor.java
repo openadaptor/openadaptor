@@ -107,7 +107,7 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
    * By default (sub) Map values will be turned into DOTypes with
    * attributes for each of the contained fields.<br>
    * These types are names according to their hierarchy within the
-   * map supplied to {@link #convert()}.<br>
+   * map supplied to {@link #convert(Object)}.<br>
    * When creating new DOTypes, this map is checked to see if the
    * candidate type name has an entry here. If it does, then the
    * String value of the map entry is instead used.<br>
