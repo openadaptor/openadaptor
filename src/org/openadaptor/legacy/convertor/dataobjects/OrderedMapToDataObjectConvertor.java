@@ -252,15 +252,49 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
         if (debug){log.debug(path+" addAttribute() processing OM: "+value);}
         SimpleDataObject mapSdo=sdoFromMap(name,(IOrderedMap)value,path);
 
+
+        //use getAttributeNamed() - getAttribute(name) throws Exception if attr doesn't exist
+        if (sdoType.getAttributeNamed(name)==null) { 
+          //Type doesn't have attribute. Need to add it.
+          if(debug){log.debug("Adding attribute "+ name+"("+mapSdo.getType().getName()+") to type "+sdoType.getName());}
+          sdoType.addAttribute(name, mapSdo.getType());
+        }
+
+        DataObject[] old=(DataObject[])sdo.getAttributeValue(name);
+        DataObject[] modified;
+        int oldLength=0;
+        if (old!=null) { //Append it to DataObject[]
+          oldLength=old.length;
+          modified=new DataObject[oldLength+1];
+          System.arraycopy(old, 0, modified, 0, oldLength);
+          modified[oldLength]=mapSdo;
+        }
+        else {
+          if(debug) {log.debug("Attribute "+name+" has "+oldLength+" values. Adding "+value);}
+          modified=new DataObject[]{mapSdo};
+        }
+        sdo.setAttributeValue(name, modified);
+
+
+
+
+
+        /*
         //use getAttributeNamed() - getAttribute(name) throws Exception if it doesn't exist
         if (sdoType.getAttributeNamed(name)!=null) { //Already have a value!
           if(debug) {log.debug("Adding value to existing attribute "+name);}
           //ToDo: Legacy code might have a more elegant way to add an extra attribute value
           DataObject[] old=(DataObject[])sdo.getAttributeValue(name);
-          int oldLength=old.length;
-          DataObject[] modified=new DataObject[oldLength+1];
-          System.arraycopy(old, 0, modified, 0, oldLength);
-          modified[oldLength]=mapSdo;
+          DataObject[] modified;
+          if (old!=null) { //Need to add a value.
+            int oldLength=old.length;
+            modified=new DataObject[oldLength+1];
+            System.arraycopy(old, 0, modified, 0, oldLength);
+            modified[oldLength]=mapSdo;
+          }
+          else { //No value - just add it.
+            modified=new DataObject[] {mapSdo};
+          }
           sdo.setAttributeValue(name, modified);
         }
         else { //No such attribute, but we need it now.
@@ -269,6 +303,11 @@ public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
           //Have to add it as a DataObject[]. Don't know why. That's just DataObjects!
           sdo.setAttributeValue(name, new DataObject[] {mapSdo});
         }
+         */
+
+
+
+
       }
       else { //Not OM, how about an Array of 'em?
         if (value instanceof IOrderedMap[]) {

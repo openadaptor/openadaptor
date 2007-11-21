@@ -61,8 +61,7 @@
    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow the file to potentially contain multiple DOXML messages if
    necessary).
   </description>
-    <property name="filename" value="input/bike_doxml.txt" />  
- <!--   <property name="filename" value="input/OrcMessage.xml" /> -->
+    <property name="filename" value="input/bike_doxml.txt" /> 
   <property name="dataReader">
    <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
   </property>
