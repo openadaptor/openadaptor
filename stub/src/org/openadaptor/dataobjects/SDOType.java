@@ -52,6 +52,9 @@ import org.openadaptor.StubException;
 public class SDOType extends FixedDOType implements Serializable {
   static final long serialVersionUID = -1110640209181246451L;
 
+  public static final SDOType DATE=null;//Dummy value for stub
+  public static final SDOType DATETIME=null;//Dummy value for stub.
+
   public SDOType(String typeName) {
     throw new StubException(StubException.WARN_LEGACY_OA_JAR);
   }
