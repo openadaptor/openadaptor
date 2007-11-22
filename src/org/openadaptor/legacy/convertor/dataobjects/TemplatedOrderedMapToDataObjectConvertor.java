@@ -120,6 +120,7 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
   }
 
   private void setAttribute(SimpleDataObject parent,DOType type,String name,Object value) throws InvalidParameterException {
+    //if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value);}
     if (value instanceof Object[]) {
       Object[] values=(Object[])value;
       for (int i=0;i<values.length;i++) {
@@ -130,28 +131,37 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
       setOneAttribute(parent,type,name,value);
     }
   }
+
   private void setOneAttribute(SimpleDataObject parent,DOType type,String name,Object value) throws InvalidParameterException {
     if (type.isPrimitive()) {
+      if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " primitive");}
       if (SDOType.DATETIME.equals(type)) {
-        if (debug) {log.debug("Converting Date value"+value+" to DateTimeHolder");}
+        if (debug) {log.debug("Converting Date value "+value+" to DateTimeHolder");}
         value=asDateTimeHolder((Date)value);
       }
       else
         if (SDOType.DATE.equals(type)) {
-          if (debug) {log.debug("Converting Date value"+value+" to DateHolder");}
+          if (debug) {log.debug("Converting Date value "+value+" to DateHolder");}
           value=asDateHolder((Date)value);        
         }
       parent.addAttributeValue(name, value);
     }
     else { //Complex.
-      SimpleDataObject child=new SimpleDataObject(type);
-
-      DOAttribute[] attrs=type.getAttributes();
-      IOrderedMap map=(IOrderedMap) value;      
-      for (int i=0;i<attrs.length;i++) {
-        DOAttribute attr=attrs[i];
-        String attrName=attr.getName();
-        setAttribute(child,attr.getType(),attrName,map.get(attrName));
+      if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " complex");}
+      if (value!=null) {
+        SimpleDataObject child=new SimpleDataObject(type);
+        DOAttribute[] attrs=type.getAttributes();
+        IOrderedMap map=(IOrderedMap) value;      
+        for (int i=0;i<attrs.length;i++) {
+          DOAttribute attr=attrs[i];
+          String attrName=attr.getName();
+          setAttribute(child,attr.getType(),attrName,map.get(attrName));
+        }
+        //Need to add the SDO as an array. That's what legacy oa requires :-)
+        parent.addAttributeValue(name, new DataObject[] {child});
+      }
+      else {
+        if (debug) {log.debug("Complex attribute "+name+" has null value - not adding");}
       }
     }
   }
@@ -162,7 +172,13 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     for (int i=0;i<attrs.length;i++) {
       DOAttribute attr=attrs[i];
       String attrName=attr.getName();
-      setAttribute(sdo,attr.getType(),attrName,map.get(attrName));
+      if (map.containsKey(attrName)) {
+        Object value=map.get(attrName);
+        setAttribute(sdo,attr.getType(),attrName,value);
+      }
+      else {
+        if (debug) {log.debug("Map does not contain attribute "+attrName);}
+      }
     }
     return sdo;
   }
