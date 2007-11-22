@@ -132,6 +132,7 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     }
   }
 
+  
   private void setOneAttribute(SimpleDataObject parent,DOType type,String name,Object value) throws InvalidParameterException {
     if (type.isPrimitive()) {
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " primitive");}
@@ -148,16 +149,9 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     }
     else { //Complex.
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " complex");}
-      if (value!=null) {
-        SimpleDataObject child=new SimpleDataObject(type);
-        DOAttribute[] attrs=type.getAttributes();
-        IOrderedMap map=(IOrderedMap) value;      
-        for (int i=0;i<attrs.length;i++) {
-          DOAttribute attr=attrs[i];
-          String attrName=attr.getName();
-          setAttribute(child,attr.getType(),attrName,map.get(attrName));
-        }
-        //Need to add the SDO as an array. That's what legacy oa requires :-)
+      if (value!=null) {       
+        SimpleDataObject child=dataObjectFromMap(type,(IOrderedMap)value);
+         //Need to add the SDO as an array. That's what legacy oa requires :-)
         parent.addAttributeValue(name, new DataObject[] {child});
       }
       else {

@@ -27,6 +27,9 @@
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.RecordException;
@@ -46,17 +49,48 @@ public class DataObjectToDOXmlConvertor extends AbstractDataObjectConvertor {
 
   private static final Log log = LogFactory.getLog(DataObjectToDOXmlConvertor.class);
 
+  //Legacy attribute name for forcing use of useUniqueID;
+  public static final String USE_UNIQUE_ID_ATTR = "useUniqueID";
+
   /**
    * This is the class which does the work.
    * <br>
    * Attributes may be set via setAttributes().
    */
   protected XMLFormatter formatter;
- 
+
+  
+  /**
+   * Assign attributes for the legacy convertor compenent.
+   * <br>
+   * Consult legacy openadaptor documentation for details on
+   * possible attributes.
+   * <br>
+   * Note: this defaults the attribute {@link #USE_UNIQUE_ID_ATTR } to true
+   * which is in keeping with legacy adaptor behaviour.
+   * By default the XMLFormatter does not issue a uniqueid.
+   * Unfortunately, the legacy sink that it's associated with
+   * sets it to true, so pretty much all actual usage does have it set.
+   * It's forced here, unless a configured Map explicitly overrides it.
+   * 
+   * @param attributeMap
+   */
+  public void setAttributes(Map attributeMap) {
+    if (attributeMap==null) { //Make sure we have a map.
+      attributeMap=new HashMap();
+    }
+    if (!attributeMap.containsKey(USE_UNIQUE_ID_ATTR)) {
+      log.debug("Defaulting "+USE_UNIQUE_ID_ATTR+" to true - configure explicitly if this is not desired");
+      attributeMap.put(USE_UNIQUE_ID_ATTR, String.valueOf(true));
+    }
+    super.setAttributes(attributeMap);
+  }
+  
   public DataObjectToDOXmlConvertor() {
     formatter = new XMLFormatter();
     //Allow the base class to set attributes on it (where possible)
     super.legacyConvertorComponent=formatter;
+    setAttributes(null); 
   }
 
   /**

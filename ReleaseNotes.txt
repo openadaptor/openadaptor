@@ -39,6 +39,8 @@ Minor changes
     mechanism to set attributes (properties) as spring bean properties on legacy convertors.
     Currently this includes ( XMLFormatter,GenericXMLWriter, GenericXMLReader)
     Added some extra legacy conversion examples also.
+    Modified DataObjectToDOXmlConvertor to issue uniqueId by default (this mirrors default
+    legacy adaptors behaviour)
 
 Bug Fixes
 =========
