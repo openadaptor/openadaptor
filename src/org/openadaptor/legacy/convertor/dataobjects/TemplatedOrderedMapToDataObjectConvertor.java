@@ -31,18 +31,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DOAttribute;
 import org.openadaptor.dataobjects.DOType;
-import org.openadaptor.dataobjects.DOTypeHolder;
 import org.openadaptor.dataobjects.DataObject;
-import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.dataobjects.InvalidParameterException;
 import org.openadaptor.dataobjects.SDOType;
 import org.openadaptor.dataobjects.SimpleDataObject;
@@ -50,7 +50,7 @@ import org.openadaptor.util.DateHolder;
 import org.openadaptor.util.DateTimeHolder;
 
 /**
- * Convert OrderedMaps to DataObjects, using prototype DOXML to define the
+ * Convert OrderedMaps to DataObjects, using template DOXML to define the
  * output types.
  * <BR>
  * 
@@ -65,7 +65,7 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
 
   protected String templateDOXmlFilename;
 
-  protected DOTypeHolder typeCache;
+  protected Map typeCache; //Cache of known types from template objects
 
   protected boolean debug=log.isDebugEnabled(); //Cached debug flag.
 
@@ -85,7 +85,7 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     debug=log.isDebugEnabled();
 
     if (typeCache==null) {
-      typeCache=generateTypeCache(loadPrototype(templateDOXmlFilename));
+      typeCache=cacheTypes(loadTemplate(templateDOXmlFilename));
     }
     SimpleDataObject[] dobs=null;
     if (! (record instanceof IOrderedMap)) {
@@ -101,19 +101,21 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
       Object value=map.get(key);
       String name=key.toString();
       log.debug("convert() is processing "+name+"->"+value);
-      try { //Will throw DataObjectException if it doesn't exist. Ugh.
-        DOType type=typeCache.getTypeNamed(name);       
+      if (typeCache.containsKey(name)) { //We have type
+        DOType type=(DOType)typeCache.get(name);
+        try {
         dobs[i]=dataObjectFromMap(type,(IOrderedMap)value);
-      } 
-      catch (InvalidParameterException ipe) {
-        String msg="Convert failed "+ipe;
-        log.warn(msg);
-        throw new RecordException(msg);       
+        }
+        catch (InvalidParameterException ipe) {
+          String msg="Convert failed "+ipe;
+          log.warn(msg);
+          throw new RecordException(msg);               
+        }
       }
-      catch (DataObjectException e) {
+      else { //Unknown type
         String msg="No type registered for field named "+name;
         log.warn(msg);
-        throw new RecordFormatException(msg);
+        throw new RecordFormatException(msg);   
       }
     }
     return dobs;
@@ -132,7 +134,6 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     }
   }
 
-  
   private void setOneAttribute(SimpleDataObject parent,DOType type,String name,Object value) throws InvalidParameterException {
     if (type.isPrimitive()) {
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " primitive");}
@@ -151,7 +152,7 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " complex");}
       if (value!=null) {       
         SimpleDataObject child=dataObjectFromMap(type,(IOrderedMap)value);
-         //Need to add the SDO as an array. That's what legacy oa requires :-)
+        //Need to add the SDO as an array. That's what legacy oa requires :-)
         parent.addAttributeValue(name, new DataObject[] {child});
       }
       else {
@@ -181,33 +182,62 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     return new DateHolder(date,null);
   }
 
-
   protected DateTimeHolder asDateTimeHolder(Date date) {
     return new DateTimeHolder(date,null);
   }
 
-  private DOTypeHolder generateTypeCache(DataObject[] prototypeDataObjects) {
-    if (debug) {log.debug("Caching DOTypes from prototype DataObjects");}
-    DOTypeHolder holder=new DOTypeHolder(prototypeDataObjects);
-    DOType[] types=holder.getTypes(false);
-    for (int i=0;i<types.length;i++){
-      DOType type=types[i];
-      if (type.isPrimitive()) {
-        if (debug) {
-          log.debug("Dropping primitive type "+type.getName()+" from type cache");
-        }
-        holder.removeType(type);
+  /**
+   * Cache all of the non-primitive types defined by the
+   * supplied DataObject array.
+   * 
+   * @param templateDataObjects template DataObject[] to be used
+   * @return Map containing all of the non-primitive DOTypes.
+   */
+  private Map cacheTypes(DataObject[] templateDataObjects) {
+    IOrderedMap cache=new OrderedHashMap();
+    for (int i=0;i<templateDataObjects.length;i++) {
+      updateCache(cache,templateDataObjects[i].getType());
+    }
+    return cache;
+  }
+
+  /**
+   * Add the supplied type to the supplied Map.
+   * <br>
+   * Primitive types are ignored.
+   * Non-primitive types are added to the cache, unless
+   * they already exist.
+   * The type of each attribute is then recursively added
+   * similarly.
+   * @param cache IOrderedMap to contain the types.
+   * @param type contains the type to be added
+   */
+  private void updateCache(IOrderedMap cache,DOType type) {
+    if (!type.isPrimitive()) { //We can ignore primitives.
+      String typeName=type.getName();
+      if (cache.containsKey(typeName)) { 
+        //log.warn("Ignoring duplicate type name "+typeName) ;
       }
       else {
-        if (debug) {
-          log.debug("Processing type: "+type.getName());
+        log.debug("Caching type"+typeName);
+        cache.put(typeName, type);
+        DOAttribute[] attributes=type.getAttributes();
+        for (int i=0;i<attributes.length;i++) {
+          updateCache(cache,attributes[i].getType());
         }
       }
     }
-    return holder;
   }
 
-  private DataObject[] loadPrototype(String filename) {
+  /**
+   * Load template DataObject[] from supplied filename
+   * <br>
+   * File is expected to contain valid DOXML for template
+   * DataObjects.
+   * @param filename path to file to read
+   * @return DataObject[] from the supplied DOXML
+   */
+  private DataObject[] loadTemplate(String filename) {
     DataObject[] dobs = null;
     if (filename==null) {
       throw new OAException("templateDOXmlFilename not configured, but is mandatory");
@@ -217,13 +247,19 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
       dobs=(DataObject[])templateConvertor.convert(text);
     }
     catch (IOException ioe) {
-      String msg="Failed to load prototype DataObjects from file "+filename;
+      String msg="Failed to load template DataObjects from DOXML file "+filename;
       log.error(msg);
       throw new RuntimeException(msg,ioe);
     }
     return dobs;
   }
 
+  /**
+   * Read complete contents of a text file into a String.
+   * @param filePath  file to be read
+   * @return String containing contents of the file
+   * @throws IOException if any I/O problems are encountered.
+   */
   private static String readFile(String filePath) throws IOException{
     StringBuffer fileData = new StringBuffer();
     BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -236,5 +272,4 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     reader.close();
     return fileData.toString();
   }
-
 }
