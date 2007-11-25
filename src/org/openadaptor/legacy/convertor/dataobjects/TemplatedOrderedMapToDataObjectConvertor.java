@@ -137,12 +137,12 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
   private void setOneAttribute(SimpleDataObject parent,DOType type,String name,Object value) throws InvalidParameterException {
     if (type.isPrimitive()) {
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " primitive");}
-      if (SDOType.DATETIME.equals(type)) {
+      if (SDOType.DATETIME.equals(type) && (null!=value)) {
         if (debug) {log.debug("Converting Date value "+value+" to DateTimeHolder");}
         value=asDateTimeHolder((Date)value);
       }
       else
-        if (SDOType.DATE.equals(type)) {
+        if (SDOType.DATE.equals(type) && (null!=value)) {
           if (debug) {log.debug("Converting Date value "+value+" to DateHolder");}
           value=asDateHolder((Date)value);        
         }
@@ -150,10 +150,25 @@ public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConv
     }
     else { //Complex.
       if (debug) {log.debug("sdo["+parent.getType().getName()+"] "+name+"("+type.getName()+") -> "+value+ " complex");}
-      if (value!=null) {       
+      if (value!=null) { 
+        //Generate an SDO for the value.
         SimpleDataObject child=dataObjectFromMap(type,(IOrderedMap)value);
-        //Need to add the SDO as an array. That's what legacy oa requires :-)
-        parent.addAttributeValue(name, new DataObject[] {child});
+
+        //Need to first check if it already has a value. If so add this one to it.
+        DataObject[] newVal; //DataObject[] which will hold the value(s)
+        //Get the old value, if any first.
+        int oldSize=0;
+        DataObject[]  oldVal=(DataObject[])parent.getAttributeValue(name);
+        if (oldVal!=null) {
+          oldSize=oldVal.length;
+          newVal=new DataObject[oldSize+1];
+          System.arraycopy(oldVal, 0, newVal, 0, oldSize);
+          newVal[oldSize]=child;
+        }  
+        else {
+          newVal=new DataObject[] {child};
+        } 
+       parent.addAttributeValue(name, newVal);
       }
       else {
         if (debug) {log.debug("Complex attribute "+name+" has null value - not adding");}
