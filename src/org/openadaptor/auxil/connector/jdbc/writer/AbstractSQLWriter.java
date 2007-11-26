@@ -56,6 +56,8 @@ import org.openadaptor.core.exception.ConnectionException;
  */
 public abstract class AbstractSQLWriter implements ISQLWriter{
   private static final Log log = LogFactory.getLog(AbstractSQLWriter.class);
+  //Mask to indicate that a db column type is an input (or inout) to stored proc.
+  protected static final int SP_IN_ARG_TYPE_MASK= DatabaseMetaData.procedureColumnIn | DatabaseMetaData.procedureColumnInOut;
 
   protected Connection connection;
   protected PreparedStatement reusablePreparedStatement=null;
@@ -78,7 +80,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       if ((reusablePreparedStatement!=null) && (argSqlTypes==null)){ //Subclass didn't setup the argument types!
         String msg="Argument types not set for PreparedStatement calls. This may not work with null values!";
         log.warn(msg);
-        throw new RuntimeException("OH BOLLOCKS");
       }
 
     } catch (SQLException e) {
@@ -305,7 +306,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * Get the types of the args of a stored proc.
    * <br>
    * From javadoc on DatabaseMetaData.getProcedureColumns()
-   * 
+   * <pre>
    * 1. PROCEDURE_CAT String => procedure catalog (may be null)
    * 2. PROCEDURE_SCHEM String => procedure schema (may be null)
    * 3. PROCEDURE_NAME String => procedure name
@@ -328,22 +329,40 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    *        * procedureNullable - allows NULL values
    *        * procedureNullableUnknown - nullability unknown 
    *13. REMARKS String => comment describing parameter/column 
+   *
+   *</pre>
+   *
    */
   protected int[] getStoredProcArgumentTypes(String storedProcName,Connection connection) throws SQLException {
+    //Fix for #SC36: MapCallableStatementWriter misses first argument for Oracle databases
+    // Now it checks eacy columnType, and only includes IN or INOUT types.
+    // ToDo: Further validation of this approach. Perhaps OUT should also be included?
     DatabaseMetaData dmd = connection.getMetaData();
     List sqlTypeList=new ArrayList();
     ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");
+    //If RS is empty, then we have failed in our mission.
     if (!rs.next()) { //First rs is return value.
       rs.close();
-      log.warn("Failed to lookup stored procedure " +storedProcName);
-      throw new SQLException("failed to lookup stored procedure "+storedProcName);
+      String msg="Failed to lookup stored procedure " +storedProcName;
+      log.warn(msg);
+      throw new SQLException(msg);
     }
-    while (rs.next()) {
-      sqlTypeList.add(new Integer(rs.getInt(6))); // DATA_TYPE is column six!
-      if (log.isDebugEnabled()) {
-        log.debug("Catalog=" + rs.getString(1) + ", Schema=" + rs.getString(2) + ", Proc=" + rs.getString(3) + ", Column=" + rs.getString(4) + ",Type=" + rs.getString(6) + "TypeName=" + rs.getString(7));
+    do { //Verify that each argument is an IN or INOUT arg type.
+      int type=rs.getInt(5); //Need to check if it is a result, or an input arg.
+      if (type==DatabaseMetaData.procedureColumnIn || type==DatabaseMetaData.procedureColumnInOut) {
+        log.debug("Argument of type "+type+" is IN or INOUT");
+        sqlTypeList.add(new Integer(rs.getInt(6))); // DATA_TYPE is column six!
+        if (log.isDebugEnabled()) {
+          log.debug("Catalog=" + rs.getString(1) + "; Schema=" + rs.getString(2) + ";; Proc=" + rs.getString(3) + "; Column=" + rs.getString(4) + "; Type=" + rs.getString(6) + "; TypeName=" + rs.getString(7));
+        }
       }
+      else {
+        log.debug("Ignoring column of type " +type+" as it is neither IN nor INOUT");
+      }
+
     }
+    while (rs.next());
+
     log.debug("Number of stored procedure parameters found: " + sqlTypeList.size());
     int[] sqlTypes=new int[sqlTypeList.size()];
     for (int i=0;i<sqlTypes.length;i++) {
@@ -351,28 +370,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     rs.close(); 
     return sqlTypes;
-  }
-  
-  protected int getStoredProcArgumentCount(String storedProcName,Connection connection) throws SQLException {
-    DatabaseMetaData dmd = connection.getMetaData();
-    int argCount=-1;
-    ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");
-    if (!rs.next()) { //First rs is return value.
-      rs.close();
-      log.warn("Failed to lookup stored procedure " +storedProcName);
-      throw new SQLException("failed to lookup stored procedure "+storedProcName);
-    }
-    argCount = 0;
-    while (rs.next()) {
-      argCount++;
-      if (log.isDebugEnabled()) {
-        log.debug("Cat="+rs.getString(1)+", Schema=" + rs.getString(2) + ", Proc=" + rs.getString(3) + ", Col=" + rs.getString(4) + ", Type=" + rs.getString(6) + "[" + rs.getString(7)+"]");
-      }
-    }
-    log.debug("Number of stored procedure parameters found: " + argCount);
-
-    rs.close();
-    return argCount;
   }
 
 }

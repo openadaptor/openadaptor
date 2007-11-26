@@ -70,6 +70,8 @@ SC34: (Bug (and patch for it) in OrderedMapToXMLConverter that does not allow to
       slash substitution value)
       
 SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag 
+
+SC36: MapCallableStatementWriter misses first argument for Oracle databases
     
 =================================================
 openadaptor3 production 3.3 Release Notes
