@@ -43,7 +43,7 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
   protected static String MockTableName = "MockTableName";
   protected static int ParameterCount = 4;
   protected static String InitialiseQuery = "SELECT * FROM " + MockTableName + " WHERE 1=2";
-  protected static String PreparedStatementSQL = "{ CALL "+ StoredProcName +"(?,?,?,?)}";
+  protected static String PreparedStatementSQL = "{ CALL "+ StoredProcName +"(?,?,?,?,?)}";
 
   protected static IOrderedMap SampleOrderedMapOne = new OrderedHashMap();
 
@@ -52,6 +52,7 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     SampleOrderedMapOne.add("Map One Param Two");
     SampleOrderedMapOne.add("Map One Param Three");
     SampleOrderedMapOne.add("Map One Param Four");
+    SampleOrderedMapOne.add("Map One Param Five");
   }
 
   protected static IOrderedMap SampleOrderedMapTwo = new OrderedHashMap();
@@ -61,6 +62,7 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     SampleOrderedMapTwo.add("Map Two Param Two");
     SampleOrderedMapTwo.add("Map Two Param Three");
     SampleOrderedMapTwo.add("Map Two Param Four");
+    SampleOrderedMapTwo.add("Map Two Param Five");
   }
 
   protected static IOrderedMap SampleOrderedMapThree = new OrderedHashMap();
@@ -70,6 +72,7 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     SampleOrderedMapThree.add("Map Three Param Two");
     SampleOrderedMapThree.add("Map Three Param Three");
     SampleOrderedMapThree.add("Map Three Param Four");
+    SampleOrderedMapThree.add("Map Three Param Five");
   }
 
   protected Mock metaDataMock;
@@ -117,7 +120,8 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     connectionMock.expects(once()).method("getCatalog").will(returnValue(CatalogName));
     metaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
     resultSetMock.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(new Stub[] {returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(false)}));
-    resultSetMock.stubs().method("getInt").will(returnValue(java.sql.Types.NUMERIC));;//Any type will do?
+//    resultSetMock.stubs().method("getInt").will(returnValue(java.sql.Types.NUMERIC));;//Any type will do?
+    resultSetMock.stubs().method("getInt").will(returnValue(2));;//Any type will do?
     resultSetMock.stubs().method("getString").will(returnValue("Dummy ResultSet Info")); // Not being specific here as this only happens when logging set to debug
     resultSetMock.expects(atLeastOnce()).method("close");
     connectionMock.expects(once()).method("prepareStatement").with(eq(PreparedStatementSQL)).will(returnValue(preparedStatementMock.proxy()));
