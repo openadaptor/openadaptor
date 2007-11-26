@@ -27,10 +27,13 @@
 
 package org.openadaptor.core.exception;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.processor.ProcessorGroup;
@@ -93,6 +96,26 @@ public class ExceptionHandlingTestCase extends TestCase {
   public void testOneExceptionFromDataProcessor(){
     processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingDataProcessor());
     checkOneException();
+  }
+  
+  /**
+   * Starts a simple adaptor with two parallel data processors, one of which throws a RuntimeException.
+   * Ensures the exceptionProcessor {@link IExceptionHandler} was used one time.
+   * Ensures the writer did write one message (which came from the 'good' data processor).
+   */
+  public void testOneExceptionFromDataProcessorWithFanout(){
+    IReadConnector reader = new TestComponent.TestReadConnector();
+    IDataProcessor processor1 = new TestComponent.ExceptionThrowingDataProcessor();
+    IDataProcessor processor2 = new TestComponent.DummyDataProcessor();
+    TestComponent.TestWriteConnector writer = new TestComponent.TestWriteConnector();
+    List processors = new ArrayList();
+    processors.add(processor1);
+    processors.add(processor2);
+    processMap.put(reader, processors);
+    processMap.put(processor1, writer);
+    processMap.put(processor2, writer);
+    checkOneException();
+    assertTrue(writer.counter==1);
   }
   
   /**

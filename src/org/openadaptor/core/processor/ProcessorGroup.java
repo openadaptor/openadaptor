@@ -37,6 +37,7 @@ import org.openadaptor.core.IDataProcessor;
 /**
  * Utility {@link IDataProcessor} which allows multiple processors to be grouped and treated
  * as one.
+ * It can group a sequence of data processors, fan-outs are not supported.
  *
  * @author Eddy Higgins
  */
