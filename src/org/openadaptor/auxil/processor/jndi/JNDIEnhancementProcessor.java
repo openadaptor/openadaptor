@@ -51,6 +51,7 @@ import org.openadaptor.core.exception.ValidationException;
  *
  * @author Eddy Higgins
  * @author Andrew Shire
+ * @deprecated by GenericEnhancementProcessor
  */
 /* Done: Needed to enrich JndiEnhancementProcessor:
  + search root driven by dn in incomingKeyMap (when present in values)
