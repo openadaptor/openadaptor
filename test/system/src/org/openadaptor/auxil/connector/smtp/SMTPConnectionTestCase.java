@@ -33,10 +33,15 @@
 
 package org.openadaptor.auxil.connector.smtp;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.dumbster.smtp.SimpleSmtpServer;
 import junit.framework.TestCase;
 
 public class SMTPConnectionTestCase extends TestCase {
+  public static final Log log=LogFactory.getLog(SMTPConnectionTestCase.class);
+  
   //Set an smtp port which will not interfere with a server running the smtp proccess
   private static final String SMTP_TEST_HOST="localhost";
   private static final int SMTP_TEST_PORT=2599;
@@ -63,7 +68,16 @@ public class SMTPConnectionTestCase extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     smtpConnection.disconnect();
-    smtpServer.stop();
+    //I haven't a clue how it works, but the cruise build sometimes gets
+    //a NPE on the call to smtpServer.stop() here, which we don't really
+    //care about. Hence sleep + try/catch.
+    Thread.sleep(100);
+    try {
+      smtpServer.stop();
+    }
+    catch (Throwable t) {
+      log.warn("FYI: tearDown() threw : "+t.toString());
+    }
   }
 
   public void testConnect() {
