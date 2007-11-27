@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 import org.openadaptor.core.IEnhancementProcessor;
 
 /**
