@@ -26,25 +26,24 @@
 */
 package org.openadaptor.core.node;
 
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.util.TestComponent;
 
 /**
  * Concrete test of EnhancementProcessorNode as an ILifecycleComponent implementation.
- * TODO
+ * Executes tests from {@link AbstractTestNodeLifecycleComponent} after setting and 
+ * enhancement read connector on the node (read connector establishes and destroyes connection
+ * during node's lifecycle operations). 
  */
 public class EnhancementProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
-  public void testStartStop() {
-    // TODO Auto-generated method stub
-//    super.testStartStop();
-  }
-
-
-  public void testStart() {
-    // TODO Auto-generated method stub
-//    super.testStart();
-  }
-
+  
+  IEnhancementReadConnector enhancementReadConnector = new TestComponent.TestEnhancementReadConnector();
+  
   protected ILifecycleComponent instantiateTestLifecycleComponent() {
-    return new EnhancementProcessorNode("EnhancementProcessorNode as ILifecycle test");
+    EnhancementProcessorNode enhancementProcNode = 
+      new EnhancementProcessorNode("EnhancementProcessorNode as ILifecycle test");
+    enhancementProcNode.readConnector = enhancementReadConnector;
+    return enhancementProcNode;
   }
 }

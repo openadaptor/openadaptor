@@ -34,6 +34,7 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ExceptionHandlerProxy;
@@ -83,6 +84,14 @@ public class TestComponent {
   
   
   /**
+   * An enhancement read connector based on TestReadConnector.
+   */
+  public static class TestEnhancementReadConnector extends TestReadConnector implements IEnhancementReadConnector{
+    public void setQueryParameters(IOrderedMap inputParameters) {}
+  }
+  
+  
+  /**
    * A write connector that throws a RuntimeException whenever it receives 
    * data to write.
    */
@@ -117,6 +126,8 @@ public class TestComponent {
     
     public void validate(List exceptions) {}
   }
+  
+  
   
   //
   // IDataProcessors
