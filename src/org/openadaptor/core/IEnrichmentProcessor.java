@@ -29,9 +29,9 @@ package org.openadaptor.core;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 
 /**
- * Interface that represents an enhancement processor. An enhancement processor 
+ * Interface that represents an enrichment processor. An enrichment processor 
  * has access to a read connector that will query an external resource for 
- * data that enhancement processor will then use to enrich its input data.
+ * data that enrichment processor will then use to enrich its input data.
  * 
  * @author Kris Lachor
  * @since Post 3.3
@@ -63,6 +63,6 @@ public interface IEnrichmentProcessor  {
    *        IEnrichmentReadConnector
    * @param additionalData data returned by IEnrichmentReadConnector
    */
-  Object [] enhance(Object input, Object [] additionalData);
+  Object [] enrich(Object input, Object [] additionalData);
   
 }

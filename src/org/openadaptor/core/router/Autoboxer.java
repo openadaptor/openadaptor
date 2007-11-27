@@ -37,7 +37,7 @@ import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
-import org.openadaptor.core.node.EnhancementProcessorNode;
+import org.openadaptor.core.node.EnrichmentProcessorNode;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.Node;
 import org.openadaptor.core.node.WriteNode;
@@ -127,10 +127,10 @@ public class Autoboxer implements IAutoboxer {
 	}
 
   public Node autobox(IEnrichmentProcessor enrichmentProcessor) {
-    EnhancementProcessorNode node = (EnhancementProcessorNode) nodeMap.get(enrichmentProcessor);
+    EnrichmentProcessorNode node = (EnrichmentProcessorNode) nodeMap.get(enrichmentProcessor);
     if (node == null) {
-        node = new EnhancementProcessorNode();
-        node.setEnhancementProcessor(enrichmentProcessor);
+        node = new EnrichmentProcessorNode();
+        node.setEnrichmentProcessor(enrichmentProcessor);
         nodeMap.put(enrichmentProcessor, node);
     }
     return node;

@@ -35,31 +35,31 @@ import org.openadaptor.core.Response;
 
 /**
  * 
- * TODO replace processor node tests with those from enhancement processor.
+ * TODO replace processor node tests with those from enrichment processor.
  * 
  * TODO implement.
  */
-public class EnhancementProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
+public class EnrichmentProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessageProcessor {
  
-  protected Mock enhancementProcessorMock;
+  protected Mock enrichmentProcessorMock;
  
 //  protected Object[] data;
 //  protected Object[] exceptionData;
 
   protected IMessageProcessor instantiateTestMessageProcessor() {
-    return new EnhancementProcessorNode("Test EnhancementProcessorNode as IMessageProcessor");
+    return new EnrichmentProcessorNode("Test EnrichmentProcessorNode as IMessageProcessor");
   }
 
   protected void instantiateMocksFor(IMessageProcessor messageProcessor) {
     super.instantiateMocksFor(messageProcessor);
-//    enhancementProcessorMock = mock(IEnrichmentProcessor.class);   
-//    IEnrichmentProcessor mockEnhancementProcessor = (IEnrichmentProcessor) enhancementProcessorMock.proxy();
-//    ((EnhancementProcessorNode)messageProcessor).setEnhancementProcessor(mockEnhancementProcessor);
+//    enrichmentProcessorMock = mock(IEnrichmentProcessor.class);   
+//    IEnrichmentProcessor mockEnhancementProcessor = (IEnrichmentProcessor) enrichmentProcessorMock.proxy();
+//    ((EnrichmentProcessorNode)messageProcessor).setEnhancementProcessor(mockEnhancementProcessor);
   }
   
   protected void tearDown() throws Exception {
     super.tearDown();
-    enhancementProcessorMock = null;
+    enrichmentProcessorMock = null;
   }
   
   /**

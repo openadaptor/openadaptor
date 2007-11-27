@@ -37,7 +37,7 @@ import org.openadaptor.util.TestComponent;
 
 /**
  * System tests for {@link GenericEnrichmentProcessor}.
- * Runs adaptor with a simple test reader, an enhancer. Verifies the writer gets 
+ * Runs adaptor with a simple test reader, an enricher. Verifies the writer gets 
  * the expected data.
  * 
  * @author Kris Lachor
@@ -49,7 +49,7 @@ public class GenericEnrichmentProcessorSystemTestCase extends JDBCConnectionTest
   
   private static final String RESOURCE_LOCATION = "test/system/src/";
   
-  private static final String DB_ENHANCEMENT_PROCESSOR = "db_enhancement_processor.xml";
+  private static final String DB_ENRICHMENT_PROCESSOR = "db_enrichment_processor.xml";
   
   /**
    * @see JDBCConnectionTestCase#getSchemaDefinition()
@@ -62,12 +62,12 @@ public class GenericEnrichmentProcessorSystemTestCase extends JDBCConnectionTest
    * Test method for {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor
    * #prepareParameters(java.lang.Object)}.
    * 
-   * Executes an adaptor with an enhancement processor. Verifies there were no errors.
+   * Executes an adaptor with an enrichment processor. Verifies there were no errors.
    * Verifies the writer received one message - an ordered map with two elements, one 
-   * of which comes from the enhancement processor.
+   * of which comes from the enrichment processor.
    */
   public void testPrepareParameters() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENHANCEMENT_PROCESSOR);
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENRICHMENT_PROCESSOR);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertEquals(adaptor.getExitCode(),0);
     List writeConnectors = SystemTestUtil.getWriteConnectors(springAdaptor);
@@ -78,7 +78,7 @@ public class GenericEnrichmentProcessorSystemTestCase extends JDBCConnectionTest
     List data = testWriter.dataCollection;
     assertNotNull(data);
     
-    /* It should hold one ordered map with two elements, second element being from the enhancer */
+    /* It should hold one ordered map with two elements, second element being from the enricher */
     assertTrue(data.size()==1);
     Object [] obj = (Object []) data.get(0);
     assertTrue(obj[0] instanceof IOrderedMap);

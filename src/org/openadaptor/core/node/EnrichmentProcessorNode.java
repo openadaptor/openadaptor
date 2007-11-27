@@ -42,16 +42,16 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
  * Essentially it is similar to {@link Node}, which it extends. The differences are
  * firstly this node connects and disconnects the underlying reader, secondly 
  * processing of a single record of data is different than in Node -
- * this difference is implemented in {@link EnhancementProcessorNode#processSingleRecord(Object)}.
+ * this difference is implemented in {@link EnrichmentProcessorNode#processSingleRecord(Object)}.
  * 
  * @author Kris Lachor
  * @since Post 3.3
  * @see Node
  * @see IMessageProcessor
  */
-public final class EnhancementProcessorNode extends Node implements IMessageProcessor{
+public final class EnrichmentProcessorNode extends Node implements IMessageProcessor{
 
-  private static final Log log = LogFactory.getLog(EnhancementProcessorNode.class);
+  private static final Log log = LogFactory.getLog(EnrichmentProcessorNode.class);
   
   private IEnrichmentProcessor enrichmentProcessor;
   
@@ -64,7 +64,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    *
    * @see Node#Node()
    */
-  public EnhancementProcessorNode() {
+  public EnrichmentProcessorNode() {
     super();
   }
 
@@ -74,7 +74,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    * @param id
    * @see Node#Node(String)
    */
-  public EnhancementProcessorNode(String id) {
+  public EnrichmentProcessorNode(String id) {
     super(id);
   }
   
@@ -85,16 +85,16 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    * @param processor
    * @see Node#Node(String)
    */
-  public EnhancementProcessorNode(String id, IEnrichmentProcessor processor) {
+  public EnrichmentProcessorNode(String id, IEnrichmentProcessor processor) {
     super(id);
     this.enrichmentProcessor = processor;
     this.readConnector = processor.getReadConnector();
   }
 
   /**
-   * Sets the enhancement processor and the read connector.
+   * Sets the enrichment processor and the read connector.
    */
-  public void setEnhancementProcessor(IEnrichmentProcessor enrichmentProcessor) {
+  public void setEnrichmentProcessor(IEnrichmentProcessor enrichmentProcessor) {
     this.enrichmentProcessor = enrichmentProcessor;
     this.readConnector = enrichmentProcessor.getReadConnector();
   }
@@ -122,19 +122,19 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
   }
   
   /**
-   * Processes individual record of input data. First asks the enhancement processor to prepare
+   * Processes individual record of input data. First asks the enrichment processor to prepare
    * query parameters for the reader, then sets the parameters on the reader and asks reader to
-   * call resource for more data. Last step is the actual enhancement of input data with the
+   * call resource for more data. Last step is the actual enrichment of input data with the
    * additional data from the reader.
    * 
    * @param record input record
-   * @return result/additional data from the enhancement processor
+   * @return result/additional data from the enrichment processor
    * @see Node#processSingleRecord(Object)
    */
   public Object [] processSingleRecord(Object record){
     IOrderedMap parameters = null;
     if(! (record instanceof IOrderedMap)){
-      log.warn("Enhancement processor parameters not an IOrderedMap");
+      log.warn("enrichment processor parameters not an IOrderedMap");
     }
     else{
       parameters = enrichmentProcessor.prepareParameters((IOrderedMap)record);
@@ -153,9 +153,9 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
     }
     Object [] additionalData = readConnector.next(readerTimeoutMs);
     if (log.isDebugEnabled()) {
-      log.debug("Reader returned: " + additionalData + ". Calling enhancer...");
+      log.debug("Reader returned: " + additionalData + ". Calling enricher...");
     }
-    Object [] outputs = enrichmentProcessor.enhance((IOrderedMap)record, additionalData);
+    Object [] outputs = enrichmentProcessor.enrich((IOrderedMap)record, additionalData);
     return outputs;
   }
 

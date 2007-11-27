@@ -44,7 +44,7 @@ import org.openadaptor.auxil.processor.GenericEnrichmentProcessor;
 import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessorTestCase;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.RecordException;
-import org.openadaptor.core.node.EnhancementProcessorNode;
+import org.openadaptor.core.node.EnrichmentProcessorNode;
 import org.jmock.cglib.MockObjectTestCase;
 
 /**
@@ -71,7 +71,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
    * IEnrichmentProcessor method call sequence - this was previously  
    * implemented in JNDIEnhancementProcessor#processOrderedMap
    */
-  EnhancementProcessorNode enhancementProcessorNode = new EnhancementProcessorNode("testNode", processor);
+  EnrichmentProcessorNode enrichmentProcessorNode = new EnrichmentProcessorNode("testNode", processor);
   
   Map incomingMap = new HashMap();
   {
@@ -133,7 +133,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
    * ported from {@link JNDIEnhancementProcessorTestCase#testValidate1()
    */
   public void testValidate1() {
-//  the previously set directly on enhancementprocessor will now be set
+//  the previously set directly on enrichmentprocessor will now be set
 //  on the JNDIReadConnector
 //-    processor.setRecordKeyUsedAsSearchBase("foo1");
 //-    processor.setRecordKeySetByExistence(recordKeySetByExistence);
@@ -208,7 +208,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     IOrderedMap map = new OrderedHashMap();
     map.put("foo1", "bar1");
     try{
-      enhancementProcessorNode.processSingleRecord(map);
+      enrichmentProcessorNode.processSingleRecord(map);
     }catch(RecordException re){
       return;
     }
@@ -228,7 +228,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     map.put("foo1", "bar1");
     mockReadConnector.setRecordKeyUsedAsSearchBase("test");
     try{
-      enhancementProcessorNode.processSingleRecord(map);
+      enrichmentProcessorNode.processSingleRecord(map);
     }catch(RecordException re){
       return;
     }
@@ -259,7 +259,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     mockJNDISearch.expects(once()).method("execute").will(returnValue(mockNamingEnumeration.proxy()));
     mockNamingEnumeration.expects(once()).method("hasMore").will(returnValue(false));
     validate();
-    enhancementProcessorNode.processSingleRecord(map);
+    enrichmentProcessorNode.processSingleRecord(map);
   }
   
   
@@ -450,20 +450,20 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
+   * Tests {@link GenericEnrichmentProcessor#enrich(Object, Object[]).
    * Reader returned no data.
    */
   public void testEnhance1(){
     Object input = new Object();
     
     /* null */
-    Object [] result = processor.enhance(input, null);
+    Object [] result = processor.enrich(input, null);
     assertNotNull(result);
     assertTrue(result.length==1);
     assertEquals(result[0], input);
     
     /* empty array */
-    result = processor.enhance(input, new Object[0]);
+    result = processor.enrich(input, new Object[0]);
     assertNotNull(result);
     assertTrue(result.length==1);
     assertEquals(result[0], input);
@@ -476,7 +476,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
   public void testEnhance2(){
     Object input = new Object();
     Object extraData = new Object();
-    Object [] result = processor.enhance(input, new Object[]{extraData});
+    Object [] result = processor.enrich(input, new Object[]{extraData});
     assertNotNull(result);
     assertTrue(result.length==2);
     assertEquals(result[0], input);
@@ -490,7 +490,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
   public void testEnhance3(){
     Object input = new Object();
     Object data1 = new Object(), data2 = new Object(), data3 = new Object();
-    Object [] result = processor.enhance(input, new Object[]{data1, data2, data3});
+    Object [] result = processor.enrich(input, new Object[]{data1, data2, data3});
     assertNotNull(result);
     assertTrue(result.length==4);
     assertEquals(result[0], input);
@@ -509,7 +509,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     input.put("foo1", "bar1");
     IOrderedMap data = new OrderedHashMap();
     data.put("foo2", "bar2");
-    Object [] result = processor.enhance(input, new Object[]{data});
+    Object [] result = processor.enrich(input, new Object[]{data});
     assertNotNull(result);
     assertTrue(result.length==1);
     assertTrue(result[0] instanceof IOrderedMap);
@@ -532,7 +532,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
       mockJNDIConnection = mock(JNDIConnection.class, "mockJNDIConnection");
       setSearch((JNDISearch)mockJNDISearch.proxy());
       setJndiConnection((JNDIConnection) mockJNDIConnection.proxy());
-      setEnhancementProcessorMode(true);
+      setEnrichmentProcessorMode(true);
     }
 
     public void fun(){

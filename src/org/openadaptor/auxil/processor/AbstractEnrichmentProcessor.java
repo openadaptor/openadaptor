@@ -142,8 +142,8 @@ public abstract class AbstractEnrichmentProcessor extends Component implements I
 
 
   /**
-   * @see org.openadaptor.core.IEnrichmentProcessor#enhance(java.lang.Object, java.lang.Object[])
+   * @see org.openadaptor.core.IEnrichmentProcessor#enrich(java.lang.Object, java.lang.Object[])
    */
-  public abstract Object[] enhance(Object input, Object[] additionalData);
+  public abstract Object[] enrich(Object input, Object[] additionalData);
     
 }

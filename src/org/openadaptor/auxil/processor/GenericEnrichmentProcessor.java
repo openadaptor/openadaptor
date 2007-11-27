@@ -74,16 +74,16 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
    * Enriches input data with extra data from the reader.
    * If reader did not return any extra data, original data is not modified in any way.
    * 
-   * @see IEnrichmentProcessor#enhance(Object, Object[]) 
+   * @see IEnrichmentProcessor#enrich(Object, Object[]) 
    */
-  public Object [] enhance(Object input, Object[] additionalData) {
+  public Object [] enrich(Object input, Object[] additionalData) {
     Object [] result = null;
     
     /* Retun original input if the reader didn't find anything */
     if(null == additionalData){
        result = new Object[]{input};
     }
-    /* or add enhancement data as next element to input */
+    /* or add enrichment data as next element to input */
     else{    
          result = new Object[additionalData.length + 1];
          result[0] = input;

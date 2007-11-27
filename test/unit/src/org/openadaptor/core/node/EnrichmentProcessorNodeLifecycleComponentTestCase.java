@@ -31,19 +31,19 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.util.TestComponent;
 
 /**
- * Concrete test of EnhancementProcessorNode as an ILifecycleComponent implementation.
+ * Concrete test of EnrichmentProcessorNode as an ILifecycleComponent implementation.
  * Executes tests from {@link AbstractTestNodeLifecycleComponent} after setting and 
- * enhancement read connector on the node (read connector establishes and destroyes connection
+ * enrichment read connector on the node (read connector establishes and destroyes connection
  * during node's lifecycle operations). 
  */
-public class EnhancementProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
+public class EnrichmentProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
   
-  IEnrichmentReadConnector enrichmentReadConnector = new TestComponent.TestEnhancementReadConnector();
+  IEnrichmentReadConnector enrichmentReadConnector = new TestComponent.TestEnrichmentReadConnector();
   
   protected ILifecycleComponent instantiateTestLifecycleComponent() {
-    EnhancementProcessorNode enhancementProcNode = 
-      new EnhancementProcessorNode("EnhancementProcessorNode as ILifecycle test");
-    enhancementProcNode.readConnector = enrichmentReadConnector;
-    return enhancementProcNode;
+    EnrichmentProcessorNode enrichmentProcNode = 
+      new EnrichmentProcessorNode("EnrichmentProcessorNode as ILifecycle test");
+    enrichmentProcNode.readConnector = enrichmentReadConnector;
+    return enrichmentProcNode;
   }
 }

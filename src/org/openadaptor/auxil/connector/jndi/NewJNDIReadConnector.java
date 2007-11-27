@@ -107,7 +107,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
 
   public void setRecordKeyUsedAsSearchBase(String recordKeyUsedAsSearchBase) {
     this.recordKeyUsedAsSearchBase = recordKeyUsedAsSearchBase;
-    this.enhancementProcessorMode = true;
+    this.enrichmentProcessorMode = true;
   }
 
   public String getRecordKeyUsedAsSearchBase() {
@@ -118,7 +118,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   
   public void setRecordKeySetByExistence(String recordKeySetByExistence) {
     this.recordKeySetByExistence = recordKeySetByExistence;
-    this.enhancementProcessorMode = true;
+    this.enrichmentProcessorMode = true;
   }
 
   public String getRecordKeySetByExistence() {
@@ -129,7 +129,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   
   public void setIncomingMap(Map incomingMap) {
     this.incomingMap = incomingMap;
-    this.enhancementProcessorMode = true;
+    this.enrichmentProcessorMode = true;
   }
 
   public Map getIncomingMap() {
@@ -161,11 +161,11 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   
   
   /********* new BEGIN ************/
-  private boolean enhancementProcessorMode = false;
+  private boolean enrichmentProcessorMode = false;
   
   
-  public void setEnhancementProcessorMode(boolean enhancementProcessorMode) {
-    this.enhancementProcessorMode = enhancementProcessorMode;
+  public void setEnrichmentProcessorMode(boolean enhancementProcessorMode) {
+    this.enrichmentProcessorMode = enhancementProcessorMode;
   }
   /********* new END ************/
   
@@ -224,7 +224,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
       exceptions.add(new ValidationException("jndiConnection property is not set", this));
     }
     
-    if(enhancementProcessorMode){
+    if(enrichmentProcessorMode){
       // relied on to allow this class to be subclassed by code that repeats the following with a different reader:
 //      search = reader.getSearch();
 

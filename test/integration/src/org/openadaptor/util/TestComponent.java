@@ -84,9 +84,9 @@ public class TestComponent {
   
   
   /**
-   * An enhancement read connector based on TestReadConnector.
+   * An enrichment read connector based on TestReadConnector.
    */
-  public static class TestEnhancementReadConnector extends TestReadConnector implements IEnrichmentReadConnector{
+  public static class TestEnrichmentReadConnector extends TestReadConnector implements IEnrichmentReadConnector{
     public void setQueryParameters(IOrderedMap inputParameters) {}
   }
   
