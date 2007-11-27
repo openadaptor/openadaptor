@@ -55,7 +55,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
   
   private IEnhancementProcessor enhancementProcessor;
   
-  private IEnhancementReadConnector readConnector;
+  protected IEnhancementReadConnector readConnector;
   
   private long readerTimeoutMs = ReadNode.DEFAULT_TIMEOUT_MS;
   
