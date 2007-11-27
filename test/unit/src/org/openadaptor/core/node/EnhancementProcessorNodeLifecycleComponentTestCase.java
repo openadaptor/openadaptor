@@ -26,7 +26,7 @@
 */
 package org.openadaptor.core.node;
 
-import org.openadaptor.core.IEnhancementReadConnector;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.util.TestComponent;
 
@@ -38,12 +38,12 @@ import org.openadaptor.util.TestComponent;
  */
 public class EnhancementProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
   
-  IEnhancementReadConnector enhancementReadConnector = new TestComponent.TestEnhancementReadConnector();
+  IEnrichmentReadConnector enrichmentReadConnector = new TestComponent.TestEnhancementReadConnector();
   
   protected ILifecycleComponent instantiateTestLifecycleComponent() {
     EnhancementProcessorNode enhancementProcNode = 
       new EnhancementProcessorNode("EnhancementProcessorNode as ILifecycle test");
-    enhancementProcNode.readConnector = enhancementReadConnector;
+    enhancementProcNode.readConnector = enrichmentReadConnector;
     return enhancementProcNode;
   }
 }

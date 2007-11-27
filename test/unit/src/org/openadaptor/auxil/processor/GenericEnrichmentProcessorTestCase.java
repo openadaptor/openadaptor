@@ -40,7 +40,7 @@ import org.openadaptor.auxil.connector.jndi.JNDISearch;
 import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-import org.openadaptor.auxil.processor.GenericEnhancementProcessor;
+import org.openadaptor.auxil.processor.GenericEnrichmentProcessor;
 import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessorTestCase;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.RecordException;
@@ -48,15 +48,15 @@ import org.openadaptor.core.node.EnhancementProcessorNode;
 import org.jmock.cglib.MockObjectTestCase;
 
 /**
- * Draft of unit tests for {@link GenericEnhancementProcessor}.
+ * Draft of unit tests for {@link GenericEnrichmentProcessor}.
  * 
  * @author Kris Lachor
  * @todo ported only testValidatex() methods from JNDIEnhancementProcessorTestCase,
  *       all other are remaining
  */
-public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
+public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
 
-  GenericEnhancementProcessor processor = new GenericEnhancementProcessor();
+  GenericEnrichmentProcessor processor = new GenericEnrichmentProcessor();
   
   NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
   
@@ -95,7 +95,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#getReadConnector()}.
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#getReadConnector()}.
    */
   public void testGetReadConnector() {
     assertNotNull(processor.getReadConnector());
@@ -127,7 +127,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#validate
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#validate
    * (java.util.List)}.
    * 
    * ported from {@link JNDIEnhancementProcessorTestCase#testValidate1()
@@ -147,7 +147,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor#validate
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#validate
    * (java.util.List)}.
    * Missing (incomingMap and recordKeyUsedAsSearchBase), and missing (outgoingMap and recordKeySetByExistence)
    * 
@@ -313,7 +313,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is null.
    */
   public void testPrepareParameters1(){
@@ -323,7 +323,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is a non-IOrderedMap.
    */
   public void testPrepareParameters2(){
@@ -333,7 +333,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap
    */
   public void testPrepareParameters3(){
@@ -349,7 +349,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap.
    * Parameter field names specified.
    */
@@ -370,7 +370,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap.
    * Parameter field names specified.
    */
@@ -391,7 +391,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap.
    * Parameter field names specified.
    */
@@ -410,7 +410,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap.
    * Parameter field names specified, but the field doesn't occur in input (expecting params map 
    * with null values).
@@ -427,7 +427,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#prepareParameters(Object)}.
+   * Tests {@link GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is an IOrdredMap.
    * Parameter field names specified, one of the fields doesn't occur in input (params map with
    * only those fields that were in the input).
@@ -450,7 +450,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Reader returned no data.
    */
   public void testEnhance1(){
@@ -470,7 +470,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Reader returned an object.
    */
   public void testEnhance2(){
@@ -484,7 +484,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   }
   
   /**
-   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Reader returned multiple objects.
    */
   public void testEnhance3(){
@@ -501,7 +501,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   
   /**
-   * Tests {@link GenericEnhancementProcessor#enhance(Object, Object[]).
+   * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Input is an IOrdredMap. Reader returned an IOrdredMap.
    */
   public void testEnhance4(){

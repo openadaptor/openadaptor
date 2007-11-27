@@ -33,7 +33,7 @@ import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.IEnhancementReadConnector;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
@@ -59,7 +59,7 @@ import java.util.List;
  * 
  * @author Eddy Higgins, Kris Lachor
  */
-public class JDBCReadConnector extends Component implements IEnhancementReadConnector, ITransactional {
+public class JDBCReadConnector extends Component implements IEnrichmentReadConnector, ITransactional {
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
@@ -211,18 +211,18 @@ public class JDBCReadConnector extends Component implements IEnhancementReadConn
    */  
   public void setQueryParameters(IOrderedMap inputParameters) {    
     if(inputParameters == null){
-      log.info("No input parameters for enhancement call");
+      log.info("No input parameters for enrichment call");
       return;
     }
     for(int i=1; i<=inputParameters.size(); i++){
-      parametriseEnhancementQuery(i, inputParameters.get(i-1));
+      parametriseEnrichmentQuery(i, inputParameters.get(i-1));
     }    
   }
   
   /**
    * @see JDBCReadConnector#setQueryParameters(IOrderedMap)
    */
-  private void parametriseEnhancementQuery(int parameterIndex, Object value){
+  private void parametriseEnrichmentQuery(int parameterIndex, Object value){
     int index = sql.indexOf("?");
     if(index != -1){
       StringBuffer newSql = new StringBuffer();

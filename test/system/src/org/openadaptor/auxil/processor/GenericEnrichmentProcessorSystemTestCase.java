@@ -36,13 +36,13 @@ import org.openadaptor.util.SystemTestUtil;
 import org.openadaptor.util.TestComponent;
 
 /**
- * System tests for {@link GenericEnhancementProcessor}.
+ * System tests for {@link GenericEnrichmentProcessor}.
  * Runs adaptor with a simple test reader, an enhancer. Verifies the writer gets 
  * the expected data.
  * 
  * @author Kris Lachor
  */
-public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTestCase {
+public class GenericEnrichmentProcessorSystemTestCase extends JDBCConnectionTestCase {
   
   private static String SCHEMA = "CREATE MEMORY TABLE TRADE(TRADEID INTEGER NOT NULL,BUYSELL CHAR(1) NOT NULL,SECID INTEGER NOT NULL,PARTYID INTEGER NOT NULL,QTY INTEGER NOT NULL,PRICE FLOAT NOT NULL); INSERT INTO TRADE VALUES(1,\'B\',1,1,1000000,3.25E0); INSERT INTO TRADE VALUES(2,\'B\',1,1,500000,3.21E0); INSERT INTO TRADE VALUES(3,\'S\',2,1,250000,1.01E0); INSERT INTO TRADE VALUES(4,\'B\',2,1,1000000,0.99E0);"
                                 + " INSERT INTO TRADE VALUES(5,\'S\',1,1,1000000,3.26E0)";
@@ -59,7 +59,7 @@ public class GenericEnhancementProcessorSystemTestCase extends JDBCConnectionTes
   }
   
   /**
-   * Test method for {@link org.openadaptor.auxil.processor.GenericEnhancementProcessor
+   * Test method for {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor
    * #prepareParameters(java.lang.Object)}.
    * 
    * Executes an adaptor with an enhancement processor. Verifies there were no errors.

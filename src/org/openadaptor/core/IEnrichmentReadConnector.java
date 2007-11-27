@@ -37,7 +37,7 @@ import org.openadaptor.core.exception.ConnectionException;
  * @author Kris Lachor
  * @since Post 3.3
  */
-public interface IEnhancementReadConnector extends IReadConnector {
+public interface IEnrichmentReadConnector extends IReadConnector {
   
   /**
    * Modifies the query to the underlying resource to use additional parameters. 

@@ -33,20 +33,21 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
 
 /**
- * A generic enhancement processor. Attempt at a 'generic' implementation
+ * A generic enrichment processor. Attempt at a 'generic' implementation
  * of prepering parameters and enhancing input data.
  * 
  * Written to eventually replace the {@link JNDIEnhancementProcessor}.
+ * TODO - update javadocs.
  * 
  * @author Kris Lachor
  * @since Post 3.3
  */
-public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
+public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
   
   /**
    * If input is not an IOrderedMap, returns an empty list of parameters. 
    * If input is an IOrderedMap, checks specific field names or field indexes
-   * have been requested (by setting properties on {@link AbstractEnhancementProcessor}.
+   * have been requested (by setting properties on {@link AbstractEnrichmentProcessor}.
    * If no specific fields requested, return the whole input, otherwise returns
    * an IOrderedMap with specified fields.
    * 
@@ -70,7 +71,7 @@ public class GenericEnhancementProcessor extends AbstractEnhancementProcessor {
   }
   
   /**
-   * Enhances input data with extra data from the reader.
+   * Enriches input data with extra data from the reader.
    * If reader did not return any extra data, original data is not modified in any way.
    * 
    * @see IEnrichmentProcessor#enhance(Object, Object[]) 

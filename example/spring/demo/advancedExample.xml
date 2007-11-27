@@ -99,7 +99,7 @@
     <property name="password" value=""/>
   </bean>
   
-  <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnhancementProcessor">
+  <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
      <property name="readConnector" ref="dbReader"/>
      <property name="parameterNames" value="uniqueid"/>
   </bean>

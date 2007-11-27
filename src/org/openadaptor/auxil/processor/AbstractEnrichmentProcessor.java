@@ -31,7 +31,7 @@ import java.util.List;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IEnrichmentProcessor;
-import org.openadaptor.core.IEnhancementReadConnector;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
@@ -42,11 +42,11 @@ import org.openadaptor.core.exception.ValidationException;
  * @author Kris Lachor
  * @since Post 3.3
  */
-public abstract class AbstractEnhancementProcessor extends Component implements IEnrichmentProcessor {
+public abstract class AbstractEnrichmentProcessor extends Component implements IEnrichmentProcessor {
 
   private static final String FIELD_SEPARATOR = ",";
   
-  private IEnhancementReadConnector readConnector;
+  private IEnrichmentReadConnector readConnector;
   
   private String commaSeparatedIndexes;
   
@@ -55,7 +55,7 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
   /**
    * @see org.openadaptor.core.IEnrichmentProcessor#getReadConnector()
    */
-  public IEnhancementReadConnector getReadConnector() {
+  public IEnrichmentReadConnector getReadConnector() {
     return readConnector;
   }
 
@@ -64,7 +64,7 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
    * 
    * @param readConnector the read connector.
    */
-  public void setReadConnector(IEnhancementReadConnector readConnector) {
+  public void setReadConnector(IEnrichmentReadConnector readConnector) {
     this.readConnector = readConnector;
   }
   

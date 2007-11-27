@@ -30,7 +30,7 @@ package org.openadaptor.auxil.connector.jndi;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.IEnhancementReadConnector;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.exception.*;
 
 import javax.naming.*;
@@ -73,7 +73,7 @@ and
 + schema: allow explicit statement of which attributes are multi-valued (if missing treat all as multi-valued).
 */
 
-public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnhancementReadConnector {
+public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnrichmentReadConnector {
 
   private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
 
@@ -93,7 +93,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    */
   protected boolean _searchHasExecuted = false;
 
-  /** To store internal state when used as IEnhancementReadConnector */
+  /** To store internal state when used as IEnrichmentReadConnector */
   private IOrderedMap inputParameters = null;
 
   // bean properties:
@@ -501,7 +501,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     
     Object[] result = null;
     
-    /* different processing path when used as IEnhancementReadConnector */
+    /* different processing path when used as IEnrichmentReadConnector */
     if(inputParameters!=null){
       result = processOrderedMap(inputParameters);
       inputParameters = null;
@@ -549,7 +549,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   /**
    * Sets parameters for customisation of the query.
    * 
-   * @see IEnhancementReadConnector#setQueryParameters(IOrderedMap)
+   * @see IEnrichmentReadConnector#setQueryParameters(IOrderedMap)
    */
   public void setQueryParameters(IOrderedMap inputParameters) {
     this.inputParameters = inputParameters;

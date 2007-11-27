@@ -40,28 +40,28 @@ public interface IEnrichmentProcessor  {
   
   /**
    * Underlying read connector. The read connector must be capable of accepting parameters
-   * and use them to customise the query to the external resource. The {@link IEnhancementReadConnector}
+   * and use them to customise the query to the external resource. The {@link IEnrichmentReadConnector}
    * is an abstraction of this capability.
    * 
    * @return the underlying read connector.
    */
-  IEnhancementReadConnector getReadConnector();
+  IEnrichmentReadConnector getReadConnector();
  
   /**
-   * Builds a map with data that IEnhancementReadConnector will use to parameterise 
+   * Builds a map with data that IEnrichmentReadConnector will use to parameterise 
    * the query.
    *
-   * @return data to parameterise IEnhancementReadConnector's query
+   * @return data to parameterise IEnrichmentReadConnector's query
    */
   IOrderedMap prepareParameters(Object input);
   
   /**
    * Merges original input with additional data obtained from the underlying 
-   * IEnhancementReadConnector.
+   * IEnrichmentReadConnector.
    * 
    * @param input original input record used to parametrise query in
-   *        IEnhancementReadConnector
-   * @param additionalData data returned by IEnhancementReadConnector
+   *        IEnrichmentReadConnector
+   * @param additionalData data returned by IEnrichmentReadConnector
    */
   Object [] enhance(Object input, Object [] additionalData);
   

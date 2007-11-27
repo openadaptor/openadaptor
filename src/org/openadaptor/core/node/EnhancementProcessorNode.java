@@ -30,14 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IEnrichmentProcessor;
-import org.openadaptor.core.IEnhancementReadConnector;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 /**
  * Class that brings together {@link IEnrichmentProcessor} and {@link IMessageProcessor}.
  * Manages the lifecycle of {@link IEnrichmentProcessor} and the lifecycle of 
- * {@link IEnhancementReadConnector} embedded in it.
+ * {@link IEnrichmentReadConnector} embedded in it.
  * 
  * Essentially it is similar to {@link Node}, which it extends. The differences are
  * firstly this node connects and disconnects the underlying reader, secondly 
@@ -55,7 +55,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
   
   private IEnrichmentProcessor enrichmentProcessor;
   
-  protected IEnhancementReadConnector readConnector;
+  protected IEnrichmentReadConnector readConnector;
   
   private long readerTimeoutMs = ReadNode.DEFAULT_TIMEOUT_MS;
   
