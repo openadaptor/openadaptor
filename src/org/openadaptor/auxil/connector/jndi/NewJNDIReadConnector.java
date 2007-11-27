@@ -47,11 +47,32 @@ import java.util.Map;
  * the present {@link JNDIReadConnector}.
  * Not read for use.
  *
- * @author Eddy Higgins, Kris Lachor
+ * @author Eddy Higgins, Andrew Shire, Kris Lachor
  * @see JNDIConnection
  * @see JNDISearch
- * @todo test, replace the old JNDIReadConnector
+ * todo test, replace the old JNDIReadConnector
  */
+
+/* 
+These comments were copied from legacy JNDIEnhancementProcessor (of which most of the functionality 
+has been moved here).
+Done: Needed to enrich JndiEnhancementProcessor:
++ search root driven by dn in incomingKeyMap (when present in values)
+- issue warning if overriding explicit JNDISearch searchBases;
++ filter uses values in incomingKeyMap
+- derive filter using actual incoming values and AND it with any explicit JNDISearch filter;
++ explicitly ask for just the attributes in outgoingKeyMap keys (performance and operational attributes)
+- merge outgoingKeyMap keys with list of attributes directly specified on JNDISearch;
++ to get dn to appear in results it must be set on JNDISearch.returnedDNAttributeName,
+and
++ refactor: merge JNDIExistenceProcessor into it.
++ refactor: make it cleaner to subclass with just a different AbstractJNDIReader.
+*/
+
+/* TODO: Need to enrich JNDISearch:
++ schema: allow explicit statement of which attributes are multi-valued (if missing treat all as multi-valued).
+*/
+
 public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnhancementReadConnector {
 
   private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
