@@ -111,20 +111,43 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     }
   }
 
+  /**
+   * Process an incoming msg.
+   * <br>
+   * This will typically lookup all the IMesssageProcessors which 
+   * should be receiving this message, and ask each in turn to
+   * process it.
+   * @param msg Incoming Message
+   * @return Response, usually empty.
+   */
   public Response process(Message msg) {
     return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
   }
 
+  /**
+   * Pass the message to a list of IMessageProcessors, in turn.
+   * @param msg
+   * @param destinations
+   * @return Response - Should be an empty Response assuming all goes well.
+   */
   private Response process(Message msg, List destinations) {
     if (log.isDebugEnabled()) {
       logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
     }
     for (Iterator iter = destinations.iterator(); iter.hasNext();) {
       IMessageProcessor processor = (IMessageProcessor) iter.next();
-      Response response = processor.process(msg);
-      processResponse(processor, response, msg.getTransaction());
+      process(msg,processor);
     }
     return new Response();
+  }
+  
+  /**
+   * Pass a message to an indivual MessageProcessor for processing
+   * @param msg Message to be processed
+   * @param processor target which should be processing the message.
+   */
+  private void process(Message msg, IMessageProcessor processor) {
+    processResponse(processor,processor.process(msg),msg.getTransaction());
   }
 
   private void processResponse(IMessageProcessor node, Response response, ITransaction transaction) {
@@ -133,14 +156,17 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       DataBatch batch = (DataBatch) iter.next();
       if (batch instanceof OutputBatch) {
         process(new Message(batch.getData(),node,transaction),routingMap.getProcessDestinations(node));
-      } else if (batch instanceof DiscardBatch) {
+      } 
+      else if (batch instanceof DiscardBatch) {
         if (logDiscardAsInfo) {
           log.info(node.toString() + " discarded " + batch.size() + " input(s)");
-        } else {
+        } 
+        else {
           log.debug(node.toString() + " discarded " + batch.size() + " input(s)");
         }
         process(new Message(batch.getData(),node,transaction),routingMap.getDiscardDestinations(node));
-      } else if (batch instanceof ExceptionBatch) {
+      } 
+      else if (batch instanceof ExceptionBatch) {
         processExceptions(node, batch.getData(), transaction);
       }
     }
