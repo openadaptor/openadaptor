@@ -36,7 +36,7 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
  * @author Kris Lachor
  * @since Post 3.3
  */
-public interface IEnhancementProcessor  {
+public interface IEnrichmentProcessor  {
   
   /**
    * Underlying read connector. The read connector must be capable of accepting parameters

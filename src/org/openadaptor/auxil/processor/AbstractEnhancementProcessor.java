@@ -30,19 +30,19 @@ import java.util.List;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.IEnhancementProcessor;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
- * Abstract implementation of {@link IEnhancementProcessor}. Holds properties:
+ * Abstract implementation of {@link IEnrichmentProcessor}. Holds properties:
  * <li> a read connector
  * <li> names or indexes of fields to be used as parameters in the reader's query.
  * 
  * @author Kris Lachor
  * @since Post 3.3
  */
-public abstract class AbstractEnhancementProcessor extends Component implements IEnhancementProcessor {
+public abstract class AbstractEnhancementProcessor extends Component implements IEnrichmentProcessor {
 
   private static final String FIELD_SEPARATOR = ",";
   
@@ -53,7 +53,7 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
   private String commaSeparatedFieldNames;
   
   /**
-   * @see org.openadaptor.core.IEnhancementProcessor#getReadConnector()
+   * @see org.openadaptor.core.IEnrichmentProcessor#getReadConnector()
    */
   public IEnhancementReadConnector getReadConnector() {
     return readConnector;
@@ -136,13 +136,13 @@ public abstract class AbstractEnhancementProcessor extends Component implements 
   }
   
   /**
-   * @see org.openadaptor.core.IEnhancementProcessor#prepareParameters(java.lang.Object)
+   * @see org.openadaptor.core.IEnrichmentProcessor#prepareParameters(java.lang.Object)
    */
   public abstract IOrderedMap prepareParameters(Object input);
 
 
   /**
-   * @see org.openadaptor.core.IEnhancementProcessor#enhance(java.lang.Object, java.lang.Object[])
+   * @see org.openadaptor.core.IEnrichmentProcessor#enhance(java.lang.Object, java.lang.Object[])
    */
   public abstract Object[] enhance(Object input, Object[] additionalData);
     

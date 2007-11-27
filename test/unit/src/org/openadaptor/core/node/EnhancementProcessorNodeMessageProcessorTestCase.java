@@ -28,7 +28,7 @@ package org.openadaptor.core.node;
 
 import org.jmock.Mock;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.IEnhancementProcessor;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -52,8 +52,8 @@ public class EnhancementProcessorNodeMessageProcessorTestCase extends AbstractTe
 
   protected void instantiateMocksFor(IMessageProcessor messageProcessor) {
     super.instantiateMocksFor(messageProcessor);
-//    enhancementProcessorMock = mock(IEnhancementProcessor.class);   
-//    IEnhancementProcessor mockEnhancementProcessor = (IEnhancementProcessor) enhancementProcessorMock.proxy();
+//    enhancementProcessorMock = mock(IEnrichmentProcessor.class);   
+//    IEnrichmentProcessor mockEnhancementProcessor = (IEnrichmentProcessor) enhancementProcessorMock.proxy();
 //    ((EnhancementProcessorNode)messageProcessor).setEnhancementProcessor(mockEnhancementProcessor);
   }
   

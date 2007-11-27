@@ -29,14 +29,14 @@ package org.openadaptor.core.node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.IEnhancementProcessor;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnhancementReadConnector;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 /**
- * Class that brings together {@link IEnhancementProcessor} and {@link IMessageProcessor}.
- * Manages the lifecycle of {@link IEnhancementProcessor} and the lifecycle of 
+ * Class that brings together {@link IEnrichmentProcessor} and {@link IMessageProcessor}.
+ * Manages the lifecycle of {@link IEnrichmentProcessor} and the lifecycle of 
  * {@link IEnhancementReadConnector} embedded in it.
  * 
  * Essentially it is similar to {@link Node}, which it extends. The differences are
@@ -53,7 +53,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
 
   private static final Log log = LogFactory.getLog(EnhancementProcessorNode.class);
   
-  private IEnhancementProcessor enhancementProcessor;
+  private IEnrichmentProcessor enrichmentProcessor;
   
   protected IEnhancementReadConnector readConnector;
   
@@ -85,18 +85,18 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
    * @param processor
    * @see Node#Node(String)
    */
-  public EnhancementProcessorNode(String id, IEnhancementProcessor processor) {
+  public EnhancementProcessorNode(String id, IEnrichmentProcessor processor) {
     super(id);
-    this.enhancementProcessor = processor;
+    this.enrichmentProcessor = processor;
     this.readConnector = processor.getReadConnector();
   }
 
   /**
    * Sets the enhancement processor and the read connector.
    */
-  public void setEnhancementProcessor(IEnhancementProcessor enhancementProcessor) {
-    this.enhancementProcessor = enhancementProcessor;
-    this.readConnector = enhancementProcessor.getReadConnector();
+  public void setEnhancementProcessor(IEnrichmentProcessor enrichmentProcessor) {
+    this.enrichmentProcessor = enrichmentProcessor;
+    this.readConnector = enrichmentProcessor.getReadConnector();
   }
 
   /**
@@ -137,7 +137,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
       log.warn("Enhancement processor parameters not an IOrderedMap");
     }
     else{
-      parameters = enhancementProcessor.prepareParameters((IOrderedMap)record);
+      parameters = enrichmentProcessor.prepareParameters((IOrderedMap)record);
     }
     if (log.isDebugEnabled() && parameters!=null){
         log.debug("Parameters to set on the reader: " + parameters);
@@ -155,7 +155,7 @@ public final class EnhancementProcessorNode extends Node implements IMessageProc
     if (log.isDebugEnabled()) {
       log.debug("Reader returned: " + additionalData + ". Calling enhancer...");
     }
-    Object [] outputs = enhancementProcessor.enhance((IOrderedMap)record, additionalData);
+    Object [] outputs = enrichmentProcessor.enhance((IOrderedMap)record, additionalData);
     return outputs;
   }
 

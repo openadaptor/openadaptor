@@ -33,7 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.IEnhancementProcessor;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
@@ -58,7 +58,7 @@ import org.openadaptor.core.router.Router;
  * <li>discard capture
  * 
  * <br/><br/>This allows implementations of {@link IDataProcessor},
- * {@link IReadConnector}, {@link IWriteConnector} and {@link IEnhancementProcessor}
+ * {@link IReadConnector}, {@link IWriteConnector} and {@link IEnrichmentProcessor}
  * to be as lightweight as possible and free from the specifics of the adaptor framework.
  * 
  * <br/>It is also possible to "chain" a Node to another IMessageProcessor, this

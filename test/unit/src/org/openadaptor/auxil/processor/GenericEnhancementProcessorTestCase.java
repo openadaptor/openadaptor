@@ -68,7 +68,7 @@ public class GenericEnhancementProcessorTestCase extends MockObjectTestCase {
   
   /* 
    * This is included here since the node is now the only component aware of
-   * IEnhancementProcessor method call sequence - this was previously  
+   * IEnrichmentProcessor method call sequence - this was previously  
    * implemented in JNDIEnhancementProcessor#processOrderedMap
    */
   EnhancementProcessorNode enhancementProcessorNode = new EnhancementProcessorNode("testNode", processor);

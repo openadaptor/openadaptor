@@ -47,7 +47,7 @@ public interface IEnhancementReadConnector extends IReadConnector {
    * @param inputParameters that this connector can use to adjust the query to the underlying
    *        resource
    * @see IReadConnector#next(long)
-   * @see IEnhancementProcessor
+   * @see IEnrichmentProcessor
    */
    void setQueryParameters(IOrderedMap inputParameters);
 
