@@ -50,7 +50,6 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.transaction.ITransaction;
 
-
 /**
  * Shared implementation of a {@link Router} and {@link Pipeline}.
  */
@@ -88,27 +87,15 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     this.componentManager=manager;
     registerComponents();
   }
-  
-  public Response process(Message msg) {
-    return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
-  }
 
-  public Response process(Message msg, String destinationId) throws MessageException {
-    IMessageProcessor processor = (IMessageProcessor) componentMap.get(destinationId);
-    if (processor != null) {
-      return process(msg, processor);
-    } else {
-      throw new RuntimeException("no processor with id " + destinationId);
-    }
-  }
-  
   private void registerComponents() {
     componentMap.clear();
     for (Iterator it=routingMap.getMessageProcessors().iterator();it.hasNext();){
       Object processor=it.next();
       if (processor instanceof ILifecycleComponent){
         componentManager.register((ILifecycleComponent)processor);
-      } else {
+      } 
+      else {
         log.info("Not registering (non-ILifecycleComponent) processor "+processor);
       }
       if (processor instanceof IComponent) {
@@ -116,11 +103,16 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
         if (id != null) {
           log.info(id + " registered with " + getId());
           componentMap.put(id, processor);
-        } else {
+        } 
+        else {
           log.info(processor.toString() + " has no id");
         }
       }
     }
+  }
+
+  public Response process(Message msg) {
+    return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
   }
 
   private Response process(Message msg, List destinations) {
@@ -128,21 +120,11 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
     }
     for (Iterator iter = destinations.iterator(); iter.hasNext();) {
-      IMessageProcessor node = (IMessageProcessor) iter.next();
-      Response response = node.process(msg);
-      processResponse(node, response, msg.getTransaction());
+      IMessageProcessor processor = (IMessageProcessor) iter.next();
+      Response response = processor.process(msg);
+      processResponse(processor, response, msg.getTransaction());
     }
     return new Response();
-  }
-
-  private Response process(Message msg, IMessageProcessor processor) throws MessageException {
-    Response response = processor.process(msg);
-    if (response.containsExceptions()) {
-      throw (MessageException) response.getCollatedExceptions()[0];
-    } else {
-      processResponse(processor, response, msg.getTransaction());
-      return new Response();
-    }
   }
 
   private void processResponse(IMessageProcessor node, Response response, ITransaction transaction) {
@@ -196,4 +178,25 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   public void setLogDiscardAsInfo(boolean logDiscardAsInfo) {
     this.logDiscardAsInfo = logDiscardAsInfo;
   }
+ 
+// Disabled - these are no longer used. 
+//  public Response process(Message msg, String destinationId) throws MessageException {
+//    IMessageProcessor processor = (IMessageProcessor) componentMap.get(destinationId);
+//    if (processor != null) {
+//      return process(msg, processor);
+//    } else {
+//      throw new RuntimeException("no processor with id " + destinationId);
+//    }
+//  }
+//
+//  private Response process(Message msg, IMessageProcessor processor) throws MessageException {
+//    Response response = processor.process(msg);
+//    if (response.containsExceptions()) {
+//      throw (MessageException) response.getCollatedExceptions()[0];
+//    } else {
+//      processResponse(processor, response, msg.getTransaction());
+//      return new Response();
+//    }
+//  }
+
 }
