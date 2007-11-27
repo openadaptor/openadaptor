@@ -149,6 +149,14 @@ public class Router extends AbstractRouter implements IMessageProcessor {
   }
   
   
+  /**
+   * Shorthand for configuring a list of processors to be connected in sequence.
+   * <br>
+   * This simply creates a Map with a series of entries of the form
+   * processor[n]-&gt;processor[n+1]
+   * Then it calls {@link #setProcessMap(Map)} with the generated Map.
+   * @param processorList
+   */
   public void setProcessors(List processorList){
     // create process map from list of processors
     if ((processorList==null) || (processorList.isEmpty())) { 
