@@ -27,7 +27,9 @@
 package org.openadaptor.auxil.connector.jndi;
 
 /**
- * Unit tests for {@link JNDIReadConnector} and {@link AbstractJNDIReadConnector}.
+ * Unit tests for {@link NewJNDIReadConnector} and {@link AbstractJNDIReadConnector}.
+ * Great part of the {@link NewJNDIReadConnector} functionality were ported from
+ * the legacy {@link JNDIEnhancementProcessor}. 
  * 
  * @author Kris Lachor
  */
