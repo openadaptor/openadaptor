@@ -149,8 +149,9 @@
   </target>
 
   <target name="compile.test" depends="compile.test.unit, compile.test.integration, compile.test.system"/>
-  
-  <target name="compile.test.unit">
+ 
+  <!-- Temporarily added dependency on integration tests as this is where some common classes are. Need to revisit this.  --> 
+  <target name="compile.test.unit" depends="compile.test.integration">
     <javac srcdir="${dir.test.unit.src}" destdir="${dir.test.classes}" classpathref="classpath.test" debug="${debug}"/>
     <copy todir="${dir.test.classes}" overwrite="true">
       <fileset dir="${dir.test.unit.src}">
