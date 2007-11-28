@@ -28,7 +28,7 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     
-  writes a file called output.xml
+  writes output to  file output/output.xml
   ]]>
 	</description>
 
@@ -37,7 +37,7 @@
 			<bean class="org.openadaptor.core.router.Router">
 				<description>
 					This creates the simple pipeline Reader ->
-					MapConverter -> XmlConvertor ->Writer.
+					MapConverter -> XmlConvertor -> Writer.
 				</description>
 				<property name="processors">
 					<list>
@@ -96,7 +96,7 @@
 	<bean id="Writer"
 		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
 		<description>This writer writes data to a file.</description>
-		<property name="filename" value="output.xml" />
+		<property name="filename" value="output/output.xml" />
 		<property name="append" value="false" />
 	</bean>
 
