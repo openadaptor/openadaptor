@@ -26,6 +26,8 @@
  */
 package org.openadaptor.core.node;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
@@ -158,5 +160,11 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
     Object [] outputs = enrichmentProcessor.enrich((IOrderedMap)record, additionalData);
     return outputs;
   }
+  
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+    enrichmentProcessor.validate(exceptions);
+  }
+
 
 }

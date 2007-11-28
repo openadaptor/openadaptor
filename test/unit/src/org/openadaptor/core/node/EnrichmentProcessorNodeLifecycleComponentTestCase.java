@@ -26,6 +26,11 @@
 */
 package org.openadaptor.core.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jmock.Mock;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.util.TestComponent;
@@ -35,15 +40,46 @@ import org.openadaptor.util.TestComponent;
  * Executes tests from {@link AbstractTestNodeLifecycleComponent} after setting and 
  * enrichment read connector on the node (read connector establishes and destroyes connection
  * during node's lifecycle operations). 
+ * 
+ *TODO finish
  */
 public class EnrichmentProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
   
   IEnrichmentReadConnector enrichmentReadConnector = new TestComponent.TestEnrichmentReadConnector();
+  
+  protected Mock testEnrichmentProcessorMock;
+  
+  protected void instantiateMocksFor(ILifecycleComponent lifecycleComponent) {
+    super.instantiateMocksFor(lifecycleComponent);
+    testEnrichmentProcessorMock = mock(IEnrichmentProcessor.class);
+    testEnrichmentProcessorMock.expects(once()).method("getReadConnector");
+    IEnrichmentProcessor testEnrichmentProcessor = (IEnrichmentProcessor) testEnrichmentProcessorMock.proxy();
+    ((EnrichmentProcessorNode) lifecycleComponent).setEnrichmentProcessor(testEnrichmentProcessor);
+  }
   
   protected ILifecycleComponent instantiateTestLifecycleComponent() {
     EnrichmentProcessorNode enrichmentProcNode = 
       new EnrichmentProcessorNode("EnrichmentProcessorNode as ILifecycle test");
     enrichmentProcNode.readConnector = enrichmentReadConnector;
     return enrichmentProcNode;
+  }
+  
+  public void testValidation() {
+    List exceptions = new ArrayList();
+    testProcessorMock.expects(once()).method("validate").with(eq(exceptions));
+    testEnrichmentProcessorMock.expects(once()).method("validate").with(eq(exceptions));
+
+    testLifecycleComponent.validate(exceptions);
+    assertTrue("Unexpected exceptions", exceptions.size() == 0);
+  }
+  
+  public void testValidationWithNullProcessor() {
+  }
+
+  
+  public void testStartStop() {
+  }
+  
+  public void testStart() {    
   }
 }

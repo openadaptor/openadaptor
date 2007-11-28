@@ -26,7 +26,10 @@
  */
 package org.openadaptor.core;
 
+import java.util.List;
+
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Interface that represents an enrichment processor. An enrichment processor 
@@ -64,5 +67,19 @@ public interface IEnrichmentProcessor  {
    * @param additionalData data returned by IEnrichmentReadConnector
    */
   Object [] enrich(Object input, Object [] additionalData);
+  
+  
+  /**
+   * This method checks that the current state of an implementation is
+   * "meaningful". Implementations of {@link IEnrichmentProcessor} are typically beans with
+   * zero-arg constructors.  Implementations are encouraged to add exception to the
+   * list parameter rather than throwing them. This allows the calling code to collate
+   * the exceptions. If the implementation is an {@link IComponent} then the exceptions
+   * should be a {@link ValidationException}.
+   *
+   * @param exceptions collection to which exceptions should be added. Must not be null
+   * @throws IllegalArgumentException if null argument provided
+   */
+  void validate(List exceptions);
   
 }

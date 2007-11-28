@@ -31,7 +31,6 @@ import java.util.Map;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
-import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 
 /**
  * A generic enrichment processor. Attempt at a 'generic' implementation
@@ -77,29 +76,28 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
    * 
    * @see IEnrichmentProcessor#enrich(Object, Object[]) 
    */
-  public Object [] enrich(Object input, Object[] additionalData) {
+  public Object [] enrich(Object input, Object[] enrichmentData) {
     Object [] result = null;
     
     /* Retun original input if the reader didn't find anything */
-    if(null == additionalData){
+    if(null==enrichmentData || enrichmentData.length==0){
        result = new Object[]{input};
     }
     /* or add enrichment data as next element to input */
     else{    
-         result = new Object[additionalData.length + 1];
-         result[0] = input;
-         for(int i=1; i<=additionalData.length; i++){
-           result[i]=additionalData[i-1];
+       result = new Object[enrichmentData.length];
+       for(int i=0; i<enrichmentData.length; i++){
+         result[i]=enrichmentData[i];
+       }
+       
+       if(input instanceof IOrderedMap && enrichmentData.length == 1){
+         Object additionalDataObj = enrichmentData[0];
+         if(additionalDataObj instanceof IOrderedMap){
+           Map additionalDataMap = (Map) additionalDataObj;
+           ((Map)input).putAll(additionalDataMap);
+           result = new Object[]{input};
          }
-         
-         if(input instanceof IOrderedMap && additionalData.length == 1){
-           Object additionalDataObj = additionalData[0];
-           if(additionalDataObj instanceof IOrderedMap){
-             Map additionalDataMap = (Map) additionalDataObj;
-             ((Map)input).putAll(additionalDataMap);
-             result = new Object[]{input};
-           }
-         }    
+       }    
     }
     return result;
   }

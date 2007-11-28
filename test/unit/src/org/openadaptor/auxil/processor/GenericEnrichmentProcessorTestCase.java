@@ -453,7 +453,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
    * Tests {@link GenericEnrichmentProcessor#enrich(Object, Object[]).
    * Reader returned no data.
    */
-  public void testEnhance1(){
+  public void testEnrich1(){
     Object input = new Object();
     
     /* null */
@@ -473,30 +473,28 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
    * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Reader returned an object.
    */
-  public void testEnhance2(){
+  public void testEnrich2(){
     Object input = new Object();
     Object extraData = new Object();
     Object [] result = processor.enrich(input, new Object[]{extraData});
     assertNotNull(result);
-    assertTrue(result.length==2);
-    assertEquals(result[0], input);
-    assertEquals(result[1], extraData); 
+    assertTrue(result.length==1);
+    assertEquals(result[0], extraData); 
   }
   
   /**
    * Tests {@link GenericEnrichmentProcessor#enhance(Object, Object[]).
    * Reader returned multiple objects.
    */
-  public void testEnhance3(){
+  public void testEnrich3(){
     Object input = new Object();
     Object data1 = new Object(), data2 = new Object(), data3 = new Object();
     Object [] result = processor.enrich(input, new Object[]{data1, data2, data3});
     assertNotNull(result);
-    assertTrue(result.length==4);
-    assertEquals(result[0], input);
-    assertEquals(result[1], data1); 
-    assertEquals(result[2], data2); 
-    assertEquals(result[3], data3); 
+    assertTrue(result.length==3);
+    assertEquals(result[0], data1); 
+    assertEquals(result[1], data2); 
+    assertEquals(result[2], data3); 
   }
   
   

@@ -297,9 +297,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
 
       search.setAttributes(attributeNames);
 
-      // Connect to enrichment source:
-//      reader.connect();
-      connect();
+//      connect();
     }
   }
   
@@ -368,6 +366,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
         }
       }
     } catch (Exception e) {
+      log.fatal(e);
       log.info("RecordException of " + e.getMessage());
       if (log.isDebugEnabled())
         e.printStackTrace();
@@ -435,10 +434,12 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     boolean treatMultiValuedAttributesAsArray = search.getTreatMultiValuedAttributesAsArray();
     String joinArraysWithSeparator = search.getJoinArraysWithSeparator();
 //    NamingEnumeration current = search.execute(((JNDIReadConnector) reader).getContext());
+    Object ctx = this.getContext();
     NamingEnumeration current = search.execute(this.getContext());
     ArrayList resultList = new ArrayList();
     while (current.hasMore()) {
-      resultList.add(JNDIUtils.getOrderedMap((SearchResult) current.next(), treatMultiValuedAttributesAsArray,
+      SearchResult searchResult = (SearchResult) current.next();
+      resultList.add(JNDIUtils.getOrderedMap(searchResult, treatMultiValuedAttributesAsArray,
           joinArraysWithSeparator));
     }
     if (resultList.size() > 0) {
