@@ -31,12 +31,13 @@ import java.util.Map;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
+import org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor;
 
 /**
  * A generic enrichment processor. Attempt at a 'generic' implementation
  * of prepering parameters and enhancing input data.
  * 
- * Written to eventually replace the {@link JNDIEnhancementProcessor}.
+ * Written to eventually replace the depricated {@link JNDIEnhancementProcessor}.
  * TODO - update javadocs.
  * 
  * @author Kris Lachor
