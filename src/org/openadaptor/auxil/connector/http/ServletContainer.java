@@ -88,16 +88,25 @@ public class ServletContainer {
     return port;
   }
 
+  
+  //EH - this did not make any sense whatsoever!
+  //The only thing this may do is throw an exception if a server is supplied.
+  //Possibly should have been if (this.server == null)  ?????
+
   public void setJettyServer(final Server server) {
-    if (server == null) {
+    if (this.server == null) { //Only set if one is not already configured.
       this.server = server;
-    } else {
-      throw new RuntimeException("jetty server already instantiated");
+    } 
+    else {
+      String msg="Jetty server has aready been configured";
+      log.warn(msg);
+      throw new RuntimeException(msg);
     }
   }
   
   public Server getJettyServer() {
     if (server == null) {
+      log.info("Starting Jetty server on port "+port);
       server = new Server(port);
       managed = true;
     }
@@ -136,6 +145,7 @@ public class ServletContainer {
     getJettyServer();
     if (managed && ++refs == 1) {
       try {
+        log.debug("Starting server "+server);
         server.start();
       } catch (Exception e) {
         log.error("failed to start jetty server", e);

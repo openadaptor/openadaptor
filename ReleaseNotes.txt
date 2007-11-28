@@ -41,6 +41,8 @@ Minor changes
     Added some extra legacy conversion examples also.
     Modified DataObjectToDOXmlConvertor to issue uniqueId by default (this mirrors default
     legacy adaptors behaviour)
+   
+  * ServletContainer.setJettyServer(Server server) was nonsensical. Fixed.
 
 Bug Fixes
 =========
