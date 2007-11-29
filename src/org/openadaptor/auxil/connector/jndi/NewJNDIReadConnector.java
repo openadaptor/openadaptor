@@ -44,12 +44,12 @@ import java.util.Map;
 
 /**
  * This is a draft of a new JNDI read connector, ultimately meant to replace 
- * the present {@link JNDIReadConnector}.
+ * the present {@link OldJNDIReadConnector}.
  *
  * @author Eddy Higgins, Andrew Shire, Kris Lachor
  * @see JNDIConnection
  * @see JNDISearch
- * TODO test, javadoc, replace the old JNDIReadConnector
+ * TODO test, javadoc, replace the old OldJNDIReadConnector
  */
 
 /* 
@@ -74,7 +74,7 @@ and
 
 public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnrichmentReadConnector {
 
-  private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
+  private static final Log log = LogFactory.getLog(OldJNDIReadConnector.class);
 
   // internal state:
   /**

@@ -37,13 +37,13 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 
 /**
- * Unit tests for {@link JNDIReadConnector} and {@link AbstractJNDIReadConnector}.
+ * Unit tests for {@link OldJNDIReadConnector} and {@link AbstractJNDIReadConnector}.
  * 
  * @author Kris Lachor
  */
-public class JNDIReadConnectorTestCase extends MockObjectTestCase {
+public class OldJNDIReadConnectorTestCase extends MockObjectTestCase {
 
-  private JNDIReadConnector readConnector = new JNDIReadConnector();
+  private OldJNDIReadConnector readConnector = new OldJNDIReadConnector();
   
   private MockJNDIConnection mockJNDIConnection = new MockJNDIConnection();
   
@@ -63,7 +63,7 @@ public class JNDIReadConnectorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jndi.JNDIReadConnector#validate(java.util.List)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector#validate(java.util.List)}.
    */
   public void testValidate() {
     List exceptions = new ArrayList();
@@ -79,7 +79,7 @@ public class JNDIReadConnectorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jndi.JNDIReadConnector#connect()}.
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector#connect()}.
    */
   public void testConnect() {
     assertTrue(mockJNDIConnection.connectCounter==0);
@@ -88,7 +88,7 @@ public class JNDIReadConnectorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jndi.JNDIReadConnector#disconnect()}.
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector#disconnect()}.
    */
   public void testDisconnect() {
     readConnector.connect();
@@ -97,7 +97,7 @@ public class JNDIReadConnectorTestCase extends MockObjectTestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.connector.jndi.JNDIReadConnector#next(long)}.
+   * Test method for {@link org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector#next(long)}.
    */
   public void testNext() {
     readConnector.connect();

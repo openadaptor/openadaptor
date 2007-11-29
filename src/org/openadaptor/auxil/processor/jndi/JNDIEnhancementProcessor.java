@@ -38,7 +38,7 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jndi.AbstractJNDIReadConnector;
-import org.openadaptor.auxil.connector.jndi.JNDIReadConnector;
+import org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector;
 import org.openadaptor.auxil.connector.jndi.JNDISearch;
 import org.openadaptor.auxil.connector.jndi.JNDIUtils;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
@@ -98,12 +98,12 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
   protected String valueIfDoesNotExist = "false";
 
   //BEGIN Bean getters/setters
-  public void setReader(JNDIReadConnector reader) {
+  public void setReader(OldJNDIReadConnector reader) {
     this.reader = reader;
   }
 
-  public JNDIReadConnector getReader() {
-    return (JNDIReadConnector) reader;
+  public OldJNDIReadConnector getReader() {
+    return (OldJNDIReadConnector) reader;
   }
 
   public void setIncomingMap(Map incomingMap) {
@@ -232,7 +232,7 @@ public class JNDIEnhancementProcessor extends AbstractOrderedMapProcessor {
     IOrderedMap[] results = null;
     boolean treatMultiValuedAttributesAsArray = search.getTreatMultiValuedAttributesAsArray();
     String joinArraysWithSeparator = search.getJoinArraysWithSeparator();
-    NamingEnumeration current = search.execute(((JNDIReadConnector) reader).getContext());
+    NamingEnumeration current = search.execute(((OldJNDIReadConnector) reader).getContext());
     ArrayList resultList = new ArrayList();
     while (current.hasMore()) {
       resultList.add(JNDIUtils.getOrderedMap((SearchResult) current.next(), treatMultiValuedAttributesAsArray,

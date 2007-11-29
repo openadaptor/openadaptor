@@ -45,10 +45,11 @@ import java.util.List;
  * @author Eddy Higgins
  * @see JNDIConnection
  * @see JNDISearch
+ * @deprecated by JNDIReadConnector. Candidate for deletion in the next major release.
  */
-public class JNDIReadConnector extends AbstractJNDIReadConnector {
+public class OldJNDIReadConnector extends AbstractJNDIReadConnector {
 
-  private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
+  private static final Log log = LogFactory.getLog(OldJNDIReadConnector.class);
 
   // internal state:
   /**
@@ -72,10 +73,10 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector {
    */
   protected JNDIConnection jndiConnection;
 
-  public JNDIReadConnector() {
+  public OldJNDIReadConnector() {
   }
 
-  public JNDIReadConnector(String id) {
+  public OldJNDIReadConnector(String id) {
     super(id);
   }
 

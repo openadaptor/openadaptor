@@ -35,7 +35,7 @@ import javax.naming.NamingEnumeration;
 
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
-import org.openadaptor.auxil.connector.jndi.JNDIReadConnector;
+import org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector;
 import org.openadaptor.auxil.connector.jndi.JNDISearch;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.OAException;
@@ -52,7 +52,7 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
 
   JNDIEnhancementProcessor processor = new JNDIEnhancementProcessor();
   
-  JNDIReadConnector mockReadConnector = new MockJNDIReadConnector();
+  OldJNDIReadConnector mockReadConnector = new MockJNDIReadConnector();
   
   String recordKeyUsedAsSearchBase = null;
   
@@ -271,7 +271,7 @@ public class JNDIEnhancementProcessorTestCase extends MockObjectTestCase {
   /**
    * Inner mock. 
    */
-  class MockJNDIReadConnector extends JNDIReadConnector{
+  class MockJNDIReadConnector extends OldJNDIReadConnector{
     
     public MockJNDIReadConnector() {
 

@@ -33,7 +33,7 @@ package org.openadaptor.auxil.connector.jndi;
  * 
  * @author Kris Lachor
  */
-public class NewJNDIReadConnectorTestCase extends JNDIReadConnectorTestCase {
+public class NewJNDIReadConnectorTestCase extends OldJNDIReadConnectorTestCase {
 
   
   /**
