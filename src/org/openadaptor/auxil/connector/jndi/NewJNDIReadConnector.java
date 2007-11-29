@@ -45,12 +45,11 @@ import java.util.Map;
 /**
  * This is a draft of a new JNDI read connector, ultimately meant to replace 
  * the present {@link JNDIReadConnector}.
- * Not read for use.
  *
  * @author Eddy Higgins, Andrew Shire, Kris Lachor
  * @see JNDIConnection
  * @see JNDISearch
- * todo test, replace the old JNDIReadConnector
+ * TODO test, javadoc, replace the old JNDIReadConnector
  */
 
 /* 
@@ -101,50 +100,14 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    * JNDIConnection which this reader will use
    */
   protected JNDIConnection jndiConnection;
-
-  /********* ported from JNDIEnhancementProcessor BEGIN ************/
+  
   protected String recordKeyUsedAsSearchBase = null;
 
-  public void setRecordKeyUsedAsSearchBase(String recordKeyUsedAsSearchBase) {
-    this.recordKeyUsedAsSearchBase = recordKeyUsedAsSearchBase;
-    this.enrichmentProcessorMode = true;
-  }
-
-  public String getRecordKeyUsedAsSearchBase() {
-    return recordKeyUsedAsSearchBase;
-  }
-  
   protected String recordKeySetByExistence = null;
-  
-  public void setRecordKeySetByExistence(String recordKeySetByExistence) {
-    this.recordKeySetByExistence = recordKeySetByExistence;
-    this.enrichmentProcessorMode = true;
-  }
 
-  public String getRecordKeySetByExistence() {
-    return recordKeySetByExistence;
-  }
-  
   protected Map incomingMap;
   
-  public void setIncomingMap(Map incomingMap) {
-    this.incomingMap = incomingMap;
-    this.enrichmentProcessorMode = true;
-  }
-
-  public Map getIncomingMap() {
-    return incomingMap;
-  }
-  
   protected Map outgoingMap;
-  
-  public void setOutgoingMap(Map outgoingMap) {
-    this.outgoingMap = outgoingMap;
-  }
-
-  public Map getOutgoingMap() {
-    return outgoingMap;
-  }
   
   protected String[] outgoingKeys; // derived from outgoingMap bean property
   
@@ -156,26 +119,24 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
 
   protected String valueIfDoesNotExist = "false";
   
-  /********* ported from JNDIEnhancementProcessor END ************/
-  
-  
-  
-  /********* new BEGIN ************/
   private boolean enrichmentProcessorMode = false;
   
   
-  public void setEnrichmentProcessorMode(boolean enhancementProcessorMode) {
-    this.enrichmentProcessorMode = enhancementProcessorMode;
-  }
-  /********* new END ************/
-  
-  
+  /**
+   * Constructor.
+   */
   public NewJNDIReadConnector() {
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param id
+   */
   public NewJNDIReadConnector(String id) {
     super(id);
   }
+   
 
   // BEGIN Bean getters/setters
 
@@ -198,10 +159,45 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     return jndiConnection;
   }
 
-  // END Bean getters/setters
+  public void setRecordKeyUsedAsSearchBase(String recordKeyUsedAsSearchBase) {
+    this.recordKeyUsedAsSearchBase = recordKeyUsedAsSearchBase;
+    this.enrichmentProcessorMode = true;
+  }
 
-  // Public accessors:
+  public String getRecordKeyUsedAsSearchBase() {
+    return recordKeyUsedAsSearchBase;
+  }
+    
+  public void setRecordKeySetByExistence(String recordKeySetByExistence) {
+    this.recordKeySetByExistence = recordKeySetByExistence;
+    this.enrichmentProcessorMode = true;
+  }
 
+  public String getRecordKeySetByExistence() {
+    return recordKeySetByExistence;
+  }
+  
+  public void setIncomingMap(Map incomingMap) {
+    this.incomingMap = incomingMap;
+    this.enrichmentProcessorMode = true;
+  }
+
+  public Map getIncomingMap() {
+    return incomingMap;
+  }
+   
+  public void setOutgoingMap(Map outgoingMap) {
+    this.outgoingMap = outgoingMap;
+  }
+
+  public Map getOutgoingMap() {
+    return outgoingMap;
+  }
+  
+  public void setEnrichmentProcessorMode(boolean enhancementProcessorMode) {
+    this.enrichmentProcessorMode = enhancementProcessorMode;
+  }
+  
   /**
    * Return the dirContext for this reader.
    * <p/>
@@ -212,7 +208,10 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   public DirContext getContext() {
     return _ctxt;
   }
+  
+  // END Bean getters/setters
 
+  
   /**
    * Checks that the mandatory properties have been set
    *
@@ -226,7 +225,6 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     
     if(enrichmentProcessorMode){
       // relied on to allow this class to be subclassed by code that repeats the following with a different reader:
-//      search = reader.getSearch();
 
       // Enforce preconditions:
       if ((incomingMap == null || incomingMap.size() < 1) && (recordKeyUsedAsSearchBase == null)) {
@@ -296,8 +294,6 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
       }
 
       search.setAttributes(attributeNames);
-
-//      connect();
     }
   }
   
@@ -433,8 +429,6 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
     IOrderedMap[] results = null;
     boolean treatMultiValuedAttributesAsArray = search.getTreatMultiValuedAttributesAsArray();
     String joinArraysWithSeparator = search.getJoinArraysWithSeparator();
-//    NamingEnumeration current = search.execute(((JNDIReadConnector) reader).getContext());
-    Object ctx = this.getContext();
     NamingEnumeration current = search.execute(this.getContext());
     ArrayList resultList = new ArrayList();
     while (current.hasMore()) {
