@@ -80,7 +80,7 @@
         <!--<property name="joinArraysWithSeparator" value="\n"/>-->
     </bean>
 
-    <bean id="Reader" class="org.openadaptor.auxil.connector.jndi.JNDIReadConnector">
+    <bean id="Reader" class="org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector">
         <description>Reader that connects to a remote lookup server, performs a search and returns the resulting data.</description>
         <property name="jndiConnection"><ref bean="JNDIConnection"/></property>
         <property name="search"><ref bean="JNDISearch"/></property>
