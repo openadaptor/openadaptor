@@ -37,7 +37,7 @@ import org.jmock.Mock;
 
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.auxil.connector.jndi.JNDISearch;
-import org.openadaptor.auxil.connector.jndi.NewJNDIReadConnector;
+import org.openadaptor.auxil.connector.jndi.JNDIReadConnector;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.auxil.processor.GenericEnrichmentProcessor;
@@ -58,7 +58,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
 
   GenericEnrichmentProcessor processor = new GenericEnrichmentProcessor();
   
-  NewJNDIReadConnector mockReadConnector = new MockNewJNDIReadConnector();
+  JNDIReadConnector mockReadConnector = new MockJNDIReadConnector();
   
   {
     processor.setReadConnector(mockReadConnector);
@@ -521,11 +521,11 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
   /**
    * Inner mock. 
    * The only difference between this and the equivalent in JNDIEnhancementProcessorTestCase
-   * is this extends NewJNDIReadConnector rather than JNDIReadConnector.
+   * is this extends JNDIReadConnector rather than OldJNDIReadConnector.
    */
-  class MockNewJNDIReadConnector extends NewJNDIReadConnector{
+  class MockJNDIReadConnector extends JNDIReadConnector{
     
-    public MockNewJNDIReadConnector() {
+    public MockJNDIReadConnector() {
       mockJNDISearch = mock(JNDISearch.class, "mockJNDISearch");
       mockJNDIConnection = mock(JNDIConnection.class, "mockJNDIConnection");
       setSearch((JNDISearch)mockJNDISearch.proxy());

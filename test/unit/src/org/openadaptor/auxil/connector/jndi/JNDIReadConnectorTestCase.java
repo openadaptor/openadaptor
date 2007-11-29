@@ -27,20 +27,18 @@
 package org.openadaptor.auxil.connector.jndi;
 
 /**
- * Unit tests for {@link NewJNDIReadConnector} and {@link AbstractJNDIReadConnector}.
- * Great part of the {@link NewJNDIReadConnector} functionality were ported from
+ * Unit tests for {@link JNDIReadConnector} and {@link AbstractJNDIReadConnector}.
+ * Great part of the {@link JNDIReadConnector} functionality were ported from
  * the legacy {@link JNDIEnhancementProcessor}. 
  * 
  * @author Kris Lachor
  */
-public class NewJNDIReadConnectorTestCase extends OldJNDIReadConnectorTestCase {
+public class JNDIReadConnectorTestCase extends OldJNDIReadConnectorTestCase {
 
-  
   /**
    * @see junit.framework.TestCase#setUp()
    */
   protected void setUp() throws Exception {
     super.setUp();
   }
-  
 }

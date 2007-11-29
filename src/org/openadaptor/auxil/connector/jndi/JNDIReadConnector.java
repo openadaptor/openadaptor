@@ -72,7 +72,7 @@ and
 + schema: allow explicit statement of which attributes are multi-valued (if missing treat all as multi-valued).
 */
 
-public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements IEnrichmentReadConnector {
+public class JNDIReadConnector extends AbstractJNDIReadConnector implements IEnrichmentReadConnector {
 
   private static final Log log = LogFactory.getLog(OldJNDIReadConnector.class);
 
@@ -125,7 +125,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
   /**
    * Constructor.
    */
-  public NewJNDIReadConnector() {
+  public JNDIReadConnector() {
   }
 
   /**
@@ -133,7 +133,7 @@ public class NewJNDIReadConnector extends AbstractJNDIReadConnector implements I
    * 
    * @param id
    */
-  public NewJNDIReadConnector(String id) {
+  public JNDIReadConnector(String id) {
     super(id);
   }
    
