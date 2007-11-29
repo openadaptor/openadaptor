@@ -63,6 +63,8 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   protected boolean stripEnclosingQuotes = false;
 
   protected boolean addNeededEnclosingQuotes = false;
+  
+  protected boolean forceEnclosingQuotes = false;
 
   protected boolean protectQuotedFields = false;
   
@@ -671,10 +673,11 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   /**
    * Convert an ordered map into a delimited String. <p/>
    * 
-   * If the <code>fieldNames</code> have been provided then use them to get the attribute values from the map. In this
-   * case the order that the fields are output is based on the order of the <code>fieldNames</code>. <p/>
+   * If the <code>fieldNames</code> have been provided then use them to get the attribute values from the map. 
+   * In this case the order that the fields are output is based on the order of the <code>fieldNames</code>. <p/>
    * 
-   * Otherwise, we output all the attributes from the map in the order that they are encountered by the map.get() call.
+   * Otherwise, we output all the attributes from the map in the order that they are encountered by the map.get()
+   * call.
    * <p/>
    * 
    * Fields will be quoted if necessary (ie. if addNeededEnclosingQuotes is set).
@@ -698,19 +701,23 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
     if (fieldNames != null) { // Then just output those fields.
       for (int i = 0; i < fieldNames.length; i++) {
         String fieldName = fieldNames[i];
-        if (map.containsKey(fieldName))
+        if (map.containsKey(fieldName)){
           sb.append(addEnclosingQuotes(map.get(fieldName)));
-        else
+        }
+        else{
           log.warn("map does not contain expected key \'" + fieldName + "\'. value will be empty");
+        }
 
-        if (i < fieldNames.length - 1)
+        if (i < fieldNames.length - 1){
           sb.append(delimiter);
+        }
       }
     } else { // Output every field found.
       for (int i = 0; i < count; i++) {
         sb.append(addEnclosingQuotes(map.get(i)));
-        if (i < count - 1)
+        if (i < count - 1){
           sb.append(delimiter);
+        }
       }
     }
     return sb.toString();
@@ -811,9 +818,13 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   }
 
   /**
-   * Wraps the field in <code>quoteChar</code> if 
-   * <code>addNeededEnclosingQuotes</code> is set to true
-   * and the field contains the delimiter string.
+   * Wraps the field in <code>quoteChar</code> if:
+   * 
+   * <code>addNeededEnclosingQuotes</code> is set to true and the field contains the delimiter string. 
+   * 
+   * or
+   * 
+   * <code>forceEnclosingQuotes</code> is set to true.
    * 
    * @param field
    * 
@@ -822,10 +833,10 @@ public abstract class AbstractDelimitedStringConvertor extends AbstractConvertor
   private Object addEnclosingQuotes(Object field) throws RecordFormatException {
     // #SC11 - No longer check that field is a charSequence (hence no longer throws RecordFormatException if not)
     Object result = field;
-    if (field != null && addNeededEnclosingQuotes) {
+    if (field != null && (addNeededEnclosingQuotes || forceEnclosingQuotes)) {
         String s = (field instanceof String) ? (String) field : field.toString();
 
-        if (s.indexOf(delimiter) >= 0) {
+        if (s.indexOf(delimiter) >= 0 || forceEnclosingQuotes) {
           // It contains the delimiter and this bean has been told to insert quotes.
           if (s.indexOf(quoteChar) >= 0) {
             // Houston, we have a problem -- already contains embedded quote char

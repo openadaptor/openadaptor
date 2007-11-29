@@ -12,7 +12,7 @@ import org.openadaptor.core.exception.RecordException;
 public class OrderedMapToDelimitedStringConvertorTestCase extends TestAbstractDelimitedStringConvertor {
 
 	private OrderedMapToDelimitedStringConvertor convertor;
-	
+	  
 	public void setUp() throws Exception {
     super.setup();
 		convertor = (OrderedMapToDelimitedStringConvertor)testProcessor;
@@ -312,4 +312,36 @@ public class OrderedMapToDelimitedStringConvertorTestCase extends TestAbstractDe
 		assertTrue(result instanceof String);
 		assertEquals("'/ONE'/'T/WO'/'TH//REE'/'FOU/R'/'a/'/'////b'/c/'d/////'", (String)result);
 	}
+    
+    public void testConvertOrderedHashMapForceEnclosingQuotes() {
+        OrderedHashMap map = new OrderedHashMap();
+        map.add("ONE");
+        map.add("TWO");
+        map.add("THREE");
+        convertor.setDelimiter(",");
+        convertor.setForceEnclosingQuotes(true);
+        convertor.setQuoteChar('\"');
+        ArrayList exceptions = new ArrayList();
+        convertor.validate(exceptions);
+        assertEquals("Unexpected validation error", exceptions.size(), 0);
+        Object result = convertor.convert(map);
+        assertTrue(result instanceof String);
+        assertEquals("\"ONE\",\"TWO\",\"THREE\"", (String)result);
+    }
+    
+    public void testConvertOrderedHashMapForceEnclosingQuotes2() {
+      OrderedHashMap map = new OrderedHashMap();
+      map.add("ON,E");
+      map.add("TWO");
+      map.add("THRE,E");
+      convertor.setDelimiter(",");
+      convertor.setForceEnclosingQuotes(true);
+      convertor.setQuoteChar('\"');
+      ArrayList exceptions = new ArrayList();
+      convertor.validate(exceptions);
+      assertEquals("Unexpected validation error", exceptions.size(), 0);
+      Object result = convertor.convert(map);
+      assertTrue(result instanceof String);
+      assertEquals("\"ON,E\",\"TWO\",\"THRE,E\"", (String)result);
+    }
 }

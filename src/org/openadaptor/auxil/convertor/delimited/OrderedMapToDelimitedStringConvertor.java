@@ -61,6 +61,17 @@ public class OrderedMapToDelimitedStringConvertor extends AbstractDelimitedStrin
   public void setAddNeededEnclosingQuotes(boolean addNeededQuotes) {
     addNeededEnclosingQuotes = addNeededQuotes;
   }
+  
+  /**
+   * Optional: whether enclosing quotes should be always output around a field 
+   * (default is <code>false</code> meaning do not add any quotes).
+   * 
+   * @param forceEnclosingQuotes
+   * @see #setAddNeededEnclosingQuotes
+   */
+  public void setForceEnclosingQuotes(boolean forceEnclosingQuotes) {
+    this.forceEnclosingQuotes = forceEnclosingQuotes;
+  }
 
   /**
    * @return true if the elcosing quotes should be added to the field
