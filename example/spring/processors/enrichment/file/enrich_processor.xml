@@ -10,38 +10,32 @@
   <description><![CDATA[ 
   This adaptor does the following...
     
-    * reads input (trade ids) from a file
+    * reads input from a file (trade_ids.txt)
     * converts input into a map
-    * uses an enrichment processor to access more data in db and enrich the input data
+    * uses an enrichment processor to access more data in another file (trades.txt) and enrich the input data
     * converts the resulting ordredmap to xml
     * writes to stdout
     
-  It is designed to illustrate the basic structure of a database based enrichment processor.
+  It is designed to illustrate the basic structure of a file based enrichment processor.
 
   Run it like this...
     
     java org.openadaptor.spring.SpringAdaptor -config enrich_processor.xml
    
+  Node that this example uses a custom file reader (CustomFileReadConnector.java), located in this folder.
+  
   You need the following in your classpath
   
     lib
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
-    
-  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
-  up the server make sure hsqldb.jar is in your class path and run the following...
-  
-    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb  
-    
-  The command needs to be executed from a folder containing Hypersonic script and properties 
-  (hsql.script and hsql.properties) located in example/spring/connectors/db 
-    
+    CustomFileReadConnector.class
+      
   Once the adaptor is running you should see several records echo-ed in XML:
   
-   <?xml version="1.0" encoding="ISO-8859-1"?>
-   <record><TradeId>1</TradeId><QUANTITY>1000000</QUANTITY><PRICE>3.25</PRICE><BUYSELL>B</BUYSELL></record>
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <record><TradeId>1</TradeId><BuyOrSell>'B'</BuyOrSell><Price>3.25</Price><Quantity>1000000</Quantity></record>
    ...
   ]]></description>
 
@@ -72,28 +66,13 @@
 		</list>
      </property>
   </bean>
-  
-  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
-    <description>This defines jdbc connection.</description>
-    <property name="driver" value="org.hsqldb.jdbcDriver"/>
-    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
-    <property name="username" value="sa"/>
-    <property name="password" value=""/>
-  </bean>
 
-  <bean id="DBReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
-    <property name="jdbcConnection" ref="JdbcConnection"/>
-    <property name="sql">
-      <value>
-        SELECT BuySell, Qty as Quantity, Price
-        FROM TRADE 
-        WHERE TradeId = ?
-      </value>
-    </property>
+  <bean id="FileReader" class="CustomFileReadConnector">
+    <property name="filename" value="input/trades.txt"/>
   </bean>
   
   <bean id="EnrichmentProcessor" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
-     <property name="readConnector" ref="DBReader"/>
+     <property name="readConnector" ref="FileReader"/>
   </bean>
   
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
