@@ -74,8 +74,11 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   
   protected String sql;
   
-  /* Derived from <code>sql</code> by replacing paramter placeholders with concrete values*/
+  /* Internal state. Derived from <code>sql</code> by replacing paramter placeholders with concrete values*/
   protected String postSubstitutionSql;
+  
+  /* Internal state */
+  private boolean enrichmentMode = false;
   
   protected Statement statement = null;
   
@@ -171,7 +174,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   public Object[] next(long timeoutMs) throws OAException {
     log.info("Call for next record(s)");
     try {
-      if (rs == null) {
+      if (rs == null || enrichmentMode) {
         /* If a callable statement's been set, ignore the sql and the statement */
         if(callableStatement != null){
           rs = callableStatement.executeQuery(); 
@@ -210,6 +213,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    * depending on which one is set).
    */  
   public void setQueryParameters(IOrderedMap inputParameters) {    
+    enrichmentMode = true;
     if(inputParameters == null){
       log.info("No input parameters for enrichment call");
       return;

@@ -49,7 +49,7 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
 
   private InputStream inputStream;
 
-  private IDataReader dataReader;
+  protected IDataReader dataReader;
 
   private boolean isDry = false;
 
