@@ -45,8 +45,12 @@ Minor changes
   * ServletContainer.setJettyServer(Server server) was nonsensical. Fixed.
   
   * Modified ScriptProcessor to allow returned arrays, adding a boxReturnedArrays property.
-    boxReturnedArrays (default false) can be set to true to force legacy behaviour. 
+    boxReturnedArrays (default false) can be set to true to force legacy behaviour.  
 
+  * Modified ScriptProcessor to allow specification of a Map of additional bindings. The
+    entries in the Map will be used to bind names to object values, which may then be
+    referenced within the script by those bound names.
+    
 Bug Fixes
 =========
 

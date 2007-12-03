@@ -29,7 +29,9 @@ package org.openadaptor.auxil.processor.script;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -71,6 +73,8 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected boolean compile = true;
   protected Object lastResult = null;
   protected String dataBinding = DEFAULT_DATA_BINDING;
+  //This allows additional bindings
+  protected Map additionalBindings=null;
 
   //Mechanism by which Objects are cloned.
   //This is due to change when a more general-purpose 
@@ -120,8 +124,22 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public void setBoxReturnedArrays(boolean boxReturnedArrays) {
     this.boxReturnedArrays=boxReturnedArrays;
   }
+  
+  /**
+   * This allows additional bindings, specified in the supplied map.
+   * <br>
+   * For example, it may include a reference to some other bean within
+   * the adaptor.
+   * <br>
+   * One trivial usage might be to maintain simple state information
+   * in some other object.
+   * @param bindingMap Map of name to Object mappings.
+   */
+  public void setAdditionalBindings(Map bindingMap) {
+    this.additionalBindings=bindingMap;
+  }
 
-
+ 
   /**
    * This holds the last result from script execution.
    * 
@@ -311,6 +329,32 @@ public class ScriptProcessor extends Component implements IDataProcessor {
         String failMsg="Failed to compile script, " + e.getMessage();
         log.warn(failMsg);
         throw new ValidationException(failMsg, e, this);
+      }
+    }
+    //Apply extra bindings, if any.
+    applyBindings(scriptEngine,additionalBindings);
+  }
+  
+  /**
+   * This will attempt to bind named objects into the ScriptEngine.
+   * <br>
+   * The key of each Map.Entry will be used as the bound name within
+   * the engine.
+   * The value object will be bound to that name withing the engine.
+   * @param engine ScriptEngine to apply bindings in.
+   * @param bindings Map of name to Object pairings
+   */
+  private void applyBindings(ScriptEngine engine, Map bindings) {
+    if (bindings!=null) {
+      log.info("Applying additionalBindings");
+      Iterator it=bindings.keySet().iterator();
+      while (it.hasNext()) { 
+        Object key=it.next();
+        Object value=bindings.get(key);
+        engine.put(key.toString(), value);
+        if (log.isDebugEnabled()) {
+          log.debug("Binding "+key.toString()+" -> "+ value);
+        }
       }
     }
   }
