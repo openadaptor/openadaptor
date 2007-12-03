@@ -211,8 +211,12 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   
   
   /**
-   * Sets parameters passed by ehnacement processor on the statement (or callableStatement,
-   * depending on which one is set).
+   * Sets input parameters on the SQL query with parameter placeholders.
+   * Then calls #next(long).
+   * 
+   * @see #next(long)
+   * @see #setParametersForQuery(IOrderedMap)
+   * @return Object[] array of objects from resultset
    */  
   public Object[] next(IOrderedMap inputParameters, long timeout) {    
     enrichmentMode = true;
@@ -228,6 +232,9 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
   
   /**
+   * Replaces parameters placeholders in <code>sql</code>, with concrete values
+   * from <code>inputParameters</code>. 
+   * 
    * @see JDBCReadConnector#next(IOrderedMap, long)
    */
   protected void setParametersForQuery(IOrderedMap inputParameters){
