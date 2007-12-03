@@ -67,6 +67,8 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
+ 
+  private static final String DEFAULT_PARAMETER_PLACEHOLDER = "?";
   
   private JDBCConnection jdbcConnection;
   
@@ -229,17 +231,18 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    * @see JDBCReadConnector#next(IOrderedMap, long)
    */
   protected void setParametersForQuery(IOrderedMap inputParameters){
-    if(inputParameters==null){
+    if(inputParameters==null || sql.indexOf(DEFAULT_PARAMETER_PLACEHOLDER)==-1){
       return;
     }
+    postSubstitutionSql = sql;
     for(int i=1; i<=inputParameters.size(); i++){
       Object value = inputParameters.get(i-1);
-      int index = sql.indexOf("?");
+      int index = postSubstitutionSql.indexOf(DEFAULT_PARAMETER_PLACEHOLDER);
       if(index != -1){
         StringBuffer newSql = new StringBuffer();
-        newSql.append(sql.substring(0, index));
+        newSql.append(postSubstitutionSql.substring(0, index));
         newSql.append(value);
-        newSql.append(sql.substring(index + 1));
+        newSql.append(postSubstitutionSql.substring(index + 1));
         postSubstitutionSql = newSql.toString();
       }
     }    

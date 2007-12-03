@@ -412,9 +412,24 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
   
   /**
    * Test for {@link JDBCReadConnector#next(org.openadaptor.auxil.orderedmap.IOrderedMap, long)}
+   * More placeholders than params.
+   */
+  public void testSetParametersForQuery4(){
+    IOrderedMap inputParams = new OrderedHashMap();
+    inputParams.put("param1", "1");
+    inputParams.put("param2", "2");
+    String sql = "SELECT a FROM TABLE1 WHERE a=? AND b=?";
+    jdbcReadConnector.setSql(sql);
+    jdbcReadConnector.setParametersForQuery(inputParams);
+    assertEquals(jdbcReadConnector.sql, sql);
+    assertEquals(jdbcReadConnector.postSubstitutionSql, "SELECT a FROM TABLE1 WHERE a=1 AND b=2");
+  }
+  
+  /**
+   * Test for {@link JDBCReadConnector#next(org.openadaptor.auxil.orderedmap.IOrderedMap, long)}
    * Null input params;
    */
-  public void testsetParametersForQuery4(){
+  public void testsetParametersForQuery5(){
     String sql = "SELECT a FROM TABLE1 WHERE a=?";
     jdbcReadConnector.setSql(sql);
     jdbcReadConnector.setParametersForQuery(null);
