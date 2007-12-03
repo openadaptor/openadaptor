@@ -12,8 +12,8 @@
     
     * reads input from a file (trade_ids.txt)
     * converts input into a map
-    * uses an enrichment processor to get more data from another file (trades.txt) and use it toenrich the input data
-    * converts the resulting ordredmap to xml
+    * uses a file enrichment processor to enrich the input data with data from trades.txt
+    * converts the resulting orderedmap to xml
     * writes to stdout
     
   It is designed to illustrate the basic structure of a file based enrichment processor.

@@ -21,7 +21,7 @@ public class CustomFileReadConnector extends FileReadConnector implements IEnric
    * @see IReadConnector#next(long)
    */
   public Object[] next(IOrderedMap inputParameters, long timeoutMs) {
-    String [] fields = null;
+    String [] fields = new String[0];
     boolean found = false;
     String tradeId = (String) inputParameters.get(0);
     
@@ -48,6 +48,11 @@ public class CustomFileReadConnector extends FileReadConnector implements IEnric
     for(int i=0; i<fields.length; i++){
       fieldsOM.put(FIELD_NAMES[i], fields[i]);
     }
+    
+    /* By closing and reopening the input file, reset the input stream to the beginning of the file */
+    disconnect();
+    connect();
+ 
     return new Object[]{fieldsOM};
   }
   
