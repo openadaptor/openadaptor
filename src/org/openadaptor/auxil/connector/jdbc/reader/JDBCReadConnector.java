@@ -212,29 +212,37 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    * Sets parameters passed by ehnacement processor on the statement (or callableStatement,
    * depending on which one is set).
    */  
-  public void setQueryParameters(IOrderedMap inputParameters) {    
+  public Object[] next(IOrderedMap inputParameters, long timeout) {    
     enrichmentMode = true;
-    if(inputParameters == null){
-      log.info("No input parameters for enrichment call");
-      return;
+    if(inputParameters != null){
+      for(int i=1; i<=inputParameters.size(); i++){
+        setParametersForQuery(inputParameters);
+      }     
     }
-    for(int i=1; i<=inputParameters.size(); i++){
-      parametriseEnrichmentQuery(i, inputParameters.get(i-1));
-    }    
+    else{     
+      log.info("No input parameters for enrichment call");
+    }
+    return next(timeout);
   }
   
   /**
-   * @see JDBCReadConnector#setQueryParameters(IOrderedMap)
+   * @see JDBCReadConnector#next(IOrderedMap, long)
    */
-  private void parametriseEnrichmentQuery(int parameterIndex, Object value){
-    int index = sql.indexOf("?");
-    if(index != -1){
-      StringBuffer newSql = new StringBuffer();
-      newSql.append(sql.substring(0, index));
-      newSql.append(value);
-      newSql.append(sql.substring(index + 1));
-      postSubstitutionSql = newSql.toString();
+  protected void setParametersForQuery(IOrderedMap inputParameters){
+    if(inputParameters==null){
+      return;
     }
+    for(int i=1; i<=inputParameters.size(); i++){
+      Object value = inputParameters.get(i-1);
+      int index = sql.indexOf("?");
+      if(index != -1){
+        StringBuffer newSql = new StringBuffer();
+        newSql.append(sql.substring(0, index));
+        newSql.append(value);
+        newSql.append(sql.substring(index + 1));
+        postSubstitutionSql = newSql.toString();
+      }
+    }    
   }
 
   /**

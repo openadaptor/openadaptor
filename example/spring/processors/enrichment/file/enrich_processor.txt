@@ -12,7 +12,7 @@
     
     * reads input from a file (trade_ids.txt)
     * converts input into a map
-    * uses an enrichment processor to access more data in another file (trades.txt) and enrich the input data
+    * uses an enrichment processor to get more data from another file (trades.txt) and use it toenrich the input data
     * converts the resulting ordredmap to xml
     * writes to stdout
     
@@ -76,7 +76,7 @@
   </bean>
   
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="record"/>
+    <property name="rootElementTag" value="trade"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>

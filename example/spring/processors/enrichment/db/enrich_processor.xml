@@ -12,8 +12,8 @@
     
     * reads input (trade ids) from a file
     * converts input into a map
-    * uses an enrichment processor to access more data in db and enrich the input data
-    * converts the resulting ordredmap to xml
+    * uses an enrichment processor to get more data from a db and use it to enrich the input data
+    * converts the resulting ordereddmap to xml
     * writes to stdout
     
   It is designed to illustrate the basic structure of a database based enrichment processor.
@@ -97,7 +97,7 @@
   </bean>
   
   <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="record"/>
+    <property name="rootElementTag" value="trade"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>

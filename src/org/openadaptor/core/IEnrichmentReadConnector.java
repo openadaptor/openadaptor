@@ -40,15 +40,17 @@ import org.openadaptor.core.exception.ConnectionException;
 public interface IEnrichmentReadConnector extends IReadConnector {
   
   /**
-   * Modifies the query to the underlying resource to use additional parameters. 
+   * Queries the underlying resource using additional parameters. 
    * Exceptions should be thrown as RuntimeExceptions.
    * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
    * @param inputParameters that this connector can use to adjust the query to the underlying
    *        resource
+   * @param timeout TODO
+   * @return TODO
    * @see IReadConnector#next(long)
    * @see IEnrichmentProcessor
    */
-   void setQueryParameters(IOrderedMap inputParameters);
+   Object[] next(IOrderedMap inputParameters, long timeout);
 
 }

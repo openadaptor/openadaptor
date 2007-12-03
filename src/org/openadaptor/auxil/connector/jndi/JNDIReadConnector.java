@@ -544,9 +544,10 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector implements IEnr
   /**
    * Sets parameters for customisation of the query.
    * 
-   * @see IEnrichmentReadConnector#setQueryParameters(IOrderedMap)
+   * @see IEnrichmentReadConnector#next(IOrderedMap, long)
    */
-  public void setQueryParameters(IOrderedMap inputParameters) {
+  public Object[] next(IOrderedMap inputParameters, long timeout) {
     this.inputParameters = inputParameters;
+    return next(timeout);
   }
 }

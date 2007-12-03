@@ -149,15 +149,14 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
     if(parameters == null){
       log.warn("No parameters for reader");
     }
-    readConnector.setQueryParameters(parameters);
     if (log.isDebugEnabled()) {
-      log.debug("Set parameters on the reader, calling for data...");
+      log.debug("Calling for enrichment data...");
     }
-    Object [] additionalData = readConnector.next(readerTimeoutMs);
+    Object [] enrichmentData = readConnector.next(parameters, readerTimeoutMs);
     if (log.isDebugEnabled()) {
-      log.debug("Reader returned: " + additionalData + ". Calling enricher...");
+      log.debug("Reader returned: " + enrichmentData + ". Calling enricher...");
     }
-    Object [] outputs = enrichmentProcessor.enrich((IOrderedMap)record, additionalData);
+    Object [] outputs = enrichmentProcessor.enrich((IOrderedMap)record, enrichmentData);
     return outputs;
   }
   

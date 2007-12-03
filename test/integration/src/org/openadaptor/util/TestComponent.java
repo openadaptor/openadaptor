@@ -87,7 +87,9 @@ public class TestComponent {
    * An enrichment read connector based on TestReadConnector.
    */
   public static class TestEnrichmentReadConnector extends TestReadConnector implements IEnrichmentReadConnector{
-    public void setQueryParameters(IOrderedMap inputParameters) {}
+    public Object[] next(IOrderedMap inputParameters, long timeout) {
+      return next(timeout);
+    }
   }
   
   
