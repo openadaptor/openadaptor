@@ -43,6 +43,9 @@ Minor changes
     legacy adaptors behaviour)
    
   * ServletContainer.setJettyServer(Server server) was nonsensical. Fixed.
+  
+  * Modified ScriptProcessor to allow returned arrays, adding a boxReturnedArrays property.
+    boxReturnedArrays (default false) can be set to true to force legacy behaviour. 
 
 Bug Fixes
 =========

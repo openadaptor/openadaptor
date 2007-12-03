@@ -71,12 +71,24 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected boolean compile = true;
   protected Object lastResult = null;
   protected String dataBinding = DEFAULT_DATA_BINDING;
-  
+
   //Mechanism by which Objects are cloned.
   //This is due to change when a more general-purpose 
   //cloning strategy has been devised
   //ToDo: Remove this (promote to Router or similar)
   private ObjectCloner cloner=new ObjectCloner();
+
+  /**
+   * If true, then converted values will always be wrapped
+   * in an enclosing Object[], even if the result is already
+   * an array.
+   * The default value for this have been changed (after 3.3)
+   * to false.
+   * Note: Individual subclasses may well override this default
+   * for their own purposes.
+   * 
+   */
+  protected boolean boxReturnedArrays = false;
 
   public ScriptProcessor() {
     super();
@@ -97,7 +109,19 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     this.dataBinding = dataBinding;
   }
 
-  
+  /**
+   * Flag to wrap returned Arrays in an enclosing Object[].
+   * If true, converted result will be wrapped in an Object[]
+   * even if it is already an array.
+   * Note: The default behaviour has been changed from true to
+   * false after release 3.3
+   * @param boxReturnedArrays
+   */
+  public void setBoxReturnedArrays(boolean boxReturnedArrays) {
+    this.boxReturnedArrays=boxReturnedArrays;
+  }
+
+
   /**
    * This holds the last result from script execution.
    * 
@@ -126,7 +150,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public void setScript(String script) {
     this.script = script;
   }
-  
+
   /**
    * Set the name of a file which contains the script to run.
    * <br>
@@ -182,12 +206,21 @@ public class ScriptProcessor extends Component implements IDataProcessor {
       } else {
         if (script != null) {
           lastResult = scriptEngine.eval(script);
-        } else {
+        } 
+        else {
           lastResult = scriptEngine.eval(new FileReader(scriptFilename));
         }
       }
       data = scriptEngine.get(dataBinding);
-      return data != null ? new Object[] {data} : new Object[0];
+      if (data==null) {
+        data=new Object[] {};
+      }
+      else {
+        if (boxReturnedArrays || (!(data instanceof Object[]))){
+          data = new Object[] { data }; //Wrap it in an Object array.
+        }
+      }
+      return (Object[])data;
     } catch (ScriptException e) {
       throw new ProcessingException("failed to compile script, " + e.getMessage()
           + " line " + e.getLineNumber() + " col " + e.getColumnNumber(), e, this);
@@ -236,7 +269,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
       }
     }
   }
-  
+
   /**
    * create a ScriptEngine.
    * <br>
