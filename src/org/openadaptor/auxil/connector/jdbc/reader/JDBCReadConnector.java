@@ -242,15 +242,19 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       return;
     }
     postSubstitutionSql = sql;
-    for(int i=1; i<=inputParameters.size(); i++){
-      Object value = inputParameters.get(i-1);
+    for(int i=0; i<inputParameters.size(); i++){
+      Object value = inputParameters.get(i);
       int index = postSubstitutionSql.indexOf(DEFAULT_PARAMETER_PLACEHOLDER);
       if(index != -1){
-        StringBuffer newSql = new StringBuffer();
-        newSql.append(postSubstitutionSql.substring(0, index));
-        newSql.append(value);
-        newSql.append(postSubstitutionSql.substring(index + 1));
-        postSubstitutionSql = newSql.toString();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(postSubstitutionSql.substring(0, index));
+        buffer.append(value);
+        buffer.append(postSubstitutionSql.substring(index + 1));
+        postSubstitutionSql = buffer.toString();
+      }
+      else{
+        log.warn("Insufficient parameter placeholders for input parameters.");
+        break;
       }
     }    
   }
