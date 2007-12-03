@@ -10,10 +10,7 @@ import org.openadaptor.core.exception.ConnectionException;
 /**
  * A custom file reader, based on FileReadConnector.
  */
-public class CustomFileReadConnector extends FileReadConnector implements
-    IEnrichmentReadConnector {
-
-  private String tradeId;
+public class CustomFileReadConnector extends FileReadConnector implements IEnrichmentReadConnector {
   
   private static String [] FIELD_NAMES = new String[]{"TradeId", "BuyOrSell", "Quantity", "Price"};
   
@@ -23,9 +20,10 @@ public class CustomFileReadConnector extends FileReadConnector implements
    * 
    * @see IReadConnector#next(long)
    */
-  public Object[] next(long timeoutMs) {
+  public Object[] next(IOrderedMap inputParameters, long timeoutMs) {
     String [] fields = null;
     boolean found = false;
+    String tradeId = (String) inputParameters.get(0);
     
     /* Find the relevant record */
     try {
@@ -53,12 +51,4 @@ public class CustomFileReadConnector extends FileReadConnector implements
     return new Object[]{fieldsOM};
   }
   
-  /**
-   * Sets the tradeId from input parameters.
-   * 
-   * @see IEnrichmentReadConnector#setQueryParameters(IOrderedMap)
-   */
-  public void setQueryParameters(IOrderedMap inputParameters) {
-     tradeId = (String) inputParameters.get(0);
-  }
 }

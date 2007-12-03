@@ -336,6 +336,7 @@
         <exclude name="**/input/*"/>
         <exclude name="**/output/*"/>
         <exclude name="**/mq_*.xml"/>
+        <exclude name="**/file/enrich_*.xml"/>
       </fileset>
     </springcheck>
   </target>
