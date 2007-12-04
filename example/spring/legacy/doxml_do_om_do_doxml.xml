@@ -72,7 +72,7 @@
 
  <bean id="do_om" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
 
- <bean id="om_proto-do" class="org.openadaptor.legacy.convertor.dataobjects.TemplatedOrderedMapToDataObjectConvertor">
+ <bean id="om_proto-do" class="org.openadaptor.legacy.convertor.dataobjects.OrderedMapToDataObjectConvertor">
   <property name="templateDOXmlFilename" value="input/bike_multi-doxml.txt" />
  </bean>
 

@@ -58,8 +58,8 @@ import org.openadaptor.util.DateTimeHolder;
  * 
  * @author Eddy Higgins
  */
-public class TemplatedOrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
-  private static final Log log = LogFactory.getLog(TemplatedOrderedMapToDataObjectConvertor.class);
+public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
+  private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
 
   private DOXmlToDataObjectConvertor templateConvertor=new DOXmlToDataObjectConvertor();
 

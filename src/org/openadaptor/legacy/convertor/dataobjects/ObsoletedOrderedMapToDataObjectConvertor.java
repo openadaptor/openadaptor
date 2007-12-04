@@ -86,6 +86,7 @@ import org.openadaptor.util.DateTimeHolder;
  * <br>
  * 
  * @author Eddy Higgins
+ * @deprecated - in favour of OrderedMapToDataObjectConvertor (template based).
  */
 public class ObsoletedOrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
   private static final Log log = LogFactory.getLog(ObsoletedOrderedMapToDataObjectConvertor.class);
