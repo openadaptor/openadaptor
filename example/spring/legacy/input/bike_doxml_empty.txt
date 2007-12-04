@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<dataobjectmessage version="1.0">
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DOMessageWrapper__">
+   <AttributeDef Name="data" Datatype="Bike"/>
+   <AttributeDef Name="UniqueID" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="Bike"/>
+    <AttributeDef Name="Manufacturer" Datatype="ManType"/>
+    <AttributeDef Name="Model" Datatype="ModelType"/>
+    <AttributeDef Name="Price" Datatype="Double"/>
+    <AttributeDef Name="Registered" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+ 
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="ManType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Country" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+<metadata type="NDCD" version="1.0">
+  <ElementDef Name="ModelType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Capacity" Datatype="Int64"/>
+    <AttributeDef Name="DateRange" Datatype="DateRangeType"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DateRangeType"/>
+    <AttributeDef Name="From" Datatype="Date"/>
+    <AttributeDef Name="To" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+ <dataobjects type="basicdo" version="1.0">
+   <DOMessageWrapper__>
+   <Row>
+    <data>
+     <Bike>     
+     <Row>
+     </Row>                 
+    </Bike>
+   </data>
+  </Row>   
+  </DOMessageWrapper__>
+ 
+ </dataobjects>
+</dataobjectmessage>
+
+
+
