@@ -87,8 +87,8 @@ import org.openadaptor.util.DateTimeHolder;
  * 
  * @author Eddy Higgins
  */
-public class OrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
-  private static final Log log = LogFactory.getLog(OrderedMapToDataObjectConvertor.class);
+public class ObsoletedOrderedMapToDataObjectConvertor extends AbstractLegacyConvertor {
+  private static final Log log = LogFactory.getLog(ObsoletedOrderedMapToDataObjectConvertor.class);
   private static final char SEP='.'; //Separator for path entries in hierarchy.
   private boolean debug=log.isDebugEnabled(); //cache debug setting.
 

@@ -24,7 +24,7 @@
   This is available from http://www.openadaptor.org. 
   Ensure that the that the classpath:
   (1) does not include openadaptor-stub.jar
-  (2) has legacy openadaptor.jar is at the *end* of your classpath.
+  (2) has legacy openadaptor.jar  at the *end* of its classpath.
     
   You need the following in your classpath
   
