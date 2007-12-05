@@ -183,7 +183,11 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
         }
         else{
           /* postSubstitutionSql takes precedence over sql */
-          rs = statement.executeQuery(postSubstitutionSql==null ? sql : postSubstitutionSql);
+          String sqlForExecution=postSubstitutionSql==null ? sql : postSubstitutionSql;
+          if (log.isDebugEnabled()) {
+            log.debug("SQL: "+sqlForExecution);
+          }
+          rs = statement.executeQuery(sqlForExecution);
         }
       }
       Object [] data = null;
