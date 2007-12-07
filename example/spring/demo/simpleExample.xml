@@ -14,11 +14,11 @@
     * applies a simple filter to records
     * outputs to stdout
     
-  It is designed to illustrate a simple use of a JavascriptFilterProcessor
+  It is designed to illustrate a simple adaptor.
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config JavascriptFilter.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config simpleExample.xml -bean Adaptor
     
   You need the following in your classpath
   
@@ -26,18 +26,9 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    
-  writes to stdout
   ]]></description>
   
   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
-    <description>
-      This adaptor is designed to illustrate a simple use of a JavascriptFilterProcessor
-        * reads all data in input/delim.txt
-        * converts to ordered
-        * applies a simple filter
-        * outputs to stdout
-    </description>
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <property name="processors">
@@ -56,9 +47,9 @@
   </bean>
   
   <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <property name="rootElementTag" value="User"/>
+    <property name="rootElementTag" value="Trade"/>
   </bean>
   
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
-  
+   
 </beans>  

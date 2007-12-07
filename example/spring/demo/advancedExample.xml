@@ -41,14 +41,18 @@
     </description>
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
-        <property name="processors">
-          <list>
-            <ref bean="reader"/>
-            <ref bean="orderedmap"/>
-            <ref bean="jsFilter"/>
-            <ref bean="dbBasedEnhancer"/>
-            <ref bean="writer"/>
-          </list>
+        <property name="processMap">
+          <map>
+			<entry key-ref="reader" value-ref="orderedmap" />
+			<entry key-ref="orderedmap" value-ref="jsFilter" />
+			<entry key-ref="jsFilter" value-ref="dbBasedEnhancer" />
+			<entry key-ref="dbBasedEnhancer">
+				<list>
+					<ref bean="writer" />
+					<ref bean="jmsPublisher" />
+				</list>
+			</entry>
+		  </map>
         </property>
         <property name="exceptionProcessor" ref="exceptionWriter"/>
       </bean>
@@ -66,7 +70,6 @@
             <value>username</value>
             <value>fullname</value>
             <value>uniqueid</value>
-            <value>dob</value>
         </list>
     </property>
   </bean>
@@ -74,9 +77,9 @@
   <bean id="jsFilter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
     <description>
       Simple use of a JavascriptFilterProcessor. 
-      Filter will discard any records with a fullname field starting with 'Terry'
+      Filter will discard any records with a fullname field starting with 'Michael'
     </description>
-    <property name="script" value="record.get('fullname').indexOf('Terry') ==0"/>
+    <property name="script" value="record.get('fullname').indexOf('Michael') ==0"/>
   </bean>
   
   <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
@@ -102,6 +105,22 @@
   <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
      <property name="readConnector" ref="dbReader"/>
      <property name="parameterNames" value="uniqueid"/>
+  </bean>
+  
+  <bean id="jndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="jmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="jndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="jmsPublisher" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="jmsConnection"/>
+    <property name="transacted" value="true"/>
   </bean>
   
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
