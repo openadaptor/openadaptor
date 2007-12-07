@@ -85,19 +85,16 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
     }
     /* or add enrichment data as next element to input */
     else{    
-       result = new Object[enrichmentData.length];
-       for(int i=0; i<enrichmentData.length; i++){
-         result[i]=enrichmentData[i];
-       }
-       
-       if(input instanceof IOrderedMap && enrichmentData.length == 1){
-         Object additionalDataObj = enrichmentData[0];
-         if(additionalDataObj instanceof IOrderedMap){
-           Map additionalDataMap = (Map) additionalDataObj;
-           ((Map)input).putAll(additionalDataMap);
-           result = new Object[]{input};
-         }
-       }    
+      if(input instanceof OrderedHashMap){
+        result = new Object[enrichmentData.length];
+        for(int i=0; i<enrichmentData.length; i++){
+          result[i]=((OrderedHashMap)input).clone();   
+          ((Map)result[i]).putAll((Map)enrichmentData[i]);
+        }
+      }
+      else{
+        result = enrichmentData; 
+      }  
     }
     return result;
   }

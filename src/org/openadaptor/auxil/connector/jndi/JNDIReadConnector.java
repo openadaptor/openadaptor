@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.jndi;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.exception.*;
 
@@ -310,7 +311,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector implements IEnr
 
         // So simply pass original data through un-enhanced:
         result = new IOrderedMap[1];
-        result[0] = (IOrderedMap) orderedMap.clone();
+        result[0] = new OrderedHashMap();
 
         // And set existence flag to does not exist:
         if (recordKeySetByExistence != null) {
@@ -321,7 +322,7 @@ public class JNDIReadConnector extends AbstractJNDIReadConnector implements IEnr
         log.debug("Enrichment search returned " + size + " results");
         result = new IOrderedMap[size];
         for (int i = 0; i < size; i++) {
-          IOrderedMap outgoing = (IOrderedMap) orderedMap.clone();
+          IOrderedMap outgoing = new OrderedHashMap();
 
           // Enrich outgoing record according to outgoingMap:
           if (outgoingMap != null && outgoingMap.size() > 0) {
