@@ -90,6 +90,17 @@ Minor changes
     entries in the Map will be used to bind names to object values, which may then be
     referenced within the script by those bound names.
     
+  * Modified OrderedMapToDelimitedStringConvertor to allow for enclosing quotes to always 
+    be output around the field (default false). This can be done by adding 
+    a forceEnclosingQuotes property to true.  
+    
+  * JDBCConnection modified to allow for getting java.sql.Connection from a DataSource 
+    looked up in the JNDI tree. This is done by setting dataSourceName and jndiConnection
+    properties. Folder openadaptor\example\spring\connectors\db\jee\jboss\ contains an
+    example.
+  
+  *  
+    
 Bug Fixes
 =========
 
