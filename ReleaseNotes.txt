@@ -15,6 +15,45 @@ Summary
 
 TBD
 
+
+Processors
+==========
+
+A new component type - an enrichment processor - has been been added. Primary 
+goal of an enrichment processor is to 'enrich' its input with more data from an
+external resource. Standard read connectors are used to connect to and retrieve data 
+from external resources.
+
+* IEnrichmentProcessor represents a new type of component, on a par with IReadConnector, 
+  IDataProcessor and IWriteConnector
+
+* An enrichment processor needs to be able to a) prepare query parameters for 
+  the underlying read connector, b) to interprete the results from the underlying 
+  read connector and use them to 'enrich' the input data
+
+* IEnrichmentReadConnector extends IReadConnector and represents a read connector 
+  that can be plugged-in to an enrichment processor. IEnrichmentReadConnector requires 
+  implementation of the next() method that accepts input parameters as an argument. 
+  Some of the existing IReadConnectors were already altered to extend IEnrichmentReadConnector
+
+* GenericEnrichmentProcessor is a generic implementation of an enrichment processor 
+
+* JNDIEnhancementProcessor has been depricated by GenericEnrichmentProcessor 
+
+* Spring examples of a db based and file based enrichment processors are 
+  in example\spring\processors\enrichment\* 
+
+|------------------------------------------------------------------------------|
+|        OA 3.3                  |            OA 3.3.1                         |    
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|JNDIEnhancementProcessor        | GenericEnrichmentProcessor                  |  
+|(depricated)                    | (JNDI specific properties from              |
+|                                | JNDIEnhancementProcessor should now be      | 
+|                                | set on JNDIReadConnector)                   |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+
 Minor changes
 =============
 
