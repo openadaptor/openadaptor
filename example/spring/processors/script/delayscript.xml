@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: javascript.xml 875 2007-10-01 13:46:52Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/script/javascript.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This (contrived) adaptor does the following...
+    
+    * reads lines from stdin
+    * delays for 1000ms
+    * writes to stdout
+    
+    Run with:  
+    java org.openadaptor.spring.SpringAdaptor -config delayscript.xml
+    
+  Initialise classpath with the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will wait for command line input
+    
+  type something like this...
+    
+    hello
+    
+    it should then delay for a second, and output the same data.
+   
+    hello    
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+      This is the bean that actually gets run.
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="ScriptDelayProcessor"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="ScriptDelayProcessor" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Delay processing for 1000ms (one second)</description>
+    <property name="script" value="java.lang.Thread.sleep(1000);"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
