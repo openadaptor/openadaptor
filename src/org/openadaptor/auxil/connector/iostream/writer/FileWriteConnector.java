@@ -100,4 +100,11 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     }
   }
 
+  /**
+   * @return the filename
+   */
+  public String getFilename() {
+    return filename;
+  }
+
 }
