@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.http;
 
@@ -91,8 +91,8 @@ public class ReadConnectorServlet extends ServletServingReadConnector {
    * registers servlet
    */
   public void connect() {
+    log.debug("Creating HttpServlet");
     Servlet servlet = new HttpServlet() {
-
       private static final long serialVersionUID = 1L;
 
       protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -133,7 +133,7 @@ public class ReadConnectorServlet extends ServletServingReadConnector {
         log.debug(name + "=" + value);
       }
     }
-    
+
     // single param configuration - queues string value
     if (parameterNames.length == 1) {
       String data = request.getParameter(parameterNames[0]);
@@ -164,7 +164,7 @@ public class ReadConnectorServlet extends ServletServingReadConnector {
         writeErrorNoThrow(response, msg);
       }
     } 
-    
+
     // no param configuration - queues map of all request parameters
     else {
       Map map = new HashMap();

@@ -55,9 +55,30 @@
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
   
   <bean id="ScriptDelayProcessor" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
-    <description>Delay processing for 1000ms (one second)</description>
-    <property name="script" value="java.lang.Thread.sleep(1000);"/>
+    <description>1000ms minimum interval Throttling</description>
+    <property name="additionalBindings">
+    <map>
+     <entry key="ts" value-ref="tsBean"/>
+     <entry key="frame"><bean class="org.openadaptor.util.beans.InspectorBean"/></entry>
+    </map>
+    </property>
+    <property name="script">
+    <value>
+     frame.setText(oa_data);
+     var last=ts.getValue();
+     var due=ts.getValue()+1000;
+     var now=java.lang.System.currentTimeMillis();
+     var interval=due-now;
+     
+     if (interval>0) {
+      java.lang.Thread.sleep(interval);
+     }
+     ts.setValue(java.lang.System.currentTimeMillis());
+    </value>
+    </property>
   </bean>
+  
+  <bean id="tsBean" class="org.openadaptor.util.beans.TimestampBean"/>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   

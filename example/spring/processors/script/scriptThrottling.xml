@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id: javascript.xml 875 2007-10-01 13:46:52Z lachork $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/script/javascript.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[
+  Sample use of a script processor to effect (crude!) throttling on messages.
+    
+    * reads lines from stdin
+    * ensures there is a miminum delay (1000ms) between messages.
+    * writes to stdout
+
+  Assuming classpath has been initialised with the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  Run with:  
+    java org.openadaptor.spring.SpringAdaptor -config scriptThrottling.xml
+ 
+  When executing, each line of input (from the console) will be
+  echoed on output, but with a minumum delay of 1000ms between output 
+  records.
+     
+
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <description>This is the bean that actually gets run.</description>
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="ScriptThrottle" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector" />
+
+ <bean id="ScriptThrottle" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  <description>1000ms minimum interval Throttling</description>
+  <property name="additionalBindings">
+   <map><entry key="ts" value-ref="tsBean" /></map>
+  </property>
+  <property name="script">
+   <value>
+    //Must delay until at least last timestamp + 1000ms.
+    var interval=ts.getValue()+1000-java.lang.System.currentTimeMillis();
+    if (interval>0) { 
+     java.lang.Thread.sleep(interval); 
+    } 
+    ts.setValue(java.lang.System.currentTimeMillis());
+   </value>
+  </property>
+ </bean>
+
+ <bean id="tsBean" class="org.openadaptor.util.beans.TimestampBean">
+  <description>This bean simply holds a timestamp value in a stateful manner</description>
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

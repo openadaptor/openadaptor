@@ -56,7 +56,7 @@ public abstract class ServletServingReadConnector extends QueuingReadConnector {
   }
   
   public void connect() {
-    log.info("Starting servlet container..");
+    log.info("Starting servlet container "+servletContainer);
     servletContainer.start();
     addServlet(servlet, path);
   }

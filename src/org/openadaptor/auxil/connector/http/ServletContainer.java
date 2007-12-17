@@ -104,11 +104,16 @@ public class ServletContainer {
     }
   }
   
+  //EH - This is bad! Should not be setting managed flag here.
+  //
   public Server getJettyServer() {
     if (server == null) {
       log.info("Starting Jetty server on port "+port);
       server = new Server(port);
       managed = true;
+    }
+    else {
+      log.debug("Jetty server already configured - "+server);
     }
     return server;
   }
