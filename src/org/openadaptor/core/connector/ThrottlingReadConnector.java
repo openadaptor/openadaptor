@@ -58,6 +58,10 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
 	
 	private long intervalMs = -1;
 	
+	private long pauseOnlyAfterMsgs = -1;
+	
+	private long msgCounter = 0;
+	
 	/**
 	 * Forwards the call to the underlying reader.
 	 * 
@@ -108,12 +112,17 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
 	 * @see org.openadaptor.core.IReadConnector#next(long)
 	 */
 	public Object[] next(long timeoutMs) {	
-	    try {
-	      log.debug("Sleeping for " + intervalMs + " before next read.");	
-	      Thread.sleep(intervalMs);
-	    } catch (InterruptedException e) {
-	      /* ignores errors */
-	    }
+		if(intervalMs != -1){
+		    try {
+		      log.debug("Sleeping for " + intervalMs + " before next read.");	
+		      Thread.sleep(intervalMs);
+		    } catch (InterruptedException e) {
+		      /* ignores errors */
+		    }
+		}
+		if(pauseOnlyAfterMsgs != -1){
+		    msgCounter ++;	
+		}
 		return delegate.next(timeoutMs);
 	}
 
@@ -188,6 +197,15 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
    */
   public long getPollIntervalMs() {
     return intervalMs;
+  }
+
+  /**
+   * Sets the reader connector that this reader wraps.
+   * 
+   * @param delegate
+   */
+  public void setDelegate(IReadConnector delegate) {
+	this.delegate = delegate;
   }
 	
 }
