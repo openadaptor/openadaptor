@@ -61,6 +61,33 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
 	private long pauseOnlyAfterMsgs = -1;
 	
 	private long msgCounter = 0;
+
+
+	/**
+	 * 
+	 * @see org.openadaptor.core.IReadConnector#next(long)
+	 */
+	public Object[] next(long timeoutMs) {	
+		if(intervalMs != -1 ){
+		  if(pauseOnlyAfterMsgs!=-1 && msgCounter!=pauseOnlyAfterMsgs){
+			msgCounter++;
+		  }
+		  else{
+		    try {
+		      log.debug("Sleeping for " + intervalMs + " before next read.");	
+		      msgCounter=0;
+		      Thread.sleep(intervalMs);
+		    } catch (InterruptedException e) {
+		      /* ignores errors */
+		    }
+		  }
+		}
+		if(pauseOnlyAfterMsgs != -1){
+		    msgCounter ++;	
+		}
+		return delegate.next(timeoutMs);
+	}
+
 	
 	/**
 	 * Forwards the call to the underlying reader.
@@ -108,25 +135,6 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
 	}
 
 	/**
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#next(long)
-	 */
-	public Object[] next(long timeoutMs) {	
-		if(intervalMs != -1){
-		    try {
-		      log.debug("Sleeping for " + intervalMs + " before next read.");	
-		      Thread.sleep(intervalMs);
-		    } catch (InterruptedException e) {
-		      /* ignores errors */
-		    }
-		}
-		if(pauseOnlyAfterMsgs != -1){
-		    msgCounter ++;	
-		}
-		return delegate.next(timeoutMs);
-	}
-
-	/**
 	 * Forwards the call to the underlying reader.
 	 * 
 	 * @see org.openadaptor.core.IReadConnector#setReaderContext(java.lang.Object)
@@ -141,6 +149,7 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
 	 * @see org.openadaptor.core.IReadConnector#validate(java.util.List)
 	 */
 	public void validate(List exceptions) {
+		//TODO pauseOnlyAfterMsgs set <- check if intervalMs set
 		delegate.validate(exceptions);
 	}
 	
@@ -206,6 +215,17 @@ public class ThrottlingReadConnector implements IPollingReadConnector {
    */
   public void setDelegate(IReadConnector delegate) {
 	this.delegate = delegate;
+  }
+
+  
+  /**
+   * If this property is set, the reader will pause only after it reads certain 
+   * amount of messages, not always after every singly message.
+   * 
+   * @param pauseOnlyAfterMsgs
+   */
+  public void setPauseOnlyAfterMsgs(long pauseOnlyAfterMsgs) {
+	this.pauseOnlyAfterMsgs = pauseOnlyAfterMsgs;
   }
 	
 }
