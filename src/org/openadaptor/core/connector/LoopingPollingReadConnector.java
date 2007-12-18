@@ -48,6 +48,8 @@ import org.openadaptor.core.IReadConnector;
  * a single poll and then exit</li>.
  * 
  * @author Fred Perry, Kris Lachor
+ * @see CronnablePollingReadConnector
+ * @see ThrottlingReadConnector
  */
 public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
 
