@@ -53,24 +53,23 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   private boolean append = true;
 
   private String moveExistingFileTo = null;
-
+  
+  /**
+   * Constructor
+   */
   public FileWriteConnector() {
     super();
     setDataWriter(new LineWriter());
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param id
+   */
   public FileWriteConnector(String id) {
     super(id);
     setDataWriter(new LineWriter());
-  }
-
-  public void setFilename(String path) throws ConnectionException {
-    this.filename = path;
-  }
-
-  public void setAppend(boolean append) {
-    this.append = append;
-    log.info(getId() + " will " + (append ? "append" : "overwrite") + " file");
   }
 
   /**
@@ -101,10 +100,41 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   }
 
   /**
+   * Sets file name.
+   * @param path
+   * @throws ConnectionException
+   */
+  public void setFilename(String path) throws ConnectionException {
+    this.filename = path;
+  }
+
+  /**
+   * Sets value of append flag.
+   */
+  public void setAppend(boolean append) {
+    this.append = append;
+    log.info(getId() + " will " + (append ? "append" : "overwrite") + " file");
+  }
+
+  /**
    * @return the filename
    */
   public String getFilename() {
     return filename;
   }
 
+  /**
+   * @return value of append flag
+   */
+  public boolean isAppend() {
+	return append;
+  }
+
+  /**
+   * @return name of the file the existing file will be renamed to.
+   */
+  public String getMoveExistingFileTo() {
+	return moveExistingFileTo;
+  }
+  
 }
