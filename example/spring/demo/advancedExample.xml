@@ -10,7 +10,7 @@
   <description><![CDATA[  
   This adaptor does the following...
     
-    * reads all data in input/delim.txt
+    * reads all data in input/delim.txt, with 1 sec time interval between the lines
     * converts to orderedmaps
     * applies a simple filter to records
     * outputs to stdout
@@ -43,7 +43,7 @@
       <bean class="org.openadaptor.core.router.Router">
         <property name="processMap">
           <map>
-			<entry key-ref="reader" value-ref="orderedmap" />
+			<entry key-ref="throttlingReader" value-ref="orderedmap" />
 			<entry key-ref="orderedmap" value-ref="jsFilter" />
 			<entry key-ref="jsFilter" value-ref="dbBasedEnhancer" />
 			<entry key-ref="dbBasedEnhancer">
@@ -61,6 +61,12 @@
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
     <property name="filename" value="input/delim.txt"/>
+  </bean>
+  
+  <bean id="throttlingReader" class="org.openadaptor.core.connector.ThrottlingReadConnector">
+	<description>Read connector that adds 'throttling' to the connector it wraps</description>
+	<property name="delegate" ref="reader" />
+	<property name="pollIntervalSecs" value="1"/>
   </bean>
   
   <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
