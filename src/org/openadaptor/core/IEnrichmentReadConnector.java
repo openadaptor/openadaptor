@@ -46,8 +46,9 @@ public interface IEnrichmentReadConnector extends IReadConnector {
    * 
    * @param inputParameters that this connector can use to adjust the query to the underlying
    *        resource
-   * @param timeout TODO
-   * @return TODO
+   * @param timeout the maximum time in milli-seconds to wait for data is none is
+   *          available immediately
+   * @return null or an array of data with one or more element.
    * @see IReadConnector#next(long)
    * @see IEnrichmentProcessor
    */

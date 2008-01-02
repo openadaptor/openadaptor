@@ -125,7 +125,6 @@ public abstract class AbstractPollingReadConnector extends Component implements 
       return delegate.next(timeoutMs);
     } else {
       sleepNoThrow(timeoutMs);
-//      return new Object[0];
       return null;
     }
   }

@@ -80,7 +80,7 @@ public interface IReadConnector {
    * external resource that implementation "talks to", it should only return
    * true if there will never be any more data available, this is different from
    * the scenario where there is is no data at the moment but there maybe in
-   * future. The documentation for each implementation should state it's
+   * future. The documentation for each implementation should state its
    * specific behaviour.
    * 
    * @return true if no more data is available from the external rsource.
