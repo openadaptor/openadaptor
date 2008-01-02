@@ -37,6 +37,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * A Write Connector that write data to a file (or stdout if the filename property
@@ -46,6 +49,8 @@ import java.io.OutputStream;
  */
 public class FileWriteConnector extends AbstractStreamWriteConnector {
 
+  private static final String DEFAULT_TIMESTAMP_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSSZ";
+  
   private static final Log log = LogFactory.getLog(FileWriteConnector.class);
 
   private String filename;
@@ -53,6 +58,10 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   private boolean append = true;
 
   private String moveExistingFileTo = null;
+
+  private boolean addTimestampToMovedFile = false;
+
+  private String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
   
   /**
    * Constructor
@@ -72,33 +81,41 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     setDataWriter(new LineWriter());
   }
 
-  /**
-   * sets the path which an existing output file will be moved to
-   */
-  public void setMoveExistingFileTo(String path) {
-    if (path != null) {
-      this.moveExistingFileTo = path;
-      log.info("Existing file (if it exists) will be moved to " + path);
-    }
-  }
 
+  /**
+   * Creates a file output stream. If <code>filename</code> is not set, the System.out
+   * (console stream) is returned. 
+   * If the file already exists, it is renamed to <code>moveExistingFileTo</code> (if the property is set).
+   * If the file already exists and the <code>addTimestampToMovedFile</code> is
+   * set to true, the new filename  (<code>moveExistingFileTo</code>) will be 
+   * extended by a timestamp. 
+   * 
+   * @return an output stream this connector will write to
+   */
   protected OutputStream getOutputStream() {
     if (filename != null) {
       if (moveExistingFileTo != null) {
-        File f = new File(filename);
-        if (f.exists())
+        if (addTimestampToMovedFile) {
+          DateFormat dataFormat = new SimpleDateFormat(timestampFormat);
+          String formattedDate = dataFormat.format(new Date());
+          moveExistingFileTo = moveExistingFileTo + "." + formattedDate;
+        }
+        File file = new File(filename);
+        if (file.exists()){
           FileUtils.moveFile(filename, moveExistingFileTo);
+        }
       }
       try {
         return new FileOutputStream(filename, append);
       } catch (FileNotFoundException e) {
-        throw new RuntimeException("FileNotFoundException, " + e.getMessage(), e);
+        throw new RuntimeException("FileNotFoundException, "
+                + e.getMessage(), e);
       }
     } else {
       return System.out;
     }
   }
-
+  
   /**
    * Sets file name.
    * @param path
@@ -137,4 +154,37 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
 	return moveExistingFileTo;
   }
   
+  /**
+   * Sets the path which an existing output file will be moved to.
+   */
+  public void setMoveExistingFileTo(String path) {
+    if (path != null) {
+      this.moveExistingFileTo = path;
+      log.info("Existing file (if it exists) will be moved to " + path);
+    }
+  }
+  
+  /**
+   * A flag that determines if a timestamp is to be appneded to 
+   * <code>moveExistingFileTo</code>.
+   */
+  public void setAddTimestampToMovedFile(boolean addTimeStamp) {
+  	this.addTimestampToMovedFile = addTimeStamp;
+  	if (addTimestampToMovedFile){
+  		log.info("Existing file (if it exists) will have timestamp added when moved.");
+  	}
+  }
+  
+  /**
+   * Allows to overwrite the default <code>timestampFormat</code>.
+   * 
+   * @param timestampFormat new timestamp format
+   */
+  public void setTimestampFormat(String timestampFormat){
+  	if (timestampFormat != null){
+  		this.timestampFormat = timestampFormat;
+  		log.info("Timestamp will be formatted as " + timestampFormat);
+  	}
+  }
+
 }

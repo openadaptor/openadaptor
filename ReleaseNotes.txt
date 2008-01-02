@@ -98,8 +98,10 @@ Minor changes
     looked up in the JNDI tree. This is done by setting dataSourceName and jndiConnection
     properties. Folder openadaptor\example\spring\connectors\db\jee\jboss\ contains an
     example.
-  
-  *  
+    
+  * FileWriteConnector has a new flag (addTimestampToMovedFile) that allows for appending 
+    a timestamp to the moveExistingFileTo (name of the file the existing file is going to 
+    be moved to). The default timestamp format can be overwritten.  
     
 Bug Fixes
 =========
