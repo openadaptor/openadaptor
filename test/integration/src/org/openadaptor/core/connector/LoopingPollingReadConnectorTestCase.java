@@ -3,6 +3,8 @@ package org.openadaptor.core.connector;
 import junit.framework.TestCase;
 import java.util.Date;
 
+import org.openadaptor.core.IReadConnector;
+
 /**
  * System tests for {@link LoopingPollingReadConnector}.
  * 
@@ -44,7 +46,7 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
   }
 
   
-  private int runPoller(LoopingPollingReadConnector poller, String dataString) {
+  private int runPoller(IReadConnector poller, String dataString) {
     int count = 0;
     poller.connect();
     while (!poller.isDry()) {

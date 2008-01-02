@@ -42,97 +42,97 @@ import org.openadaptor.core.transaction.TestTransactionalResource;
 
 public class TestReadConnector extends Component implements IReadConnector, ITransactional {
 
-	private int count = 0;
-
-	private int batchSize = 1;
-
-	private int intervalMs = 0;
-
-	private int maxSend = 1;
-
-	private String dataString = "test data %n";
-	
-	private int exceptionFrequency = 0;
+  private int count = 0;
+  
+  private int batchSize = 1;
+  
+  private int intervalMs = 0;
+  
+  private int maxSend = 1;
+  
+  private String dataString = "test data %n";
+  
+  private int exceptionFrequency = 0;
   
   private int expectedCommitCount = -1;
   
   private TestTransactionalResource transactionalResource = null;
 
   public TestReadConnector() {
-	}
-
-	public TestReadConnector(String id) {
-		super(id);
-	}
-
-	public void setBatchSize(final int batchSize) {
-		this.batchSize = batchSize;
-	}
-
-	public void setIntervalMs(final int intervalMs) {
-		this.intervalMs = intervalMs;
-	}
-
-	public void setMaxSend(final int maxSend) {
-		this.maxSend = maxSend;
-	}
-
-	public String getDataString() {
-		return dataString;
-	}
-
-	public void setDataString(String dataString) {
-		this.dataString = dataString;
-	}
-
-	public void setExceptionFrequency(int frequency) {
-		exceptionFrequency = frequency;
-	}
+  }
+  
+  public TestReadConnector(String id) {
+  	super(id);
+  }
+  
+  public void setBatchSize(final int batchSize) {
+  	this.batchSize = batchSize;
+  }
+  
+  public void setIntervalMs(final int intervalMs) {
+  	this.intervalMs = intervalMs;
+  }
+  
+  public void setMaxSend(final int maxSend) {
+  	this.maxSend = maxSend;
+  }
+  
+  public String getDataString() {
+  	return dataString;
+  }
+  
+  public void setDataString(String dataString) {
+  	this.dataString = dataString;
+  }
+  
+  public void setExceptionFrequency(int frequency) {
+  	exceptionFrequency = frequency;
+  }
 	
   public boolean isDry() {
     return count >= maxSend;
   }
   
-	public Object[] next(long timeoutMs) {
-
+  public Object[] next(long timeoutMs) {
+  
     if (isDry()) {
       return null;
     }
-
-		// sleep configured time
-		if (intervalMs > 0) {
-			try {
-				Thread.sleep(intervalMs);
-			} catch (InterruptedException e) {
-			}
-		}
-
-		// allocate and populate next batch
-		Object[] data = new String[count + batchSize >= maxSend ? maxSend - count : batchSize];
-		for (int i = 0; i < data.length; i++) {
-			count++;
-			if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
-				throw new RuntimeException("configured runtime exception");
-			}
-			data[i] = dataString.replaceAll("%n", String.valueOf(count));
+  
+  	// sleep configured time
+  	if (intervalMs > 0) {
+  		try {
+  			Thread.sleep(intervalMs);
+  		} catch (InterruptedException e) {
+  		}
+  	}
+  
+  	// allocate and populate next batch
+  	Object[] data = new String[count + batchSize >= maxSend ? maxSend - count : batchSize];
+  	for (int i = 0; i < data.length; i++) {
+  		count++;
+  		if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
+  			throw new RuntimeException("configured runtime exception");
+  		}
+  		data[i] = dataString.replaceAll("%n", String.valueOf(count));
       if (transactionalResource != null) {
         transactionalResource.incrementRecordCount();
       }
-		}
-		
-		return data;
-	}
+  	}
+  	
+  	return data;
+  }
 
-	public void connect() {
+  public void connect() {
     count = 0;
     transactionalResource = null;
-	}
-
-	public void disconnect() {
+  }
+  
+  public void disconnect() {
     if (transactionalResource != null) {
       checkCommitCount();
     }
-	}
+  }
 
   private void checkCommitCount() {
     if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {

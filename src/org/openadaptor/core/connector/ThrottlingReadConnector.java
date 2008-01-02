@@ -30,8 +30,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
 import org.openadaptor.core.IPollingReadConnector;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * A polling read connector that calls to underlying read connector at fixed time 
@@ -50,110 +52,131 @@ import org.openadaptor.core.IReadConnector;
  * @see CronnablePollingReadConnector
  * @see LoopingPollingReadConnector
  */
-public class ThrottlingReadConnector implements IPollingReadConnector {
+public class ThrottlingReadConnector extends Component implements IPollingReadConnector {
 
-	private static final Log log = LogFactory.getLog(ThrottlingReadConnector.class);
+  private static final Log log = LogFactory.getLog(ThrottlingReadConnector.class);
+  
+  private IReadConnector delegate;
+  
+  private long intervalMs = -1;
+  
+  private long pauseOnlyAfterMsgs = -1;
+  
+  private long msgCounter = 0;
+  
+  /**
+   * Constructor.
+   */  
+  public ThrottlingReadConnector() {
+    super();
+  }
+
+  /**
+   * Constructor.
+   * 
+   * @param id a descriptive identifier for this connector.
+   */  
+  public ThrottlingReadConnector(String id) {
+    super(id);
+  }
+  
+  /**
+   * @see org.openadaptor.core.IReadConnector#next(long)
+   */
+  public Object[] next(long timeoutMs) {	
+  	if(intervalMs != -1 ){
+      
+      /* Sleep only if pauseOnlyAfterMsgs not set or equal msgCounter */
+      if( !(pauseOnlyAfterMsgs!=-1 && msgCounter++!=pauseOnlyAfterMsgs)){
+  	    try {
+  	      log.debug("Sleeping for " + intervalMs + " before next read.");	
+  	      msgCounter=1;
+  	      Thread.sleep(intervalMs);
+  	    } catch (InterruptedException e) {
+  	      /* ignores errors */
+  	    }
+  	  }
+  	}
+    else{
+      log.warn("Time interval not set.");
+    }
+//    System.out.println("Time.....: " + new java.util.Date());
+  	return delegate.next(timeoutMs);
+  }
+
+  /**
+   * Checks if the delegate set.
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#validate(java.util.List)
+   */
+  public void validate(List exceptions) {
+    if(pauseOnlyAfterMsgs!=-1 && intervalMs==-1){
+      exceptions.add(new ValidationException("[pauseOnlyAfterMsgs] property set but [intervalMs] not set.", this));
+    }
+    if (delegate == null) {
+      exceptions.add(new ValidationException("[delegate] property not set. " 
+        + "Please supply an instance of " + IReadConnector.class.getName() + " for it", this));
+    }
+    delegate.validate(exceptions);
+  }
+  
 	
-	private IReadConnector delegate;
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IPollingReadConnector#getDelegate()
+   */
+  public IReadConnector getDelegate() {
+  	return this.delegate;
+  }
+  
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#connect()
+   */
+  public void connect() {
+  	delegate.connect();
+  }
+  
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#disconnect()
+   */
+  public void disconnect() {
+  	delegate.disconnect();
+  }
+  
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#getReaderContext()
+   */
+  public Object getReaderContext() {
+  	return delegate.getReaderContext();
+  }
+  
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#isDry()
+   */
+  public boolean isDry() {
+  	return delegate.isDry();
+  }
+  
+  /**
+   * Forwards the call to the underlying reader.
+   * 
+   * @see org.openadaptor.core.IReadConnector#setReaderContext(java.lang.Object)
+   */
+  public void setReaderContext(Object context) {
+  	delegate.setReaderContext(context);
+  }
 	
-	private long intervalMs = -1;
-	
-	private long pauseOnlyAfterMsgs = -1;
-	
-	private long msgCounter = 0;
-
-
-	/**
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#next(long)
-	 */
-	public Object[] next(long timeoutMs) {	
-		if(intervalMs != -1 ){
-		  if(pauseOnlyAfterMsgs!=-1 && msgCounter!=pauseOnlyAfterMsgs){
-			msgCounter++;
-		  }
-		  else{
-		    try {
-		      log.debug("Sleeping for " + intervalMs + " before next read.");	
-		      msgCounter=0;
-		      Thread.sleep(intervalMs);
-		    } catch (InterruptedException e) {
-		      /* ignores errors */
-		    }
-		  }
-		}
-		if(pauseOnlyAfterMsgs != -1){
-		    msgCounter ++;	
-		}
-		return delegate.next(timeoutMs);
-	}
-
-	
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IPollingReadConnector#getDelegate()
-	 */
-	public IReadConnector getDelegate() {
-		return this.delegate;
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#connect()
-	 */
-	public void connect() {
-		delegate.connect();
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#disconnect()
-	 */
-	public void disconnect() {
-		delegate.disconnect();
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#getReaderContext()
-	 */
-	public Object getReaderContext() {
-		return delegate.getReaderContext();
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#isDry()
-	 */
-	public boolean isDry() {
-		return delegate.isDry();
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#setReaderContext(java.lang.Object)
-	 */
-	public void setReaderContext(Object context) {
-		delegate.setReaderContext(context);
-	}
-
-	/**
-	 * Forwards the call to the underlying reader.
-	 * 
-	 * @see org.openadaptor.core.IReadConnector#validate(java.util.List)
-	 */
-	public void validate(List exceptions) {
-		//TODO pauseOnlyAfterMsgs set <- check if intervalMs set
-		delegate.validate(exceptions);
-	}
-	
-	/**
+  /**
    * Optional.
    * 
    * @param intervalMs set the adaptor to poll every X milliseconds
