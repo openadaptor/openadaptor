@@ -16,6 +16,15 @@ Summary
 TBD
 
 
+Connectors
+==========
+
+New IPollingReadConnector - ThrottlingReadConnector allows for 'throttling'
+of calls of read connector it wraps. The new connector is similar to 
+the LoopingPollingReadConnector except it operates on more fine-grained level,
+i.e. adds time intervals in between individual calls for more data by the underlying
+reader. 
+
 Processors
 ==========
 
