@@ -7,18 +7,21 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[    
-  This adaptor assumes it runs within a jee container with a data source available via JNDI. 
+  This adaptor assumes it runs within a jee container that has a JDBC DataSource available via JNDI. 
   It does the following...
     
-    * establishes a db connection via a DataSource lookup in JNDI
-    * selects data from a db using a query
+    * establishes a database connection via a DataSource lookup in JNDI
+    * selects data from a db using an SQL query
     * converts the result set to XML
     * writes data to stdout
     
-  It is designed to illustrate the basic structure of an adaptor that looks up the db connection 
+  It is designed to illustrate the basic structure of an adaptor that looks up a db connection 
   via JNDI & DataSource.
 
   The way to run this adaptor will be specific to the jee application server it is deployed to.
+  Look into ./jboss/ for instructions on how to create a Hypersonic data source and 
+  deploy open adaptor to JBoss.
+
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -38,12 +41,13 @@
   </bean>
    
   <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
-    <description>This gets jdbc connection from a data source (looked up in JNDI).</description>
+    <description>This gets jdbc connection from a data source (looked up via JNDI).</description>
     <property name="jndiConnection" ref="JndiConnection"/>
     <property name="dataSourceName" value="java:openadaptorDS"/>
   </bean>
 
   <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <description>This represents a local JNDI connection.</description>
     <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
     <property name="providerUrl" value="jnp://localhost:1099"/>
   </bean>

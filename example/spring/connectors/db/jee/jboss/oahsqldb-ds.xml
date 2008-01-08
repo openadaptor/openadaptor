@@ -10,6 +10,9 @@
     java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
     
  This file needs to be copied to an auto-deploy area of JBoss.   
+
+ Note: the <jndi-name>openadaptorDS</jndi-name> needs to be the same as that used in the definition 
+ definition of JDBC connection in the adaptor that accesses it (../readerDS.xml) 
 -->
 
 <datasources>
