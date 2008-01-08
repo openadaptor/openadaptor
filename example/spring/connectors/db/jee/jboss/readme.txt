@@ -8,9 +8,16 @@ The following libraries need to be put on JBoss server's CLASSPATH:
     lib/openadaptor-depends.jar
 
 The XML files in this folder should be dropped into an auto-deploy area of JBoss.
+Hypersonic database and JBoss instances need to be started prior to running the
+adaptor.
 
-When the JBoss instance is running, a JMX managed spring adaptor should be 
-available via JMXConsole at http://localhost:8080  (under openadaptor.org).
+oahsqldb-ds.xml - defines a Hypersonic DataSource
+oa-service.xml - exposes openadaptor as JBoss service
+
+When the JBoss instance is running, an adaptor exposed as JMX managed bean should be 
+available via JBoss web console at http://localhost:8080  (under openadaptor.org).
+Adaptor can be kicked of via runSpringAdaptor() method run with the name of 
+adaptor config file (readerDS.xml) as argument.
 
 
 
