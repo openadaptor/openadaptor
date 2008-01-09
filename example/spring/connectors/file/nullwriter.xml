@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id$
+	$HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor simply reads data from standard input and sends it to a Null writer which
+  just consumes it.
+    
+  Run as follows.
+    
+    java org.openadaptor.spring.SpringAdaptor -config nullwriter.xml -bean Adaptor
+    
+  The following classpath elements should be included.
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					Creates the simple pipeline Reader -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+
+	<bean id="Writer" class="org.openadaptor.core.connector.NullWriteConnector"/>
+
+</beans>
