@@ -29,19 +29,22 @@ package org.openadaptor.auxil.connector.soap;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
+import org.codehaus.xfire.service.OperationInfo;
+import org.codehaus.xfire.service.Service;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * binds to a webservice endpoint and delivers data by calling a method
+ * Binds to a webservice endpoint and delivers data by calling a method
  * on this service.
  * 
- * @author perryj
- *
+ * @author perryj, Kris Lachor
  */
 public class WebServiceWriteConnector extends AbstractWriteConnector {
 
@@ -53,35 +56,83 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
 
   private String endpoint;
 
+  /**
+   * Constructor.
+   */
   public WebServiceWriteConnector() {
     super();
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param id descriptive identifier.
+   */
   public WebServiceWriteConnector(String id) {
     super(id);
   }
 
+  /**
+   * Sets the <code>endpoint</code> with WSDL definition.
+   */
   public void setEndpoint(final String endpoint) {
     this.endpoint = endpoint;
   }
 
+  /**
+   * TODO manual setting of method name might be unnecessary.
+   */
   public void setMethodName(final String methodName) {
     this.methodName = methodName;
   }
-
+ 
+  /**
+   * Creates a web service client based on <code>endpoint</code> WSDL defition.
+   */
   public void connect() {
     try {
       client = new Client(new URL(endpoint));
       log.info(getId() + " bound to endpoint " + endpoint);
+      
+      /* If method name not supplied in config, read from WSDL */
+      if(methodName==null){
+        Service service = client.getService();
+        log.info("Service name: " + service.getSimpleName());
+        Collection col = service.getServiceInfo().getOperations();
+        Iterator it = col.iterator();
+        if(it.hasNext()){
+          OperationInfo operationInfo = (OperationInfo) it.next();
+          log.info("Operation name: " + operationInfo.getName());
+          methodName = operationInfo.getName();
+        }
+      }
     } catch (MalformedURLException e) {
       throw new RuntimeException("Malformed Url exception ", e);
     } catch (Exception e) {
       throw new ConnectionException("failed to connect", e, this);
     }
   }
+  
+  /**
+   * Sets the web service client to null.
+   */
+  public void disconnect() {
+    client = null;
+  }
 
+  /**
+   * Invokes the web service defined in <code>endpoint</code> WSDL.
+   * Call the web service as many times as there are elements in the
+   * <code>data</code> array.
+   * 
+   * @param data - an array with data to be passed to the web service.
+   * TODO review the fact of connecting and disconnecting the client here - this
+   *      is also implemetned in {@link #connect()}, {@link #disconnect()} and
+   *      called by the framework.
+   */
   public Object deliver(Object[] data) {
     if (client == null) {
+      log.info("Connecting web service client.");
       connect();
     }
     try {
@@ -101,10 +152,6 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
 
   protected Object marshall(Object data) {
     return data.toString();
-  }
-
-  public void disconnect() {
-    client = null;
   }
 
 }

@@ -107,11 +107,16 @@ public class WebServiceListeningReadConnector extends ServletServingReadConnecto
     return endpoint;
   }
 
-
+  /**
+   * An XFire servlet.
+   */
   class StringDataProcessorServlet extends XFireServlet {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Starts up a web service.
+     */
     public void init() throws ServletException
     {
       super.init();

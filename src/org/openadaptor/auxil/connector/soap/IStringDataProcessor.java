@@ -27,6 +27,11 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+/**
+ * Web service interface. 
+ */
 public interface IStringDataProcessor {
-  void process(String s);
+  
+  void process(String data);
+
 }

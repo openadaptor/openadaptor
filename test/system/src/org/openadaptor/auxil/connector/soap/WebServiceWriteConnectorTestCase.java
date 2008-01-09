@@ -56,13 +56,21 @@ import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
 
+/**
+ * System tests for {@link WebServiceWriteConnector}.
+ */
 public class WebServiceWriteConnectorTestCase extends TestCase {
 
+  /**
+   * Starts up web service server.
+   * Programmatically assembles an adaptor with one read node and WebServiceWriteConnector
+   * as the write node.
+   * Runs the adaptor, ensures the server received expected data.
+   */
   public void test() {
     
+    /* run up webservice (under jetty) */
     MyServiceImpl impl = new MyServiceImpl();
-    
-    // run up webservice (under jetty)
     Server server = new Server(8191);
     Context root = new Context(server, "/",Context.SESSIONS);
     root.addServlet(new ServletHolder(new MyServlet(MyService.class, impl, "MyService")), "/*");
@@ -72,35 +80,39 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
       fail("failed to start jetty");
     }
     
-    // create adaptor to invoke webservice
+    /* Create adaptor to invoke webservice */
     TestReadConnector readNode = new TestReadConnector("in");
     readNode.setDataString("foobar");
-    
     WebServiceWriteConnector writeNode = new WebServiceWriteConnector("out");
     writeNode.setEndpoint("http://localhost:8191/MyService?wsdl");
     writeNode.setMethodName("process");
     
+    /* Run adaptor */
     Map map = new HashMap();
     map.put(readNode, writeNode);
     RoutingMap routingMap = new RoutingMap();
     routingMap.setProcessMap(map);
-    
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(new Router(routingMap));
-    
     adaptor.run();
     assertTrue(adaptor.getExitCode() == 0);
     
-    // check state of web service
+    /* Check state of web service */
     List results = impl.getData();
     assertTrue(results.size() == 1);
     assertTrue(results.get(0).equals("foobar"));
   }
   
+  /**
+   * Web service interface.
+   */
   public interface MyService {
     void process(String s);
   }
   
+  /**
+   * Web service implementation.
+   */
   public class MyServiceImpl implements MyService {
 
     private List data = new ArrayList();
@@ -115,6 +127,9 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
     }
   }
   
+  /**
+   * XFireServlet, runs as web service server.
+   */
   public class MyServlet extends XFireServlet {
 
     private static final long serialVersionUID = 1L;
