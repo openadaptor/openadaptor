@@ -111,6 +111,8 @@ Minor changes
   * FileWriteConnector has a new flag (addTimestampToMovedFile) that allows for appending 
     a timestamp to the moveExistingFileTo (name of the file the existing file is going to 
     be moved to). The default timestamp format can be overwritten.  
+  
+  * Added NullWriteConnector.
     
 Bug Fixes
 =========
