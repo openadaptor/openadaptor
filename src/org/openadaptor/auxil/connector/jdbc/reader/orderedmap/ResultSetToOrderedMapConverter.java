@@ -38,6 +38,7 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 /**
  * Convert ResultSets into OrderedMaps.
  * 
+ * @author higginse
  * @author perryj
  */
 public class ResultSetToOrderedMapConverter extends AbstractResultSetConverter {
@@ -51,7 +52,8 @@ public class ResultSetToOrderedMapConverter extends AbstractResultSetConverter {
     int columnCount = rsmd.getColumnCount();
     IOrderedMap map = new OrderedHashMap(columnCount);
     for (int i = 1; i <= columnCount; i++) {
-      map.put(rsmd.getColumnName(i), rs.getObject(i));
+      //This could be much more efficient (less methods calls). Candidate for improvement.
+      map.put(getColumnNameOrAlias(rsmd, i), rs.getObject(i));
     }
     return map;
   }

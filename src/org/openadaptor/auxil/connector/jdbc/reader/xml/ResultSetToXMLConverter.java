@@ -38,6 +38,8 @@ import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
 
 /**
  * Converts a result set to XML.
+ * 
+ * @author higginse
  */
 public class ResultSetToXMLConverter extends AbstractResultSetConverter {
 
@@ -62,7 +64,8 @@ public class ResultSetToXMLConverter extends AbstractResultSetConverter {
     Document doc = DocumentHelper.createDocument();
     Element root = doc.addElement(rootElement);
     for (int i = 1; i <= columnCount; i++) {
-      Element e = root.addElement(rsmd.getColumnName(i));
+      //Could be more efficient, with less method calls. Candidate for refactoring.
+      Element e = root.addElement(getColumnNameOrAlias(rsmd, i));
       String text = rs.getString(i);
       if (text != null) {
         e.setText(text);

@@ -36,10 +36,33 @@ import java.util.ArrayList;
  * Abstract base class which converts a SQL ResultSet into a format
  * for use within an adaptor.
  * Subclasses defined the output type.
+ * 
  * @author higginse
+ * @author browe (updated based on Brian's patch suggestions)
  */
 public abstract class AbstractResultSetConverter implements IResultSetConverter {
 
+  protected boolean useColumnLabels=false; //False for backward compatibility with 3.3
+
+  /**
+   * If true, use column labels if available in returned ResultSets.
+   * <br>
+   * The default is <code>false</code> for backwards compatibility with
+   * openadaptor 3.3
+   * 
+   * @param useColumnLabels boolean to indicate labels may be used.
+   */
+  public void setUseColumnLabels(boolean useColumnLabels) {
+    this.useColumnLabels=useColumnLabels;
+  }
+  
+  /**
+   * Flag to indicate if column aliases may be used in returned ResultSets.
+   * @return boolean containing true if aliases are to be used.
+   */
+  public boolean getUseColumnLabels() {
+    return useColumnLabels;
+  }
   /**
    * Convert the next row in the result set into an Object.
    * @param rs Contains the current ResultSet
@@ -103,5 +126,9 @@ public abstract class AbstractResultSetConverter implements IResultSetConverter 
    * @throws SQLException
    */
   protected abstract Object convertNext(ResultSet rs, ResultSetMetaData rsmd) throws SQLException;
+  
+  protected String getColumnNameOrAlias(ResultSetMetaData rsmd, int colIndex) throws SQLException{
+    return useColumnLabels?rsmd.getColumnLabel(colIndex):rsmd.getColumnName(colIndex);
+  }
 
 }
