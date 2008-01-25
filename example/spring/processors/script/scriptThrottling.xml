@@ -28,7 +28,7 @@
   echoed on output, but with a minumum delay of 1000ms between output 
   records.
      
-
+  For an alternative throttling mechanism see spring/connectors/polling/throttling_file.xml
   ]]>
  </description>
 
