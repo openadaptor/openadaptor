@@ -54,7 +54,9 @@
   <bean id="WebService" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
     <description>This is a write connector that invokes a webservice</description>
     <property name="endpoint" value="http://localhost:9999/MyService?wsdl"/>
-    <property name="methodName" value="process"/>
+    
+    <!-- This parameter is completely obsolete - it is already specified in WSDL -->
+    <!--  property name="methodName" value="process"/ -->
   </bean>
   
 </beans>
