@@ -26,8 +26,6 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    
-  writes output to console
   ]]>
 	</description>
 
@@ -47,24 +45,24 @@
 		</property>
 	</bean>
 
-	<bean id="Reader"
-		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 		<description>
 			This read connector reads lines from a file.
 		</description>
 		<property name="filename" value="input/input.txt" />
 	</bean>
 
-    <bean id="ThrottlingReader"
-		class="org.openadaptor.core.connector.ThrottlingReadConnector">
-		<description>Read connector that adds 'throttling' to the connector it wraps</description>
+    <bean id="ThrottlingReader" class="org.openadaptor.core.connector.ThrottlingReadConnector">
+		<description>
+		  Read connector that adds 'throttling' to the connector it wraps.
+		  It reads 2 lines of input file, then pauses for 3 seconds, reads 2 lines etc.
+		</description>
 		<property name="delegate" ref="Reader" />
 		<property name="pollIntervalSecs" value="3"/>
 		<property name="pauseOnlyAfterMsgs" value="2"/>
 	</bean>
 
-	<bean id="Writer"
-		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
 		<description>This writer writes data to the console.</description>
 	</bean>
 
