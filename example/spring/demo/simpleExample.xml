@@ -29,13 +29,14 @@
   ]]></description>
   
   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>Defines the adaptor - arranges other beans into a processing pipeline</description>
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <property name="processors">
           <list>
             <ref bean="servlet"/>
-            <ref bean="xmlConverter"/>
-            <ref bean="writer"/>
+            <ref bean="toXmlConverter"/>
+            <ref bean="consoleWriter"/>
           </list>
         </property>
       </bean>
@@ -43,17 +44,21 @@
   </bean>
   
   <bean id="servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <description>Starts up an HTTP server on indicated port</description>
     <property name="port" value="9999"/>
   </bean>
   
-  <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <bean id="toXmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>Converts an ordered map to XML</description>
     <property name="rootElementTag" value="Trade"/>
   </bean>
   
-  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>By default (with no filename specified) writes to the console</description>
+  </bean>
   
   <bean class="org.openadaptor.core.jmx.MBeanServer">
-    <description>Embed this in your config to expose jmx interface via http and rmi.</description>
+    <description>Exposes a JMX interface via HTTP, on indicated port</description>
     <property name="port" value="8082"/>
   </bean>
    
