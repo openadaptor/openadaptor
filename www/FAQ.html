@@ -86,7 +86,7 @@
     <h2>Versions of OpenAdaptor</h2>
     <p>
       OpenAdaptor has a long history, and we are now putting all of our development effort
-      into the OpenAdaptor&nbsp;3.2.1+ codebase.
+      into the OpenAdaptor&nbsp;3.4+ codebase.
     </p>
     <p>
       All other versions are now either in legacy maintenance mode (1.7.2.2) or no longer supported.
@@ -94,7 +94,7 @@
       and that we are only patching significant bugs.
     </p>
     <p>
-      The supported migration path for legacy adaptors is to upgrade to 1.7.2.2 and then move to 3.2.1+.
+      The supported migration path for legacy adaptors is to upgrade to 1.7.2.2 and then move to 3.x.
     </p>
     <table border="1">
       <tr>
@@ -104,7 +104,7 @@
         <th>Comment</th>
       </tr>
       <tr>
-        <td>OpenAdaptor&nbsp;3.2.1+</td>
+        <td>OpenAdaptor&nbsp;3.4</td>
         <td><a href="https://openadaptor3.openadaptor.org">https://openadaptor3.openadaptor.org</a></td>
         <td>
           <table>
@@ -123,7 +123,7 @@
         <td>
           <table>
             <tr><td>LEGACY (SUPPORTED)</td></tr>
-            <tr><td>Migrate to 1.7.2.2, and then to OpenAdaptor&nbsp;3.2.1+.</td></tr>
+            <tr><td>Migrate to 1.7.2.2, and then to OpenAdaptor&nbsp;3.x.</td></tr>
           </table>
         </td>
         <td>
@@ -131,25 +131,11 @@
           We are still using it in production (with a migration programme underway).
         </td>
       </tr>
-      <tr>
-        <td>OA3.0, OA3.1</td>
-        <td><a href="https://oa3.openadaptor.org">https://oa3.openadaptor.org</a></td>
-        <td>
-          <table>
-            <tr><td>UNSUPPORTED (prototype)</td></tr>
-            <tr><td>Migrate immediately to 3.2.1+</td></tr>
-          </table>
-        </td>
-        <td>
-          CVS project used for prototyping: completely superceded by OpenAdaptor&nbsp;3.2.1+ codebase.
-          Migration is straightforward.
-        </td>
-      </tr>
     </table>
     <p>
       If you are migrating legacy OpenAdaptor&nbsp;1.x adaptors you may encounter
       <a href="#customcomponents">custom components</a> which may now be supported by standard
-      componentry in OpenAdaptor&nbsp;3.2.1+.
+      componentry in OpenAdaptor&nbsp;3.x.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -269,7 +255,7 @@
   java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
     
     <p>
-      <b>Note: The command line syntax is under review following release of version 3.2.1,
+      <b>Note: The command line syntax is under review following release of version 3.4,
       and so the syntax might change in the next release.</b>
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -420,7 +406,7 @@
       Incoming data had to be a DataObject before it could be processed.
     </p>
     <p>
-      In OpenAdaptor version 3.0+ we have thrown away that restriction, and the data records passed
+      In OpenAdaptor version 3.x we have thrown away that restriction, and the data records passed
       around simply needs to be of standard Java type Object.
     </p>
     <p>
@@ -440,7 +426,6 @@
     </p>
     <p>
       We support a variety of payload formats, but with a special emphasis on Maps and XML.
-      (We are actively working on further improving/harmonising this area for post 3.2.1 releases.)
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -478,7 +463,7 @@
       Similarly all versions of OpenAdaptor allow you to provide your own custom components.
     </p>
     <p>
-      In OpenAdaptor 3.2.1+ we have:
+      In OpenAdaptor 3.x we have:
     </p>
     <ul>
       <li>
@@ -491,7 +476,7 @@
             allow custom attribute manipulation to be expressed inside the adaptor XML config file.
           </li>
           <li>
-            XML payloads are handled natively by OpenAdaptor 3.2.1+, both by general purpose
+            XML payloads are handled natively by OpenAdaptor 3.x, both by general purpose
             components and by XML specific components such as <code>XsltProcessor</code>.
           </li>
         </ul>
