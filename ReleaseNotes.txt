@@ -13,7 +13,9 @@ openadaptor 3.4
 Summary
 =======
 
-TBD
+This release focuses on improving the documentation, the migration (from 1.x)
+and on further stabilisation. It comes with a number of bug fixes and a new 
+component type - an enrichment processor.
 
 Connectors
 ==========
@@ -24,6 +26,19 @@ the LoopingPollingReadConnector except it operates on more fine-grained level,
 adding time intervals in between individual calls for data by the underlying
 reader, rather than treating all calls (until source data is exhausted) of the 
 wrapped reader as one call.
+
+The depricated PollingReadConnector has been deleted; all occurences need to be
+replaced with either LoopingPollingReadConnector or CronnablePollingReadConnector.
+
+|------------------------------------------------------------------------------|
+|        OA 3.3                  |            OA 3.4                           |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|PollingReadConnector            | either LoopingPollingReadConnector or       |
+|         (deleted)              | CronnablePollingReadConnector depending on  |
+|                                | which mode (interval or cron) the           |
+|                                | PollingReadConnector  was used in.          |
+|------------------------------------------------------------------------------|
 
 Processors
 ==========
