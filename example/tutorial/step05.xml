@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: step03a.xml 696 2007-06-27 13:04:36Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step03a.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  Adaptor for step 5 of the tutorial.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="TickerFilter"/>
+        <ref bean="XMLConverter"/>
+        <ref bean="Validator"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+  </bean>
+   
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+   </bean>
+
+  <bean id="TickerFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+   <property name="scriptProcessor">
+    <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+     <property name="script">
+      <value>
+       <![CDATA[
+         //Return true if the ticker is 'XXX';
+         oa_data.get('ticker') == 'XXX';
+       ]]>
+      </value>
+     </property>
+
+    </bean>
+   </property>
+  </bean>
+
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="Trade"/>
+  </bean>
+
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+    
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/trades.xml"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/puberror.txt"/>
+  </bean>
+  
+</beans>

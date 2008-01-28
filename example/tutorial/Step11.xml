@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: step05_old.xml 1141 2008-01-28 14:17:14Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step05_old.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description>
+  Adaptor for step 11 of the tutorial.
+  </description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+   <property name="processMap">
+    <map>
+     <entry key-ref="Reader" value-ref="XmlToMap" />
+     <entry key-ref="XmlToMap" value-ref="FormatterScript" />
+     <entry key-ref="FormatterScript" value-ref="CustomValidator" />
+     <entry key-ref="CustomValidator">
+      <list>
+       <ref bean="Writer" />
+       <ref bean="BuySellFilter" />
+      </list>
+     </entry>
+     <entry key-ref="BuySellFilter" value-ref="BuyToCSV" />
+     <entry key-ref="BuyToCSV" value-ref="BuyWriter" />
+     <entry key-ref="SellToCSV" value-ref="SellWriter" />
+    </map>
+   </property>
+   
+   <property name="discardMap">
+    <map>
+     <entry key-ref="BuySellFilter" value-ref="SellToCSV" />
+    </map>
+   </property>
+  </bean>
+
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+  
+  <bean id="XmlToMap" class="org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor"/>
+  
+  <bean id="FormatterScript" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+   <property name="script">
+    <value>
+     <![CDATA[
+         var trade=oa_data.get('Trade');
+         oa_data.put('SIDE',trade.get('buySell'));
+         oa_data.put('STOCK',trade.get('ticker'));
+         oa_data.put('PRICE',trade.get('price'));
+         oa_data.remove('Trade'); //No longer needed
+       ]]>
+    </value>
+   </property>
+  </bean>
+
+  <bean id="CustomValidator" class="CustomBuySellValidator">
+   <property name="fieldName" value="SIDE" />
+   <property name="legalValues">
+    <list>
+     <value>BUY</value>
+     <value>SELL</value>
+    </list>
+   </property>
+   <property name="discardBadValues" value="true"/>
+  </bean>
+
+  <bean id="BuySellFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+   <property name="scriptProcessor">
+    <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+     <property name="script">
+      <value>
+       <![CDATA[
+         oa_data.get('SIDE') != ('BUY'); //Keep only buys
+       ]]>
+      </value>
+     </property>
+    </bean>
+   </property>
+  </bean>
+
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+   <property name="jdbcConnection" ref="JdbcConnection" />
+   <property name="writer">
+    <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+     <property name="tableName" value="TRADE" />
+    </bean>
+   </property>
+  </bean>
+  
+  <bean id="BuyToCSV" class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
+  <bean id="SellToCSV" class="org.openadaptor.auxil.convertor.delimited.OrderedMapToDelimitedStringConvertor"/>
+
+  <bean id="BuyWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+   <property name="filename" value="output/buys.csv" />
+  </bean>
+  
+  <bean id="SellWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+   <property name="filename" value="output/sells.csv" />
+  </bean>
+
+</beans>
