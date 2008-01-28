@@ -12,7 +12,9 @@
     
     * reads input from a file (trade_ids.txt)
     * converts input into a map
-    * uses a file enrichment processor to enrich the input data with data from trades.txt
+    * uses a file based enrichment processor to enrich the input data with data from trades.txt
+    * the enrichment processor uses a custom file read connector that 
+      implements a simple search-by-id mechanism
     * converts the resulting orderedmap to xml
     * writes to stdout
     
@@ -24,7 +26,7 @@
    
   Node that this example uses a custom file reader (CustomFileReadConnector.java), located in this folder.
   
-  You need the following in your classpath
+  You need the following in your classpath (note the extra read connector):
   
     lib
     lib/openadaptor.jar
