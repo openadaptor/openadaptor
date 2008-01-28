@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * Default behaviour is to discard records where the javascript returns true.
  * This may be overridden by the discartMatches property.
  * @author higginse
+ * @deprecated replaced by more flexible map based script processors: {@link org.openadaptor.auxil.processor.script.ScriptFilterProcessor}
  *
  */
 public  class JavascriptFilterProcessor extends JavascriptProcessor {

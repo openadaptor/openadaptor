@@ -48,6 +48,7 @@ import java.util.List;
  * RuntimeException will be thrown.
  * 
  * @author higginse
+ * @deprecated replaced by more flexible map based script processors: {@link org.openadaptor.auxil.processor.script.ScriptConditionProcessor}
  *
  */
 public  class JavascriptConditionProcessor extends JavascriptProcessor {

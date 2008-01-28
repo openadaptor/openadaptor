@@ -29,7 +29,8 @@ package org.openadaptor.auxil.processor.javascript;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.ScriptableObject;
 import org.openadaptor.auxil.simplerecord.ISimpleRecord;
 import org.openadaptor.core.exception.RecordFormatException;
 /**
@@ -49,6 +50,7 @@ import org.openadaptor.core.exception.RecordFormatException;
  * <br>
  * See the Rhino documentation for further details on the mappping.
  * @author higginse
+ * @deprecated The more flexible script processors now work directly with Maps.
  *
  */
 public class ScriptableSimpleRecord extends ScriptableObject  {

@@ -51,6 +51,7 @@ import java.util.List;
  * <br>
  *
  * @author higginse
+ * @deprecated replaced by more flexible map based script processors: {@link org.openadaptor.auxil.processor.script.ScriptProcessor}
  *
  */
 public  class JavascriptProcessor extends Component implements IDataProcessor {
