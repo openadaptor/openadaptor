@@ -4,10 +4,10 @@ openadaptor3 production 3.3.1 Release Notes
 See licences/licence.txt for Licence information.
 =================================================
 
-Date: TBD
+Date: 31st January 2008
 Author: openadaptor Core Team
 
-openadaptor 3.3.1
+openadaptor 3.4
 =======
 
 Summary
@@ -18,19 +18,19 @@ TBD
 Connectors
 ==========
 
-New IPollingReadConnector - ThrottlingReadConnector allows for 'throttling'
+New IPollingReadConnector - ThrottlingReadConnector allows for throttling
 of calls of read connector it wraps. The new connector is similar to 
 the LoopingPollingReadConnector except it operates on more fine-grained level,
-i.e. adds time intervals in between individual calls for more data by the underlying
-reader. 
+adding time intervals in between individual calls for data by the underlying
+reader, rather than treating all calls (until source data is exhausted) of the 
+wrapped reader as one call.
 
 Processors
 ==========
 
-A new component type - an enrichment processor - has been been added. Primary 
-goal of an enrichment processor is to 'enrich' its input with more data from an
-external resource. Standard read connectors are used to connect to and retrieve data 
-from external resources.
+A new component type - an enrichment processor. Its goal is to 'enrich' its input 
+with more data from an external resource. Standard read connectors are used to 
+connect to and retrieve data from external resources.
 
 * IEnrichmentProcessor represents a new type of component, on a par with IReadConnector, 
   IDataProcessor and IWriteConnector
@@ -44,7 +44,7 @@ from external resources.
   implementation of the next() method that accepts input parameters as an argument. 
   Some of the existing IReadConnectors were already altered to extend IEnrichmentReadConnector
 
-* GenericEnrichmentProcessor is a generic implementation of an enrichment processor 
+* GenericEnrichmentProcessor is its generic implementation 
 
 * JNDIEnhancementProcessor has been depricated by GenericEnrichmentProcessor 
 
@@ -52,7 +52,7 @@ from external resources.
   in example\spring\processors\enrichment\* 
 
 |------------------------------------------------------------------------------|
-|        OA 3.3                  |            OA 3.3.1                         |    
+|        OA 3.3                  |              OA 3.4                         |    
 |------------------------------------------------------------------------------|
 |                                |                                             |
 |JNDIEnhancementProcessor        | GenericEnrichmentProcessor                  |  
@@ -154,6 +154,8 @@ SC34: (Bug (and patch for it) in OrderedMapToXMLConverter that does not allow to
 SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag 
 
 SC36: MapCallableStatementWriter misses first argument for Oracle databases
+    
+    
     
 =================================================
 openadaptor3 production 3.3 Release Notes
