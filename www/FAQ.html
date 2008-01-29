@@ -29,8 +29,8 @@
 
     <h3>2. Control Flow and Scripting</h3>
     <ol>
-      <li><a href="#pipevrouter">Should I use a Pipeline or a Router?</a></li>
-      <li><a href="#loggingrecords">How do I write out intermediate processing results or discarded data?</a></li>
+      <li><a href="#pipevrouter">Should I use processors (List) or processMap (Map) to configure the Routing?</a></li>
+      <li><a href="#discards">How can I access/process discarded data?</a></li>
       <li><a href="#exceptions">How do I handle Exceptions?</a></li>
       <li><a href="#logging">How does logging work?</a></li>
       <li><a href="#hospital">How do I hospitalise problematic records?</a></li>
@@ -472,7 +472,7 @@
         were simply applying some business logic to manipulate attributes.
         <ul>
           <li>
-            <code>JavascriptProcessor</code> and <code>JavascriptFilterProcessor</code>
+            <code>ScriptProcessor</code> and <code>ScriptFilterProcessor</code>
             allow custom attribute manipulation to be expressed inside the adaptor XML config file.
           </li>
           <li>
@@ -504,37 +504,41 @@
     <!-- Control flow: -->
 
     <a id="pipevrouter"></a>
-    <h2>Should I use a Pipeline or a Router?</h2>
+    <h2>Should I use processors (List) or processMap (Map) to configure the Routing?</h2>
     <p>
-      You must use a Router if you have multiple routes through an adaptor.
+      The processors property is simple a convenience method which ultimately converts the
+      supplied list of components into a Map. It is useful to simplify the configuration where 
+      each component only needs to be connected to a single downstream component (i.e it is 
+      simply syntactic sugar adaptors with a single path).
     </p>
     <p>
-      The Pipeline provides a terser syntactic sugar for adaptors with a single route.
+      However, for production adaptors, it is likely that components may well fan out their
+      output to more than one destination, in which case it would be necessary to convert the
+      List explicitly into a Map anyway; this being the case, it may well be useful to start
+      with a Map anyway. 
     </p>
-    <p>
-      So in general we would recommend that you start with a Router for production strength adaptors.
-    <p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
-
     
 
-    <a id="loggingrecords"></a>
-    <h2>How do I write out intermediate processing results or discarded data?</h2>
+    <a id="discards"></a>
+    <h2>How can I access/process discarded data?</h2>
     <p>
-      Use a Router rather than a Pipeline.
-      In the Router you can say where all data goes to regardless of whether it is successfully processed
-      (unlike in OpenAdaptor 1.x where you had the tricky task of writing
-      a second inverted-logic filter to catch discarded data).
+      Configure the discardMap property to assign a destination for records that would be 
+      otherwise discarded from a component.
+      If the discardMap contains a key reference to a component which would otherwise be discarding
+      a record, it will instead forward the record to the referenced component(s) in the discardMap.
+      This mechanism offers considerable advantages over legacy OpenAdaptor (1.x ) where it was 
+      instead required to provide multiple inverted-logic filters to process 'active' and discarded
+      data successfully. In practice, this tended to lead to configuration errors.
     </p>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
-
     
 
     <a id="exceptions"></a>
     <h2>How do I handle Exceptions?</h2>
-    <p></p>
+    <p>Refer to the Tutorial for some examples on exception handling.</p>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -542,7 +546,8 @@
 
     <a id="logging"></a>
     <h2>How does logging work?</h2>
-    <p>We use Apache Commons logging abstraction in our classes, and typically behind that we use Log4j at runtime.</p>
+    <p>openadaptor uses Apache Commons logging abstraction throughout, and is typically configured
+    to use the Log4j implementation at runtime.</p>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -552,6 +557,7 @@
     <a id="hospital"></a>
     <h2>How do I hospitalise problematic records?</h2>
     <p>
+    Consult the Tutorial for information on Exception processing, and hospital-like functionality.
     </p>
     <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -561,28 +567,28 @@
     <a id="javascriptnulls"></a>
     <h2>How do I handle <code>null</code> or missing record keys in JavaScript?</h2>
     <p>
-      It is your responsibility to explicitly handle <code>null</code> or missing record keys in JavaScript.
+      It is the devloper's responsibility to explicitly handle <code>null</code> or missing record keys in JavaScript.
     </p>
     <p>
       Typically you do this by using guard clauses that test for <code>null</code> in JavaScript
       before operating on the value.
     </p>
     <p>
-      JavaScript will see a <code>null</code> value when you call <code>record.get(keyname)</code>
+      JavaScript will see a <code>null</code> value when you call <code>oa_data.get(keyname)</code>
       regardless of whether (a) the key exists and is bound to a null value in the record,
       or (b) the key does not exist in the record.
     </p>
     <p>
-      You can descriminate between cases (a) and (b) using the <code>record.containsKey(keyname)</code> method.
+      You can descriminate between cases (a) and (b) using the <code>oa_data.containsKey(keyname)</code> method.
     </p>
-    <div class="xml-txt"><pre>  &lt;bean id="FilterDateOfBirth" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    <div class="xml-txt"><pre>  &lt;bean id="FilterDateOfBirth" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;
       Set 'dobstatus' attribute according to presence and value of 'dateofbirth' attribute.
     &lt;/description&gt;
     &lt;property name="script"&gt;
-      dob = record.get('dateofbirth');
+      dob = oa_data.get('dateofbirth');
       if (dob == null) {
-        if (record.containsKey('dateofbirth')) {
+        if (oa_data.containsKey('dateofbirth')) {
           found = "present and explicitly null";
         } else {
           found = "missing and implicitly null";
@@ -590,7 +596,7 @@
       } else {
         found = "present and not null";
       }
-      record.set('dobstatus',found);
+      oa_data.set('dobstatus',found);
     &lt;/script&gt;
   &lt;/bean&gt;</pre></div>     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -603,17 +609,17 @@
       of:
     </p>
     <ul>
-      <li><code>org.openadaptor.auxil.processor.javascript.JavascriptProcessor</code></li>
-      <li><code>org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor</code></li>
+      <li><code>org.openadaptor.auxil.processor.script.ScriptProcessor</code></li>
+      <li><code>org.openadaptor.auxil.processor.script.ScriptFilterProcessor</code></li>
     </ul>
-    <div class="xml-txt"><pre>  &lt;bean id="SetBirthYear" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    <div class="xml-txt"><pre>  &lt;bean id="SetBirthYear" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;
       Updates the 'birthyear' attribute with the result of extracting year from 'dateofbirth' attribute.
       
       Uses JavaScript regular expression to parse and takes first capture group as result.
     &lt;/description&gt;
     &lt;property name="script"&gt;
-      record.put('birthyear',/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(record.get('dateofbirth'))[1]/;
+      oa_data.put('birthyear',/(\d{4})-(\d{1,2})-(\d{1,2})/.exec(oa_data.get('dateofbirth'))[1]/;
     &lt;/script&gt;
   &lt;/bean&gt;</pre></div> 
   
@@ -627,22 +633,22 @@
     <a id="javascriptarrays"></a>
     <h2>Can I use JavaScript arrays?</h2>
     <p>
-      Yes (added for OpenAdaptor 3.2.1.1).
+      Yes 
     </p>
     <p>
-      In your script you use <code>record.get()</code>, <code>record.set()</code>
-      and <code>record.put()</code> where the value is a JavaScript native array.
+      In your script you use <code>oa_data.get()</code>, <code>oa_data.put()</code>
+       where the value is a JavaScript native array.
     </p>
-    <div class="xml-txt"><pre>  &lt;bean id="ParseAddress" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    <div class="xml-txt"><pre>  &lt;bean id="ParseAddress" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;
       Split address string into an array of strings on ',' characters.
       Input address='National Maritime Museum, Greenwich, LONDON SE10 9NF';
       Output address={'National Maritime Museum',' Greenwich',' LONDON SE10 9NF'};
     &lt;/description&gt;
     &lt;property name="script"&gt;
-      address = record.get('address');
+      address = oa_data.get('address');
       if (address != null) {
-        record.set('address', address.split(','));
+        oa_data.put('address', address.split(','));
       }
     &lt;/property&gt;
     &lt;property name="discardMatches" value="false" /&gt;
@@ -685,7 +691,7 @@
     <a id="scriptscontrolflow"></a>
     <h2>Can I use JavaScript control flow inside my JavascriptProcessor scripts?</h2>
     <p>
-      Yes.  You write JavaScript in the normal way, and operate on the <code>record</code> passed in
+      Yes.  You write JavaScript in the normal way, and operate on the <code>oa_data</code> passed in
       which also doubles as the result object.
     </p>
     <p>
@@ -697,19 +703,19 @@
     <p>
       As a design guideline we very strongly advocate avoiding writing long pieces of JavaScript (a screenful is long).
       Instead break down your JavaScript into small blocks of defined functionality and place each
-      in a separate <code>JavaScriptProcessor</code>.
+      in a separate <code>ScriptProcessor</code>.
       This makes it much easier to unit-test each piece of logic (we plan to provide some practical
       help with this at the component level in the future) according to expected inputs and outputs.
       It also allows you to take advantage of the discard and exception routing support of OpenAdaptor.
-      Note that hosting it in multiple components may mean using <code>JavascriptFilterProcessor</code>
-      components to express branching logic as well as <code>JavascriptProcessor</code> components.
+      Note that hosting it in multiple components may mean using <code>ScriptFilterProcessor</code>
+      components to express branching logic as well as <code>ScriptProcessor</code> components.
     </p>
-    <div class="xml-txt"><pre>  &lt;bean id="DiscountedTrainFare" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor"&gt;
+    <div class="xml-txt"><pre>  &lt;bean id="DiscountedTrainFare" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;Calcuate train fare discount applicable based on age (and for illustration) gender.&lt;/description&gt;
     &lt;property name="script"&gt;
       // examine incoming object:
-      age = record.get('age');
-      gender = record.get('gender');
+      age = oa_data.get('age');
+      gender = oa_data.get('gender');
       
       // assume full fare:
       percentage = 100;
@@ -732,7 +738,7 @@
       }
       
       // modify outgoing object:
-      record.set('rate',percentage);
+      oa_data.set('rate',percentage);
     &lt;/property&gt;
     &lt;property name="discardMatches" value="false" /&gt;
   &lt;/bean&gt;</pre></div>
@@ -752,7 +758,6 @@
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
-
     <hr>
     <h1>Working with XML config files:</h1>
     <!-- Working with XML config files: -->
