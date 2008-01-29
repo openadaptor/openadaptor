@@ -170,6 +170,12 @@ SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag
 
 SC36: MapCallableStatementWriter misses first argument for Oracle databases
     
+Dependencies
+============
+
+  * log4j library upgraded from v1.2.9 to 1.2.15
+  * JBoss jars were removed from lib/3rdparty  due to licence restrictions
+
     
     
 =================================================
