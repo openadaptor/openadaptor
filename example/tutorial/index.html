@@ -750,8 +750,7 @@ This variant allows a single source component to forward to multiple destination
 contrived Custom Processor, to filter out illegal  Buy/Sell Requests. This has custom code that is included 
 as part of the tutorial - <a href="src/CustomBuySellValidator.java" target="_blank">src/CustomBuySellValidator.java</a>.
 The processor can be configured to either discard bad values, or to throw an exception.
-a map property. Here is the config.</p>
-Custom bean is configured as follows:</p>
+The Custom bean is configured as follows:<br>
 <textarea cols="100" rows="12" readonly="true">
   <bean id="CustomValidator" class="CustomBuySellValidator">
    <property name="fieldName" value="SIDE" />
@@ -933,25 +932,23 @@ Consider this contrived example: <br/><br/>
  
 </textarea> 
 
-<br/><br/>
+<p>
 
 In the simple example above the org.openadaptor.core.exception.ExceptionHandlerProxy is used as an exception handling entry
 point that implements a fan-out and redirects handling to ExceptionConverter and FileWriter. The ExceptionConverter converts exceptions to key-value pairs which
-are then sent to XMLConverter and then printed to the console as XML. On a parallel path, the exceptions are written to
-a log file.
-
-
-
-<br/><br/>
+are then sent to XMLConverter and then printed to the console as XML. The exceptions are also written in parallel
+directly to a log file.
+<p>
 
 <h3>b) Exception Map</h3>
 
-By defining an exceptionProcessor on the Router we make it the default handler for all exception types, 
-which means all exceptions will be handled by one and the same exceptionProcessor (perhaps consisting of a number of different
-nodes as shown in the preceding paragraph, but as a whole one and the same processor nonetheless). This behaviour can be fine-tuned. 
-Different exception processors can be set up to handle different exception types.
-This is achieved by defining the exceptionProcessor as an org.openadaptor.core.exception.ExceptionHandlerProxy with
-a redefined exception routing map, as in this sample:<br/><br/>
+Defining an exceptionProcessor on the Router makes it the default handler for all exception types. This
+means all exceptions will be handled by that exceptionProcessor (perhaps consisting of a number of different
+nodes as shown in the preceding paragraph, but as a whole one processor nonetheless). This behaviour can be
+fine-tuned.<br>
+Different exception processors can be set up to handle different exception types.<br>
+This may be achieved by defining the exceptionProcessor as an org.openadaptor.core.exception.ExceptionHandlerProxy
+with a corresponding exception routing map, as in this sample:<br/><br/>
 <textarea cols="120" rows="24" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processors">
@@ -978,31 +975,32 @@ a redefined exception routing map, as in this sample:<br/><br/>
   </bean>
 </textarea> 
 
-<br/><br/>
+<p>All ProcessingExceptions (including subclasses) here will be written to the processor called ProcessingExceptionLog,
+all other exceptions will go to OtherExceptionsLog.
 
-All ProcessingExceptions and its subclasses here will be written to the processor called ProcessingExceptionLog, all
-other errors will go to OtherExceptionsLog. 
 
-<p>The ExceptionHandler has a new property called exceptionMap, which defines how processing exceptions
+<p>The ExceptionHandler has a property called exceptionMap, which defines how processing exceptions
 are handled. The value is a map of maps, where the key to the first map is either a bean or a wildcard
 (as in the example above) and the value is a map between the exception and a bean (or list of beans).
 In the example above this means that ProcessingExceptions thrown by any bean in the adaptor will be
-routed to the ErrorLog bean, this is also implemented by a FileWriteConnector.</p>
+routed to the ErrorLog bean; this is configured in the example as a FileWriteConnector.</p>
 
 <h3>c) The Message Hospital</h3>
 Lastly, an exception handler conventionally called The Message Hospital can be used to write exceptions to a 
-predefined table in the database. Other than The Message Hospital respects the format of the table it is writing to, there is nothing special about it. It is using 
-two standard components - ExceptionToOrderedMapConverter to convert exceptions to a map, and JDBCWriteConnector to store the exceptions in the database.
-The Message Hostpital stores information such as exception class name, originating component name, exception timestamp and 
+predefined table in a database. Excepting that the Message Hospital respects the format of the table it is writing to, 
+there is nothing special about it. It uses two standard components - ExceptionToOrderedMapConverter to convert exceptions 
+to a map, and JDBCWriteConnector to store the exceptions in the database.
+<p>The Message Hospital stores information such as exception class name, originating component name, exception timestamp and 
 - most importantly - the user data which caused the exception. The table can either be used for informative purpose 
-only or as a staging area where the user data can be fixed and then read back to OA for another attempt of processing. 
-The HospitalReader can be used to read the data from The Message Hospital back to the OA. Again, the HospitalReader is nothing more 
-than a plain JDBCReadConnector that reads from the hospital schema.
-OA does not provide any ready-to-use tools for editing user data in the hospital at present.
-Although any RDMS can be used for the hospital, HospitalWriter and HospitalReader connectors assume certain 
-structure of the table which needs to be created beforehand. SQL scripts are provided for Sybase and HSQL.
+only, or as a staging area where the user data can be fixed and then read back to openadaptor for another attempt of processing. 
+The HospitalReader can be used to inject the data from The Message Hospital back into an adaptor. Again, the HospitalReader 
+is nothing more than a plain JDBCReadConnector that reads from the hospital schema.
+<p>openadaptor does not provide any ready-to-use tools for editing user data in the hospital at present.
+<p>Although any RDBMS can be used for the hospital, HospitalWriter and HospitalReader connectors assume certain 
+structure of the table which needs to be created beforehand. openadaptor provides SQL scripts for Sybase and HSQL, though others
+should be straightforward to create.
 
-<br/><br/>
+<p>
 <textarea cols="150" rows="23" readonly="true">
    <bean id="Router" class="org.openadaptor.core.router.Router">
     <property name="processMap">
@@ -1031,7 +1029,8 @@ structure of the table which needs to be created beforehand. SQL scripts are pro
 <br/><br/>
 
 
-<p>Here is how to run sample adaptors for paragraphs a and c above. For example c look into the file for instructions on setting up the hostpital schema.</p>
+<p>Here is how to run sample adaptors for paragraphs a and c above. For example c look into the file for instructions
+ on setting up the hospital schema.</p>
 
 <div class="shell"><pre>
   java org.openadaptor.spring.SpringAdaptor -config step13[a|c].xml 
@@ -1040,13 +1039,14 @@ structure of the table which needs to be created beforehand. SQL scripts are pro
 <br/><br/>
 
 <h3>Exception Handling Summary</h3>
-Exception handling was designed with simplicity and flexibility in mind. In basic scenarios all that users need to
-do to enable exception handling is to set a file writer as an exceptionProcessor on the Router. More savvy users
-have ways of setting up more sofisticated exception handlers and their disposal. Those various ways are not self-exclusive and, if necessary, could be used in combination to suit most complex needs - to create an exceptionProcessor made up of several nodes some of which 
-could branch off, include the Message Hospital as well as handle different exception types differently by using the exceptionMap. 
+Exception handling was designed to be simple but flexibille. For basic scenarios, all that users need to
+do to enable exception handling is to set a file writer as an exceptionProcessor on the Router.
+<br> There are, however, mechanisms to set up more sophisticated exception handlers as users needs and experience with
+openadaptor dictate. The mechanisms not mutually-exclusive,  and may be used in combination to suit complex needs,
+e.g. to create an exceptionProcessor constiging of several nodes, some of which could branch off, include the Message 
+Hospital and equally handle different exception types differently by using the exceptionMap. 
 
 <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
 <!--
@@ -1054,10 +1054,15 @@ could branch off, include the Message Hospital as well as handle different excep
 -->
 <a name="summary"></a>
 <h2>Summary</h2>
-<p>This tutorial builds up two adaptor examples that are much more representative than 
-the simplistic examples in the example/spring. It does not give a comprehensive view
-of all of openadaptor capabilities, you need to refer to the other spring examples and
-the java docs.</p>
+<p>This tutorial is intended to provide an introduction to creating adaptors with openadaptor. In the process, it creates
+multiple adaptors, illustrating how they might integrate with a Message Oriented Middleware (MOM) as part of an organisations
+integration solution. The adaptors illustrate reading and writing multiple data formats, publishing and subscribing to JMS, 
+interacting with databases, exception handling, and more.
+Nonetheless, for a more comprehensive view of openadaptor, readers are invited to view the numerous spring examples (in the
+<code>spring/examples</code>section of the distribution, for a more focussed view on many of the features of openadaptor.
+
+<p>Additionally, the javadocs will also provide substantial information, particularly on bean properties of the various components,
+and on the various interfaces that are core to openadaptor.
 
 <p class="back"><a href="#contents">back to contents</a></p>
 
