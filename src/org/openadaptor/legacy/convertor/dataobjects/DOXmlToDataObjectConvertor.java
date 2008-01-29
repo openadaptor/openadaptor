@@ -53,7 +53,12 @@ public class DOXmlToDataObjectConvertor extends AbstractLegacyConvertor {
   protected XMLFormatter formatter;
 
   public DOXmlToDataObjectConvertor() {
+    try {
     formatter = new XMLFormatter();
+    }
+    catch (NoClassDefFoundError ncfe) {
+      LegacyUtils.legacyInstantiationFailed("XMLFormatter", ncfe);
+    }
     //Allow the base class to set attributes on it (where possible)
     super.legacyConvertorComponent=formatter;
   }

@@ -23,19 +23,15 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
-
-import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.core.exception.RecordFormatException;
-import org.openadaptor.dataobjects.DataObjectException;
 import org.openadaptor.doxml.GenericXMLReader;
 
 /**
@@ -47,7 +43,7 @@ import org.openadaptor.doxml.GenericXMLReader;
 public class XmlToDataObjectConvertor extends AbstractLegacyConvertor {
 
   private static final Log log = LogFactory.getLog(XmlToDataObjectConvertor.class);
- 
+
   /**
    * This is the class which does the work.
    * <br>
@@ -56,7 +52,13 @@ public class XmlToDataObjectConvertor extends AbstractLegacyConvertor {
   protected GenericXMLReader reader;
 
   public XmlToDataObjectConvertor() {
-    reader = new GenericXMLReader();
+    try {
+      reader = new GenericXMLReader();
+    }
+    catch (NoClassDefFoundError ncfe) {
+      LegacyUtils.legacyInstantiationFailed("GenericXMLReader", ncfe);
+    }
+
     //Allow the base class to set attributes on it (where possible)
     super.legacyConvertorComponent=reader;
   }
@@ -97,14 +99,4 @@ public class XmlToDataObjectConvertor extends AbstractLegacyConvertor {
   }
   // END Abstract Convertor Processor implementation
 
-  public void setAttributes(Map attributeMap) {
-    for (Iterator iter = attributeMap.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      try {
-        reader.setAttributeValue((String) entry.getKey(), (String) entry.getValue());
-      } catch (DataObjectException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-    }
-  }
 }

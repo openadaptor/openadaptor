@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
@@ -59,7 +59,7 @@ public class DataObjectToDOXmlConvertor extends AbstractDataObjectConvertor {
    */
   protected XMLFormatter formatter;
 
-  
+
   /**
    * Assign attributes for the legacy convertor compenent.
    * <br>
@@ -85,9 +85,15 @@ public class DataObjectToDOXmlConvertor extends AbstractDataObjectConvertor {
     }
     super.setAttributes(attributeMap);
   }
-  
+
   public DataObjectToDOXmlConvertor() {
-    formatter = new XMLFormatter();
+    try {
+      formatter = new XMLFormatter();
+    }
+    catch (NoClassDefFoundError ncfe) {
+      LegacyUtils.legacyInstantiationFailed("XMLFormatter", ncfe);
+    }
+
     //Allow the base class to set attributes on it (where possible)
     super.legacyConvertorComponent=formatter;
     setAttributes(null); 
@@ -114,5 +120,5 @@ public class DataObjectToDOXmlConvertor extends AbstractDataObjectConvertor {
       throw new RecordException(reason, e);
     }
   }
-  
+
 }

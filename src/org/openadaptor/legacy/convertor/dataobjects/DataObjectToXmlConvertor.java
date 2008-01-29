@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.legacy.convertor.dataobjects;
 
@@ -49,9 +49,16 @@ public class DataObjectToXmlConvertor extends AbstractDataObjectConvertor {
    * Attributes may be set via setAttributes().
    */
   private GenericXMLWriter writer;
-  
+
   public DataObjectToXmlConvertor() {
-    writer=new GenericXMLWriter();
+    try {
+      writer=new GenericXMLWriter();
+    }
+    catch (NoClassDefFoundError ncfe) {
+      LegacyUtils.legacyInstantiationFailed("GenericXMLWriter", ncfe);
+    }
+
+
     //Allow the base class to set attributes on it (if possible)
     super.legacyConvertorComponent=writer;
   }

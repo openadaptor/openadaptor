@@ -52,9 +52,7 @@ import org.openadaptor.util.DateTimeHolder;
 /**
  * Convert OrderedMaps to DataObjects, using template DOXML to define the
  * output types.
- * <BR>
- * 
- *  UNFINISHED PROTOTYPE WORK
+ * <BR/>
  * 
  * @author Eddy Higgins
  */

@@ -232,6 +232,12 @@ public class LegacyUtils  {
     return method;
   }
 
+  public static void legacyInstantiationFailed(String failedClass,Throwable t) {
+    log.error("Failed to instantiate legacy class: "+failedClass);
+    String msg="Is the legacy openadaptor jar available on the classpath?";
+    log.error(msg);
+    throw new RuntimeException(msg,t);
+  }
 
 //  private static Method getNonStubMethod(Class cl, String methodName,Class[] argTypes) {
 //    Method method=getMethod(cl, methodName, argTypes);
