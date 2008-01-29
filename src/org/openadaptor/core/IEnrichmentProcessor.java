@@ -37,7 +37,7 @@ import org.openadaptor.core.exception.ValidationException;
  * data that enrichment processor will then use to enrich its input data.
  * 
  * @author Kris Lachor
- * @since Post 3.3
+ * @since 3.4
  */
 public interface IEnrichmentProcessor  {
   

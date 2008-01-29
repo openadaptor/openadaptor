@@ -35,7 +35,7 @@ import org.openadaptor.core.exception.ConnectionException;
  * connector should also be able to use parameters passed from the IEhancementProcessor.
  * 
  * @author Kris Lachor
- * @since Post 3.3
+ * @since 3.4
  */
 public interface IEnrichmentReadConnector extends IReadConnector {
   

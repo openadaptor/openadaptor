@@ -100,7 +100,6 @@ public class ThrottlingReadConnector extends Component implements IPollingReadCo
     else{
       log.warn("Time interval not set.");
     }
-//    System.out.println("Time.....: " + new java.util.Date());
   	return delegate.next(timeoutMs);
   }
 

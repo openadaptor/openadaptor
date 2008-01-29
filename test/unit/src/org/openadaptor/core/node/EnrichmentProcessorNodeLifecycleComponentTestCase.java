@@ -41,7 +41,7 @@ import org.openadaptor.util.TestComponent;
  * enrichment read connector on the node (read connector establishes and destroyes connection
  * during node's lifecycle operations). 
  * 
- *TODO finish
+ * TODO finish
  */
 public class EnrichmentProcessorNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycleComponent {
   

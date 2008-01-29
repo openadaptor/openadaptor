@@ -50,7 +50,6 @@ import java.util.Map;
  * @author Eddy Higgins, Andrew Shire, Kris Lachor
  * @see JNDIConnection
  * @see JNDISearch
- * TODO test, javadoc, replace the old OldJNDIReadConnector
  */
 
 /* 
@@ -75,7 +74,7 @@ and
 
 public class JNDIReadConnector extends AbstractJNDIReadConnector implements IEnrichmentReadConnector {
 
-  private static final Log log = LogFactory.getLog(OldJNDIReadConnector.class);
+  private static final Log log = LogFactory.getLog(JNDIReadConnector.class);
 
   // internal state:
   /**
