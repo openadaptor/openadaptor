@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved.
+ Copyright (C) 2001 - 2008 The Software Conservancy as Trustee. All rights reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the
@@ -24,6 +24,7 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
 */
+
 package org.openadaptor.auxil.connector.jms;
 
 import org.apache.commons.logging.Log;
