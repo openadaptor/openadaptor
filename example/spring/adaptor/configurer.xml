@@ -21,7 +21,7 @@
 
   Run it like this...
     
-    java -Dinput=input/input.txt org.openadaptor.spring.SpringAdaptor -config configurer.xml -bean Adaptor -noprops
+    java -Dinput=input/input.txt org.openadaptor.spring.SpringAdaptor -config configurer.xml -noprops
     
   You need the following in your classpath
   

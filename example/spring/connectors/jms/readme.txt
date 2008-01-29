@@ -11,7 +11,7 @@ Please ensure that the jboss client and server jars used are from compatible rel
 
 Run these examples like this...
 
-java org.openadaptor.spring.SpringAdaptor -config example.xml -bean Adaptor -props jms.properties
+java org.openadaptor.spring.SpringAdaptor -config example.xml -props jms.properties
 
 Suggested Classpath
 

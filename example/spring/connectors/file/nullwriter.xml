@@ -13,7 +13,7 @@
     
   Run as follows.
     
-    java org.openadaptor.spring.SpringAdaptor -config nullwriter.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config nullwriter.xml
     
   The following classpath elements should be included.
   

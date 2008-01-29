@@ -20,7 +20,7 @@
 
   Run it like this...
 
-    java org.openadaptor.spring.SpringAdaptor -config feedback.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config feedback.xml 
 
   You need the following in your classpath
 

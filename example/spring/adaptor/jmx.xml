@@ -13,7 +13,7 @@
 
 Run it like this...
 
-    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config jmx.xml -bean Adaptor
+    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config jmx.xml
 
   You need the following in your classpath
 

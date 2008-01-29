@@ -17,7 +17,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config storedprocwriter.xml -bean Adaptor -props db.props
+    java org.openadaptor.spring.SpringAdaptor -config storedprocwriter.xml -props db.props
 
   You must supply db.props populated appropriately for your environment.
     

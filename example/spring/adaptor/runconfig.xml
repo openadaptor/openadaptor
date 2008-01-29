@@ -21,7 +21,7 @@
     
   Run it like this...
    
-    java org.openadaptor.spring.SpringAdaptor -config runconfig.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config runconfig.xml
     
   You need the following in your classpath
   

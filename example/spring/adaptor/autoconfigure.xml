@@ -20,7 +20,7 @@
 
   Run it like this...
     
-    java -Dinput=input/input.txt org.openadaptor.spring.SpringAdaptor -config autoconfigure.xml -bean Adaptor -props example.properties
+    java -Dinput=input/input.txt org.openadaptor.spring.SpringAdaptor -config autoconfigure.xml -props example.properties
     
   You need the following in your classpath
   

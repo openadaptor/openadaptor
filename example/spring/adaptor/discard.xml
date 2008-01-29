@@ -17,7 +17,7 @@
   
   Run it like this...
   
-  java org.openadaptor.spring.SpringAdaptor -config discard.xml -bean Adaptor
+  java org.openadaptor.spring.SpringAdaptor -config discard.xml 
   
   You need the following in your classpath
   
