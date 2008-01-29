@@ -26,11 +26,13 @@
 */
 package org.openadaptor;
 
+import java.util.MissingResourceException;
+
 /**
  * Exception which is thrown when stub methods are 
  * called but shouldn't be!
  */
-public class StubException extends RuntimeException {
+public class StubException extends MissingResourceException {
   private static final long serialVersionUID = 1L;
   
   public static final String WARN_LEGACY_OA_JAR="Please put real legacy openadaptor.jar on classpatch";
@@ -38,20 +40,12 @@ public class StubException extends RuntimeException {
   public static final String WARN_MQ_JAR="Please put real MQ jar on classpath";
  
   /**
-   * Create default StubException
-   *
-   */
-  public StubException() {
-    super();
-  }
-
-  /**
    * StubException with message
    *
    * @param msg   The error message.
    */
   public StubException(String msg) {
-    super(msg);
+    super(msg,"stub",null);
   }
 
 }

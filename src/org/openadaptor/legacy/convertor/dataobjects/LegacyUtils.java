@@ -31,10 +31,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.StubException;
 import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.dataobjects.DataObject;
 import org.openadaptor.util.DateHolder;
@@ -73,7 +73,7 @@ public class LegacyUtils  {
     try {
       new DateHolder(); //Try and create an instance
     }
-    catch (StubException se) {
+    catch (MissingResourceException se) {
       stub=true;
     }
     return stub;
@@ -157,7 +157,7 @@ public class LegacyUtils  {
         method.invoke(legacyOpenadaptorObject,new Object[] {(String) entry.getKey(), (String) entry.getValue()});
       } 
       //ToDo: Revisit this.
-      catch (StubException se) { //Ignore the stub warning, it would break springcheck ant task for now
+      catch (MissingResourceException se) { //Ignore the stub warning, it would break springcheck ant task for now
         log.warn(se);
         if (!ignoreStubExceptions()) {
           throw new RuntimeException(se.getMessage(),se);
@@ -166,13 +166,13 @@ public class LegacyUtils  {
       catch (InvocationTargetException ite) {
         Throwable cause=ite.getCause();
         log.debug("InvocationTargetException cause: "+cause);
-        if (cause instanceof StubException) {
+        if (cause instanceof MissingResourceException) {
           if (ignoreStubExceptions()){
             log.warn("Ignoring StubException generated on setAttributes");
           }
           else {
             log.error("Stub code invoked - "+cause.getMessage());
-            throw (StubException)cause;
+            throw (MissingResourceException)cause;
           }
         }
         else {
