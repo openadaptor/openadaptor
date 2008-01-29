@@ -584,11 +584,11 @@ This time, if the ticker 'XXX' is chosen in <a href="test.html" target="_blank">
 discard the data completely.
 </p>
 <p class="p1">
-It is worth noting that the filter's location in the processing pipeline dictates that is acts upon the Map data as
+It is worth noting that the filter's location in the processing pipeline dictates that it acts upon the Map data as
  read in from the original servlet.
 </p>
 <p class="p1">
-The script may be altered to, for example, only allow records with ticker 'XXX' by inverting the test ( !=) in 
+The script may be altered to, for example, only allow records with ticker 'XXX' by inverting the test (!=) in 
 the script. The script itself may be as complex as desired. The filter only uses the final result value to determine 
 whether to pass or fail the data record.
 </p>
@@ -627,7 +627,7 @@ which is free to download and should be trivial to install and run.
 </ul>
 <p class="p1">
 Additional beans for JNDI and JMS will be required, in addition to the JMSWrite Connector.
-These can be seen here here:
+These can be seen here:
 </p>
 
 <div class="config"><pre>
@@ -675,7 +675,7 @@ Its function is simply to fetch messages from the queue and print them to the co
 </p>
 <p class="p1">
 <b>Note:</b> As this example is intended to be used in conjunction with the previous <a href="#step6">example</a> 
-which serves as the JMS publisher, that example should already be running separately in it's own command 
+which serves as the JMS publisher, that example should already be running separately in its own command 
 window / shell.
 </p>
 <p class="p1">
@@ -683,7 +683,7 @@ A new command shell / window should be created, and the initialisation steps fro
 again followed in the new window.
 </p>
 <p class="p1">
-Once setup correctly, the subscriber may then be launched with:
+Once set up correctly, the subscriber may then be launched with:
 </p>
 <div class="shell"><pre>
 
@@ -783,7 +783,7 @@ the resulting trade information into a database table via JDBC.
 </p>
 <p class="p1">
 The tutorial was developed to use hypersonic <a href="http://hsqldb.org" target="_blank">http://hsqldb.org</a>
-- a 100% java lightweight db.
+- a 100% java light-weight db.
 </p>
 <p class="p1">
 For this example, an instance of the hypersonic database (with an appropriate schema) must be available.
@@ -905,8 +905,7 @@ data which has been discarded by a filter:
      a filter; in the above example it's the newly added BuySellFilter shown here:
  </ul>
 <div class="config"><pre>
-   &lt;bean id="BuySellFilter"
-		class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor"&gt;
+  &lt;bean id="BuySellFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor"&gt;
    &lt;property name="scriptProcessor"&gt;
     &lt;bean class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
      &lt;property name="script"&gt;
@@ -965,7 +964,7 @@ the input, or throws an exception depending on the configured value of discardBa
 </p>
 <p class="p1">
 Before running the example, the custom code must be compiled (naturally this requires the availability of 
-a suitable java compiler (a JRE won't suffice).
+a suitable java compiler - a JRE won't suffice).
 </p>
 <p class="p1">
 The following should be executed in a command shell which has the classpath appropriately setup as for the
@@ -1045,7 +1044,7 @@ It is also intended to also highlight some of the implementation of openadaptor.
 In the previous examples adaptors where assembled from ReadConnectors, Processors and WriteConnectors. In fact
 however, the adaptor framework deals with implementations of <code>IMessageProcessor</code> and 
 <code>IRunnable</code> (See the javadoc for further information). The classes that actually implement these 
-interfaces are ReadNode, ProcessorNode and WriteNode respectively. These classes provide lifecycle, transaction,
+interfaces are ReadNode, ProcessorNode and WriteNode, respectively. These classes provide lifecycle, transaction,
 batching and exception management capabilities for the components they generally contain.
 </p>
 <p class="p1">
@@ -1082,7 +1081,7 @@ Exception handling refers to an adaptor's behaviour when one of its components r
 </p>
 <p class="p1">
 By default, adaptors are not configured to handle exceptions, meaning that when an exception is raised, it will
-be logged, and the propagate to the back to the call that instantiated openadaptor. In practice, it means that 
+be logged, and then propagate to the back to the call that instantiated openadaptor. In practice, it means that 
 the adaptor will halt with a non-zero exit status.
 </p>
 <p class="p1"> 
@@ -1132,7 +1131,7 @@ Fan-out in the exception handler may be useful in situations when information ab
 multiple destinations.
 </p>
 <p class="p1">
-For example, an exception may need to be logged, but also generate an an e-mail alert to application owners
+For example, an exception may need to be logged, but also generate an e-mail alert to application owners
 and issue a warning (via a chat mechanism) to the organisation's instant messaging system.
 </p>
 <p class="p1">
