@@ -264,18 +264,17 @@ Here is the additional bean and the modified config for the Router.</p>
 
 <p>Again it may be exercised with the test webpage <a href="test.html" target="_blank">test.html</a></p>
 
-<p>This time, the output should instead take the form of an XML Document similar to:</p>
+<p>In this example, the output from the Servlet is passed to XMLConverter bean.
+This converts the map of data into an XML document (the root element is configured to be "Trade"),
+this output is then passed to the Writer bean which writes the output to the console (stdout) as before.
+The output should take the form of an XML Document similar to:
+</p>
 
 <textarea cols="100" rows="4" readonly="true">
 
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Trade><buySell>SELL</buySell><ticker>ABC</ticker><price>123.56</price></Trade>
 </textarea>
-
-<p>In this example, the output from the Servlet is passed to XMLConverter bean.
-This converts the map of data into an XML document (the root element is configured to be "Trade"),
-this output is then passed to the Writer bean which writes the output to the console (stdout) as before
-</p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -317,7 +316,7 @@ the additional bean and the modified config for the Pipeline bean.</p>
 
 <p>Again it may be tested with the test webpage <a href="test.html" target="_blank">test.html</a>.
 If a numeric price is input, the adaptor should behave as previously.
-However, if a non numeric price is input, the adaptor will fail and exit.<br>
+However, if a non numeric price is input, the adaptor will fail and exit.
 This is because the XML validator will throw an processing exception, which will propagate back 
 to the ReadConnector (The Servlet), and ultimately cause the adaptor to stop.</p>
 
@@ -354,9 +353,9 @@ The additional bean and the modified configuration is:</p>
   java org.openadaptor.spring.SpringAdaptor -config step03a.xml 
 </pre></div>
 
-<p>If invalid input is suplplie (via<a href="test.html" target="_blank">test.html</a>) the
-  invalid xml will be filtered out and written to the configured file (<a href="output/puberror.txt">
-  puberror.txt</a>). Note that unlike in the previous example, the adaptor will not halt .</p>
+<p>If invalid input is supplied (via <a href="test.html" target="_blank">test.html</a>) the
+  invalid xml will be filtered out and written to the configured file (<a href="output/puberror.txt">puberror.txt</a>). 
+  Note that unlike in the previous example, the adaptor will not halt .</p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -366,7 +365,7 @@ The additional bean and the modified configuration is:</p>
 <a name="step4"></a>
 <h2>Step 4</h2>
 <p>This adaptor <a href="step04.xml" target="_blank">step04.xml</a> 
-extends the previous adaptor (including exception Handler) by writing the output to a file instead of the console.
+extends the previous adaptor (including exception handler) by writing the output to a file instead of the console.
 This can be trivially achieved by setting the <code>filename</code> property of
 the Writer:
 
@@ -384,8 +383,8 @@ the Writer:
   java org.openadaptor.spring.SpringAdaptor -config step04.xml 
 </pre></div>
 
-<p>Now, instead of outputing the information to the console <a href="test.html" target="_blank">test.html</a>, the adaptor will
-output the valid xml documents to the configured file.</p>
+<p>Now, instead of outputing the information to the console, the adaptor will
+output the valid xml documents created from data input from <a href="test.html" target="_blank">test.html</a> to the configured file.</p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
 
