@@ -895,16 +895,18 @@ subsequent data records. </p>
 
 <h3>a) Compound Exception Handler</h3>
 
-The exceptionProcessor can be made up of any number of nodes which can branch off just like any other nodes that take part in  
-the 'normal' processing flow. However, such composite exceptionProcessor should be assembled carefully and any 
+The exceptionProcessor can consist of any number of nodes which can fan out just like any other nodes that participate in  
+the normal processing flow. However, such composite exceptionProcessors should be assembled with care, and any 
 user-defined implementations of OA interfaces that take part in exception handling should be programmed defensively 
-and try to avoid throwing exceptions themselves. Exceptions thrown by the exceptionProcessor won't be
-handled to avoid a potential indefinite exception catch-rethrow cycle, they'll be treated like normal exceptions
-when the exception handling is disabled, which means they'll be logged in standard logs and the adaptor will then shut down. 
+to try to avoid throwing exceptions themselves.<br> Exceptions thrown by the exceptionProcessor won't be
+handled to avoid a potential indefinite exception catch-rethrow cycle; they will not have any exception handling, meaning
+they will be logged as mentioned, and the adaptors in which they are raised will terminate. 
 
-<br/>Branching in the exception handler may be useful in situations when information about errors is to be sent to multiple destinations.
-For example, it needs to be logged but also generate an an e-mail alert to application owners
-and 'chat' a warning to the organisation's instant messaging system. Consider this contrived example: <br/><br/>
+<br/>Fan-out in the exception handler may be useful in situations when information about errors is to be sent to multiple
+destinations.<br>
+For example, an exception may need to be logged, but also generate an an e-mail alert to application owners
+and issue a warning (via a chat mechanism) to the organisation's instant messaging system.<br>
+Consider this contrived example: <br/><br/>
 
 <textarea cols="110" rows="22" readonly="true">
   <bean id="Router" class="org.openadaptor.core.router.Router">
