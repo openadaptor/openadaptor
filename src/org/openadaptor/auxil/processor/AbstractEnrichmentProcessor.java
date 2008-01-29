@@ -49,8 +49,6 @@ public abstract class AbstractEnrichmentProcessor extends Component implements I
   
   private IEnrichmentReadConnector readConnector;
   
-  private String commaSeparatedIndexes;
-  
   private String commaSeparatedFieldNames;
   
   /**
@@ -74,7 +72,6 @@ public abstract class AbstractEnrichmentProcessor extends Component implements I
    * to be passed to the reader.
    */
   public void setParameterIndexes(String commaSeparatedIndexes){
-    this.commaSeparatedIndexes = commaSeparatedIndexes;
   }
 
   /**
