@@ -36,7 +36,7 @@ import org.openadaptor.core.IEnrichmentProcessor;
  * A enrichment processor with generic implementations of prepering parameters and 
  * enhancing input data. 
  * 
- * Written to replace the (depricated) {@link JNDIEnhancementProcessor}.
+ * Written to replace the (deprecated) {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor}.
  * 
  * @author Kris Lachor
  * @since Post 3.3

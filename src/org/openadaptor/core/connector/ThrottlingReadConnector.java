@@ -42,8 +42,8 @@ import org.openadaptor.core.exception.ValidationException;
  * {@link IReadConnector#next(long)}
  * 
  * The throttling occurs between calls to {@link IReadConnector#next(long)}.
- * Note that the difference between this connector and {@link ILoopingPollingReadConnector}
- * and {@link ICronnablePolingReadConnector} is that this connector operates between
+ * Note that the difference between this connector and {@link LoopingPollingReadConnector}
+ * and {@link CronnablePollingReadConnector} is that this connector operates between
  * single calls to #next(long) by the underlying reader whereas the other two treat 
  * all calls #next(long) until #isDry() is true, as one read operation. 
  * This connector does not connect or disconnect the underlying reader.
