@@ -77,7 +77,7 @@ h4 {
 </head>
 <title>openadaptor tutorial</title>
 <body>
-<h1>openAdaptor Tutorial</h1>
+<h1>openadaptor Tutorial</h1>
 <p class="p1">
 This tutorial assumes that openadaptor has already been installed, the
 Java <code>CLASSPATH</code> has been set appropriately the simple adaptor will run correctly. If not, 
@@ -1041,11 +1041,15 @@ how file based connectors can be used for both batch file processing and as part
 It is also intended to also highlight some of the implementation of openadaptor.
 </p>
 <p class="p1">
-In the previous examples adaptors where assembled from ReadConnectors, Processors and WriteConnectors. In fact
+In the previous examples adaptors where assembled from ReadConnectors, DataProcessors and WriteConnectors. In fact
 however, the adaptor framework deals with implementations of <code>IMessageProcessor</code> and 
 <code>IRunnable</code> (See the javadoc for further information). The classes that actually implement these 
 interfaces are ReadNode, ProcessorNode and WriteNode, respectively. These classes provide lifecycle, transaction,
 batching and exception management capabilities for the components they generally contain.
+</p>
+<p class="p1">
+Note: there is a component type that does not occur in previous examples - an EnrichmentProcessor, with a 
+corresponding EnrichmentProcessorNode.
 </p>
 <p class="p1">
 For convenience, consistency, (and brevity in the configurations), Routers  wrap (a.k.a. "autobox") 
@@ -1103,7 +1107,7 @@ though typically it may simply be a file writer connector:
 </pre></div>  
 
 <p class="p1">
-This staightforward will generally prove sufficient for the majority of adaptors.
+This straightforward approach will generally prove sufficient for the majority of adaptors.
 </p>
 <p class="p1"> 
 It will cause all instances of java.lang.Exception and subclasses thrown in any of adaptor's nodes to be caught
