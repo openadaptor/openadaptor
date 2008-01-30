@@ -50,7 +50,7 @@ import org.openadaptor.core.IComponent;
  * top level application class (such as an adaptor).
  * 
  */
-public class Application implements IComponent {
+public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static final Log log = LogFactory.getLog(Application.class);
 
@@ -176,7 +176,10 @@ public class Application implements IComponent {
     String url = getRegistrationUrl();
     if (url != null && url.length() > 0) {
       try {
-        PropertiesPoster.post(url, propsToRegister);
+        //Uncomment this when we move to Async Registration.
+        //PropertiesPoster.post(url, propsToRegister,this);
+        PropertiesPoster.post(url,propsToRegister);
+        
         registered = true;
         log.info("posted registration properties to " + url);
       } catch (Exception e) {
@@ -245,5 +248,16 @@ public class Application implements IComponent {
    */
   public void setRegisterOnlyOnce(final boolean registerOnlyOnce) {
     this.registerOnlyOnce = registerOnlyOnce;
+  }
+
+  /**
+   * Process a callback from Registration.
+   * 
+   * Not used yet.
+   */
+  public void registrationCallbackEvent(Object src, Object data) {
+    log.debug("registrationCallbackEvent occured from "+src);
+    String info=data==null?"No information":data.toString();
+    log.info("Registration status: "+info);
   }
 }

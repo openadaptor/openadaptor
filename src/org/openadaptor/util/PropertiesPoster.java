@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util;
 
@@ -60,7 +60,7 @@ import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
  * @author Eddy Higgins
  */
 public class PropertiesPoster {
-  private static Log log = LogFactory.getLog(PropertiesPoster.class.getName());
+  protected static Log log = LogFactory.getLog(PropertiesPoster.class.getName());
 
   /**
    * W3C state that UTF-8 should be used (not doing so may introduce compatibilities)
@@ -72,6 +72,19 @@ public class PropertiesPoster {
   private PropertiesPoster() {
   } // No instantiation allowed.
 
+
+  public static void post(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
+    AsyncPoster poster=new AsyncPoster(caller,registrationURL,properties);
+    Thread posterThread=new Thread(poster,"Registration-Thread");
+    log.debug("Launching new Thread to register asynchronously");
+    posterThread.setDaemon(true);
+    posterThread.start();
+  }
+
+  public static void post(String registrationURL, Properties properties) throws Exception {
+    syncPost(registrationURL,properties);
+  }
+
   /**
    * Utility method which will attempt to POST the supplied properties information to the supplied URL.
    * 
@@ -82,7 +95,7 @@ public class PropertiesPoster {
    * @param properties
    * @throws Exception
    */
-  public static void post(String registrationURL, Properties properties) throws Exception {
+  protected static void syncPost(String registrationURL, Properties properties) throws Exception {
 
     URL url = new URL(registrationURL);
     String postData = generatePOSTData(properties);
@@ -204,3 +217,28 @@ public class PropertiesPoster {
     return sb.toString();
   }
 }
+
+class AsyncPoster implements Runnable {
+  private IRegistrationCallbackListener listener;
+  private String url;
+  private Properties props;
+
+  public AsyncPoster(IRegistrationCallbackListener listener,String url, Properties props) {
+    this.listener=listener;
+    this.url=url;
+    this.props=props;
+  }
+
+  public void run() {
+    Object result=null;
+    try {
+      PropertiesPoster.syncPost(url,props);
+    }
+    catch (Exception e) {
+      result=e;
+    }
+    listener.registrationCallbackEvent(this, result);
+    PropertiesPoster.log.debug("Registration thread is done");
+  }
+}
+
