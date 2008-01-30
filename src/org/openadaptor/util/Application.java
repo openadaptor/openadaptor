@@ -190,7 +190,7 @@ public class Application implements IComponent {
     if (registrationUrl != null) {
       return registrationUrl;
     } else {
-      return System.getProperty(PROPERTY_REGISTRATION_URL, null);
+      return props.getProperty(PROPERTY_REGISTRATION_URL);
     }
   }
   
