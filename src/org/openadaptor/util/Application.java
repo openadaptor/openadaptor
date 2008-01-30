@@ -193,7 +193,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     if (registrationUrl != null) {
       return registrationUrl;
     } else {
-      return props.getProperty(PROPERTY_REGISTRATION_URL);
+      return System.getProperty(PROPERTY_REGISTRATION_URL, null);
     }
   }
   
