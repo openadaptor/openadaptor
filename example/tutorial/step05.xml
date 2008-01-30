@@ -56,10 +56,8 @@
     <property name="schemaURL" value="schema.xsd"/>
   </bean>
     
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-    <property name="filename" value="output/trades.xml"/>
-  </bean>
-  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+   
   <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
     <property name="filename" value="output/puberror.txt"/>
   </bean>
