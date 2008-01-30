@@ -18,6 +18,11 @@
   such as registration.
     
   The actual adaptor, simply reads stdin and writes to stdout.
+
+  Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config registration.xml -bean Adaptor -props registration.properties
+
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
@@ -31,7 +36,7 @@
         </property>
       </bean>
     </property>
-    <property name="registrationUrl" value="http://foo.com/register.jsp"/> 
+    <property name="registrationUrl" value="${registration.url}"/>
     <property name="additionalRegistrationProps">
       <props>
         <prop key="purpose">Registration Example</prop>
