@@ -207,6 +207,10 @@
         </xsl:choose>
       </xsl:when>
 
+      <xsl:when test="@parent">
+        <xsl:text>color=LightCyan</xsl:text>
+      </xsl:when>
+
       <!-- Extension classes: -->
       <xsl:otherwise>
         <xsl:text>color=Pink</xsl:text>
@@ -328,93 +332,106 @@
           <!-- Pipeline: does not support Discard routing (so no edges to define here). -->
 
 
-          <!-- Router: Add exception edge definitions for this node: -->
-          <xsl:if test="@name='exceptionMap'">
-            <xsl:for-each select="beans:map/beans:entry">
-              <xsl:variable name="entryKeyNode" select="@key-ref|@key" />
 
-              <!--
-                Typically the exceptionMap is a map of nested maps
-                (separate exception map for each node):
-                -->
-              <xsl:for-each select="beans:map/beans:entry">
-                <xsl:choose>
+          <!-- Exception routing: this is all handled using exceptionProcessor since OpenAdaptor 3.3.0 -->
+          <xsl:if test="@name='exceptionProcessor'">
+            
+            <xsl:choose>
+            
+              <xsl:when test="count(beans:bean/beans:property[@name='exceptionMap']) > 0">
+                <!-- add multiple exception edge definitions for this node: -->
+
+                <xsl:for-each select="beans:bean/beans:property[@name='exceptionMap']/beans:map/beans:entry">
+                  <xsl:variable name="entryKeyNode" select="@key-ref|@key" />
 
                   <!--
-                    If the nested map has a key of "*" in the map of maps
-                    then this exception routing is applied to all nodes.
-                    Rather than riddling the image with exception lines, we show this by drawing
-                    the Router itself as the source node.
+                    Typically the exceptionMap is a map of nested maps
+                    (separate exception map for each node):
                     -->
-                  <xsl:when test="$entryKeyNode='*'">
+                  <xsl:for-each select="beans:map/beans:entry">
+                    <xsl:choose>
+
+                      <!--
+                        If the nested map has a key of "*" in the map of maps
+                        then this exception routing is applied to all nodes.
+                        Rather than riddling the image with exception lines, we show this by drawing
+                        the Router itself as the source node.
+                        -->
+                      <xsl:when test="$entryKeyNode='*'">
+                        <xsl:call-template name="exceptionEdge">
+                          <xsl:with-param name="srcNode" select="$srcNode" />
+                          <xsl:with-param name="destNode" select="@value-ref" />
+                          <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
+                          <xsl:with-param name="arrowTailShape" select="'dot'" />
+                        </xsl:call-template>
+                      </xsl:when>
+
+                      <!--
+                        Otherwise the nested map has a Node name as a key in the map of maps
+                        and so this exception routing is applied just to this named node.
+                        We show this by drawing the named node as the source node (obviously ;-).
+                        -->
+                      <xsl:otherwise>
+                        <xsl:call-template name="exceptionEdge">
+                          <xsl:with-param name="srcNode" select="$entryKeyNode" />
+                          <xsl:with-param name="destNode" select="@value-ref" />
+                          <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
+                          <xsl:with-param name="arrowTailShape" select="'dot'" />
+                        </xsl:call-template>
+                      </xsl:otherwise>
+
+                    </xsl:choose>
+                  </xsl:for-each>
+
+                  <!--
+                    Atypically the exceptionMap is NOT a map of maps,
+                    and it is just a single unnested map:
+                    -->
+                  <xsl:if test="not(beans:map/beans:entry)">
+                    <!--
+                      This single map is treated as if it appeared in a map of maps with a key of "*",
+                      i.e. this routing is applied to all nodes.
+                      Rather than riddling the image with exception lines, we show this by drawing
+                      the Router itself as the source node.
+                      -->
                     <xsl:call-template name="exceptionEdge">
                       <xsl:with-param name="srcNode" select="$srcNode" />
                       <xsl:with-param name="destNode" select="@value-ref" />
                       <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
                       <xsl:with-param name="arrowTailShape" select="'dot'" />
                     </xsl:call-template>
-                  </xsl:when>
+                  </xsl:if>
 
-                  <!--
-                    Otherwise the nested map has a Node name as a key in the map of maps
-                    and so this exception routing is applied just to this named node.
-                    We show this by drawing the named node as the source node (obviously ;-).
-                    -->
-                  <xsl:otherwise>
-                    <xsl:call-template name="exceptionEdge">
-                      <xsl:with-param name="srcNode" select="$entryKeyNode" />
-                      <xsl:with-param name="destNode" select="@value-ref" />
-                      <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
-                      <xsl:with-param name="arrowTailShape" select="'dot'" />
-                    </xsl:call-template>
-                  </xsl:otherwise>
+                </xsl:for-each>
 
-                </xsl:choose>
-              </xsl:for-each>
+                <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
+                <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
 
-              <!--
-                Atypically the exceptionMap is NOT a map of maps,
-                and it is just a single unnested map:
-                -->
-              <xsl:if test="not(beans:map/beans:entry)">
+              </xsl:when>
+          
+              <xsl:otherwise>
+                <!--  add single edge for global exceptionProcessor: -->
+
                 <!--
-                  This single map is treated as if it appeared in a map of maps with a key of "*",
-                  i.e. this routing is applied to all nodes.
+                  This routing is applied to all nodes.
                   Rather than riddling the image with exception lines, we show this by drawing
                   the Router itself as the source node.
                   -->
+                <xsl:variable name="destNode" select="@ref" />
                 <xsl:call-template name="exceptionEdge">
                   <xsl:with-param name="srcNode" select="$srcNode" />
-                  <xsl:with-param name="destNode" select="@value-ref" />
-                  <xsl:with-param name="edgeTooltipLabel" select="'exceptionRouting'" />
+                  <xsl:with-param name="destNode" select="$destNode" />
+                  <xsl:with-param name="edgeTooltipLabel" select="'exceptionProcessor'" />
                   <xsl:with-param name="arrowTailShape" select="'dot'" />
                 </xsl:call-template>
-              </xsl:if>
 
-            </xsl:for-each>
+                <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
+                <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
 
-            <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-            <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
-          </xsl:if>
+              </xsl:otherwise>
 
+            </xsl:choose>
 
-          <!--  Pipeline: add single edge for global exceptionProcessor: -->
-          <xsl:if test="@name='exceptionProcessor'">
-            <!--
-              This routing is applied to all nodes.
-              Rather than riddling the image with exception lines, we show this by drawing
-              the Router itself as the source node.
-              -->
-            <xsl:variable name="destNode" select="@ref" />
-            <xsl:call-template name="exceptionEdge">
-              <xsl:with-param name="srcNode" select="$srcNode" />
-              <xsl:with-param name="destNode" select="$destNode" />
-              <xsl:with-param name="edgeTooltipLabel" select="'exceptionProcessor'" />
-              <xsl:with-param name="arrowTailShape" select="'dot'" />
-            </xsl:call-template>
-
-            <!-- Apply bean rules to inline beans in routing properties (treat as top-level beans) -->
-            <xsl:apply-templates select="beans:map/beans:entry/beans:value/beans:bean" />
           </xsl:if>
 
         </xsl:for-each>
@@ -443,6 +460,7 @@
           </xsl:for-each>
         </xsl:for-each>
       </xsl:otherwise>
+      
     </xsl:choose>
 
     <!-- Check for factory bean reference: -->

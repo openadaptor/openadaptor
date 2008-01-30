@@ -161,7 +161,7 @@
         </td>
         <td>
           <!-- Router exception routing: -->
-          <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionMap']/beans:map/beans:entry[@key-ref=$beanId]/beans:map" />
+          <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionProcessor']/beans:bean[@class='org.openadaptor.core.exception.ExceptionHandlerProxy']/beans:property[@name='exceptionMap']/beans:map/beans:entry[@key-ref=$beanId]/beans:map" />
 
           <!-- Pipeline exception routing: -->
           <xsl:apply-templates select="$routerNode/beans:property[@name='exceptionProcessor']/@ref" />
@@ -204,7 +204,8 @@
               </xsl:otherwise>
             </xsl:choose>
             
-            <!-- Beans always have a class, unless they refer to a factory bean: -->
+            <!-- Beans always have a class (except class is optional if they refer to a parent bean),
+                 unless they refer to a factory bean: -->
             <xsl:if test="@class">
               <xsl:text> : </xsl:text>
               <a class="th">
@@ -268,6 +269,22 @@
           </font>
         </th>
       </tr>
+
+      <xsl:if test="@parent">
+        <tr bgcolor="#FFFFFF">
+          <td bgcolor="#CCCCCC">
+            <xsl:text>parent</xsl:text>
+          </td>
+          <td colspan="2">
+            <a href="#{@parent}">
+              <xsl:value-of select="@parent" />
+            </a>
+          </td>
+          <td>
+            <xsl:apply-templates select="beans:description" />
+          </td>
+        </tr>
+      </xsl:if>
 
       <xsl:if test="beans:description">
         <tr bgcolor="#CCCCCC">
