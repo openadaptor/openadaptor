@@ -1,7 +1,7 @@
 =================================================
-openadaptor3 production 3.3.1 Release Notes
+openadaptor3 production 3.4 Release Notes
 
-See licences/licence.txt for Licence information.
+See licence.txt for Licence information.
 =================================================
 
 Date: 31st January 2008
