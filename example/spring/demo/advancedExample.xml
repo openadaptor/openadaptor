@@ -89,13 +89,11 @@
   </bean>
   
   <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
-    <description>Reader which polls database using configured SQL.</description>
+    <description>Reader queries database using the configured SQL.</description>
     <property name="jdbcConnection" ref="jdbcConnection"/>
     <property name="sql">
       <value>
-        SELECT u.Qty as Quantity
-        FROM USER u
-        WHERE u.UserId = ?
+        SELECT dob FROM USER WHERE UserId = ?
       </value>
     </property>
   </bean>
