@@ -22,7 +22,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config hospitalReader.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config hospitalReader.xml
     
   You need the following in your classpath
   

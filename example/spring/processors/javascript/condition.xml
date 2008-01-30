@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config condition.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config condition.xml 
    
   You need the following in your classpath
   

@@ -20,7 +20,7 @@
 
   Run it like this...
 
-    java org.openadaptor.spring.SpringAdaptor -config fromjson.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config fromjson.xml
 
   You need the following in your classpath
 

@@ -20,7 +20,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config JavascriptFilter.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config JavascriptFilter.xml
     
   You need the following in your classpath
   

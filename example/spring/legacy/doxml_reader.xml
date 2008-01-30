@@ -21,7 +21,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config doxml_reader.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config doxml_reader.xml
 
   For this example to run correctly you need to download the legacy openadaptor.jar from
   openadaptor 1.7.2.2 or later. This is available from http://www.openadaptor.org. Ensure
