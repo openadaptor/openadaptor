@@ -14,12 +14,10 @@
     * converts to orderedmaps
     * applies a simple filter to records
     * outputs to stdout
-    
-  It is designed to illustrate a simple use of a JavascriptFilterProcessor
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config JavascriptFilter.xml
+    java org.openadaptor.spring.SpringAdaptor -config advancedExample.xml
     
   You need the following in your classpath
   
