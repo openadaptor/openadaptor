@@ -87,7 +87,7 @@ public class ThrottlingReadConnectorTestCase extends TestCase {
     Date stop = new Date();
     long durationMs = stop.getTime() - start.getTime();
     assertTrue(durationMs >= 200);
-    assertTrue(durationMs < 500);
+    assertTrue(durationMs < 1000);
   }
   
   private int runThrottlingReader(IReadConnector poller, String dataString) {
