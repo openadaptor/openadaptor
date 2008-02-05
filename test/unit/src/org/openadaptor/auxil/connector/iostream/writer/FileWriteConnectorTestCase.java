@@ -20,8 +20,12 @@ public class FileWriteConnectorTestCase extends TestCase {
   private static String TEST_FILE_CONTENT = "larry\ncurly\nmo\n";
   
   public void testStringDataWriter() throws IOException {
-    FileWriteConnector connector = new FileWriteConnector("writer");
-    File tempFile = File.createTempFile("xyz", ".txt", new File(DIR));
+  	File dir = new File(DIR);
+  	if (!dir.exists()) {
+  		dir.mkdir();
+  	}
+    FileWriteConnector connector = new FileWriteConnector("writer");    
+    File tempFile = File.createTempFile("xyz", ".txt", dir);
     connector.setFilename(tempFile.getAbsolutePath());
     runWriter(connector);
     verifyFileContent(tempFile.getAbsolutePath(), TEST_FILE_CONTENT);
@@ -31,6 +35,10 @@ public class FileWriteConnectorTestCase extends TestCase {
    * Tests if the existing file is renamed before a new file is created.
    */
   public void testMoveTo() throws IOException {
+  	File dir = new File(DIR);
+  	if (!dir.exists()) {
+  		dir.mkdir();
+  	}
     FileWriteConnector connector1 = new FileWriteConnector("writer");
     File tempFile = File.createTempFile("xyz", ".txt", new File(DIR));
     connector1.setFilename(tempFile.getAbsolutePath());
@@ -51,6 +59,10 @@ public class FileWriteConnectorTestCase extends TestCase {
    * before a new file is created.
    */
   public void testMoveTo_WithTimeStamp() throws IOException {
+  	File dir = new File(DIR);
+  	if (!dir.exists()) {
+  		dir.mkdir();
+  	}
     FileWriteConnector connector1 = new FileWriteConnector("writer");
     File tempFile = File.createTempFile("xyz", ".txt", new File(DIR));
     connector1.setFilename(tempFile.getAbsolutePath());
