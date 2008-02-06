@@ -7,8 +7,10 @@
     <target name="init" description="Initialisation of directories and classpaths">
    	<echo level="info" message="Initialising directories and classpaths"/>
 	  <tstamp/>
-   	<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
-  	<echo level="info" message="Build timestamp: ${build.timestamp}"/>
+   	<!-- Explicitly override tag to change release -->
+   	<property name="tag" value="trunk"/>
+  	<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
+  	<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
   	<property name="dir.src" value="${basedir}/src"/>
   	<property name="dir.lib" value="${basedir}/lib"/>
 
@@ -38,7 +40,7 @@
      	<pathelement path="${dir.build.classes}"/>
 	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
      	<path refid="classpath" />
-     </path> 	
+     </path>   	
 	</target>
 	
 	
@@ -70,12 +72,26 @@
 	
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source">
-		<mkdir dir="${dir.build.javadocs}"/>
+	 <echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}"/>
+	 <mkdir dir="${dir.build.javadocs}"/>
+	 <javadoc
+		destdir="${dir.build.javadocs}"
+		classpathref="classpath.spring"
+		doctitle="openadaptor ${tag}"
+		verbose="false"
+		additionalparam="-quiet">
+		<fileset dir="${dir.src}">
+		  <include name="**/*.java"/>
+		</fileset>
+		<fileset dir="${dir.spring.src}">
+			<include name="**/*.java"/>
+		</fileset>
+  </javadoc>
 	</target>
 	
 	<!-- Packaging tasks -->
   <target name="jars" depends="compile.all" description="Create jars from compiled classes">
-		<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
+	<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
     <jar destfile="${dir.build.lib}/openadaptor.jar">
       <fileset dir="${dir.build.classes}"/>
