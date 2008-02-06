@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="openadaptor" default="package">
+	<description>
+		Ant build script for openadaptor
+		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
+	</description>
+    <target name="init" description="Initialisation of directories and classpaths">
+   	<echo level="info" message="Initialising directories and classpaths"/>
+	  <tstamp/>
+   	<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
+  	<echo level="info" message="Build timestamp: ${build.timestamp}"/>
+  	<property name="dir.src" value="${basedir}/src"/>
+  	<property name="dir.lib" value="${basedir}/lib"/>
+
+  	<property name="dir.spring" value="${basedir}/spring"/>
+  	<property name="dir.spring.src" value="${dir.spring}/src"/>
+  	<property name="dir.spring.lib" value="${dir.spring}/lib"/>
+
+  	<property name="dir.stub.src" value="${basedir}/stub/src"/>
+  	<property name="dir.build" value="${basedir}/build"/>
+  	<property name="dir.build.lib" value="${dir.build}/lib"/>
+  	<property name="dir.build.classes" value="${dir.build}/classes"/>
+  	<property name="dir.build.stub" value="${dir.build}/stub"/>
+  	<property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
+  	<property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
+  	<property name="dir.build.javadocs" value="${dir.build}/javadocs"/>
+
+  	<path id="classpath.lib">
+	    <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
+	  </path>
+  	
+    <path id="classpath">
+    	<path refid="classpath.lib" />
+    	<pathelement path="${dir.build.stub.classes}"/>
+    </path>
+  	
+  	<path id="classpath.spring">
+     	<pathelement path="${dir.build.classes}"/>
+	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
+     	<path refid="classpath" />
+     </path> 	
+	</target>
+	
+	
+	<!-- Compilation tasks -->
+	<target name="compile.stub" depends="clean,init" description="Compile stub classes: legacy oa,mq and tibrv">
+		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}"/>
+		<mkdir dir="${dir.build}"/>		
+		<mkdir dir="${dir.build.stub}"/>		
+		<mkdir dir="${dir.build.stub.classes}"/>
+	  <javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath"/>
+  </target>
+	
+	<target name="compile" depends="compile.stub" description="Compile openadaptor source code">
+		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}"/>
+		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.build.classes}"/>
+	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath"/>
+  </target>
+
+	<target name="compile.spring" depends="compile" description="Compile openadaptor spring source code">
+		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}"/>
+		<mkdir dir="${dir.build.spring.classes}"/>
+	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring"/>
+  </target>
+	
+	<target name="compile.all" depends="compile.spring" description="Compile all source code"/>
+	
+	<!-- Test tasks -->
+	
+	<!-- Javadoc tasks -->
+	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source">
+		<mkdir dir="${dir.build.javadocs}"/>
+	</target>
+	
+	<!-- Packaging tasks -->
+  <target name="jars" depends="compile.all" description="Create jars from compiled classes">
+		<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
+   <mkdir dir="${dir.build.lib}"/>
+    <jar destfile="${dir.build.lib}/openadaptor.jar">
+      <fileset dir="${dir.build.classes}"/>
+    </jar>
+  	
+    <jar destfile="${dir.build.lib}/openadaptor-spring.jar">
+      <fileset dir="${dir.build.spring.classes}"/>
+    </jar>
+  	
+    <jar destfile="${dir.build.lib}/openadaptor-stub.jar">
+      <fileset dir="${dir.build.stub.classes}"/>
+    </jar>
+   </target>
+	
+	<!--
+   <jar destfile="${dir.build.lib}/openadaptor-depends.jar">
+     <fileset dir="${dir.build.stub.classes}"/>
+  </jar>
+	-->
+	
+	<target name="package.init" depends="init" description="Initialisation of directories etc. for packaging build">
+		<property name="dir.package" value="${dir.build}/package"/>
+		<echo level="info" message ="Initialising package area ${dir.package}"/>
+		<property name="dir.package.lib" value="${dir.package}/lib"/>
+		<property name="dir.package.example" value="${dir.package}/example"/>
+		<property name="sql" value="${dir.package}/sql"/>
+		<property name="dir.package.javadocs" value="${dir.package}/javadocs"/>
+		<mkdir dir="${dir.package.lib}"/>
+		<mkdir dir="${dir.package.example}"/>
+		<mkdir dir="${dir.package.sql}"/>
+		<mkdir dir="${dir.package.javadocs}"/>	
+	</target>
+
+	<target name="package" depends="jars,javadocs,package.init" description="Create openadaptor package">
+		<echo level="info" message ="creating package in ${dir.package}"/>
+	  <copy todir="${dir.package.javadocs}">
+	    <fileset dir="${dir.build.javadocs}">
+	    </fileset>
+	  </copy>
+	</target>
+
+	<!-- Clean tasks -->
+	<target name="clean.package" depends="package.init" description="Clean package area ${dir.package}">
+	  <delete dir="${dir.package}"/>
+	</target>	
+		
+	<target name="clean.build" depends="init" description="Clean build area ${dir.build}">
+    <delete dir="${dir.build}"/>
+	</target>
+		
+	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
+	
+</project>
