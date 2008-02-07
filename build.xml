@@ -451,93 +451,93 @@
     <property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*"/>
     <jar destfile="${dir.package.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
       <!-- ordered list of jars, only includes qualified resources -->
-      <zipfileset src="${dir.lib}/XmlSchema.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-codec.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-collections.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-httpclient.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-jxpath.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-lang.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-lang_2.0.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-net.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/dom4j.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jaxen.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jdom.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jetty-util.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jetty.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jdom_1.0.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jetty_6.0.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jms.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jmxremote.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jmxri.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/js.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/js_1_6R5.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/json.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jta-spec.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/log4j.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/log4j-1.2.15.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/qname.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/quartz.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/resolver.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/rome.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/quartz_1.5.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/rome_0.9.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/saaj.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/serializer.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/servlet-api.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/stax-api.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/velocity.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/wsdl4j.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/wstx-asl.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xercesImpl.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xfire-all.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xml-apis.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xstream.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/stax-api_1.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/velocity_1.4.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xstream-1.2.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" includes="${includes.unqualified}"/>
       <!-- ordered list of jars, includes non-qualified resources but with prefix -->
-      <zipfileset src="${dir.lib}/XmlSchema.jar" excludes="${includes.unqualified}" prefix="XmlSchema"/>
+      <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" excludes="${includes.unqualified}" prefix="XmlSchema"/>
       <zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol"/>
-      <zipfileset src="${dir.lib}/commons-codec.jar" excludes="${includes.unqualified}" prefix="commons-codec"/>
-      <zipfileset src="${dir.lib}/commons-collections.jar" excludes="${includes.unqualified}" prefix="commons-collections"/>
-      <zipfileset src="${dir.lib}/commons-httpclient.jar" excludes="${includes.unqualified}" prefix="commons-httpclient"/>
-      <zipfileset src="${dir.lib}/commons-jxpath.jar" excludes="${includes.unqualified}" prefix="commons-jxpath"/>
-      <zipfileset src="${dir.lib}/commons-lang.jar" excludes="${includes.unqualified}" prefix="commons-lang"/>
+      <zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec"/>
+      <zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections"/>
+      <zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient"/>
+      <zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" excludes="${includes.unqualified}" prefix="commons-jxpath"/>
+      <zipfileset src="${dir.lib}/commons-lang_2.0.jar" excludes="${includes.unqualified}" prefix="commons-lang"/>
       <zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging"/>
-      <zipfileset src="${dir.lib}/commons-net.jar" excludes="${includes.unqualified}" prefix="commons-net"/>
-      <zipfileset src="${dir.lib}/dom4j.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
-      <zipfileset src="${dir.lib}/jaxen.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
+      <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net"/>
+      <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
+      <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc"/>
-      <zipfileset src="${dir.lib}/jdom.jar" excludes="${includes.unqualified}" prefix="jdom"/>
-      <zipfileset src="${dir.lib}/jetty-util.jar" excludes="${includes.unqualified}" prefix="jetty-util"/>
-      <zipfileset src="${dir.lib}/jetty.jar" excludes="${includes.unqualified}" prefix="jetty"/>
+      <zipfileset src="${dir.lib}/jdom_1.0.jar" excludes="${includes.unqualified}" prefix="jdom"/>
+      <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty-util"/>
+      <zipfileset src="${dir.lib}/jetty_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty"/>
       <zipfileset src="${dir.lib}/jms.jar" excludes="${includes.unqualified}" prefix="jms"/>
       <zipfileset src="${dir.lib}/jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote"/>
       <zipfileset src="${dir.lib}/jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri"/>
       <zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools"/>
       <zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm"/>
       <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs"/>
-      <zipfileset src="${dir.lib}/js.jar" excludes="${includes.unqualified}" prefix="js"/>
+      <zipfileset src="${dir.lib}/js_1_6R5.jar" excludes="${includes.unqualified}" prefix="js"/>
       <zipfileset src="${dir.lib}/json.jar" excludes="${includes.unqualified}" prefix="json"/>
-      <zipfileset src="${dir.lib}/jta-spec.jar" excludes="${includes.unqualified}" prefix="jta-spec"/>
-      <zipfileset src="${dir.lib}/log4j.jar" excludes="${includes.unqualified}" prefix="log4j"/>
+      <zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" excludes="${includes.unqualified}" prefix="jta-spec"/>
+      <zipfileset src="${dir.lib}/log4j-1.2.15.jar" excludes="${includes.unqualified}" prefix="log4j"/>
       <zipfileset src="${dir.lib}/qname.jar" excludes="${includes.unqualified}" prefix="qname"/>
-      <zipfileset src="${dir.lib}/quartz.jar" excludes="${includes.unqualified}" prefix="quartz"/>
-      <zipfileset src="${dir.lib}/resolver.jar" excludes="${includes.unqualified}" prefix="resolver"/>
-      <zipfileset src="${dir.lib}/rome.jar" excludes="${includes.unqualified}" prefix="rome"/>
+      <zipfileset src="${dir.lib}/quartz_1.5.2.jar" excludes="${includes.unqualified}" prefix="quartz"/>
+      <zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="resolver"/>
+      <zipfileset src="${dir.lib}/rome_0.9.jar" excludes="${includes.unqualified}" prefix="rome"/>
       <zipfileset src="${dir.lib}/saaj.jar" excludes="${includes.unqualified}" prefix="saaj"/>
-      <zipfileset src="${dir.lib}/serializer.jar" excludes="${includes.unqualified}" prefix="serializer"/>
-      <zipfileset src="${dir.lib}/servlet-api.jar" excludes="${includes.unqualified}" prefix="servlet-api"/>
-      <zipfileset src="${dir.lib}/stax-api.jar" excludes="${includes.unqualified}" prefix="stax-api"/>
-      <zipfileset src="${dir.lib}/velocity.jar" excludes="${includes.unqualified}" prefix="velocity"/>
-      <zipfileset src="${dir.lib}/wsdl4j.jar" excludes="${includes.unqualified}" prefix="wsdl4j"/>
-      <zipfileset src="${dir.lib}/wstx-asl.jar" excludes="${includes.unqualified}" prefix="wstx-asl"/>
-      <zipfileset src="${dir.lib}/xercesImpl.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
-      <zipfileset src="${dir.lib}/xfire-all.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
-      <zipfileset src="${dir.lib}/xml-apis.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
-      <zipfileset src="${dir.lib}/xstream.jar" excludes="${includes.unqualified}" prefix="xstream"/>
+      <zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="serializer"/>
+      <zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" excludes="${includes.unqualified}" prefix="servlet-api"/>
+      <zipfileset src="${dir.lib}/stax-api_1.0.1.jar" excludes="${includes.unqualified}" prefix="stax-api"/>
+      <zipfileset src="${dir.lib}/velocity_1.4.jar" excludes="${includes.unqualified}" prefix="velocity"/>
+      <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" excludes="${includes.unqualified}" prefix="wsdl4j"/>
+      <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" excludes="${includes.unqualified}" prefix="wstx-asl"/>
+      <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
+      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
+      <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
+      <zipfileset src="${dir.lib}/xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream"/>
       <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
-      <zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
-      <zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring"/>
+      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
+      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring"/>
     </jar>
     <copy todir="${dir.package.lib}">
       <fileset dir="${dir.lib}">
