@@ -42,6 +42,7 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 import org.openadaptor.core.router.Router;
 
@@ -102,12 +103,19 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 
 	public void setProcessor(IDataProcessor processor) {
 		this.processor = processor;
+        
+        /* 
+         * If the processor is interested in this node's state
+         * changes, add it as a listener 
+         */
+        if(processor instanceof ILifecycleListener){
+          addListener((ILifecycleListener)processor);
+        }
 	}
     
     public IDataProcessor getProcessor(){
         return this.processor;
     }
-    
     
     /**
      * Processes individual record of input data. 
