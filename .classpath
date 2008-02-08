@@ -23,12 +23,7 @@
 	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-jxpath.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-lang.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jta-spec.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jms.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/spring-mock.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
 		<attributes>
@@ -44,40 +39,46 @@
 	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxtools.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jdom.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/rome.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jetty.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jetty-util.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/servlet-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/stax-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/wstx-asl.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xfire-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/axis.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/commons-discovery.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/jaxrpc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/qname.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/XmlSchema.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-httpclient.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-codec.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/hsqldb.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/velocity.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-collections.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/quartz.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/carol.jar"/>
 	<classpathentry kind="lib" path="lib/jotm.jar"/>
 	<classpathentry kind="lib" path="lib/jotm_jrmp_stubs.jar"/>
-	<classpathentry kind="lib" path="lib/resolver.jar"/>
-	<classpathentry kind="lib" path="lib/serializer.jar"/>
-	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/script.jar"/>
-	<classpathentry kind="lib" path="lib/xstream.jar"/>
 	<classpathentry kind="lib" path="test/lib/jmock-core-1.2.0.jar"/>
 	<classpathentry kind="lib" path="test/lib/jmock-cglib-1.2.0.jar"/>
 	<classpathentry kind="lib" path="test/lib/cglib-nodep.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/XmlSchema_1.1.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/xfire-all_1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/wstx-asl_3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j_1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/velocity_1.4.jar"/>
+	<classpathentry kind="lib" path="lib/stax-api_1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api_2.5-6.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/serializer_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/rome_0.9.jar"/>
+	<classpathentry kind="lib" path="lib/resolver_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/quartz_1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.6-bin.jar"/>
+	<classpathentry kind="lib" path="lib/jta-spec_1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/js_1_6R5.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util_6.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jetty_6.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jdom_1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen_1.1-beta-9.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j_1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net_1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang_2.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-jxpath_1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient_3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections_3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec_1.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

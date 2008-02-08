@@ -9,11 +9,16 @@
 	  <tstamp/>
    	<!-- Explicitly override tag to change release -->
    	<property name="tag" value="trunk"/>
-  	<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
+    <echo level="warning" message="Licence file should move to top level"/>	
+    <property name="file.licence" value="${basedir}/src/org/openadaptor/util/licence.txt"/>
+ 	  <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
   	<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
   	<property name="dir.src" value="${basedir}/src"/>
   	<property name="dir.lib" value="${basedir}/lib"/>
-
+    <property name="dir.example" value="${basedir}/example"/>
+    <property name="dir.sql" value="${basedir}/sql"/>
+    
+    
   	<property name="dir.spring" value="${basedir}/spring"/>
   	<property name="dir.spring.src" value="${dir.spring}/src"/>
   	<property name="dir.spring.lib" value="${dir.spring}/lib"/>
@@ -102,6 +107,7 @@
      <fileset dir="${dir.build.spring.classes}"/>
    </jar>
   	
+   <!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
    <jar destfile="${dir.build.lib}/openadaptor-stub.jar">
      <fileset dir="${dir.build.stub.classes}"/>
    </jar>
@@ -225,9 +231,8 @@
 
 	<target name="package" depends="jars,javadocs,package.init" description="Create openadaptor package">
 		<echo level="info" message ="creating package in ${dir.package}"/>
-
-		
-		<echo level="info" message ="Copying openadaptor jars from ${dir.package.lib}"/>
+	
+		<echo level="info" message ="Copying openadaptor jars from ${dir.build.lib}"/>
 		<copy todir="${dir.package.lib}">
 	    <fileset dir="${dir.build.lib}" includes="*.jar,*.zip"/>
 	  </copy>
@@ -238,10 +243,30 @@
 	    <fileset dir="${dir.spring.lib}" includes="*.jar,*.zip"/>
 	  </copy>
 		
+		<echo level="info" message ="Copying log4j.properties"/>
+    <copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties"/>
+		
 	  <echo level="info" message ="Copying javadocs from ${dir.build.javadocs}"/>
     <copy todir="${dir.package.javadocs}">
 	    <fileset dir="${dir.build.javadocs}"/>
 	  </copy>
+
+		<echo level="info" message ="Copying Release Notes ${basedir}/ReleaseNotes.txt"/>
+    <copy todir="${dir.package}" file="${basedir}/ReleaseNotes.txt"/>
+
+		<echo level="info" message ="Copying Licence file ${file.licence}"/>
+    <copy todir="${dir.package}" file="${file.licence}"/>
+
+		<echo level="info" message="Copying Examples from ${dir.example}"/>
+    <copy todir="${dir.package.example}">
+      <fileset dir="${dir.example}"/>
+    </copy>
+		
+		<echo level="info" message="Copying SQL from ${dir.sql}"/>
+    <copy todir="${dir.package.sql}">
+      <fileset dir="${dir.sql}"/>
+    </copy>
+
 	</target>
 
 	<!-- Clean tasks -->
@@ -254,5 +279,7 @@
 	</target>
 		
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
+	<!-- Cruise tasks for use by continuous builds -->
 	
+	<target name="cruise" depends="package" description="Cruise target for openadaptor build"/>
 </project>
