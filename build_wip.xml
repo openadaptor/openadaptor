@@ -103,8 +103,11 @@
      <fileset dir="${dir.build.classes}"/>
    </jar>
   	
+   <echo level="warning" message="Explicitly copying .openadaptor-spring.xml into jar."/>
    <jar destfile="${dir.build.lib}/openadaptor-spring.jar">
      <fileset dir="${dir.build.spring.classes}"/>
+  	 <!-- ToDo: This is a hangover from old env. Should be possible to remove soon -->
+  	 <filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml"/>
    </jar>
   	
    <!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
