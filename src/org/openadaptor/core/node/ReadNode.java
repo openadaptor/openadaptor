@@ -128,6 +128,8 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     try {
       connector.connect();
     } catch (RuntimeException ex) {
+      /* adaptor.getExitErrors needs to report errors that happened during connection attempt */
+      exitThrowable = ex;
       log.error(getId() + " failed to connect", ex);
       disconnectNoThrow();
       throw new ConnectionException("failed to connect", ex, this);
