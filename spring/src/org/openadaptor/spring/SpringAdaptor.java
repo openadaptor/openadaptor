@@ -27,8 +27,6 @@
 
 package org.openadaptor.spring;
 
-import java.io.PrintStream;
-
 import org.openadaptor.core.adaptor.Adaptor;
 import org.springframework.beans.factory.ListableBeanFactory;
 
@@ -72,18 +70,6 @@ public class SpringAdaptor extends SpringApplication {
       }
     }
     return (Adaptor) factory.getBean(getBeanId());
-  }
-
-
-  protected static void usage(PrintStream ps) {
-    ps.println("usage: java " + SpringApplication.class.getName()
-      + "\n  " + CONFIG + " <url> [ " + CONFIG + " <url> ]"
-      + "\n  [ " + BEAN + " <id> ]"
-      + "\n  [ " + PROPS + " <url> [ " + PROPS + " <url> ] ]"
-      + "\n  [ " + NOPROPS + " ]"
-      + "\n  [ " + JMXPORT + " <http port>]"
-      + "\n\n"
-      + " e.g. java " + SpringApplication.class.getName() + " " + CONFIG + " file:test.xml " + BEAN + " Application");
   }
 
 }
