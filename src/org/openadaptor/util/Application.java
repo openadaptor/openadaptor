@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util;
 
@@ -72,25 +72,30 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static final String BUILD_PROPERTIES_NAME     = ".openadaptor.properties";
 
-  public static final String LICENCE_TEXT;
-  
+  private static final String[] LICENCE_LOCATIONS= {"licence.txt","org/openadaptor/util/licence.txt"};
+
+  public static String LICENCE_TEXT=ClasspathUtils.loadFromClasspath(LICENCE_LOCATIONS);
+
   static {
-    try {
-      LICENCE_TEXT = ResourceUtil.readFileContents(ResourceUtil.class, "licence.txt");
-    } catch (Throwable e) {
-      throw new RuntimeException("unable to load openadaptor licence file, " + e.getMessage(), e);
+    if (LICENCE_TEXT==null) {
+      log.debug("Failed to get licence text from licence.txt or org/openadaptor/util/licence.txt");
+      try {
+        LICENCE_TEXT = ResourceUtil.readFileContents(ResourceUtil.class, "licence.txt");
+      } catch (Throwable e) {
+        throw new RuntimeException("unable to load openadaptor licence file, " + e.getMessage(), e);
+      }
+      System.err.println("\n" + LICENCE_TEXT + "\n");
     }
-    System.err.println("\n" + LICENCE_TEXT + "\n");
   }
-  
+
   private String registrationUrl;
-  
+
   private Properties props;
-  
+
   private boolean registerOnlyOnce = true;
-  
+
   private boolean registered;
-  
+
   protected Application() {
 
     log.info("classpath = " + System.getProperty("java.class.path", "not set"));
@@ -135,7 +140,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     }
 
   }
-  
+
   public String getId() {
     return props.getProperty(PROPERTY_COMPONENT_ID, null);
   }
@@ -147,19 +152,19 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   public void setConfigData(String data) {
     props.setProperty(PROPERTY_CONFIG_URL, data);
   }
-  
+
   /**
    * called by subclasses that want to register with a url
    */
   protected void register() {
-    
+
     if (registered && registerOnlyOnce) {
       return;
     }
-    
+
     // filter and transform properties
     Properties propsToRegister = filterProperties(props);
-    
+
     // sort and log
     List toLog = new ArrayList();
     for (Iterator iter = propsToRegister.entrySet().iterator(); iter.hasNext();) {
@@ -169,7 +174,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     Collections.sort(toLog);
     for (Iterator iter = toLog.iterator(); iter.hasNext();) {
       log.info("property, " + iter.next());
-      
+
     }
 
     // if registration url is set then post
@@ -179,7 +184,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
         //Uncomment this when we move to Async Registration.
         //PropertiesPoster.post(url, propsToRegister,this);
         PropertiesPoster.post(url,propsToRegister);
-        
+
         registered = true;
         log.info("posted registration properties to " + url);
       } catch (Exception e) {
@@ -196,7 +201,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       return System.getProperty(PROPERTY_REGISTRATION_URL, null);
     }
   }
-  
+
   private static Properties filterProperties(Properties props) {
     Properties newProps = new Properties();
     InputStream is = Application.class.getResourceAsStream(REGISTRATION_PROPERTIES);
@@ -213,7 +218,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
         }
       }
     } catch (IOException e) {
-     log.warn("failed to load " + REGISTRATION_PROPERTIES);
+      log.warn("failed to load " + REGISTRATION_PROPERTIES);
     } finally {
       try {
         is.close();
