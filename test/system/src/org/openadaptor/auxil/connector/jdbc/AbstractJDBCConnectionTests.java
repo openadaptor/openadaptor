@@ -45,7 +45,7 @@ import junit.framework.TestCase;
  * 
  * This class can be used as a superclass for any test cases that require a JDBCConnection.
  */
-public abstract class JDBCConnectionTestCase extends TestCase {
+public abstract class AbstractJDBCConnectionTests extends TestCase {
   
     private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
     private static final String DB_URL="jdbc:hsqldb:mem:test";

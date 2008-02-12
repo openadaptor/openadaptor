@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.auxil.connector.jdbc.JDBCConnectionTestCase;
+import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnectionTests;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
@@ -40,12 +40,12 @@ import org.openadaptor.util.TestComponent;
 /**
  * System tests for {@link JDBCReadConnector}.
  * Uses a test table with two columns and three rows.
- * Extends {@link JDBCConnectionTestCase} that starts up HSQL with appropriate schema. 
+ * Extends {@link AbstractJDBCConnectionTests} that starts up HSQL with appropriate schema. 
  * Tests reader with different batch sizes.
  * 
  * @author Kris Lachor
  */
-public class JDBCReadConnectorTestCase extends JDBCConnectionTestCase{
+public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
   
   protected static String COL1 = "COL1";
   
