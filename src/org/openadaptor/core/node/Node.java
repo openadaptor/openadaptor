@@ -162,17 +162,17 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 		// delegate to next IMessageProcessor in the chain
 		
 		if (messageProcessor != null) {
-			if (!response.containsExceptions()) {
-        if (!response.isEmpty()) {  // Don't pass on the message if there is no data
-          msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
-				  response = callChainedMessageProcessor(msg);
-        }
-      } else {
-        //Fix for SC22: Invalid cast
-        Object[] exceptions=response.getCollatedExceptions();
-        MessageException exception=(MessageException)exceptions[0];
-        throw new RuntimeException(exception);
-			}
+          if (!response.containsExceptions()) {
+            if (!response.isEmpty()) {  // Don't pass on the message if there is no data
+              msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
+          	  response = callChainedMessageProcessor(msg);
+            }
+          } else {
+            //Fix for SC22: Invalid cast
+            Object[] exceptions=response.getCollatedExceptions();
+            MessageException exception=(MessageException)exceptions[0];
+            throw new RuntimeException(exception);
+          }
 		}
 		
 		return response;
