@@ -10,23 +10,34 @@
    	<!-- Explicitly override tag to change release -->
    	<property name="tag" value="trunk"/>
     <echo level="warning" message="Licence file should move to top level"/>	
-    <property name="file.licence" value="${basedir}/src/org/openadaptor/util/licence.txt"/>
+    <property name="licence.dir" value="${basedir}/src/org/openadaptor/util"/>
+    <property name="file.licence" value="${licence.dir}/licence.txt"/>
  	  <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
   	<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
   	<property name="dir.src" value="${basedir}/src"/>
   	<property name="dir.lib" value="${basedir}/lib"/>
     <property name="dir.example" value="${basedir}/example"/>
     <property name="dir.sql" value="${basedir}/sql"/>
+    	
+    <property name="dir.test" value="${basedir}/test"/>
+    <property name="dir.test.lib" value="${dir.test}/lib"/>
+    <property name="dir.test.src.unit" value="${dir.test}/unit/src"/>
+    <property name="dir.test.src.integration" value="${dir.test}/integration/src"/>
+    <property name="dir.test.src.system" value="${dir.test}/system/src"/>
     
     
   	<property name="dir.spring" value="${basedir}/spring"/>
   	<property name="dir.spring.src" value="${dir.spring}/src"/>
   	<property name="dir.spring.lib" value="${dir.spring}/lib"/>
-
   	<property name="dir.stub.src" value="${basedir}/stub/src"/>
+    	
   	<property name="dir.build" value="${basedir}/build"/>
   	<property name="dir.build.lib" value="${dir.build}/lib"/>
   	<property name="dir.build.classes" value="${dir.build}/classes"/>
+    	
+    <property name="dir.build.test" value="${dir.build}/test"/>
+    <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
+    	
   	<property name="dir.build.stub" value="${dir.build}/stub"/>
   	<property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
   	<property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
@@ -46,11 +57,49 @@
 	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
      	<path refid="classpath" />
      </path>   	
+ 
 	</target>
 	
+	<target name="init.test" depends="init" description="Initialisation for tests">
+	  <echo level="info" message="Creating test directories under ${dir.build.test}"/>	
+	  <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
+	  <property name="dir.build.test.output" value="${dir.build.test}/output"/>
+		<mkdir dir="${dir.build.test}"/>
+	  <mkdir dir="${dir.build.test.classes}"/>
+	  <mkdir dir="${dir.build.test.output}"/>
+		
+		<property name="test.vm.dir" value="${basedir}"/>
+		<property name="test.printsummary" value="true"/>
+		<property name="test.formatter" value="xml"/>
+
+		<property name="test.namefilter" value="**/*TestCase.java"/>
+	
+    <path id="classpath.test.compile">
+	    <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
+     	<pathelement path="${dir.build.spring.classes}"/>
+   	  <path refid="classpath.spring"/>
+    </path>  
+		
+		<!-- Include the source paths, handy for stack trace info -->
+		<!-- Include ${dir.test.lib} to find log4j.properties -->
+   	<echo level="warning" message="Tests require Licence file on CP, adding ${licence.dir}"/>	
+   <path id="classpath.test">
+  	  <pathelement path="${dir.test.lib}"/>
+     	<pathelement path="${licence.dir}"/>
+   	  <pathelement path="${dir.src}"/>
+ 	    <pathelement path="${dir.spring.src}"/>
+     	<pathelement path="${dir.test.src.unit}"/>
+     	<pathelement path="${dir.test.src.integration}"/>
+      <pathelement path="${dir.test.src.system}"/>
+     	<pathelement path="${dir.build.test.classes}"/>
+   	  <path refid="classpath.test.compile"/>
+    </path>   	
+
+	</target>
+
 	
 	<!-- Compilation tasks -->
-	<target name="compile.stub" depends="init,clean" description="Compile stub classes: legacy oa,mq and tibrv">
+	<target name="compile.stub" depends="init" description="Compile stub classes: legacy oa,mq and tibrv">
 		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}"/>
 		<mkdir dir="${dir.build}"/>		
 		<mkdir dir="${dir.build.stub}"/>		
@@ -58,22 +107,97 @@
 	  <javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath"/>
   </target>
 	
-	<target name="compile" depends="compile.stub" description="Compile openadaptor source code">
+	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
 		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}"/>
 		<mkdir dir="${dir.build}"/>
 		<mkdir dir="${dir.build.classes}"/>
 	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath"/>
   </target>
 
-	<target name="compile.spring" depends="compile" description="Compile openadaptor spring source code">
+	<target name="compile.spring" depends="compile.src" description="Compile openadaptor spring source code">
 		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}"/>
 		<mkdir dir="${dir.build.spring.classes}"/>
 	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring"/>
   </target>
 	
-	<target name="compile.all" depends="compile.spring" description="Compile all source code"/>
+	<target name="compile" depends="compile.stub,compile.src,compile.spring" description="Compile all source code"/>
+
+  <!-- 
+    Currently unit test source has a dependency on common class in integration
+     Namely TestComponent. This needs to be reorganised.
+    -->
+	<target name="compile.test.unit" depends="compile.test.integration" description="Compile unit test code">
+    <echo level="info" message="Compiling unit test source ${dir.test.src.unit}->${dir.build.test.classes}"/>
+    <javac srcdir="${dir.test.src.unit}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+	</target>
+
+	<target name="compile.test.integration" depends="compile,init.test" description="Compile integration test code">
+    <echo level="info" message="Compiling integration test source ${dir.test.src.integration}->${dir.build.test.classes}"/>
+    <javac srcdir="${dir.test.src.integration}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+	</target>
+
+	<target name="compile.test.system" depends="compile.test.unit" description="Compile system test code">
+    <echo level="info" message="Compiling system test source ${dir.test.src.system}->${dir.build.test.classes}"/>
+    <javac srcdir="${dir.test.src.system}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+	</target>
+
+	<target name="compile.test" depends="compile.test.integration,compile.test.unit,compile.test.system" description="compile all test code"/>
+
+	<target name="compile.all" depends="compile.spring,compile.test" description="Compile all source code"/>
 	
-	<!-- Test tasks -->
+	<!-- Test tasks -->	
+	<target name="test.unit" depends="compile.test" description="Unit tests (against compiled classes)">
+	 <echo level="info" message="Running unit tests"/>
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+    <classpath refid="classpath.test"/>
+     <formatter type="${test.formatter}"/>
+     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     	          errorProperty="test.failed" failureProperty="test.failed">
+      <fileset dir="${dir.test.src.unit}">
+       <include name="${test.namefilter}"/>
+      </fileset>
+     </batchtest>
+   </junit>			
+ </target>
+	
+	<target name="test.integration" depends="compile.test" description="Integration tests (against compiled classes)">
+	 <echo level="info" message="Running integration tests"/>
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+    <classpath refid="classpath.test"/>
+     <formatter type="${test.formatter}"/>
+     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     	          errorProperty="test.failed" failureProperty="test.failed"
+     	          unless="test.failed">
+      <fileset dir="${dir.test.src.integration}">
+       <include name="${test.namefilter}"/>
+      </fileset>
+     </batchtest>
+   </junit>	
+	 </target>
+
+	<target name="test.system" depends="compile.test" description="System tests (against compiled classes)">
+	 <echo level="info" message="Running system tests" />
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+    <classpath refid="classpath.test"/>
+     <formatter type="${test.formatter}"/>
+     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     	          errorProperty="test.failed" failureProperty="test.failed"
+     	          unless="test.failed">
+      <fileset dir="${dir.test.src.system}">
+       <include name="${test.namefilter}"/>
+      </fileset>
+     </batchtest>
+   </junit>	
+ </target>
+	
+	<target name="test.all" depends="test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)">
+	  <echo level="info" message="Generating report from test execution"/>		
+    <junitreport todir="${dir.build.test.output}">
+      <fileset dir="${dir.build.test.output}" includes="TEST-*.xml"/>
+      <report format="frames" todir="${dir.build.test.output}"/>
+    </junitreport>		
+    <fail message="Tests failed: check ${dir.build.test.output}" if="test.failed"/>
+</target>
 	
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source">
@@ -94,9 +218,8 @@
   </javadoc>
 	</target>
 	
-	
 	<!-- Packaging tasks -->
-  <target name="jars.compiled" depends="compile.all" description="Create jars from compiled classes">
+  <target name="jars.compiled" depends="test.all" description="Create jars from compiled classes">
 	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
    <jar destfile="${dir.build.lib}/openadaptor.jar">
