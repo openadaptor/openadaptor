@@ -70,7 +70,9 @@
 		
 		<property name="test.vm.dir" value="${basedir}"/>
 		<property name="test.printsummary" value="true"/>
+		<property name="test.showoutput" value="false"/>
 		<property name="test.formatter" value="xml"/>
+		<property name="test.batchtest.fork" value="yes"/>
 
 		<property name="test.namefilter" value="**/*TestCase.java"/>
 	
@@ -147,50 +149,52 @@
 	
 	<!-- Test tasks -->	
 	<target name="test.unit" depends="compile.test" description="Unit tests (against compiled classes)">
+		
 	 <echo level="info" message="Running unit tests"/>
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
     <classpath refid="classpath.test"/>
      <formatter type="${test.formatter}"/>
-     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
      	          errorProperty="test.failed" failureProperty="test.failed">
-      <fileset dir="${dir.test.src.unit}">
-       <include name="${test.namefilter}"/>
-      </fileset>
+      <fileset dir="${dir.test.src.unit}" includes="${test.namefilter}"/>
      </batchtest>
    </junit>			
  </target>
 	
 	<target name="test.integration" depends="compile.test" description="Integration tests (against compiled classes)">
 	 <echo level="info" message="Running integration tests"/>
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
     <classpath refid="classpath.test"/>
      <formatter type="${test.formatter}"/>
-     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
      	          errorProperty="test.failed" failureProperty="test.failed"
      	          unless="test.failed">
-      <fileset dir="${dir.test.src.integration}">
-       <include name="${test.namefilter}"/>
-      </fileset>
+      <fileset dir="${dir.test.src.integration}" includes="${test.namefilter}"/>
      </batchtest>
    </junit>	
 	 </target>
 
 	<target name="test.system" depends="compile.test" description="System tests (against compiled classes)">
 	 <echo level="info" message="Running system tests" />
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}">
+   <echo level="warning" message="Excluding **/WebService*TestCase.java" />
+	 <echo level="warning" message="Excluding **/MQ*.java" />
+	 <echo level="warning" message="Excluding **/TIBCO*.java" />
+   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
     <classpath refid="classpath.test"/>
      <formatter type="${test.formatter}"/>
-     <batchtest fork="yes" todir="${dir.build.test.output}" 
+     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
      	          errorProperty="test.failed" failureProperty="test.failed"
      	          unless="test.failed">
-      <fileset dir="${dir.test.src.system}">
-       <include name="${test.namefilter}"/>
+      <fileset dir="${dir.test.src.system}" includes="${test.namefilter}">
+       <exclude name="**/WebService*TestCase.java"/>
+       <exclude name="**/MQ*.java"/>
+       <exclude name="**/TIBCO*.java"/>
       </fileset>
      </batchtest>
    </junit>	
  </target>
 	
-	<target name="test.all" depends="test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)">
+	<target name="test.all" depends="clean.build.test,test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)">
 	  <echo level="info" message="Generating report from test execution"/>		
     <junitreport todir="${dir.build.test.output}">
       <fileset dir="${dir.build.test.output}" includes="TEST-*.xml"/>
@@ -403,9 +407,14 @@
 	<target name="clean.build" depends="init" description="Clean build area ${dir.build}">
     <delete dir="${dir.build}"/>
 	</target>
+	
+	<target name="clean.build.test" depends="init" description="Clean build area ${dir.build.test}">
+    <delete dir="${dir.build.test}"/>
+	</target>
+	
 		
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
 	<!-- Cruise tasks for use by continuous builds -->
 	
-	<target name="cruise" depends="package" description="Cruise target for openadaptor build"/>
+	<target name="cruise" depends="clean,package" description="Cruise target for openadaptor build"/>
 </project>
