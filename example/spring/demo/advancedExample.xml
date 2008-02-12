@@ -13,30 +13,39 @@
     * reads all data in input/delim.txt, with 1 sec time interval between the lines
     * converts to orderedmaps
     * applies a simple filter to records
+    * applies a db-based enrichment processor
     * outputs to stdout
+    * outputs data to a JMS queue
 
   Run it like this...
     
     java org.openadaptor.spring.SpringAdaptor -config advancedExample.xml
     
-  You need the following in your classpath
+  You need the following in your classpath (note the extra hsqldb.jar and jbossall-client.jar):
   
     lib
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
+    jbossall-client.jar (this is not distributed with openadaptor)
+  
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
     
-  writes to stdout
+  The above command needs to be run from current folder (that includes htsql.script with the USER 
+  table definition and sample data).  
+    
+  This example relies on a default instance of jboss (http://www.jboss.org)
+  running on the same machine that the example is being run.
+
+  Please ensure that the jboss client and server jars used are from compatible releases.  
+    
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
-    <description>
-      This adaptor is designed to illustrate a simple use of a JavascriptFilterProcessor
-        * reads all data in input/delim.txt
-        * converts to ordered
-        * applies a simple filter
-        * outputs to stdout
-    </description>
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <property name="processMap">
@@ -87,7 +96,6 @@
   </bean>
   
   <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
-    <description>Reader queries database using the configured SQL.</description>
     <property name="jdbcConnection" ref="jdbcConnection"/>
     <property name="sql">
       <value>
