@@ -15,7 +15,29 @@ Processors
 
 * When processor implements the ILifecycleListener interface it will be
   notified of state changes of its associated Node
- 
+  
+  
+Deprecated Components Removed
+=============================
+
+The following deprecated components have been removed in this release:
+
+JDBC
+
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.StatementConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.AbstractStatementConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.CallableStatementConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.PreparedStatementTableConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter
+
+org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConvertorTestCase
+
+example/spring/connectors/db/writer2.xml
+example/spring/connectors/db/writer3.xml
+
  
  
 
