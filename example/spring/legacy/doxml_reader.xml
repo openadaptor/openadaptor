@@ -14,7 +14,7 @@
     * converts to DataObjects (legacy data structures from previous openadaptor versions)
     * converts DataObjects to map
     * converts map to xml
-    * writes to file
+    * writes to console
     
   It is designed to illustrate the basic structure something that needs to receive
   the legacy DataObject format.
