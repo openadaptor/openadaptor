@@ -36,6 +36,7 @@ import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.ProcessorGroup;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.util.TestComponent;
@@ -228,6 +229,28 @@ public class ExceptionHandlingTestCase extends TestCase {
    */
   public void testNoExceptionProcessorWithOneReader(){
     processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
+    runAdaptorWithNoExceptionProcessor();
+  }
+  
+  public void testNoExceptionProcessorWithOneReader2(){
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector2());
+    runAdaptorWithNoExceptionProcessor();
+  }
+  
+  /**
+   * Tests WriteNode#suppressDisconnectionErrors(false) property.
+   * Set to 'false' it prevents WriteNode from catching exceptions at connector's 
+   * disconnection phase.
+   */
+  public void testNoExceptionProcessorWithOneReader3(){
+    WriteNode writeNode = new WriteNode();
+    writeNode.setSuppressDisconnectionErrors(false);
+    writeNode.setConnector( new TestComponent.ExceptionThrowingWriteConnector3());
+    processMap.put(new TestComponent.TestReadConnector(),writeNode);
+    runAdaptorWithNoExceptionProcessor();
+  }
+  
+  private void runAdaptorWithNoExceptionProcessor(){
     router.setProcessMap(processMap);
     assertTrue(adaptor.getExitCode()==0);
     assertNotNull(adaptor.getExitErrors());

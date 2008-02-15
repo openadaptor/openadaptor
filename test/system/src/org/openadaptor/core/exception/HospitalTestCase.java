@@ -114,7 +114,6 @@ public class HospitalTestCase extends AbstractJDBCConnectionTests {
     verifyHospitalHasOneEntry();
   }
   
-  
 // Readers are unable to do any exception handling at the moment. 
 // Commented out until exception handling in a read node is fixed.   
 //  
@@ -123,7 +122,7 @@ public class HospitalTestCase extends AbstractJDBCConnectionTests {
 //   * Verifies hospital has one entry.
 //   */
 //  public void testHospitalWriterGetsOneExceptionFromReadConnector() throws Exception{
-//    runAdaptor(CONFIG_FILE_WRITER_3);
+//    SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, HOSPITAL_WRITER_3);
 //    verifyHospitalHasOneEntry();
 //  }
   

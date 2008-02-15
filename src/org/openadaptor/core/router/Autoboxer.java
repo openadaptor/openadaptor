@@ -97,7 +97,7 @@ public class Autoboxer implements IAutoboxer {
 	}
 
 	public Node autobox(IDataProcessor processor) {
-    Node node = (Node) nodeMap.get(processor);
+        Node node = (Node) nodeMap.get(processor);
 		if (node == null) {
 			node = new ProcessorNode();
 			node.setProcessor(processor);
@@ -106,25 +106,25 @@ public class Autoboxer implements IAutoboxer {
 		return node;
 	}
 
-	public Node autobox(IReadConnector connector) {
-		ReadNode node = (ReadNode) nodeMap.get(connector);
-		if (node == null) {
-			node = new ReadNode();
-			node.setConnector(connector);
-			nodeMap.put(connector, node);
-		}
-		return node;
-	}
+  public Node autobox(IReadConnector connector) {
+  	ReadNode node = (ReadNode) nodeMap.get(connector);
+  	if (node == null) {
+  		node = new ReadNode();
+  		node.setConnector(connector);
+  		nodeMap.put(connector, node);
+  	}
+  	return node;
+  }
 
-	public Node autobox(IWriteConnector connector) {
-		WriteNode node = (WriteNode) nodeMap.get(connector);
-		if (node == null) {
-			node = new WriteNode();
-			node.setConnector(connector);
-			nodeMap.put(connector, node);
-		}
-		return node;
-	}
+  public Node autobox(IWriteConnector connector) {
+  	WriteNode node = (WriteNode) nodeMap.get(connector);
+  	if (node == null) {
+  		node = new WriteNode();
+  		node.setConnector(connector);
+  		nodeMap.put(connector, node);
+  	}
+  	return node;
+  }
 
   public Node autobox(IEnrichmentProcessor enrichmentProcessor) {
     EnrichmentProcessorNode node = (EnrichmentProcessorNode) nodeMap.get(enrichmentProcessor);

@@ -101,6 +101,13 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 		this.messageProcessor = processor;
 	}
 
+    
+    /**
+     * Sets a processor. Also adds it as a listener to lifecycle changes of this node
+     * if the processor is a {@link ILifecycleListener}.
+     * 
+     * @param processor
+     */
 	public void setProcessor(IDataProcessor processor) {
 		this.processor = processor;
         
@@ -182,10 +189,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
     return messageProcessor.process(msg);
   }
   
-	public void validate(List exceptions) {
-		super.validate(exceptions);
-		processor.validate(exceptions);
-	}
+  public void validate(List exceptions) {
+  	super.validate(exceptions);
+  	processor.validate(exceptions);
+  }
   
   protected void resetProcessor(Object context) {
     processor.reset(context);

@@ -128,8 +128,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     try {
       connector.connect();
     } catch (RuntimeException ex) {
-      /* adaptor.getExitErrors needs to report errors that happened during connection attempt */
-      exitThrowable = ex;
+      setExitError(ex);
       log.error(getId() + " failed to connect", ex);
       disconnectNoThrow();
       throw new ConnectionException("failed to connect", ex, this);
@@ -159,6 +158,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     try {
       connector.disconnect();
     } catch (Exception e) {
+      setExitError(e);
       log.debug("disconnect failed, " + e.getMessage());
     } 
   }
@@ -191,8 +191,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       }
     }
     catch (Throwable e) {
-      exitCode = 1;
-      exitThrowable = e;
+      setExitError(e);
       log.error(getId() + " uncaught exception, rolling back transaction and stopping", e);
       if (transaction != null) {
         transaction.setErrorOrException(e);
@@ -234,6 +233,9 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     return connector.next(timeoutMs);
   }
 
+  /**
+   * Returns exit code of this Runnable.
+   */
   public int getExitCode() {
     return exitCode;
   }
@@ -258,6 +260,11 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   public String toString() {
     return getId();
+  }
+  
+  private void setExitError(Throwable throwable){
+    exitCode++;
+    exitThrowable = throwable;
   }
 
   /**

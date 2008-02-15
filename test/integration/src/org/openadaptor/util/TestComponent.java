@@ -228,6 +228,34 @@ public class TestComponent {
     public void validate(List exceptions) {}
   }
   
+  /**
+   * A write connector that throws a RuntimeException when connects to external resource.
+   */
+  public static final class ExceptionThrowingWriteConnector2 extends Component implements IWriteConnector {
+    public int counter = 0;
+    public void connect(){
+      counter++;
+      throw new RuntimeException(TEST_ERROR_MESSAGE);
+    }
+    public void disconnect() {}
+    public Object deliver(Object[] data) {return null;}
+    public void validate(List exceptions) {}
+  }
+  
+  /**
+   * A write connector that throws a RuntimeException when disconnects from external resource.
+   */
+  public static final class ExceptionThrowingWriteConnector3 extends Component implements IWriteConnector {
+    public int counter = 0;
+    public void connect() {}
+    public void disconnect(){
+      counter++;
+      throw new RuntimeException(TEST_ERROR_MESSAGE);
+    }
+    public Object deliver(Object[] data) {return null;}
+    public void validate(List exceptions) {}
+  }
+  
   
   //
   // IExceptionHandlers

@@ -38,7 +38,7 @@
     <property name="password" value=""/>
   </bean>
   
-  <bean id="exceptionThrowingReader" class="org.openadaptor.core.exception.HospitalTestCase$ExceptionThrowingReadConnector"/>
+  <bean id="exceptionThrowingReader" class="org.openadaptor.util.TestComponent$ExceptionThrowingReadConnector"/>
     
-  <bean id="dummyWriter" class="org.openadaptor.core.exception.HospitalTestCase$DummyWriteConnector"/>
+  <bean id="dummyWriter" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
 </beans>

@@ -55,13 +55,12 @@ import org.openadaptor.core.transaction.ITransactional;
  * <br/><br/>This represents the "outpoint" of an Adaptor. Typically an
  * {@link Adaptor} is managing the lifecycle of a WriteNode.
  * 
- * By virtue of it's subclass, this class can also have an
- * {@link IDataProcessor} configured, if this the case then data is processed by
+ * By virtue of its subclass, this class can also have an
+ * {@link IDataProcessor} configured, if this is the case then data is processed by
  * the {@link IDataProcessor} before being delegated to the
  * {@link IWriteConnector}. This by-passes any exception / discard management
  * that can be configured in delegates such as {@link Router}.
  * 
- * @author perryj
  * @see Adaptor
  * @see IWriteConnector
  * 
@@ -71,29 +70,34 @@ public class WriteNode extends Node {
 	private static final Log log = LogFactory.getLog(WriteNode.class);
 	
 	private IWriteConnector connector;
+    
 	private boolean unbatch = false;
+    
+    private boolean suppressDisconnectionErrors = true;
 	
+    /**
+     * Constructor.
+     */
 	public WriteNode() {
 		super();
 	}
 	
+    /**
+     * Constructor.
+     */
 	public WriteNode(String id) {
 		super(id);
 	}
 
+    /**
+     * Constructor.
+     */
 	public WriteNode(String id, final IWriteConnector connector) {
 		super(id);
 		this.connector = connector;
 	}
 
-	public void setConnector(final IWriteConnector connector) {
-		this.connector = connector;
-	}
-	
-	public IWriteConnector getConnector() {
-		return this.connector;
-	}
-	
+
 	public void setUnbatch(boolean unbatch) {
 		this.unbatch = unbatch;
 	}
@@ -104,22 +108,39 @@ public class WriteNode extends Node {
 			exceptions.add(new RuntimeException(toString() + " does not have a connector"));
 		} else {
 		  connector.validate(exceptions);
-    }
+		}
 	}
 	
-	public void start() {
-		connector.connect();
-		super.start();
-	}
+  /**
+   * @see ILifecycleComponent#start()
+   */
+  public void start() {
+  	connector.connect();
+  	super.start();
+  }
 	
-	public void stop() {
+  /**
+   * Disconnects the underlying connector; depending on the value of 
+   * <code>suppressDisconnectionErrors</code> property does or does not catch exceptions.
+   * By default catches all exceptions.
+   * 
+   * @see ILifecycleComponent#stop()
+   */
+  public void stop() {
     setState(State.STOPPING);
-		disconnectNoThrow();
-		super.stop();
-	}
+    if(suppressDisconnectionErrors){
+      disconnectNoThrow();
+    }
+    else{
+      connector.disconnect(); 
+    }
+    super.stop();
+  }
 	
-	public Response process(Message msg) {
-    
+  /**
+   * @see IMessageProcessor#process(Message)
+   */  
+  public Response process(Message msg) {
     Object resource = null;
     if ((connector instanceof ITransactional) && (msg.getTransaction() != null)) {
       resource = ((ITransactional)connector).getResource();
@@ -128,49 +149,62 @@ public class WriteNode extends Node {
         msg.getTransaction().enlist(resource);
       }
     }
+  
+    Response processorResponse = super.process(msg);
+    Response response = new Response();
+  
+    // all we can do is copy processor discards and exceptions
+    // into the response to this call
+    List batches = processorResponse.getBatches();
+    for (Iterator iter = batches.iterator(); iter.hasNext();) {
+    	List batch = (List) iter.next();
+    	if (batch instanceof DiscardBatch) {
+    		response.addDiscardedInputs(batch);
+    	} else if (batch instanceof ExceptionBatch) {
+    		response.addExceptions(batch);
+    	}
+    }
     
-		Response processorResponse = super.process(msg);
-
-		Response response = new Response();
-		
-		// all we can do is copy processor discards and exceptions
-		// into the response to this call
-		List batches = processorResponse.getBatches();
-		for (Iterator iter = batches.iterator(); iter.hasNext();) {
-			List batch = (List) iter.next();
-			if (batch instanceof DiscardBatch) {
-				response.addDiscardedInputs(batch);
-			} else if (batch instanceof ExceptionBatch) {
-				response.addExceptions(batch);
-			}
-		}
-		// the output from the processor forms the input to the connector
-		// so call the connector and update the response with the results
-		Object[] inputs = processorResponse.getCollatedOutput();
-		if (unbatch || inputs.length == 1) {
-			for (int i = 0; i < inputs.length; i++) {
-				try {
-					Object output = connector.deliver(new Object[] {inputs[i]});
-					if (output != null) {
-						response.addOutput(output);
-					}
-				} catch (Exception ex) {
-					log.info(getId() + " caught " + ex.getClass().getName() + ":" + ex.getMessage());
-					response.addException(new MessageException(inputs[i], ex, getId()));
-				}
-			}
-		} else {
-			Object output = connector.deliver(inputs);
-			if (output != null) {
-				response.addOutput(output);
-			}
-		}
+    // the output from the processor forms the input to the connector
+    // so call the connector and update the response with the results
+    Object[] inputs = processorResponse.getCollatedOutput();
+    if (unbatch || inputs.length == 1) {
+    	for (int i = 0; i < inputs.length; i++) {
+          try {
+            Object output = connector.deliver(new Object[] {inputs[i]});
+            if (output != null) {
+              response.addOutput(output);
+            }
+          }catch(Exception ex) {
+            log.info(getId() + " caught " + ex.getClass().getName() + ":" + ex.getMessage());
+            response.addException(new MessageException(inputs[i], ex, getId()));
+          }
+    	}
+    } 
+    else {
+      Object output = connector.deliver(inputs);
+      if (output != null) {
+      	response.addOutput(output);
+      }
+    }
     if ((resource != null) && (msg.getTransaction() != null)) {
       msg.getTransaction().delistForCommit(resource);
     }
-		return response;
-	}
+  	return response;
+  }
 
+  
+  private void disconnectNoThrow() {
+    try {
+      connector.disconnect();
+    } catch (Exception e) {
+      log.error("disconnect failed, " + e.getMessage());
+    } 
+  }
+  
+  /**
+   * @see LifecycleComponent#getId()
+   */
   public String getId() {
     String id = super.getId();
     if (id == null && connector instanceof IComponent) {
@@ -179,15 +213,34 @@ public class WriteNode extends Node {
     return id;
   }
   
+  /**
+   * @see LifecycleComponent#getId()
+   */
   public String toString() {
     return getId();
   }
 
-  private void disconnectNoThrow() {
-    try {
-      connector.disconnect();
-    } catch (Exception e) {
-      log.error("disconnect failed, " + e.getMessage());
-    } 
+  /**
+   * Sets connector this node manages.
+   * 
+   * @param the connector
+   */
+  public void setConnector(final IWriteConnector connector) {
+      this.connector = connector;
+  }
+  
+  /**
+   * @return the connector this node manages.
+   */
+  public IWriteConnector getConnector() {
+      return this.connector;
+  }
+
+  /**
+   * If set to true, exceptions resulting from an attempt to disconnec the underlying
+   * reader will be caught and logged. 
+   */
+  public void setSuppressDisconnectionErrors(boolean suppressDisconnectionErrors) {
+    this.suppressDisconnectionErrors = suppressDisconnectionErrors;
   }
 }

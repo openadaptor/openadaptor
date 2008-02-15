@@ -75,7 +75,7 @@ import java.util.List;
  * 
  */
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
-    Administrable, ILifecycleListener {
+     Administrable, ILifecycleListener {
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
@@ -122,6 +122,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * denotes that adaptor exited naturally
    */
   private int exitCode = 0;
+  
+  /**
+   * an agregation of exit exceptions from non-runnables.
+   */
+  private List exitErrors = new ArrayList();
 
   /**
    * controls adaptor retry and start, stop, restart functionality
@@ -234,6 +239,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public Response process(Message msg) {
     return processor.process(msg);
   }
+  
 
   /**
    * "starts" all of the components that it is managing. Blocks until these
@@ -247,6 +253,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
 
     exitCode = 0;
+    exitErrors = new ArrayList();
     registerComponents();
 
     try {
@@ -270,6 +277,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     } catch (Throwable ex) {
       log.error("failed to start adaptor", ex);
       exitCode = 1;
+      exitErrors.add(ex);
     } finally {
       if (state != State.STOPPING) {
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
@@ -278,7 +286,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
 
     if (getExitCode() != 0) {
-      log.fatal("adaptor exited with " + getExitCode());
+      log.fatal("adaptor exited with error code " + getExitCode());
     }
   }
 
@@ -327,6 +335,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
   }
 
+  /**
+   * @see #getExitErrors()
+   */
   public int getExitCode() {
     int exitCode = this.exitCode;
     for (Iterator iter = runnables.iterator(); iter.hasNext();) {
@@ -346,7 +357,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    *         errors occured in any of the runnables.
    */
   public List getExitErrors(){
-    List exitErrors = new ArrayList();
     for (Iterator iter = runnables.iterator(); iter.hasNext();) {
       IRunnable runnable = (IRunnable) iter.next();
       if(runnable.getExitError() != null) {
