@@ -38,8 +38,10 @@ org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementCo
 example/spring/connectors/db/writer2.xml
 example/spring/connectors/db/writer3.xml
 
- 
- 
+Miscellaneous
+=============
+ * Clean up of JUnit tests e.g. warnings (unused imports, non-static references to static 
+   fields, etc.) have been tidied.
 
 =================================================
 openadaptor3 production 3.4 Release Notes
