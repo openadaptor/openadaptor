@@ -59,7 +59,7 @@ public class HospitalTestCase extends AbstractJDBCConnectionTests {
                                   
   private static String SELECT_ALL_ERRORS_SQL = "SELECT * FROM ERROR_LOG";
   
-  private static String SELECT_ALL_REPROCESSED_SQL = SELECT_ALL_ERRORS_SQL + " WHERE REPROCESSED=true";
+  //private static String SELECT_ALL_REPROCESSED_SQL = SELECT_ALL_ERRORS_SQL + " WHERE REPROCESSED=true";
   
   private static String FIX_ALL_RECORDS_SQL = "UPDATE ERROR_LOG SET FIXED='true'";
   
@@ -71,7 +71,7 @@ public class HospitalTestCase extends AbstractJDBCConnectionTests {
   
   private static final String HOSPITAL_WRITER_2 = "hospital_db_writer2.xml";
   
-  private static final String HOSPITAL_WRITER_3 = "hospital_db_writer3.xml";
+  //private static final String HOSPITAL_WRITER_3 = "hospital_db_writer3.xml";
   
   private static final String HOSPITAL_WRITER_4 = "hospital_db_writer4.xml";
   
