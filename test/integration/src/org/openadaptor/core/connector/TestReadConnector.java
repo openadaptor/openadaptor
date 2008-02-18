@@ -42,15 +42,19 @@ import org.openadaptor.core.transaction.TestTransactionalResource;
 
 public class TestReadConnector extends Component implements IReadConnector, ITransactional {
 
+  public static final String DEFAULT_DATA_STRING="test data %n";
+  public static final int DEFAULT_BATCH_SIZE=1;
+  public static final int DEFAULT_MAX_SEND=1;
+ 
   private int count = 0;
   
-  private int batchSize = 1;
+  private int batchSize = DEFAULT_BATCH_SIZE;
   
   private int intervalMs = 0;
   
-  private int maxSend = 1;
+  private int maxSend = DEFAULT_MAX_SEND;
   
-  private String dataString = "test data %n";
+  private String dataString = DEFAULT_DATA_STRING;
   
   private int exceptionFrequency = 0;
   
