@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config adaptorws.xml
+    java org.openadaptor.spring.SpringAdaptor -config wsserver.xml
     
   You need the following in your classpath
   
@@ -31,7 +31,7 @@
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
   
-  To test it fully you can either run the wsinvoker.xml example which processes data by invoking
+  To test it fully you can either run the wsclient.xml example which processes data by invoking
   a webservice, or use any SOAP clients such as soapUI (http://www.soapui.org/).
   ]]></description>
 
