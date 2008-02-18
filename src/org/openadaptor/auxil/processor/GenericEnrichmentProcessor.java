@@ -34,10 +34,8 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
 
 /**
- * A enrichment processor with generic implementations of prepering parameters and 
+ * An enrichment processor with generic implementations of preparing parameters and 
  * enhancing input data. 
- * 
- * Written to replace the (deprecated) {@link org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor}.
  * 
  * @author Kris Lachor
  * @since Post 3.3

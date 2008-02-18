@@ -44,8 +44,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is a draft of a new JNDI read connector, ultimately meant to replace 
- * the present {@link OldJNDIReadConnector}.
+ * This class is a connector which will generate IOrderedMaps from the results of a JNDI search.
+ * <p/>
+ * It should be configured with an appropriate JNDIConnection and JNDISearch objects.
  *
  * @author Eddy Higgins, Andrew Shire, Kris Lachor
  * @see JNDIConnection
