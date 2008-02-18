@@ -1,7 +1,5 @@
 package org.openadaptor.core.connector;
 
-import java.util.Date;
-
 import org.openadaptor.core.connector.CronnablePollingReadConnector;
 
 import junit.framework.TestCase;
