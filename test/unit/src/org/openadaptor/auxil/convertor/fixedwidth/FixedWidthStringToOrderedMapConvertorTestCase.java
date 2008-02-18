@@ -206,7 +206,7 @@ public class FixedWidthStringToOrderedMapConvertorTestCase extends AbstractTestF
 
   public void testProcessNoFieldsDefined() {
     // no field names defined - that's ok
-    FixedWidthFieldDetail[] fieldDetails = new FixedWidthFieldDetail[]{fd5};
+    
     String rec2 = "02 Steve     Riverbank House, London, UK";
     IOrderedMap result;
     List keys = null;

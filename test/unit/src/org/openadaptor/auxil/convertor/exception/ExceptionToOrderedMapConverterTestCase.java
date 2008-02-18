@@ -27,14 +27,11 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
 		OrderedHashMap map = (OrderedHashMap)result;
-		assertTrue(map.containsKey(convertor.TIMESTAMP));
-		assertTrue(map.containsKey(convertor.EXCEPTION_CLASS));
-		assertTrue(map.containsKey(convertor.COMPONENT));
-		assertTrue(map.containsKey(convertor.DATA));
+    testBasicAssertions(map);
 		
-		assertEquals("java.lang.RuntimeException", map.get(convertor.EXCEPTION_CLASS));
-		assertEquals("SOURCE", map.get(convertor.COMPONENT));
-		assertEquals("EEEE", map.get(convertor.DATA));
+		assertEquals("java.lang.RuntimeException", map.get(ExceptionToOrderedMapConvertor.EXCEPTION_CLASS));
+		assertEquals("SOURCE", map.get(ExceptionToOrderedMapConvertor.COMPONENT));
+		assertEquals("EEEE", map.get(ExceptionToOrderedMapConvertor.DATA));
 	}
 
 	public void testWithDateFormatConvert() {
@@ -44,22 +41,26 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
 		OrderedHashMap map = (OrderedHashMap)result;
-		assertTrue(map.containsKey(convertor.TIMESTAMP));
-		assertTrue(map.containsKey(convertor.EXCEPTION_CLASS));
-		assertTrue(map.containsKey(convertor.COMPONENT));
-		assertTrue(map.containsKey(convertor.DATA));
+    testBasicAssertions(map);
 		
-		if (!now.equals(map.get(convertor.TIMESTAMP))) {
+		if (!now.equals(map.get(ExceptionToOrderedMapConvertor.TIMESTAMP))) {
 			// possible but very unlikely we clicked over to the next minute
 			// between getting the current date and making the conversion
 			// but we can handle that
 			now = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date());
-			assertEquals(now, map.get(convertor.TIMESTAMP));
+			assertEquals(now, map.get(ExceptionToOrderedMapConvertor.TIMESTAMP));
 		}
 		
-		assertEquals("java.sql.SQLException", map.get(convertor.EXCEPTION_CLASS));
-		assertEquals("...", map.get(convertor.COMPONENT));
-		assertEquals("''", map.get(convertor.DATA));
+		assertEquals("java.sql.SQLException", map.get(ExceptionToOrderedMapConvertor.EXCEPTION_CLASS));
+		assertEquals("...", map.get(ExceptionToOrderedMapConvertor.COMPONENT));
+		assertEquals("''", map.get(ExceptionToOrderedMapConvertor.DATA));
 	}
+  
+  private void testBasicAssertions(OrderedHashMap map) {
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.TIMESTAMP));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.EXCEPTION_CLASS));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.COMPONENT));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.DATA)); 
+  }
 
 }
