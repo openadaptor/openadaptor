@@ -12,20 +12,20 @@ import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.adaptor.AdaptorRunConfiguration;
 import org.openadaptor.core.processor.TestProcessor;
-import org.openadaptor.core.router.Pipeline;
+import org.openadaptor.core.router.Router;
 
 public class AdaptorRunConfigurationTest extends TestCase {
 
   private static final Object DATA = "foobar";
 
   private Adaptor createTestAdaptor(Object[] pipeline,Object exceptionHandler) {
-    Pipeline p=new Pipeline();
-    p.setProcessors(Arrays.asList(pipeline));
+    Router r=new Router();
+    r.setProcessors(Arrays.asList(pipeline));
     if (exceptionHandler!=null) {
-      p.setExceptionProcessor(exceptionHandler);
+      r.setExceptionProcessor(exceptionHandler);
     }
     Adaptor adaptor=new Adaptor();
-    adaptor.setMessageProcessor(p);
+    adaptor.setMessageProcessor(r);
     return adaptor;
   }
   private Adaptor createTestAdaptor(Object[] pipeline) {
@@ -216,11 +216,8 @@ public class AdaptorRunConfigurationTest extends TestCase {
       runCount++;
     }
 
-    public void validate(List exceptions) {
-      // TODO Auto-generated method stub
-      
+    public void validate(List exceptions) {      
     }
-    
   }
   
   class MyTestReadConnector extends TestComponent implements IReadConnector {
@@ -270,8 +267,6 @@ public class AdaptorRunConfigurationTest extends TestCase {
     }
 
     public void validate(List exceptions) {
-      // TODO Auto-generated method stub
-      
     }
   }
   
