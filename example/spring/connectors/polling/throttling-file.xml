@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config throttling_file.xml
+    java org.openadaptor.spring.SpringAdaptor -config throttling-file.xml
     
   You need the following in your classpath
   
