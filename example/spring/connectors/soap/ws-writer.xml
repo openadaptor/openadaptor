@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-client.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-writer.xml
     
   You need the following in your classpath
   
@@ -27,17 +27,18 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     lib/3rdparty/activation.jar
-     
+  
   Once it is running you need to type some data into the command line, for the
   processing to succeed, the webservice it is connecting to needs to be running
-  (see the ws-server.xml example).
+  (see the ws-server.xml example). 
+   
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
   	<property name="messageProcessor">
   		<bean class="org.openadaptor.core.router.Router">
   			<description>
-  				This creates the simple pipeline Reader -> WebService.
+  				This creates the simple pipeline: console reader -> Web service writer.
   			</description>
   			<property name="processors">
   				<list>
@@ -53,10 +54,7 @@
   
   <bean id="WebService" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
     <description>This is a write connector that invokes a webservice</description>
-    <property name="endpoint" value="http://localhost:9999/MyService?wsdl"/>
-    
-    <!-- This parameter is completely obsolete - it is already specified in WSDL -->
-    <!--  property name="methodName" value="process"/ -->
+    <property name="endpoint" value="http://localhost:9999/OAService?wsdl"/>
   </bean>
   
 </beans>

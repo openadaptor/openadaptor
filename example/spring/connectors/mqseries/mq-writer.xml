@@ -13,7 +13,7 @@
   Data terminates: MQ.
 
   Run using
-    java org.openadaptor.spring.SpringAdaptor -config mq_writer.xml -props mq.properties
+    java org.openadaptor.spring.SpringAdaptor -config mq-writer.xml -props mq.properties
 
   mq.properties is a properties format file which should be edited to supply specific mq property
   values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
@@ -27,7 +27,7 @@
     mq.jar  (this is not distributed with openadaptor)
     
   Once it is running you need to type some data into the command line. To verify that this is working you 
-  need to be running the corresponding mq_reader example.
+  need to be running the corresponding mq-reader example.
     
   ]]></description>
  

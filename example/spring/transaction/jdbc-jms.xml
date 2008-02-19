@@ -22,7 +22,7 @@
 
     Run it like this...
 
-      java org.openadaptor.spring.SpringAdaptor -config jdbcjms.xml -props transaction-examples.properties
+      java org.openadaptor.spring.SpringAdaptor -config jdbc-jms.xml -props transaction-examples.properties
 
     You need the following in your classpath
 

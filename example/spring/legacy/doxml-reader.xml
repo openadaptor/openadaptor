@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- $Id: doxml_reader.xml 1008 2007-11-06 16:23:26Z higginse $
- $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/legacy/doxml_reader.xml $
+ $Id$
+ $HeadURL$
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
@@ -12,15 +12,16 @@
     
     * reads DOXML from a file
     * converts to DataObjects (legacy data structures from previous openadaptor versions)
-    * converts DataObjects xml
-    * writes to file
+    * converts DataObjects to map
+    * converts map to xml
+    * writes to console
     
   It is designed to illustrate the basic structure something that needs to receive
   the legacy DataObject format.
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config doxml_to_xml.xml
+    java org.openadaptor.spring.SpringAdaptor -config doxml-reader.xml
 
   For this example to run correctly you need to download the legacy openadaptor.jar from
   openadaptor 1.7.2.2 or later. This is available from http://www.openadaptor.org. Ensure
@@ -46,6 +47,7 @@
      <list>
       <ref bean="Reader" />
       <ref bean="DOXmlConverter" />
+      <ref bean="MapConverter" />
       <ref bean="XmlConverter" />
       <ref bean="Writer" />
      </list>
@@ -59,7 +61,7 @@
     Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
     the file to potentially contain multiple DOXML messages if necessary).
   </description>
-  <property name="filename" value="input/bike_doxml.txt" />
+  <property name="filename" value="input/doxml.txt" />
   <property name="dataReader">
    <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
   </property>
@@ -69,14 +71,13 @@
   <description>Converts this string to an array of DataObject[].</description>
  </bean>
 
+ <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
+  <description>Converts DataObject[] to IOrderedMap.</description>
+ </bean>
 
- <bean id="XmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToXmlConvertor">
-  <description>Converts DataObjects to XML.</description>
-  <property name="attributes">
-   <map>
-    <entry key="ElideSingletonRootObjectTag" value="true"/>
-   </map>
-  </property>
+ <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <description>Converts IOrderedMap to XML.</description>
+  <property name="rootElementTag" value="record" />
  </bean>
 
  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
