@@ -19,7 +19,7 @@
 
   Run it like this...
 
-    java org.openadaptor.spring.SpringAdaptor -config jsonobject.xml
+    java org.openadaptor.spring.SpringAdaptor -config json-object.xml
 
   You need the following in your classpath
 

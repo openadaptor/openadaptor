@@ -16,7 +16,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config pollingreader.xml 
+    java org.openadaptor.spring.SpringAdaptor -config polling-reader.xml 
     
   You need the following in your classpath
   

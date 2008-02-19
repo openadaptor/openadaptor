@@ -17,7 +17,7 @@
     
   Run it like this...
     
-    java org.openadaptor.spring.SpringApplication -config tojson.xml
+    java org.openadaptor.spring.SpringApplication -config to-json.xml
     
   You need the following in your classpath
   

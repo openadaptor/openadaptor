@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config fixedwidth.xml
+    java org.openadaptor.spring.SpringAdaptor -config fixed-width.xml
     
   You need the following in your classpath
   

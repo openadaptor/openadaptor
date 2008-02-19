@@ -17,7 +17,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config directoryreadconnector.xml -bean Adaptor
+    java org.openadaptor.spring.SpringAdaptor -config directory-read-connector.xml -bean Adaptor
     
   You need the following in your classpath
   
