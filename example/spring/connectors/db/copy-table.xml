@@ -18,7 +18,7 @@
 
     Run it like this...
 
-      java -DinputTable=MyTable -DoutputTable=MyOtherTable org.openadaptor.spring.SpringAdaptor -config copytable.xml -bean Adaptor -props copytable.properties
+      java -DinputTable=MyTable -DoutputTable=MyOtherTable org.openadaptor.spring.SpringAdaptor -config copy-table.xml -bean Adaptor -props copy-table.properties
 
     You need the following in your classpath (substituting database driver jar(s) as appropriate)
 
@@ -33,7 +33,7 @@
       lib/ifxjdbc-2.21.JC2.jar   (informix)
       lib/jtds-1.2.jar           (SQLServer)
 
-    You must also supply appropriate values for properties in the file copytable.properties.
+    You must also supply appropriate values for properties in the file copy-table.properties.
 
    ]]></description>
 
