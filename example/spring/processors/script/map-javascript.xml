@@ -16,7 +16,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config mapjavascript.xml
+    java org.openadaptor.spring.SpringAdaptor -config map-javascript.xml
     
   You need the following in your classpath
   

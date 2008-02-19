@@ -20,7 +20,7 @@
     
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config JavascriptXPath.xml 
+    java org.openadaptor.spring.SpringAdaptor -config javascript-xpath.xml 
     
   You need the following in your classpath
   

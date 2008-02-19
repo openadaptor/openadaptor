@@ -22,13 +22,13 @@
     lib/openadaptor-depends.jar
     
   Run with:  
-    java org.openadaptor.spring.SpringAdaptor -config scriptThrottling.xml
+    java org.openadaptor.spring.SpringAdaptor -config script-throttling.xml
  
   When executing, each line of input (from the console) will be
   echoed on output, but with a minumum delay of 1000ms between output 
   records.
      
-  For an alternative throttling mechanism see spring/connectors/polling/throttling_file.xml
+  For an alternative throttling mechanism see spring/connectors/polling/throttling-file.xml
   ]]>
  </description>
 

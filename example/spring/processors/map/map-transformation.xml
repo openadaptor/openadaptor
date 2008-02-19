@@ -20,7 +20,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config MapTransformation.xml
+    java org.openadaptor.spring.SpringAdaptor -config map-transformation.xml
    
   You need the following in your classpath
   

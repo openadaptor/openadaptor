@@ -20,7 +20,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config enrich_processor.xml
+    java org.openadaptor.spring.SpringAdaptor -config enrich-processor.xml
    
   You need the following in your classpath
   

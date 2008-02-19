@@ -13,8 +13,8 @@ openadaptor 3.4.1
 Processors
 ==========
 
-* When processor implements the ILifecycleListener interface it will be
-  notified of state changes of its associated Node
+* A processor that implements the ILifecycleListener interface will be
+  notified of state changes of its associated Node.
   
   
 Deprecated Components Removed
@@ -42,6 +42,9 @@ Miscellaneous
 =============
  * Clean up of JUnit tests e.g. warnings (unused imports, non-static references to static 
    fields, etc.) have been tidied.
+   
+ * Spring XML files with examples config renamed to follow industry standard (lower case,
+   hyphen separated).   
 
 =================================================
 openadaptor3 production 3.4 Release Notes

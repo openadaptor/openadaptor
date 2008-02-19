@@ -19,7 +19,7 @@
 
   Run it like this...
 
-    java org.openadaptor.spring.SpringAdaptor -config ProcessorGroup.xml 
+    java org.openadaptor.spring.SpringAdaptor -config processor-group.xml 
 
   You need the following in your classpath
 

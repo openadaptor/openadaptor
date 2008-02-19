@@ -22,7 +22,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config enrich_processor.xml
+    java org.openadaptor.spring.SpringAdaptor -config enrich-processor.xml
    
   Node that this example uses a custom file reader (CustomFileReadConnector.java), located in this folder.
   

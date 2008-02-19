@@ -336,7 +336,7 @@
         <exclude name="**/input/*"/>
         <exclude name="**/output/*"/>
         <exclude name="**/mq-*.xml"/>
-        <exclude name="**/file/enrich_*.xml"/>
+        <exclude name="**/file/enrich-*.xml"/>
         <exclude name="**/db/jee/jboss/oa*.xml"/>
       </fileset>
     </springcheck>
