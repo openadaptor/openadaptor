@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config wsclient.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-client.xml
     
   You need the following in your classpath
   
@@ -30,7 +30,7 @@
      
   Once it is running you need to type some data into the command line, for the
   processing to succeed, the webservice it is connecting to needs to be running
-  (see the wsserver.xml example).
+  (see the ws-server.xml example).
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
