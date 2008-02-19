@@ -1,6 +1,0 @@
-palinm,Michael Palin,1001,1978-01-21 17:01:31.673
-cleesej,John Cleese,1002,1972-07-26 17:02:09.086
-chapmang,Graham Chapman,1003,1960-12-10 17:02:24.46
-jonest,Terry Jones,1004,1985-01-09 17:03:38.196
-gilliamt,Terry Gilliam,1005,2006-01-28 17:04:27.936
-idlee,Eric Idle,1006,1999-11-22 17:05:07.54

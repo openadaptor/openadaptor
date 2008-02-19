@@ -87,12 +87,16 @@
     </property>
   </bean>
   
-  <bean id="jsFilter" class="org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor">
+  <bean id="jsFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
     <description>
-      Simple use of a JavascriptFilterProcessor. 
+      Simple use of a ScriptFilterProcessor. 
       Filter will discard any records with a fullname field starting with 'Michael'
     </description>
-    <property name="script" value="record.get('fullname').indexOf('Michael') ==0"/>
+    <property name="scriptProcessor">
+      <bean class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+        <property name="script" value="fullname.indexOf('Michael') == 0"/>
+      </bean>
+    </property>
   </bean>
   
   <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">

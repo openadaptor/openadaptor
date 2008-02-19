@@ -67,11 +67,11 @@
     </property>
   </bean>
 
-  <bean id="updater" class="org.openadaptor.auxil.processor.javascript.JavascriptProcessor">
+  <bean id="updater" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
     <description>
-      Simple use of a JavascriptProcessor. Changes the "age" attribute to 21.
+      Simple use of a ScriptProcessor. Changes the "age" attribute to 21.
     </description>
-    <property name="script" value="record.put('age', 21 )"/>
+    <property name="script" value="oa_data.put('age', 21 )"/>
   </bean>
 
   <bean id="unwrapper" class="org.openadaptor.auxil.convertor.simplerecord.FromSimpleRecordConvertor"/>
