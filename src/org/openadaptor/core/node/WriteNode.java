@@ -112,7 +112,7 @@ public class WriteNode extends Node {
 	}
 	
   /**
-   * @see ILifecycleComponent#start()
+   * @see org.openadaptor.core.lifecycle.ILifecycleComponent#start()
    */
   public void start() {
   	connector.connect();
@@ -124,7 +124,7 @@ public class WriteNode extends Node {
    * <code>suppressDisconnectionErrors</code> property does or does not catch exceptions.
    * By default catches all exceptions.
    * 
-   * @see ILifecycleComponent#stop()
+   * @see org.openadaptor.core.lifecycle.ILifecycleComponent#stop()
    */
   public void stop() {
     setState(State.STOPPING);
@@ -138,7 +138,7 @@ public class WriteNode extends Node {
   }
 	
   /**
-   * @see IMessageProcessor#process(Message)
+   * @see org.openadaptor.core.IMessageProcessor#process(Message)
    */  
   public Response process(Message msg) {
     Object resource = null;
@@ -203,7 +203,7 @@ public class WriteNode extends Node {
   }
   
   /**
-   * @see LifecycleComponent#getId()
+   * @see org.openadaptor.core.lifecycle.LifecycleComponent#getId()
    */
   public String getId() {
     String id = super.getId();
@@ -214,7 +214,7 @@ public class WriteNode extends Node {
   }
   
   /**
-   * @see LifecycleComponent#getId()
+   * @see org.openadaptor.core.lifecycle.LifecycleComponent#getId()
    */
   public String toString() {
     return getId();
@@ -223,7 +223,7 @@ public class WriteNode extends Node {
   /**
    * Sets connector this node manages.
    * 
-   * @param the connector
+   * @param connector The connector
    */
   public void setConnector(final IWriteConnector connector) {
       this.connector = connector;
