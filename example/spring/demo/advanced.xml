@@ -19,7 +19,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config advancedExample.xml
+    java org.openadaptor.spring.SpringAdaptor -config advanced.xml
     
   You need the following in your classpath (note the extra hsqldb.jar and jbossall-client.jar):
   
