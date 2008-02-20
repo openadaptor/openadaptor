@@ -54,7 +54,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static final Log log = LogFactory.getLog(Application.class);
 
-  private static final String REGISTRATION_PROPERTIES   = "registration.properties";
+  private static final String[] REGISTRATION_PROPERTIES_LOCATIONS={"registration.properties","org/openadaptor/util/registration.properties"};
 
   private static final String PROPERTY_HOSTADDRESS      = "openadaptor.hostaddress";
 
@@ -70,23 +70,11 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   public static final String START_TIMESTAMP_FORMAT     = "yyyy/MM/dd HH:mm:ss";
 
-  private static final String BUILD_PROPERTIES_NAME     = ".openadaptor.properties";
+  private static final String[] BUILD_PROPERTIES_LOCATIONS={".openadaptor.properties"};
 
   private static final String[] LICENCE_LOCATIONS= {"licence.txt","org/openadaptor/util/licence.txt"};
 
-  public static String LICENCE_TEXT=ClasspathUtils.loadFromClasspath(LICENCE_LOCATIONS);
-
-  static {
-    if (LICENCE_TEXT==null) {
-      log.debug("Failed to get licence text from licence.txt or org/openadaptor/util/licence.txt");
-      try {
-        LICENCE_TEXT = ResourceUtil.readFileContents(ResourceUtil.class, "licence.txt");
-      } catch (Throwable e) {
-        throw new RuntimeException("unable to load openadaptor licence file, " + e.getMessage(), e);
-      }
-      System.err.println("\n" + LICENCE_TEXT + "\n");
-    }
-  }
+  public static final String LICENCE_TEXT=loadLicence(LICENCE_LOCATIONS);
 
   private String registrationUrl;
 
@@ -95,6 +83,26 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   private boolean registerOnlyOnce = true;
 
   private boolean registered;
+
+  private static String textFromClasspath(String[] locations) {
+    return ClasspathUtils.loadStringFromClasspath(locations);
+  }
+
+  private static Properties propertiesFromClasspath(String[] locations) {
+    return ClasspathUtils.loadPropertiesFromClasspath(locations);
+  }
+
+  private static String loadLicence(String[] locations) {
+    String text=textFromClasspath(locations);
+    if (text==null) {
+      log.warn("Failed to get licence text from licence.txt or org/openadaptor/util/licence.txt");
+    }
+    else {
+      log.debug("Issuing licence information to stderr");
+      System.err.println("\n" + text + "\n");
+    }
+    return text;
+  }
 
   protected Application() {
 
@@ -113,6 +121,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     props.put(PROPERTY_HOSTADDRESS, NetUtil.getLocalHostAddress());
 
     // override with build properties
+    Properties buildProps=propertiesFromClasspath(BUILD_PROPERTIES_LOCATIONS);
+    /*
     Properties buildProps = new Properties();
     InputStream in = Application.class.getResourceAsStream(BUILD_PROPERTIES_NAME);
     if (in != null) {
@@ -129,14 +139,19 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     } else {
       log.warn("failed to find " + BUILD_PROPERTIES_NAME + " in classpath");
     }
-
-    for (Iterator iter = buildProps.entrySet().iterator(); iter.hasNext();) {
-      Map.Entry entry = (Map.Entry) iter.next();
-      if (props.containsKey(entry.getKey()) && !props.get(entry.getKey()).equals(entry.getValue())) {
-        log.info("build property " + entry.getKey() + " overrides system property");
+     */
+    if (buildProps!=null) {
+      for (Iterator iter = buildProps.entrySet().iterator(); iter.hasNext();) {
+        Map.Entry entry = (Map.Entry) iter.next();
+        if (props.containsKey(entry.getKey()) && !props.get(entry.getKey()).equals(entry.getValue())) {
+          log.info("build property " + entry.getKey() + " overrides system property");
+        }
+        log.info(entry.getKey() + " = " + entry.getValue());
+        props.put(entry.getKey(), entry.getValue());
       }
-      log.info(entry.getKey() + " = " + entry.getValue());
-      props.put(entry.getKey(), entry.getValue());
+    }
+    else {
+      log.warn("Failed to load build properties from classpath");
     }
 
   }
@@ -204,6 +219,28 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static Properties filterProperties(Properties props) {
     Properties newProps = new Properties();
+    props=props==null?new Properties():props; //Make sure it's not null.
+    Properties registrationProps = propertiesFromClasspath(REGISTRATION_PROPERTIES_LOCATIONS);
+    if (registrationProps!=null) {
+      for (Iterator iter = registrationProps.keySet().iterator(); iter.hasNext();) {
+        String key = (String) iter.next();
+        String propertyName = registrationProps.getProperty(key);
+        if (propertyName != null && propertyName.length() > 0) {
+          String value = props.getProperty(propertyName, "<unknown>");
+          log.debug("registration property : " + key + "," + value);
+          newProps.setProperty(key, value);
+        }
+      }
+    }
+    else {
+      log.warn("Failed to load registration properties from classpath");
+    }
+    return newProps;
+  }
+
+  /*
+  private static Properties filterProperties(Properties props) {
+    Properties newProps = new Properties();
     InputStream is = Application.class.getResourceAsStream(REGISTRATION_PROPERTIES);
     Properties registrationProps = new Properties();
     try {
@@ -227,7 +264,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     }
     return newProps;
   }
-
+   */
   /**
    * Adds props to application properties
    */

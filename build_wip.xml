@@ -4,7 +4,8 @@
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 	</description>
-	
+	<property name="suppress.tests" value="set"/>
+	<property name="suppress.javadoc" value="set"/>
   <target name="init" description="Initialisation of directories and classpaths">
     <echo level="info" message="Initialising directories and classpaths"/>
     <tstamp/>
@@ -12,7 +13,7 @@
     <property name="tag" value="trunk"/>
     <echo level="warning" message="Licence file should move to top level"/>	
     <property name="licence.dir" value="${basedir}/src/org/openadaptor/util"/>
-    <property name="file.licence" value="${licence.dir}/licence.txt"/>
+    <property name="licence.file" value="licence.txt"/>
     <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
     <echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
     <property name="dir.src" value="${basedir}/src"/>
@@ -101,7 +102,12 @@
 	</target>
 	
 	<!-- Compilation tasks -->
-	<target name="compile.stub" depends="init" description="Compile stub classes: legacy oa,mq and tibrv">
+	<target name="make.dirs" depends="init" description="Create build area ${dir.build}">
+		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.build.javadocs}"/>
+	</target>
+	
+	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
 		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}"/>
 		<mkdir dir="${dir.build}"/>		
 		<mkdir dir="${dir.build.stub}"/>		
@@ -111,7 +117,6 @@
 	
 	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
 		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}"/>
-		<mkdir dir="${dir.build}"/>
 		<mkdir dir="${dir.build.classes}"/>
 	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath"/>
   </target>
@@ -148,7 +153,7 @@
 	<target name="compile.all" depends="compile.spring,compile.test" description="Compile all source code"/>
 	
 	<!-- Test tasks -->	
-	<target name="test.unit" depends="compile.test" description="Unit tests (against compiled classes)">
+	<target name="test.unit" depends="compile.test" description="Unit tests (against compiled classes)" unless="suppress.tests">
 		
 	 <echo level="info" message="Running unit tests"/>
    <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
@@ -161,7 +166,7 @@
    </junit>			
  </target>
 	
-	<target name="test.integration" depends="compile.test" description="Integration tests (against compiled classes)">
+	<target name="test.integration" depends="compile.test" description="Integration tests (against compiled classes)" unless="suppress.tests">
 	 <echo level="info" message="Running integration tests"/>
    <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
     <classpath refid="classpath.test"/>
@@ -174,7 +179,7 @@
    </junit>	
 	 </target>
 
-	<target name="test.system" depends="compile.test" description="System tests (against compiled classes)">
+	<target name="test.system" depends="compile.test" description="System tests (against compiled classes)" unless="suppress.tests">
 	 <echo level="info" message="Running system tests" />
    <echo level="warning" message="Excluding **/WebService*TestCase.java" />
 	 <echo level="warning" message="Excluding **/MQ*.java" />
@@ -194,7 +199,11 @@
    </junit>	
  </target>
 	
-	<target name="test.all" depends="clean.build.test,test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)">
+	<target name="test.all" 
+		depends="clean.build.test,test.unit,test.integration,test.system" 
+		description="Perform all tests (unit,integration,system)"
+		unless="suppress.tests">
+		
 	  <echo level="info" message="Generating report from test execution"/>		
     <junitreport todir="${dir.build.test.output}">
       <fileset dir="${dir.build.test.output}" includes="TEST-*.xml"/>
@@ -203,10 +212,13 @@
     <fail message="Tests failed: check ${dir.build.test.output}" if="test.failed"/>
   </target>
 	
+	<target name="test.suppressed" description="Warns of suppressed tests" if="suppress.tests">
+	  <echo message="*** TEST EXECUTION HAS BEEN SUPPRESSED (suppress.tests is set) ***"/>				
+	</target>
+	
 	<!-- Javadoc tasks -->
-	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source">
+	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source" unless="suppress.javadoc">
 	 <echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}"/>
-	 <mkdir dir="${dir.build.javadocs}"/>
 	 <javadoc
 		destdir="${dir.build.javadocs}"
 		classpathref="classpath.spring"
@@ -222,12 +234,18 @@
   </javadoc>
 	</target>
 	
+	<target name="javadocs.suppressed" description="Warns of suppressed javadoc generation" if="suppress.javadoc">
+	  <echo message="*** JAVADOC GENERATION HAS BEEN SUPPRESSED (suppress.javadoc is set) ***"/>				
+	</target>
+
 	<!-- Packaging tasks -->
-  <target name="jars.compiled" depends="test.all" description="Create jars from compiled classes">
+  <target name="jars.compiled" depends="compile,test.all,test.suppressed" description="Create jars from compiled classes">
 	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
+  	
    <jar destfile="${dir.build.lib}/openadaptor.jar">
      <fileset dir="${dir.build.classes}"/>
+   	 <fileset dir="${licence.dir}" includes="${licence.file}"/>
    </jar>
   	
    <echo level="warning" message="Explicitly copying .openadaptor-spring.xml into jar."/>
@@ -361,7 +379,7 @@
 		<mkdir dir="${dir.package.licences}"/>	
 	</target>
 
-	<target name="package" depends="jars,javadocs,package.init" description="Create openadaptor package">
+	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed" description="Create openadaptor package">
 		<echo level="info" message ="creating package in ${dir.package}"/>
 	
 		<echo level="info" message ="Copying openadaptor jars from ${dir.build.lib}"/>
@@ -386,9 +404,8 @@
 		<echo level="info" message ="Copying Release Notes ${basedir}/ReleaseNotes.txt"/>
     <copy todir="${dir.package}" file="${basedir}/ReleaseNotes.txt"/>
 
-		<echo level="info" message ="Copying Licence file ${file.licence}"/>
-    <copy todir="${dir.package}" file="${file.licence}"/>
-		<copy todir="${dir.package.licences}" file="${file.licence}"/>
+		<echo level="info" message ="Copying Licence file ${licence.file}"/>
+    <copy todir="${dir.package}" file="${licence.file}"/>
 
 		<echo level="info" message="Copying Examples from ${dir.example}"/>
     <copy todir="${dir.package.example}">
