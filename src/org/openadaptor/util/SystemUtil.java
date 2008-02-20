@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util;
 
@@ -33,9 +33,12 @@ import org.openadaptor.core.jmx.Administrable;
  * jmx component for accessing system info
  * 
  * @author perryj
+ * @author higginse
  *
  */
 public class SystemUtil implements Administrable {
+
+  private static final long MEGABYTE=1024 * 1024;
 
   public Object getAdmin() {
     return new Admin();
@@ -56,17 +59,16 @@ public class SystemUtil implements Administrable {
     }
 
     public String getMemory() {
-      long mb = 1024 * 1024;
-      int max = (int) (Runtime.getRuntime().maxMemory() / mb);
-      int free = (int) (Runtime.getRuntime().freeMemory() / mb);
-      int total = (int) (Runtime.getRuntime().totalMemory() / mb);
+      int max = (int) (Runtime.getRuntime().maxMemory() / MEGABYTE);
+      int free = (int) (Runtime.getRuntime().freeMemory() / MEGABYTE);
+      int total = (int) (Runtime.getRuntime().totalMemory() / MEGABYTE);
       int used = total - free;
 
       StringBuffer buffer = new StringBuffer();
       buffer.append("used=").append(used).append(",");
       buffer.append("free=").append(free).append(",");
       buffer.append("total=").append(total).append(",");
-      buffer.append("max=").append(max).append(" (Mb)");
+      buffer.append("max=").append(max).append(" (MB)");
       return buffer.toString();
     }
 
@@ -81,7 +83,8 @@ public class SystemUtil implements Administrable {
         dumpThreadGroup(buffer, "", threadGroup);
         buffer.append("</pre>");
         return buffer.toString();
-      } catch (RuntimeException e) {
+      } 
+      catch (RuntimeException e) {
         e.printStackTrace();
         throw e;
       }
