@@ -4,18 +4,19 @@
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 	</description>
-    <target name="init" description="Initialisation of directories and classpaths">
-   	<echo level="info" message="Initialising directories and classpaths"/>
-	  <tstamp/>
-   	<!-- Explicitly override tag to change release -->
-   	<property name="tag" value="trunk"/>
+	
+  <target name="init" description="Initialisation of directories and classpaths">
+    <echo level="info" message="Initialising directories and classpaths"/>
+    <tstamp/>
+    <!-- Explicitly override tag to change release -->
+    <property name="tag" value="trunk"/>
     <echo level="warning" message="Licence file should move to top level"/>	
     <property name="licence.dir" value="${basedir}/src/org/openadaptor/util"/>
     <property name="file.licence" value="${licence.dir}/licence.txt"/>
- 	  <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
-  	<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
-  	<property name="dir.src" value="${basedir}/src"/>
-  	<property name="dir.lib" value="${basedir}/lib"/>
+    <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
+    <echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
+    <property name="dir.src" value="${basedir}/src"/>
+    <property name="dir.lib" value="${basedir}/lib"/>
     <property name="dir.example" value="${basedir}/example"/>
     <property name="dir.sql" value="${basedir}/sql"/>
     	
@@ -24,41 +25,41 @@
     <property name="dir.test.src.unit" value="${dir.test}/unit/src"/>
     <property name="dir.test.src.integration" value="${dir.test}/integration/src"/>
     <property name="dir.test.src.system" value="${dir.test}/system/src"/>
-    
-    
-  	<property name="dir.spring" value="${basedir}/spring"/>
-  	<property name="dir.spring.src" value="${dir.spring}/src"/>
-  	<property name="dir.spring.lib" value="${dir.spring}/lib"/>
-  	<property name="dir.stub.src" value="${basedir}/stub/src"/>
+      
+    <property name="dir.spring" value="${basedir}/spring"/>
+    <property name="dir.spring.src" value="${dir.spring}/src"/>
+    <property name="dir.spring.lib" value="${dir.spring}/lib"/>
+    <!-- Source root for stub code, e.g. tibco, legacy -->
+    <property name="dir.stub.src" value="${basedir}/stub/src"/>
     	
-  	<property name="dir.build" value="${basedir}/build"/>
-  	<property name="dir.build.lib" value="${dir.build}/lib"/>
-  	<property name="dir.build.classes" value="${dir.build}/classes"/>
+    <!-- Directories for build output -->
+    <property name="dir.build" value="${basedir}/build"/>
+    <property name="dir.build.lib" value="${dir.build}/lib"/>
+    <property name="dir.build.classes" value="${dir.build}/classes"/>
     	
     <property name="dir.build.test" value="${dir.build}/test"/>
     <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
     	
-  	<property name="dir.build.stub" value="${dir.build}/stub"/>
-  	<property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
-  	<property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
-  	<property name="dir.build.javadocs" value="${dir.build}/javadocs"/>
+    <property name="dir.build.stub" value="${dir.build}/stub"/>
+    <property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
+    <property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
+    <property name="dir.build.javadocs" value="${dir.build}/javadocs"/>
 
-  	<path id="classpath.lib">
-	    <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
+    <path id="classpath.lib">
+    	<fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
 	  </path>
   	
     <path id="classpath">
-    	<path refid="classpath.lib" />
-    	<pathelement path="${dir.build.stub.classes}"/>
+      <path refid="classpath.lib" />
+      <pathelement path="${dir.build.stub.classes}"/>
     </path>
   	
-  	<path id="classpath.spring">
-     	<pathelement path="${dir.build.classes}"/>
+    <path id="classpath.spring">
+      <pathelement path="${dir.build.classes}"/>
 	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
-     	<path refid="classpath" />
-     </path>   	
- 
-	</target>
+      <path refid="classpath" />
+    </path>   	 
+</target>
 	
 	<target name="init.test" depends="init" description="Initialisation for tests">
 	  <echo level="info" message="Creating test directories under ${dir.build.test}"/>	
@@ -98,7 +99,6 @@
     </path>   	
 
 	</target>
-
 	
 	<!-- Compilation tasks -->
 	<target name="compile.stub" depends="init" description="Compile stub classes: legacy oa,mq and tibrv">
@@ -201,7 +201,7 @@
       <report format="frames" todir="${dir.build.test.output}"/>
     </junitreport>		
     <fail message="Tests failed: check ${dir.build.test.output}" if="test.failed"/>
-</target>
+  </target>
 	
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source">
@@ -411,10 +411,9 @@
 	<target name="clean.build.test" depends="init" description="Clean build area ${dir.build.test}">
     <delete dir="${dir.build.test}"/>
 	</target>
-	
-		
+			
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
-	<!-- Cruise tasks for use by continuous builds -->
-	
+
+	<!-- Cruise tasks for use by continuous builds -->	
 	<target name="cruise" depends="clean,package" description="Cruise target for openadaptor build"/>
 </project>
