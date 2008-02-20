@@ -44,7 +44,9 @@ Miscellaneous
    fields, etc.) have been tidied.
    
  * Spring XML files with examples config renamed to follow industry standard (lower case,
-   hyphen separated).   
+   hyphen separated).
+   
+ * Failure to load .openadaptor-spring.xml from classpath is no longer fatal (reduced to warning).   
 
 =================================================
 openadaptor3 production 3.4 Release Notes
