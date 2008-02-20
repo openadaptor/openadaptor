@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.spring;
 
@@ -36,6 +36,7 @@ import org.openadaptor.util.Application;
 import org.openadaptor.util.ResourceUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.FieldRetrievingFactoryBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -71,6 +72,10 @@ public class SpringApplication {
   protected static final String BEAN = "-bean";
   protected static final String JMXPORT = "-jmxport";
   protected static final String PROPS = "-props";
+
+  //Config that SpringApplication always looks for.
+  //Not sure we need it any more, but it's kept for backwards compatibility.
+  protected static final String OPENADAPTOR_SPRING_CONFIG=".openadaptor-spring.xml";
 
 
   private ArrayList configUrls = new ArrayList();
@@ -187,7 +192,7 @@ public class SpringApplication {
     }
     return buffer.toString();
   }
-  
+
   public void run() {
     Runnable bean = getRunnableBean(createBeanFactory());
     if (bean instanceof Application) {
@@ -224,7 +229,14 @@ public class SpringApplication {
       throw new RuntimeException("no config urls specified");
     }
     GenericApplicationContext context = new GenericApplicationContext();
-    loadBeanDefinitions("classpath:" + ResourceUtil.getResourcePath(this, "", ".openadaptor-spring.xml"), context);
+    //Changed to make failure to load OPENADAPTOR_SPRING_CONFIG non-fatal.
+    try {
+      loadBeanDefinitions("classpath:" + ResourceUtil.getResourcePath(this, "",OPENADAPTOR_SPRING_CONFIG), context);
+    }
+    catch (BeanDefinitionStoreException bdse) {
+      Throwable cause=bdse.getCause();
+      log.warn("Resource "+OPENADAPTOR_SPRING_CONFIG+" was not loaded. Reason: "+cause.getClass().getName());
+    }
     for (Iterator iter = configUrls.iterator(); iter.hasNext();) {
       String configUrl = (String) iter.next();
       loadBeanDefinitions(configUrl, context);
