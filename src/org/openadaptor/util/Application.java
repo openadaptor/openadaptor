@@ -27,8 +27,6 @@
 
 package org.openadaptor.util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
