@@ -120,24 +120,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
     // override with build properties
     Properties buildProps=propertiesFromClasspath(BUILD_PROPERTIES_LOCATIONS);
-    /*
-    Properties buildProps = new Properties();
-    InputStream in = Application.class.getResourceAsStream(BUILD_PROPERTIES_NAME);
-    if (in != null) {
-      try {
-        buildProps.load(in);
-      } catch (IOException e) {
-        log.error("failed to load " + BUILD_PROPERTIES_NAME + " from classpath");
-      } finally {
-        try {
-          in.close();
-        } catch (IOException e) {
-        }
-      }
-    } else {
-      log.warn("failed to find " + BUILD_PROPERTIES_NAME + " in classpath");
-    }
-     */
+    
     if (buildProps!=null) {
       for (Iterator iter = buildProps.entrySet().iterator(); iter.hasNext();) {
         Map.Entry entry = (Map.Entry) iter.next();

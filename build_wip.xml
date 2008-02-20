@@ -4,11 +4,16 @@
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 	</description>
+	
+	<property name="suppress.src.jar" value="set"/>
+	<!--
 	<property name="suppress.tests" value="set"/>
 	<property name="suppress.javadoc" value="set"/>
+	-->
   <target name="init" description="Initialisation of directories and classpaths">
     <echo level="info" message="Initialising directories and classpaths"/>
     <tstamp/>
+    <property name="debug" value="true"/>
     <!-- Explicitly override tag to change release -->
     <property name="tag" value="trunk"/>
     <echo level="warning" message="Licence file should move to top level"/>	
@@ -112,19 +117,19 @@
 		<mkdir dir="${dir.build}"/>		
 		<mkdir dir="${dir.build.stub}"/>		
 		<mkdir dir="${dir.build.stub.classes}"/>
-	  <javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath"/>
+	  <javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath" debug="${debug}"/>
   </target>
 	
 	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
 		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}"/>
 		<mkdir dir="${dir.build.classes}"/>
-	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath"/>
+	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath" debug="${debug}"/>
   </target>
 
 	<target name="compile.spring" depends="compile.src" description="Compile openadaptor spring source code">
 		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}"/>
 		<mkdir dir="${dir.build.spring.classes}"/>
-	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring"/>
+	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
   </target>
 	
 	<target name="compile" depends="compile.stub,compile.src,compile.spring" description="Compile all source code"/>
@@ -135,17 +140,17 @@
     -->
 	<target name="compile.test.unit" depends="compile.test.integration" description="Compile unit test code">
     <echo level="info" message="Compiling unit test source ${dir.test.src.unit}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.unit}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+    <javac srcdir="${dir.test.src.unit}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
 	</target>
 
 	<target name="compile.test.integration" depends="compile,init.test" description="Compile integration test code">
     <echo level="info" message="Compiling integration test source ${dir.test.src.integration}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.integration}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+    <javac srcdir="${dir.test.src.integration}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
 	</target>
 
 	<target name="compile.test.system" depends="compile.test.unit" description="Compile system test code">
     <echo level="info" message="Compiling system test source ${dir.test.src.system}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.system}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile"/>
+    <javac srcdir="${dir.test.src.system}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
 	</target>
 
 	<target name="compile.test" depends="compile.test.integration,compile.test.unit,compile.test.system" description="compile all test code"/>
@@ -261,6 +266,18 @@
    </jar>
 	 
   </target>
+	
+	<target name="src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.src}, ${dir.spring.src}" unless="suppress.src.jar">
+		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}"/>
+		<jar destfile="${dir.build.lib}/openadaptor-src.jar">
+	    <fileset dir="${dir.src}"/>
+	    <fileset dir="${dir.spring.src}"/>
+	   </jar>		
+	</target>
+
+	<target name="src.jar.suppressed" description="Warns of suppressed javadoc generation" if="suppress.src.jar">
+	  <echo level="info" message="Source jar generation is suppressed (suppress.src.jar is set)"/>				
+	</target>
 
 	<target name="jar.depends" depends="jars.compiled" description="Create openadaptor-depends.jar from 3rd party libs">
 	 <echo level="info" message="Creating ${dir.build.lib}/openadaptor-depends.jar from 3rd party libraries"/>
@@ -360,7 +377,7 @@
 	</jar>
   </target>
 
-	<target name="jars" depends="jar.depends" description="Assemble all jars"/>
+	<target name="jars" depends="jars.compiled,jar.depends,src.jar,src.jar.suppressed" description="Assemble all jars"/>
 	
 	<target name="package.init" depends="init" description="Initialisation of directories etc. for packaging build">
 		<property name="dir.package" value="${dir.build}/package"/>
