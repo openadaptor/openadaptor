@@ -352,11 +352,13 @@
 		<property name="dir.package.example" value="${dir.package}/example"/>
 		<property name="dir.package.sql" value="${dir.package}/sql"/>
 		<property name="dir.package.javadocs" value="${dir.package}/javadocs"/>
+		<property name="dir.package.licences" value="${dir.package}/licences"/>
 		<mkdir dir="${dir.package.lib}"/>
 		<mkdir dir="${dir.package.lib.3rdparty}"/>
 		<mkdir dir="${dir.package.example}"/>
 		<mkdir dir="${dir.package.sql}"/>
 		<mkdir dir="${dir.package.javadocs}"/>	
+		<mkdir dir="${dir.package.licences}"/>	
 	</target>
 
 	<target name="package" depends="jars,javadocs,package.init" description="Create openadaptor package">
@@ -386,6 +388,7 @@
 
 		<echo level="info" message ="Copying Licence file ${file.licence}"/>
     <copy todir="${dir.package}" file="${file.licence}"/>
+		<copy todir="${dir.package.licences}" file="${file.licence}"/>
 
 		<echo level="info" message="Copying Examples from ${dir.example}"/>
     <copy todir="${dir.package.example}">
@@ -396,8 +399,16 @@
     <copy todir="${dir.package.sql}">
       <fileset dir="${dir.sql}"/>
     </copy>
-
 	</target>
+
+  <target name="zip" depends="package" description="Create a zip file with packaged build">
+    <property name="oa.zip.prefix" value="openadaptor-${tag}"/>
+  	<property name="oa.zip.file" value="${dir.build}/${oa.zip.prefix}-bin.zip"/>
+  	<echo level="info" message="Creating zip file: ${dir.package} -> ${oa.zip.file} "/>
+    <zip destfile="${oa.zip.file}">
+      <zipfileset dir="${dir.package}" prefix="${oa.zip.prefix}"/>
+    </zip>
+  </target>
 
 	<!-- Clean tasks -->
 	<target name="clean.package" depends="package.init" description="Clean package area ${dir.package}">
@@ -415,5 +426,5 @@
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
 
 	<!-- Cruise tasks for use by continuous builds -->	
-	<target name="cruise" depends="clean,package" description="Cruise target for openadaptor build"/>
+	<target name="cruise" depends="clean,zip" description="Cruise target for openadaptor build"/>
 </project>
