@@ -71,6 +71,25 @@ public class MBeanServer implements javax.management.MBeanServer {
   private HtmlAdaptorServer html=null;
   
   /**
+   * Constructor.
+   */
+  public MBeanServer() {
+    //Use the jvm-neutral 'Factory' to get at the real mbean server.
+    //For 1.5+ it should yield the same as: 
+    //mServer = javax.management.MBeanServerFactory.createMBeanServer();
+    //
+    log.info("Getting MBeanServer (note: Http server will not start unless property 'port' is configured)");
+ 
+    mServer=JVMNeutralMBeanServerFactory.getMBeanServer();
+	}
+	
+	public MBeanServer(int httpPort) {
+    this();
+    //This will have the side effect of starting the http server.
+    setPort(httpPort);
+  }
+    
+  /**
    * set the httpPort for this MBeanServer.
    * <br>
    * This isn't perfect. Strictly, setting a bean property shouldn't
@@ -96,23 +115,7 @@ public class MBeanServer implements javax.management.MBeanServer {
         startHtmlServerAdaptor(html);
       }
     }
-  }  
-  
-	public MBeanServer() {
-    //Use the jvm-neutral 'Factory' to get at the real mbean server.
-    //For 1.5+ it should yield the same as: 
-    //mServer = javax.management.MBeanServerFactory.createMBeanServer();
-    //
-    log.info("Getting MBeanServer (note: Http server will not start unless property 'port' is configured)");
- 
-    mServer=JVMNeutralMBeanServerFactory.getMBeanServer();
-	}
-	
-	public MBeanServer(int httpPort) {
-    this();
-    //This will have the side effect of starting the http server.
-    setPort(httpPort);
-	}
+  }    
   
   private void startHtmlServerAdaptor(HtmlAdaptorServer html) {
     try {
