@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id: javascript.xml 875 2007-10-01 13:46:52Z lachork $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/script/javascript.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[
+  Sample use of a script processor to illustrate round-robin distribution of incoming messages.
+    
+    * reads lines from stdin
+    * injects scheduling value
+    * filters out records at various stages according to the current round-robin
+      sequence value.
+    * all write to file write connectors (this example writes them all out to
+      the console, but this can easily be changed)
+
+  Assuming classpath has been initialised with the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  Run with:  
+    java org.openadaptor.spring.SpringAdaptor -config round-robin-distributor.xml
+ 
+  When executing, each line of input (from the console) will be
+  echoed on output via the various paths.
+     
+  Note that it would be more efficient to apply the filters in a binary-tree
+  style in that the mean number of stages for each message to pass through 
+  would be reduces, but it would reduce the readability of the example.
+  The masochistic reader is encouraged to do this as an exercise ;-)
+  
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <description>This is the bean that actually gets run.</description>
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+     <map>
+      <entry key-ref="Reader" value-ref="DiscardA" />
+      <entry key-ref="DiscardA" value-ref="DiscardB" />
+      <entry key-ref="DiscardB" value-ref="DiscardC" />
+      <entry key-ref="DiscardC" value-ref="WriterD" />
+     </map>
+    </property>
+    <property name="discardMap">
+     <map>
+      <entry key-ref="DiscardA" value-ref="WriterA" />
+      <entry key-ref="DiscardB" value-ref="WriterB" />
+      <entry key-ref="DiscardC" value-ref="WriterC" />
+     </map>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector" />
+
+ <bean id="DiscardA" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+  <property name="scriptProcessor">
+   <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <property name="additionalBindings">
+     <map>
+      <entry key="scheduler" value-ref="schedulerBean" />
+     </map>
+    </property>
+    <property name="script" value="scheduler.next() =='A'" />
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="DiscardB" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+  <property name="scriptProcessor">
+   <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <property name="additionalBindings">
+     <map>
+      <entry key="scheduler" value-ref="schedulerBean" />
+     </map>
+    </property>
+    <property name="script" value="scheduler.getCurrentValue() =='B'" />
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="DiscardC" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+  <property name="scriptProcessor">
+   <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <property name="additionalBindings">
+     <map>
+      <entry key="scheduler" value-ref="schedulerBean" />
+     </map>
+    </property>
+    <property name="script" value="scheduler.getCurrentValue() =='C'" />
+   </bean>
+  </property>
+ </bean>
+
+
+ <bean id="schedulerBean" class="org.openadaptor.util.beans.RoundRobinGeneratorBean">
+  <description>This bean simply generates round robin values</description>
+  <property name="values">
+   <list>
+    <value>A</value>
+    <value>B</value>
+    <value>C</value>
+    <value>D</value>
+   </list>
+  </property>
+ </bean>
+
+ <bean id="WriterA" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+ <bean id="WriterB" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+ <bean id="WriterC" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+ <bean id="WriterD" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>
