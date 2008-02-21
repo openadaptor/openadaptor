@@ -64,28 +64,33 @@ import com.sun.jdmk.comm.HtmlAdaptorServer;
  *
  */
 public class MBeanServer implements javax.management.MBeanServer {
-	private static Log log = LogFactory.getLog(MBeanServer.class);
   
   public static final String OBJECT_NAME_STRING="jmx:id=http";
+  
+  private static Log log = LogFactory.getLog(MBeanServer.class);
+  
   private javax.management.MBeanServer mServer;
+  
   private HtmlAdaptorServer html=null;
   
   /**
    * Constructor.
+   * Uses the jvm-neutral 'Factory' to get at the real mbean server.
+   * For 1.5+ it should yield the same as: 
+   * mServer = javax.management.MBeanServerFactory.createMBeanServer();
    */
   public MBeanServer() {
-    //Use the jvm-neutral 'Factory' to get at the real mbean server.
-    //For 1.5+ it should yield the same as: 
-    //mServer = javax.management.MBeanServerFactory.createMBeanServer();
-    //
     log.info("Getting MBeanServer (note: Http server will not start unless property 'port' is configured)");
- 
     mServer=JVMNeutralMBeanServerFactory.getMBeanServer();
-	}
+  }
 	
-	public MBeanServer(int httpPort) {
+  /**
+   * Constructor. Has a side effect of starting HTTP server.
+   * 
+   * @param httpPort the HTTP port.
+   */
+  public MBeanServer(int httpPort) {
     this();
-    //This will have the side effect of starting the http server.
     setPort(httpPort);
   }
     
@@ -129,205 +134,205 @@ public class MBeanServer implements javax.management.MBeanServer {
     }   
   }
 
-	public void addNotificationListener(ObjectName arg0,
-			NotificationListener arg1, NotificationFilter arg2, Object arg3)
-			throws InstanceNotFoundException {
-		mServer.addNotificationListener(arg0, arg1, arg2, arg3);
-	}
+  public void addNotificationListener(ObjectName arg0,
+  		NotificationListener arg1, NotificationFilter arg2, Object arg3)
+  		throws InstanceNotFoundException {
+  	mServer.addNotificationListener(arg0, arg1, arg2, arg3);
+  }
+  
+  public void addNotificationListener(ObjectName arg0, ObjectName arg1,
+  		NotificationFilter arg2, Object arg3) throws InstanceNotFoundException {
+  	mServer.addNotificationListener(arg0, arg1, arg2, arg3);
+  }
+  
+  public ObjectInstance createMBean(String arg0, ObjectName arg1)
+  		throws ReflectionException, InstanceAlreadyExistsException,
+  		MBeanRegistrationException, MBeanException, NotCompliantMBeanException {
+  	return mServer.createMBean(arg0, arg1);
+  }
+  
+  public ObjectInstance createMBean(String arg0, ObjectName arg1,
+  		ObjectName arg2) throws ReflectionException,
+  		InstanceAlreadyExistsException, MBeanRegistrationException,
+  		MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
+  	return mServer.createMBean(arg0, arg1, arg2);
+  }
+  
+  public ObjectInstance createMBean(String arg0, ObjectName arg1,
+  		Object[] arg2, String[] arg3) throws ReflectionException,
+  		InstanceAlreadyExistsException, MBeanRegistrationException,
+  		MBeanException, NotCompliantMBeanException {
+  	return mServer.createMBean(arg0, arg1, arg2, arg3);
+  }
+  
+  public ObjectInstance createMBean(String arg0, ObjectName arg1,
+  		ObjectName arg2, Object[] arg3, String[] arg4)
+  		throws ReflectionException, InstanceAlreadyExistsException,
+  		MBeanRegistrationException, MBeanException, NotCompliantMBeanException,
+  		InstanceNotFoundException {
+  	return mServer.createMBean(arg0, arg1, arg2, arg3, arg4);
+  }
 
-	public void addNotificationListener(ObjectName arg0, ObjectName arg1,
-			NotificationFilter arg2, Object arg3) throws InstanceNotFoundException {
-		mServer.addNotificationListener(arg0, arg1, arg2, arg3);
-	}
-
-	public ObjectInstance createMBean(String arg0, ObjectName arg1)
-			throws ReflectionException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, MBeanException, NotCompliantMBeanException {
-		return mServer.createMBean(arg0, arg1);
-	}
-
-	public ObjectInstance createMBean(String arg0, ObjectName arg1,
-			ObjectName arg2) throws ReflectionException,
-			InstanceAlreadyExistsException, MBeanRegistrationException,
-			MBeanException, NotCompliantMBeanException, InstanceNotFoundException {
-		return mServer.createMBean(arg0, arg1, arg2);
-	}
-
-	public ObjectInstance createMBean(String arg0, ObjectName arg1,
-			Object[] arg2, String[] arg3) throws ReflectionException,
-			InstanceAlreadyExistsException, MBeanRegistrationException,
-			MBeanException, NotCompliantMBeanException {
-		return mServer.createMBean(arg0, arg1, arg2, arg3);
-	}
-
-	public ObjectInstance createMBean(String arg0, ObjectName arg1,
-			ObjectName arg2, Object[] arg3, String[] arg4)
-			throws ReflectionException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, MBeanException, NotCompliantMBeanException,
-			InstanceNotFoundException {
-		return mServer.createMBean(arg0, arg1, arg2, arg3, arg4);
-	}
-
-	/**
-	 * @deprecated 
-	 */
-	public ObjectInputStream deserialize(ObjectName arg0, byte[] arg1)
-			throws InstanceNotFoundException, OperationsException {
-		throw new RuntimeException("deprecated");
-	}
-
-	/**
-	 * @deprecated 
-	 */
-	public ObjectInputStream deserialize(String arg0, byte[] arg1)
-			throws OperationsException, ReflectionException {
-		throw new RuntimeException("deprecated");
-	}
-
-	/**
-	 * @deprecated 
-	 */
-	public ObjectInputStream deserialize(String arg0, ObjectName arg1, byte[] arg2)
-			throws InstanceNotFoundException, OperationsException,
-			ReflectionException {
-		throw new RuntimeException("deprecated");
-	}
-
-	public Object getAttribute(ObjectName arg0, String arg1)
-			throws MBeanException, AttributeNotFoundException,
-			InstanceNotFoundException, ReflectionException {
-		return mServer.getAttribute(arg0, arg1);
-	}
-
-	public AttributeList getAttributes(ObjectName arg0, String[] arg1)
-			throws InstanceNotFoundException, ReflectionException {
-		return mServer.getAttributes(arg0, arg1);
-	}
-
-	public ClassLoader getClassLoader(ObjectName arg0)
-			throws InstanceNotFoundException {
-		return mServer.getClassLoader(arg0);
-	}
-
-	public ClassLoader getClassLoaderFor(ObjectName arg0)
-			throws InstanceNotFoundException {
-		return mServer.getClassLoaderFor(arg0);
-	}
-
-	public ClassLoaderRepository getClassLoaderRepository() {
-		return mServer.getClassLoaderRepository();
-	}
-
-	public String getDefaultDomain() {
-		return mServer.getDefaultDomain();
-	}
-
-	public String[] getDomains() {
-		return mServer.getDomains();
-	}
-
-	public Integer getMBeanCount() {
-		return mServer.getMBeanCount();
-	}
-
-	public MBeanInfo getMBeanInfo(ObjectName arg0)
-			throws InstanceNotFoundException, IntrospectionException,
-			ReflectionException {
-		return mServer.getMBeanInfo(arg0);
-	}
-
-	public ObjectInstance getObjectInstance(ObjectName arg0)
-			throws InstanceNotFoundException {
-		return mServer.getObjectInstance(arg0);
-	}
-
-	public Object instantiate(String arg0) throws ReflectionException,
-			MBeanException {
-		return mServer.instantiate(arg0);
-	}
-
-	public Object instantiate(String arg0, ObjectName arg1)
-			throws ReflectionException, MBeanException, InstanceNotFoundException {
-		return mServer.instantiate(arg0, arg1);
-	}
-
-	public Object instantiate(String arg0, Object[] arg1, String[] arg2)
-			throws ReflectionException, MBeanException {
-		return mServer.instantiate(arg0, arg1, arg2);
-	}
-
-	public Object instantiate(String arg0, ObjectName arg1, Object[] arg2,
-			String[] arg3) throws ReflectionException, MBeanException,
-			InstanceNotFoundException {
-		return mServer.instantiate(arg0, arg1, arg2, arg3);
-	}
-
-	public Object invoke(ObjectName arg0, String arg1, Object[] arg2,
-			String[] arg3) throws InstanceNotFoundException, MBeanException,
-			ReflectionException {
-		return mServer.invoke(arg0, arg1, arg2, arg3);
-	}
-
-	public boolean isInstanceOf(ObjectName arg0, String arg1)
-			throws InstanceNotFoundException {
-		return mServer.isInstanceOf(arg0, arg1);
-	}
-
-	public boolean isRegistered(ObjectName arg0) {
-		return mServer.isRegistered(arg0);
-	}
-
-	public Set queryMBeans(ObjectName arg0, QueryExp arg1) {
-		return mServer.queryMBeans(arg0, arg1);
-	}
-
-	public Set queryNames(ObjectName arg0, QueryExp arg1) {
-		return mServer.queryNames(arg0, arg1);
-	}
-
-	public ObjectInstance registerMBean(Object arg0, ObjectName arg1)
-			throws InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException {
-		return mServer.registerMBean(arg0, arg1);
-	}
-
-	public void removeNotificationListener(ObjectName arg0, ObjectName arg1)
-			throws InstanceNotFoundException, ListenerNotFoundException {
-		mServer.removeNotificationListener(arg0, arg1);
-	}
-
-	public void removeNotificationListener(ObjectName arg0,
-			NotificationListener arg1) throws InstanceNotFoundException,
-			ListenerNotFoundException {
-		mServer.removeNotificationListener(arg0, arg1);
-	}
-
-	public void removeNotificationListener(ObjectName arg0, ObjectName arg1,
-			NotificationFilter arg2, Object arg3) throws InstanceNotFoundException,
-			ListenerNotFoundException {
-		mServer.removeNotificationListener(arg0, arg1, arg2, arg3);
-	}
-
-	public void removeNotificationListener(ObjectName arg0,
-			NotificationListener arg1, NotificationFilter arg2, Object arg3)
-			throws InstanceNotFoundException, ListenerNotFoundException {
-		mServer.removeNotificationListener(arg0, arg1, arg2, arg3);
-	}
-
-	public void setAttribute(ObjectName arg0, Attribute arg1)
-			throws InstanceNotFoundException, AttributeNotFoundException,
-			InvalidAttributeValueException, MBeanException, ReflectionException {
-		mServer.setAttribute(arg0, arg1);
-	}
-
-	public AttributeList setAttributes(ObjectName arg0, AttributeList arg1)
-			throws InstanceNotFoundException, ReflectionException {
-		return mServer.setAttributes(arg0, arg1);
-	}
-
-	public void unregisterMBean(ObjectName arg0)
-			throws InstanceNotFoundException, MBeanRegistrationException {
-		mServer.unregisterMBean(arg0);
-	}
+  /**
+   * @deprecated 
+   */
+  public ObjectInputStream deserialize(ObjectName arg0, byte[] arg1)
+  		throws InstanceNotFoundException, OperationsException {
+  	throw new RuntimeException("deprecated");
+  }
+  
+  /**
+   * @deprecated 
+   */
+  public ObjectInputStream deserialize(String arg0, byte[] arg1)
+  		throws OperationsException, ReflectionException {
+  	throw new RuntimeException("deprecated");
+  }
+  
+  /**
+   * @deprecated 
+   */
+  public ObjectInputStream deserialize(String arg0, ObjectName arg1, byte[] arg2)
+  		throws InstanceNotFoundException, OperationsException,
+  		ReflectionException {
+  	throw new RuntimeException("deprecated");
+  }
+  
+  public Object getAttribute(ObjectName arg0, String arg1)
+  		throws MBeanException, AttributeNotFoundException,
+  		InstanceNotFoundException, ReflectionException {
+  	return mServer.getAttribute(arg0, arg1);
+  }
+  
+  public AttributeList getAttributes(ObjectName arg0, String[] arg1)
+  		throws InstanceNotFoundException, ReflectionException {
+  	return mServer.getAttributes(arg0, arg1);
+  }
+  
+  public ClassLoader getClassLoader(ObjectName arg0)
+  		throws InstanceNotFoundException {
+  	return mServer.getClassLoader(arg0);
+  }
+  
+  public ClassLoader getClassLoaderFor(ObjectName arg0)
+  		throws InstanceNotFoundException {
+  	return mServer.getClassLoaderFor(arg0);
+  }
+  
+  public ClassLoaderRepository getClassLoaderRepository() {
+  	return mServer.getClassLoaderRepository();
+  }
+  
+  public String getDefaultDomain() {
+  	return mServer.getDefaultDomain();
+  }
+  
+  public String[] getDomains() {
+  	return mServer.getDomains();
+  }
+  
+  public Integer getMBeanCount() {
+  	return mServer.getMBeanCount();
+  }
+  
+  public MBeanInfo getMBeanInfo(ObjectName arg0)
+  		throws InstanceNotFoundException, IntrospectionException,
+  		ReflectionException {
+  	return mServer.getMBeanInfo(arg0);
+  }
+  
+  public ObjectInstance getObjectInstance(ObjectName arg0)
+  		throws InstanceNotFoundException {
+  	return mServer.getObjectInstance(arg0);
+  }
+  
+  public Object instantiate(String arg0) throws ReflectionException,
+  		MBeanException {
+  	return mServer.instantiate(arg0);
+  }
+  
+  public Object instantiate(String arg0, ObjectName arg1)
+  		throws ReflectionException, MBeanException, InstanceNotFoundException {
+  	return mServer.instantiate(arg0, arg1);
+  }
+  
+  public Object instantiate(String arg0, Object[] arg1, String[] arg2)
+  		throws ReflectionException, MBeanException {
+  	return mServer.instantiate(arg0, arg1, arg2);
+  }
+  
+  public Object instantiate(String arg0, ObjectName arg1, Object[] arg2,
+  		String[] arg3) throws ReflectionException, MBeanException,
+  		InstanceNotFoundException {
+  	return mServer.instantiate(arg0, arg1, arg2, arg3);
+  }
+  
+  public Object invoke(ObjectName arg0, String arg1, Object[] arg2,
+  		String[] arg3) throws InstanceNotFoundException, MBeanException,
+  		ReflectionException {
+  	return mServer.invoke(arg0, arg1, arg2, arg3);
+  }
+  
+  public boolean isInstanceOf(ObjectName arg0, String arg1)
+  		throws InstanceNotFoundException {
+  	return mServer.isInstanceOf(arg0, arg1);
+  }
+  
+  public boolean isRegistered(ObjectName arg0) {
+  	return mServer.isRegistered(arg0);
+  }
+  
+  public Set queryMBeans(ObjectName arg0, QueryExp arg1) {
+  	return mServer.queryMBeans(arg0, arg1);
+  }
+  
+  public Set queryNames(ObjectName arg0, QueryExp arg1) {
+  	return mServer.queryNames(arg0, arg1);
+  }
+  
+  public ObjectInstance registerMBean(Object arg0, ObjectName arg1)
+  		throws InstanceAlreadyExistsException, MBeanRegistrationException,
+  		NotCompliantMBeanException {
+  	return mServer.registerMBean(arg0, arg1);
+  }
+  
+  public void removeNotificationListener(ObjectName arg0, ObjectName arg1)
+  		throws InstanceNotFoundException, ListenerNotFoundException {
+  	mServer.removeNotificationListener(arg0, arg1);
+  }
+  
+  public void removeNotificationListener(ObjectName arg0,
+  		NotificationListener arg1) throws InstanceNotFoundException,
+  		ListenerNotFoundException {
+  	mServer.removeNotificationListener(arg0, arg1);
+  }
+  
+  public void removeNotificationListener(ObjectName arg0, ObjectName arg1,
+  		NotificationFilter arg2, Object arg3) throws InstanceNotFoundException,
+  		ListenerNotFoundException {
+  	mServer.removeNotificationListener(arg0, arg1, arg2, arg3);
+  }
+  
+  public void removeNotificationListener(ObjectName arg0,
+  		NotificationListener arg1, NotificationFilter arg2, Object arg3)
+  		throws InstanceNotFoundException, ListenerNotFoundException {
+  	mServer.removeNotificationListener(arg0, arg1, arg2, arg3);
+  }
+  
+  public void setAttribute(ObjectName arg0, Attribute arg1)
+  		throws InstanceNotFoundException, AttributeNotFoundException,
+  		InvalidAttributeValueException, MBeanException, ReflectionException {
+  	mServer.setAttribute(arg0, arg1);
+  }
+  
+  public AttributeList setAttributes(ObjectName arg0, AttributeList arg1)
+  		throws InstanceNotFoundException, ReflectionException {
+  	return mServer.setAttributes(arg0, arg1);
+  }
+  
+  public void unregisterMBean(ObjectName arg0)
+  		throws InstanceNotFoundException, MBeanRegistrationException {
+  	mServer.unregisterMBean(arg0);
+  }
 
 }
