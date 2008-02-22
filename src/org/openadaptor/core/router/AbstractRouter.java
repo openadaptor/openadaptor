@@ -67,6 +67,8 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   private boolean logDiscardAsInfo = false;
   
+  private boolean ignoreExceptionProcessorErrors = false;
+  
   public AbstractRouter() {
     super();
   }
@@ -182,7 +184,17 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
         process(msg, destinations);
       } else {
         log.error("uncaught exception from " + node.toString(), messageException.getException());
-        throw new RuntimeException("No route defined for Exception "+messageException.getException());
+        
+        /* 
+         * Check if the exception in question was from the exceptionProcessor (if one is set)
+         * and if so - if it should be ignored.
+         */
+        if(routingMap.isAnExceptionProcessor(node) && ignoreExceptionProcessorErrors){
+          log.error("Ignoring exception from the exceptionProcessor", messageException.getException());	
+        }
+        else{
+          throw new RuntimeException("No route defined for Exception "+messageException.getException());
+        }
       }
     }
   }
@@ -203,6 +215,16 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
 
   public void setLogDiscardAsInfo(boolean logDiscardAsInfo) {
     this.logDiscardAsInfo = logDiscardAsInfo;
+  }
+
+  /**
+   * If set to true and an exception processor is set on the router, all exceptions
+   * thrown from the exception processor will only be logged - they won't cause the 
+   * adaptor to shut down instantaneously. Default is false.
+   */
+  public void setIgnoreExceptionProcessorErrors(
+		boolean ignoreExceptionProcessorErrors) {
+	this.ignoreExceptionProcessorErrors = ignoreExceptionProcessorErrors;
   }
  
 // Disabled - these are no longer used. 

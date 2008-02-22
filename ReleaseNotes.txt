@@ -47,6 +47,11 @@ Miscellaneous
    hyphen separated).
    
  * Failure to load .openadaptor-spring.xml from classpath is no longer fatal (reduced to warning).   
+ 
+ * Added an ignoreExceptionProcessorErrors flag on the Router class. If set to true and an 
+   exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
+   will be logged only (they will not cause the adaptor to shut down).
+ 
 
 =================================================
 openadaptor3 production 3.4 Release Notes

@@ -214,6 +214,25 @@ public class RoutingMap implements IRoutingMap,Cloneable {
       }
     }
   }
+  
+  /**
+   * Checks if the <code>processor</code> is part of the exceptionProcessor pipeline.
+   * 
+   * @return true if <code>processor</code> occurs anywhere in the exceptionProcessor
+   *         pipeline. False it it doesn't occur or the excedptionProcessor 
+   *         is not set.
+   */
+  protected boolean isAnExceptionProcessor(IMessageProcessor processor){
+    if( entryExceptionProcessor!=null ){
+      if(exceptionProcessors.isEmpty()){
+        findExceptionProcessors();
+      }
+      if(exceptionProcessors.contains(processor)){
+        return true;
+      }
+    }  
+    return false;
+  }
 
   /**
    * Gets destinations (a list of message processors) for a given processor and exception.
@@ -227,13 +246,8 @@ public class RoutingMap implements IRoutingMap,Cloneable {
      * Exceptions thrown from any of the nodes that can participate in exception handling
      * won't be handled. 
      */   
-    if( entryExceptionProcessor!=null ){
-      if(exceptionProcessors.isEmpty()){
-        findExceptionProcessors();
-      }
-      if(exceptionProcessors.contains(processor)){
-        return Collections.EMPTY_LIST;
-      }
+    if( isAnExceptionProcessor(processor) ){
+      return Collections.EMPTY_LIST;
     }
 
 
@@ -246,6 +260,8 @@ public class RoutingMap implements IRoutingMap,Cloneable {
       return Collections.EMPTY_LIST;
     }
   }
+  
+  
 
 
   /**

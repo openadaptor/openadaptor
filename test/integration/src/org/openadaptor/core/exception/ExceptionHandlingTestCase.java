@@ -81,6 +81,9 @@ public class ExceptionHandlingTestCase extends TestCase {
 //  Test commented out, pending a fix in ReadNode and enabling exception handling for read
 //  connectors.
 //  
+//  22/2/08 KLA - ReadNodes nodes are unlikely to be included in the exception handling. 
+//  Typical exception is ConnectionException not related to any data and very likely to re-occur.
+//  
 //  /**
 //   * Starts a simple adaptor with a read connector node that throws a RuntimeException.
 //   * Ensures the exceptionProcessor {@link IExceptionHandler} was used one time.
@@ -168,6 +171,7 @@ public class ExceptionHandlingTestCase extends TestCase {
     router.setExceptionProcessor(eHandler);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
+    assertTrue(adaptor.getExitCode()==1);
   }
   
   /**
@@ -182,6 +186,7 @@ public class ExceptionHandlingTestCase extends TestCase {
     router.setExceptionProcessor(eHandler);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
+    assertTrue(adaptor.getExitCode()==1);
   }
    
   /**
@@ -201,6 +206,26 @@ public class ExceptionHandlingTestCase extends TestCase {
     router.setExceptionProcessor(eHandler);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
+    assertTrue(adaptor.getExitCode()==1);
+  }
+  
+  
+  /**
+   * Same as testNoEndlessExceptionThrowingLoop2 - uses {@link IWriteConnector} for the exception
+   * handler. It has a new ignoreExceptionProcessorErrors flag set to true. Exceptions from the exception 
+   * handler should be logged only - they should not cause the adaptor to shut down (adaptor's exit error code
+   * should be 0).
+   */
+  public void testNoEndlessExceptionThrowingLoop4(){
+    processMap.put(new TestComponent.TestReadConnector(), new TestComponent.ExceptionThrowingWriteConnector());
+    router.setProcessMap(processMap);
+    TestComponent.ExceptionThrowingWriteConnector eHandler = new TestComponent.ExceptionThrowingWriteConnector();
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    router.setIgnoreExceptionProcessorErrors(true);
+    adaptor.run();
+    assertTrue(eHandler.counter == 1);
+    assertTrue(adaptor.getExitCode()==0);
   }
   
   /**
