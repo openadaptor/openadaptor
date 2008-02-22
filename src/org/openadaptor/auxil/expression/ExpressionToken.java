@@ -62,6 +62,7 @@ import org.openadaptor.auxil.expression.function.UpperFn;
  * <LI>An optional postfix function which is associated with an operator.
  * </UL>
  * //ToDo: Check if resolved flag can be removed by using a leading '{' as an indicator
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class ExpressionToken {
 

@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Function to provide access to System Properties.
  * 
  * @author Kevin Scully
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class SystemPropertyFn extends AbstractFunction {
   public static final String NAME = "systemproperty";

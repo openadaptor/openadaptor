@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Function to implement String.length().
  * 
  * @author Eddy higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class LengthFn extends AbstractFunction {
   public static final String NAME = "length";

@@ -33,6 +33,7 @@ import org.openadaptor.core.exception.RecordException;
  * Exception class for exceptions related to handling expression exceptions.
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class ExpressionException extends RecordException {
 

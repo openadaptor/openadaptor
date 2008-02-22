@@ -48,6 +48,7 @@ import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
  * For examples of expressions in use, see the examples included with openadaptor
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public interface IExpression {
   /**

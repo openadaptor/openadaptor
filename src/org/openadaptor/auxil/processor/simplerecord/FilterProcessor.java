@@ -44,6 +44,7 @@ import org.openadaptor.core.exception.RecordException;
  * Note that pass/discard logic may be inverted via discardMatches property.
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptFilterProcessor should be used instead
  */
 public class FilterProcessor extends AbstractSimpleRecordProcessor {
 

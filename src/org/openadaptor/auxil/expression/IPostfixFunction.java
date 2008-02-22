@@ -36,6 +36,7 @@ import java.util.Stack;
  * resulting value will be available on the top of the stack.
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public interface IPostfixFunction {
   /**

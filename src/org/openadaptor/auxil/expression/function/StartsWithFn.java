@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Evaluate String.startsWith()
  * 
  * @author Andrew Shire
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class StartsWithFn extends AbstractFunction {
   public static final String NAME = "startswith";

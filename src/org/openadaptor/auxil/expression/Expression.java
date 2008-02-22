@@ -57,6 +57,7 @@ import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
  * <p>
  * Workaround: break into multiple expressions. </li>
  * </ul>
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class Expression implements IExpression {
 

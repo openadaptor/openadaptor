@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Evaluate String.endsWith()
  * 
  * @author Kevin Scully
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class EndsWithFn extends AbstractFunction {
   public static final String NAME = "endswith";

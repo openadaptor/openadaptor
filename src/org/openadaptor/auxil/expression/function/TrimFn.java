@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Implementation of String.trim()
  * 
  * @author Russ Fennell
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class TrimFn extends AbstractFunction {
   

@@ -48,6 +48,7 @@ import org.openadaptor.core.exception.RecordException;
  * <bean class="org.openadaptor.auxil.expression.RegularExpression"> <property name="expression" value="{somefield}"/> <property
  * name="match" value="^.*;date=([0-9]{4})([0-1][0-9])([0-3][0-9])([0-9]{6});.*$"/> <property name="value"
  * value="$1$2$3$4"/> </bean>
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  * 
  */
 public class RegularExpression extends Expression implements IExpression {

@@ -68,6 +68,7 @@ import org.apache.commons.logging.LogFactory;
  * //ToDo: Add more examples.
  * 
  * @see Expression for more detail on valid expressions.
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class ExpressionTokenReader {
 

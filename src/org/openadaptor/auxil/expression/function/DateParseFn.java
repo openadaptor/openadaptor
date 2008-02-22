@@ -43,6 +43,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * 
  * @author Andrew Shire
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 
 public class DateParseFn extends AbstractFunction {

@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Function to implement Math.floor().
  * 
  * @author Kevin Scully
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class FloorFn extends AbstractFunction {
   public static final String NAME = "floor";

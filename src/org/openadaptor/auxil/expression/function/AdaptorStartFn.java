@@ -43,6 +43,7 @@ import org.openadaptor.util.Application;
  * and parse it as a <code>Date</code> using the format from <i>RunAdaptor.ADAPTOR_START_TIMESTAMP_FORMAT</i>
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class AdaptorStartFn extends SystemPropertyFn {
   public static final String NAME = "adaptorstart";

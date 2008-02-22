@@ -33,6 +33,7 @@ import java.util.Date;
  * Generate a <code>java.util.Date</code> object representing the current date/time.
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class NowFn extends AbstractFunction {
   public static final String NAME = "now";

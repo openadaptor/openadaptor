@@ -39,6 +39,7 @@ import org.openadaptor.auxil.expression.IPostfixFunction;
  * put the result back on the stack.
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public abstract class AbstractFunction implements IPostfixFunction {
 

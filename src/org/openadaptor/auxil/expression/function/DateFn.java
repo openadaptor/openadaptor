@@ -35,6 +35,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Function to convert a long value into a Date().
  * <p>
  * Is it essentially a wrapper around new Date(long longValue);
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class DateFn extends AbstractFunction {
   public static final String NAME = "date";

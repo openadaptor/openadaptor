@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
  * </UL>
  * 
  * @author Eddy Higgins
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 
 public class UnaryOperation implements IPostfixFunction {

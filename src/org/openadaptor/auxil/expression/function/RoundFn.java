@@ -31,6 +31,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
 
 /**
  * Function to implement Math.round().
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class RoundFn extends AbstractFunction {
   public static final String NAME = "round";

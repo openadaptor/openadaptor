@@ -33,6 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Implementation of String.toLowerCase()
  * 
  * @author Kevin Scully
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class LowerFn extends AbstractFunction {
   public static final String NAME = "lower";

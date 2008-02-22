@@ -45,6 +45,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * 
  * @author Eddy Higgins
  * @author Andrew Shire
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class FormatFn extends AbstractFunction {
   public static final String NAME = "format";

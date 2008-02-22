@@ -35,6 +35,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * Replaces NULL with the specified replacement value in much the same fashion as the isNull() function in T-SQL.
  * 
  * @author Russ Fennell
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class IsNullFn extends AbstractFunction {
   

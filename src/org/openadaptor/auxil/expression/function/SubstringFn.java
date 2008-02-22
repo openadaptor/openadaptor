@@ -33,7 +33,7 @@ import org.openadaptor.auxil.expression.ExpressionException;
  * implements a String.substring() function.
  * <p>
  * The only substring variant it implements is substring(int,int).
- * 
+ * @deprecated ScriptProcessor or ScriptFilterProcessor may be used in place of Expressions
  */
 public class SubstringFn extends AbstractFunction {
   public static final String NAME = "substring";
