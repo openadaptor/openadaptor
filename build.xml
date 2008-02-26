@@ -25,9 +25,15 @@
   <property name="dir.src" value="${basedir}/src"/>
   <property name="dir.sql" value="${basedir}/sql"/>
 
-  <property name="dir.buildtools.src" value="${basedir}/buildtools/src"/>
+	<!-- Moved build tools to support instead
+  <property name="dir.builtools.src" value="${basedir}/buildtools/src"/>
   <property name="dir.buildtools.classes" value="${basedir}/buildtools/classes"/>
   <property name="dir.buildtools.backup" value="${basedir}/buildtools/backup"/>
+   -->
+	<property name="dir.support" value="${basedir}/support"/>
+	 <property name="dir.buildtools.src" value="${dir.support}/src"/>
+	 <property name="dir.buildtools.classes" value="${dir.support}/classes"/>
+	 <property name="dir.buildtools.backup" value="${dir.support}/backup"/>
 
   <property name="dir.spring.classes" value="${basedir}/spring/classes"/>
   <property name="dir.spring.lib" value="${basedir}/spring/lib"/>
