@@ -37,11 +37,13 @@
     <property name="dir.spring.lib" value="${dir.spring}/lib"/>
     <!-- Source root for stub code, e.g. tibco, legacy -->
     <property name="dir.stub.src" value="${basedir}/stub/src"/>
-    	
+    
+  	
     <!-- Directories for build output -->
     <property name="dir.build" value="${basedir}/build"/>
     <property name="dir.build.lib" value="${dir.build}/lib"/>
     <property name="dir.build.classes" value="${dir.build}/classes"/>
+  	<property name="dir.build.support" value="${dir.build}/support"/>
     	
     <property name="dir.build.test" value="${dir.build}/test"/>
     <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
@@ -50,6 +52,12 @@
     <property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
     <property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
     <property name="dir.build.javadocs" value="${dir.build}/javadocs"/>
+
+  	<!-- Directories for tool to support the build (e.g. ant custom tasks) -->
+  	<property name="dir.support" value="${basedir}/support"/>
+  	<property name="dir.support.src" value="${dir.support}/src"/>
+  	<property name="dir.support.lib" value="${dir.support}/lib"/>
+  	<property name="dir.build.support.classes" value="${dir.build.support}/classes"/>
 
     <path id="classpath.lib">
     	<fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
@@ -110,8 +118,15 @@
 	<target name="make.dirs" depends="init" description="Create build area ${dir.build}">
 		<mkdir dir="${dir.build}"/>
 		<mkdir dir="${dir.build.javadocs}"/>
+		<mkdir dir="${dir.build.support}"/>
 	</target>
-	
+
+	<target name="compile.support" depends="make.dirs" description="Compile support tools (custom ant tasks etc.)">
+		<echo level="info" message="Compiling support tools ${dir.support.src}->${dir.build.support.classes}"/>
+		<mkdir dir="${dir.build.support.classes}"/>		
+	  <javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath" debug="${debug}"/>
+  </target>
+
 	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
 		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}"/>
 		<mkdir dir="${dir.build}"/>		
@@ -132,7 +147,7 @@
 	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
   </target>
 	
-	<target name="compile" depends="compile.stub,compile.src,compile.spring" description="Compile all source code"/>
+	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code"/>
 
   <!-- 
     Currently unit test source has a dependency on common class in integration

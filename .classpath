@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="src" output="build/support/classes" path="support/src"/>
 	<classpathentry kind="src" output="test/unit/classes" path="test/unit/src"/>
 	<classpathentry kind="src" output="test/system/classes" path="test/system/src"/>
 	<classpathentry kind="src" output="test/integration/classes" path="test/integration/src"/>
@@ -80,5 +81,7 @@
 	<classpathentry kind="lib" path="lib/commons-httpclient_3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections_3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec_1.3.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="support/lib/ant.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
