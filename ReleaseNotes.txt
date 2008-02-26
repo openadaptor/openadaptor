@@ -13,8 +13,8 @@ openadaptor 3.4.1
 Processors
 ==========
 
-* A processor that implements the ILifecycleListener interface will be
-  notified of state changes of its associated Node.
+ * A processor that implements the ILifecycleListener interface will be
+   notified of state changes of its associated Node.
   
   
 Deprecated Components Removed
@@ -37,6 +37,10 @@ org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementCo
 
 example/spring/connectors/db/writer2.xml
 example/spring/connectors/db/writer3.xml
+
+Cleanup of Build Process
+========================
+ * Moved build tools into support area, and fixed package/directory setup.
 
 Miscellaneous
 =============
