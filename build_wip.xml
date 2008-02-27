@@ -24,6 +24,7 @@
     <property name="dir.src" value="${basedir}/src"/>
     <property name="dir.lib" value="${basedir}/lib"/>
     <property name="dir.example" value="${basedir}/example"/>
+    <property name="dir.faq" value="${basedir}/example"/>
     <property name="dir.sql" value="${basedir}/sql"/>
     	
     <property name="dir.test" value="${basedir}/test"/>
@@ -72,7 +73,11 @@
       <pathelement path="${dir.build.classes}"/>
 	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
       <path refid="classpath" />
-    </path>   	 
+    </path> 
+  	
+    <taskdef name="spring.validate" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.build.support.classes}"/>
+    <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}"/>
+
 </target>
 	
 	<target name="init.test" depends="init" description="Initialisation for tests">
@@ -236,6 +241,21 @@
 	  <echo message="*** TEST EXECUTION HAS BEEN SUPPRESSED (suppress.tests is set) ***"/>				
 	</target>
 	
+	<!-- Spring Example validations -->
+	<target name="test.spring.examples" depends="test.all" description="Validate Spring example configurations">
+		<echo level="info" message="Validating Spring examples in ${dir.example}"/> 
+	    <spring.validate classpathref="classpath.test" ignorestubexceptions="true">
+	      <fileset dir="${dir.example}/spring">
+	        <include name="**/*.xml"/>
+	        <exclude name="**/input/*"/>
+	        <exclude name="**/output/*"/>
+	        <exclude name="**/mq-*.xml"/>
+	        <exclude name="**/file/enrich-*.xml"/>
+	        <exclude name="**/db/jee/jboss/oa*.xml"/>
+	      </fileset>
+	    </spring.validate>
+	</target>
+	
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source" unless="suppress.javadoc">
 	 <echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}"/>
@@ -259,7 +279,7 @@
 	</target>
 
 	<!-- Packaging tasks -->
-  <target name="jars.compiled" depends="compile,test.all,test.suppressed" description="Create jars from compiled classes">
+  <target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples" description="Create jars from compiled classes">
 	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
   	
@@ -400,6 +420,7 @@
 		<property name="dir.package.lib" value="${dir.package}/lib"/>		
 		<property name="dir.package.lib.3rdparty" value="${dir.package.lib}/3rdparty"/>
 		<property name="dir.package.example" value="${dir.package}/example"/>
+		<property name="dir.package.faq" value="${dir.package}"/>
 		<property name="dir.package.sql" value="${dir.package}/sql"/>
 		<property name="dir.package.javadocs" value="${dir.package}/javadocs"/>
 		<property name="dir.package.licences" value="${dir.package}/licences"/>
@@ -411,7 +432,17 @@
 		<mkdir dir="${dir.package.licences}"/>	
 	</target>
 
-	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed" description="Create openadaptor package">
+  <target name="copyright.validate" depends="init" description="checks copyright notices in code">
+  	<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}"/>
+    <copyright update="false" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
+      <fileset dir="${dir.src}" includes="**/*.java"/>
+      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
+      <fileset dir="${dir.example}" includes="**/*.java"/>
+    </copyright>
+
+  </target>
+
+	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate" description="Create openadaptor package">
 		<echo level="info" message ="creating package in ${dir.package}"/>
 	
 		<echo level="info" message ="Copying openadaptor jars from ${dir.build.lib}"/>
@@ -443,7 +474,12 @@
     <copy todir="${dir.package.example}">
       <fileset dir="${dir.example}"/>
     </copy>
-		
+
+		<echo level="info" message="Copying FAQ from ${dir.faq}"/>
+    <copy todir="${dir.package.faq}">
+      <fileset dir="${dir.faq}" includes="FAQ.html"/>
+    </copy>
+
 		<echo level="info" message="Copying SQL from ${dir.sql}"/>
     <copy todir="${dir.package.sql}">
       <fileset dir="${dir.sql}"/>

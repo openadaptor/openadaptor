@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util.ant;
 
@@ -45,34 +45,56 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 
+/**
+ * ant task to check the copyright header on openadaptor files.
+ * 
+ * @author higginse
+ *
+ */
 public class CopyrightTask extends Task {
 
   private static final String START_OF_COMMENT = "\\w*\\/\\*.*";
 
   private static final String END_OF_COMMENT = ".*\\*\\/";
 
-  private static final String START_OF_CODE = "package.*";
+  private static final String START_OF_CODE = "package .*|import .*";
 
   private List filesets = new ArrayList();
 
   private File backupDir = new File(".copyright_backup");
 
   private String copyright;
-  
+
   private boolean update = false;
+
+  private boolean verbose=false;
 
   public void addFileset(FileSet set) {
     filesets.add(set);
   }
 
+  /**
+   * If true (default) make output more verbose
+   * @param verbose
+   */
+  public void setVerbose (boolean verbose) {
+    this.verbose=verbose;
+  }
+
+  /**
+   * If true, task will update missing or incorrect copyright notices it encounters.
+   * <br>
+   * Default is <code>false</code>
+   * @param update
+   */
   public void setUpdate(final boolean update) {
     this.update = update;
   }
-  
+
   public void setBackupdir(String dirname) {
     backupDir = new File(dirname);
   }
-  
+
   public void setCopyright(String filename) {
     try {
       copyright = "/*\n" + readInputStreamContents(new FileInputStream(filename)) + "\n*/\n";
@@ -80,7 +102,7 @@ public class CopyrightTask extends Task {
       throw new RuntimeException("IOException, " + e.getMessage(), e);
     }
   }
-  
+
   public static String readInputStreamContents(InputStream is) {
     StringBuffer sb = new StringBuffer();
     char[] cbuf = new char[1024];
@@ -116,56 +138,67 @@ public class CopyrightTask extends Task {
   }
   public void execute() throws BuildException {
 
+    int processedFiles=0;
     String onelineComment = trimWhitespace(copyright);
-    
-    boolean uptodate = true;
+
+    boolean valid = true;
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
       FileSet fileSet = (FileSet) iter.next();
       DirectoryScanner ds = fileSet.getDirectoryScanner(getProject());
       String[] files = ds.getIncludedFiles();
       for (int i = 0; i < files.length; i++) {
-        uptodate &= execute(fileSet.getDir(getProject()), files[i], onelineComment);
+        valid &= execute(fileSet.getDir(getProject()), files[i], onelineComment);
+        processedFiles++;
       }
     }
-    
-    if (!uptodate) {
-      throw new BuildException("copyright notices missing or out of date");
+
+    if (!valid) {
+      throw new BuildException("Copyright notices absent or out of date");
+    }
+    else {
+      System.out.println(processedFiles+" files processed successfully for copyright notices");
     }
   }
 
   protected boolean execute(File dir, String file, String onelineComment) throws BuildException {
-    if (!isCopyrightUptodate(dir, file, onelineComment)) {
+    boolean valid=isCopyrightUptodate(dir, file, onelineComment);
+    if (valid) {
+      if (verbose){
+        System.out.println(file+" has valid copyright notice");
+      }
+    } 
+    else {
+      System.err.println("Detected invalid copyright notice on "+file);
       if (update) {
         overwriteCopyrightComment(dir, file, copyright);
         System.out.println("updated " + file);
-        return true;
-      } else {
-        System.out.println(file + "!!!");
-        return false;
+        valid=true;
       }
-    } else {
-      return true;
+      else {
+        System.out.println("Missing or invalid copyright notice on "+file);
+      }
     }
+     return valid;
   }
 
   private void overwriteCopyrightComment(File dir, String filename, String copyright) {
-    
+
     createBackupDir();
-    
+
     FileWriter modified = null;
     BufferedReader reader = null;
-    
+
     File existingFile = new File(dir, filename);
     File newFile = new File(dir, filename + ".new");
-    
+
     try {
       modified = new FileWriter(newFile);
       reader = new BufferedReader(new FileReader(existingFile));
       String line;
-      
+
       // write copyright comment
       modified.write(copyright + "\n");
-      
+
       // discard existing comment
       boolean inComment = false;
       while ((line = reader.readLine()) != null) {
@@ -178,7 +211,7 @@ public class CopyrightTask extends Task {
           break;
         }
       }
-      
+
       // write remainder
       while ((line = reader.readLine()) != null) {
         modified.write(line + "\n");
@@ -193,7 +226,7 @@ public class CopyrightTask extends Task {
       existingFile.renameTo(new File(backupDir, filename));
       (new File(dir, filename)).delete();
       newFile.renameTo(new File(dir, filename));
-      
+
     } catch (IOException e) {
       throw new BuildException("IOEXception, " + e.getMessage(), e);
     } finally {
@@ -206,8 +239,8 @@ public class CopyrightTask extends Task {
     if (!backupDir.exists()) {
       if (backupDir.mkdir()) {
         System.out.println("created backup dir " + backupDir.getAbsolutePath());
-       } else {
-         throw new BuildException("failed to create backup dir");
+      } else {
+        throw new BuildException("failed to create backup dir");
       }
     }
   }
@@ -254,12 +287,12 @@ public class CopyrightTask extends Task {
       closeNoThrow(reader);
     }
     String onelineComment = trimWhitespace(comment.toString());
-    
+
     if (onelineComment.equals(copyright)) {
       return true;
     } else {
-//      System.err.println(onelineComment);
-//      System.err.println(copyright);
+//    System.err.println(onelineComment);
+//    System.err.println(copyright);
       return false;
     }
   }
