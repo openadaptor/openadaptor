@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-	$Id: file.xml 1162 2008-01-29 14:11:25Z lachork $
-	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/file/file.xml $
--->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
-	
+   <description><![CDATA[  
+	  This is an example of an web service IWriteConnector definition that may be
+	  used by an Openadaptor Java client to send data to an Openadaptor with a 
+	  Web service IReadConnector.
+	  
+	  To programmatically invoke the Openadaptor Java client you need the following 
+	  in your Java program:
+	  
+	  import org.openadaptor.client.OAClient;
+	  ....
+	  OAClient client = new OAClient("ws-client.xml");
+	  client.send("my data");
+	  
+	  You need the following in your classpath:
+  
+	    lib
+	    lib/openadaptor.jar
+	    lib/openadaptor-spring.jar
+	    lib/openadaptor-depends.jar
+	    lib/3rdparty/activation.jar
+    ]]></description>
+  
+  
 	<bean id="Writer" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
-  	  <description>This is a write connector that invokes a webservice</description>
+  	  <description>This is a write connector that sends data to Openadaptor with a Web service read</description>
   	  <property name="endpoint" value="http://localhost:9999/OAService?wsdl"/>
     </bean>
 
