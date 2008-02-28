@@ -55,6 +55,9 @@ Miscellaneous
  * Added an ignoreExceptionProcessorErrors flag on the Router class. If set to true and an 
    exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
    will be logged only (they will not cause the adaptor to shut down).
+   
+ * Implemented OAClient class that may be used to send data into Openadaptor from a Java
+   program.   
  
 
 =================================================
