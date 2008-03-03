@@ -154,6 +154,22 @@
 	
 	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code"/>
 
+	<target name="copy.configs" depends="compile" description="Copy build information to build area">
+    <echo level="info" message="Copying/building build and registration properties .openadaptor.properties,registration.properties"/>
+		<copy todir="${dir.build.classes}" overwrite="true">
+      <fileset dir="${dir.src}">
+        <include name=".openadaptor.properties"/>
+        <include name="registration.properties"/>
+      </fileset>
+      <filterset>
+        <filter token="BUILDCOMPILER" value="${ant.java.version}"/>
+        <filter token="BUILDTIME" value="${DSTAMP}:${TSTAMP}"/>
+        <filter token="BUILDTAG" value="${tag}"/>
+      </filterset>
+    </copy>
+	
+	</target>
+
   <!-- 
     Currently unit test source has a dependency on common class in integration
      Namely TestComponent. This needs to be reorganised.
@@ -279,7 +295,7 @@
 	</target>
 
 	<!-- Packaging tasks -->
-  <target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples" description="Create jars from compiled classes">
+  <target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,copy.configs" description="Create jars from compiled classes">
 	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
   	

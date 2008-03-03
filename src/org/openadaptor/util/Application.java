@@ -68,7 +68,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   public static final String START_TIMESTAMP_FORMAT     = "yyyy/MM/dd HH:mm:ss";
 
-  private static final String[] BUILD_PROPERTIES_LOCATIONS={".openadaptor.properties"};
+  private static final String[] BUILD_PROPERTIES_LOCATIONS={".openadaptor.properties","org/openadaptor/util/.openadaptor.properties"};
 
   private static final String[] LICENCE_LOCATIONS= {"licence.txt","org/openadaptor/util/licence.txt"};
 

@@ -59,6 +59,9 @@ Miscellaneous
  * Implemented OAClient class that may be used to send data into Openadaptor from a Java
    program.   
  
+ * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
+ 
+ * Moved licence file licence.txt to top level
 
 =================================================
 openadaptor3 production 3.4 Release Notes
