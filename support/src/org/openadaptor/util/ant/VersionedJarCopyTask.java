@@ -46,7 +46,10 @@ import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.util.FileUtils;
-
+/**
+ * 
+ * @deprecated - this is no longer needed
+ */
 public class VersionedJarCopyTask extends Task {
 
   private FileUtils fileUtils = FileUtils.newFileUtils();

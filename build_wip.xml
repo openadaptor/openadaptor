@@ -5,11 +5,24 @@
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 	</description>
 	
+	<!-- 
+	  Set copyright.fix to true to automatically fix copyright notices.
+	  Warning: this may modify source files!
+	  -->
+	<property name="copyright.auto_fix" value="false"/>
+	
+	<!-- If set, the src.jar jarfile will not be created -->
 	<property name="suppress.src.jar" value="set"/>
-	<!--
+	<!-- If set, tests will not be executed
 	<property name="suppress.tests" value="set"/>
+	-->
+	<!-- If set, javadocs will not be generated
 	<property name="suppress.javadoc" value="set"/>
 	-->
+	
+	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties"/>
+  <property file="${basedir}/checkout.properties"/>
+	
   <target name="init" description="Initialisation of directories and classpaths">
     <echo level="info" message="Initialising directories and classpaths"/>
     <tstamp/>
@@ -45,6 +58,7 @@
     <property name="dir.build.lib" value="${dir.build}/lib"/>
     <property name="dir.build.classes" value="${dir.build}/classes"/>
   	<property name="dir.build.support" value="${dir.build}/support"/>
+  	<property name="dir.build.example" value="${dir.build}/example"/>
     	
     <property name="dir.build.test" value="${dir.build}/test"/>
     <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
@@ -294,7 +308,31 @@
 	  <echo message="*** JAVADOC GENERATION HAS BEEN SUPPRESSED (suppress.javadoc is set) ***"/>				
 	</target>
 
+	<!-- Automatic Example documentation creation -->
+  <target name="example.doc" depends="init">
+  	<mkdir dir="${dir.build.example}"/>
+    <ant antfile="build_docs.xml" dir="${dir.example}/tools" target="docs">
+      <property name="filecomment.path.pattern1" value="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
+      <property name="filecomment.path.pattern2" value="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
+    </ant>
+  </target>
+	
+	<target name="example.doc.suppressed" description="Warns of suppressed exacmple documentation generation" if="suppress.example.doc">
+	  <echo message="*** Example documentation generationhas been suppressed (suppress.example.doc is set) ***"/>				
+	</target>
+	
+
 	<!-- Packaging tasks -->
+  <target name="copyright.validate" depends="init" description="checks copyright notices in code">
+  	<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}"/>
+  	<echo level="info" message="Automatic fix flag value: ${copyright.auto_fix}"/>
+    <copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
+      <fileset dir="${dir.src}" includes="**/*.java"/>
+      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
+      <fileset dir="${dir.example}" includes="**/*.java"/>
+    </copyright>
+  </target>
+
   <target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,copy.configs" description="Create jars from compiled classes">
 	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
    <mkdir dir="${dir.build.lib}"/>
@@ -448,16 +486,6 @@
 		<mkdir dir="${dir.package.licences}"/>	
 	</target>
 
-  <target name="copyright.validate" depends="init" description="checks copyright notices in code">
-  	<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}"/>
-    <copyright update="false" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
-      <fileset dir="${dir.src}" includes="**/*.java"/>
-      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
-      <fileset dir="${dir.example}" includes="**/*.java"/>
-    </copyright>
-
-  </target>
-
 	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate" description="Create openadaptor package">
 		<echo level="info" message ="creating package in ${dir.package}"/>
 	
@@ -490,6 +518,9 @@
     <copy todir="${dir.package.example}">
       <fileset dir="${dir.example}"/>
     </copy>
+		<echo level="info" message="Copying example log4j.propertes to ${dir.package.example}/tutorial"/>
+    <copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties"/>
+
 
 		<echo level="info" message="Copying FAQ from ${dir.faq}"/>
     <copy todir="${dir.package.faq}">
@@ -523,7 +554,11 @@
 	<target name="clean.build.test" depends="init" description="Clean build area ${dir.build.test}">
     <delete dir="${dir.build.test}"/>
 	</target>
-			
+
+	<target name="clean.build.example" depends="init" description="Clean build example area ${dir.build.example}}">
+    <delete dir="${dir.build.example}"/>
+	</target>
+
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
 
 	<!-- Cruise tasks for use by continuous builds -->	
