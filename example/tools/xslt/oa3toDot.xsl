@@ -93,7 +93,7 @@
   </xsl:variable>
 
   <xsl:variable name="graphName"
-    select="concat('Map_', translate($exampleName, '/', '_'))" />
+    select="concat('Map_', translate(translate($exampleName, '/', '_'),'-','_'))" />
 
   <xsl:template match="/">
     digraph

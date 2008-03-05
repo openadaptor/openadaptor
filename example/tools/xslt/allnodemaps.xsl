@@ -94,7 +94,7 @@
             <xsl:choose>
               <!-- Named cookbook example -->
               <xsl:when test="@id">
-                <xsl:variable name="idAsRelativePath" select="translate(translate(@id,'_','/'),'-','_')" />
+                <xsl:variable name="idAsRelativePath" select="translate(@id,'_','/')" />
 
                 <!-- Cookbook example name -->
                 <tr bgcolor="#000099">

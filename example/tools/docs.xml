@@ -68,9 +68,11 @@
     <include name="tutorial/**/*.xml" />
     <exclude name="**/input/*.xml" />
     <exclude name="**/output/*.xml" />
+    <exclude name="**/spring/client/*.xml" />
+    <exclude name="**/spring/connectors/db/jee/jboss/*.xml" />
   </patternset>
 
-  <!-- Where to find the schema files: -->
+	<!-- Where to find the schema files: -->
   <xmlcatalog id="oa3XmlCatalog">
     <entity publicId="adaptorDoc.xsl" location="${src.examples.tools.dir}/xslt/adaptorDoc.xsl" />
 
@@ -118,12 +120,12 @@
         <available file="${graphviz.dot.mac}" />
       </and>
     </condition>
-
+    <echo level="info" message="'dot' executable is ${graphviz.dot}"/>
   </target>
 
 
   <target name="docs_images" depends="docs_prepare" if="graphviz.dot" description="Generates the project Cookbook (including index pages)">
-
+    <echo level="info" message="Generating dot notation file ${src.examples.dir} -> ${build.examples.images.dir}"/>
     <!-- Generate GraphViz dot notation file using XSLT for each cookbook example -->
     <xslt basedir="${src.examples.dir}" destdir="${build.examples.images.dir}" style="${src.examples.tools.dir}/xslt/oa3toDot.xsl">
       <patternset refid="example.xml.config.files" />
@@ -144,7 +146,8 @@
     <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
     <mapper id="outImage" type="glob" from="*.dot" to="${build.examples.images.dir}/*.${graphviz.image.fileextension}" />
 
-    <apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
+   <echo level="info" message="Using ${graphviz.dot} to images (*.${graphviz.image.fileextension})"/>
+   <apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
       <arg value="-T${graphviz.image.fileextension}" />
       <srcfile />
       <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
@@ -159,6 +162,7 @@
     <!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
     <mapper id="outCmap" type="glob" from="*.dot" to="${build.examples.images.dir}/*.map" />
 
+  	<echo level="info" message="Using ${graphviz.dot} to generate image maps"/>
     <apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
       <arg value="-Tcmapx" />
       <srcfile />
@@ -171,10 +175,12 @@
 
 
     <!-- Clean up the generated dot files at this point -->
+  	<echo  message="TEMPORARILY DISABLED DELETION OF DOT FILES FOR DEBUGGING"/>
+  	<!--
     <delete>
       <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
     </delete>
-
+    -->
 
     <!-- Generate html page using XSLT for each cookbook example -->
     <xslt basedir="${src.examples.dir}" destdir="${build.examples.docs.dir}" style="${src.examples.tools.dir}/xslt/beans.xsl">

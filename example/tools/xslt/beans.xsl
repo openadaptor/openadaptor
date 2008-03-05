@@ -134,7 +134,7 @@
     </table>
     <p></p>
 
-    <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate($thisExample,'/','_')}" alt=""/>
+    <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate(translate($thisExample,'/','_'),'-','_')}" alt=""/>
     <xsl:copy-of select="document(concat($docsRelativeToTools,$thisExample,'.map'))"/>
 
     <xsl:apply-templates select="/beans:beans">
