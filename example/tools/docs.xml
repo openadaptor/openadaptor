@@ -175,13 +175,10 @@
 
 
     <!-- Clean up the generated dot files at this point -->
-  	<echo  message="TEMPORARILY DISABLED DELETION OF DOT FILES FOR DEBUGGING"/>
-  	<!--
     <delete>
       <fileset dir="${build.examples.images.dir}" includes="**/*.dot" />
     </delete>
-    -->
-
+ 
     <!-- Generate html page using XSLT for each cookbook example -->
     <xslt basedir="${src.examples.dir}" destdir="${build.examples.docs.dir}" style="${src.examples.tools.dir}/xslt/beans.xsl">
       <patternset refid="example.xml.config.files" />
