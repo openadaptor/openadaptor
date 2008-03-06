@@ -121,6 +121,8 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   public void validate(List exceptions) {
     if ( jdbcConnection == null ) {
       exceptions.add(new ValidationException("jdbcConnection property not set", this));
+    } else {
+      jdbcConnection.validate(exceptions);
     }
     //If an sqlWriter has not been configured, use RawSQLWriter as a default.
     if (sqlWriter==null) {

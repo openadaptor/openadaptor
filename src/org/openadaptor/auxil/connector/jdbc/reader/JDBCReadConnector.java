@@ -382,7 +382,10 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     if (jdbcConnection == null) {
       exceptions.add(new ValidationException("[jdbcConnection] property not set. " 
           + "Please supply an instance of " + JDBCConnection.class.getName(), this));   
+    } else {
+      jdbcConnection.validate(exceptions);
     }
+    
   }
 
 }

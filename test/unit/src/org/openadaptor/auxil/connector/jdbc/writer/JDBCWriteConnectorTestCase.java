@@ -125,7 +125,7 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
     try {
       testWriteConnector.connect();
     } catch (ConnectionException e) {
-      // Expection the cause to have been an SQLException
+      // Expecting the cause to have been an SQLException
       assertTrue(e.getCause() instanceof SQLException);
       return;
     } catch (RuntimeException re) {
@@ -268,6 +268,11 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
     public MockJDBCConnection(Connection connection) {
       super();
       initialMockConnection = connection;
+      //Setup so by default it passes validation (based on setup for direct connection).
+      setDriver("DummyDriver");
+      setUrl("DummyURL");
+      setUsername("DummyUsername");
+      setPassword("DummyPassword");
     }
 
     public MockJDBCConnection(boolean fail) {
