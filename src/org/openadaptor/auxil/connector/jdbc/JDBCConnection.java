@@ -136,7 +136,18 @@ public class JDBCConnection extends Component {
   /**
    * Constructor.
    * 
-   * create JDBC connection based on an JNDIConnection and DataSource
+   * create JDBC connection based on a DataSource
+   * @param dataSource
+   */
+  public JDBCConnection(DataSource dataSource) {
+    this();
+    this.dataSource = dataSource;
+  }  
+  
+  /**
+   * Constructor.
+   * 
+   * create JDBC connection based on an JNDIConnection and DataSource name
    * @param jndiConnection
    * @param dataSourceName 
    */
@@ -207,17 +218,6 @@ public class JDBCConnection extends Component {
    * either create a connection directly from the jdbc connection parameters, or
    * or get a connection from DataSource, or create a connection from using an XADataSource. 
    * If the component is transacted then this will set the transaction resource.
-   * 
-   * Since this bean be configured in a number of ways it attempts to connect in
-   * a particular order. If an XADataSource is configured use that otherwise if
-   * a DataSource is configured use that. If neither DataSource type is configured
-   * but a jndiConnection and a DataSource name is supplied then look up the DataSource
-   * and use that. If no way of using a DataSource has been configured then assume
-   * that driver properties have been supplied and use those.
-   * 
-   * Note there is no attempt to fall back on other config options if one fails. So 
-   * if for example a DataSource is supplied and the connection fails we do not attempt
-   * to use driver properties even if those have been supplied.
    * 
    * @throws SQLException
    */
