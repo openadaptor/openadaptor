@@ -4,572 +4,568 @@
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 	</description>
-	
+
 	<!-- 
 	  Set copyright.fix to true to automatically fix copyright notices.
 	  Warning: this may modify source files!
 	  -->
-	<property name="copyright.auto_fix" value="false"/>
-	
+	<property name="copyright.auto_fix" value="false" />
+
 	<!-- If set, the src.jar jarfile will not be created -->
-	<property name="suppress.src.jar" value="set"/>
+	<property name="suppress.src.jar" value="set" />
 	<!-- If set, tests will not be executed
 	<property name="suppress.tests" value="set"/>
 	-->
 	<!-- If set, javadocs will not be generated
 	<property name="suppress.javadoc" value="set"/>
 	-->
-	
-	<echo level="warning" message="$tag and $examples.relative.basename needed only for doc generations - investigate"/>
-  <property name="tag" value="trunk"/>
-  <condition property="examples.relative.basename" value="tags/${tag}">
-    <not>
-      <equals arg1="${tag}" arg2="trunk"/>
-    </not>
-  </condition>
-	<property name="examples.relative.basename" value="${tag}" />
 
-	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties"/>
-  <property file="${basedir}/checkout.properties"/>
-	
-  <target name="init" description="Initialisation of directories and classpaths">
-    <echo level="info" message="Initialising directories and classpaths"/>
-    <tstamp/>
-    <property name="debug" value="true"/>
-    <!-- Explicitly override tag to change release -->
-    <property name="tag" value="trunk"/>
-    <echo level="warning" message="Licence file should move to top level"/>	
-    <property name="licence.dir" value="${basedir}/src/org/openadaptor/util"/>
-    <property name="licence.file" value="licence.txt"/>
-    <property name="build.timestamp" value="${DSTAMP}:${TSTAMP}"/>
-    <echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}"/>
-    <property name="dir.src" value="${basedir}/src"/>
-    <property name="dir.lib" value="${basedir}/lib"/>
-    <property name="dir.example" value="${basedir}/example"/>
-    <property name="dir.faq" value="${basedir}/example"/>
-    <property name="dir.sql" value="${basedir}/sql"/>
-    	
-    <property name="dir.test" value="${basedir}/test"/>
-    <property name="dir.test.lib" value="${dir.test}/lib"/>
-    <property name="dir.test.src.unit" value="${dir.test}/unit/src"/>
-    <property name="dir.test.src.integration" value="${dir.test}/integration/src"/>
-    <property name="dir.test.src.system" value="${dir.test}/system/src"/>
-      
-    <property name="dir.spring" value="${basedir}/spring"/>
-    <property name="dir.spring.src" value="${dir.spring}/src"/>
-    <property name="dir.spring.lib" value="${dir.spring}/lib"/>
-    <!-- Source root for stub code, e.g. tibco, legacy -->
-    <property name="dir.stub.src" value="${basedir}/stub/src"/>
-    
-  	
-    <!-- Directories for build output -->
-    <property name="dir.build" value="${basedir}/build"/>
-    <property name="dir.build.lib" value="${dir.build}/lib"/>
-    <property name="dir.build.classes" value="${dir.build}/classes"/>
-  	<property name="dir.build.support" value="${dir.build}/support"/>
-  	<property name="dir.build.example" value="${dir.build}/example"/>
-    	
-    <property name="dir.build.test" value="${dir.build}/test"/>
-    <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
-    	
-    <property name="dir.build.stub" value="${dir.build}/stub"/>
-    <property name="dir.build.stub.classes" value="${dir.build.stub}/classes"/>
-    <property name="dir.build.spring.classes" value="${dir.build}/spring/classes"/>
-    <property name="dir.build.javadocs" value="${dir.build}/javadocs"/>
+	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties" />
+	<property file="${basedir}/checkout.properties" />
 
-  	<!-- Directories for tool to support the build (e.g. ant custom tasks) -->
-  	<property name="dir.support" value="${basedir}/support"/>
-  	<property name="dir.support.src" value="${dir.support}/src"/>
-  	<property name="dir.support.lib" value="${dir.support}/lib"/>
-  	<property name="dir.build.support.classes" value="${dir.build.support}/classes"/>
+	<target name="init" description="Initialisation of tag,directories and classpaths">
+		<echo level="info" message="Initialising directories and classpaths" />
+		<tstamp />
+		<property name="debug" value="true" />
+		<!-- Initialise tag variable (unless it has already been explicitly set) -->
+		<property name="tag" value="trunk" />
+		<echo level="info" message="Initialised $tag value is ${tag}" />
+		<echo level="warning" message="Licence file should move to top level" />
+		<property name="licence.dir" value="${basedir}/src/org/openadaptor/util" />
+		<property name="licence.file" value="licence.txt" />
+		<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}" />
+		<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}" />
+		<property name="dir.src" value="${basedir}/src" />
+		<property name="dir.lib" value="${basedir}/lib" />
+		<property name="dir.example" value="${basedir}/example" />
+		<property name="dir.faq" value="${basedir}/example" />
+		<property name="dir.sql" value="${basedir}/sql" />
 
-    <path id="classpath.lib">
-    	<fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
-	  </path>
-  	
-    <path id="classpath">
-      <path refid="classpath.lib" />
-      <pathelement path="${dir.build.stub.classes}"/>
-    </path>
-  	
-    <path id="classpath.spring">
-      <pathelement path="${dir.build.classes}"/>
-	    <fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip"/>
-      <path refid="classpath" />
-    </path> 
-  	
-    <taskdef name="spring.validate" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.build.support.classes}"/>
-    <taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}"/>
+		<property name="dir.test" value="${basedir}/test" />
+		<property name="dir.test.lib" value="${dir.test}/lib" />
+		<property name="dir.test.src.unit" value="${dir.test}/unit/src" />
+		<property name="dir.test.src.integration" value="${dir.test}/integration/src" />
+		<property name="dir.test.src.system" value="${dir.test}/system/src" />
 
-</target>
-	
+		<property name="dir.spring" value="${basedir}/spring" />
+		<property name="dir.spring.src" value="${dir.spring}/src" />
+		<property name="dir.spring.lib" value="${dir.spring}/lib" />
+		<!-- Source root for stub code, e.g. tibco, legacy -->
+		<property name="dir.stub.src" value="${basedir}/stub/src" />
+
+
+		<!-- Directories for build output -->
+		<property name="dir.build" value="${basedir}/build" />
+		<property name="dir.build.lib" value="${dir.build}/lib" />
+		<property name="dir.build.classes" value="${dir.build}/classes" />
+		<property name="dir.build.support" value="${dir.build}/support" />
+		<property name="dir.build.example" value="${dir.build}/example" />
+
+		<property name="dir.build.test" value="${dir.build}/test" />
+		<property name="dir.build.test.classes" value="${dir.build.test}/classes" />
+
+		<property name="dir.build.stub" value="${dir.build}/stub" />
+		<property name="dir.build.stub.classes" value="${dir.build.stub}/classes" />
+		<property name="dir.build.spring.classes" value="${dir.build}/spring/classes" />
+		<property name="dir.build.javadocs" value="${dir.build}/javadocs" />
+
+		<!-- Directories for tool to support the build (e.g. ant custom tasks) -->
+		<property name="dir.support" value="${basedir}/support" />
+		<property name="dir.support.src" value="${dir.support}/src" />
+		<property name="dir.support.lib" value="${dir.support}/lib" />
+		<property name="dir.build.support.classes" value="${dir.build.support}/classes" />
+
+		<path id="classpath.lib">
+			<fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip" />
+		</path>
+
+		<path id="classpath">
+			<path refid="classpath.lib" />
+			<pathelement path="${dir.build.stub.classes}" />
+		</path>
+
+		<path id="classpath.spring">
+			<pathelement path="${dir.build.classes}" />
+			<fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip" />
+			<path refid="classpath" />
+		</path>
+
+		<taskdef name="spring.validate" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.build.support.classes}" />
+		<taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}" />
+	</target>
+
+	<target name="init.example.documentation" depends="init" description="Initialisation for automatic documentation generation">
+		<echo level="warning" message="$examples.relative.basename only needed for doc generations - investigate" />
+    <!-- if tag is not 'trunk' set relative path to 'tags/<tagname>' instead of just 'trunk' -->
+		<condition property="examples.relative.basename" value="tags/${tag}">
+			<not>
+				<equals arg1="${tag}" arg2="trunk" />
+			</not>
+		</condition>
+		<!-- set relative path to tag (only if previous condition hasn't already done so -->
+		<property name="examples.relative.basename" value="${tag}" />
+		<echo level="info" message="Relative path for examples is: ${examples.relative.basename}"/>
+	</target>
+
 	<target name="init.test" depends="init" description="Initialisation for tests">
-	  <echo level="info" message="Creating test directories under ${dir.build.test}"/>	
-	  <property name="dir.build.test.classes" value="${dir.build.test}/classes"/>
-	  <property name="dir.build.test.output" value="${dir.build.test}/output"/>
-		<mkdir dir="${dir.build.test}"/>
-	  <mkdir dir="${dir.build.test.classes}"/>
-	  <mkdir dir="${dir.build.test.output}"/>
-		
-		<property name="test.vm.dir" value="${basedir}"/>
-		<property name="test.printsummary" value="true"/>
-		<property name="test.showoutput" value="false"/>
-		<property name="test.formatter" value="xml"/>
-		<property name="test.batchtest.fork" value="yes"/>
+		<echo level="info" message="Creating test directories under ${dir.build.test}" />
+		<property name="dir.build.test.classes" value="${dir.build.test}/classes" />
+		<property name="dir.build.test.output" value="${dir.build.test}/output" />
+		<mkdir dir="${dir.build.test}" />
+		<mkdir dir="${dir.build.test.classes}" />
+		<mkdir dir="${dir.build.test.output}" />
 
-		<property name="test.namefilter" value="**/*TestCase.java"/>
-	
-    <path id="classpath.test.compile">
-	    <fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip"/>
-     	<pathelement path="${dir.build.spring.classes}"/>
-   	  <path refid="classpath.spring"/>
-    </path>  
-		
+		<property name="test.vm.dir" value="${basedir}" />
+		<property name="test.printsummary" value="true" />
+		<property name="test.showoutput" value="false" />
+		<property name="test.formatter" value="xml" />
+		<property name="test.batchtest.fork" value="yes" />
+
+		<property name="test.namefilter" value="**/*TestCase.java" />
+
+		<path id="classpath.test.compile">
+			<fileset dir="${dir.test.lib}" includes="**/*.jar,**/*.zip" />
+			<pathelement path="${dir.build.spring.classes}" />
+			<path refid="classpath.spring" />
+		</path>
+
 		<!-- Include the source paths, handy for stack trace info -->
 		<!-- Include ${dir.test.lib} to find log4j.properties -->
-   	<echo level="warning" message="Tests require Licence file on CP, adding ${licence.dir}"/>	
-   <path id="classpath.test">
-  	  <pathelement path="${dir.test.lib}"/>
-     	<pathelement path="${licence.dir}"/>
-   	  <pathelement path="${dir.src}"/>
- 	    <pathelement path="${dir.spring.src}"/>
-     	<pathelement path="${dir.test.src.unit}"/>
-     	<pathelement path="${dir.test.src.integration}"/>
-      <pathelement path="${dir.test.src.system}"/>
-     	<pathelement path="${dir.build.test.classes}"/>
-   	  <path refid="classpath.test.compile"/>
-    </path>   	
+		<echo level="warning" message="Tests require Licence file on CP, adding ${licence.dir}" />
+		<path id="classpath.test">
+			<pathelement path="${dir.test.lib}" />
+			<pathelement path="${licence.dir}" />
+			<pathelement path="${dir.src}" />
+			<pathelement path="${dir.spring.src}" />
+			<pathelement path="${dir.test.src.unit}" />
+			<pathelement path="${dir.test.src.integration}" />
+			<pathelement path="${dir.test.src.system}" />
+			<pathelement path="${dir.build.test.classes}" />
+			<path refid="classpath.test.compile" />
+		</path>
 
 	</target>
-	
+
 	<!-- Compilation tasks -->
 	<target name="make.dirs" depends="init" description="Create build area ${dir.build}">
-		<mkdir dir="${dir.build}"/>
-		<mkdir dir="${dir.build.javadocs}"/>
-		<mkdir dir="${dir.build.support}"/>
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.build.javadocs}" />
+		<mkdir dir="${dir.build.support}" />
 	</target>
 
 	<target name="compile.support" depends="make.dirs" description="Compile support tools (custom ant tasks etc.)">
-		<echo level="info" message="Compiling support tools ${dir.support.src}->${dir.build.support.classes}"/>
-		<mkdir dir="${dir.build.support.classes}"/>		
-	  <javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath" debug="${debug}"/>
-  </target>
-
-	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
-		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}"/>
-		<mkdir dir="${dir.build}"/>		
-		<mkdir dir="${dir.build.stub}"/>		
-		<mkdir dir="${dir.build.stub.classes}"/>
-	  <javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath" debug="${debug}"/>
-  </target>
-	
-	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
-		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}"/>
-		<mkdir dir="${dir.build.classes}"/>
-	  <javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath" debug="${debug}"/>
-  </target>
-
-	<target name="compile.spring" depends="compile.src" description="Compile openadaptor spring source code">
-		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}"/>
-		<mkdir dir="${dir.build.spring.classes}"/>
-	  <javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring" debug="${debug}"/>
-  </target>
-	
-	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code"/>
-
-	<target name="copy.configs" depends="compile" description="Copy build information to build area">
-    <echo level="info" message="Copying/building build and registration properties .openadaptor.properties,registration.properties"/>
-		<copy todir="${dir.build.classes}" overwrite="true">
-      <fileset dir="${dir.src}">
-        <include name=".openadaptor.properties"/>
-        <include name="registration.properties"/>
-      </fileset>
-      <filterset>
-        <filter token="BUILDCOMPILER" value="${ant.java.version}"/>
-        <filter token="BUILDTIME" value="${DSTAMP}:${TSTAMP}"/>
-        <filter token="BUILDTAG" value="${tag}"/>
-      </filterset>
-    </copy>
-	
+		<echo level="info" message="Compiling support tools ${dir.support.src}->${dir.build.support.classes}" />
+		<mkdir dir="${dir.build.support.classes}" />
+		<javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath" debug="${debug}" />
 	</target>
 
-  <!-- 
+	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
+		<echo level="info" message="Compiling stub src (legacy oa,mq and tibrv) ${dir.stub.src}->${dir.build.stub.classes}" />
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.build.stub}" />
+		<mkdir dir="${dir.build.stub.classes}" />
+		<javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath" debug="${debug}" />
+	</target>
+
+	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
+		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}" />
+		<mkdir dir="${dir.build.classes}" />
+		<javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath" debug="${debug}" />
+	</target>
+
+	<target name="compile.spring" depends="compile.src" description="Compile openadaptor spring source code">
+		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}" />
+		<mkdir dir="${dir.build.spring.classes}" />
+		<javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring" debug="${debug}" />
+	</target>
+
+	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code" />
+
+	<target name="copy.configs" depends="compile" description="Copy build information to build area">
+		<echo level="info" message="Copying/building build and registration properties .openadaptor.properties,registration.properties" />
+		<copy todir="${dir.build.classes}" overwrite="true">
+			<fileset dir="${dir.src}">
+				<include name=".openadaptor.properties" />
+				<include name="registration.properties" />
+			</fileset>
+			<filterset>
+				<filter token="BUILDCOMPILER" value="${ant.java.version}" />
+				<filter token="BUILDTIME" value="${DSTAMP}:${TSTAMP}" />
+				<filter token="BUILDTAG" value="${tag}" />
+			</filterset>
+		</copy>
+
+	</target>
+
+	<!-- 
     Currently unit test source has a dependency on common class in integration
      Namely TestComponent. This needs to be reorganised.
     -->
 	<target name="compile.test.unit" depends="compile.test.integration" description="Compile unit test code">
-    <echo level="info" message="Compiling unit test source ${dir.test.src.unit}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.unit}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
+		<echo level="info" message="Compiling unit test source ${dir.test.src.unit}->${dir.build.test.classes}" />
+		<javac srcdir="${dir.test.src.unit}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}" />
 	</target>
 
 	<target name="compile.test.integration" depends="compile,init.test" description="Compile integration test code">
-    <echo level="info" message="Compiling integration test source ${dir.test.src.integration}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.integration}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
+		<echo level="info" message="Compiling integration test source ${dir.test.src.integration}->${dir.build.test.classes}" />
+		<javac srcdir="${dir.test.src.integration}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}" />
 	</target>
 
 	<target name="compile.test.system" depends="compile.test.unit" description="Compile system test code">
-    <echo level="info" message="Compiling system test source ${dir.test.src.system}->${dir.build.test.classes}"/>
-    <javac srcdir="${dir.test.src.system}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}"/>
+		<echo level="info" message="Compiling system test source ${dir.test.src.system}->${dir.build.test.classes}" />
+		<javac srcdir="${dir.test.src.system}" destdir="${dir.build.test.classes}" classpathref="classpath.test.compile" debug="${debug}" />
 	</target>
 
-	<target name="compile.test" depends="compile.test.integration,compile.test.unit,compile.test.system" description="compile all test code"/>
+	<target name="compile.test" depends="compile.test.integration,compile.test.unit,compile.test.system" description="compile all test code" />
 
-	<target name="compile.all" depends="compile.spring,compile.test" description="Compile all source code"/>
-	
-	<!-- Test tasks -->	
+	<target name="compile.all" depends="compile.spring,compile.test" description="Compile all source code" />
+
+	<!-- Test tasks -->
 	<target name="test.unit" depends="compile.test" description="Unit tests (against compiled classes)" unless="suppress.tests">
-		
-	 <echo level="info" message="Running unit tests"/>
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
-    <classpath refid="classpath.test"/>
-     <formatter type="${test.formatter}"/>
-     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
-     	          errorProperty="test.failed" failureProperty="test.failed">
-      <fileset dir="${dir.test.src.unit}" includes="${test.namefilter}"/>
-     </batchtest>
-   </junit>			
- </target>
-	
+
+		<echo level="info" message="Running unit tests" />
+		<junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
+			<classpath refid="classpath.test" />
+			<formatter type="${test.formatter}" />
+			<batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" errorProperty="test.failed" failureProperty="test.failed">
+				<fileset dir="${dir.test.src.unit}" includes="${test.namefilter}" />
+			</batchtest>
+		</junit>
+	</target>
+
 	<target name="test.integration" depends="compile.test" description="Integration tests (against compiled classes)" unless="suppress.tests">
-	 <echo level="info" message="Running integration tests"/>
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
-    <classpath refid="classpath.test"/>
-     <formatter type="${test.formatter}"/>
-     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
-     	          errorProperty="test.failed" failureProperty="test.failed"
-     	          unless="test.failed">
-      <fileset dir="${dir.test.src.integration}" includes="${test.namefilter}"/>
-     </batchtest>
-   </junit>	
-	 </target>
+		<echo level="info" message="Running integration tests" />
+		<junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
+			<classpath refid="classpath.test" />
+			<formatter type="${test.formatter}" />
+			<batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" errorProperty="test.failed" failureProperty="test.failed" unless="test.failed">
+				<fileset dir="${dir.test.src.integration}" includes="${test.namefilter}" />
+			</batchtest>
+		</junit>
+	</target>
 
 	<target name="test.system" depends="compile.test" description="System tests (against compiled classes)" unless="suppress.tests">
-	 <echo level="info" message="Running system tests" />
-   <echo level="warning" message="Excluding **/WebService*TestCase.java" />
-	 <echo level="warning" message="Excluding **/MQ*.java" />
-	 <echo level="warning" message="Excluding **/TIBCO*.java" />
-   <junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
-    <classpath refid="classpath.test"/>
-     <formatter type="${test.formatter}"/>
-     <batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" 
-     	          errorProperty="test.failed" failureProperty="test.failed"
-     	          unless="test.failed">
-      <fileset dir="${dir.test.src.system}" includes="${test.namefilter}">
-       <exclude name="**/WebService*TestCase.java"/>
-       <exclude name="**/MQ*.java"/>
-       <exclude name="**/TIBCO*.java"/>
-      </fileset>
-     </batchtest>
-   </junit>	
- </target>
-	
-	<target name="test.all" 
-		depends="clean.build.test,test.unit,test.integration,test.system" 
-		description="Perform all tests (unit,integration,system)"
-		unless="suppress.tests">
-		
-	  <echo level="info" message="Generating report from test execution"/>		
-    <junitreport todir="${dir.build.test.output}">
-      <fileset dir="${dir.build.test.output}" includes="TEST-*.xml"/>
-      <report format="frames" todir="${dir.build.test.output}"/>
-    </junitreport>		
-    <fail message="Tests failed: check ${dir.build.test.output}" if="test.failed"/>
-  </target>
-	
-	<target name="test.suppressed" description="Warns of suppressed tests" if="suppress.tests">
-	  <echo message="*** TEST EXECUTION HAS BEEN SUPPRESSED (suppress.tests is set) ***"/>				
+		<echo level="info" message="Running system tests" />
+		<echo level="warning" message="Excluding **/WebService*TestCase.java" />
+		<echo level="warning" message="Excluding **/MQ*.java" />
+		<echo level="warning" message="Excluding **/TIBCO*.java" />
+		<junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
+			<classpath refid="classpath.test" />
+			<formatter type="${test.formatter}" />
+			<batchtest fork="${test.batchtest.fork}" todir="${dir.build.test.output}" errorProperty="test.failed" failureProperty="test.failed" unless="test.failed">
+				<fileset dir="${dir.test.src.system}" includes="${test.namefilter}">
+					<exclude name="**/WebService*TestCase.java" />
+					<exclude name="**/MQ*.java" />
+					<exclude name="**/TIBCO*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
 	</target>
-	
+
+	<target name="test.all" depends="clean.build.test,test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)" unless="suppress.tests">
+
+		<echo level="info" message="Generating report from test execution" />
+		<junitreport todir="${dir.build.test.output}">
+			<fileset dir="${dir.build.test.output}" includes="TEST-*.xml" />
+			<report format="frames" todir="${dir.build.test.output}" />
+		</junitreport>
+		<fail message="Tests failed: check ${dir.build.test.output}" if="test.failed" />
+	</target>
+
+	<target name="test.suppressed" description="Warns of suppressed tests" if="suppress.tests">
+		<echo message="*** TEST EXECUTION HAS BEEN SUPPRESSED (suppress.tests is set) ***" />
+	</target>
+
 	<!-- Spring Example validations -->
 	<target name="test.spring.examples" depends="test.all" description="Validate Spring example configurations">
-		<echo level="info" message="Validating Spring examples in ${dir.example}"/> 
-	    <spring.validate classpathref="classpath.test" ignorestubexceptions="true">
-	      <fileset dir="${dir.example}/spring">
-	        <include name="**/*.xml"/>
-	        <exclude name="**/input/*"/>
-	        <exclude name="**/output/*"/>
-	        <exclude name="**/mq-*.xml"/>
-	        <exclude name="**/file/enrich-*.xml"/>
-	        <exclude name="**/db/jee/jboss/oa*.xml"/>
-	      </fileset>
-	    </spring.validate>
+		<echo level="info" message="Validating Spring examples in ${dir.example}" />
+		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
+			<fileset dir="${dir.example}/spring">
+				<include name="**/*.xml" />
+				<exclude name="**/input/*" />
+				<exclude name="**/output/*" />
+				<exclude name="**/mq-*.xml" />
+				<exclude name="**/file/enrich-*.xml" />
+				<exclude name="**/db/jee/jboss/oa*.xml" />
+			</fileset>
+		</spring.validate>
 	</target>
-	
+
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source" unless="suppress.javadoc">
-	 <echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}"/>
-	 <javadoc
-		destdir="${dir.build.javadocs}"
-		classpathref="classpath.spring"
-		doctitle="openadaptor ${tag}"
-		verbose="false"
-		additionalparam="-quiet">
-		<fileset dir="${dir.src}">
-		  <include name="**/*.java"/>
-		</fileset>
-		<fileset dir="${dir.spring.src}">
-			<include name="**/*.java"/>
-		</fileset>
-  </javadoc>
+		<echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}" />
+		<javadoc destdir="${dir.build.javadocs}" classpathref="classpath.spring" doctitle="openadaptor ${tag}" verbose="false" additionalparam="-quiet">
+			<fileset dir="${dir.src}">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${dir.spring.src}">
+				<include name="**/*.java" />
+			</fileset>
+		</javadoc>
 	</target>
-	
+
 	<target name="javadocs.suppressed" description="Warns of suppressed javadoc generation" if="suppress.javadoc">
-	  <echo message="*** JAVADOC GENERATION HAS BEEN SUPPRESSED (suppress.javadoc is set) ***"/>				
+		<echo message="*** JAVADOC GENERATION HAS BEEN SUPPRESSED (suppress.javadoc is set) ***" />
 	</target>
 
 	<!-- Automatic Example documentation creation -->
-  <target name="example.doc" depends="init">
-  	<mkdir dir="${dir.build.example}"/>
-    <ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
-      <property name="filecomment.path.pattern1" value="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
-      <property name="filecomment.path.pattern2" value="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
-    </ant>
-  </target>
-	
-	<target name="example.doc.suppressed" description="Warns of suppressed exacmple documentation generation" if="suppress.example.doc">
-	  <echo message="*** Example documentation generationhas been suppressed (suppress.example.doc is set) ***"/>				
+	<target name="example.doc" depends="init.example.documentation">
+		<mkdir dir="${dir.build.example}" />
+		<ant antfile="docs_wip.xml" dir="${dir.example}/tools" target="docs">
+			<property name="docgen.bin" value="${dir.example}/tools"/>
+			<property name="docgen.tag" value="$tag"/>
+			<property name="docgen.input.dir" value="${dir.example}"/>
+			<property name="docgen.output.dir" value="${dir.example}/docs"/>
+			<!--
+			<property name="docgen.output.dir" value="$dir.build.example"/>
+			-->
+		</ant>
 	</target>
-	
+
+	<target name="example.doc.suppressed" description="Warns of suppressed exacmple documentation generation" if="suppress.example.doc">
+		<echo message="*** Example documentation generationhas been suppressed (suppress.example.doc is set) ***" />
+	</target>
+
 
 	<!-- Packaging tasks -->
-  <target name="copyright.validate" depends="init" description="checks copyright notices in code">
-  	<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}"/>
-  	<echo level="info" message="Automatic fix flag value: ${copyright.auto_fix}"/>
-    <copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
-      <fileset dir="${dir.src}" includes="**/*.java"/>
-      <fileset dir="${dir.spring.src}" includes="**/*.java"/>
-      <fileset dir="${dir.example}" includes="**/*.java"/>
-    </copyright>
-  </target>
+	<target name="copyright.validate" depends="init" description="checks copyright notices in code">
+		<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}" />
+		<echo level="info" message="Automatic fix flag value: ${copyright.auto_fix}" />
+		<copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
+			<fileset dir="${dir.src}" includes="**/*.java" />
+			<fileset dir="${dir.spring.src}" includes="**/*.java" />
+			<fileset dir="${dir.example}" includes="**/*.java" />
+		</copyright>
+	</target>
 
-  <target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,copy.configs" description="Create jars from compiled classes">
-	 <echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}"/>
-   <mkdir dir="${dir.build.lib}"/>
-  	
-   <jar destfile="${dir.build.lib}/openadaptor.jar">
-     <fileset dir="${dir.build.classes}"/>
-   	 <fileset dir="${licence.dir}" includes="${licence.file}"/>
-   </jar>
-  	
-   <echo level="warning" message="Explicitly copying .openadaptor-spring.xml into jar."/>
-   <jar destfile="${dir.build.lib}/openadaptor-spring.jar">
-     <fileset dir="${dir.build.spring.classes}"/>
-  	 <!-- ToDo: This is a hangover from old env. Should be possible to remove soon -->
-  	 <filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml"/>
-   </jar>
-  	
-   <!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
-   <jar destfile="${dir.build.lib}/openadaptor-stub.jar">
-     <fileset dir="${dir.build.stub.classes}"/>
-   </jar>
-	 
-  </target>
-	
+	<target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,copy.configs" description="Create jars from compiled classes">
+		<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}" />
+		<mkdir dir="${dir.build.lib}" />
+
+		<jar destfile="${dir.build.lib}/openadaptor.jar">
+			<fileset dir="${dir.build.classes}" />
+			<fileset dir="${licence.dir}" includes="${licence.file}" />
+		</jar>
+
+		<echo level="warning" message="Explicitly copying .openadaptor-spring.xml into jar." />
+		<jar destfile="${dir.build.lib}/openadaptor-spring.jar">
+			<fileset dir="${dir.build.spring.classes}" />
+			<!-- ToDo: This is a hangover from old env. Should be possible to remove soon -->
+			<filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml" />
+		</jar>
+
+		<!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
+		<jar destfile="${dir.build.lib}/openadaptor-stub.jar">
+			<fileset dir="${dir.build.stub.classes}" />
+		</jar>
+
+	</target>
+
 	<target name="src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.src}, ${dir.spring.src}" unless="suppress.src.jar">
-		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}"/>
+		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}" />
 		<jar destfile="${dir.build.lib}/openadaptor-src.jar">
-	    <fileset dir="${dir.src}"/>
-	    <fileset dir="${dir.spring.src}"/>
-	   </jar>		
+			<fileset dir="${dir.src}" />
+			<fileset dir="${dir.spring.src}" />
+		</jar>
 	</target>
 
 	<target name="src.jar.suppressed" description="Warns of suppressed javadoc generation" if="suppress.src.jar">
-	  <echo level="info" message="Source jar generation is suppressed (suppress.src.jar is set)"/>				
+		<echo level="info" message="Source jar generation is suppressed (suppress.src.jar is set)" />
 	</target>
 
 	<target name="jar.depends" depends="jars.compiled" description="Create openadaptor-depends.jar from 3rd party libs">
-	 <echo level="info" message="Creating ${dir.build.lib}/openadaptor-depends.jar from 3rd party libraries"/>
-		
-	 <property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*"/>
-	 <echo level="info" message="includes.unqualified = ${includes.unqualified}"/>
+		<echo level="info" message="Creating ${dir.build.lib}/openadaptor-depends.jar from 3rd party libraries" />
+
+		<property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*" />
+		<echo level="info" message="includes.unqualified = ${includes.unqualified}" />
 
 		<jar destfile="${dir.build.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
-      <!-- ordered list of jars, only includes qualified resources -->
-      <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-lang_2.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jdom_1.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jetty_6.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jms.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jmxremote.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jmxri.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/js_1_6R5.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/json.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/log4j-1.2.15.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/qname.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/quartz_1.5.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/rome_0.9.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/saaj.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/stax-api_1.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/velocity_1.4.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xstream-1.2.1.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" includes="${includes.unqualified}"/>
-      <!-- ordered list of jars, includes non-qualified resources but with prefix -->
-      <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" excludes="${includes.unqualified}" prefix="XmlSchema"/>
-      <zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol"/>
-      <zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec"/>
-      <zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections"/>
-      <zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient"/>
-      <zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" excludes="${includes.unqualified}" prefix="commons-jxpath"/>
-      <zipfileset src="${dir.lib}/commons-lang_2.0.jar" excludes="${includes.unqualified}" prefix="commons-lang"/>
-      <zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging"/>
-      <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net"/>
-      <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
-      <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
-      <zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc"/>
-      <zipfileset src="${dir.lib}/jdom_1.0.jar" excludes="${includes.unqualified}" prefix="jdom"/>
-      <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty-util"/>
-      <zipfileset src="${dir.lib}/jetty_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty"/>
-      <zipfileset src="${dir.lib}/jms.jar" excludes="${includes.unqualified}" prefix="jms"/>
-      <zipfileset src="${dir.lib}/jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote"/>
-      <zipfileset src="${dir.lib}/jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri"/>
-      <zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools"/>
-      <zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm"/>
-      <zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs"/>
-      <zipfileset src="${dir.lib}/js_1_6R5.jar" excludes="${includes.unqualified}" prefix="js"/>
-      <zipfileset src="${dir.lib}/json.jar" excludes="${includes.unqualified}" prefix="json"/>
-      <zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" excludes="${includes.unqualified}" prefix="jta-spec"/>
-      <zipfileset src="${dir.lib}/log4j-1.2.15.jar" excludes="${includes.unqualified}" prefix="log4j"/>
-      <zipfileset src="${dir.lib}/qname.jar" excludes="${includes.unqualified}" prefix="qname"/>
-      <zipfileset src="${dir.lib}/quartz_1.5.2.jar" excludes="${includes.unqualified}" prefix="quartz"/>
-      <zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="resolver"/>
-      <zipfileset src="${dir.lib}/rome_0.9.jar" excludes="${includes.unqualified}" prefix="rome"/>
-      <zipfileset src="${dir.lib}/saaj.jar" excludes="${includes.unqualified}" prefix="saaj"/>
-      <zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="serializer"/>
-      <zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" excludes="${includes.unqualified}" prefix="servlet-api"/>
-      <zipfileset src="${dir.lib}/stax-api_1.0.1.jar" excludes="${includes.unqualified}" prefix="stax-api"/>
-      <zipfileset src="${dir.lib}/velocity_1.4.jar" excludes="${includes.unqualified}" prefix="velocity"/>
-      <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" excludes="${includes.unqualified}" prefix="wsdl4j"/>
-      <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" excludes="${includes.unqualified}" prefix="wstx-asl"/>
-      <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
-      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
-      <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
-      <zipfileset src="${dir.lib}/xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream"/>
-      <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
-      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
-      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring"/>
-	</jar>
-  </target>
+			<!-- ordered list of jars, only includes qualified resources -->
+			<zipfileset src="${dir.lib}/XmlSchema_1.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-lang_2.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-net_1.2.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/dom4j_1.6.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jdom_1.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jetty_6.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jms.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jmxremote.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jmxri.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/js_1_6R5.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/json.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/log4j-1.2.15.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/qname.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/quartz_1.5.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/rome_0.9.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/saaj.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/stax-api_1.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/velocity_1.4.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/xstream-1.2.1.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" includes="${includes.unqualified}" />
+			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
+			<zipfileset src="${dir.lib}/XmlSchema_1.1.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
+			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
+			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
+			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections" />
+			<zipfileset src="${dir.lib}/commons-httpclient_3.0.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient" />
+			<zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" excludes="${includes.unqualified}" prefix="commons-jxpath" />
+			<zipfileset src="${dir.lib}/commons-lang_2.0.jar" excludes="${includes.unqualified}" prefix="commons-lang" />
+			<zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging" />
+			<zipfileset src="${dir.lib}/commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net" />
+			<zipfileset src="${dir.lib}/dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j" />
+			<zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen" />
+			<zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc" />
+			<zipfileset src="${dir.lib}/jdom_1.0.jar" excludes="${includes.unqualified}" prefix="jdom" />
+			<zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty-util" />
+			<zipfileset src="${dir.lib}/jetty_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty" />
+			<zipfileset src="${dir.lib}/jms.jar" excludes="${includes.unqualified}" prefix="jms" />
+			<zipfileset src="${dir.lib}/jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote" />
+			<zipfileset src="${dir.lib}/jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri" />
+			<zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools" />
+			<zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm" />
+			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs" />
+			<zipfileset src="${dir.lib}/js_1_6R5.jar" excludes="${includes.unqualified}" prefix="js" />
+			<zipfileset src="${dir.lib}/json.jar" excludes="${includes.unqualified}" prefix="json" />
+			<zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" excludes="${includes.unqualified}" prefix="jta-spec" />
+			<zipfileset src="${dir.lib}/log4j-1.2.15.jar" excludes="${includes.unqualified}" prefix="log4j" />
+			<zipfileset src="${dir.lib}/qname.jar" excludes="${includes.unqualified}" prefix="qname" />
+			<zipfileset src="${dir.lib}/quartz_1.5.2.jar" excludes="${includes.unqualified}" prefix="quartz" />
+			<zipfileset src="${dir.lib}/resolver_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="resolver" />
+			<zipfileset src="${dir.lib}/rome_0.9.jar" excludes="${includes.unqualified}" prefix="rome" />
+			<zipfileset src="${dir.lib}/saaj.jar" excludes="${includes.unqualified}" prefix="saaj" />
+			<zipfileset src="${dir.lib}/serializer_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="serializer" />
+			<zipfileset src="${dir.lib}/servlet-api_2.5-6.0.1.jar" excludes="${includes.unqualified}" prefix="servlet-api" />
+			<zipfileset src="${dir.lib}/stax-api_1.0.1.jar" excludes="${includes.unqualified}" prefix="stax-api" />
+			<zipfileset src="${dir.lib}/velocity_1.4.jar" excludes="${includes.unqualified}" prefix="velocity" />
+			<zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" excludes="${includes.unqualified}" prefix="wsdl4j" />
+			<zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" excludes="${includes.unqualified}" prefix="wstx-asl" />
+			<zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" excludes="${includes.unqualified}" prefix="xercesImpl" />
+			<zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" excludes="${includes.unqualified}" prefix="xfire-all" />
+			<zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis" />
+			<zipfileset src="${dir.lib}/xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream" />
+			<zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script" />
+			<zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring-core" />
+			<zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring" />
+		</jar>
+	</target>
 
-	<target name="jars" depends="jars.compiled,jar.depends,src.jar,src.jar.suppressed" description="Assemble all jars"/>
-	
+	<target name="jars" depends="jars.compiled,jar.depends,src.jar,src.jar.suppressed" description="Assemble all jars" />
+
 	<target name="package.init" depends="init" description="Initialisation of directories etc. for packaging build">
-		<property name="dir.package" value="${dir.build}/package"/>
-		<echo level="info" message ="Initialising package area ${dir.package}"/>
-		<property name="dir.package.lib" value="${dir.package}/lib"/>		
-		<property name="dir.package.lib.3rdparty" value="${dir.package.lib}/3rdparty"/>
-		<property name="dir.package.example" value="${dir.package}/example"/>
-		<property name="dir.package.faq" value="${dir.package}"/>
-		<property name="dir.package.sql" value="${dir.package}/sql"/>
-		<property name="dir.package.javadocs" value="${dir.package}/javadocs"/>
-		<property name="dir.package.licences" value="${dir.package}/licences"/>
-		<mkdir dir="${dir.package.lib}"/>
-		<mkdir dir="${dir.package.lib.3rdparty}"/>
-		<mkdir dir="${dir.package.example}"/>
-		<mkdir dir="${dir.package.sql}"/>
-		<mkdir dir="${dir.package.javadocs}"/>	
-		<mkdir dir="${dir.package.licences}"/>	
+		<property name="dir.package" value="${dir.build}/package" />
+		<echo level="info" message="Initialising package area ${dir.package}" />
+		<property name="dir.package.lib" value="${dir.package}/lib" />
+		<property name="dir.package.lib.3rdparty" value="${dir.package.lib}/3rdparty" />
+		<property name="dir.package.example" value="${dir.package}/example" />
+		<property name="dir.package.faq" value="${dir.package}" />
+		<property name="dir.package.sql" value="${dir.package}/sql" />
+		<property name="dir.package.javadocs" value="${dir.package}/javadocs" />
+		<property name="dir.package.licences" value="${dir.package}/licences" />
+		<mkdir dir="${dir.package.lib}" />
+		<mkdir dir="${dir.package.lib.3rdparty}" />
+		<mkdir dir="${dir.package.example}" />
+		<mkdir dir="${dir.package.sql}" />
+		<mkdir dir="${dir.package.javadocs}" />
+		<mkdir dir="${dir.package.licences}" />
 	</target>
 
 	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate" description="Create openadaptor package">
-		<echo level="info" message ="creating package in ${dir.package}"/>
-	
-		<echo level="info" message ="Copying openadaptor jars from ${dir.build.lib}"/>
+		<echo level="info" message="creating package in ${dir.package}" />
+
+		<echo level="info" message="Copying openadaptor jars from ${dir.build.lib}" />
 		<copy todir="${dir.package.lib}">
-	    <fileset dir="${dir.build.lib}" includes="*.jar,*.zip"/>
-	  </copy>
-		
-	  <echo level="info" message ="Copying 3rd party jars from ${dir.lib},${dir.spring.lib}"/>
-	  <copy todir="${dir.package.lib.3rdparty}">
-	    <fileset dir="${dir.lib}" includes="*.jar,*.zip"/>
-	    <fileset dir="${dir.spring.lib}" includes="*.jar,*.zip"/>
-	  </copy>
-		
-		<echo level="info" message ="Copying log4j.properties"/>
-    <copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties"/>
-		
-	  <echo level="info" message ="Copying javadocs from ${dir.build.javadocs}"/>
-    <copy todir="${dir.package.javadocs}">
-	    <fileset dir="${dir.build.javadocs}"/>
-	  </copy>
+			<fileset dir="${dir.build.lib}" includes="*.jar,*.zip" />
+		</copy>
 
-		<echo level="info" message ="Copying Release Notes ${basedir}/ReleaseNotes.txt"/>
-    <copy todir="${dir.package}" file="${basedir}/ReleaseNotes.txt"/>
+		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib}" />
+		<copy todir="${dir.package.lib.3rdparty}">
+			<fileset dir="${dir.lib}" includes="*.jar,*.zip" />
+			<fileset dir="${dir.spring.lib}" includes="*.jar,*.zip" />
+		</copy>
 
-		<echo level="info" message ="Copying Licence file ${licence.file}"/>
-    <copy todir="${dir.package}" file="${licence.file}"/>
+		<echo level="info" message="Copying log4j.properties" />
+		<copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties" />
 
-		<echo level="info" message="Copying Examples from ${dir.example}"/>
-    <copy todir="${dir.package.example}">
-      <fileset dir="${dir.example}"/>
-    </copy>
-		<echo level="info" message="Copying example log4j.propertes to ${dir.package.example}/tutorial"/>
-    <copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties"/>
+		<echo level="info" message="Copying javadocs from ${dir.build.javadocs}" />
+		<copy todir="${dir.package.javadocs}">
+			<fileset dir="${dir.build.javadocs}" />
+		</copy>
+
+		<echo level="info" message="Copying Release Notes ${basedir}/ReleaseNotes.txt" />
+		<copy todir="${dir.package}" file="${basedir}/ReleaseNotes.txt" />
+
+		<echo level="info" message="Copying Licence file ${licence.file}" />
+		<copy todir="${dir.package}" file="${licence.file}" />
+
+		<echo level="info" message="Copying Examples from ${dir.example}" />
+		<copy todir="${dir.package.example}">
+			<fileset dir="${dir.example}" />
+		</copy>
+		<echo level="info" message="Copying example log4j.propertes to ${dir.package.example}/tutorial" />
+		<copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties" />
 
 
-		<echo level="info" message="Copying FAQ from ${dir.faq}"/>
-    <copy todir="${dir.package.faq}">
-      <fileset dir="${dir.faq}" includes="FAQ.html"/>
-    </copy>
+		<echo level="info" message="Copying FAQ from ${dir.faq}" />
+		<copy todir="${dir.package.faq}">
+			<fileset dir="${dir.faq}" includes="FAQ.html" />
+		</copy>
 
-		<echo level="info" message="Copying SQL from ${dir.sql}"/>
-    <copy todir="${dir.package.sql}">
-      <fileset dir="${dir.sql}"/>
-    </copy>
+		<echo level="info" message="Copying SQL from ${dir.sql}" />
+		<copy todir="${dir.package.sql}">
+			<fileset dir="${dir.sql}" />
+		</copy>
 	</target>
 
-  <target name="zip" depends="package" description="Create a zip file with packaged build">
-    <property name="oa.zip.prefix" value="openadaptor-${tag}"/>
-  	<property name="oa.zip.file" value="${dir.build}/${oa.zip.prefix}-bin.zip"/>
-  	<echo level="info" message="Creating zip file: ${dir.package} -> ${oa.zip.file} "/>
-    <zip destfile="${oa.zip.file}">
-      <zipfileset dir="${dir.package}" prefix="${oa.zip.prefix}"/>
-    </zip>
-  </target>
+	<target name="zip" depends="package" description="Create a zip file with packaged build">
+		<property name="oa.zip.prefix" value="openadaptor-${tag}" />
+		<property name="oa.zip.file" value="${dir.build}/${oa.zip.prefix}-bin.zip" />
+		<echo level="info" message="Creating zip file: ${dir.package} -> ${oa.zip.file} " />
+		<zip destfile="${oa.zip.file}">
+			<zipfileset dir="${dir.package}" prefix="${oa.zip.prefix}" />
+		</zip>
+	</target>
 
 	<!-- Clean tasks -->
 	<target name="clean.package" depends="package.init" description="Clean package area ${dir.package}">
-	  <delete dir="${dir.package}"/>
-	</target>	
-		
-	<target name="clean.build" depends="init" description="Clean build area ${dir.build}">
-    <delete dir="${dir.build}"/>
+		<delete dir="${dir.package}" />
 	</target>
-	
+
+	<target name="clean.build" depends="init" description="Clean build area ${dir.build}">
+		<delete dir="${dir.build}" />
+	</target>
+
 	<target name="clean.build.test" depends="init" description="Clean build area ${dir.build.test}">
-    <delete dir="${dir.build.test}"/>
+		<delete dir="${dir.build.test}" />
 	</target>
 
 	<target name="clean.build.example" depends="init" description="Clean build example area ${dir.build.example}}">
-    <delete dir="${dir.build.example}"/>
+		<delete dir="${dir.build.example}" />
 	</target>
 
-	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas"/>
+	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
-	<!-- Cruise tasks for use by continuous builds -->	
-	<target name="cruise" depends="clean,zip" description="Cruise target for openadaptor build"/>
+	<!-- Cruise tasks for use by continuous builds -->
+	<target name="cruise" depends="clean,zip" description="Cruise target for openadaptor build" />
 </project>
