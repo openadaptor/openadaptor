@@ -20,6 +20,15 @@
 	<property name="suppress.javadoc" value="set"/>
 	-->
 	
+	<echo level="warning" message="$tag and $examples.relative.basename needed only for doc generations - investigate"/>
+  <property name="tag" value="trunk"/>
+  <condition property="examples.relative.basename" value="tags/${tag}">
+    <not>
+      <equals arg1="${tag}" arg2="trunk"/>
+    </not>
+  </condition>
+	<property name="examples.relative.basename" value="${tag}" />
+
 	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties"/>
   <property file="${basedir}/checkout.properties"/>
 	
@@ -311,7 +320,7 @@
 	<!-- Automatic Example documentation creation -->
   <target name="example.doc" depends="init">
   	<mkdir dir="${dir.build.example}"/>
-    <ant antfile="build_docs.xml" dir="${dir.example}/tools" target="docs">
+    <ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
       <property name="filecomment.path.pattern1" value="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
       <property name="filecomment.path.pattern2" value="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
     </ant>
