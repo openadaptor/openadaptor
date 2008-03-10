@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id:$
+  $HeadURL:$
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This (contrived) adaptor does the following...
+    
+    * reads lines from multiple input files
+    * converts delmited input into a maps
+    * converts maps to xml
+    * writes to stdout
+    
+  This example is designed to illustrate the basic structure of an adaptor router configuration which
+  fans in from several data sources (ReadConnectors) to a single output stage.
+  
+  This example illustrates the linkage between components using a processMap within Router. 
+ 
+  It may be run as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config fanin.xml
+    
+  The classpath should include the following
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>This is the bean that actually gets run.</description>
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <description>
+       The adaptor delegates it's message processing to a router. 
+       The router uses this mapping to define the "processing pipeline".
+    </description>
+    <property name="processMap">
+      <map>
+        <entry key-ref="ReaderA" value-ref="MapConverter"/>        
+        <entry key-ref="ReaderB" value-ref="MapConverter"/>        
+        <entry key-ref="ReaderC" value-ref="MapConverter"/>
+        <entry key-ref="MapConverter" value-ref="Writer"/>
+        <entry key-ref="XmlConverter" value-ref="Writer"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="ReaderA" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+ 		<property name="filename" value="input/inputA.csv" />
+  </bean>
+
+  <bean id="ReaderB" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+ 		<property name="filename" value="input/inputB.csv" />
+  </bean>
+
+  <bean id="ReaderC" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/inputC.csv" />
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>This is a processor that converts delimited strings into an ordered map.</description>
+    <property name="fieldNames">
+      <list>
+        <value>Source</value>
+        <value>Number</value>
+        <value>Text</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>This is a processor that converts an ordered map into an xml string.</description>
+    <property name="rootElementTag" value="record"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that outputs the data to a stream (stdout).</description>
+    <property name="filename" value="output/output.xml" />
+  </bean>
+  
+</beans>

@@ -70,7 +70,7 @@
 	<!-- Where to find XSL Transforms, Schemas, DTDs -->
 
 	<!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
-	<patternset id="example.xml.config.files">
+	<patternset id="xexample.xml.config.files">
 		<include name="spring/**/*.xml" />
 		<include name="tutorial/**/*.xml" />
 		<exclude name="**/input/*.xml" />
@@ -80,7 +80,7 @@
 	</patternset>
 
 	<echo level="warning" message=" *** EXAMPLES LIST FORESHORTENED FOR DEBUGGING - fix in docs.xml ***" />
-	<patternset id="xexample.xml.config.files">
+	<patternset id="example.xml.config.files">
 		<include name="spring/adaptor/autoconfigure.xml" />
 	</patternset>
 
@@ -158,7 +158,7 @@
 		<!-- Windows, Unix/Linux, Mac binaries and source code: http://www.graphviz.org/Download.php -->
 		<mapper id="outImage" type="glob" from="*.dot" to="${build.examples.images.dir}/*.${graphviz.image.fileextension}" />
 
-		<echo level="info" message="Using ${graphviz.dot} to images (*.${graphviz.image.fileextension})" />
+		<echo level="info" message="Using ${graphviz.dot} to generate images (*.${graphviz.image.fileextension})" />
 		<apply executable="${graphviz.dot}" dest="${build.examples.images.dir}" failifexecutionfails="false">
 			<arg value="-T${graphviz.image.fileextension}" />
 			<srcfile />
