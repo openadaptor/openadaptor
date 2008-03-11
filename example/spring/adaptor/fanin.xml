@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,14 +10,15 @@
   This (contrived) adaptor does the following...
     
     * reads lines from multiple input files
-    * converts delmited input into a maps
-    * converts maps to xml
+    * converts delmited input into maps
     * writes to stdout
     
   This example is designed to illustrate the basic structure of an adaptor router configuration which
   fans in from several data sources (ReadConnectors) to a single output stage.
   
-  This example illustrates the linkage between components using a processMap within Router. 
+  This example illustrates the linkage between components using a processMap within Router.
+  
+  Note that the order of input from the various sources is not defined.  
  
   It may be run as follows:
     
@@ -48,7 +49,6 @@
         <entry key-ref="ReaderB" value-ref="MapConverter"/>        
         <entry key-ref="ReaderC" value-ref="MapConverter"/>
         <entry key-ref="MapConverter" value-ref="Writer"/>
-        <entry key-ref="XmlConverter" value-ref="Writer"/>
       </map>
     </property>
   </bean>
@@ -75,15 +75,9 @@
       </list>
     </property>
   </bean>
-  
-  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
-    <description>This is a processor that converts an ordered map into an xml string.</description>
-    <property name="rootElementTag" value="record"/>
-  </bean>
-  
+    
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
     <description>This is a write connector that outputs the data to a stream (stdout).</description>
-    <property name="filename" value="output/output.xml" />
   </bean>
   
 </beans>
