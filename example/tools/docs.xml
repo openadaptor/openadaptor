@@ -207,13 +207,9 @@
 			<param name="filepathGlobPrefix4" expression="${filecomment.path.pattern4}" />
 			<param name="showJavaDocLinks" expression="true" />
 			<param name="showConfigIndexLinks" expression="true" />
+			<param name="docgenInputDir" expression="${docgen.output.dir}/"/>
 			<!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
 			<!-- <param name="javaDocPath" expression="https://myserver.mydomain/javadocs/" /> -->
-
-			<!-- BEGIN Eddys Additions -->
-			<param name="docgenInputDir" expression="${docgen.output.dir}/"/>
-			<!-- ENDEddys Additions -->
-			
 			
 			<xmlcatalog refid="oa3XmlCatalog" />
 			<mapper type="glob" from="*.xml" to="*.html" />
@@ -315,11 +311,7 @@
 		</xslt>
 
 		<!-- Tidy up temporary XML file used for index generation -->
-		<echo message="TEMPORARILY disabling deletion of ${dir.output}/cookbook_combined.xml"/>
-		<!--
-		<delete file="${dir.output}/cookbook_combined.xml" />
-      -->
-		
+		<delete file="${dir.output}/cookbook_combined.xml" />		
 		<!-- Clean up the generated map files at this point -->
 		<delete>
 			<fileset dir="${dir.output.images}" includes="**/*.map" />
