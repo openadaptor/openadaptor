@@ -369,7 +369,7 @@
 
   <!-- Lets put the example doc generation here -->
   <target name="example.doc" depends="clean.example">
-    <ant antfile="docs.xml" dir="${basedir}/example/tools" target="docs">
+    <ant antfile="docs_old.xml" dir="${basedir}/example/tools" target="docs">
       <property name="filecomment.path.pattern1" value="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
       <property name="filecomment.path.pattern2" value="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/"/>
     </ant>

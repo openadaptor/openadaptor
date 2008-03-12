@@ -50,6 +50,7 @@
 
   <xsl:param name="oaVersion" />
   <xsl:param name="imageFileExtension" />
+  <xsl:param name="docgenInputDir" select="'../../docs/'"/>
 
   <xsl:template match="/cookbook">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
@@ -116,7 +117,7 @@
                 <tr bgcolor="#FFFFFF">
                   <td>
                     <img src="{$idAsRelativePath}.{$imageFileExtension}" usemap="#Map_{translate(@id, '-', '_')}" alt="" />
-                    <xsl:copy-of select="document(concat('../../docs/',$idAsRelativePath,'.localmap'))" />
+                    <xsl:copy-of select="document(concat($docgenInputDir,$idAsRelativePath,'.localmap'))" />
                   </td>
                 </tr>
                 <!-- Cookbook example description -->

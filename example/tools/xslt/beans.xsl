@@ -54,7 +54,9 @@
 <xsl:param name="filepathGlobPrefix2" select="'HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/'"/>
 <xsl:param name="filepathGlobPrefix3" select="'some value1 defined specifically for your build environment'"/>
 <xsl:param name="filepathGlobPrefix4" select="'some value2 defined specifically for your build environment'"/>
+<!-- Replaced by docgenInputDir
 <xsl:param name="docsRelativeToTools" select="'../../docs/'"/>
+-->
 <xsl:param name="xmlRelative" select="'../'"/>
 
 <xsl:param name="showJavaDocLinks" select="'true'"/>
@@ -62,6 +64,10 @@
 <xsl:param name="showOverviewLinks" select="'false'"/>
 <!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
 <xsl:param name="javaDocPath" select="'../../javadocs/'"/>
+
+<!-- BEGIN Eddys Additions -->
+<xsl:param name="docgenInputDir" select="'../../docs/'"/>
+<!-- END Eddys Additions -->
 
 
 <xsl:template match="/">
@@ -135,7 +141,7 @@
     <p></p>
 
     <img src="{$baseRelativeDotDot}{$thisExample}.{$imageFileExtension}" usemap="#Map_{translate(translate($thisExample,'/','_'),'-','_')}" alt=""/>
-    <xsl:copy-of select="document(concat($docsRelativeToTools,$thisExample,'.map'))"/>
+    <xsl:copy-of select="document(concat($docgenInputDir,$thisExample,'.map'))"/>
 
     <xsl:apply-templates select="/beans:beans">
       <xsl:with-param name="baseRelativeDotDot" select="$baseRelativeDotDot" />
