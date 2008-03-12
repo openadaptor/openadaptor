@@ -13,6 +13,7 @@
 
 	<!-- If set, the src.jar jarfile will not be created -->
 	<property name="suppress.src.jar" value="set" />
+		
 	<!-- If set, tests will not be executed
 	<property name="suppress.tests" value="set"/>
 	-->
@@ -89,11 +90,14 @@
 			<fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip" />
 			<path refid="classpath" />
 		</path>
-
+	</target>
+	
+	<target name="init.support.tasks" depends="compile.support" description="Prepare custom ant support tasks">
+		<echo level="info" message="Preparing custom ant support tasks"/>
 		<taskdef name="spring.validate" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.build.support.classes}" />
 		<taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}" />
 	</target>
-
+		
 	<target name="init.example.documentation" depends="init" description="Initialisation for automatic documentation generation">
 		<echo level="warning" message="$examples.relative.basename only needed for doc generations - investigate" />
     <!-- if tag is not 'trunk' set relative path to 'tags/<tagname>' instead of just 'trunk' -->
@@ -277,7 +281,7 @@
 	</target>
 
 	<!-- Spring Example validations -->
-	<target name="test.spring.examples" depends="test.all" description="Validate Spring example configurations">
+	<target name="test.spring.examples" depends="test.all,init.support.tasks" description="Validate Spring example configurations">
 		<echo level="info" message="Validating Spring examples in ${dir.example}" />
 		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
 			<fileset dir="${dir.example}/spring">
@@ -309,26 +313,19 @@
 	</target>
 
 	<!-- Automatic Example documentation creation -->
-	<target name="example.doc" depends="init.example.documentation">
+	<target name="example.doc" depends="init">
 		<mkdir dir="${dir.build.example}" />
-		<ant antfile="docs_wip.xml" dir="${dir.example}/tools" target="docs">
+		<mkdir dir="${dir.build.example}/docs"/>
+		<ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
 			<property name="docgen.bin" value="${dir.example}/tools"/>
 			<property name="docgen.tag" value="$tag"/>
 			<property name="docgen.input.dir" value="${dir.example}"/>
-			<property name="docgen.output.dir" value="${dir.example}/docs"/>
-			<!--
-			<property name="docgen.output.dir" value="$dir.build.example"/>
-			-->
+			<property name="docgen.output.dir" value="${dir.build.example}/docs"/>
 		</ant>
 	</target>
 
-	<target name="example.doc.suppressed" description="Warns of suppressed exacmple documentation generation" if="suppress.example.doc">
-		<echo message="*** Example documentation generationhas been suppressed (suppress.example.doc is set) ***" />
-	</target>
-
-
 	<!-- Packaging tasks -->
-	<target name="copyright.validate" depends="init" description="checks copyright notices in code">
+	<target name="copyright.validate" depends="init,init.support.tasks" description="checks copyright notices in code">
 		<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}" />
 		<echo level="info" message="Automatic fix flag value: ${copyright.auto_fix}" />
 		<copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
@@ -490,8 +487,8 @@
 		<mkdir dir="${dir.package.javadocs}" />
 		<mkdir dir="${dir.package.licences}" />
 	</target>
-
-	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate" description="Create openadaptor package">
+	
+	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate,example.doc" description="Create openadaptor package">
 		<echo level="info" message="creating package in ${dir.package}" />
 
 		<echo level="info" message="Copying openadaptor jars from ${dir.build.lib}" />
@@ -519,9 +516,10 @@
 		<echo level="info" message="Copying Licence file ${licence.file}" />
 		<copy todir="${dir.package}" file="${licence.file}" />
 
-		<echo level="info" message="Copying Examples from ${dir.example}" />
+		<echo level="info" message="Copying Examples from ${dir.example} and ${dir.build.example}" />
 		<copy todir="${dir.package.example}">
 			<fileset dir="${dir.example}" />
+			<fileset dir="${dir.build.example}" />
 		</copy>
 		<echo level="info" message="Copying example log4j.propertes to ${dir.package.example}/tutorial" />
 		<copy todir="${dir.package.example}/tutorial" file="${dir.example}/log4j.properties" />
