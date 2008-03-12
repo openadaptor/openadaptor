@@ -98,19 +98,6 @@
 		<taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}" />
 	</target>
 		
-	<target name="init.example.documentation" depends="init" description="Initialisation for automatic documentation generation">
-		<echo level="warning" message="$examples.relative.basename only needed for doc generations - investigate" />
-    <!-- if tag is not 'trunk' set relative path to 'tags/<tagname>' instead of just 'trunk' -->
-		<condition property="examples.relative.basename" value="tags/${tag}">
-			<not>
-				<equals arg1="${tag}" arg2="trunk" />
-			</not>
-		</condition>
-		<!-- set relative path to tag (only if previous condition hasn't already done so -->
-		<property name="examples.relative.basename" value="${tag}" />
-		<echo level="info" message="Relative path for examples is: ${examples.relative.basename}"/>
-	</target>
-
 	<target name="init.test" depends="init" description="Initialisation for tests">
 		<echo level="info" message="Creating test directories under ${dir.build.test}" />
 		<property name="dir.build.test.classes" value="${dir.build.test}/classes" />
@@ -317,6 +304,7 @@
 		<mkdir dir="${dir.build.example}" />
 		<mkdir dir="${dir.build.example}/docs"/>
 		<ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
+			<property name="docgen.project.name" value="${ant.project.name}"/>
 			<property name="docgen.bin" value="${dir.example}/tools"/>
 			<property name="docgen.tag" value="$tag"/>
 			<property name="docgen.input.dir" value="${dir.example}"/>

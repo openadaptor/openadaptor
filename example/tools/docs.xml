@@ -61,6 +61,11 @@
 		<property name="filecomment.path.pattern3" value="this pattern will not be found" />
 		<property name="filecomment.path.pattern4" value="this pattern will not be found" />
 
+		<!-- old version information - didn't work as oa3 version stuff wasn't set afaik 
+  	<property name="oaVersion" value="${docgen.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+		-->
+		<property name="oaVersion" value="${docgen.project.name} ${tag} ${DSTAMP}:${TSTAMP}" />
+
 		<echo level="info" message="Input from: ${dir.input}" />
 		<echo level="info" message=" Output to: ${dir.output}" />
 		<echo level="info" message=" Images to: ${dir.output.images}" />
@@ -137,7 +142,7 @@
 		<!-- Generate GraphViz dot notation file using XSLT for each cookbook example -->
 		<xslt basedir="${dir.input}" destdir="${dir.output.images}" style="${dir.xsl}/oa3toDot.xsl">
 			<patternset refid="example.xml.config.files" />
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
 			<!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
 			<!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
@@ -191,7 +196,7 @@
 		<xslt basedir="${dir.input}" destdir="${dir.output}" style="${dir.xsl}/beans.xsl">
 			<patternset refid="example.xml.config.files" />
 
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
 			<!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
 			<!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
@@ -276,7 +281,7 @@
 		<!-- Generate html page using XSLT: mapping cookbook examples to beans -->
 		<xslt basedir="${dir.output}" destdir="${dir.output}" includes="cookbook_combined.xml" 
 			style="${dir.xsl}/cookbook2beans.xsl">
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<xmlcatalog refid="oa3XmlCatalog" />
 			<mapper type="glob" from="cookbook_combined.xml" to="config2beans.html" />
 		</xslt>
@@ -284,7 +289,7 @@
 		<!-- Generate html page using XSLT: mapping beans to cookbook examples -->
 		<xslt basedir="${dir.output}" destdir="${dir.output}" includes="cookbook_combined.xml" 
 			style="${dir.xsl}/beans2cookbook.xsl">
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<xmlcatalog refid="oa3XmlCatalog" />
 			<mapper type="glob" from="cookbook_combined.xml" to="beans2config.html" />
 		</xslt>
@@ -292,7 +297,7 @@
 		<!-- Generate html image page using XSLT: containing node maps for all cookbook examples -->
 		<xslt basedir="${dir.output}" destdir="${dir.output.images}" includes="cookbook_combined.xml" 
 			style="${dir.xsl}/allnodemaps.xsl">
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<param name="imageFileExtension" expression="${graphviz.image.fileextension}" />
 			<!-- BEGIN Eddys Additions -->
 			<param name="docgenInputDir" expression="${docgen.output.dir}/"/>
@@ -304,7 +309,7 @@
 		<!-- Generate main index.html page using XSLT: containing summary of cookbook information -->
 		<xslt basedir="${dir.output}" destdir="${dir.output}" includes="cookbook_combined.xml" 
 			style="${dir.xsl}/index.xsl">
-			<param name="oaVersion" expression="${ant.project.name} version ${oa3.version.major} ${oa3.version.minor} build ${build.number}" />
+			<param name="oaVersion" expression="${oaVersion}" />
 			<xmlcatalog refid="oa3XmlCatalog" />
 			<mapper type="glob" from="cookbook_combined.xml" to="index.html" />
 		</xslt>
