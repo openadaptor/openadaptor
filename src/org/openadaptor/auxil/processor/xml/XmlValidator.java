@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.processor.xml;
 
@@ -121,6 +121,9 @@ public class XmlValidator extends Component implements IDataProcessor {
     }
 
     try {
+      if (log.isDebugEnabled()) {
+        log.debug("Data to be validated: "+data);
+      }
       in.setCharacterStream(new StringReader((String)data));
       parser.parse(in);
     } catch (Exception e) {
@@ -136,7 +139,7 @@ public class XmlValidator extends Component implements IDataProcessor {
    * implementation. Defult behaviour should be a no-op.
    */
   public void validate(List exceptions) {
-    
+
     if (forcingURLValidation) {
       try {
         URLUtils.validateURLAsDataSource(schemaURL);
