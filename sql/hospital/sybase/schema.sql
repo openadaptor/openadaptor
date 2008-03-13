@@ -18,10 +18,11 @@ go
 create table ERROR_LOG
 (
   ID          int  	identity 		NOT NULL,
-  TIMESTAMP     	varchar(20) 	NOT NULL,
+  TIMESTAMP     	varchar(30) 	NOT NULL,
   EXCEPTION_CLASS_NAME  varchar(255) NOT NULL,
+  ADAPTOR_NAME          varchar(255) NULL,
   ORIGINATING_COMPONENT varchar(255) NULL,
-  DATA     	        varchar(255) 	NULL,
+  DATA     	        varchar(2000) 	NULL,
   FIXED    	        varchar(20)  	NULL,
   REPROCESSED      	varchar(20) 	NULL
 )
