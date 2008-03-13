@@ -62,7 +62,9 @@ Miscellaneous
  * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
  
  * Moved licence file licence.txt to top level
-
+ 
+ * Added "ADAPTOR_NAME" column to Sybase Hospital schema
+   
 =================================================
 openadaptor3 production 3.4 Release Notes
 
