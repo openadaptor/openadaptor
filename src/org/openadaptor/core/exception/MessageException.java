@@ -34,7 +34,7 @@ import org.openadaptor.core.Response;
  * Used in {@link Response}, RuntimeExceptions thrown from calls to {@link IDataProcessor#process(Object)}
  * are wrapped in this class with the argument to the call.
  * 
- * @author perryj
+ * @author perryj, Kris Lachor
  *
  */
 public class MessageException extends Throwable {
@@ -43,7 +43,12 @@ public class MessageException extends Throwable {
 	private Object data;
 	private Exception exception;
     private String originatingModule;
+    
+    private String adaptorName;
 
+    /**
+     * Constructor.
+     */
     public MessageException(final Object data, final Exception exception, 
           final String originatingModule) {
 		this.data = data;
@@ -65,5 +70,13 @@ public class MessageException extends Throwable {
     
     public String getOriginatingModule() {
       return originatingModule;
+    }
+
+    public String getAdaptorName() {
+      return adaptorName;
+    }
+
+    public void setAdaptorName(String adaptorName) {
+      this.adaptorName = adaptorName;
     }
 }

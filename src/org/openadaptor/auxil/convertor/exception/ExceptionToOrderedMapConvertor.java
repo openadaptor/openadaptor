@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractConvertor;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.exception.MessageException;
 
 /**
@@ -46,6 +47,9 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
+  /* Optional property allowing to retrieve an adaptor's name */
+  private IComponent adaptor;
+  
   /* 
    * Default ordered map field names. Ideally, these should correspond to column names
    * in the database - public setters allow for overriding the defaults.
@@ -54,6 +58,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   static final String TIMESTAMP = "TIMESTAMP";
   
   static final String EXCEPTION_CLASS = "EXCEPTION_CLASS_NAME";
+  
+  static final String ADAPTOR_NAME = "ADAPTOR_NAME";
   
   static final String COMPONENT = "ORIGINATING_COMPONENT";
   
@@ -69,6 +75,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String timestampColName = TIMESTAMP;
   
   private String exceptionClassColName = EXCEPTION_CLASS;
+  
+  private String adaptorColName = ADAPTOR_NAME;
   
   private String componentColName = COMPONENT;
   
@@ -114,6 +122,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       IOrderedMap map = new OrderedHashMap();
       map.put(timestampColName, timestampFormat.format(new java.util.Date()));
       map.put(exceptionClassColName, messageException.getException().getClass().getName());
+      String adaptorName = null==adaptor ? "Unknown" : adaptor.getId();
+      map.put(adaptorColName, adaptorName);
       String component = messageException.getOriginatingModule();
       map.put(componentColName, null==component ? "Unknown" : component);
       map.put(dataColName, messageException.getData());
@@ -178,6 +188,15 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    */
   public void setTimestampColName(String timestampColName) {
     this.timestampColName = timestampColName;
+  }
+
+  /**
+   * Optional property that allows to retrieve the name of the adaptor. 
+   * 
+   * @param adaptor
+   */
+  public void setAdaptor(IComponent adaptor) {
+    this.adaptor = adaptor;
   }
 
 }
