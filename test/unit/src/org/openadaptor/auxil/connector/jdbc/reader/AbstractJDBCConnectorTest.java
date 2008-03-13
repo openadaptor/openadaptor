@@ -74,12 +74,14 @@ public abstract class AbstractJDBCConnectorTest extends MockObjectTestCase {
   
   /* Inner mock of {@link JDBCConnection} */
   class MockJDBCConnection extends JDBCConnection {
-    
+    private boolean connected=false;
     public MockJDBCConnection() {
       super();
       setConnection((java.sql.Connection) mockSqlConnection.proxy());
     }
 
-    public void connect() throws SQLException {}
+    public void connect() throws SQLException { connected=true;}
+    public void disconnect() throws SQLException {super.disconnect();connected=false;}
+    public boolean isConnected() {return connected;}
   }
 }

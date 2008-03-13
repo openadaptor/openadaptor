@@ -442,7 +442,7 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     mockSqlConnection.expects(once()).method("prepareCall").will(returnValue(mockStatement.proxy()));
     
     /* 'Plain' statement for the underlying connector */
-    mockSqlConnection.expects(once()).method("createStatement");
+    //mockSqlConnection.expects(once()).method("createStatement");
     
     mockStatement.expects(once()).method("registerOutParameter").with(eq(1), eq(java.sql.Types.INTEGER));
     mockStatement.expects(once()).method("setInt").with(eq(2), eq(10));

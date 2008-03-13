@@ -183,6 +183,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     log.info("Connector: [" + getId() + "] successfully connected.");
   }
 
+  //ToDo: This should be refactored to be shared common code with 
+  //      JDBCReadConnector.
+
   private void executePrePostambleSQL(String sql, Connection connection) {
     try {
       PreparedStatement ps=connection.prepareStatement(sql);

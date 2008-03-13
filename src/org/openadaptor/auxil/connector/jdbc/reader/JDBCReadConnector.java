@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.jdbc.reader;
 
@@ -63,35 +63,38 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
-  
+
   private static final Log log = LogFactory.getLog(JDBCReadConnector.class.getName());
 
   private static AbstractResultSetConverter DEFAULT_CONVERTER = new ResultSetToOrderedMapConverter();
- 
+
   private static final String DEFAULT_PARAMETER_PLACEHOLDER = "?";
-  
+
   private JDBCConnection jdbcConnection;
-  
+
   private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
-  
+
   protected String sql;
-  
+
+  private String preambleSQL=null;
+  private String postambleSQL=null;
+
   /* Internal state. Derived from <code>sql</code> by replacing paramter placeholders with concrete values*/
   protected String postSubstitutionSql;
-  
+
   /* Internal state */
   private boolean enrichmentMode = false;
-  
+
   protected Statement statement = null;
-  
+
   protected CallableStatement callableStatement = null;
-  
+
   protected ResultSet rs = null;
-  
+
   protected ResultSetMetaData rsmd = null;
-  
+
   protected boolean dry = false;
-  
+
   protected int batchSize = IResultSetConverter.CONVERT_ONE;
 
   /**
@@ -100,7 +103,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   public JDBCReadConnector() {
     super();
   }
-  
+
   /**
    * Constructor.
    * 
@@ -118,7 +121,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   public void setSql(final String sql) { 
     this.sql = sql;
   }
-  
+
   /**
    * Sets a prepared or callable (ready to execute) statement on this connector.
    * 
@@ -128,33 +131,91 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     this.callableStatement = callableStatement;
   }
 
-  
+  /**
+   * Optional SQL to be executed before connector processes messages.
+   * @param sql SQL statement
+   */
+  public void setPreambleSQL(String sql) {
+    this.preambleSQL=sql;
+  }
+
+  /**
+   * Optional SQL to be executed before connector disconnects.
+   * @param sql SQL statement
+   */
+  public void setPostambleSQL(String sql) {
+    this.postambleSQL=sql;
+  }
+
+
   /**
    * Set up connection to database
    */
   public void connect() {
-    try {
-      jdbcConnection.connect();
-      statement =  jdbcConnection.getConnection().createStatement();
-    } catch (SQLException e) {
-      handleException(e, "failed to create JDBC statement");
+    log.debug("Connector: [" + getId() + "] connecting ....");
+    Connection connection=null;
+    if (!jdbcConnection.isConnected()) {
+      try {
+        jdbcConnection.connect();
+        connection=jdbcConnection.getConnection();
+        statement =  connection.createStatement();
+      } catch (SQLException e) {
+        handleException(e, "failed to create JDBC statement");
+      }
+      if (preambleSQL!=null) {
+        log.info("Executing preamble SQL: "+preambleSQL);
+        executePrePostambleSQL(preambleSQL, connection);
+      }    
     }
-    dry = false;
+    else {
+      log.info("JDBConnection "+jdbcConnection+" is already connected. Not reconnecting");
+    }
+    dry = false; 
+ }
+
+  //ToDo: This should be refactored to be shared common code with 
+  //      JDBCWriteConnector.
+  private void executePrePostambleSQL(String sql, Connection connection) {
+    try {
+      PreparedStatement ps=connection.prepareStatement(sql);
+      ps.execute();
+      ps.close();
+    } catch (SQLException e) {
+      jdbcConnection.handleException(e, "Failed to execute sql: "+sql);
+    }
   }
-  
+
   /**
    * Disconnect JDBC connection
    *
    * @throws ConnectionException
    */
   public void disconnect() throws ConnectionException {
-    JDBCUtil.closeNoThrow(statement);
+    log.debug("Connector: [" + getId() + "] disconnecting ....");
+  
+    if ( jdbcConnection == null  || (!jdbcConnection.isConnected())) {
+      log.info("Connection already closed/disconnected");
+      if (postambleSQL!=null) {
+        log.warn("Unable to execute postambleSLQ - connection is not available");
+      }
+      return;
+    }  
+
+   JDBCUtil.closeNoThrow(statement);
+ 
+   //Execute postamble sql if it exists...
+   if (postambleSQL!=null) {
+     log.info("Executing postamble SQL: "+postambleSQL);
+     executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
+   }
+  
     try {
       jdbcConnection.disconnect();
     } catch (SQLException e) {
       handleException(e, "Failed to disconnect JDBC connection");
     }
-  }
+    log.info("Connector: [" + getId() + "] disconnected");
+ }
 
   /**
    * Inpoint has no more data
@@ -191,7 +252,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
         }
       }
       Object [] data = null;
-      
+
       /* 
        * Converts certain number of records from the result set, depending on batchSize value.
        * If the result set had fewer records than expected, closes the result set and turns 
@@ -204,7 +265,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
         rs = null;
         dry = true;
       }
-        
+
       return data;
     }
     catch (SQLException e) {
@@ -212,8 +273,8 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     }
     return new Object[0];
   }
-  
-  
+
+
   /**
    * Sets input parameters on the SQL query with parameter placeholders.
    * Then calls #next(long).
@@ -234,7 +295,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     }
     return next(timeout);
   }
-  
+
   /**
    * Replaces parameters placeholders in <code>sql</code>, with concrete values
    * from <code>inputParameters</code>. 
@@ -268,7 +329,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    */
   private CallableStatement convertEventToStatement(IOrderedMap row) throws SQLException {
     int cols=row.size();
-    
+
     /* create statement string */
     StringBuffer buffer = new StringBuffer();
     buffer.append("{ call ").append(row.get(EVENT_RS_STORED_PROC)).append(" (");   
@@ -276,10 +337,10 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       buffer.append(i > EVENT_RS_PARAM1 ? ",?" : "?");
     }
     String sql = buffer.append(")}").toString();
-    
+
     /* create a callable statement and set 'in' parameters */
     CallableStatement callableStatement = jdbcConnection.getConnection().prepareCall(sql);
-    
+
     String loggedSql = sql;
     for (int i = EVENT_RS_PARAM1; i < cols; i++) {
       String stringVal= (String)((row.get(i)==null)? null: row.get(i));      
@@ -289,7 +350,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       }
     }
     if (log.isDebugEnabled()) {
-       log.debug("Event sql statement = " + loggedSql);
+      log.debug("Event sql statement = " + loggedSql);
     }  
     return callableStatement;    
   }
@@ -319,7 +380,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     }
     setCallableStatement(callableStatement); 
   }
-  
+
   /**
    * @see IReadConnector#getReaderContext()
    * @return null
@@ -339,7 +400,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   public void setBatchSize(int batchSize) {
     this.batchSize = batchSize;
   }
-  
+
   /**
    * Sets the jdbc connection.
    * 
@@ -352,7 +413,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   public void setResultSetConverter(AbstractResultSetConverter resultSetConverter) {
     this.resultSetConverter = resultSetConverter;
   }
-  
+
   protected void handleException(SQLException e, String message) {
     jdbcConnection.handleException(e, message);
   }
@@ -360,7 +421,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   protected void handleException(SQLException e) {
     jdbcConnection.handleException(e, null);
   }
-  
+
   /**
    * @see ITransactional#getResource()
    * @see JDBCConnection#getTransactionalResource()
@@ -372,7 +433,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       return null;
     }
   }
-  
+
   /**
    * Checks that the mandatory properties have been set
    * 
@@ -385,7 +446,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     } else {
       jdbcConnection.validate(exceptions);
     }
-    
+
   }
 
 }
