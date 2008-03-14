@@ -34,6 +34,7 @@
     $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tools/xslt/beans.xsl $
 
     @author Andrew Shire
+    @author Eddy Higgins
 
     Autogenerates detailed documentation for an OA3 XML file such as a cookbook example.
     (interprets Spring config with knowledge of key OA3 semantics).

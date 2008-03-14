@@ -70,6 +70,9 @@
 		<property name="dir.build.spring.classes" value="${dir.build}/spring/classes" />
 		<property name="dir.build.javadocs" value="${dir.build}/javadocs" />
 
+		<!-- Base directory for output package -->
+		<property name="dir.package" value="${dir.build}/package" />
+
 		<!-- Directories for tool to support the build (e.g. ant custom tasks) -->
 		<property name="dir.support" value="${basedir}/support" />
 		<property name="dir.support.src" value="${dir.support}/src" />
@@ -458,8 +461,7 @@
 
 	<target name="jars" depends="jars.compiled,jar.depends,src.jar,src.jar.suppressed" description="Assemble all jars" />
 
-	<target name="package.init" depends="init" description="Initialisation of directories etc. for packaging build">
-		<property name="dir.package" value="${dir.build}/package" />
+	<target name="package.init" depends="init,clean.package" description="Initialisation of directories etc. for packaging build">
 		<echo level="info" message="Initialising package area ${dir.package}" />
 		<property name="dir.package.lib" value="${dir.package}/lib" />
 		<property name="dir.package.lib.3rdparty" value="${dir.package.lib}/3rdparty" />
@@ -534,7 +536,7 @@
 	</target>
 
 	<!-- Clean tasks -->
-	<target name="clean.package" depends="package.init" description="Clean package area ${dir.package}">
+	<target name="clean.package" depends="init" description="Clean package area ${dir.package}">
 		<delete dir="${dir.package}" />
 	</target>
 
