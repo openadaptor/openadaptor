@@ -342,6 +342,17 @@
 			<filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml" />
 		</jar>
 
+		<!-- ToDo: Completely rework the bootstrap concept -->
+		<echo level="info" message="Generating ${dir.build.lib}/bootstrap.jar"/>
+    <jar destfile="${dir.build.lib}/bootstrap.jar">
+      <fileset dir="${dir.build.classes}" includes="org/openadaptor/bootstrap/*"/>
+      <fileset dir="${dir.build.spring.classes}" includes="org/openadaptor/bootstrap/*"/>
+      <fileset dir="${dir.lib}" includes="log4j.properties"/>
+      <manifest>
+        <attribute name="Main-Class" value="org.openadaptor.bootstrap.Usage"/>
+      </manifest>
+    </jar>
+
 		<!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
 		<jar destfile="${dir.build.lib}/openadaptor-stub.jar">
 			<fileset dir="${dir.build.stub.classes}" />
