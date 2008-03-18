@@ -137,6 +137,11 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * It will use the configured ISQLWriter delegate to perform the
    * writes.
    *
+   * Access to a JDBC Connection needs to be synchronized, as some JDBC drivers, such 
+   * as Sybase simply interrupt execution of a thread when another thread starts
+   * running a statement on the same connection. Oracle should not need the synchronisation
+   * here as apparently it is already implemented in the JDBC driver.
+   * 
    * @param data Object[] of records to be written.
    *
    * @return null
@@ -144,8 +149,8 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    * @throws OAException just a wrapper around any SQLExceptions that may be thrown
    * or if the jdbcConnection details have not been set
    */
-  public Object deliver(Object[] data) throws OAException {
-    try {
+  public synchronized Object deliver(Object[] data) throws OAException {
+    try {   
       sqlWriter.writeBatch(data);
     } catch (SQLException e) {
       jdbcConnection.handleException(e, null);
