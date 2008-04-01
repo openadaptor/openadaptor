@@ -96,7 +96,7 @@ adding time intervals in between individual calls for data by the underlying
 reader, rather than treating all calls (until source data is exhausted) of the 
 wrapped reader as one call.
 
-The depricated PollingReadConnector has been deleted; all occurences need to be
+The deprecated PollingReadConnector has been deleted; all occurences need to be
 replaced with either LoopingPollingReadConnector or CronnablePollingReadConnector.
 
 |------------------------------------------------------------------------------|
@@ -130,7 +130,7 @@ connect to and retrieve data from external resources.
 
 * GenericEnrichmentProcessor is its generic implementation 
 
-* JNDIEnhancementProcessor has been depricated by GenericEnrichmentProcessor 
+* JNDIEnhancementProcessor has been deprecated by GenericEnrichmentProcessor 
 
 * Spring examples of a db based and file based enrichment processors are 
   in example\spring\processors\enrichment\* 
@@ -140,7 +140,7 @@ connect to and retrieve data from external resources.
 |------------------------------------------------------------------------------|
 |                                |                                             |
 |JNDIEnhancementProcessor        | GenericEnrichmentProcessor                  |  
-|(depricated)                    | (JNDI specific properties from              |
+|(deprecated)                    | (JNDI specific properties from              |
 |                                | JNDIEnhancementProcessor should now be      | 
 |                                | set on JNDIReadConnector)                   |
 |                                |                                             |
@@ -307,7 +307,7 @@ rework:
   * Three implementations of IPollingReadConnector have been implemented: 
     LoopingPollingReadConnector, CronnablePollingReadConnector and 
     DBEventDrivenPollingReadConnector. The first two were based on the legacy 
-    (now depricated) PollingReadConnector. The last was based on 
+    (now deprecated) PollingReadConnector. The last was based on 
     JDBCEventReadConnector.
 
   * JDBCPollConnector has been deleted and its role subsumed by 
