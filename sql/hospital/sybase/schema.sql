@@ -22,7 +22,7 @@ create table ERROR_LOG
   EXCEPTION_CLASS_NAME  varchar(255) NOT NULL,
   ADAPTOR_NAME          varchar(255) NULL,
   ORIGINATING_COMPONENT varchar(255) NULL,
-  DATA     	        varchar(2000) 	NULL,
+  DATA     	        text 	NULL,
   FIXED    	        varchar(20)  	NULL,
   REPROCESSED      	varchar(20) 	NULL
 )
