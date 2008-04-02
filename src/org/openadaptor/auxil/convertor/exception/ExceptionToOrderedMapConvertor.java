@@ -129,6 +129,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       map.put(dataColName, messageException.getData());
       map.put(fixedColName, "false");
       map.put(reprocessedColName, "false");
+      map.put("originatingThreadName", messageException.getOriginatingThreadName());
       return map;       
   }
   

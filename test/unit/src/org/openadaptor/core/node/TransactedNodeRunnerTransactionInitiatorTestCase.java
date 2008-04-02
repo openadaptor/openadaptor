@@ -60,7 +60,7 @@ public class TransactedNodeRunnerTransactionInitiatorTestCase extends AbstractTe
     mockManagedComponent = mock(ILifecycleComponent.class);
     mockMessageProcessor = mock(IMessageProcessor.class);
     ((AbstractNodeRunner)transactionInitiator).setManagedComponent((ILifecycleComponent)mockManagedComponent.proxy());
-    ((AbstractNodeRunner)transactionInitiator).setMessageProcessorDelegate((IMessageProcessor)mockMessageProcessor.proxy());
+    ((AbstractNodeRunner)transactionInitiator).setTarget((IMessageProcessor)mockMessageProcessor.proxy());
   }
 
   /**

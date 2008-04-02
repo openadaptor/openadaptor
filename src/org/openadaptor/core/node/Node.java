@@ -157,7 +157,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 					response.addDiscardedInput(inputs[i]);
 				}
 			} catch (Exception e) {
-				response.addException(new MessageException(inputs[i], e, getId()));
+				response.addException(new MessageException(inputs[i], e, getId(), fetchThreadName()));
 			}
 		}
 			
@@ -204,5 +204,9 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
     }
     return null;
   }
-
+  
+  protected String fetchThreadName() {
+    return Thread.currentThread().getName();
+  }
+  
 }

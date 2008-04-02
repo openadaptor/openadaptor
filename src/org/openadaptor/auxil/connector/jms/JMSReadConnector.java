@@ -56,6 +56,8 @@ import java.util.List;
  * <li><b>durableSubscriptionName</b>   Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
  * <li><b>messageSelector</b>           Not set by default.
  * <li><b>noLocal</b>                   Default is <i>false</i>
+ * <li><b>messageConvertor</b>          The IMessageConvertor instance used to extracts the message data from JMSMessage instances. Defaults to an instance of <code>DefaultMessageConvertor</code>.
+
  * </ul>
  * <p/>
  * @see JMSConnection
@@ -90,7 +92,7 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
    */
   private String durableSubscriptionName = null;
   /**
-   * Message Selctor to use when receiving messages. Not set by default.
+   * Message Selector to use when receiving messages. Not set by default.
    */
   private String messageSelector = null;
   /**

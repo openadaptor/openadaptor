@@ -29,6 +29,7 @@ package org.openadaptor.core.node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -56,15 +57,15 @@ public abstract class AbstractNodeRunner extends LifecycleComponent implements I
 
   private static final Log log = LogFactory.getLog(AbstractNodeRunner.class);
 
-  private IMessageProcessor messageProcessor;
-  private ILifecycleComponent managedComponent;
+  protected IMessageProcessor messageProcessor;
+  protected ILifecycleComponent managedComponent;
 
   protected int exitCode;
-  protected IMessageProcessor messageProcessorDelegate;
+  protected IMessageProcessor target;
   protected Throwable exitThrowable;
 
   public Response process(Message msg) {
-    return messageProcessor.process(msg);
+    return target.process(msg);
   }
 
   /**
@@ -77,11 +78,15 @@ public abstract class AbstractNodeRunner extends LifecycleComponent implements I
     messageProcessor = processor;
   }
 
-  public void setMessageProcessorDelegate(IMessageProcessor processor) {
-   messageProcessorDelegate = processor;
-   if (messageProcessorDelegate instanceof ILifecycleComponent  && managedComponent == null) {
-     managedComponent = (ILifecycleComponent)messageProcessorDelegate;
+  public void setTarget(IMessageProcessor processor) {
+   target = processor;   
+   if (target instanceof ILifecycleComponent  && managedComponent == null) {
+     managedComponent = (ILifecycleComponent)target;
    }
+  }
+
+  public IMessageProcessor getTarget() {
+    return target;
   }
 
   public int getExitCode() {
@@ -108,6 +113,14 @@ public abstract class AbstractNodeRunner extends LifecycleComponent implements I
   }
 
   public void start() {
+    // Force the delegate to have the same ID as this.
+    if(target instanceof IComponent) {
+      ((IComponent)target).setId(getId());
+    }
+    if ((messageProcessor != null) && (target instanceof Node)) {
+      // If the target is a Node force it to use the same message processor as this (If one has been set)
+      ((Node)target).setMessageProcessor(messageProcessor); 
+    }
     if (managedComponent != null) { managedComponent.start();}
     super.start();
   }
@@ -134,4 +147,5 @@ public abstract class AbstractNodeRunner extends LifecycleComponent implements I
   public void setManagedComponent(ILifecycleComponent managedComponent) {
     this.managedComponent = managedComponent;
   }
+  
 }

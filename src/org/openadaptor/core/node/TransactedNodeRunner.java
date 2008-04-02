@@ -27,6 +27,7 @@
 
 package org.openadaptor.core.node;
 
+import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.transaction.ITransaction;
@@ -57,7 +58,7 @@ public class TransactedNodeRunner extends AbstractNodeRunner implements ITransac
         if ((transaction == null) && (getTransactionManager() != null)) {
           transaction = getTransactionManager().getTransaction();
         }
-        Response response = messageProcessorDelegate.process(new Message(new Object[]{}, null, transaction));
+        Response response = target.process(new Message(new Object[]{}, null, transaction));        
         log.debug("Response is: " + response);
         if (transaction != null) {
           if (transaction.getErrorOrException() == null) {
@@ -94,4 +95,5 @@ public class TransactedNodeRunner extends AbstractNodeRunner implements ITransac
   public ITransactionManager getTransactionManager() {
     return transactionManager;
   }
+ 
 }

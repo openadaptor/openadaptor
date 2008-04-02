@@ -38,12 +38,12 @@ import org.jmock.Mock;
  * Created Sep 5, 2007 by oa3 Core Team
  */
 
-public class NodeRunnerRunnableTestCase extends AbstractTestIRunnable {
+public class RunnableNodeWrapperRunnableTestCase extends AbstractTestIRunnable {
   private Mock mockMessageProcessor;
   private Mock mockManagedComponent;
 
   protected IRunnable instantiateTestRunnable() {
-    return new NodeRunner();
+    return new RunnableNodeWrapper();
   }
 
   protected void setMocksFor(IRunnable runnable) {
@@ -51,7 +51,7 @@ public class NodeRunnerRunnableTestCase extends AbstractTestIRunnable {
     mockMessageProcessor = mock(IMessageProcessor.class);
 
     ((AbstractNodeRunner)runnable).setManagedComponent((ILifecycleComponent)mockManagedComponent.proxy());
-    ((AbstractNodeRunner)runnable).setMessageProcessorDelegate((IMessageProcessor)mockMessageProcessor.proxy());
+    ((AbstractNodeRunner)runnable).setTarget((IMessageProcessor)mockMessageProcessor.proxy());
   }
 
   public void testRun() {

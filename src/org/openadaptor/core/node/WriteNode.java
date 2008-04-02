@@ -177,12 +177,12 @@ public class WriteNode extends Node {
             }
           }catch(Exception ex) {
             log.info(getId() + " caught " + ex.getClass().getName() + ":" + ex.getMessage());
-            response.addException(new MessageException(inputs[i], ex, getId()));
+            response.addException(new MessageException(inputs[i], ex, getId(), fetchThreadName()));
           }
     	}
     } 
     else {
-      Object output = connector.deliver(inputs);
+      Object output= connector.deliver(inputs);
       if (output != null) {
       	response.addOutput(output);
       }
@@ -237,7 +237,7 @@ public class WriteNode extends Node {
   }
 
   /**
-   * If set to true, exceptions resulting from an attempt to disconnec the underlying
+   * If set to true, exceptions resulting from an attempt to disconnect the underlying
    * reader will be caught and logged. 
    */
   public void setSuppressDisconnectionErrors(boolean suppressDisconnectionErrors) {

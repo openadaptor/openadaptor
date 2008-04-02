@@ -51,7 +51,7 @@ public class TransactedNodeRunnerRunnableTestCase extends AbstractTestIRunnable 
     mockMessageProcessor = mock(IMessageProcessor.class);
 
     ((AbstractNodeRunner)runnable).setManagedComponent((ILifecycleComponent)mockManagedComponent.proxy());
-    ((AbstractNodeRunner)runnable).setMessageProcessorDelegate((IMessageProcessor)mockMessageProcessor.proxy());
+    ((AbstractNodeRunner)runnable).setTarget((IMessageProcessor)mockMessageProcessor.proxy());
   }
 
   public void testRun() {

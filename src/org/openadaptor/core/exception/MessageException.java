@@ -39,11 +39,13 @@ import org.openadaptor.core.Response;
  */
 public class MessageException extends Throwable {
 
-	private static final long serialVersionUID = 1L;
+	protected static final String UNSET_THREAD_NAME = "Originating Thread Name Not Set";
+	
+    private static final long serialVersionUID = 1L;
 	private Object data;
 	private Exception exception;
     private String originatingModule;
-    
+    private String originatingThreadName = UNSET_THREAD_NAME;    
     private String adaptorName;
 
     /**
@@ -56,6 +58,14 @@ public class MessageException extends Throwable {
         this.originatingModule = originatingModule;
 	}
 
+    public MessageException(final Object data, final Exception exception, 
+        final String originatingModule, final String originatingThreadName) {
+      this.data = data;
+      this.exception = exception;
+      this.originatingModule = originatingModule;
+      this.originatingThreadName = originatingThreadName;
+    }
+    
 	public Object getData() {
 		return data;
 	}
@@ -71,7 +81,15 @@ public class MessageException extends Throwable {
     public String getOriginatingModule() {
       return originatingModule;
     }
+    
+    public String getOriginatingThreadName() {
+      return originatingThreadName;
+    }
 
+    public void setOriginatingThreadName(String originatingThreadName) {
+      this.originatingThreadName = originatingThreadName;
+    }
+    
     public String getAdaptorName() {
       return adaptorName;
     }

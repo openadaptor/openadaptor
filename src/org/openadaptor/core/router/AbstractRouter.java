@@ -123,7 +123,16 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
    * @return Response, usually empty.
    */
   public Response process(Message msg) {
-    return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
+    // First look to see if the (real) componentMap has a component with the same ID as the message sender.
+    // If this is the case then this is going to be the one in the routing map.
+    IMessageProcessor realSender = (IMessageProcessor) componentMap.get(((IComponent)msg.getSender()).getId());
+    if (realSender == null ) { 
+      // Looks like the componentMap was not set up properly. Use the sender in the message.
+      // Basically we are reverting to the way things worked prior to this change.
+      realSender = (IMessageProcessor)msg.getSender();
+    }
+    // return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
+    return process(msg, routingMap.getProcessDestinations(realSender));
   }
 
   /**
@@ -144,7 +153,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   }
   
   /**
-   * Pass a message to an indivual MessageProcessor for processing
+   * Pass a message to an individual MessageProcessor for processing
    * @param msg Message to be processed
    * @param processor target which should be processing the message.
    */

@@ -360,8 +360,9 @@ public class SpringApplication {
   }
 
   private static void setComponentIds(ListableBeanFactory factory) {
-    String[] beanNames = factory.getBeanDefinitionNames();
-    for (int i = 0; i < beanNames.length; i++) {
+    //String[] beanNames = factory.getBeanDefinitionNames();
+    String[] beanNames = factory.getBeanNamesForType(IComponent.class);
+    for (int i = 0; i < beanNames.length; i++) {      
       Object bean = factory.getBean(beanNames[i]);
       if (bean instanceof IComponent) {
         IComponent component = (IComponent) bean;

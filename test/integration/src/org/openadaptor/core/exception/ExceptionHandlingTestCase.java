@@ -136,6 +136,7 @@ public class ExceptionHandlingTestCase extends TestCase {
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
+    adaptor.setRunInCallingThread(true);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
   }
@@ -153,6 +154,7 @@ public class ExceptionHandlingTestCase extends TestCase {
     router.setProcessMap(processMap);
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
+    adaptor.setRunInCallingThread(true);
     adaptor.run();
     assertTrue(eHandler.counter == 1);
   }

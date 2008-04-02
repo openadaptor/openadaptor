@@ -35,8 +35,10 @@ import java.util.Map;
 
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentProcessor;
+import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.node.AbstractNodeRunner;
 import org.openadaptor.core.node.EnrichmentProcessorNode;
 import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.Node;
@@ -92,7 +94,9 @@ public class Autoboxer implements IAutoboxer {
 			o = autobox((IWriteConnector) o);
         } else if (o instanceof IEnrichmentProcessor) {
             o = autobox((IEnrichmentProcessor) o);
-        }
+        } /* else if (o instanceof IMessageProcessor) {
+          o = ((IMessageProcessor)o).testRoutingId().getId();
+        }*/
 		return o;
 	}
 

@@ -37,8 +37,8 @@ import org.openadaptor.core.Response;
  * Created Sep 4, 2007 by oa3 Core Team
  */
 
-public class NodeRunner extends AbstractNodeRunner {
-  private static final Log log = LogFactory.getLog(NodeRunner.class);
+public class RunnableNodeWrapper extends AbstractNodeRunner {
+  private static final Log log = LogFactory.getLog(RunnableNodeWrapper.class);
 
   public void run() {
     if (!isStillRunning()) {
@@ -48,7 +48,7 @@ public class NodeRunner extends AbstractNodeRunner {
     try {
       log.info(getId() + " running");
       while (isStillRunning()) {
-        Response response = messageProcessorDelegate.process(new Message(new Object[]{}, null, null));
+        Response response = target.process(new Message(new Object[]{}, null, null));        
         log.debug("Response is: " + response);
       }
     }
