@@ -27,3 +27,10 @@ create table ERROR_LOG
   REPROCESSED      	varchar(20) 	NULL
 )
 go
+
+/**
+*** Following grants need to be adapted to local conventions!
+***/
+
+grant SELECT on ERROR_LOG to ReadOnly
+grant SELECT, INSERT, UPDATE, DELETE on ERROR_LOG  to ReadWrite
