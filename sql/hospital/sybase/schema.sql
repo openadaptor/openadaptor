@@ -3,16 +3,16 @@
 ***
 **/
 
-if exists (select name from sysobjects where type = "U"
-		and name = "ERROR_LOG")
+if exists (select name from sysobjects where type = 'U'
+		and name = 'ERROR_LOG')
 BEGIN
-	print "Dropping existing ERROR_LOG table"
+	print 'Dropping existing ERROR_LOG table'
 	drop table ERROR_LOG
 END
 go
 
 
-print "Creating ERROR_LOG table"
+print 'Creating ERROR_LOG table'
 go
 
 create table ERROR_LOG
