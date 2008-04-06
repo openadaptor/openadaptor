@@ -47,6 +47,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
+  private static final String NO_CAUSE_EXCEPTION = "No cause exception detected.";
+  
   /* Optional property allowing to retrieve an adaptor's name */
   private IComponent adaptor;
   
@@ -59,9 +61,19 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   static final String EXCEPTION_CLASS = "EXCEPTION_CLASS_NAME";
   
+  static final String EXCEPTION_MESSAGE = "EXCEPTION_MESSAGE";
+  
+  static final String CAUSE_EXCEPTION_CLASS = "CAUSE_EXCEPTION_CLASS_NAME";
+  
+  static final String CAUSE_EXCEPTION_MESSAGE = "CAUSE_EXCEPTION_MESSAGE";
+  
+  static final String STACK_TRACE = "STACK_TRACE";
+  
   static final String ADAPTOR_NAME = "ADAPTOR_NAME";
   
   static final String COMPONENT = "ORIGINATING_COMPONENT";
+  
+  static final String THREAD_NAME = "THREAD_NAME";
   
   static final String DATA = "DATA";
   
@@ -76,6 +88,14 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private String exceptionClassColName = EXCEPTION_CLASS;
   
+  private String exceptionMessageColName = EXCEPTION_MESSAGE;
+  
+  private String causeExceptionClassColName = CAUSE_EXCEPTION_CLASS;
+  
+  private String causeExceptionMessageColName = CAUSE_EXCEPTION_MESSAGE;
+  
+  private String stackTraceColName = STACK_TRACE;  
+  
   private String adaptorColName = ADAPTOR_NAME;
   
   private String componentColName = COMPONENT;
@@ -85,6 +105,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String fixedColName = FIXED;
   
   private String reprocessedColName = REPROCESSED;
+  
+  private String threadNameColName = THREAD_NAME;
   
  
   // the format the exception timestamp will have in the ordered map
@@ -122,14 +144,52 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       IOrderedMap map = new OrderedHashMap();
       map.put(timestampColName, timestampFormat.format(new java.util.Date()));
       map.put(exceptionClassColName, messageException.getException().getClass().getName());
+      map.put(exceptionMessageColName, messageException.getException().getMessage());
+      
+      Throwable cause = messageException.getException().getCause();
+      if(cause!=null){
+    	map.put(causeExceptionClassColName, cause.getClass().getName());
+        map.put(causeExceptionMessageColName, cause.getMessage());
+      }
+      else{
+    	map.put(causeExceptionClassColName, NO_CAUSE_EXCEPTION);
+        map.put(causeExceptionMessageColName, NO_CAUSE_EXCEPTION);
+      }
+      
+      Exception exception = messageException.getException();
+      StringBuffer stackTraceBuf = new StringBuffer();
+      StackTraceElement [] stackTrace = exception.getStackTrace();
+      for(int i=0; i<stackTrace.length; i++){
+    	stackTraceBuf.append(stackTrace[i]);
+    	stackTraceBuf.append("\n");	
+      }
+      /* Append cause exception stack trace */
+      if(cause!=null){
+    	stackTraceBuf.append("\n\n");
+	    stackTrace = cause.getStackTrace();
+        for(int i=0; i<stackTrace.length; i++){
+    	  stackTraceBuf.append(stackTrace[i]);
+    	  stackTraceBuf.append("\n");	
+        }
+  	  }
+      map.put(stackTraceColName, stackTraceBuf.toString());
+      
       String adaptorName = null==adaptor ? "Unknown" : adaptor.getId();
       map.put(adaptorColName, adaptorName);
       String component = messageException.getOriginatingModule();
       map.put(componentColName, null==component ? "Unknown" : component);
-      map.put(dataColName, messageException.getData());
+            
+      /* data has to be String */
+      Object data = messageException.getData();
+      if(data!=null && !(data instanceof String)){
+        data = data.toString();
+      }
+      map.put(dataColName, data);
+      
       map.put(fixedColName, "false");
       map.put(reprocessedColName, "false");
-      map.put("originatingThreadName", messageException.getOriginatingThreadName());
+      map.put(threadNameColName, messageException.getOriginatingThreadName());
+      messageException.getException().getCause();
       return map;       
   }
   
