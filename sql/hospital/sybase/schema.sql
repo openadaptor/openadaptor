@@ -27,6 +27,7 @@ create table OA_Exceptions
   ADAPTOR_NAME          varchar(255) NULL,
   THREAD_NAME           varchar(255) NULL,
   ORIGINATING_COMPONENT varchar(255) NULL,
+  DATA_TYPE             varchar(255) NULL,
   DATA     	        text 	        NULL,
   FIXED    	        varchar(20)  	NULL,
   REPROCESSED      	varchar(20) 	NULL

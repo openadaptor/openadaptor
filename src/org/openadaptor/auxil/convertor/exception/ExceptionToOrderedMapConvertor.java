@@ -75,6 +75,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   static final String THREAD_NAME = "THREAD_NAME";
   
+  static final String DATA_TYPE = "DATA_TYPE";
+  
   static final String DATA = "DATA";
   
   static final String FIXED = "FIXED";
@@ -99,6 +101,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String adaptorColName = ADAPTOR_NAME;
   
   private String componentColName = COMPONENT;
+  
+  private String dataTypeColName = DATA_TYPE;
   
   private String dataColName = DATA;
   
@@ -178,13 +182,19 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       map.put(adaptorColName, adaptorName);
       String component = messageException.getOriginatingModule();
       map.put(componentColName, null==component ? "Unknown" : component);
-            
+              
       /* data has to be String */
       Object data = messageException.getData();
       if(data!=null && !(data instanceof String)){
         data = data.toString();
       }
       map.put(dataColName, data);
+    
+      String dataType = null;  
+      if(data!=null){
+        dataType = data.getClass().getName();
+      }
+      map.put(dataTypeColName, dataType); 
       
       map.put(fixedColName, "false");
       map.put(reprocessedColName, "false");
