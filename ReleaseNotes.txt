@@ -66,6 +66,8 @@ Miscellaneous
  * Added "ADAPTOR_NAME" column to Sybase Hospital schema
  
  * Added preambleSQL and postambleSQL to JDBCReadConnector
+ 
+ * Added jtds-1.2.2.jar to lib 
    
 =================================================
 openadaptor3 production 3.4 Release Notes
