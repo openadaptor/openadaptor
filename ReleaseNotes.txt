@@ -69,6 +69,9 @@ Miscellaneous
  * Added preambleSQL and postambleSQL to JDBCReadConnector
  
  * Added jtds-1.2.2.jar to lib 
+ 
+ * A number of changes have been made to enable use of Declarative Transaction Management. One JMS/JDBC 
+   example spring-local-txn-demo.xml has been added to example/spring/transaction.
    
 =================================================
 openadaptor3 production 3.4 Release Notes
