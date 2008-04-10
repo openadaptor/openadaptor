@@ -184,7 +184,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   }
  
   private void processExceptions(IMessageProcessor node, Object[] exceptions, ITransaction transaction) {
-    log.warn(node.toString() + " caught " + exceptions.length + " exceptions");
+    log.warn(node.toString() + " caught " + exceptions.length + " exception(s). Passing to the exception processor.");
     for (int i = 0; i < exceptions.length; i++) {
       MessageException messageException=(MessageException)exceptions[i];
       List destinations = routingMap.getExceptionDestinations(node, messageException.getException());
