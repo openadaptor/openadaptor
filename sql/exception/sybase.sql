@@ -1,48 +1,42 @@
-if exists (select 1 from sysobjects where type = "U" and name="ExceptionSummary")
-begin
-  drop table ExceptionSummary
-end
+/**
+*** Sybase Message Exceptions Schema
+***
+**/
+
+
+if exists (select 1 from  sysobjects where  id = object_id('dbo.OA_Exception') and type = 'U')
+BEGIN
+   print 'Dropping existing OA_Exception table'
+   drop table dbo.OA_Exception
+END
 go
 
-create table ExceptionSummary (
-  ExceptionId  INT          IDENTITY,
-  ComponentId  VARCHAR(64)  NOT NULL,
-  Application  VARCHAR(64)  NOT NULL,
-  Date         DATETIME     NOT NULL,
-  Message      VARCHAR(255) NOT NULL, 
-  RetryAddress VARCHAR(255) NOT NULL, 
-  Retries      INT          NOT NULL,
-  ParentId     INT                  ,
-  Host         VARCHAR(64)          ,
-  Class        VARCHAR(255)         ,
-  Status       CHAR(1)      NOT NULL
+
+print 'Creating OA_Exception table'
+go
+
+create table dbo.OA_Exception
+(
+  ID                         int identity NOT NULL,
+  TIMESTAMP                  varchar(30)  NOT NULL,
+  EXCEPTION_CLASS_NAME       varchar(255) NOT NULL,
+  EXCEPTION_MESSAGE          varchar(255) NULL,
+  CAUSE_EXCEPTION_CLASS_NAME varchar(255) NULL, 
+  CAUSE_EXCEPTION_MESSAGE    varchar(255) NULL, 
+  STACK_TRACE                text         NULL,
+  ADAPTOR_NAME               varchar(255) NULL,
+  THREAD_NAME                varchar(255) NULL,
+  ORIGINATING_COMPONENT      varchar(255) NULL,
+  DATA_TYPE                  varchar(255) NULL,
+  DATA                       text         NULL,
+  FIXED                      varchar(20)  NULL,
+  REPROCESSED                varchar(20)  NULL
 )
 go
 
-create unique clustered index idx0 on ExceptionSummary(ExceptionId)
-go
+/**
+*** Following grants need to be adapted to local conventions!
+***/
 
-create nonclustered index idx1 on ExceptionSummary(Application)
-go
-
-create nonclustered index idx1 on ExceptionSummary(Date)
-go
-
-create nonclustered index idx1 on ExceptionSummary(Application, Date)
-go
-
-
-if exists (select 1 from sysobjects where type = "U" and name="ExceptionDetail")
-begin
-  drop table ExceptionDetail
-end
-go
-
-create table ExceptionDetail (
-  ExceptionId  INT  NOT NULL,
-  Detail       TEXT NOT NULL
-)
-go
-
-create unique clustered index idx0 on ExceptionDetail(ExceptionId)
-go
+grant SELECT on dbo.OA_Exception to ReadOnly
+grant SELECT, INSERT, UPDATE, DELETE on dbo.OA_Exception to ReadWrite
