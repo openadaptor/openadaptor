@@ -63,7 +63,8 @@ Miscellaneous
  
  * Moved licence file licence.txt to top level
  
- * Added "ADAPTOR_NAME" column to Sybase Hospital schema
+ * Extended the database schema for handling exceptions. It now records data such as exception message,
+   cause exception, exception stack trace, thread name
  
  * Added preambleSQL and postambleSQL to JDBCReadConnector
  
