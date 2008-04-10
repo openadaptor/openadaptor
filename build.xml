@@ -466,6 +466,8 @@
       <zipfileset src="${dir.lib}/commons-lang_2.0.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-dbcp-1.2.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/commons-pool-1.3.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}"/>
@@ -498,8 +500,8 @@
       <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xstream-1.2.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}"/>
       <!-- ordered list of jars, includes non-qualified resources but with prefix -->
       <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" excludes="${includes.unqualified}" prefix="XmlSchema"/>
       <zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol"/>
@@ -510,6 +512,8 @@
       <zipfileset src="${dir.lib}/commons-lang_2.0.jar" excludes="${includes.unqualified}" prefix="commons-lang"/>
       <zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging"/>
       <zipfileset src="${dir.lib}/commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net"/>
+      <zipfileset src="${dir.lib}/commons-dbcp-1.2.2.jar" includes="${includes.unqualified}" prefix="commons-dbcp"/>
+      <zipfileset src="${dir.lib}/commons-pool-1.3.jar" includes="${includes.unqualified}" prefix="commons-pool"/>
       <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
       <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc"/>
@@ -542,8 +546,8 @@
       <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
       <zipfileset src="${dir.lib}/xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream"/>
       <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
-      <zipfileset src="${dir.spring.lib}/spring-core_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
-      <zipfileset src="${dir.spring.lib}/spring_2.0.2.jar" excludes="${includes.unqualified}" prefix="spring"/>
+      <zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core"/>
+      <zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring"/>
     </jar>
     <copy todir="${dir.package.lib}">
       <fileset dir="${dir.lib}">

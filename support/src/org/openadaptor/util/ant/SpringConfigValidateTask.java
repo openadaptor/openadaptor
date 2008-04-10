@@ -50,12 +50,19 @@ import org.apache.tools.ant.types.Reference;
 public class SpringConfigValidateTask extends Task {
   //If ignoreStubExceptions is set, then this system property will be set to true.
   public static final String IGNORE_STUB_EXCEPTION_FLAG="openadaptor.exception.stub.ignore";
+  
+  // Edit this to add new configs to the exclusion list
+  // Should really be done differently, list in the build file, property file, tag in the config something else sensible.
+  private static String[] EXCLUDED_FILES={"spring-local-txn-demo.xml"};
 
   private static String SPRING_FACTORY_CLASSNAME = "org.springframework.beans.factory.xml.XmlBeanFactory";
+  private static String SPRING_BEAN_DEFINITION_CLASSNAME = "org.springframework.beans.factory.config.BeanDefinition";
   private static String SPRING_RESOURCE_CLASSNAME = "org.springframework.core.io.Resource";
   private static String SPRING_URLRESOURCE_CLASSNAME = "org.springframework.core.io.UrlResource";
   private static final String SPRING_GET_BEAN_METHOD = "getBean";
+  private static final String SPRING_GET_BEAN_DEFINITION_METHOD = "getBeanDefinition";
   private static final String SPRING_GET_BEAN_NAMES_METHOD = "getBeanDefinitionNames";
+  private static final String BEAN_DEFINITION_IS_ABSTRACT_METHOD = "isAbstract";
 
   private List filesets = new ArrayList();
   private Path classpath;
@@ -85,6 +92,7 @@ public class SpringConfigValidateTask extends Task {
 
   public void execute() throws BuildException {
     int processedFiles=0;
+    ArrayList excludedFiles = new ArrayList();
     //
     // create new class loader and use reflection to get constructors and method
     // for instantiating a spring factory and forcing named beans to be loaded
@@ -100,19 +108,25 @@ public class SpringConfigValidateTask extends Task {
     Constructor resourceConstructor;
     Constructor factoryConstructor;
     Method getBeanNamesMethod;
+    Method getBeanDefinitionMethod;
     Method getBeanMethod;
+    Method getBeanIsAbstractMethod;
 
     try {
       loader.forceLoadClass(SPRING_FACTORY_CLASSNAME);
       Class factoryClass = Class.forName(SPRING_FACTORY_CLASSNAME, true, loader);
+      Class beanDefinitionClass = Class.forName(SPRING_BEAN_DEFINITION_CLASSNAME, true, loader);
       Class resourceClass = Class.forName(SPRING_RESOURCE_CLASSNAME, true, loader);
       Class urlResourceClass = Class.forName(SPRING_URLRESOURCE_CLASSNAME, true, loader);
 
       resourceConstructor = urlResourceClass.getConstructor(new Class[] {String.class});
       factoryConstructor = factoryClass.getConstructor(new Class[] {resourceClass});
 
-      getBeanNamesMethod = factoryClass.getMethod(SPRING_GET_BEAN_NAMES_METHOD, new Class[0]);
+      getBeanNamesMethod = factoryClass.getMethod(SPRING_GET_BEAN_NAMES_METHOD, new Class[] {});
+      getBeanDefinitionMethod = factoryClass.getMethod(SPRING_GET_BEAN_DEFINITION_METHOD, new Class[] {String.class});
       getBeanMethod = factoryClass.getMethod(SPRING_GET_BEAN_METHOD, new Class[] {String.class});
+           
+      getBeanIsAbstractMethod = beanDefinitionClass.getMethod("isAbstract", new Class[] {});
 
     } catch (Throwable t) {
       t.printStackTrace();
@@ -130,23 +144,34 @@ public class SpringConfigValidateTask extends Task {
       FileSet fileSet = (FileSet) iter.next();
       DirectoryScanner ds = fileSet.getDirectoryScanner(getProject());
       String[] files = ds.getIncludedFiles();
-      for (int i = 0; i < files.length; i++) {
-        // HACK - reset registration url property
-        System.setProperty("openadaptor.registration.url", "");
-        File dir = fileSet.getDir(getProject());
-        String configUrl = "file:" + dir.getAbsolutePath() + "/" + files[i];
-        processedFiles++;
-        try {
-          Object resource = resourceConstructor.newInstance(new Object[] {configUrl});
-          Object factory = factoryConstructor.newInstance(new Object[] {resource});
-
-          String[] beanNames = (String[]) getBeanNamesMethod.invoke(factory, new Object[0]);
-          for (int j = 0; j < beanNames.length; j++) {
-            getBeanMethod.invoke(factory, new Object[] {beanNames[j]});
+      for (int i = 0; i < files.length; i++) {       
+        if (isExcluded(files[i])) {
+          File dir = fileSet.getDir(getProject());
+          excludedFiles.add("file:" + dir.getAbsolutePath() + "/" + files[i]);
+         } 
+        else {
+          // HACK - reset registration url property
+          System.setProperty("openadaptor.registration.url", "");
+          File dir = fileSet.getDir(getProject());       
+          String configUrl = "file:" + dir.getAbsolutePath() + "/" + files[i];
+          processedFiles++;
+          try {
+            Object resource = resourceConstructor.newInstance(new Object[] {configUrl});
+            Object factory = factoryConstructor.newInstance(new Object[] {resource});
+  
+            String[] beanNames = (String[]) getBeanNamesMethod.invoke(factory, new Object[] {});
+            for (int j = 0; j < beanNames.length; j++) {
+              Object beanDefinition = getBeanDefinitionMethod.invoke(factory, new Object[] {beanNames[j]});
+              Boolean isAbstract = (Boolean)getBeanIsAbstractMethod.invoke(beanDefinition, new Object[] {});
+              // We instantiate only if the bean name is not abstract.
+              if (!isAbstract.booleanValue()) {
+                getBeanMethod.invoke(factory, new Object[] {beanNames[j]});
+              }
+            }       
+          } catch (Throwable e) {
+            e.printStackTrace();
+            failedFiles.add(configUrl);
           }
-        } catch (Throwable e) {
-          e.printStackTrace();
-          failedFiles.add(configUrl);
         }
       }
     }
@@ -170,8 +195,25 @@ public class SpringConfigValidateTask extends Task {
     else {
       System.out.println("Processed "+processedFiles+" Spring configurations");
     }
-    
-
+    if(!excludedFiles.isEmpty()){
+      System.out.println("Excluded "+excludedFiles.size()+" Spring configuration(s) from check.");
+      for (Iterator iter = excludedFiles.iterator(); iter.hasNext();) {
+        String filename = (String) iter.next();
+        System.out.println("Excluded: "+filename);
+      }     
+    }
+  }
+  
+  private boolean isExcluded(String fileName) {
+    //System.out.println("Testing ["+fileName+"] for exclusion.");
+    boolean excluded = false;
+    for (int i = 0; i < EXCLUDED_FILES.length; i++) {
+      if (fileName.indexOf(EXCLUDED_FILES[i]) >= 0) {
+        excluded = true;
+        System.out.println("File ["+fileName+"] Excluded from Checks.");
+      }      
+    }
+    return excluded; 
   }
 
 

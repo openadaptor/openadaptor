@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id:  $
+  $HeadURL:  $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+<description><![CDATA[
+  This example is intended to illustrate one way of using Spring Local Transaction Managers
+  to manage adaptor transactions.
+  
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    
+  The example does not specify a particular JMS implementation. Please ensure that
+  jms.properties is correctly populated for your installation. Don't forget to include 
+  the relevant jms client jars on your classpath. See the accompanying readme.txt for 
+  more information.
+   
+  This adaptor does the following...
+    
+    * listens for messages via a Spring JmsTemplate
+    * executes SQL against a database
+    * executes the whole read/write round trip within a local JMS transaction
+    * delivers the payload to the database in a single local JDBC transaction
+  
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config spring-local-tx-demo.xml -bean Adaptor -props jms.properties
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/hsqldb.jar
+    (relevant jms client jars)
+    
+  once running any data read from std input executed against the database, like this...
+  
+    insert into testoutput values ('hello mum')
+  ]]></description>
+  
+  <!-- Spring JMS Bean Definitions  -->
+
+  <bean id="JndiParent" abstract="true" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <description>Abstract Bean defining the JNDI Environment for JMS.</description>
+     <property name="jndiEnvironment">
+      <props>
+        <prop key="java.naming.factory.initial">${jndi.initialContextFactory}</prop>
+        <prop key="java.naming.provider.url">${jndi.providerUrl}</prop>
+        <prop key="java.naming.security.principal">${jndi.securityPrincipal}</prop>
+        <prop key="java.naming.security.credentials">${jndi.securityCredentials}</prop>
+      </props>
+     </property>
+  </bean> 
+  
+  <bean id="ConnectionFactory" parent="JndiParent">
+    <description>This reference resolves the ConnectionFactory from JNDI.</description>
+    <property name="jndiName" value="${jms.ts.connectionFactoryName.1}"/>
+  </bean>
+  
+  <bean id="destination" parent="JndiParent">
+    <description>This reference resolves the Destination from JNDI.</description>
+    <property name="jndiName" value="${jms.t.destinationName.1}"/>
+  </bean> 
+  
+  <bean id="AuthenticatedConnectionFactory" class="org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter">
+    <description>The Spring way of adding authentication.</description>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+    <property name="targetConnectionFactory" ref="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="SingleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+    <description>
+      Use to prevent the JmsTemplate repeatedly opening and closing the underlying
+      JMS Connection. Not needed if using properly managed pooled resources.
+    </description>
+    <property name="targetConnectionFactory" ref="AuthenticatedConnectionFactory"/>
+    <!-- Use the ConnectionFactory directly if you do not need to authenticate it. -->
+    <!-- <property name="targetConnectionFactory" ref="ConnectionFactory"/> -->
+  </bean>
+  
+  <bean id="template" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory"  ref="SingleConnectionFactory"/>
+    <!-- Uncomment this if you wish to set a Default Destination. -->
+    <!-- If you don't supply a default then the JMS Reader must supply a Destination -->
+    <!-- <property name="defaultDestination" ref="destination"/> -->
+    <property name="receiveTimeout" value="10000"/> <!-- The default is 1000 which is a bit short to be able to see what's going on in a demo. -->
+  </bean>
+  
+  <bean id="JmsTxmanager" class="org.springframework.jms.connection.JmsTransactionManager">
+    <description>The Spring Local Transaction Manager for JMS.</description>
+    <property name="connectionFactory" ref="SingleConnectionFactory"/>
+  </bean>
+
+  <!--  Configure the Spring JDBC Beans and Resources. -->
+
+  <!-- The JDBC PlatformTransactionManager -->
+  <bean id="JdbcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <description>Spring Local Transaction Manager for JDBC.</description>
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <!-- don't forget the DataSource -->
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <description>Commons DataSource which uses driver settings. Replace with container managed a DataSource as required.</description>
+    <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb" />
+    <property name="username" value="sa" />
+    <property name="password" value="" />
+  </bean>
+
+  <!--  From here on we are defining the Adaptor itself and how it hooks into the Container's resources and transaction management. -->
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+          This creates the simple pipeline TransactedReader -> TransactedWriter.
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline Reader -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="TransactedReader" />
+            <ref bean="TransactedWriter" />
+          </list>
+        </property>
+      </bean>    
+    </property>
+  </bean>
+  
+  <bean id="TransactedReader" class="org.openadaptor.core.node.RunnableNodeWrapper">
+  <description>
+    We want wrap a transaction around the full message read/write round trip. What we do
+    is wrap a declarative transaction around the call to process on the ReadNode that manages
+    the JMSSpringReadConnector. To do this we need to i) explicitly configure the Node and
+    ii) refernce the Node from another Bean (the RunnableNodeWapper) so that we have somewhere
+    to insert the transaction reference.
+  </description>
+    <property name="target">
+      <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <!-- Proxy that configures the transaction -->
+        <property name="transactionManager" ref="JmsTxmanager" />
+        <property name="target">
+          <bean class="org.openadaptor.core.node.ReadNode">
+            <!-- The ReadNode that supplies the service being transacted. -->
+            <property name="connector">
+                <bean class="org.openadaptor.auxil.connector.jms.JMSSpringReadConnector">
+                  <property name="template" ref="template" />
+                  <!--  JMS Destination to listen on. Could also be 
+                        specified as the Template's default destination -->
+                  <property name="destination" ref="destination"/>
+                </bean>
+            </property>
+            <!-- We must add the adaptor as the downstream target as the autoboxing 
+                 will no longer supply it once we complicate the config this way. -->
+            <property name="messageProcessor" ref="Adaptor"/>
+          </bean>
+        </property>
+        <property name="transactionAttributes">
+          <props>
+            <prop key="process*">PROPAGATION_REQUIRED</prop>
+          </props>
+        </property>
+      </bean>
+    </property>
+  </bean>  
+ 
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="TransactedWriter" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    <description>Spring Proxy which adds a transaction the Write Connector's deliver.</description>
+    <property name="transactionManager" ref="JdbcTransactionManager" />
+    <property name="target">
+      <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+        <description>Writer which executes message payload as sql.</description>
+        <property name="jdbcConnection" ref="JdbcConnection" />
+      </bean>
+    </property>
+    <property name="transactionAttributes">
+      <props>
+        <prop key="deliver*">PROPAGATION_REQUIRED</prop>
+      </props>
+    </property>
+  </bean>
+
+</beans>
