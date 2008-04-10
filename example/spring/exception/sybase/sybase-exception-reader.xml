@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id: hospitalReader.xml 796 2007-09-03 14:06:25Z lachork $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/exceptions/hospitalReader.xml $
+  $Id: $
+  $HeadURL: $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
