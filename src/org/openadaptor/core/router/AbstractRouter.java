@@ -206,6 +206,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
         }
       }
     }
+    log.info("Processing exceptions complete.");
   }
 
   private void logRoutingDebug(IMessageProcessor sender, List destinations) {
