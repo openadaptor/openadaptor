@@ -24,7 +24,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config sybase-hospital-writer.xml 
+    java org.openadaptor.spring.SpringAdaptor -config sybase-hospital-writer.xml -props sybase.properties
     
   You need the following in your classpath
   

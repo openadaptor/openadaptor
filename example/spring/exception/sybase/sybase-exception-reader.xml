@@ -19,7 +19,7 @@
   
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config sybase-hospital-reader.xml
+    java org.openadaptor.spring.SpringAdaptor -config sybase-exception-reader.xml -props sybase.properties
     
   You need the following in your classpath
   
