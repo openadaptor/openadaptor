@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: hospitalReader.xml 796 2007-09-03 14:06:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/exceptions/hospitalReader.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * connects to Sybase based Hospital
+    * executes SQL against the Hospital schema
+    
+  It is designed to illustrate the basic structure of an adaptor that retrieves exceptions
+  from a database (the hospital). 
+  See sybaseHospitalWriter.xml for an example of how to generate exceptions in the Sybase based hospital.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config sybase-hospital-reader.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/dealbus-depends.jar       (this holds the Sybase Driver)
+    
+  Once running, errors stored in the hospital will be printed to the console.
+  ]]></description>
+  
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor" ref="router"/>
+   </bean>
+  
+   <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="hospitalReader" value-ref="consoleWriter"/> 
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="sybaseJdbcConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Sybase database account configuration </description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+
+  <bean id="hospitalReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+	  <description>Reader which polls database using configured SQL.</description>
+	  <property name="jdbcConnection" ref="sybaseJdbcConnection"/>
+	  <property name="resultSetConverter">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+	  </property>
+	  <property name="sql">
+	    <value>
+	      select ID, TIMESTAMP, DATA, EXCEPTION_CLASS_NAME, EXCEPTION_MESSAGE, CAUSE_EXCEPTION_CLASS_NAME, 
+	             CAUSE_EXCEPTION_MESSAGE, ADAPTOR_NAME, ORIGINATING_COMPONENT, THREAD_NAME, DATA_TYPE
+	      from OA_Exception
+	      where FIXED = 'true' and REPROCESSED = 'false' 
+	    </value>
+	  </property>
+	  <property name="postambleSQL">
+	    <value>
+	      update OA_Exception 
+	      set REPROCESSED='true'
+	      where FIXED = 'true' and REPROCESSED = 'false' 
+	    </value>
+	  </property>
+  </bean>
+       
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
+  
+</beans>
