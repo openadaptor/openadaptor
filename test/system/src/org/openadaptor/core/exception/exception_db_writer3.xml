@@ -25,7 +25,7 @@
 	<property name="jdbcConnection" ref="jdbcConnection" />
 	<property name="writer">
 	   <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
-		  <property name="tableName" value="ERROR_LOG" />
+		  <property name="tableName" value="OA_Exception" />
 	   </bean>
 	</property>
   </bean>
