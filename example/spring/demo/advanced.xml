@@ -10,9 +10,9 @@
   <description><![CDATA[  
   This adaptor does the following...
     
-    * reads all data from a comma delimited file (input/delim.txt), 
-      with 1 sec time interval between the lines
-    * converts comma delimited records to maps (key-value pairs)
+    * reads comma delimited recrods from a file (input/delim.txt), 
+      with 1 sec time interval between records
+    * converts comma delimited records into maps (key-value pairs)
     * applies a simple filter to records
     * applies a database based enrichment processor
     * outputs to stdout
