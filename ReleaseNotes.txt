@@ -10,6 +10,13 @@ Author: openadaptor Core Team
 openadaptor 3.4.1
 =======
 
+ Summary
+ =======
+ 
+ This release focuses on minor cleanup of the codebase & examples as well as some specific 
+ changes as outlined below.
+ 
+
 Processors
 ==========
 
@@ -58,6 +65,7 @@ Cleanup of Build Process
 
  * Moved build tools into support area, and fixed package/directory setup.
 
+ * Startup is more forgiving of locations of certain property files
   
 Deprecated Components Removed
 =============================
@@ -86,9 +94,7 @@ Deprecated Components Removed
 	org.openadaptor.auxil.processor.javascript.JavascriptConditionProcessor
     org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor
     org.openadaptor.auxil.processor.javascript.JavascriptProcessor
-    org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord
-  
-  
+    org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord 
    
 =================================================
 openadaptor3 production 3.4 Release Notes
