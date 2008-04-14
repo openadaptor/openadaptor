@@ -4,7 +4,7 @@ openadaptor3 production 3.4.1 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: ??
+Date: 16th April 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.1
@@ -60,23 +60,23 @@ Cleanup of Build Process
 Deprecated Components Removed
 =============================
 
-The following deprecated components have been removed in this release:
+  The following deprecated components have been removed in this release:
 
-JDBC
-
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.StatementConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.AbstractStatementConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.CallableStatementConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.PreparedStatementTableConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter
-
-org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConvertorTestCase
-
-example/spring/connectors/db/writer2.xml
-example/spring/connectors/db/writer3.xml
+	JDBC
+	
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.StatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.AbstractStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.CallableStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.PreparedStatementTableConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter
+	
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConvertorTestCase
+	
+	example/spring/connectors/db/writer2.xml
+	example/spring/connectors/db/writer3.xml
   
    
 =================================================
