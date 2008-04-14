@@ -13,8 +13,10 @@ openadaptor 3.4.1
 Processors
 ==========
 
- * A processor that implements the ILifecycleListener interface will be notified 
+ * Any processor that implements the ILifecycleListener interface will be notified 
    of state changes of its associated Node.
+   
+ * Added StringSubstitutor processor for escaping illegal XML characters.  
   
 Miscellaneous
 =============
@@ -62,8 +64,7 @@ Deprecated Components Removed
 
   The following deprecated components have been removed in this release:
 
-	JDBC
-	
+	JDBC:
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.StatementConverter
@@ -72,11 +73,21 @@ Deprecated Components Removed
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.PreparedStatementTableConverter
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter
-	
 	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConvertorTestCase
-	
+	org.openadaptor.core.connector.PollingReadConnector
 	example/spring/connectors/db/writer2.xml
 	example/spring/connectors/db/writer3.xml
+  
+	JNDI:
+	org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector
+	org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor
+	
+	Javascript Processor:
+	org.openadaptor.auxil.processor.javascript.JavascriptConditionProcessor
+    org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor
+    org.openadaptor.auxil.processor.javascript.JavascriptProcessor
+    org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord
+  
   
    
 =================================================
