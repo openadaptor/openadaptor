@@ -28,6 +28,8 @@
     lib/openadaptor-depends.jar
     
   Once the adaptor is running, open test.html and send sample data to the adaptor.  
+  
+  Graphical representation of this example can be found in example\docs\spring\demo\simple.htm
   ]]></description>
   
   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 

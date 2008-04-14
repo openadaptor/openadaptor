@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,10 +10,11 @@
   <description><![CDATA[  
   This adaptor does the following...
     
-    * reads all data in input/delim.txt, with 1 sec time interval between the lines
-    * converts to orderedmaps
+    * reads all data from a comma delimited file (input/delim.txt), 
+      with 1 sec time interval between the lines
+    * converts comma delimited records to maps (key-value pairs)
     * applies a simple filter to records
-    * applies a db-based enrichment processor
+    * applies a database based enrichment processor
     * outputs to stdout
     * outputs data to a JMS queue
 
@@ -42,6 +43,10 @@
   running on the same machine that the example is being run.
 
   Please ensure that the jboss client and server jars used are from compatible releases.  
+  
+  Graphical representation of this example can be found in example\docs\spring\demo\advanced.htm
+  
+  Note: use JVM 1.4 or 1.5. 
     
   ]]></description>
   
