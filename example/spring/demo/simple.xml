@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,6 +26,8 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    
+  Once the adaptor is running, open test.html and send sample data to the adaptor.  
   ]]></description>
   
   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 

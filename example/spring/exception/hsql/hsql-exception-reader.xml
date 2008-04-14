@@ -67,7 +67,7 @@
 	  <property name="sql">
 	    <value>
 	      SELECT id, timestamp, data, exception_class_name, originating_component
-	      FROM error_log
+	      FROM OA_Exception
 	      WHERE fixed = 'true' AND REPROCESSED = 'false' 
 	    </value>
 	  </property>
