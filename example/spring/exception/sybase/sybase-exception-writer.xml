@@ -9,7 +9,7 @@
  
    <description><![CDATA[    
    
-  Adaptor based on step 11c from the OA tutorial, that has been modified to work with Sybase
+  Adaptor based on step 13c from the OA tutorial, that has been modified to work with Sybase
   (SQL insert statement is slightly different).
   
   This adaptor does the following...
@@ -20,7 +20,7 @@
     * writes anything that didn't validate to the hospital
     * example of a valid XML: <Trade><buySell>1</buySell><ticker>1</ticker><price>1</price></Trade>
     
-  It is designed to illustrate the basic use of the Hospital as an exception handler.
+  It is designed to illustrate the basic use of the Sybase backed exception handler.
   
   Run it like this...
     
@@ -32,7 +32,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/dealbus-depends.jar       (this holds the Sybase Driver)
+    <Sybase Driver>       
    
   once running any data read from std will be validated as XML.
   ]]></description>
@@ -49,7 +49,7 @@
         <entry key-ref="Validator" value-ref="ConsoleWriter"/> 
       
         <!-- Exception processors -->
-        <entry key-ref="ExceptionConvertor" value-ref="HospitalWriter"/> 
+        <entry key-ref="ExceptionConvertor" value-ref="ExceptionWriter"/> 
       
       </map>
     </property>
@@ -78,7 +78,7 @@
     <property name="adaptor" ref="Adaptor"/>
   </bean>
   
-  <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <bean id="ExceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
 	<property name="jdbcConnection" ref="SybaseJdbcConnection" />
 	<property name="writer">
 	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">

@@ -10,12 +10,13 @@
   <description><![CDATA[    
   This adaptor does the following...
     
-    * connects to Sybase based Hospital
-    * executes SQL against the Hospital schema
+    * connects to Sybase based exception processor
+    * executes SQL against the exception schema
     
   It is designed to illustrate the basic structure of an adaptor that retrieves exceptions
-  from a database (the hospital). 
-  See sybaseHospitalWriter.xml for an example of how to generate exceptions in the Sybase based hospital.
+  from a database. 
+  See sybase-hospital-writer.xml for an example of how to generate exceptions in the Sybase based 
+  exception processor.
   
   Run it like this...
     
@@ -27,7 +28,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/dealbus-depends.jar       (this holds the Sybase Driver)
+    <Sybase Driver>  
     
   Once running, errors stored in the hospital will be printed to the console.
   ]]></description>
@@ -39,7 +40,7 @@
    <bean id="router" class="org.openadaptor.core.router.Router">
     <property name="processMap">
       <map>
-        <entry key-ref="hospitalReader" value-ref="consoleWriter"/> 
+        <entry key-ref="exceptionReader" value-ref="consoleWriter"/> 
       </map>
     </property>
   </bean>
@@ -52,7 +53,7 @@
     <property name="password" value="${sybase.password}"/>
   </bean>
 
-  <bean id="hospitalReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+  <bean id="exceptionReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
 	  <description>Reader which polls database using configured SQL.</description>
 	  <property name="jdbcConnection" ref="sybaseJdbcConnection"/>
 	  <property name="resultSetConverter">
