@@ -13,9 +13,49 @@ openadaptor 3.4.1
 Processors
 ==========
 
- * A processor that implements the ILifecycleListener interface will be
-   notified of state changes of its associated Node.
+ * A processor that implements the ILifecycleListener interface will be notified 
+   of state changes of its associated Node.
   
+Miscellaneous
+=============
+
+ * Clean up of JUnit tests e.g. warnings (unused imports, non-static references to static 
+   fields, etc.) have been tidied.
+   
+ * Spring XML files with examples config renamed to follow industry standard (lower case,
+   hyphen separated).
+   
+ * Failure to load .openadaptor-spring.xml from classpath is no longer fatal (reduced to warning).   
+ 
+ * Added an ignoreExceptionProcessorErrors flag on the Router class. If set to true and an 
+   exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
+   will be logged only (they will not cause the adaptor to shut down).
+   
+ * New OAClient class may be used to send data into Openadaptor from a Java program.   
+ 
+ * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
+ 
+ * Moved licence file licence.txt to top level
+ 
+ * Extended the database schema for handling exceptions. Exception message,
+   cause exception, exception stack trace, thread name (and more) are now recorded.
+   Examples can be found in example\spring\exception\sybase\*.xml.
+ 
+ * Added preambleSQL and postambleSQL to JDBCReadConnector
+ 
+ * Added jtds-1.2.2.jar to lib 
+ 
+ * A number of changes have been made to enable use of Declarative Transaction Management. 
+   One JMS/JDBC example spring-local-txn-demo.xml has been added to example/spring/transaction.
+ 
+ * WriteNode - new 'suppressDisconnectionErrors' property allows for preventing disconnection
+   errors (IWriteConnector#disconnect) from being propagated to the Adaptor
+
+Cleanup of Build Process
+========================
+
+ * Moved build tools into support area, and fixed package/directory setup.
+
   
 Deprecated Components Removed
 =============================
@@ -37,41 +77,7 @@ org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementCo
 
 example/spring/connectors/db/writer2.xml
 example/spring/connectors/db/writer3.xml
-
-Cleanup of Build Process
-========================
- * Moved build tools into support area, and fixed package/directory setup.
-
-Miscellaneous
-=============
- * Clean up of JUnit tests e.g. warnings (unused imports, non-static references to static 
-   fields, etc.) have been tidied.
-   
- * Spring XML files with examples config renamed to follow industry standard (lower case,
-   hyphen separated).
-   
- * Failure to load .openadaptor-spring.xml from classpath is no longer fatal (reduced to warning).   
- 
- * Added an ignoreExceptionProcessorErrors flag on the Router class. If set to true and an 
-   exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
-   will be logged only (they will not cause the adaptor to shut down).
-   
- * Implemented OAClient class that may be used to send data into Openadaptor from a Java
-   program.   
- 
- * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
- 
- * Moved licence file licence.txt to top level
- 
- * Extended the database schema for handling exceptions. It now records data such as exception message,
-   cause exception, exception stack trace, thread name
- 
- * Added preambleSQL and postambleSQL to JDBCReadConnector
- 
- * Added jtds-1.2.2.jar to lib 
- 
- * A number of changes have been made to enable use of Declarative Transaction Management. One JMS/JDBC 
-   example spring-local-txn-demo.xml has been added to example/spring/transaction.
+  
    
 =================================================
 openadaptor3 production 3.4 Release Notes
