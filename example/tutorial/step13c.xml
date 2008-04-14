@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -80,13 +80,12 @@
   <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
   
   <bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
-		<property name="jdbcConnection" ref="jdbcConnection" />
-		<property name="writer">
-			<bean
-				class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
-				<property name="tableName" value="ERROR_LOG" />
-			</bean>
-		</property>
+	<property name="jdbcConnection" ref="jdbcConnection" />
+	<property name="writer">
+	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+		<property name="tableName" value="OA_Exception" />
+	  </bean>
+	</property>
   </bean>
   
 </beans>
