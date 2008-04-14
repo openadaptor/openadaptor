@@ -23,7 +23,12 @@ Processors
  * Any processor that implements the ILifecycleListener interface will be notified 
    of state changes of its associated Node.
    
- * Added StringSubstitutor processor for escaping illegal XML characters.  
+ * Added StringSubstitutor processor for escaping illegal XML characters.
+ 
+Spring
+======
+
+ * We have upgraded to release 2.5.3 of the Spring Framework.   
   
 Miscellaneous
 =============
