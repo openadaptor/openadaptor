@@ -51,21 +51,21 @@
         <description>
             Connection details for the remote server running the JNDI lookup service
         </description>
-        <property name="initialContextFactory"  value="com.sun.jndi.ldap.LdapCtxFactory"/>
-        <property name="providerUrl"            value="ldap://myldapserver.myCompany.com:389"/>
-        <property name="securityAuthentication" value="simple"/>
-        <property name="securityPrincipal"      value="uid=user1001,ou=ApplicationAccounts,ou=Resources,o=myCompany.com"/>
-        <property name="securityCredentials"    value="myTrickyPassword"/>
+        <property name="initialContextFactory"  value="${jndi.initialContextFactory}"/>
+        <property name="providerUrl"            value="${jndi.providerUrl}"/>
+        <property name="securityAuthentication" value="${jndi.securityAuthentication}"/>
+        <property name="securityPrincipal"      value="${jndi.securityPrincipal}"/>
+        <property name="securityCredentials"    value="${jndi.securityCredentials}"/>
     </bean>
 
     <bean id="JNDISearch" class="org.openadaptor.auxil.connector.jndi.JNDISearch">
         <property name="searchBases">
             <list>
-                <value>ou=people,o=myCompany.com</value>
-                <value>ou=clients,o=myCompany.com</value>
+                <value>${jndi.searchBase1}</value>
+                <value>${jndi.searchBase2}</value>
             </list>
         </property>
-        <property name="filter" value="(sn=Smith)"/>
+        <property name="filter" value="${jndi.searchFilter}"/>
         <property name="attributes">
             <list>
                 <value>businessline</value>
