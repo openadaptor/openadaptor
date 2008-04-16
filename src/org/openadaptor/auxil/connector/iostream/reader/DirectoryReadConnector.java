@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +54,11 @@ import org.openadaptor.core.exception.ValidationException;
  * when connect is called, the order in which the files are read is the default
  * implementation of {@link java.io.File#compareTo(File)}. This behaviour can
  * be overridden by using the fileComparator property, this class provides class
- * constants for comparing based on name and timestamp.
+ * constants for comparing based on name and timestamp. If a valid value for 
+ * the property {@link #setProcessedDir(File)} is supplied then successfully
+ * processed files will be moved to that directory. If for any reason the move
+ * fails then a warning is logged and the processed file is left in the input 
+ * area. 
  * 
  * Defaults dataReader to {@link LineReader}
  * 
@@ -64,8 +69,11 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
   private static final Log log = LogFactory.getLog(DirectoryReadConnector.class);
 
   private File dir;
+  private File processedDir = null;
 
   private List files = new ArrayList();
+  
+  private List processedFiles = new ArrayList();
   
   private File currentFile;
   
@@ -85,6 +93,22 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
 
   public void setDirname(String path) {
     dir = new File(path);
+  }
+
+  /**
+   * The directory to copy processed files to.
+   * @return File Must be a Directory
+   */
+  public File getProcessedDir() {
+    return processedDir;
+  }
+
+  /**
+   * The directory to copy processed files to.
+   * @param processedDir Must be a directory.
+   */
+  public void setProcessedDir(File processedDir) {
+    this.processedDir = processedDir;
   }
 
   /**
@@ -111,6 +135,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     super.validate(exceptions);
     if (!dir.exists() || !dir.isDirectory()) {
       exceptions.add(new ValidationException("dir " + dir.toString() + " does not exist or is not a directory", this));
+    }
+    if (processedDir != null && (!processedDir.exists() || !processedDir.isDirectory())) {
+      exceptions.add(new ValidationException("ProcessedDir has been set and " + processedDir.toString() + " does not exist or is not a directory", this));
     }
   }
   
@@ -147,6 +174,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     if (super.isDry() && !files.isEmpty()) {
       setInputStream(getNextInputStream());
     }
+    if (super.isDry() && files.isEmpty()) {
+      postProcessFiles(); // OK finger in the air here..
+    }
     return super.isDry();
   }
 
@@ -161,6 +191,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     closeInputStream();
     if (!files.isEmpty()) {
       File f = (File) files.remove(0);
+      processedFiles.add(f);
       try {
         currentFile = f;
         log.info(getId() + " opening " + f.getAbsolutePath() + "...");
@@ -168,9 +199,25 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
       } catch (FileNotFoundException e) {
         throw new RuntimeException("FileNotFoundException, " + e.getMessage(), e);
       }
-    } else {
+    } else { // This never happens. The connector goes dry first.
       currentFile = null;
       return null;
+    }
+  }
+
+  /**
+   * Do any post processing needed to successfully processed files.
+   */
+  private void postProcessFiles() {
+    Iterator iter = processedFiles.iterator();
+    while (iter.hasNext()) {
+      File nextProcessedFile= (File)iter.next();
+      log.debug("Successfully processed: " + nextProcessedFile.getName());
+      if (processedDir != null) {        
+        File target = new File(processedDir, nextProcessedFile.getName());        
+        boolean success = nextProcessedFile.renameTo(target);
+        if (!success) {log.warn("Failed to move processed file: " + nextProcessedFile);}
+      }
     }
   }
 
