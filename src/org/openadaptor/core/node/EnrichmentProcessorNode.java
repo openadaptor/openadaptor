@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IMessageProcessor;
@@ -166,5 +167,15 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
     enrichmentProcessor.validate(exceptions);
   }
 
+  /**
+   * @see org.openadaptor.core.lifecycle.LifecycleComponent#getId()
+   */
+  public String getId() {
+    String id = super.getId();
+    if (id == null && enrichmentProcessor instanceof IComponent) {
+      return ((IComponent)enrichmentProcessor).getId();
+    }
+    return id;
+  }
 
 }
