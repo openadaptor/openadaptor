@@ -29,26 +29,32 @@
      
   Once it is running it will wait for command line input
     
-  type something like this...
+  type some valid xml like this...
     
     <data>hello</data>
     
-  ...and you should see it echo-ed
+  ...and it should be echoed to standard output
+  
+  Invalid xml (or anything else) will instead be routed to the failures file.
   
   type something which is not an XML doc with an element called data and the validation
-  exception will be thrown
+  exception will be thrown.
+  The adaptor is configured to route all failures to the configured output file.
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
-        <property name="processors">
-          <list>
-            <ref bean="Reader"/>
-            <ref bean="Validator"/>
-            <ref bean="Writer"/>
-          </list>
-        </property>
+       <property name="processors">
+        <list>
+         <ref bean="Reader" />
+         <ref bean="Validator" />
+         <ref bean="Writer" />
+        </list>
+       </property>
+       <property name="exceptionProcessor" ref="FailedWriter">
+        <description>this routes any exception to invalid writer</description>
+       </property>
       </bean>
     </property>
   </bean>    
@@ -65,5 +71,8 @@
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="FailedWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+   <property name="filename" value="output/failedvalidation.out"></property>
+  </bean>
   
 </beans>
