@@ -8,7 +8,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
  
   <description><![CDATA[  
-  This adaptor does the following...
+  This (contrived) adaptor does the following...
     
     * starts a servlet that listens for HTTP requests
     * applies a simple filter to records
@@ -29,7 +29,18 @@
     
   Once the adaptor is running, open test.html and send sample data to the adaptor.  
   
+  This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
+  reference implementation and automatically runs a http adaptor which you can browse 
+  at http://localhost:8082).
+  
   Graphical representation of this example can be found in example\docs\spring\demo\simple.htm
+  
+  In a realistic implementation the connectors could be reading/writing from/to
+  enterprise middleware (jms, mqseries, tibco...etc), databases, webservices, filesystems, 
+  ftp sites, tcp/ip sockets or specific system APIs. The processors could be converting this 
+  data to a cannonical form, normalising and enriching it, validating it against enterprise 
+  information models.      
+  
   ]]></description>
   
   <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
