@@ -219,6 +219,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
         if (!success) {log.warn("Failed to move processed file: " + nextProcessedFile);}
       }
     }
+    processedFiles = new ArrayList();
   }
 
   /**
