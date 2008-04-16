@@ -103,7 +103,8 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       if (processor instanceof IComponent) {
         String id = ((IComponent)processor).getId();
         if (id != null) {
-          log.info(id + " registered with " + getId());
+          String routerId = getId()!=null ? getId() : "Router";
+          log.info(id + " registered with " + routerId);
           componentMap.put(id, processor);
         } 
         else {
