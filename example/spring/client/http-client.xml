@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,8 +9,8 @@
 
    <description><![CDATA[  
 	  This is an example of an HTTP IWriteConnector definition that may be
-	  used by an Openadaptor Java client to send data to an Openadaptor with a 
-	  HTTP IReadConnector.
+	  used by an Openadaptor Java client to send data to an adaptor with a 
+	  HTTP IReadConnector such defined in example/spring/connectors/http/servlet.xml.
 	  
 	  To programmatically invoke the Openadaptor Java client you need the following 
 	  in your Java program:
@@ -26,6 +26,8 @@
 	    lib/openadaptor.jar
 	    lib/openadaptor-spring.jar
 	    lib/openadaptor-depends.jar
+	    
+	  Before executing the client program run server adaptor: http/servlet.xml  
     ]]></description>
 
 	

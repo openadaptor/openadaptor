@@ -9,7 +9,7 @@
    <description><![CDATA[  
 	  This is an example of an web service IWriteConnector definition that may be
 	  used by an Openadaptor Java client to send data to an Openadaptor with a 
-	  Web service IReadConnector.
+	  Web service IReadConnector such defined in example/spring/connectors/soap/ws-server.xml.
 	  
 	  To programmatically invoke the Openadaptor Java client you need the following 
 	  in your Java program:
@@ -26,6 +26,8 @@
 	    lib/openadaptor-spring.jar
 	    lib/openadaptor-depends.jar
 	    lib/3rdparty/activation.jar
+	    
+	   Before executing the client program run server adaptor: soap/ws-server.xml   
     ]]></description>
   
   
