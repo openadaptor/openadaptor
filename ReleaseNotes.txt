@@ -4,7 +4,7 @@ openadaptor3 production 3.4.1 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: 16th April 2008
+Date: 17th April 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.1
@@ -45,7 +45,8 @@ Miscellaneous
    exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
    will be logged only (they will not cause the adaptor to shut down).
    
- * New OAClient class may be used to send data into Openadaptor from a Java program.   
+ * New OAClient class may be used to send data into Openadaptor from a Java program. Added 
+   examples: spring/client/*.xml.  
  
  * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
  
@@ -100,6 +101,13 @@ Deprecated Components Removed
     org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor
     org.openadaptor.auxil.processor.javascript.JavascriptProcessor
     org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord 
+   
+Known Issues
+============
+
+ * Incompatibility between ScriptProcessor and JVM 1.6 was detected. Adaptors that use 
+   ScriptProcessor should use JVM 1.4 or 1.5 until this issue has been resolved.
+   
    
 =================================================
 openadaptor3 production 3.4 Release Notes
