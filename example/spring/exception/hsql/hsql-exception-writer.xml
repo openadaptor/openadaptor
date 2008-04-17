@@ -64,7 +64,7 @@
   <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
   
   <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
-    <property name="schemaURL" value="input/schema.xsd"/>
+    <property name="schemaURL" value="../input/schema.xsd"/>
   </bean>
   
   <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
