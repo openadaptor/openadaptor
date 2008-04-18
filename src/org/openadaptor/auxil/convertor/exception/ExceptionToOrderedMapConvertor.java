@@ -183,19 +183,19 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       String component = messageException.getOriginatingModule();
       map.put(componentColName, null==component ? "Unknown" : component);
               
-      /* data has to be String */
       Object data = messageException.getData();
-      if(data!=null && !(data instanceof String)){
-        data = data.toString();
-      }
-      map.put(dataColName, data);
-    
       String dataType = null;  
       if(data!=null){
         dataType = data.getClass().getName();
       }
       map.put(dataTypeColName, dataType); 
       
+      /* data has to be String */
+      if(data!=null && !(data instanceof String)){
+        data = data.toString();
+      }
+      map.put(dataColName, data);
+   
       map.put(fixedColName, "false");
       map.put(reprocessedColName, "false");
       map.put(threadNameColName, messageException.getOriginatingThreadName());
