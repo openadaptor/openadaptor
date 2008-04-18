@@ -1,4 +1,20 @@
 =================================================
+openadaptor3 production 3.4.2 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: ???
+Author: openadaptor Core Team
+
+openadaptor 3.4.2
+=======
+
+
+
+
+
+=================================================
 openadaptor3 production 3.4.1 Release Notes
 
 See licence.txt for Licence information.
