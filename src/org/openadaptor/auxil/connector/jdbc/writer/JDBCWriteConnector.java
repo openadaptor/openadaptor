@@ -183,7 +183,17 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
       }
     }
 
-    sqlWriter.initialise(jdbcConnection.getConnection());
+    /* 
+     * checking if sqlWriter is null before initialising as subclasses 
+     * may choose not to use an sqlWriter. 
+     */
+    if(sqlWriter!=null){
+      sqlWriter.initialise(jdbcConnection.getConnection());
+    }
+    else{
+      log.warn("sqlWriter not set and could not be initialised");
+    }
+    
     connected = true;
     log.info("Connector: [" + getId() + "] successfully connected.");
   }
