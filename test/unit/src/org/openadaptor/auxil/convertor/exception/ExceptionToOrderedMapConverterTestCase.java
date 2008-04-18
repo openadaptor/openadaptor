@@ -7,9 +7,12 @@ import org.openadaptor.core.AbstractTestIDataProcessor;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.MessageException;
 
+/**
+ * Unit tests for {@link ExceptionToOrderedMapConvertor}.
+ */
 public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataProcessor {
 
-	private ExceptionToOrderedMapConvertor convertor;
+   private ExceptionToOrderedMapConvertor convertor;
 
    public void setUp() throws Exception {
      super.setUp();
@@ -18,9 +21,10 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
    public void tearDown() throws Exception {
      super.tearDown();
    }
+   
    protected IDataProcessor createProcessor() {
       return new ExceptionToOrderedMapConvertor();
-    }
+   }
 
 	public void testProcessRecord() {
 		MessageException exception = new MessageException("EEEE", new RuntimeException("RUNTIME"), "SOURCE");
@@ -59,8 +63,18 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
   private void testBasicAssertions(OrderedHashMap map) {
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.TIMESTAMP));
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.EXCEPTION_CLASS));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.EXCEPTION_MESSAGE));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.CAUSE_EXCEPTION_CLASS));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.CAUSE_EXCEPTION_MESSAGE));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.STACK_TRACE));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.ADAPTOR_NAME));
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.COMPONENT));
-    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.DATA)); 
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.THREAD_NAME));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.DATA_TYPE));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.DATA));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.FIXED));
+    assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.REPROCESSED)); 
+    
   }
 
 }
