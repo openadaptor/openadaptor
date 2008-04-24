@@ -49,7 +49,6 @@ import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.core.transaction.ITransactionalResource;
 
-import com.sun.java_cup.internal.production;
 
 /**
  * Read Connector that will read all the files in a directory.
