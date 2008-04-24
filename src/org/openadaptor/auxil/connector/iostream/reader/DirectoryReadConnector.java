@@ -46,6 +46,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.core.transaction.ITransactional;
+import org.openadaptor.core.transaction.ITransactionalResource;
+
+import com.sun.java_cup.internal.production;
 
 /**
  * Read Connector that will read all the files in a directory.
@@ -64,7 +68,7 @@ import org.openadaptor.core.exception.ValidationException;
  * 
  * @author Eddy Higgins
  */
-public class DirectoryReadConnector extends AbstractStreamReadConnector {
+public class DirectoryReadConnector extends AbstractStreamReadConnector implements ITransactional {
 
   private static final Log log = LogFactory.getLog(DirectoryReadConnector.class);
 
@@ -80,6 +84,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
   private FilenameFilter filter;
   
   private Comparator fileComparator;
+
+  private Object txnResource;
 
   public DirectoryReadConnector() {
     super();
@@ -133,7 +139,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
 
   public void validate(List exceptions) {
     super.validate(exceptions);
-    if (!dir.exists() || !dir.isDirectory()) {
+    if ( dir == null) {
+      exceptions.add(new ValidationException("No read directory to process has been set.", this));
+    } else if (!dir.exists() || !dir.isDirectory()) {
       exceptions.add(new ValidationException("dir " + dir.toString() + " does not exist or is not a directory", this));
     }
     if (processedDir != null && (!processedDir.exists() || !processedDir.isDirectory())) {
@@ -174,9 +182,11 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
     if (super.isDry() && !files.isEmpty()) {
       setInputStream(getNextInputStream());
     }
+    
     if (super.isDry() && files.isEmpty()) {
-      postProcessFiles(); // OK finger in the air here..
+      postProcessFiles(); // Belt and braces..
     }
+    
     return super.isDry();
   }
 
@@ -216,7 +226,12 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
       if (processedDir != null) {        
         File target = new File(processedDir, nextProcessedFile.getName());        
         boolean success = nextProcessedFile.renameTo(target);
-        if (!success) {log.warn("Failed to move processed file: " + nextProcessedFile);}
+        if (!success) {
+          log.warn("Failed to move processed file: " + nextProcessedFile);
+          }
+        else {
+          log.info("Successfully postprocessed file: " + nextProcessedFile);
+        }
       }
     }
     processedFiles = new ArrayList();
@@ -228,6 +243,35 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
   public void setFileComparator(Comparator fileComparator) {
     this.fileComparator = fileComparator;
   }
+
+  /** 
+   * Return the resource used by Openadaptor's default Transaction Manager.
+   */
+  public Object getResource() {    
+    if (txnResource == null) { txnResource = new DirectoryReaderTransactionResource(); }
+    return txnResource;
+  }
+  
+  /**
+   * This Inner Class implements the transactional resource for this connector as used by
+   * Openadaptor's default Transaction Manager.
+   * @author scullyk
+   */
+  protected class DirectoryReaderTransactionResource implements ITransactionalResource {      
+    public void begin() {
+      // Nothing specific to do when a transaction starts.      
+    }
+   public void commit() {
+      log.debug("Commit called on [" + getId() +"]");
+      log.debug("Post-processing: " + processedFiles);
+      postProcessFiles();      
+    }
+    public void rollback(Throwable e) {
+      // Just don't post process the files so that they'll still be there for processing the next time around.     
+    }
+
+  }
+  
   
   /**
    * can be used as a value for fileComparator property, compares based on
@@ -251,5 +295,6 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector {
       File f2 = (File) o2;
       return (int) (f1.lastModified() - f2.lastModified());
     }
-  };
+  }; 
+  
 }

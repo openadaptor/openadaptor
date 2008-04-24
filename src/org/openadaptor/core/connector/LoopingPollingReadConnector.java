@@ -32,6 +32,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.transaction.ITransactional;
 
 /**
  * A polling read connector that calls to underlying read connector at fixed time 
@@ -51,7 +52,7 @@ import org.openadaptor.core.IReadConnector;
  * @see CronnablePollingReadConnector
  * @see ThrottlingReadConnector
  */
-public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
+public class LoopingPollingReadConnector extends AbstractPollingReadConnector implements ITransactional {
 
   private static final Log log = LogFactory.getLog(LoopingPollingReadConnector.class);
   
@@ -146,5 +147,8 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector {
   public long getPollIntervalMs() {
     return intervalMs;
   }
+  
+  
+  
   
 }
