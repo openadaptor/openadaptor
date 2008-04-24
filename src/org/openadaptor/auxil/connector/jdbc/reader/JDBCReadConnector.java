@@ -59,7 +59,7 @@ import java.util.List;
  * 
  * @author Eddy Higgins, Kris Lachor
  */
-public class JDBCReadConnector extends Component implements IEnrichmentReadConnector, ITransactional {
+public class JDBCReadConnector extends Component implements IEnrichmentReadConnector, ITransactional{
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
@@ -251,14 +251,15 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
           rs = statement.executeQuery(sqlForExecution);
         }
       }
-      Object [] data = null;
-
+      /* set the dry flag in case this is not the first query in this reader's lifetime */
+      dry = false;
+   
       /* 
        * Converts certain number of records from the result set, depending on batchSize value.
        * If the result set had fewer records than expected, closes the result set and turns 
        * the connector dry. 
        */
-      data = resultSetConverter.convert(rs, batchSize);          
+      Object [] data = resultSetConverter.convert(rs, batchSize);          
       if( data.length==0 ||  batchSize==IResultSetConverter.CONVERT_ALL
           || (batchSize!=IResultSetConverter.CONVERT_ALL && data.length < batchSize)){
         JDBCUtil.closeNoThrow(rs);
@@ -448,5 +449,20 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     }
 
   }
+  
+  public Object getAdmin(){
+    return new Admin();
+  }
+  
+  interface AdminMBean {
+    String describeMe();
+  }
+  
+  public class Admin implements AdminMBean {
 
+    public String describeMe() {
+      return "I'm a  read connector";
+    }
+  }
+  
 }

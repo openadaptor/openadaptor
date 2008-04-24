@@ -56,7 +56,7 @@ import java.util.List;
  * @see IReadConnector
  * @author Fred Perry, Kris Lachor, Eddy Higgins
  */
-public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector {
+public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector{
 
   private static final Log log = LogFactory.getLog(AbstractPollingReadConnector.class);
   
@@ -71,6 +71,8 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   protected int limit = 1;
   
   private int count;
+  
+  private boolean reconnect = true;
 
   /**
    * Constructor.
@@ -117,11 +119,22 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     Date now = new Date();
 
     if (delegate.isDry() && now.after(reconnectTime)) {
-      disconnect();
-      connect();
+      if(reconnect){
+        log.info("Reconnecting underlying IReadConnector");
+        disconnect();
+        connect();
+      }else{
+        /* Some read connectors, such as JDBCReadConnector, may benefit from not being reconnected */
+        log.info("Reconnection suppressed, resetting timers. Counting on the underlying IReadConnector to reset its 'dry' flag");
+        initTimes();
+        count++;
+        calculateReconnectTime();
+      }
     }
 
-    if (!delegate.isDry() && now.after(startTime)) {
+    /* If 'reconnect' flag is false, ingore the isDry() */
+    if (!delegate.isDry() && now.after(startTime)
+        || (!reconnect && now.after(startTime))) {
       return delegate.next(timeoutMs);
     } else {
       sleepNoThrow(timeoutMs);
@@ -253,6 +266,15 @@ public abstract class AbstractPollingReadConnector extends Component implements 
    */
   public IReadConnector getDelegate() {
     return delegate;
+  }
+
+  /**
+   * If set to false (default = true), the underlying IReadConnector will
+   * not be reconnected after it turns dry. Instead, the value of the 'dry'
+   * flag will be ignored and the underlying connector queried for data.
+   */
+  public void setReconnect(boolean reconnect) {
+    this.reconnect = reconnect;
   }
 
 }
