@@ -33,21 +33,21 @@
     java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
   ]]></description>
   
-  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
     <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <property name="processors">
           <list>
-            <ref bean="Poller"/>
-            <ref bean="XmlConverter"/>
-            <ref bean="Writer"/>
+            <ref bean="poller"/>
+            <ref bean="xmlConverter"/>
+            <ref bean="writer"/>
           </list>
         </property>
       </bean>
     </property>
   </bean>
   
-  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description>This defines jdbc connection.</description>
     <property name="driver" value="org.hsqldb.jdbcDriver"/>
     <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
@@ -55,16 +55,17 @@
     <property name="password" value=""/>
   </bean>
 
-  <bean id="Poller" class="org.openadaptor.core.connector.CronnablePollingReadConnector">
+  <bean id="poller" class="org.openadaptor.core.connector.CronnablePollingReadConnector">
     <description>Poller which wraps JDBC Reader below, polls immediately and then every fifth second.</description>
-    <property name="delegate" ref="Reader"/>
+    <property name="delegate" ref="reader"/>
     <property name="forceInitialPoll" value="true"/>
     <property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>
+    <property name="reconnect" value="false"/>
   </bean>
   
-  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+  <bean id="reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
     <description>Reader which polls database using configured SQL.</description>
-    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="jdbcConnection" ref="jdbcConnection"/>
     <property name="sql">
       <value>
         SELECT t.BuySell as Side, t.Qty as Size, s.ShortCode as RIC,
@@ -75,10 +76,10 @@
     </property>
   </bean>
 
-  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
     <property name="rootElementTag" value="TRADE"/>
   </bean>
   
-  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 
 </beans>
