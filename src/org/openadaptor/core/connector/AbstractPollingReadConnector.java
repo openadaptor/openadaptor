@@ -43,13 +43,22 @@ import java.util.List;
  * An abstract implementation of {@link IPollingReadConnector}. 
  * <br>
  * Based on the legacy <code>PollingReadConnector</code>.
- * When this connector polls it calls the following on the IReadConnector it is
+ * When this connector polls, and the <code>reconnect</code> flag is true,
+ * it calls the following on the IReadConnector it is
  * wrapping...
  * <ul>
  * <li>{@link IReadConnector#connect()}
  * <li>{@link IReadConnector#next(long)}, until {@link IReadConnector#isDry()}
  * returns true
  * <li>{@link IReadConnector#disconnect()}
+ * </ul>
+ * 
+ * If the <code>reconnect</code> flag is false, the following is called on 
+ * the underlying IReadConnector:
+ * 
+ * <ul>
+ * <li>{@link IReadConnector#next(long)}, until {@link IReadConnector#isDry()}
+ * returns true
  * </ul>
  * 
  * @see IPollingReadConnector
@@ -73,6 +82,14 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   private int count;
   
   private boolean reconnect = true;
+  
+  /**
+   * Flag used only in the 'reconnect = false' mode. Tells if there has been a call to 
+   * delegate#next() after refreshing the timers. If there was no such call, the 'dry' flag
+   * on the underlying reader will be ignored, as even if the delegate shows it's dry it could have
+   * new data appear in the external resource.
+   */
+  private boolean fresh = true;
 
   /**
    * Constructor.
@@ -125,16 +142,18 @@ public abstract class AbstractPollingReadConnector extends Component implements 
         connect();
       }else{
         /* Some read connectors, such as JDBCReadConnector, may benefit from not being reconnected */
-        log.info("Reconnection suppressed, resetting timers. Counting on the underlying IReadConnector to reset its 'dry' flag");
+        log.debug("Reconnection suppressed, resetting timers. Counting on the underlying IReadConnector to reset its 'dry' flag");
         initTimes();
         count++;
         calculateReconnectTime();
+        fresh = true;
       }
     }
 
     /* If 'reconnect' flag is false, ingore the isDry() */
     if (!delegate.isDry() && now.after(startTime)
-        || (!reconnect && now.after(startTime))) {
+        || (!reconnect && fresh && now.after(startTime))) {
+      fresh = false;
       return delegate.next(timeoutMs);
     } else {
       sleepNoThrow(timeoutMs);
