@@ -16,6 +16,10 @@ Connectors
  * JDBCWriteConnector#connect - additional safety checks that allow a subclass 
    to choose to use the connection from this class at the same time not using
    the sqlWriter.
+   
+ * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' flag.
+   Setting it to false causes the underlying IReadConnector not to be physically
+   reconnected on every poll. Useful when the underlying reader is JDBCReadConnector. 
 
 Processors
 ==========
