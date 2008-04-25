@@ -20,6 +20,7 @@ Connectors
  * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' flag.
    Setting it to false causes the underlying IReadConnector not to be physically
    reconnected on every poll. Useful when the underlying reader is JDBCReadConnector. 
+   Updated relevant examples.
 
 Processors
 ==========
