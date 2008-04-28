@@ -447,22 +447,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     } else {
       jdbcConnection.validate(exceptions);
     }
-
-  }
-  
-  public Object getAdmin(){
-    return new Admin();
-  }
-  
-  interface AdminMBean {
-    String describeMe();
-  }
-  
-  public class Admin implements AdminMBean {
-
-    public String describeMe() {
-      return "I'm a  read connector";
-    }
   }
   
 }
