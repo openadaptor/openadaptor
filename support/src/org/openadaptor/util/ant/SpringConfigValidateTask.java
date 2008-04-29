@@ -62,8 +62,6 @@ public class SpringConfigValidateTask extends Task {
   private static final String SPRING_GET_BEAN_METHOD = "getBean";
   private static final String SPRING_GET_BEAN_DEFINITION_METHOD = "getBeanDefinition";
   private static final String SPRING_GET_BEAN_NAMES_METHOD = "getBeanDefinitionNames";
-  private static final String BEAN_DEFINITION_IS_ABSTRACT_METHOD = "isAbstract";
-
   private List filesets = new ArrayList();
   private Path classpath;
   private boolean ignoreStubExceptions=false;
