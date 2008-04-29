@@ -17,9 +17,9 @@ Connectors
    to choose to use the connection from this class at the same time not using
    the sqlWriter.
    
- * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' flag.
+ * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' property.
    Setting it to false causes the underlying IReadConnector not to be physically
-   reconnected on every poll. Useful when the underlying reader is JDBCReadConnector. 
+   reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
    Updated relevant examples.
 
 Processors
