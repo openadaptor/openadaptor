@@ -36,23 +36,23 @@
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
   	<property name="messageProcessor">
-  		<bean class="org.openadaptor.core.router.Router">
-  			<description>
-  				This creates the simple pipeline: console reader -> Web service writer.
-  			</description>
-  			<property name="processors">
-  				<list>
-  					<ref bean="Reader" />
-  					<ref bean="WebService" />
-  				</list>
-  			</property>
-  		</bean>
+  	  <bean class="org.openadaptor.core.router.Router">
+		<description>This creates the simple pipeline: console reader -> Web service writer.</description>
+  		<property name="processors">
+  		  <list>
+  			<ref bean="reader" />
+  			<ref bean="webService" />
+  		  </list>
+  		</property>
+  	  </bean>
   	</property>
   </bean>
 
-  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>This is a write connector that reads from the console</description>
+  </bean>
   
-  <bean id="WebService" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
+  <bean id="webService" class="org.openadaptor.auxil.connector.soap.WebServiceWriteConnector">
     <description>This is a write connector that invokes a webservice</description>
     <property name="endpoint" value="http://localhost:9999/OAService?wsdl"/>
   </bean>
