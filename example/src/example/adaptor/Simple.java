@@ -35,7 +35,6 @@ import org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector;
 import org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor;
 import org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.core.router.Router;
 
 /**
  * This code example corresponds to the basic spring example in simple.xml
@@ -43,8 +42,7 @@ import org.openadaptor.core.router.Router;
  * It assembles a adaptor which read fromm stdin, converts the delimited
  * fields into a map, converts that map into xml and writes to stdout.
  * 
- * @author perryj
- *
+ * @author perryj, Kris Lachor
  */
 public class Simple {
 
@@ -79,16 +77,8 @@ public class Simple {
     
     FileWriteConnector writer = new FileWriteConnector("Writer");
     
-    // we then instantiate an Adaptor and set it's pipeline to be the
-    // array of ordered components
-    
-    Adaptor adaptor = new Adaptor();
-    Router router=new Router();
-    router.setProcessors(Arrays.asList(new Object[] {reader, mapConverter, xmlConverter, writer}));
-    adaptor.setMessageProcessor(router);
-    
-    // this starts the adaptor
-    adaptor.run();
+    // we then use a static utility method to execute the adaptor
+    Adaptor.run(Arrays.asList(new Object[] {reader, mapConverter, xmlConverter, writer}));
   }
 
 }
