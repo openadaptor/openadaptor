@@ -21,6 +21,9 @@ Connectors
    Setting it to false causes the underlying IReadConnector not to be physically
    reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
    Updated relevant examples.
+   
+ * Added example of a Sybase event driven read connector 
+   (example\spring\connectors\db\sybase\event.xml).  
 
 Processors
 ==========
