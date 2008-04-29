@@ -43,6 +43,7 @@ import org.openadaptor.util.Application;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An Adaptor is a core framework class that serves as the "top level" Runnable
@@ -544,5 +545,31 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    */
   public String getState() {
     return state.toString();
+  }
+  
+  /**
+   * Static method that facilitates programmatic execution of an adaptor.
+   * 
+   * @param processMap - a map with adaptor processors.
+   */
+  public static void run(Map processMap){
+    Router router = new Router();
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
+    router.setProcessMap(processMap);
+    adaptor.run();
+  }
+  
+  /**
+   * Static method that facilitates programmatic execution of an adaptor.
+   * 
+   * @param processors a list with adaptor processors.
+   */
+  public static void run(List processors){
+    Router router = new Router();
+    Adaptor adaptor = new Adaptor();
+    adaptor.setMessageProcessor(router);
+    router.setProcessors(processors);
+    adaptor.run();
   }
 }
