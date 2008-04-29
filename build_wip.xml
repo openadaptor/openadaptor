@@ -11,16 +11,28 @@
 	  -->
 	<property name="copyright.auto_fix" value="false" />
 
-	<!-- If set, the src.jar jarfile will not be created -->
+	<!-- If set, the src.jar jarfile will not be created 
 	<property name="suppress.src.jar" value="set" />
-		
-	<!-- If set, tests will not be executed
+	-->
+	
+	<!-- If set, tests will not be executed 
 	<property name="suppress.tests" value="set"/>
 	-->
-	<!-- If set, javadocs will not be generated
+
+	<!-- If set, javadocs will not be generated 
 	<property name="suppress.javadoc" value="set"/>
 	-->
-
+	
+	<!-- If set, springcheck will not be run
+	<property name="suppress.springcheck" value="set"/>
+	-->
+	
+	<!-- If set, example documentation will not be generated
+	
+	<property name="suppress.example.doc" value="set"/>
+	
+	-->
+	
 	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties" />
 	<property file="${basedir}/checkout.properties" />
 
@@ -80,6 +92,7 @@
 		<property name="dir.build.support.classes" value="${dir.build.support}/classes" />
 
 		<path id="classpath.lib">
+			<pathelement path="${dir.lib}" />
 			<fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip" />
 		</path>
 
@@ -87,7 +100,17 @@
 			<path refid="classpath.lib" />
 			<pathelement path="${dir.build.stub.classes}" />
 		</path>
+		
+		<echo level="info" message="Creating classpath.support with ${dir.support.lib},${dir.build.support.classes}, classpath and ${dir.support.lib}"/>
 
+		<!-- Note ant 1.6.5 seems to include incompatible version of xercesImpl -->
+	  <path id="classpath.support">
+			<pathelement path="${dir.build.support.classes}"/>
+			<pathelement path="${dir.support.lib}"/>
+			<fileset dir="${dir.support.lib}" includes="**/*.jar,**/*.zip" />
+			<path refid="classpath"/>
+		</path>
+		
 		<path id="classpath.spring">
 			<pathelement path="${dir.build.classes}" />
 			<fileset dir="${dir.spring.lib}" includes="**/*.jar,**/*.zip" />
@@ -99,6 +122,7 @@
 		<echo level="info" message="Preparing custom ant support tasks"/>
 		<taskdef name="spring.validate" classname="org.openadaptor.util.ant.SpringConfigValidateTask" classpath="${dir.build.support.classes}" />
 		<taskdef name="copyright" classname="org.openadaptor.util.ant.CopyrightTask" classpath="${dir.build.support.classes}" />
+		<taskdef name="upload" classname="org.openadaptor.util.ant.HostedFileUploadTask" classpathref="classpath.support"/>
 	</target>
 		
 	<target name="init.test" depends="init" description="Initialisation for tests">
@@ -145,12 +169,13 @@
 		<mkdir dir="${dir.build}" />
 		<mkdir dir="${dir.build.javadocs}" />
 		<mkdir dir="${dir.build.support}" />
+		<mkdir dir="${dir.build.example}" />
 	</target>
 
 	<target name="compile.support" depends="make.dirs" description="Compile support tools (custom ant tasks etc.)">
 		<echo level="info" message="Compiling support tools ${dir.support.src}->${dir.build.support.classes}" />
 		<mkdir dir="${dir.build.support.classes}" />
-		<javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath" debug="${debug}" />
+		<javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath.support" debug="${debug}" />
 	</target>
 
 	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
@@ -271,7 +296,7 @@
 	</target>
 
 	<!-- Spring Example validations -->
-	<target name="test.spring.examples" depends="test.all,init.support.tasks" description="Validate Spring example configurations">
+	<target name="test.spring.examples" depends="test.all,init.support.tasks" description="Validate Spring example configurations" unless="suppress.springcheck">
 		<echo level="info" message="Validating Spring examples in ${dir.example}" />
 		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
 			<fileset dir="${dir.example}/spring">
@@ -283,6 +308,10 @@
 				<exclude name="**/db/jee/jboss/oa*.xml" />
 			</fileset>
 		</spring.validate>
+	</target>
+
+	<target name="test.spring.examples.suppressed" description="Warns of suppressed spring examples validation" if="suppress.springcheck">
+		<echo message="*** SPRING EXAMPLES VALIDATION HAS BEEN SUPPRESSED (suppress.springcheck is set) ***" />
 	</target>
 
 	<!-- Javadoc tasks -->
@@ -303,8 +332,7 @@
 	</target>
 
 	<!-- Automatic Example documentation creation -->
-	<target name="example.doc" depends="init">
-		<mkdir dir="${dir.build.example}" />
+	<target name="example.doc" depends="init" unless="suppress.example.doc">
 		<mkdir dir="${dir.build.example}/docs"/>
 		<ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
 			<property name="docgen.project.name" value="${ant.project.name}"/>
@@ -313,6 +341,10 @@
 			<property name="docgen.input.dir" value="${dir.example}"/>
 			<property name="docgen.output.dir" value="${dir.build.example}/docs"/>
 		</ant>
+	</target>
+	
+	<target name="example.doc.suppressed" description="Warns of suppressed example doc generation" if="suppress.example.doc">
+		<echo message="*** EXAMPLE DOCUMENTATION GENERATION HAS BEEN SUPPRESSED (suppress.example.doc is set) ***" />
 	</target>
 
 	<!-- Packaging tasks -->
@@ -326,7 +358,7 @@
 		</copyright>
 	</target>
 
-	<target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,copy.configs" description="Create jars from compiled classes">
+	<target name="jars.compiled" depends="compile,test.all,test.suppressed,test.spring.examples,test.spring.examples.suppressed,copy.configs" description="Create jars from compiled classes">
 		<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}" />
 		<mkdir dir="${dir.build.lib}" />
 
@@ -493,7 +525,7 @@
 		<mkdir dir="${dir.package.licences}" />
 	</target>
 	
-	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate,example.doc" description="Create openadaptor package">
+	<target name="package" depends="jars,javadocs,package.init,javadocs.suppressed,copyright.validate,example.doc,example.doc.suppressed" description="Create openadaptor package">
 		<echo level="info" message="creating package in ${dir.package}" />
 
 		<echo level="info" message="Copying openadaptor jars from ${dir.build.lib}" />
@@ -569,6 +601,20 @@
 
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
+	<target name="upload" depends="init.support.tasks" description="Upload packaged build to hosted website">
+		<!-- filepath="${oa.zip.file}" -->
+		<upload
+			filepath="/Users/higginse/testfile.zip"
+			description="*TESTING* Automated nightly build ${build.timestamp}"
+			overwrite="true" 
+			projecturl="https://openadaptor3.openadaptor.org"
+			proxyhost="${upload.proxy.port}"
+			proxyport="${upload.proxy.port}"
+			username="${upload.username}"
+		  password="${upload.password}"
+		/>
+	</target>
+	
 	<!-- Cruise tasks for use by continuous builds -->
 	<target name="cruise" depends="clean,zip" description="Cruise target for openadaptor build" />
 </project>
