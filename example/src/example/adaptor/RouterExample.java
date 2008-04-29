@@ -41,16 +41,11 @@ import org.openadaptor.core.router.Router;
 /**
  * This example code is equivalent to the router.xml spring example
  * 
- * It shows how to construct an adaptor with a Router rather than a Pipeline.
+ * It shows how to programmatically construct an adaptor.
  * In this example the configuration of the router is identical to that of
  * the router in router.xml.
  * 
- * Typically the reasons for using a Router are that you need some kind
- * of branched linkage between the adaptor component and / or exception
- * management for specific exceptions.
- * 
  * @author perryj
- *
  */
 public class RouterExample {
 
