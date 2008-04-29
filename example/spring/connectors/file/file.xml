@@ -51,8 +51,21 @@
 		</property>
 	</bean>
 
-	<bean id="Reader"
-		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+   <bean id="Poller" class="org.openadaptor.core.connector.LoopingPollingReadConnector">
+		<description>
+			Poller which wraps File Reader and polls infinitely every 30
+			seconds. (More example config parameters commented out in
+			config XML file.)
+		</description>
+		<property name="delegate" ref="Reader" />
+		<property name="pollLimit" value="0" />
+		<!--<property name="pollIntervalHours"  value="1"/>-->
+		<!--<property name="pollIntervalMins"   value="1"/>-->
+		<!--<property name="pollIntervalSecs"   value="30"/>-->
+		<property name="pollIntervalMs" value="3000" />
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 		<description>
 			This read connector reads lines from a file.
 		</description>
@@ -69,8 +82,7 @@
 		</property>
 	</bean>
 
-	<bean id="MapConverter"
-		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+	<bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
 		<description>
 		  Strings are delimited by commas; each value in the string will be associated with the
 			corresponding 'name' in the generated map
@@ -87,14 +99,12 @@
 		</property>
 	</bean>
 
-	<bean id="XmlConverter"
-		class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+	<bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
 		<description>Convert the map into XML</description>
 		<property name="rootElementTag" value="record" />
 	</bean>
 
-	<bean id="Writer"
-		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
 		<description>This writer writes data to a file.</description>
 		<property name="filename" value="output/output.xml" />
 		<property name="append" value="false" />
