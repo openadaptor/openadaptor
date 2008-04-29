@@ -49,15 +49,19 @@ public class WebServiceListeningReadConnector extends ServletServingReadConnecto
   private static final Log log = LogFactory.getLog(WebServiceListeningReadConnector.class);
 
   private String serviceName = "openadaptorws";
+  
+  private String namespace = "http://www.openadaptor.org";
 
   /**
-   * Default constructor
-   *
+   * Default constructor.
    */
   public WebServiceListeningReadConnector() {
     super();
   }
 
+  /**
+   * Constructor.
+   */
   public WebServiceListeningReadConnector(String id) {
     super(id);
   }
@@ -120,12 +124,17 @@ public class WebServiceListeningReadConnector extends ServletServingReadConnecto
     public void init() throws ServletException
     {
       super.init();
+      
+      /* Create an XFire Service */
       ObjectServiceFactory factory = new ObjectServiceFactory(getXFire().getTransportManager(), null);
-      Service service = factory.create(IStringDataProcessor.class, serviceName, null, null);
+      Service service = factory.create(IStringDataProcessor.class, serviceName, namespace, null);
       log.info(getId() + " created webservice " + getEndpoint());
       service.setInvoker(new BeanInvoker(WebServiceListeningReadConnector.this));
+      
+      /* Register the service in the ServiceRegistry */
       getController().getServiceRegistry().register(service);
     }
+    
   }
 
 
