@@ -23,12 +23,19 @@ Connectors
    Updated relevant examples.
    
  * Added example of a Sybase event driven read connector 
-   (example\spring\connectors\db\sybase\event.xml).  
-
+   (example\spring\connectors\db\sybase\event.xml). 
+   
 Processors
 ==========
  
  * ExceptionToOrderedMapConvertor - correct detection of the message data type.
+
+Miscellaneous
+=============
+
+ * Adaptor class has two static utility methods for programmatic invocation of adaptors.
+   Simple.java (in example/src/...) demonstrates usage.
+
 
 =================================================
 openadaptor3 production 3.4.1 Release Notes
