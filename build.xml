@@ -31,6 +31,7 @@
   <property name="dir.buildtools.backup" value="${basedir}/buildtools/backup"/>
    -->
 	<property name="dir.support" value="${basedir}/support"/>
+	<property name="dir.support.lib" value="${dir.support}/lib"/>
 	 <property name="dir.buildtools.src" value="${dir.support}/src"/>
 	 <property name="dir.buildtools.classes" value="${dir.support}/classes"/>
 	 <property name="dir.buildtools.backup" value="${dir.support}/backup"/>
@@ -82,6 +83,11 @@
     <pathelement path="${dir.stub.classes}"/>
     <fileset dir="${dir.lib}" includes="**/*.jar,**/*.zip"/>
   </path>
+
+	<path id="classpath.support">
+		<path refid="classpath"/>
+		<fileset dir="${dir.support.lib}" includes="**/*.jar,**/*.zip" />
+	</path>
 
   <path id="classpath.spring">
     <pathelement path="${dir.classes}"/>
@@ -305,7 +311,8 @@
 
   <target name="compile.buildtools">
     <mkdir dir="${dir.buildtools.classes}"/>
-    <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/>
+<!--    <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpath="${dir.classes}"/> -->
+    <javac srcdir="${dir.buildtools.src}" destdir="${dir.buildtools.classes}" classpathref="classpath.support"/>
   </target>
 
   <target name="clean.buildtools">
