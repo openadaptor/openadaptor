@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: event.xml 432 2007-08-21 08:39:01Z lachork $
+  $HeadURL: https://dresdneroa3.collabnet.drkw.net/svn/dresdneroa3/trunk/example/spring/connectors/db/sybase/event.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<description><![CDATA[
+    This adaptor does the following...
+    
+      * polls for events (openadaptor event schema, see sql dir)
+      * converts the result set to XML
+      * writes data to stdout
+    
+    It is designed to illustrate the basic structure of an adaptor that polls a 
+    the openadaptor events schema
+
+    Run it like this...
+    
+      java org.openadaptor.spring.SpringAdaptor -config event.xml -bean Adaptor
+    
+    You need the following in your classpath
+  
+      lib
+      lib/dealbus.jar
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/dealbus-depends.jar
+      lib/openadaptor-depends.jar
+    
+    Once the events have been processed, their status is marked as SENT in the
+    OA_Event table. So you will need to reset the status, see database connection
+    details in this config.
+ ]]></description>  
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      <list>
+        <ref bean="PollingReader"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>	
+  </bean>
+  
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Sybase database account configuration </description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="resultSetConverter">
+      <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+    </property>
+  </bean>
+  
+  <bean id="PollingReader" class="org.openadaptor.core.connector.DBEventDrivenPollingReadConnector">
+     <property name="eventServiceID" value="1"/>
+     <property name="jdbcConnection" ref="JdbcConnection"/>
+     <property name="delegate" ref="Reader"/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>
