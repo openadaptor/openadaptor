@@ -25,6 +25,8 @@ Connectors
  * Added example of a Sybase event driven read connector 
    (example\spring\connectors\db\sybase\event.xml). 
    
+ * WebServiceListeningReadConnector - changed default namespace in the response.  
+   
 Processors
 ==========
  
