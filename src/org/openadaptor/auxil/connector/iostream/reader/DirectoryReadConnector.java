@@ -27,12 +27,14 @@
 
 package org.openadaptor.auxil.connector.iostream.reader;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +47,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.reader.string.LineReader;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.core.transaction.ITransactionalResource;
@@ -85,6 +88,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   private Comparator fileComparator;
 
   private Object txnResource;
+
+  /** Used to mark reaching the end of a single file */
+  private boolean currentStreamDry = false;
 
   public DirectoryReadConnector() {
     super();
@@ -139,7 +145,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   public void validate(List exceptions) {
     super.validate(exceptions);
     if ( dir == null) {
-      exceptions.add(new ValidationException("No read directory to process has been set.", this));
+      exceptions.add(new ValidationException("No read directory has been set.", this));
     } else if (!dir.exists() || !dir.isDirectory()) {
       exceptions.add(new ValidationException("dir " + dir.toString() + " does not exist or is not a directory", this));
     }
@@ -148,17 +154,25 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
     }
   }
   
+
+  /** Overridden to refresh the file list before getting the next stream */ 
+  protected void refreshInputStream() {
+    if (files == null || files.isEmpty()) {
+      refreshFileList();
+    }
+    super.refreshInputStream();
+  }
+
   /**
-   * establishes the ordered list of files to be processed
+   * Add all files in the directory to the file list.
    */
-  public void connect() {
+  protected void refreshFileList() {
     files.addAll(Arrays.asList(dir.listFiles(filter)));
     if (fileComparator != null) {
       Collections.sort(files, fileComparator);
     } else {
       Collections.sort(files);
     }
-    super.connect();
   }
   
   /**
@@ -169,24 +183,19 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   }
 
   /**
-   * Flag which indicates that there is no more data available to read.
+   * Returns true when no more messages to be read.
    * <br>
-   * If the end of the current input stream (super.isDry()) is reached,
+   * If the end of the current input stream (currentStreamDry) is reached,
    * but there are more files to process, it will then open the next file
    * and set the input stream accordingly. 
    * It will return true, only when there are no more files to process and
    * the current (last) file has reached the end if its input stream.
+   * NB We are ignoring the superclass implementation of isDry as it doesn't
+   * fit well with the multiple stream approach we are using.
    */
-  public boolean isDry() {
-    if (super.isDry() && !files.isEmpty()) {
-      setInputStream(getNextInputStream());
-    }
-    
-    if (super.isDry() && files.isEmpty()) {
-      postProcessFiles(); // Belt and braces..
-    }
-    
-    return super.isDry();
+  public boolean isDry() {    
+    boolean locallyDry = currentStreamDry && files.isEmpty();
+    return locallyDry;
   }
 
   /**
@@ -195,7 +204,27 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   public Object getReaderContext() {
     return currentFile.getAbsolutePath();
   }
+  
+  public Object[] next(long timeoutMs) {
+    if ( currentStreamDry ) {refreshInputStream();}    
+    try {
+      ArrayList batch = new ArrayList();
+      for (int i = 0; i < batchSize; i++) {
+        Object data = dataReader.read();
+        if (data != null) {
+          batch.add(data);
+        } else {
+          currentStreamDry = true;
+          break;
+        }
+      }
+      return batch.toArray();
+    } catch (IOException e) {
+      throw new ConnectionException("IOException, " + e.getMessage(), e, this);
+    }
+  }
 
+  /** Called to retrieve next stream. Means last stream is empty */
   private InputStream getNextInputStream() {
     closeInputStream();
     if (!files.isEmpty()) {
@@ -204,16 +233,24 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
       try {
         currentFile = f;
         log.info(getId() + " opening " + f.getAbsolutePath() + "...");
+        //isDry = false;
+        currentStreamDry = false;
         return new FileInputStream(f);
       } catch (FileNotFoundException e) {
         throw new RuntimeException("FileNotFoundException, " + e.getMessage(), e);
       }
-    } else { // This never happens. The connector goes dry first.
-      currentFile = null;
-      return null;
+    } else {
+      currentFile = null; // Todo check if this belongs here
+      return new ByteArrayInputStream(new byte[] {}); // Any empty stream will do.
     }
-  }
+  } 
 
+  protected void closeInputStream() {
+    //Todo Could do postprocess here? If Txn mechanism proves troublesome.
+    currentFile = null;
+    super.closeInputStream();
+  }
+  
   /**
    * Do any post processing needed to successfully processed files.
    */
@@ -253,7 +290,14 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   
   /**
    * This Inner Class implements the transactional resource for this connector as used by
-   * Openadaptor's default Transaction Manager.
+   * Openadaptor's default Transaction Manager. The idea is that we use the default transaction
+   * mechanism to post-process files. This guarantees that files are not moved until all
+   * downstream writers have successfully processed the messages. One proviso is that an 
+   * individual file is post processed only if all messages originating in it have been 
+   * processed, i.e we've reached the end of the file. This means that if the reader is 
+   * rerun after a failure there may be some duplicate messages as the full file will be 
+   * reprocessed.
+   * 
    * @author scullyk
    */
   protected class DirectoryReaderTransactionResource implements ITransactionalResource {      
@@ -263,14 +307,14 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
    public void commit() {
       log.debug("Commit called on [" + getId() +"]");
       log.debug("Post-processing: " + processedFiles);
-      postProcessFiles();      
+      if (currentStreamDry) { // Only post process files if we are not in mid-stream.
+        postProcessFiles();    
+      }
     }
     public void rollback(Throwable e) {
       // Just don't post process the files so that they'll still be there for processing the next time around.     
     }
-
-  }
-  
+  }  
   
   /**
    * can be used as a value for fileComparator property, compares based on

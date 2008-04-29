@@ -47,13 +47,13 @@ import org.openadaptor.core.lifecycle.LifecycleComponent;
  */
 public abstract class AbstractStreamReadConnector extends LifecycleComponent implements IReadConnector {
 
-  private InputStream inputStream;
+  protected InputStream inputStream;
 
   protected IDataReader dataReader;
 
   private boolean isDry = false;
 
-  private int batchSize = 1;
+  protected int batchSize = 1;
 
   public void setBatchSize(int batchSize) {
     this.batchSize = batchSize;
@@ -72,6 +72,10 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
   }
 
   public void connect() {
+    refreshInputStream();
+  }
+  
+  protected void refreshInputStream() {
     try {
       inputStream = getInputStream();
     } catch (IOException e) {
@@ -80,7 +84,7 @@ public abstract class AbstractStreamReadConnector extends LifecycleComponent imp
     if (!(isDry = (inputStream == null))) {
       setInputStream(inputStream);
     }
-  }
+  }  
 
   protected abstract InputStream getInputStream() throws IOException;
 
