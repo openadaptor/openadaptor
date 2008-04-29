@@ -19,7 +19,7 @@
 
     Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config event.xml -bean Adaptor
+      java org.openadaptor.spring.SpringAdaptor -config event.xml -bean Adaptor -props sybase.properties
     
     You need the following in your classpath
   
@@ -29,6 +29,8 @@
       lib/openadaptor-spring.jar
       lib/dealbus-depends.jar
       lib/openadaptor-depends.jar
+    
+    Correct Sybase connection details need to be provided in sybase.properties.
     
     Once the events have been processed, their status is marked as SENT in the
     OA_Event table. So you will need to reset the status, see database connection
