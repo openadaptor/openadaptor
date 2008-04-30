@@ -3,6 +3,11 @@
 	<description>
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
+		
+		Outstanding tasks...
+		* Make it test against the zipped package instead of the compiled classes.
+		* Build RMI ?
+		
 	</description>
 
 	<!-- 
@@ -43,8 +48,8 @@
 		<!-- Initialise tag variable (unless it has already been explicitly set) -->
 		<property name="tag" value="trunk" />
 		<echo level="info" message="Initialised $tag value is ${tag}" />
-		<echo level="warning" message="Licence file should move to top level" />
-		<property name="licence.dir" value="${basedir}/src/org/openadaptor/util" />
+		<!-- <echo level="warning" message="Licence file should move to top level" /> -->
+		<property name="licence.dir" value="${basedir}" />
 		<property name="licence.file" value="licence.txt" />
 		<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}" />
 		<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}" />
