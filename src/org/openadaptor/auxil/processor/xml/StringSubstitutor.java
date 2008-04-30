@@ -26,17 +26,15 @@
  */
 package org.openadaptor.auxil.processor.xml;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.RecordFormatException;
-import org.openadaptor.core.exception.ValidationException;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.exception.RecordFormatException;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Perform string substitution upon incoming java.lang.String payload.
@@ -64,8 +62,6 @@ import java.util.regex.PatternSyntaxException;
  */
 public class StringSubstitutor extends Component implements IDataProcessor {
 
-  private static final Log log = LogFactory.getLog(StringSubstitutor.class);
-
   private String pattern = null;
   private String replacement = "";
   private boolean replaceall = true;
@@ -79,7 +75,7 @@ public class StringSubstitutor extends Component implements IDataProcessor {
    * <br>
    * This must be set explicitly.
    * 
-   * @param pattern the pattern to search for
+   * @param regexp a regular expression defining the pattern to search for
    */
   public void setPattern(String regexp) {
     if ((regexp == null) || (regexp.trim().length() == 0)) {
@@ -169,8 +165,7 @@ public class StringSubstitutor extends Component implements IDataProcessor {
    * @return Object[] containing the substituted string.
    */
   public Object[] process(Object input) {
-    if (!(input instanceof java.lang.CharSequence))
-    {
+    if (!(input instanceof java.lang.CharSequence)) {
       throw new RecordFormatException("Expected input to be a java.lang.CharSequence (e.g. java.lang.String) but instead it was "+input.getClass().getName());
     }
 
@@ -178,8 +173,7 @@ public class StringSubstitutor extends Component implements IDataProcessor {
 
     Matcher matcher = compiledPattern.matcher(result);
         
-    if (!checkfirst || matcher.reset().find())
-    {
+    if (!checkfirst || matcher.reset().find()) {
       result = replaceall ? matcher.replaceAll(replacement) : matcher.replaceFirst(replacement);
     }
     
