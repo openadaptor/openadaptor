@@ -601,14 +601,13 @@
 
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
-	<target name="upload" depends="init.support.tasks" description="Upload packaged build to hosted website">
-		<!-- filepath="${oa.zip.file}" -->
+	<target name="upload" depends="init.support.tasks,zip" description="Upload packaged build to hosted website" if="${upload.project.url}">
 		<upload
-			filepath="/Users/higginse/testfile.zip"
-			description="*TESTING* Automated nightly build ${build.timestamp}"
+			filepath="${oa.zip.file}"
+			description="Automated build ${build.timestamp}"
 			overwrite="true" 
-			projecturl="https://openadaptor3.openadaptor.org"
-			proxyhost="${upload.proxy.port}"
+			projecturl="${upload.project.url}"
+			proxyhost="${upload.proxy.host}"
 			proxyport="${upload.proxy.port}"
 			username="${upload.username}"
 		  password="${upload.password}"
@@ -616,5 +615,5 @@
 	</target>
 	
 	<!-- Cruise tasks for use by continuous builds -->
-	<target name="cruise" depends="clean,zip" description="Cruise target for openadaptor build" />
+	<target name="cruise" depends="clean,zip,upload" description="Cruise target for openadaptor build" />
 </project>
