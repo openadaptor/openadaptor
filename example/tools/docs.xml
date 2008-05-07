@@ -74,28 +74,30 @@
 		<echo level="info" message=" Images to: ${dir.output.images}" />
 		<echo level="info" message=" Tools dir: ${dir.tools}" />
 		<echo level="info" message="" />
+
+		<!-- find expected path to graphviz utility for generating dot files -->
+		<property file="docs.properties"/>
+		<!-- Where to find XSL Transforms, Schemas, DTDs -->
+
+		<!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
+		<patternset id="example.xml.config.files">
+			<include name="spring/**/*.xml" />
+			<include name="tutorial/**/*.xml" />
+			<exclude name="**/input/*.xml" />
+			<exclude name="**/output/*.xml" />
+			<exclude name="**/spring/client/*.xml" />
+			<exclude name="**/spring/connectors/db/jee/jboss/*.xml" />
+		</patternset>
+
+		<!-- Where to find the schema files: -->
+		<xmlcatalog id="oa3XmlCatalog">
+			<entity publicId="adaptorDoc.xsl" location="${dir.xsl}/adaptorDoc.xsl" />
+			<dtd publicId="-//SPRING//DTD BEAN 2.0//EN" location="${dir.xsl}/spring-beans-2.0.dtd" />
+			<entity publicId="http://www.springframework.org/schema/beans" location="${dir.xsl}/spring-beans-2.0.xsd" />
+		</xmlcatalog>
+	
 	</target>
 
-	<!-- find expected path to graphviz utility for generating dot files -->
-	<property file="docs.properties"/>
-	<!-- Where to find XSL Transforms, Schemas, DTDs -->
-
-	<!-- Include all of the XML example files, except the ones that are not Spring XML config: -->
-	<patternset id="example.xml.config.files">
-		<include name="spring/**/*.xml" />
-		<include name="tutorial/**/*.xml" />
-		<exclude name="**/input/*.xml" />
-		<exclude name="**/output/*.xml" />
-		<exclude name="**/spring/client/*.xml" />
-		<exclude name="**/spring/connectors/db/jee/jboss/*.xml" />
-	</patternset>
-
-	<!-- Where to find the schema files: -->
-	<xmlcatalog id="oa3XmlCatalog">
-		<entity publicId="adaptorDoc.xsl" location="${dir.xsl}/adaptorDoc.xsl" />
-		<dtd publicId="-//SPRING//DTD BEAN 2.0//EN" location="${dir.xsl}/spring-beans-2.0.dtd" />
-		<entity publicId="http://www.springframework.org/schema/beans" location="${dir.xsl}/spring-beans-2.0.xsd" />
-	</xmlcatalog>
 
 	<target name="docs_prepare" depends="init">
 		<!-- Start with clean cookbook and tutorial generated docs/images directories: -->
