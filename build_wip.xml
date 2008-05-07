@@ -301,7 +301,7 @@
 	</target>
 
 	<!-- Spring Example validations -->
-	<target name="test.spring.examples" depends="test.all,init.support.tasks" description="Validate Spring example configurations" unless="suppress.springcheck">
+	<target name="test.spring.examples" depends="test.all,init.support.tasks,copy.configs" description="Validate Spring example configurations" unless="suppress.springcheck">
 		<echo level="info" message="Validating Spring examples in ${dir.example}" />
 		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
 			<fileset dir="${dir.example}/spring">
