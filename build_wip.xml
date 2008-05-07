@@ -405,7 +405,7 @@
 		</jar>
 	</target>
 
-	<target name="src.jar.suppressed" description="Warns of suppressed javadoc generation" if="suppress.src.jar">
+	<target name="src.jar.suppressed" description="Warns of suppressed source jar generation" if="suppress.src.jar">
 		<echo level="info" message="Source jar generation is suppressed (suppress.src.jar is set)" />
 	</target>
 
