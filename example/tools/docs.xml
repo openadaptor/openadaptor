@@ -108,43 +108,12 @@
 		<mkdir dir="${dir.output}" />
 		<mkdir dir="${dir.output.images}" />
 
-
-		<!-- Set the platform/installation specific path to the installed Graphviz binary: -->
-
-		<condition property="graphviz.dot" value="${graphviz.dot.windows}">
-			<and>
-				<os family="windows" />
-				<available file="${graphviz.dot.windows}" />
-			</and>
-		</condition>
-
-		<condition property="graphviz.dot" value="${graphviz.dot.unix}">
-			<and>
-				<os family="unix" />
-				<not>
-					<os name="Mac OS X" />
-				</not>
-				<available file="${graphviz.dot.unix}" />
-			</and>
-		</condition>
-		
-		<condition property="graphviz.dot" value="${graphviz.dot.unix}">
-			<and>
-				<os family="unix" />
-				<not>
-					<os name="Mac OS X" />
-				</not>
-				<available file="${graphviz.dot.linux}" />
-			</and>
-		</condition>
-
-		<condition property="graphviz.dot" value="${graphviz.dot.mac}">
-			<and>
-				<os name="Mac OS X" />
-				<available file="${graphviz.dot.mac}" />
-			</and>
-		</condition>
-		<echo level="info" message="'dot' executable is ${graphviz.dot}" />
+		<!-- Try various paths for graphviz 'dot' executable -->
+    <available file="${graphviz.dot.windows}" property="graphviz.dot" value="${graphviz.dot.windows}"/>
+	  <available file="${graphviz.dot.linux}" property="graphviz.dot" value="${graphviz.dot.linux}"/>
+	  <available file="${graphviz.dot.unix}" property="graphviz.dot" value="${graphviz.dot.unix}"/>
+	  <available file="${graphviz.dot.mac}" property="graphviz.dot" value="${graphviz.dot.mac}"/>
+		<echo level="info" message="'dot' executable is ${graphviz.dot}" />		
 	</target>
 
 
@@ -228,7 +197,7 @@
 	</target>
 
 	<!-- Generates the project Cookbook (including index pages) -->
-	<target name="docs" depends="docs_prepare,docs_images" description="Generate the documentation">
+	<target name="docs" depends="docs_images" description="Generate the documentation">
 
 		<echo level="info" message="Index generation; temporarily combining examples into ${dir.output}/cookbook_combined.xml"/>
 		<!-- Combine all cookbook examples into a single file (so we can later generate index) -->
