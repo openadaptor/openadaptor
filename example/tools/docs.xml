@@ -127,6 +127,16 @@
 				<available file="${graphviz.dot.unix}" />
 			</and>
 		</condition>
+		
+		<condition property="graphviz.dot" value="${graphviz.dot.unix}">
+			<and>
+				<os family="unix" />
+				<not>
+					<os name="Mac OS X" />
+				</not>
+				<available file="${graphviz.dot.linux}" />
+			</and>
+		</condition>
 
 		<condition property="graphviz.dot" value="${graphviz.dot.mac}">
 			<and>
