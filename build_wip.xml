@@ -415,7 +415,12 @@
 		<property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*" />
 		<echo level="info" message="includes.unqualified = ${includes.unqualified}" />
 
-		<jar destfile="${dir.build.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
+		<jar destfile="${dir.build.lib}/openadaptor-depends.jar">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Created" value="${build.timestamp}"/>
+				<attribute name="Version" value="${tag}"/>
+			</manifest>
 			<!-- ordered list of jars, only includes qualified resources -->
 			<zipfileset src="${dir.lib}/XmlSchema_1.1.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}" />
