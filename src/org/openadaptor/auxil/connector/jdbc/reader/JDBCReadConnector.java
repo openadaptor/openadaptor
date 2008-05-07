@@ -46,13 +46,13 @@ import java.sql.*;
 import java.util.List;
 
 /**
- * Generic JDBC polling read connector that replaced:
+ * Generic JDBC polling read connector that replaced several pre 3.3 JDBC read connectors:
  *
- * The legacy (pre 3.3) JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
+ * The (pre 3.3) JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
  * with no parameters.
- * The legacy (pre 3.3) JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
+ * The (pre 3.3) JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
  * with pollLimit and pollInterval parameters set.
- * The legacy (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
+ * The (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
  * DBEventDrivenPollingReadConnector. 
  * 
  * Associates a ResultSetConvertor with the connector, by default this is DEFAULT_CONVERTOR.
