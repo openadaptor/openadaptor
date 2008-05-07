@@ -158,13 +158,13 @@
 		<path id="classpath.test">
 			<pathelement path="${dir.test.lib}" />
 			<pathelement path="${licence.dir}" />
-			<pathelement path="${dir.src}" />
-			<pathelement path="${dir.spring.src}" />
 			<pathelement path="${dir.test.src.unit}" />
 			<pathelement path="${dir.test.src.integration}" />
 			<pathelement path="${dir.test.src.system}" />
 			<pathelement path="${dir.build.test.classes}" />
 			<path refid="classpath.test.compile" />
+			<pathelement path="${dir.src}" />
+			<pathelement path="${dir.spring.src}" />
 		</path>
 
 	</target>
