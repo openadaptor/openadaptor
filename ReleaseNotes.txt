@@ -38,6 +38,10 @@ Miscellaneous
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
 
+Dependencies
+============
+ * Updated lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar
+
 
 =================================================
 openadaptor3 production 3.4.1 Release Notes
