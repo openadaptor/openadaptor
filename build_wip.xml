@@ -468,7 +468,7 @@
 			<zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}" />
 			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
-			<zipfileset src="${dir.lib}/XmlSchema_1.1.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
+			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
 			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
 			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections" />
