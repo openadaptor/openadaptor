@@ -464,7 +464,7 @@
     <property name="includes.unqualified" value="org/**,javax/**,com/**,META-INF/services/**,META-INF/spring*"/>
     <jar destfile="${dir.package.lib}/openadaptor-depends.jar" manifest="lib/MANIFEST.MF">
       <!-- ordered list of jars, only includes qualified resources -->
-      <zipfileset src="${dir.lib}/XmlSchema_1.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}"/>
