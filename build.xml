@@ -478,6 +478,7 @@
       <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxws-api_2.1-1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jdom_1.0.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jetty_6.0.1.jar" includes="${includes.unqualified}"/>
@@ -524,6 +525,7 @@
       <zipfileset src="${dir.lib}/dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j"/>
       <zipfileset src="${dir.lib}/jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen"/>
       <zipfileset src="${dir.lib}/jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc"/>
+      <zipfileset src="${dir.lib}/jaxws-api_2.1-1.jar" excludes="${includes.unqualified}" prefix="jaxws-api"/>
       <zipfileset src="${dir.lib}/jdom_1.0.jar" excludes="${includes.unqualified}" prefix="jdom"/>
       <zipfileset src="${dir.lib}/jetty-util_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty-util"/>
       <zipfileset src="${dir.lib}/jetty_6.0.1.jar" excludes="${includes.unqualified}" prefix="jetty"/>

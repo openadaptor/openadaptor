@@ -74,6 +74,7 @@
 	<classpathentry kind="lib" path="lib/jetty_6.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jdom_1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen_1.1-beta-9.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-api_2.1-1.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j_1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net_1.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang_2.4.jar"/>
