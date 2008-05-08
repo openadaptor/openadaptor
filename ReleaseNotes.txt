@@ -38,9 +38,14 @@ Miscellaneous
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
 
-Dependencies
-============
- * Updated lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar
+3rd Party
+=========
+
+ * Upgraded lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar.
+ 
+ * Upgraded lib/commons-httpclient_3.0.1.jar to lib/commons-httpclient_3.1.jar
+ 
+ * Added lib/jaxws-api_2.1-1.jar (required by CXF).
 
 
 =================================================
