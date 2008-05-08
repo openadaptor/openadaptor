@@ -76,7 +76,7 @@
 	<classpathentry kind="lib" path="lib/jaxen_1.1-beta-9.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j_1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net_1.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang_2.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang_2.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-jxpath_1.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient_3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections_3.2.jar"/>

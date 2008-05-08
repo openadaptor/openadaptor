@@ -428,7 +428,7 @@
 			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-httpclient_3.1.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" includes="${includes.unqualified}" />
-			<zipfileset src="${dir.lib}/commons-lang_2.0.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/commons-lang_2.4.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-logging.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-net_1.2.2.jar" includes="${includes.unqualified}" />
       <zipfileset src="${dir.lib}/commons-dbcp-1.2.2.jar" includes="${includes.unqualified}"/>
@@ -474,7 +474,7 @@
 			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections" />
 			<zipfileset src="${dir.lib}/commons-httpclient_3.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient" />
 			<zipfileset src="${dir.lib}/commons-jxpath_1.2.jar" excludes="${includes.unqualified}" prefix="commons-jxpath" />
-			<zipfileset src="${dir.lib}/commons-lang_2.0.jar" excludes="${includes.unqualified}" prefix="commons-lang" />
+			<zipfileset src="${dir.lib}/commons-lang_2.4.jar" excludes="${includes.unqualified}" prefix="commons-lang" />
 			<zipfileset src="${dir.lib}/commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging" />
 			<zipfileset src="${dir.lib}/commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net" />
       <zipfileset src="${dir.lib}/commons-dbcp-1.2.2.jar" includes="${includes.unqualified}" prefix="commons-dbcp"/>
