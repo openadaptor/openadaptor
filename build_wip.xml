@@ -469,7 +469,6 @@
 			<zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}" />
 		        <zipfileset src="${dir.lib}/neethi-2.0.4.jar" includes="${includes.unqualified}"/>
-                        <zipfileset src="${dir.lib}/cxf-2.1.jar" includes="${includes.unqualified}"/>
 			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
 			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
@@ -518,7 +517,6 @@
 			<zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core" />
 			<zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring" />
        		        <zipfileset src="${dir.lib}/neethi-2.0.4.jar" excludes="${includes.unqualified}" prefix="neethi"/>
-                        <zipfileset src="${dir.lib}/cxf-2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
 		</jar>
 	</target>
 
