@@ -47,7 +47,11 @@ Miscellaneous
  
  * Upgraded lib/commons-lang_2.0.jar to lib/commons-lang_2.4.jar.
  
- * Added lib/jaxws-api_2.1-1.jar (required by CXF).
+ * Added lib/jaxws-api_2.1-1.jar (required for CXF).
+ 
+ * Added lib/neethi-2.0.4.jar (required for CXF).
+  
+ * Added lib/cxf-2.1.jar (required for CXF).
 
 
 =================================================
