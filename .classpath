@@ -83,7 +83,10 @@
 	<classpathentry kind="lib" path="lib/commons-collections_3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec_1.3.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="support/lib/ant.jar"/>
 	<classpathentry kind="lib" path="lib/jtds-1.2.2.jar"/>
+	<classpathentry kind="lib" path="support/lib/ant.jar"/>
+	<classpathentry kind="lib" path="support/lib/nekohtml.jar"/>
+	<classpathentry kind="lib" path="support/lib/junit.jar"/>
+	<classpathentry kind="lib" path="support/lib/httpunit.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
