@@ -18,7 +18,7 @@
 
 
 <h3>Conventions</h3>
-<p>Paths are often referred to in Unix notation, i.e. "/" rather than "\".</p>
+<p>Paths are generally referred to in Unix notation, i.e. "/" rather than "\".</p>
 
 <a name="contents"></a>
 <h2>Contents</h2>
@@ -92,7 +92,7 @@
    |  
    |- example         // README.txt and ant build file to compile code examples
    |   |
-   |   |- bin         // scripts to set your JAVACLASSPATH
+   |   |- bin         // scripts to set your JAVA CLASSPATH
    |   |- spring      // spring framework example files
    |   |- src         // java code examples
    |   |- tutorial    // a walk-through to illustrate adaptor creation
@@ -117,11 +117,11 @@
 <p>The nature of what openadaptor does means that it ships with a large number of 3rd party jars, these
   can be found in lib/3rdparty. Some of these are used by the framework but many of these relate to the
   different things it is capable of connecting to and the different data formats it can process. To make
-  your life easy we have collated the majority of the third party jars into a single jar called
+  your life easy we have conflated the majority of the third party jars into a single jar called
   <code>openadaptor-depends.jar</code> (This contains a manifest with the version of the 3rdparty jars
   that are included).</p>
 
-<p>For most of the examples that we provide it it sufficient to set your CLASSPATH with the following...</p>
+<p>For most of the examples that we provide it is sufficient to set your CLASSPATH with the following...</p>
 
 <pre>
   lib                          // so that the <a href="http://logging.apache.org" target="_blank">log4j</a> logging configuration is "picked up"
@@ -130,7 +130,7 @@
   lib/openadaptor-depends.jar  // subset of 3rd party jars upon which our core code depends
 </pre>
 
-<p>One of the ways in which Java will "pickup" it's CLASSPATH is from an environment variable named
+<p>One of the ways in which Java will "pick up" it's CLASSPATH is from an environment variable named
   CLASSPATH. The following instructions show how to set this in both a Windows command prompt and a Unix
   (bourne shell).</p>
 
@@ -230,7 +230,7 @@
   you to type something. If you type something then it should be echoed. Type Ctrl-C to quit to shutdown
   the adaptor.</p>
 
-<p>If it didn't work then you will probably see a "stack trace". The first things to check are the
+<p>If it didn't work then you will probably see a "stack trace". The first things to check are that the
   command line you typed is correct and that your CLASSPATH is correct.</p>
 <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -286,7 +286,7 @@ or
   java org.openadaptor.spring.SpringAdaptor -config simple.xml 
 </pre></div>
 
-<p>Upon startup the adaptor will generate logging output according to it's logging configuration. Note
+<p>Upon startup the adaptor will generate logging output according to its logging configuration. Note
   that a running adaptor may be stopped by typing Ctrl-C on the command line (both Windows and Unix).
   Under normal circumstances this should cause the adaptor to terminate gracefully.</p>
 
@@ -324,7 +324,7 @@ or
 -->
 <a name="environment"></a>
 <h2>Environment</h2>
-<p>Several tutorial examples require availibility of a JMS implementation. Those examples were successfully tested with a default installation of the jBoss application server in the following versions:</p>
+<p>Several tutorial examples require availability of a JMS implementation. Those examples were successfully tested with a default installation of the jBoss application server in the following versions:</p>
 
 <ul>
 <li>jboss-3.2.8 SP1</li>
