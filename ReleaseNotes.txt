@@ -41,19 +41,14 @@ Miscellaneous
 3rd Party
 =========
 
- * Upgraded lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar.
+ * Upgraded: lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar.
+             lib/commons-httpclient_3.0.1.jar to lib/commons-httpclient_3.1.jar.
+             lib/commons-lang_2.0.jar to lib/commons-lang_2.4.jar.
+             lib/xfire-all_1.2.3.jar to lib/xfire-all_1.2.6.jar.
  
- * Upgraded lib/commons-httpclient_3.0.1.jar to lib/commons-httpclient_3.1.jar.
- 
- * Upgraded lib/commons-lang_2.0.jar to lib/commons-lang_2.4.jar.
- 
- * Upgraded lib/xfire-all_1.2.3.jar to lib/xfire-all_1.2.6.jar.
- 
- * Added lib/jaxws-api_2.1-1.jar (required for CXF).
- 
- * Added lib/neethi-2.0.4.jar (required for CXF).
-  
- * Added lib/cxf-2.1.jar (required for CXF).
+ * Added:    lib/jaxws-api_2.1-1.jar (required for CXF).
+             lib/neethi-2.0.4.jar (required for CXF).
+             lib/cxf-2.1.jar (required for CXF).
 
 
 =================================================
