@@ -56,7 +56,7 @@
 	<classpathentry kind="lib" path="lib/xstream-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/XmlSchema_1.4.2.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis_from_xerces_2.9.0.jar"/>
-	<classpathentry kind="lib" path="lib/xfire-all_1.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/xfire-all_1.2.6.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl_2.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/wstx-asl_3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j_1.6.2.jar"/>

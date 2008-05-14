@@ -504,7 +504,7 @@
       <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" includes="${includes.unqualified}"/>
-      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/xfire-all_1.2.6.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/xstream-1.2.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}"/>
@@ -552,7 +552,7 @@
       <zipfileset src="${dir.lib}/wsdl4j_1.6.2.jar" excludes="${includes.unqualified}" prefix="wsdl4j"/>
       <zipfileset src="${dir.lib}/wstx-asl_3.0.1.jar" excludes="${includes.unqualified}" prefix="wstx-asl"/>
       <zipfileset src="${dir.lib}/xercesImpl_2.9.0.jar" excludes="${includes.unqualified}" prefix="xercesImpl"/>
-      <zipfileset src="${dir.lib}/xfire-all_1.2.3.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
+      <zipfileset src="${dir.lib}/xfire-all_1.2.6.jar" excludes="${includes.unqualified}" prefix="xfire-all"/>
       <zipfileset src="${dir.lib}/xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis"/>
       <zipfileset src="${dir.lib}/xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream"/>
       <zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script"/>
