@@ -19,10 +19,6 @@
     <td>Compiles everything in the work area, runs junit tests and verification targets.</td>
   </tr>
   <tr>
-    <td><code><b>package.xml</b></code></td>
-    <td>Creates a distribution archive from a compiled work area, does not actually do the compilation.</td>
-  </tr>
-  <tr>
     <td><code><b>release.xml</b></code></td>
     <td>Checks out a clean work area from the revision control system and then invokes build.xml and package.xml.</td>
   </tr>
@@ -45,11 +41,6 @@
     <td>Performs a clean compile and runs all the tests.</td>
   </tr>
   <tr>
-    <td><div class="shell"><pre>ant -f package.xml</pre></div></td>
-    <td>Creates a distribution area (in a temp directory called package), re-runs the tests and "spits out" a zip file
-    (<b>NOTE:</b> it will not compile the work area).</td>
-  </tr>
-  <tr>
     <td><div class="shell"><pre>ant -f release.xml</pre></div></td>
     <td>"Checks out" a new work area from subversion (in a temp directory called checkout), compiles ,tests and packages it.</td>
   </tr>
@@ -60,14 +51,15 @@
   </tr>
 </table>
 
-<p>As a developer you normally only invoke <code>build.xml</code>. Invoking <code>package.xml</code> 
-and <code>release</code>.xml in your local workarea is really only applicable for testing the release 
-process. See the next section for how to build a release for "general consumption".</p> 
+<p>A developer might normally only invoke <code>build.xml</code>. Invoking <code>release</code>.xml in the local workarea is really only 
+applicable for testing the release process. 
 
-<p>The compilation and packaging is parameterized by an ant property called "tag". This affects
+See the next section for how to build a release for general use.</p> 
+
+<p>The compilation and packaging is parameterised by an ant property called "tag". This affects
 the version number that is embedded in the openadpator.jar file, the javadocs, the directory
-structure and name of the distribution zip. If you do not specify the tag property then is
-gets set to "untagged", the resultant zip file will be called <code>openadaptor-untagged-bin.zip</code>, 
+structure and name of the distribution zip. If the tag property is not specified then is
+gets set to "trunk", the resultant zip file will be called <code>openadaptor-trunk-bin.zip</code>, 
  the root directory structure will be <code>openadaptor-untagged</code> and the release will echo the
   following log line</p>
 

@@ -38,8 +38,12 @@
 	
 	-->
 	
-	<echo level="warning" message="(Necessary?) Reading properties from ${basedir}/checkout.properties" />
+	<echo level="warning" message="Trying ${basedir}/checkout.properties for checkout properties" />
 	<property file="${basedir}/checkout.properties" />
+
+	<property name="hosted.upload.properties.file" value="${basedir}/support/src/hosting.properties"/>
+	<echo level="info" message="Trying ${hosted.upload.properties.file} for hosted upload config" />
+	<property file="${hosted.upload.properties.file}" />
 
 	<target name="init" description="Initialisation of tag,directories and classpaths">
 		<echo level="info" message="Initialising directories and classpaths" />
@@ -616,9 +620,12 @@
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
 	<target name="upload" depends="init.support.tasks,zip" description="Upload packaged build to hosted website" if="${upload.project.url}">
+    <!-- Set file path & description (if not already set) -->
+		<property name="upload.file.path" value="${oa.zip.file}"/>
+		<property name="upload.file.description" value="Automated build ${build.timestamp}"/>
 		<upload
-			filepath="${oa.zip.file}"
-			description="Automated build ${build.timestamp}"
+			filepath="${upload.file.path}"
+			description="${upload.file.description}"
 			overwrite="true" 
 			projecturl="${upload.project.url}"
 			proxyhost="${upload.proxy.host}"
