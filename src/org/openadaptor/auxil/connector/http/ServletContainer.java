@@ -130,6 +130,16 @@ public class ServletContainer {
     }
     if (root == null) {
       root = new Context(server, context, Context.SESSIONS);
+      /*
+       * lachork: upgrading jetty from 6.0.1 to 6.1.9 made the following step necessary.
+       * In the older Jetty the context was already started in the constructor; in
+       * newer it appears to require an explicit call to start()
+       */
+      try {
+        root.start();
+      } catch (Exception e) {
+        log.error("Failed to start Jetty servlet context", e);
+      }
     }
     return root;
   }
