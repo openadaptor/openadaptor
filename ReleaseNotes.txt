@@ -41,10 +41,12 @@ Miscellaneous
 3rd Party
 =========
 
- * Upgraded: lib/XmlSchema_1.1.jar to lib/XmlSchema_1.4.2.jar.
-             lib/commons-httpclient_3.0.1.jar to lib/commons-httpclient_3.1.jar.
-             lib/commons-lang_2.0.jar to lib/commons-lang_2.4.jar.
-             lib/xfire-all_1.2.3.jar to lib/xfire-all_1.2.6.jar.
+ * Upgraded: lib/XmlSchema_1.1.jar 1.4.2.
+             lib/commons-httpclient_3.0.1.jar to 3.1.
+             lib/commons-lang_2.0.jar to 2.4.
+             lib/xfire-all_1.2.3.jar to 1.2.6.
+             lib/jetty-6.0.1.jar to 6.1.9 (related change in ServletContainer).
+             lib/jetty-util-6.0.1.jar to 6.1.9 (related change in ServletContainer).
  
  * Added:    lib/jaxws-api_2.1-1.jar (required for CXF).
              lib/neethi-2.0.4.jar (required for CXF).
