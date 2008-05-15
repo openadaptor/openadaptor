@@ -49,8 +49,8 @@ Miscellaneous
              lib/jetty-util-6.0.1.jar to 6.1.9 (related change in ServletContainer).
  
  * Added:    lib/jaxws-api_2.1-1.jar (required for CXF).
-             lib/neethi-2.0.4.jar (required for CXF).
-             lib/cxf-2.1.jar (required for CXF).
+             lib/neethi_2.0.4.jar (required for CXF).
+             lib/cxf_2.1.jar (required for CXF).
 
 
 =================================================
