@@ -84,6 +84,13 @@
 	<classpathentry kind="lib" path="lib/commons-codec_1.3.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/jtds-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api_2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl_2.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc_2.1.6.jar"/>
+	<classpathentry kind="lib" path="lib/neethi_2.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/FastInfoset_1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/geronimo-annotation_1.0_spec_1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/cxf_2.1.jar"/>
 	<classpathentry kind="lib" path="support/lib/ant.jar"/>
 	<classpathentry kind="lib" path="support/lib/nekohtml.jar"/>
 	<classpathentry kind="lib" path="support/lib/junit.jar"/>

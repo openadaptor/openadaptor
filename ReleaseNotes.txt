@@ -48,9 +48,15 @@ Miscellaneous
              lib/jetty-6.0.1.jar to 6.1.9 (related change in ServletContainer).
              lib/jetty-util-6.0.1.jar to 6.1.9 (related change in ServletContainer).
  
- * Added:    lib/jaxws-api_2.1-1.jar (required for CXF).
-             lib/neethi_2.0.4.jar (required for CXF).
-             lib/cxf_2.1.jar (required for CXF).
+ * Added (required for CXF):    
+             lib/jaxws-api_2.1-1.jar.
+             lib/neethi_2.0.4.jar.
+             lib/FastInfoset_1.2.2.jar.
+             lib/geronimo-annotation_1.0_spec_1.1.1.jar.
+             lib/jaxb-api_2.1.jar.
+             lib/jaxb-impl_2.1.6.jar.
+             lib/jaxb-xjc_2.1.6.jar.
+             lib/cxf_2.1.jar.
 
 
 =================================================
