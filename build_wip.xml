@@ -427,6 +427,11 @@
 			</manifest>
 			<!-- ordered list of jars, only includes qualified resources -->
 		        <zipfileset src="${dir.lib}/cxf_2.1.jar" includes="${includes.unqualified}"/>
+		        <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" includes="${includes.unqualified}"/>
+                        <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" includes="${includes.unqualified}"/>
+                        <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" includes="${includes.unqualified}"/>
+                        <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" includes="${includes.unqualified}"/>
+                        <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" includes="${includes.unqualified}"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}" />
@@ -476,6 +481,11 @@
 		        <zipfileset src="${dir.lib}/neethi_2.0.4.jar" includes="${includes.unqualified}"/>
 			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
        		        <zipfileset src="${dir.lib}/cxf_2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
+                        <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" excludes="${includes.unqualified}" prefix="fast-infoset"/>
+                        <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" excludes="${includes.unqualified}" prefix="geronimo"/>
+                        <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
+                        <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
+                        <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
 			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
