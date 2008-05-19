@@ -63,8 +63,131 @@
 
     
     <h1>Sources/Sinks</h1>
+    
+    <a id="jmsConnectors"></a>
+    <h2>JMS</h2>
+     <table border="1">
+      <tr>
+        <th>Component</th>
+        <th>Property</th>
+        <th>Legacy OA</th>
+        <th>OA3</th>
+      </tr>
+      <tr>
+        <td>Source / read connector</td>
+        <td>&nbsp;</td>
+        <td>com.dresdnerkb.infobus.jms.JMSSource</td>
+        <td>org.openadaptor.auxil.connector.jms.JMSReadConnector</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Destination name</td>
+        <td>Topic.Subject</td>
+        <td>destinationName</td>
+      </tr>
+        <tr>
+        <td>&nbsp;</td>
+        <td>Durable subscription name</td>
+        <td>Topic.SubscriptionID</td>
+        <td>durableSubscriptionName</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Destination is durable</td>
+        <td>Topic.Durable</td>
+        <td>durable</td>
+      </tr>
+      </tr>
+        <tr>
+        <td>&nbsp;</td>
+        <td>Destination is transacted</td>
+        <td>Topic.Transacted</td>
+        <td>transacted</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>org.openadaptor.auxil.connector.jms.JMSConnection</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Connection factory</td>
+        <td>Topic.Factory</td>
+        <td>connectionFactoryName</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Destination user name</td>
+        <td>Topic.UserName</td>
+        <td>username</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Destination password</td>
+        <td>Topic.Password</td>
+        <td>password</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>org.openadaptor.auxil.connector.jndi.JNDIConnection</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Context factory</td>
+        <td>Topic.JndiFactory</td>
+        <td>initialContextFactory</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>JNDI provider URL</td>
+        <td>Topic.JndiProvider</td>
+        <td>providerUrl</td>
+      </tr>
+       <tr>
+        <td>&nbsp;</td>
+        <td>Security Principal</td>
+        <td>Topic.JndiUserName</td>
+        <td>securityPrincipal</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>Security Credentials</td>
+        <td>Topic.JndiPassword</td>
+        <td>securityCredentials</td>
+      </tr>
+     
+      
+      <tr>
+        <td>Sink / write connector</td>
+        <td>&nbsp;</td>
+        <td>com.dresdnerkb.infobus.jms.JMSSink</td>
+        <td>org.openadaptor.auxil.connector.jms.JMSWriteConnector</td>
+      </tr> 
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      </tr>
+      
+     </table>   
     <p>
-     TBC
+     Relevant examples:
     </p>
     
     <h1>Pipes</h1>
