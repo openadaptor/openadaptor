@@ -41,7 +41,7 @@
 	<echo level="warning" message="Trying ${basedir}/checkout.properties for checkout properties" />
 	<property file="${basedir}/checkout.properties" />
 
-	<property name="hosted.upload.properties.file" value="${basedir}/support/src/hosting.properties"/>
+	<property name="hosted.upload.properties.file" value="${basedir}/src/hosting.properties"/>
 	<echo level="info" message="Trying ${hosted.upload.properties.file} for hosted upload config" />
 	<property file="${hosted.upload.properties.file}" />
 
@@ -631,7 +631,7 @@
 
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
-	<target name="upload" depends="init.support.tasks,zip" description="Upload packaged build to hosted website" if="${upload.project.url}">
+	<target name="upload" depends="init.support.tasks,zip" description="Upload packaged build to hosted website" if="upload.project.url">
     <!-- Set file path & description (if not already set) -->
 		<property name="upload.file.path" value="${oa.zip.file}"/>
 		<property name="upload.file.description" value="Automated build ${build.timestamp}"/>
