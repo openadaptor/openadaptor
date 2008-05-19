@@ -4,7 +4,7 @@ openadaptor3 production 3.4.2 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: ???
+Date: estimated end of June 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.2
@@ -37,6 +37,8 @@ Miscellaneous
 
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
+   
+ * Migration guidelines (draft): www/migration.html  
 
 3rd Party
 =========
