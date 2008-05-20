@@ -20,6 +20,7 @@
       <li><a href="#shouldMigrate">Should I migrate yet?</a></li>
       <li><a href="#propertyFiles">Property files format</a></li>
       <li><a href="#compatibility">Compatibility</a></li>
+      <li><a href="#dataObjects">Support for DataObjects</a></li>
     
     </ol>
 
@@ -35,12 +36,6 @@
     <ol>
        <li><a href="#customPipes">Bespoke</a></li>
     </ol>
-
-    <h3>4. Testing</h3>
-    <ol>
-   
-    </ol>
-
 
 
     <hr>
@@ -60,7 +55,14 @@
      Most popular way to configure Openadaptor 3.x is via a Spring configuration file (XML). 
     </p>
     
-
+    <a id="dataObjects"></a>
+    <h2>Support for DataObjects</h2>
+    <p>
+     OA3 components have been developed that can convert data objects to and from DOXML and maps.
+     This effectively allows for manipulation of data objects within OA3 framework as well as 
+     acceping DOXML as an input, and writing out DOXML as output. Relevant examples can be viewed here:
+     example/spring/legacy/*.xml. 
+    </p>
     
     <h1>Sources/Sinks</h1>
     
@@ -161,44 +163,39 @@
      
       
       <tr>
-        <td>Sink / write connector</td>
+        <td>Sink / write connector *</td>
         <td>&nbsp;</td>
         <td>com.dresdnerkb.infobus.jms.JMSSink</td>
         <td>org.openadaptor.auxil.connector.jms.JMSWriteConnector</td>
       </tr> 
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
+
       
      </table>   
     <p>
-     Relevant examples:
+     * Mapping of properties from JMSSink to JMSWriteConnector the same as from JMSSource to JMSReadConnector.  
     </p>
-    
+    <p>  
+     Relevant examples: example/spring/connectors/jms/*.xml.
+    </p>
+    <h2>Bespoke Sources/Sinks</h2>    
+        
+        
     <h1>Pipes</h1>
     <p>
      TBC
     </p>
-    
-    <h1>Testing</h1>
+    <h2>Bespoke</h2>    
     <p>
-     TBC
+     Custom pipes, depending on the amount of custom code, should either be replaced with a script processor
+     or a custom data processor. 
+     Small amounts of custom Java code are best moved to org.openadaptor.auxil.processor.script.ScriptProcessor.
+     Examples can be found in: example/spring/processors/script/*.xml. Complex Pipes are typically migrated
+     by either direct implementation of IDataProcessor or extention of an OA3 IDataProcessor implementation that
+     closest matches the criteria (migration effort is necessary as IDataProcessor interface from OA3 differs from
+     SimpleComponent interface from the legacy Openadaptor).
+     
     </p>
+    
 
   </body>
 </html>
