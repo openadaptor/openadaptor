@@ -35,7 +35,8 @@ import org.openadaptor.util.hosting.HostedFile;
 import org.openadaptor.util.hosting.HostedFolder;
 
 /**
- * Upload a file to a hosted server
+ * Upload a file to a hosted server.
+ * <br>
  * Intended to be used for uploading nightly builds of openadaptor.
  * @author higginse
  */
@@ -43,6 +44,8 @@ public class HostedFileUploadTask extends Task {
   private String projectUrl;
   private String proxyHost;
   private int proxyPort;
+  private String proxyUsername=null;
+  private String proxyPassword=null;
   private String username;
   private String password;
 
@@ -59,6 +62,9 @@ public class HostedFileUploadTask extends Task {
   public void setProjectURL(String projectUrl) {this.projectUrl=projectUrl;}
   public void setProxyHost(String proxyHost){this.proxyHost=proxyHost;}
   public void setProxyPort(int proxyPort){this.proxyPort=proxyPort;}
+  public void setProxyUsername(String proxyUsername){this.proxyUsername=realValue(proxyUsername);}
+  public void setProxyPassword(String proxyPassword){this.proxyPassword=realValue(proxyPassword);}
+
   public void setUsername(String username){this.username=username;}
   public void setPassword(String password){this.password=password;}
 
@@ -67,6 +73,23 @@ public class HostedFileUploadTask extends Task {
   public void setDescription(String description){this.description=description;}
   public void setStatus(String status){this.status=status;}
   public void setOverwrite(boolean overwrite){this.overwrite=overwrite;}
+
+  /**
+   * Check if a property is really an unresolved placeholder.
+   * <br>
+   * If so, return null instead.
+   * @param propValue candidate value
+   * @return The value, or null if it looks like ${...}
+   */
+  private static String realValue(String propValue) {
+    String realValue=propValue;
+    if ((propValue!=null) && 
+        propValue.startsWith("${") &&
+        propValue.endsWith("}")) {
+      realValue=null;
+    }
+    return realValue;
+  }
 
   private void validate() {
     if (projectUrl==null) {
@@ -85,7 +108,7 @@ public class HostedFileUploadTask extends Task {
     HostedFolder folder=null;
     connection=new HostedConnection(projectUrl);
     if (proxyHost!=null) {
-      connection.setProxy(proxyHost, proxyPort);
+      connection.setProxy(proxyHost, proxyPort,proxyUsername,proxyPassword);
     }
     folder=connection.login(username, password);
     if(targetFolder!=null) {
@@ -98,6 +121,11 @@ public class HostedFileUploadTask extends Task {
     }
     return folder;
   }
+
+  /**
+   * This will attempt to upload a file to a hosted service using
+   * provided properties.
+   */
   public void execute() throws BuildException {
     validate();
     try {
@@ -120,15 +148,19 @@ public class HostedFileUploadTask extends Task {
     System.err.println(msg);
     throw new BuildException(msg,t);
   }
-  
+
+  /**
+   * Main task is purely for testing and should not normally be used.
+   * @param argv String arguments to main
+   */
   public static void main(String argv[]) {
     HostedFileUploadTask task=new HostedFileUploadTask();
-    task.setProjectURL("https://openadaptor3.openadaptor.org");
+    task.setProjectURL("https://some-url-here");
     task.setProxyHost("proxy");
     task.setProxyPort(8080);
     task.setUsername("username");
     task.setPassword("password");
-    
+
     task.setFilePath("uploadfilepath");
     task.setDescription("description");
     task.setOverwrite(true); 

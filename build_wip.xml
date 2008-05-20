@@ -632,9 +632,11 @@
 	<target name="clean" depends="clean.package,clean.build" description="Clean build and package areas" />
 
 	<target name="upload" depends="init.support.tasks,zip" description="Upload packaged build to hosted website" if="upload.project.url">
-    <!-- Set file path & description (if not already set) -->
+    <!-- Note that for large uploads, the ant java process may need to have it's memory size increased -->
+		<!-- Set file path & description (if not already set) -->
 		<property name="upload.file.path" value="${oa.zip.file}"/>
-		<property name="upload.file.description" value="Automated build ${build.timestamp}"/>
+		<property name="upload.file.description" value="Automated build ${build.timestamp} - TEST ONLY"/>
+		<echo level="info" message="Uploading ${oa.zip.file} via ${upload.project.url}. This may take some time"/>
 		<upload
 			filepath="${upload.file.path}"
 			description="${upload.file.description}"

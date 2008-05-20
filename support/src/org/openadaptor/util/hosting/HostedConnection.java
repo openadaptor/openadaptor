@@ -74,6 +74,8 @@ public class HostedConnection {
   public static final String PROP_PROJECT_URL="project.url";
   public static final String PROP_PROXY_HOST="proxy.host";
   public static final String PROP_PROXY_PORT="proxy.port";
+  public static final String PROP_PROXY_USERNAME="proxy.username"; //For authenticating proxy
+  public static final String PROP_PROXY_PASSWORD="proxy.password"; //For authenticating proxy
   public static final String PROP_USERNAME="username";
   public static final String PROP_PASSWORD="password";
   public static final String PROP_UPLOAD_TARGET_FOLDER="upload.target.folder";
@@ -131,19 +133,31 @@ public class HostedConnection {
     this(properties.getProperty(PROP_PROJECT_URL));
     this.properties=properties;
     if (properties.containsKey(PROP_PROXY_HOST)) {
-      setProxy(properties.getProperty(PROP_PROXY_HOST),properties.getProperty(PROP_PROXY_PORT));
+      String proxyHost=properties.getProperty(PROP_PROXY_HOST);
+      String proxyPort=properties.getProperty(PROP_PROXY_PORT);
+      String proxyUsername=properties.getProperty(PROP_PROXY_USERNAME);
+      String proxyPassword=properties.getProperty(PROP_PROXY_PASSWORD);
+      setProxy(proxyHost,proxyPort,proxyUsername,proxyPassword);
     }
   }
 
-  public void setProxy(String proxyHost, int proxyPort) {
+  public void setProxy(String proxyHost, int proxyPort,String proxyUsername,String proxyPassword) {
     log.info("Configuring proxy of "+proxyHost+":"+proxyPort);
-    wc.setProxyServer(proxyHost, proxyPort);
     System.setProperty("https.proxyHost", proxyHost);
     System.setProperty("https.proxyPort", String.valueOf(proxyPort));
+    if (proxyUsername!=null) {
+      log.info("Configuring proxy user of "+proxyUsername);
+      System.setProperty("https.proxyUser",proxyUsername);
+      System.setProperty("https.proxyPassword",proxyPassword);           
+      wc.setProxyServer(proxyHost, proxyPort,proxyUsername,proxyPassword);
+    }
+    else {
+      wc.setProxyServer(proxyHost, proxyPort);
+    }
   }
 
-  public void setProxy(String proxyHost,String proxyPortString) {
-    setProxy(proxyHost,Integer.parseInt(proxyPortString));
+  public void setProxy(String proxyHost,String proxyPortString,String proxyUsername,String proxyPassword) {
+    setProxy(proxyHost,Integer.parseInt(proxyPortString),proxyUsername,proxyPassword);
   }
 
   public HostedFolder login() {
