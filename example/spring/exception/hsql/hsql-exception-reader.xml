@@ -71,7 +71,7 @@
 	      WHERE fixed = 'true' AND REPROCESSED = 'false' 
 	    </value>
 	  </property>
-	  <!--  property name="postambleSQL" value="UPDATE ERROR_LOG SET REPROCESSED='true'"/ -->
+	  <!--  property name="postReadSql" value="UPDATE ERROR_LOG SET REPROCESSED='true'"/ -->
   </bean>
        
   <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  

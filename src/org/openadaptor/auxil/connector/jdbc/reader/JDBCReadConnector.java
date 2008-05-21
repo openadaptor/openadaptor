@@ -77,9 +77,20 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
 
   protected String sql;
 
-  private String preambleSQL=null;
-  private String postambleSQL=null;
+  /* 
+   * SQL that, if set, will get executed right after the connection is established and right before the
+   * disconnection, respectively.
+   */
+  private String afterConnectSql=null;
+  private String beforeDisconnectSql=null;
 
+  /* 
+   * SQL that, if set, will get executed right before the query is executed and right after the 
+   * result set is exhausted, respectively.
+   */
+  private String preReadSql=null;
+  private String postReadSql=null;
+  
   /* Internal state. Derived from <code>sql</code> by replacing paramter placeholders with concrete values*/
   protected String postSubstitutionSql;
 
@@ -136,16 +147,30 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    * Optional SQL to be executed before connector processes messages.
    * @param sql SQL statement
    */
-  public void setPreambleSQL(String sql) {
-    this.preambleSQL=sql;
+  public void setAfterConnectSql(String sql) {
+    this.afterConnectSql=sql;
   }
 
   /**
    * Optional SQL to be executed before connector disconnects.
    * @param sql SQL statement
    */
-  public void setPostambleSQL(String sql) {
-    this.postambleSQL=sql;
+  public void setBeforeDisconnectSql(String sql) {
+    this.beforeDisconnectSql=sql;
+  }
+  
+  /**
+   * @param sql SQL statement
+   */
+  public void setPreReadSql(String sql) {
+    this.preReadSql=sql;
+  }
+
+  /**
+   * @param sql SQL statement
+   */
+  public void setPostReadSql(String sql) {
+    this.postReadSql=sql;
   }
 
 
@@ -163,9 +188,9 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       } catch (SQLException e) {
         handleException(e, "failed to create JDBC statement");
       }
-      if (preambleSQL!=null) {
-        log.info("Executing preamble SQL: "+preambleSQL);
-        executePrePostambleSQL(preambleSQL, connection);
+      if (afterConnectSql!=null) {
+        log.info("Executing after connect SQL: " + afterConnectSql);
+        executePrePostambleSQL(afterConnectSql, connection);
       }    
     }
     else {
@@ -188,7 +213,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
 
   /**
    * Closes the <code>statement</code>.
-   * Executes the <code>postambleSQL</code>, then disconnects the JDBC connection.
+   * Executes the <code>beforeDisconnectSql</code>, then disconnects the JDBC connection.
    *
    * @throws ConnectionException 
    */
@@ -197,18 +222,18 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   
     if ( jdbcConnection == null  || (!jdbcConnection.isConnected())) {
       log.info("Connection already closed/disconnected");
-      if (postambleSQL!=null) {
-        log.warn("Unable to execute postambleSLQ - connection is not available");
+      if (beforeDisconnectSql!=null) {
+        log.warn("Unable to execute before disconnect SQL - connection is not available");
       }
       return;
     }  
 
     JDBCUtil.closeNoThrow(statement);
  
-    /* Execute postamble sql if it exists... */
-    if (postambleSQL!=null) {
-      log.info("Executing postamble SQL: "+postambleSQL);
-      executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
+    /* Execute before disconnect sql if it exists... */
+    if (beforeDisconnectSql!=null) {
+      log.info("Executing before disconnect SQL: " + beforeDisconnectSql);
+      executePrePostambleSQL(beforeDisconnectSql, jdbcConnection.getConnection());
     }
   
     /* Disconnect */
@@ -241,6 +266,13 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     log.info("Call for next record(s)");
     try {
       if (rs == null || enrichmentMode) {
+        
+        /* execute preabmle SQL */
+        if (preReadSql!=null) {
+          log.info("Executing pre read SQL: "+preReadSql);
+          executePrePostambleSQL(preReadSql, jdbcConnection.getConnection());
+        }    
+        
         /* If a callable statement's been set, ignore the sql and the statement */
         if(callableStatement != null){
           rs = callableStatement.executeQuery(); 
@@ -268,6 +300,12 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
         JDBCUtil.closeNoThrow(rs);
         rs = null;
         dry = true;
+        
+        /* execute postamble SQL */
+        if (postReadSql!=null) {
+          log.info("Executing post read SQL: " + postReadSql);
+          executePrePostambleSQL(postReadSql, jdbcConnection.getConnection());
+        }    
       }
 
       return data;

@@ -67,7 +67,7 @@
 	      where FIXED = 'true' and REPROCESSED = 'false' 
 	    </value>
 	  </property>
-	  <property name="postambleSQL">
+	  <property name="postReadSql">
 	    <value>
 	      update OA_Exception 
 	      set REPROCESSED='true'
