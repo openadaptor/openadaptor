@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id$
+ $HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[
+ Trivial adaptor to illustrate how ScriptProcessors can be used as crude inspectors.
+    
+    * reads lines of csv from a file (input/numbers.csv)
+    * prints out the record before modification
+    * converts the record to a map
+    * prints out the record after modification
+    * converts the record to XML
+    * writes to a file
+
+ It may be run as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config script-inspector.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <description>This is the bean that gets run.</description>
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="inspector1" />
+      <ref bean="MapConvertor" />
+      <ref bean="inspector2" />
+      <ref bean="XmlConvertor" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <property name="filename" value="input/numbers.csv" />
+ </bean>
+
+ <bean id="MapConvertor" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+  <description>This is simply a sample processor which manipulates the data in some way</description>
+  <property name="delimiter" value=",">
+   <description>This means that delimiters within quotes do not delimit.</description>
+  </property>
+  <property name="protectQuotedFields" value="true" />
+  <property name="stripEnclosingQuotes" value="true" />
+  <property name="fieldNames">
+   <list>
+    <value>Text</value>
+    <value>Numeric</value>
+    <value>Cardinal</value>
+   </list>
+  </property>
+ </bean>
+
+ <bean id="XmlConvertor" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <property name="rootElementTag" value="record" />
+ </bean>
+
+ <bean id="inspector1" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  <property name="script" value="print('Before: '+oa_data);" />
+ </bean>
+
+ <bean id="inspector2" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  <property name="script" value="print('During: '+oa_data);" />
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+  <description>This is a write connector that outputs the data to stdout</description>
+ </bean>
+
+</beans>
