@@ -42,6 +42,7 @@
       <ref bean="MapConvertor" />
       <ref bean="inspector2" />
       <ref bean="XmlConvertor" />
+      <ref bean="inspector3" />
       <ref bean="Writer" />
      </list>
     </property>
@@ -87,6 +88,15 @@
    <value>
    importPackage(Packages.javax.swing);
    JOptionPane.showMessageDialog(null,oa_data,"Before XML",JOptionPane.PLAIN_MESSAGE);
+   </value>
+  </property>
+ </bean>
+ 
+ <bean id="inspector3" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+   <property name="script">
+   <value>
+   importPackage(Packages.javax.swing);
+   JOptionPane.showMessageDialog(null,oa_data,"After XML",JOptionPane.PLAIN_MESSAGE);
    </value>
   </property>
  </bean>
