@@ -43,8 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jndi.JNDIConnection;
 import org.openadaptor.core.Component;
-import org.openadaptor.core.IComponent;
-import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -230,6 +228,10 @@ public class JDBCConnection extends Component {
       connectViaDataSourceName();
     } else { // last Option
       connectDirectly();
+    }
+    if (log.isDebugEnabled()) {
+      String connectionClass=(connection==null)?"<null>":connection.getClass().getName();
+      log.debug("Connected (connection class is "+connectionClass);
     }
   }
   
