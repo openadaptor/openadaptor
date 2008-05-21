@@ -74,11 +74,21 @@
  </bean>
 
  <bean id="inspector1" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
-  <property name="script" value="print('Before: '+oa_data);" />
+  <property name="script">
+   <value>
+   importPackage(Packages.javax.swing);
+   JOptionPane.showMessageDialog(null,oa_data,"before CSV",JOptionPane.PLAIN_MESSAGE);
+   </value>
+  </property>
  </bean>
 
  <bean id="inspector2" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
-  <property name="script" value="print('During: '+oa_data);" />
+   <property name="script">
+   <value>
+   importPackage(Packages.javax.swing);
+   JOptionPane.showMessageDialog(null,oa_data,"Before XML",JOptionPane.PLAIN_MESSAGE);
+   </value>
+  </property>
  </bean>
 
  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
