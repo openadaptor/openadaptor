@@ -55,7 +55,8 @@ import java.util.List;
  * The (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
  * DBEventDrivenPollingReadConnector. 
  * 
- * Associates a ResultSetConvertor with the connector, by default this is DEFAULT_CONVERTOR.
+ * Associates an IResultSetConverter with the connector, by default this 
+ * is <code>ResultSetToOrderedMapConverter</code>.
  * 
  * @author Eddy Higgins, Kris Lachor
  */
@@ -72,7 +73,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
 
   private JDBCConnection jdbcConnection;
 
-  private AbstractResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
+  private IResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
   protected String sql;
 
@@ -186,9 +187,10 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
-   * Disconnect JDBC connection
+   * Closes the <code>statement</code>.
+   * Executes the <code>postambleSQL</code>, then disconnects the JDBC connection.
    *
-   * @throws ConnectionException
+   * @throws ConnectionException 
    */
   public void disconnect() throws ConnectionException {
     log.debug("Connector: [" + getId() + "] disconnecting ....");
@@ -201,26 +203,27 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       return;
     }  
 
-   JDBCUtil.closeNoThrow(statement);
+    JDBCUtil.closeNoThrow(statement);
  
-   //Execute postamble sql if it exists...
-   if (postambleSQL!=null) {
-     log.info("Executing postamble SQL: "+postambleSQL);
-     executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
-   }
+    /* Execute postamble sql if it exists... */
+    if (postambleSQL!=null) {
+      log.info("Executing postamble SQL: "+postambleSQL);
+      executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
+    }
   
+    /* Disconnect */
     try {
       jdbcConnection.disconnect();
     } catch (SQLException e) {
       handleException(e, "Failed to disconnect JDBC connection");
     }
     log.info("Connector: [" + getId() + "] disconnected");
- }
+  }
 
   /**
-   * Inpoint has no more data
+   * Inpoint has no more data.
    *
-   * @return boolean true if there is no more input data
+   * @return boolean true if there is no more input data.
    */
   public boolean isDry() {
     return dry;
@@ -326,7 +329,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
-   * convert event ResultSet into a statement to get the actual data
+   * Converts the event ResultSet into a statement that will the actual data.
    */
   private CallableStatement convertEventToStatement(IOrderedMap row) throws SQLException {
     int cols=row.size();
@@ -411,7 +414,13 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     jdbcConnection = connection;
   }
 
-  public void setResultSetConverter(AbstractResultSetConverter resultSetConverter) {
+  /**
+   * Allows to overwrite the default IResultSetConverter.
+   * 
+   * @param resultSetConverter an IResultSetConverter that will overwrite the default
+   *        convertor.
+   */
+  public void setResultSetConverter(IResultSetConverter resultSetConverter) {
     this.resultSetConverter = resultSetConverter;
   }
 
