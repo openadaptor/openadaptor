@@ -58,8 +58,8 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   private ISQLWriter sqlWriter;// = new RawSQLWriter();
   private JDBCConnection jdbcConnection;
 
-  private String preambleSQL=null;
-  private String postambleSQL=null;
+  private String afterConnectSql=null;
+  private String beforeDisconnectSql=null;
 
 
   public JDBCWriteConnector() {
@@ -99,17 +99,35 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   /**
    * Optional SQL to be executed before connector processes messages.
    * @param sql SQL statement
+   * @deprecated use {@link #setAfterConnectSql(String)} instead.
    */
   public void setPreambleSQL(String sql) {
-    this.preambleSQL=sql;
+    this.afterConnectSql=sql;
+  }
+
+  /**
+   * Optional SQL to be executed before connector disconnects.
+   * @param sql SQL statement
+   * @deprecated use {@link #beforeDisconnectSql} instead.
+   */
+  public void setPostambleSQL(String sql) {
+    this.beforeDisconnectSql=sql;
+  }
+  
+  /**
+   * Optional SQL to be executed right after the connector has extablished physical connection.
+   * @param sql SQL statement
+   */
+  public void setAfterConnectSql(String sql) {
+    this.afterConnectSql=sql;
   }
 
   /**
    * Optional SQL to be executed before connector disconnects.
    * @param sql SQL statement
    */
-  public void setPostambleSQL(String sql) {
-    this.postambleSQL=sql;
+  public void setBeforeDisconnectSql(String sql) {
+    this.beforeDisconnectSql=sql;
   }
 
   /**
@@ -177,9 +195,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
         jdbcConnection.handleException(e, "Failed to establish JDBC connection");
       }
       //Execute preamble sql if it exists...
-      if (preambleSQL!=null) {
-        log.info("Executing preamble SQL: "+preambleSQL);
-        executePrePostambleSQL(preambleSQL, jdbcConnection.getConnection());
+      if (afterConnectSql!=null) {
+        log.info("Executing preamble SQL: "+afterConnectSql);
+        executePrePostambleSQL(afterConnectSql, jdbcConnection.getConnection());
       }
     }
 
@@ -226,9 +244,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     }
 
     //Execute postamble sql if it exists...
-    if (postambleSQL!=null) {
-      log.info("Executing postamble SQL: "+postambleSQL);
-      executePrePostambleSQL(postambleSQL, jdbcConnection.getConnection());
+    if (beforeDisconnectSql!=null) {
+      log.info("Executing postamble SQL: "+beforeDisconnectSql);
+      executePrePostambleSQL(beforeDisconnectSql, jdbcConnection.getConnection());
     }
 
     try {
