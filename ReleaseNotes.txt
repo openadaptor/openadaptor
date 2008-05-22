@@ -20,10 +20,6 @@ Connectors
  * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' property.
    Setting it to false causes the underlying IReadConnector not to be physically
    reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
-   Updated relevant examples.
-   
- * Added example of a Sybase event driven read connector 
-   (example\spring\connectors\db\sybase\event.xml). 
    
  * WebServiceListeningReadConnector - changed default namespace in the response.  
    
@@ -31,6 +27,20 @@ Processors
 ==========
  
  * ExceptionToOrderedMapConvertor - correct detection of the message data type.
+
+Examples
+========
+
+ * Added example of a Sybase event driven read connector 
+   (example\spring\connectors\db\sybase\event.xml). 
+
+ * Modified looping/cronnable connector examples as per comments above.
+ 
+ * Added new example to illustrate how to mark data as processing/processed when
+   reading from database (example\spring\connectors\db\reader2.xml)
+   
+ * Added example to illustrate how legacy 'Inspectors' may be approximated using scripts
+   (example\spring\processors\script\script-inspector.xml)
 
 Miscellaneous
 =============
