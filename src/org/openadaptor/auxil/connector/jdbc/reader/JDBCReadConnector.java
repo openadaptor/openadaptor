@@ -466,7 +466,7 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
-   * Optional SQL to be executed before connector processes messages.
+   * Optional SQL to be executed right after the connector has extablished physical connection.
    * @param sql SQL statement
    */
   public void setAfterConnectSql(String sql) {
@@ -482,6 +482,10 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
   
   /**
+   * Optional.
+   * Sets an SQL that will be executed every time before the execution of <code>sql</code>.
+   * Typically this is an UPDATE statement.
+   * 
    * @param sql SQL statement
    */
   public void setPreReadSql(String sql) {
@@ -489,10 +493,32 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
+   * Optional.
+   * Sets an SQL that will be executed every time after the result set from execution of <code>sql</code>
+   * has been exhausted. Typically this is an UPDATE statement.
+   * 
    * @param sql SQL statement
    */
   public void setPostReadSql(String sql) {
     this.postReadSql=sql;
+  }
+  
+  /**
+   * Optional.
+   * @param sql SQL statement
+   * @deprecated use {@link #setAfterConnectSql(String)} instead.
+   */
+  public void setPreambleSQL(String sql) {
+    this.afterConnectSql=sql;
+  }
+
+  /**
+   * Optional.
+   * @param sql SQL statement
+   * @deprecated use {@link #setBeforeDisconnectSql(String)} instead.
+   */
+  public void setPostambleSQL(String sql) {
+    this.beforeDisconnectSql=sql;
   }
   
 }
