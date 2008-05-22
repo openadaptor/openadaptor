@@ -27,6 +27,7 @@
 package org.openadaptor.auxil.connector.jdbc.reader;
 
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -107,12 +108,51 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     connectDBEventDrivenConnector(mockCallableStatement, pollingReadConnector);
   }
   
+  /**
+   * Test the scenario when the afterConnectSql property is set.
+   * 
+   * Tests {@link JDBCReadConnector#connect}.
+   */
+  public void testConnectWithAfterConnectSql(){
+    Mock mockAfterConnectPreparedStatement = new Mock(PreparedStatement.class);
+    String afterConnectSql = "SELECT * FROM ...";
+    mockSqlConnection.expects(once()).method("createStatement").will(returnValue(mockStatement.proxy()));
+    mockSqlConnection.expects(once()).method("prepareStatement").with(eq(afterConnectSql))
+      .will(returnValue(mockAfterConnectPreparedStatement.proxy()));
+    mockAfterConnectPreparedStatement.expects(once()).method("execute").will(returnValue(false));
+    mockAfterConnectPreparedStatement.expects(once()).method("close");
+    assertNull(jdbcReadConnector.statement);
+    jdbcReadConnector.setAfterConnectSql(afterConnectSql);
+    jdbcReadConnector.connect();
+    assertEquals(mockStatement.proxy(), jdbcReadConnector.statement);
+  }
+  
   /**   
    * Tests {@link JDBCReadConnector#disconnect}.
    */
   public void testDisonnect(){
     testConnect();
     mockStatement.expects(once()).method("close");
+    mockSqlConnection.expects(once()).method("close");
+    jdbcReadConnector.disconnect();
+  }
+  
+  /**   
+   * Tests {@link JDBCReadConnector#disconnect}.
+   */
+  public void testDisonnectWithBeforeDisconnectSql(){
+    Mock mockBeforeDisconnectPreparedStatement = new Mock(PreparedStatement.class);
+    String beforeDisconnectSql = "SELECT * FROM ...";
+    jdbcReadConnector.setBeforeDisconnectSql(beforeDisconnectSql);
+    testConnect();
+    mockStatement.expects(once()).method("close");
+    
+    /* Part specific to beforeDisconnectSql */
+    mockSqlConnection.expects(once()).method("prepareStatement").with(eq(beforeDisconnectSql))
+      .will(returnValue(mockBeforeDisconnectPreparedStatement.proxy()));
+    mockBeforeDisconnectPreparedStatement.expects(once()).method("execute").will(returnValue(false));
+    mockBeforeDisconnectPreparedStatement.expects(once()).method("close");
+    
     mockSqlConnection.expects(once()).method("close");
     jdbcReadConnector.disconnect();
   }
