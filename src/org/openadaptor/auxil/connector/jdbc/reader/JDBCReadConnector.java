@@ -29,21 +29,19 @@ package org.openadaptor.auxil.connector.jdbc.reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnector;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.Component;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 
 import java.sql.*;
-import java.util.List;
 
 /**
  * Generic JDBC polling read connector that replaced several pre 3.3 JDBC read connectors:
@@ -60,7 +58,7 @@ import java.util.List;
  * 
  * @author Eddy Higgins, Kris Lachor
  */
-public class JDBCReadConnector extends Component implements IEnrichmentReadConnector, ITransactional{
+public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichmentReadConnector, ITransactional{
 
   private static final int EVENT_RS_STORED_PROC = 3;
   private static final int EVENT_RS_PARAM1 = 5;
@@ -71,18 +69,9 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
 
   private static final String DEFAULT_PARAMETER_PLACEHOLDER = "?";
 
-  private JDBCConnection jdbcConnection;
-
   private IResultSetConverter resultSetConverter = DEFAULT_CONVERTER;
 
   protected String sql;
-
-  /* 
-   * SQL that, if set, will get executed right after the connection is established and right before the
-   * disconnection, respectively.
-   */
-  private String afterConnectSql=null;
-  private String beforeDisconnectSql=null;
 
   /* 
    * SQL that, if set, will get executed right before the query is executed and right after the 
@@ -148,18 +137,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
       log.info("JDBConnection "+jdbcConnection+" is already connected. Not reconnecting");
     }
     dry = false; 
- }
-
-  //ToDo: This should be refactored to be shared common code with 
-  //      JDBCWriteConnector.
-  private void executePrePostambleSQL(String sql, Connection connection) {
-    try {
-      PreparedStatement ps=connection.prepareStatement(sql);
-      ps.execute();
-      ps.close();
-    } catch (SQLException e) {
-      jdbcConnection.handleException(e, "Failed to execute sql: "+sql);
-    }
   }
 
   /**
@@ -399,32 +376,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   protected void handleException(SQLException e) {
     jdbcConnection.handleException(e, null);
   }
-
-  /**
-   * @see ITransactional#getResource()
-   * @see JDBCConnection#getTransactionalResource()
-   */
-  public Object getResource() {
-    if (jdbcConnection.isTransacted()) {
-      return jdbcConnection.getTransactionalResource();
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Checks that the mandatory properties have been set
-   * 
-   * @param exceptions list of exceptions that any validation errors will be appended to
-   */
-  public void validate(List exceptions) {
-    if (jdbcConnection == null) {
-      exceptions.add(new ValidationException("[jdbcConnection] property not set. " 
-          + "Please supply an instance of " + JDBCConnection.class.getName(), this));   
-    } else {
-      jdbcConnection.validate(exceptions);
-    }
-  }
   
   /**
    * Sets the batch size. A negative number of zero will correspond to {@link IResultSetConverter#CONVERT_ALL}
@@ -436,15 +387,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    */
   public void setBatchSize(int batchSize) {
     this.batchSize = batchSize;
-  }
-
-  /**
-   * Sets the jdbc connection.
-   * 
-   * @param connection a JDBCConnection
-   */
-  public void setJdbcConnection(JDBCConnection connection) {
-    jdbcConnection = connection;
   }
   
   /**
@@ -463,22 +405,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    */
   private void setCallableStatement(CallableStatement callableStatement) {
     this.callableStatement = callableStatement;
-  }
-
-  /**
-   * Optional SQL to be executed right after the connector has extablished physical connection.
-   * @param sql SQL statement
-   */
-  public void setAfterConnectSql(String sql) {
-    this.afterConnectSql=sql;
-  }
-
-  /**
-   * Optional SQL to be executed before connector disconnects.
-   * @param sql SQL statement
-   */
-  public void setBeforeDisconnectSql(String sql) {
-    this.beforeDisconnectSql=sql;
   }
   
   /**
@@ -501,24 +427,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
    */
   public void setPostReadSql(String sql) {
     this.postReadSql=sql;
-  }
-  
-  /**
-   * Optional.
-   * @param sql SQL statement
-   * @deprecated use {@link #setAfterConnectSql(String)} instead.
-   */
-  public void setPreambleSQL(String sql) {
-    this.afterConnectSql=sql;
-  }
-
-  /**
-   * Optional.
-   * @param sql SQL statement
-   * @deprecated use {@link #setBeforeDisconnectSql(String)} instead.
-   */
-  public void setPostambleSQL(String sql) {
-    this.beforeDisconnectSql=sql;
   }
   
 }

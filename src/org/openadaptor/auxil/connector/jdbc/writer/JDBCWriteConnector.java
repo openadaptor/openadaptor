@@ -29,15 +29,14 @@ package org.openadaptor.auxil.connector.jdbc.writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnector;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
-import org.openadaptor.core.connector.AbstractWriteConnector;
+import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -51,16 +50,14 @@ import java.util.List;
  *
  * @see JDBCConnection
  */
-public class JDBCWriteConnector extends AbstractWriteConnector implements ITransactional {
+public class JDBCWriteConnector extends AbstractJDBCConnector implements IWriteConnector, ITransactional {
+  
   private static final Log log = LogFactory.getLog(JDBCWriteConnector.class);
 
   //Provide a default writer delegate.
   private ISQLWriter sqlWriter;// = new RawSQLWriter();
-  private JDBCConnection jdbcConnection;
 
-  private String afterConnectSql=null;
-  private String beforeDisconnectSql=null;
-
+  private boolean connected;
 
   public JDBCWriteConnector() {
     super();
@@ -68,18 +65,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
 
   public JDBCWriteConnector(String id) {
     super(id);
-  }
-
-
-  /**
-   * Associate this connector with a JDBCConnection instance.
-   * <br>
-   * This property is manadatory
-   *
-   * @param jdbcConnection the connection details for the database.
-   */
-  public void setJdbcConnection(final JDBCConnection jdbcConnection) {
-    this.jdbcConnection = jdbcConnection;
   }
 
   /**
@@ -94,40 +79,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
    */
   public void setWriter(final ISQLWriter sqlWriter) {
     this.sqlWriter = sqlWriter;
-  }
-
-  /**
-   * Optional SQL to be executed before connector processes messages.
-   * @param sql SQL statement
-   * @deprecated use {@link #setAfterConnectSql(String)} instead.
-   */
-  public void setPreambleSQL(String sql) {
-    this.afterConnectSql=sql;
-  }
-
-  /**
-   * Optional SQL to be executed before connector disconnects.
-   * @param sql SQL statement
-   * @deprecated use {@link #beforeDisconnectSql} instead.
-   */
-  public void setPostambleSQL(String sql) {
-    this.beforeDisconnectSql=sql;
-  }
-  
-  /**
-   * Optional SQL to be executed right after the connector has extablished physical connection.
-   * @param sql SQL statement
-   */
-  public void setAfterConnectSql(String sql) {
-    this.afterConnectSql=sql;
-  }
-
-  /**
-   * Optional SQL to be executed before connector disconnects.
-   * @param sql SQL statement
-   */
-  public void setBeforeDisconnectSql(String sql) {
-    this.beforeDisconnectSql=sql;
   }
 
   /**
@@ -177,7 +128,6 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
   }
 
 
-
   /**
    * Creates a connection to the database. 
    * Reuses existing connection if one already exists. 
@@ -216,20 +166,7 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     log.info("Connector: [" + getId() + "] successfully connected.");
   }
 
-  //ToDo: This should be refactored to be shared common code with 
-  //      JDBCReadConnector.
-
-  private void executePrePostambleSQL(String sql, Connection connection) {
-    try {
-      PreparedStatement ps=connection.prepareStatement(sql);
-      ps.execute();
-      ps.close();
-    } catch (SQLException e) {
-      jdbcConnection.handleException(e, "Failed to execute sql: "+sql);
-    }
-  }
-
-
+  
   /**
    * Closes the connection to the database.
    *
@@ -269,5 +206,9 @@ public class JDBCWriteConnector extends AbstractWriteConnector implements ITrans
     }
 
     return null;
+  }
+  
+  public boolean isConnected() {
+    return connected;
   }
 }
