@@ -13,6 +13,14 @@ openadaptor 3.4.2
 Connectors
 ==========
 
+ * JDBCReadConnector & JDBCWriteConnector - preambleSQL and postambleSQL properties
+   renamed to afterConnectSql and beforeDisconnectSql, respectively. Setters for 
+   the old properties were deprecated.
+
+ * JDBCReadConnector - new properties preReadSql and postReadSql that get executed
+   right before the actual SQL that returns a result set, and right after the result
+   set has been read, respectively.
+
  * JDBCWriteConnector#connect - additional safety checks that allow a subclass 
    to choose to use the connection from this class at the same time not using
    the sqlWriter.
