@@ -43,7 +43,7 @@ import org.openadaptor.core.exception.ConnectionException;
 /**
  * Unit tests for {@link JDBCReadConnector}. 
  * The tests verify that {@link JDBCReadConnector}, perhaps in combination with a {@link IPollingReadConnector}
- * implementation, is compatible with the legacy JDBC read connectors which it has replaced:
+ * implementation, is compatible with the pre 3.3 JDBC read connectors which it has replaced:
  * {@OldJDBCReadConnector)
  * {@JDBCPollConnector}
  * {@JDBCEventReadConnector}
@@ -229,6 +229,72 @@ public class JDBCReadConnectorUnitTestCase extends AbstractJDBCConnectorTest{
     jdbcReadConnector.next(10);
     assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
   }
+  
+  
+  /**
+   * Based on {@link #testNextOneRow2()} but also sets 'preReadSql' property.
+   */
+  public void testNextOneRow2WithPreReadSql() {
+    Mock mockPreReadSqlPreparedStatement = new Mock(PreparedStatement.class);
+    String preReadSql = "UPDATE ...";
+    jdbcReadConnector.setPreReadSql(preReadSql);
+    
+    setMocksToReturnNumberOfRows(1);
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+   
+    /* Part specific to preReadSql */
+    mockSqlConnection.expects(once()).method("prepareStatement").with(eq(preReadSql))
+      .will(returnValue(mockPreReadSqlPreparedStatement.proxy()));
+    mockPreReadSqlPreparedStatement.expects(once()).method("execute").will(returnValue(false));
+    mockPreReadSqlPreparedStatement.expects(once()).method("close");
+    
+    mockResultSet.expects(once()).method("close"); 
+   
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
+    assertTrue("Unexpected result type", arr[0] instanceof Map);
+    assertTrue("Unexpected result count", arr.length == 1);
+    Map map = (Map) arr[0];
+    String s = (String) map.get(COL1);
+    assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    jdbcReadConnector.next(10);
+    assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
+  }
+  
+  
+  /**
+   * Based on {@link #testNextOneRow2()} but also sets 'postReadSql' property.
+   */
+  public void testNextOneRow2WithPostReadSql() {
+    Mock mockPostReadSqlPreparedStatement = new Mock(PreparedStatement.class);
+    String postReadSql = "UPDATE ...";
+    jdbcReadConnector.setPostReadSql(postReadSql);
+    
+    setMocksToReturnNumberOfRows(1);
+    mockResultSet.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(returnValue(true), returnValue(false)));
+    mockResultSet.expects(once()).method("close"); 
+    
+    /* Part specific to postReadSql */
+    mockSqlConnection.expects(once()).method("prepareStatement").with(eq(postReadSql))
+      .will(returnValue(mockPostReadSqlPreparedStatement.proxy()));
+    mockPostReadSqlPreparedStatement.expects(once()).method("execute").will(returnValue(false));
+    mockPostReadSqlPreparedStatement.expects(once()).method("close");
+    
+    jdbcReadConnector.connect();
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    Object [] arr = (Object []) jdbcReadConnector.next(10);
+    assertTrue("Unexpected result type", arr[0] instanceof Map);
+    assertTrue("Unexpected result count", arr.length == 1);
+    Map map = (Map) arr[0];
+    String s = (String) map.get(COL1);
+    assertTrue("Unexpected result", s.equals(TEST_STRING));
+    assertFalse("Read connector dry to soon.", jdbcReadConnector.isDry());
+    jdbcReadConnector.next(10);
+    assertTrue("Read connector not dry. Should be.", jdbcReadConnector.isDry());
+  }
+  
   
   /**
    * Test method for {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector#next(long)}.
