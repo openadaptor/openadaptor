@@ -126,55 +126,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
-   * Set sql statement to be executed
-   *
-   * @param sql
-   */
-  public void setSql(final String sql) { 
-    this.sql = sql;
-  }
-
-  /**
-   * Sets a prepared or callable (ready to execute) statement on this connector.
-   * 
-   * @param callableStatement a ready to execute statement
-   */
-  private void setCallableStatement(CallableStatement callableStatement) {
-    this.callableStatement = callableStatement;
-  }
-
-  /**
-   * Optional SQL to be executed before connector processes messages.
-   * @param sql SQL statement
-   */
-  public void setAfterConnectSql(String sql) {
-    this.afterConnectSql=sql;
-  }
-
-  /**
-   * Optional SQL to be executed before connector disconnects.
-   * @param sql SQL statement
-   */
-  public void setBeforeDisconnectSql(String sql) {
-    this.beforeDisconnectSql=sql;
-  }
-  
-  /**
-   * @param sql SQL statement
-   */
-  public void setPreReadSql(String sql) {
-    this.preReadSql=sql;
-  }
-
-  /**
-   * @param sql SQL statement
-   */
-  public void setPostReadSql(String sql) {
-    this.postReadSql=sql;
-  }
-
-
-  /**
    * Set up connection to database
    */
   public void connect() {
@@ -432,27 +383,6 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
   }
 
   /**
-   * Sets the batch size. A negative number of zero will correspond to {@link IResultSetConverter#CONVERT_ALL}
-   * - the batch will contain all rows from the result set. Batch size equal to 1 corresponds to
-   * {@link IResultSetConverter#CONVERT_ONE}, which'll fetch the next records from the result set
-   * on every call to {@link #next(long)}.
-   * 
-   * @param batchSize the batch size
-   */
-  public void setBatchSize(int batchSize) {
-    this.batchSize = batchSize;
-  }
-
-  /**
-   * Sets the jdbc connection.
-   * 
-   * @param connection a JDBCConnection
-   */
-  public void setJdbcConnection(JDBCConnection connection) {
-    jdbcConnection = connection;
-  }
-
-  /**
    * Allows to overwrite the default IResultSetConverter.
    * 
    * @param resultSetConverter an IResultSetConverter that will overwrite the default
@@ -494,6 +424,75 @@ public class JDBCReadConnector extends Component implements IEnrichmentReadConne
     } else {
       jdbcConnection.validate(exceptions);
     }
+  }
+  
+  /**
+   * Sets the batch size. A negative number of zero will correspond to {@link IResultSetConverter#CONVERT_ALL}
+   * - the batch will contain all rows from the result set. Batch size equal to 1 corresponds to
+   * {@link IResultSetConverter#CONVERT_ONE}, which'll fetch the next records from the result set
+   * on every call to {@link #next(long)}.
+   * 
+   * @param batchSize the batch size
+   */
+  public void setBatchSize(int batchSize) {
+    this.batchSize = batchSize;
+  }
+
+  /**
+   * Sets the jdbc connection.
+   * 
+   * @param connection a JDBCConnection
+   */
+  public void setJdbcConnection(JDBCConnection connection) {
+    jdbcConnection = connection;
+  }
+  
+  /**
+   * Set sql statement to be executed
+   *
+   * @param sql
+   */
+  public void setSql(final String sql) { 
+    this.sql = sql;
+  }
+
+  /**
+   * Sets a prepared or callable (ready to execute) statement on this connector.
+   * 
+   * @param callableStatement a ready to execute statement
+   */
+  private void setCallableStatement(CallableStatement callableStatement) {
+    this.callableStatement = callableStatement;
+  }
+
+  /**
+   * Optional SQL to be executed before connector processes messages.
+   * @param sql SQL statement
+   */
+  public void setAfterConnectSql(String sql) {
+    this.afterConnectSql=sql;
+  }
+
+  /**
+   * Optional SQL to be executed before connector disconnects.
+   * @param sql SQL statement
+   */
+  public void setBeforeDisconnectSql(String sql) {
+    this.beforeDisconnectSql=sql;
+  }
+  
+  /**
+   * @param sql SQL statement
+   */
+  public void setPreReadSql(String sql) {
+    this.preReadSql=sql;
+  }
+
+  /**
+   * @param sql SQL statement
+   */
+  public void setPostReadSql(String sql) {
+    this.postReadSql=sql;
   }
   
 }
