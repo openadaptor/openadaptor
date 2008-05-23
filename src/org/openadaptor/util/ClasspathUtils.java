@@ -27,12 +27,10 @@
 
 package org.openadaptor.util;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -84,40 +82,6 @@ public class ClasspathUtils {
     });
     return (Properties)result;
   }
-
-  /**
-   * Derive the base install path of oa.
-   * <br>
-   * It works by guessing that the root directory of the install
-   * is the parent of the directory containing the jar from which this class
-   * is loaded.
-   * <br>
-   * Note that it will not work if this class was not located within a jar in the
-   * correct structure.
-   * @return String containing the path to the openadaptor install dir.
-   */
-  public static String deriveOAHomePath() {
-    return getClassJarDirectory(ClasspathUtils.class);
-  }
-  
-  private static URL getClassLocation(Class classToLocate) {
-    return classToLocate.getProtectionDomain().getCodeSource().getLocation();
-  }
-
-  private static File getClassFile(Class classToLocate) {
-    return new File(getClassLocation(classToLocate).getPath());
-  }
-
-  private static String getClassJarDirectory(Class classToLocate) {
-    String result=null;
-
-    File file=getClassFile(classToLocate);
-    result=file.getParent();
-    return result;
-  }
-
-
-
 
   private static Object loadResource(String[] candidateAbsoluteResourceNames,StreamLoader loader) {
     Object result=null;
