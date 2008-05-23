@@ -372,6 +372,9 @@
 		<mkdir dir="${dir.build.lib}" />
 
 		<jar destfile="${dir.build.lib}/openadaptor.jar">
+	     <manifest>
+	        <attribute name="Main-Class" value="org.openadaptor.JarLauncher"/>
+	      </manifest>
 			<fileset dir="${dir.build.classes}" />
 			<fileset dir="${licence.dir}" includes="${licence.file}" />
 		</jar>

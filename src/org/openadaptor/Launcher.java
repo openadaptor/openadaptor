@@ -73,7 +73,7 @@ import java.util.Properties;
  *
  */
 public class Launcher implements Runnable {
-  private static final String PROP_PREFIX="oa.";
+  protected static final String PROP_PREFIX="oa.";
   public static final String PROP_OA_GEN_CP="genclasspath";
   public static final String PROP_OA_HOME="home";
   public static final String PROP_OA_LIB="lib";
@@ -100,7 +100,7 @@ public class Launcher implements Runnable {
 
   private boolean generateClasspath=false;
 
-  private Launcher(String[] args) {
+  protected Launcher(String[] args) {
     launchArgs=extractSystemProperties(args);
     generateClasspath=Boolean.getBoolean(PROP_PREFIX+PROP_OA_GEN_CP);
     String[] tmpArgs=new String[launchArgs.length*2];
