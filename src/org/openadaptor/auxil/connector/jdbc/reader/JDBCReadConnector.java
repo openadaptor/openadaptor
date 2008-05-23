@@ -30,7 +30,6 @@ package org.openadaptor.auxil.connector.jdbc.reader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnector;
-import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IEnrichmentReadConnector;
