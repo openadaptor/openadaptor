@@ -113,6 +113,12 @@ public abstract class AbstractJDBCConnector extends Component implements ITransa
     this.beforeDisconnectSql=sql;
   }
   
+  /**
+   * Just a utility method to execute an SQL statement.
+   * 
+   * @param sql - an SQL statement
+   * @param connection an established conenction
+   */
   protected void executePrePostambleSQL(String sql, Connection connection) {
     try {
       PreparedStatement ps=connection.prepareStatement(sql);
