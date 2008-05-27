@@ -16,7 +16,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-registration-server.xml -props sybase.properties
+    java org.openadaptor.spring.SpringAdaptor -config ws-register-server.xml -props db.properties
     
   You need the following in your classpath
   
@@ -65,10 +65,10 @@
   
   <bean id="registrationDbConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
     <description> Sybase database account configuration </description>
-    <property name="driver" value="${sybase.driver}"/>
-    <property name="url" value="${sybase.url}"/>
-    <property name="username" value="${sybase.username}"/>
-    <property name="password" value="${sybase.password}"/>
+    <property name="driver" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.username}"/>
+    <property name="password" value="${db.password}"/>
   </bean>
   
   <bean id="mapEnricherTimestamp" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
