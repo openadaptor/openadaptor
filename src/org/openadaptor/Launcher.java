@@ -82,8 +82,12 @@ public class Launcher implements Runnable {
   public static final String OA_JAR="openadaptor.jar";
   public static final String OA_DEPENDS_JAR="openadaptor-depends.jar";
   public static final String OA_SPRING_JAR="openaadaptor-spring.jar";
+  //Jars to blacklist
+  public static final String OA_BOOTSTRAP_JAR="bootstrap.jar";
+  public static final String OA_STUB_JAR="openadaptor-stub.jar";
 
   private static final String[] OA_PRIORITISED_JARS={OA_SPRING_JAR,OA_DEPENDS_JAR,OA_JAR,""};
+  private static final String[] OA_BLACKLISTED_JARS={OA_BOOTSTRAP_JAR,OA_STUB_JAR};
 
   /**
    * Preferred launch class
@@ -139,7 +143,7 @@ public class Launcher implements Runnable {
 
     String oaLibPath=getPath(props,PROP_PREFIX+PROP_OA_LIB,oaHome,PROP_OA_LIB);
     System.out.println("OA Lib Location is: "+oaLibPath);
-    entries.addAll(getJars(oaLibPath,OA_PRIORITISED_JARS));
+    entries.addAll(getJars(oaLibPath,OA_PRIORITISED_JARS,OA_BLACKLISTED_JARS));
 
     return (File[])entries.toArray(new File[entries.size()]);
   }
@@ -179,10 +183,22 @@ public class Launcher implements Runnable {
   }
 
 
-  private static List getJars(String path,String[] prioritisedEntries) {
+  private static List getJars(String path,String[] prioritisedEntries,String[] blacklistedEntries) {
     List libEntries=getJars(path);
+    if (blacklistedEntries!=null) {
+      //Remove any blacklisted entries from the classpath of jars.
+      String[] blacklistedJars=prependBasePath(path, blacklistedEntries);
+      List blacklistedFiles=new ArrayList();
+      
+      for (int i=0;i<blacklistedJars.length;i++) {
+        blacklistedFiles.add(new File(blacklistedJars[i]));
+      }
+      //System.err.println("Entries before blacklisting: "+libEntries.size());
+      libEntries.removeAll(blacklistedFiles);
+      //System.err.println("Entries after blacklisting:  "+libEntries.size());
+    }
     if ((prioritisedEntries!=null) && (prioritisedEntries.length>0)){
-      String[] prioritisedJars=generatePriorityList(path,prioritisedEntries);
+      String[] prioritisedJars=prependBasePath(path,prioritisedEntries);
       prioritise(libEntries, prioritisedJars);
     }
     return libEntries;
@@ -299,26 +315,6 @@ public class Launcher implements Runnable {
    */
   public static void main(String[] args) {
     System.err.println("THIS CLASS IS NOT FOR PRODUCTION USE - IT IS STILL A PROTOTYPE");
-//  String[] unsorted={"b","x","f","d","z","e","r"};
-//  List prios=Arrays.asList(new String[] {"x","y","z"});
-//  List prios2=Arrays.asList(new String[] {"a","b","c"});
-
-//  List l1=Arrays.asList(unsorted);
-//  prioritise(l1, prios);
-//  String[] s1=(String[])l1.toArray(new String[l1.size()]);
-//  for (int i=0;i<s1.length;i++) {
-//  System.out.print(s1[i]+" ");
-//  }
-//  System.out.println();
-//  unsorted=new String[]{"b","x","f","d","z","e","r"};
-//  List l2=Arrays.asList(unsorted);
-//  prioritise(l2, prios2);
-//  String[] s2=(String[])l2.toArray(new String[l2.size()]);
-//  for (int i=0;i<unsorted.length;i++) {
-//  System.out.print(s2[i]+" ");
-//  }
-//  System.out.println();
-
     new Launcher(args).run();
   }
 
@@ -371,12 +367,12 @@ public class Launcher implements Runnable {
   }
 
   /**
-   * Prepend a path to an array of Strings.
+   * Prepend a base path to an array of Strings.
    * @param path
    * @param entries
    * @return
    */
-  private static String[] generatePriorityList(String path,String[] entries){
+  private static String[] prependBasePath(String path,String[] entries){
     String[] result=new String[entries.length];
     for (int i=0;i<result.length;i++) {
       String entry=entries[i];
