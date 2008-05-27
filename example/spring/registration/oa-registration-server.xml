@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: ws-server.xml 1409 2008-04-29 10:00:19Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/soap/ws-server.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * exposes a webservice that awaits Openadaptor registration data
+    * writes the data to an OA registration database
+    
+  It is designed to serve as an Openadaptor registration backend.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config ws-registration-server.xml -props sybase.properties
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/activation.jar
+     
+  Once it is running it will echo the webservice endpoint to the log, you can put
+  this into a web browser and verify that you can see the wsdl.
+  
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  	  <bean class="org.openadaptor.core.router.Router">
+  		<property name="processors">
+  		  <list>
+  			<ref bean="registrationWsEndpoint" />
+  			<ref bean="propertiesUnmarshaller" />
+  			<ref bean="attributeMapper" />
+  			<ref bean="mapEnricherTimestamp" />
+  		    <ref bean="registrationDbWriter" />
+  		  </list>
+  		</property>
+  	  </bean>
+  	</property>
+  </bean>
+
+  <bean id="registrationWsEndpoint" class="org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector">
+    <description>This is a read connector, that exposes a webservice.</description>
+    <property name="serviceName" value="OARegistration"/>
+    <property name="port" value="9191"/>
+  </bean>
+ 
+  <bean id="propertiesUnmarshaller" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <property name="script">
+      <value>
+        var props=new java.util.Properties();
+        props.load(new java.io.ByteArrayInputStream(oa_data.toString().getBytes()));
+        oa_data=props;
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="registrationDbConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description> Sybase database account configuration </description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+  
+  <bean id="mapEnricherTimestamp" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+    <property name="script">
+      <value>oa_data.put("fldTimestamp", new java.util.Date());</value>
+    </property>
+  </bean>
+  
+  <bean id="attributeMapper" class="org.openadaptor.auxil.processor.map.AttributeMapProcessor">
+    <property name="map">
+      <map>
+	    <entry key="adaptorname" value="fldAdaptorName"/>
+	    <entry key="adaptorid" value="fldAdaptorId"/>
+	    <entry key="oaversion" value="fldAdaptorVersion"/>
+	    <entry key="hostname" value="fldHostname"/>
+	    <entry key="ipaddress" value="fldIpAddress"/>
+	    <entry key="osname" value="fldOSName"/>
+	    <entry key="osversion" value="fldOSVersion"/>
+	    <entry key="username" value="fldUsername"/>
+	    <entry key="installdir" value="fldInstallDir"/>
+	    <entry key="javaversion" value="fldJavaVersion"/>
+	    <entry key="javaclasspath" value="fldJavaClasspath"/>
+	    <entry key="propertiesfile" value="fldPropertiesFile"/>
+	    <entry key="additionaldetails" value="fldAdditionalDetails"/>
+	  </map>
+    </property>
+  </bean>
+  
+  <bean id="registrationDbWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="registrationDbConnection" />
+	<property name="writer">
+	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+	    <property name="tableName" value="tblRegister" />
+	    <property name="outputColumns">
+			<list>
+			  <value>fldAdaptorName</value> 
+			  <value>fldAdaptorId</value> 
+			  <value>fldAdaptorVersion</value>
+			  <value>fldHostname</value>
+			  <value>fldIpAddress</value>
+			  <value>fldOSName</value>
+			  <value>fldOSVersion</value>
+			  <value>fldUsername</value>
+			  <value>fldInstallDir</value>
+			  <value>fldJavaVersion</value>
+			  <value>fldJavaClasspath</value>
+			  <value>fldPropertiesFile</value>
+			  <value>fldAdditionalDetails</value>
+			  <value>fldTimestamp</value>
+			</list>
+		 </property>   
+	  </bean>
+	</property>
+  </bean>
+  
+</beans>
