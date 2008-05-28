@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id$
+ $HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ <description>
+  <![CDATA[    
+  This adaptor does the following...
+    
+    * reads table data from a Swing UI
+    * converts data to xml
+    * writes to stdout
+    
+  It is designed to illustrate the basic structure of a file GUI reader adaptor
+
+  It may be launched as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config ui.xml
+    
+  Runtime classpath should include
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates the simple pipeline Reader -> XmlConvertor -> Writer.</description>
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="XmlConverter" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.ui.TableUIConnector">
+  <description>This read connector reads lines from a Swing UI</description>
+  <property name="name" value="TableReader" />
+  <property name="columnNames">
+   <list>
+    <value>Side</value>
+    <value>Qty</value>
+    <value>SecurityId</value>
+    <value>Counterparty</value>
+    <value>Price</value>
+   </list>
+  </property>
+ </bean>
+
+ <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <description>Convert the map into XML</description>
+  <property name="rootElementTag" value="record" />
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>
