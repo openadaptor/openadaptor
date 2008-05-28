@@ -44,7 +44,7 @@ import java.util.Properties;
 /**
  * Launch class for Openadaptor Adaptor instances.
  * <br>
- * <B>CURRENTLY THIS IS A WORK IN PROGRESS AND NOT FOR PRODUCTION USE</B>
+ * <B>CURRENTLY THIS IS A PROROTYPE AND NOT FOR PRODUCTION USE</B>
  * <br>
  * The Launcher will work as follows:
  * <br>
@@ -87,6 +87,7 @@ public class Launcher implements Runnable {
   public static final String OA_STUB_JAR="openadaptor-stub.jar";
 
   private static final String[] OA_PRIORITISED_JARS={OA_SPRING_JAR,OA_DEPENDS_JAR,OA_JAR,""};
+  //Blacklist of libraries to ignore in lib (can be removed when they are no longer generated)
   private static final String[] OA_BLACKLISTED_JARS={OA_BOOTSTRAP_JAR,OA_STUB_JAR};
 
   /**
