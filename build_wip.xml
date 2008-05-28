@@ -11,7 +11,7 @@
 	</description>
 
 	<!-- 
-	  Set copyright.fix to true to automatically fix copyright notices.
+	  Set copyright.auto_fix to true to automatically fix copyright notices.
 	  Warning: this may modify source files!
 	  -->
 	<property name="copyright.auto_fix" value="false" />
@@ -74,7 +74,6 @@
 		<property name="dir.spring.lib" value="${dir.spring}/lib" />
 		<!-- Source root for stub code, e.g. tibco, legacy -->
 		<property name="dir.stub.src" value="${basedir}/stub/src" />
-
 
 		<!-- Directories for build output -->
 		<property name="dir.build" value="${basedir}/build" />
@@ -563,15 +562,16 @@
 
 		<echo level="info" message="Copying openadaptor jars from ${dir.build.lib}" />
 		<copy todir="${dir.package.lib}">
-			<fileset dir="${dir.build.lib}" includes="*.jar,*.zip" />
+			<fileset dir="${dir.build.lib}" includes="*.jar,*.zip" excludes="bootstrap.jar,openadaptor-stub.jar" />
 		</copy>
 
+		<!-- This is no longer being copied.
 		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib}" />
 		<copy todir="${dir.package.lib.3rdparty}">
 			<fileset dir="${dir.lib}" includes="*.jar,*.zip" />
 			<fileset dir="${dir.spring.lib}" includes="*.jar,*.zip" />
 		</copy>
-
+     -->
 		<echo level="info" message="Copying log4j.properties" />
 		<copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties" />
 
