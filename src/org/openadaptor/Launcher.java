@@ -85,10 +85,11 @@ public class Launcher implements Runnable {
   //Jars to blacklist
   public static final String OA_BOOTSTRAP_JAR="bootstrap.jar";
   public static final String OA_STUB_JAR="openadaptor-stub.jar";
+  public static final String OA_SRC_JAR="openadaptor-src.jar";
 
   private static final String[] OA_PRIORITISED_JARS={OA_SPRING_JAR,OA_DEPENDS_JAR,OA_JAR,""};
-  //Blacklist of libraries to ignore in lib (can be removed when they are no longer generated)
-  private static final String[] OA_BLACKLISTED_JARS={OA_BOOTSTRAP_JAR,OA_STUB_JAR};
+  //Blacklist of libraries to ignore in lib (some can be removed when they are no longer generated)
+  private static final String[] OA_BLACKLISTED_JARS={OA_SRC_JAR,OA_BOOTSTRAP_JAR,OA_STUB_JAR};
 
   /**
    * Preferred launch class
@@ -108,6 +109,7 @@ public class Launcher implements Runnable {
   protected Launcher(String[] args) {
     launchArgs=extractSystemProperties(args);
     generateClasspath=Boolean.getBoolean(PROP_PREFIX+PROP_OA_GEN_CP);
+    //Fudge argument into a format for SpringAdaptor.
     String[] tmpArgs=new String[launchArgs.length*2];
     for (int i=0;i<launchArgs.length;i++){
       tmpArgs[i*2]="-config";
@@ -153,13 +155,7 @@ public class Launcher implements Runnable {
     URL[] urls=new URL[classpathEntries.length];
     for (int i=0;i<urls.length;i++) {
       try {
-        File entry=classpathEntries[i];
-        String path=entry.getAbsolutePath();
-        // URLClassloader like a trailing slash for directories...
-        if (entry.isDirectory() && (!path.endsWith(File.separator))) {
-          path+=File.separator;
-        }
-        urls[i]=new URL("file",null,path);
+        urls[i]=classpathEntries[i].toURL();
         System.out.println(urls[i]);
       } 
       catch (MalformedURLException e) {
