@@ -27,8 +27,11 @@
 
 package org.openadaptor;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -41,10 +44,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
 /**
  * Launch class for Openadaptor Adaptor instances.
  * <br>
- * <B>CURRENTLY THIS IS A PROROTYPE AND NOT FOR PRODUCTION USE</B>
+ * <B>CURRENTLY THIS IS A PROTOTYPE AND NOT FOR PRODUCTION USE</B>
  * <br>
  * The Launcher will work as follows:
  * <br>
@@ -73,6 +79,7 @@ import java.util.Properties;
  *
  */
 public class Launcher implements Runnable {
+  private  final MiniLog log=new MiniLog();
   protected static final String PROP_PREFIX="oa.";
   public static final String PROP_OA_GEN_CP="genclasspath";
   public static final String PROP_OA_HOME="home";
@@ -106,16 +113,85 @@ public class Launcher implements Runnable {
 
   private boolean generateClasspath=false;
 
+
   protected Launcher(String[] args) {
     launchArgs=extractSystemProperties(args);
-    generateClasspath=Boolean.getBoolean(PROP_PREFIX+PROP_OA_GEN_CP);
-    //Fudge argument into a format for SpringAdaptor.
-    String[] tmpArgs=new String[launchArgs.length*2];
-    for (int i=0;i<launchArgs.length;i++){
-      tmpArgs[i*2]="-config";
-      tmpArgs[i*2+1]=launchArgs[i];
+    
+    if (Boolean.getBoolean("debug")) {
+      log.setLevel(MiniLog.DEBUG);
     }
-    launchArgs=tmpArgs;
+    
+    generateClasspath=Boolean.getBoolean(PROP_PREFIX+PROP_OA_GEN_CP);
+    if (launchArgs.length==0) {
+      launchArgs=promptForLaunchArgs();
+    }
+    if (launchArgs.length>0) {
+      //Fudge argument into a format for SpringAdaptor.
+      String[] tmpArgs=new String[launchArgs.length*2];
+      for (int i=0;i<launchArgs.length;i++){
+        tmpArgs[i*2]="-config";
+        tmpArgs[i*2+1]=launchArgs[i];
+      }
+      launchArgs=tmpArgs;
+    }
+  }
+
+  /**
+   * Simple GUI to allow user to choose an adaptor to run.
+   * @param chosenFiles
+   */
+  private void runGUI(List chosenFiles) {
+    synchronized(this){
+      JFileChooser chooser;
+      String userDir=System.getProperty("user.dir");
+      if (userDir!=null) {
+        chooser=new JFileChooser(userDir);
+      }
+      else {
+        chooser=new JFileChooser();
+      }
+      chooser.setFileFilter(new AdaptorConfigFilter(new String[]{"xml","properties","props"}));
+      chooser.setMultiSelectionEnabled(true);
+      chooser.showOpenDialog(null);
+      File[] selection=chooser.getSelectedFiles();
+      if ((selection!=null) && (selection.length>0)) {
+        for (int i=0;i<selection.length;i++) {
+          chosenFiles.add(selection[i].getPath());
+        }
+      }
+      notifyAll(); //Notify waiting threads that the UI is done.
+    }
+  }
+
+  private String[] promptForLaunchArgs() {
+    final List chooserArgs=new ArrayList();
+    String[] args=null;
+    try { //Try GUI first.
+      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        public void run() { runGUI(chooserArgs);}
+      });
+      synchronized(this) {
+        wait();
+      }
+      if (!chooserArgs.isEmpty()) {
+        args=(String[])chooserArgs.toArray(new String[chooserArgs.size()]);
+      }
+    }
+    catch(Throwable t) {} // Assume the gui couldn't run.
+
+    if (args==null) { //GUI either failed or didn't get anything.
+      BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+      System.out.print("Please specify configuration arguments for adaptor > ");
+      System.out.flush();
+      try {
+        String argString=br.readLine();
+        args=argString.split("\t");
+      }
+      catch (IOException ioe) {
+        log.error("Failed to get configuration arguments: "+ioe.getMessage());
+      }
+    }
+    return args;
   }
 
   private File[] deriveClasspathEntries(Properties props) {
@@ -138,14 +214,14 @@ public class Launcher implements Runnable {
         throw new RuntimeException(oaHome+" ("+PROP_PREFIX+PROP_OA_HOME+") is not a valid directory");
       }
     }
-    System.out.println("Using OA home of "+oaHome);
+    log.info("Using OA home of "+oaHome);
 
     String oaExtPath=getPath(props,PROP_PREFIX+PROP_OA_EXT,oaHome,PROP_OA_EXT);
-    System.out.println("OA Ext Location is: "+oaExtPath);
+    log.debug("OA Ext location is: "+oaExtPath);
     entries.addAll(getJars(oaExtPath));
 
     String oaLibPath=getPath(props,PROP_PREFIX+PROP_OA_LIB,oaHome,PROP_OA_LIB);
-    System.out.println("OA Lib Location is: "+oaLibPath);
+    log.debug("OA lib location is: "+oaLibPath);
     entries.addAll(getJars(oaLibPath,OA_PRIORITISED_JARS,OA_BLACKLISTED_JARS));
 
     return (File[])entries.toArray(new File[entries.size()]);
@@ -156,10 +232,10 @@ public class Launcher implements Runnable {
     for (int i=0;i<urls.length;i++) {
       try {
         urls[i]=classpathEntries[i].toURL();
-        System.out.println(urls[i]);
+        log.trace(urls[i]);
       } 
       catch (MalformedURLException e) {
-        System.err.println("Ignoring "+classpathEntries[i]+" - Failed to generate URL");
+        log.warn("Ignoring "+classpathEntries[i]+" - Failed to generate URL");
       }
     }
     //Make sure the parent is specified as null here.
@@ -180,19 +256,17 @@ public class Launcher implements Runnable {
   }
 
 
-  private static List getJars(String path,String[] prioritisedEntries,String[] blacklistedEntries) {
+  private  List getJars(String path,String[] prioritisedEntries,String[] blacklistedEntries) {
     List libEntries=getJars(path);
     if (blacklistedEntries!=null) {
       //Remove any blacklisted entries from the classpath of jars.
       String[] blacklistedJars=prependBasePath(path, blacklistedEntries);
       List blacklistedFiles=new ArrayList();
-      
+
       for (int i=0;i<blacklistedJars.length;i++) {
         blacklistedFiles.add(new File(blacklistedJars[i]));
       }
-      //System.err.println("Entries before blacklisting: "+libEntries.size());
       libEntries.removeAll(blacklistedFiles);
-      //System.err.println("Entries after blacklisting:  "+libEntries.size());
     }
     if ((prioritisedEntries!=null) && (prioritisedEntries.length>0)){
       String[] prioritisedJars=prependBasePath(path,prioritisedEntries);
@@ -205,11 +279,11 @@ public class Launcher implements Runnable {
    * @param path
    * @return
    */
-  private static List getJars(String path) {
+  private List getJars(String path) {
     List result=new ArrayList();
     File dir=new File(path);
     if (dir.isDirectory()) {
-      System.out.println("Adding "+dir);
+      log.debug("Adding "+dir);
       result.add(dir);
       String[] files=dir.list();
       for (int i=0;i<files.length;i++) {
@@ -219,17 +293,17 @@ public class Launcher implements Runnable {
         }
         else {
           if (usableJar(file)) {
-            System.out.println("Adding "+file);
+            log.debug("Adding "+file);
             result.add(file);
           }
           else {
-            System.out.println("Ignoring "+file);
+            log.debug("Ignoring "+file);
           }
         }
       }
     }
     else {
-      System.out.println("Ignoring "+dir+" (not a directory)");
+      log.warn("Ignoring "+dir+" (not a directory)");
     }
     return result;
   }
@@ -250,9 +324,9 @@ public class Launcher implements Runnable {
         value=oaHome+File.separator+value;
       }     
     }
-//    if (!value.endsWith(File.separator)){ //Make it end with separator - url loading likes this.
-//      value=value+File.separator;
-//    }
+//  if (!value.endsWith(File.separator)){ //Make it end with separator - url loading likes this.
+//  value=value+File.separator;
+//  }
     return value;
   }
 
@@ -260,23 +334,23 @@ public class Launcher implements Runnable {
     Class launchClass=null;
     try {
       if(generateClasspath) {
-        System.out.println("Generating classpath...");
+        log.info("Generating classpath for adaptor ("+PROP_PREFIX+PROP_OA_GEN_CP+" is true)");
         File[] classpathEntries=deriveClasspathEntries(System.getProperties());
-        System.out.println("Generated classpath with "+classpathEntries.length+" entries");
+        log.debug("Generated classpath with "+classpathEntries.length+" entries");
         derivedClassLoader=buildClassLoader(classpathEntries);
         String classpath=buildClasspath(classpathEntries);
-        System.out.println("Generated classpath: "+classpath);
+        log.debug("Generated classpath: "+classpath);
         System.setProperty("java.class.path",classpath);
-        
+
         if (derivedClassLoader!=null) {
-          System.out.println("Configuring classloader for current Thread");
+          log.debug("Configuring classloader for current Thread");
           Thread.currentThread().setContextClassLoader(derivedClassLoader);
         }
         launchClass=derivedClassLoader.loadClass(launchClassname);
-        
+
       }
       else {
-        System.out.println("Using default classpath for launch class");
+        log.info("Using default classpath for launch class ( set "+PROP_PREFIX+PROP_OA_GEN_CP+" true to auto-generate)");
         launchClass = Class.forName(launchClassname);
       }
       Method mainMethod = launchClass.getMethod("main", STRING_ARRAY_CLASS);
@@ -303,6 +377,7 @@ public class Launcher implements Runnable {
   }
 
   private void fail(String msg,Throwable throwable) {
+    log.error(msg);
     throwable.printStackTrace();
     throw new RuntimeException(msg,throwable);
   }
@@ -312,7 +387,8 @@ public class Launcher implements Runnable {
    */
   public static void main(String[] args) {
     System.err.println("THIS CLASS IS NOT FOR PRODUCTION USE - IT IS STILL A PROTOTYPE");
-    new Launcher(args).run();
+    //new Launcher(args).run();
+    new Launcher(new String[] {}).run();
   }
 
   private static String[] extractSystemProperties(String[] argsAndOptions) {
@@ -411,5 +487,82 @@ public class Launcher implements Runnable {
     File file=getClassFile(classToLocate);
     result=file.getParent();
     return result;
+  }
+
+  class AdaptorConfigFilter extends FileFilter {
+    List validExtensions;    
+    public AdaptorConfigFilter(String[] extensions) {
+      super();
+      validExtensions=new ArrayList();
+      if (extensions!=null){
+        for (int i =0;i<extensions.length;i++) {
+          validExtensions.add(extensions[i].toLowerCase());
+        }
+      }
+    }
+
+    public boolean accept(File f) {
+      boolean accept=f.isDirectory();
+      if (!accept) {
+        String filename=f.getName();
+        int ofs=filename.lastIndexOf('.');
+        if ((ofs>0) && (f.length()>ofs)) {
+          accept=validExtensions.contains(filename.substring(ofs+1).toLowerCase());
+        }
+      }
+      return accept;
+    }
+
+    public String getDescription() {
+      return "Adaptor configurations .xml & .properties";
+    }   
+  }
+
+  class MiniLog {
+    public static final int TRACE=0;
+    public static final int DEBUG=1;
+    public static final int INFO=2;
+    public static final int WARN=3;
+    public static final int ERROR=4;
+    public static final int FATAL=5;
+
+    private int level=INFO;
+    private PrintStream ps;
+
+    public MiniLog(PrintStream ps) { this.ps=ps; }
+    public MiniLog() { this(System.err); }
+
+    public void setLevel(int level) {
+      this.level=level;
+    }
+    public void setLevel(String s) {
+      if ("TRACE".equalsIgnoreCase(s)) {level=TRACE;}
+      else if ("DEBUG".equalsIgnoreCase(s)) {level=DEBUG;}
+      else if ("INFO".equalsIgnoreCase(s)) {level=INFO;}
+      else if ("WARN".equalsIgnoreCase(s)) {level=WARN;}
+      else if ("ERROR".equalsIgnoreCase(s)) {level=ERROR;}
+      else if ("FATAL".equalsIgnoreCase(s)) {level=FATAL;}
+      else {level=INFO;}
+    }
+
+    public void trace(Object o) {log(TRACE,o);}
+    public void debug(String o) {log(DEBUG,o);}
+    public void info(String o) {log(INFO,o);}
+    public void warn(String o) {log(WARN,o);}
+    public void error(String o) {log(ERROR,o);}
+    public void fatal(String o) {log(FATAL,o);}
+
+    private void log(int logLevel,Object o) {
+      String s;
+      if (o!=null) {
+        s=(o instanceof String)?(String)o:o.toString();
+      }
+      else {
+        s="<null>";
+      }
+      if (logLevel>=level) {
+        ps.println(s);
+      }
+    }
   }
 }
