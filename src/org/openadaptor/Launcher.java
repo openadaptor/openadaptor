@@ -116,11 +116,11 @@ public class Launcher implements Runnable {
 
   protected Launcher(String[] args) {
     launchArgs=extractSystemProperties(args);
-    
+
     if (Boolean.getBoolean("debug")) {
       log.setLevel(MiniLog.DEBUG);
     }
-    
+
     generateClasspath=Boolean.getBoolean(PROP_PREFIX+PROP_OA_GEN_CP);
     if (launchArgs.length==0) {
       launchArgs=promptForLaunchArgs();
@@ -152,12 +152,17 @@ public class Launcher implements Runnable {
       }
       chooser.setFileFilter(new AdaptorConfigFilter(new String[]{"xml","properties","props"}));
       chooser.setMultiSelectionEnabled(true);
-      chooser.showOpenDialog(null);
-      File[] selection=chooser.getSelectedFiles();
-      if ((selection!=null) && (selection.length>0)) {
-        for (int i=0;i<selection.length;i++) {
-          chosenFiles.add(selection[i].getPath());
+      try { 
+        chooser.showOpenDialog(null);
+        File[] selection=chooser.getSelectedFiles();
+        if ((selection!=null) && (selection.length>0)) {
+          for (int i=0;i<selection.length;i++) {
+            chosenFiles.add(selection[i].getPath());
+          }
         }
+      }
+      catch(Throwable t) { //If it can't do GUI, then we just give up on it.
+        log.warn("Failed to select config vi GUI dialog - "+t.getMessage());
       }
       notifyAll(); //Notify waiting threads that the UI is done.
     }
@@ -166,18 +171,18 @@ public class Launcher implements Runnable {
   private String[] promptForLaunchArgs() {
     final List chooserArgs=new ArrayList();
     String[] args=null;
-    try { //Try GUI first.
-      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        public void run() { runGUI(chooserArgs);}
-      });
-      synchronized(this) {
-        wait();
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() { runGUI(chooserArgs);}
+    });
+    synchronized(this) {
+      try {
+        wait(); //Wait for GUI to let us know it's ok to continue.
       }
-      if (!chooserArgs.isEmpty()) {
-        args=(String[])chooserArgs.toArray(new String[chooserArgs.size()]);
-      }
+      catch (InterruptedException ie) {} //Ignore it
     }
-    catch(Throwable t) {} // Assume the gui couldn't run.
+    if (!chooserArgs.isEmpty()) {
+      args=(String[])chooserArgs.toArray(new String[chooserArgs.size()]);
+    }
 
     if (args==null) { //GUI either failed or didn't get anything.
       BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
@@ -324,9 +329,6 @@ public class Launcher implements Runnable {
         value=oaHome+File.separator+value;
       }     
     }
-//  if (!value.endsWith(File.separator)){ //Make it end with separator - url loading likes this.
-//  value=value+File.separator;
-//  }
     return value;
   }
 
@@ -386,9 +388,8 @@ public class Launcher implements Runnable {
    * @param args
    */
   public static void main(String[] args) {
-    System.err.println("THIS CLASS IS NOT FOR PRODUCTION USE - IT IS STILL A PROTOTYPE");
-    //new Launcher(args).run();
-    new Launcher(new String[] {}).run();
+    System.err.println("THIS PROTOTYPE CLASS IS NOT YET READY FOR PRODUCTION USE");
+    new Launcher(args).run();
   }
 
   private static String[] extractSystemProperties(String[] argsAndOptions) {

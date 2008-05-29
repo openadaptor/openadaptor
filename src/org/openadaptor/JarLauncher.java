@@ -38,7 +38,6 @@ public class JarLauncher extends Launcher {
     super(argv);
   }
   public static void main(String[] argv) {
-    System.out.println("Launching from jar file!");
     System.setProperty(PROP_PREFIX+PROP_OA_GEN_CP,Boolean.toString(true));
     Launcher.main(argv);
   }
