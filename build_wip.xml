@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="openadaptor" default="package">
+<project name="openadaptor" default="cruise">
 	<description>
 		Ant build script for openadaptor
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
@@ -287,7 +287,9 @@
 		</junit>
 	</target>
 
-	<target name="test.all" depends="clean.build.test,test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)" unless="suppress.tests">
+	<target name="test.unit.system.integration" depends="test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)"/>
+	
+	<target name="test.all" depends="clean.build.test,test.unit.system.integration" description="Perform clean+all tests (unit,integration,system)" unless="suppress.tests">
 
 		<echo level="info" message="Generating report from test execution" />
 		<junitreport todir="${dir.build.test.output}">
@@ -302,7 +304,7 @@
 	</target>
 
 	<!-- Spring Example validations -->
-	<target name="test.spring.examples" depends="test.all,init.support.tasks,copy.configs" description="Validate Spring example configurations" unless="suppress.springcheck">
+	<target name="test.spring.examples" depends="init.support.tasks,copy.configs" description="Validate Spring example configurations" unless="suppress.springcheck">
 		<echo level="info" message="Validating Spring examples in ${dir.example}" />
 		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
 			<fileset dir="${dir.example}/spring">
@@ -616,7 +618,7 @@
 		<property name="suppress.tests" value="set"/>
 		<property name="suppress.springcheck" value="set"/>
 	</target>
-		
+	
   <target name="test.package" depends="skip.test.and.springcheck,package" description="run all tests against packaged build in ${dir.package}">
   	<!--
   	  The test src paths are currently required, as some of the tests load resources from these areas using the
@@ -640,11 +642,14 @@
 			<pathelement path="${dir.build.stub.classes}"/>
 		</path>
 
-    <ant target="test.all" inheritAll="false">
+    <echo level="info" message="Invoking test.unit.system.integration on package in ${dir.package}"/>
+    <ant antfile="build_wip.xml" target="test.unit.system.integration" inheritAll="false">
       <reference refid="classpath.package.test" torefid="classpath.test"/>
     </ant>
-    <ant target="example.springcheck" inheritAll="false">
-      <reference refid="classpath.package.test" torefid="classpath.test" />
+
+    <echo level="info" message="Invoking example.springcheck on package in ${dir.package}"/>
+    <ant antfile="build_wip.xml" target="test.spring.examples" inheritAll="false">
+    	<property name="dir.example" value="${dir.package.example}" />
     </ant>
   </target>
 
