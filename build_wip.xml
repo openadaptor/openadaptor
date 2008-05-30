@@ -304,7 +304,7 @@
 	</target>
 
 	<!-- Spring Example validations -->
-	<target name="test.spring.examples" depends="init.support.tasks,copy.configs" description="Validate Spring example configurations" unless="suppress.springcheck">
+	<target name="test.spring.examples" depends="init.test,init.support.tasks,copy.configs" description="Validate Spring example configurations" unless="suppress.springcheck">
 		<echo level="info" message="Validating Spring examples in ${dir.example}" />
 		<spring.validate classpathref="classpath.test" ignorestubexceptions="true">
 			<fileset dir="${dir.example}/spring">
@@ -647,7 +647,7 @@
       <reference refid="classpath.package.test" torefid="classpath.test"/>
     </ant>
 
-    <echo level="info" message="Invoking example.springcheck on package in ${dir.package}"/>
+    <echo level="info" message="Invoking test.spring.examples on package in ${dir.package}"/>
     <ant antfile="build_wip.xml" target="test.spring.examples" inheritAll="false">
     	<property name="dir.example" value="${dir.package.example}" />
     </ant>
