@@ -32,10 +32,8 @@
 	<property name="suppress.springcheck" value="set"/>
 	-->
 	
-	<!-- If set, example documentation will not be generated
-	
+	<!-- If set, example documentation will not be generated	
 	<property name="suppress.example.doc" value="set"/>
-	
 	-->
 	
 	<echo level="warning" message="Trying ${basedir}/checkout.properties for checkout properties" />
@@ -52,8 +50,9 @@
 		<!-- Initialise tag variable (unless it has already been explicitly set) -->
 		<property name="tag" value="trunk" />
 		<echo level="info" message="Initialised $tag value is ${tag}" />
-		<!-- <echo level="warning" message="Licence file should move to top level" /> -->
 		<property name="licence.dir" value="${basedir}" />
+		<property name="licence.3rdparty.dir" value="${basedir}/licences"/>
+		
 		<property name="licence.file" value="licence.txt" />
 		<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}" />
 		<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}" />
@@ -79,7 +78,7 @@
 		<property name="dir.build" value="${basedir}/build" />
 		<property name="dir.build.lib" value="${dir.build}/lib" />
 		<property name="dir.build.classes" value="${dir.build}/classes" />
-		<property name="dir.build.support" value="${dir.build}/support" />
+		<property name="dir.build.support" value="${dir.build}/support" /> 
 		<property name="dir.build.example" value="${dir.build}/example" />
 
 		<property name="dir.build.test" value="${dir.build}/test" />
@@ -428,12 +427,12 @@
 				<attribute name="Version" value="${tag}"/>
 			</manifest>
 			<!-- ordered list of jars, only includes qualified resources -->
-		        <zipfileset src="${dir.lib}/cxf_2.1.jar" includes="${includes.unqualified}"/>
-		        <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" includes="${includes.unqualified}"/>
-                        <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" includes="${includes.unqualified}"/>
-                        <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" includes="${includes.unqualified}"/>
-                        <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" includes="${includes.unqualified}"/>
-                        <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" includes="${includes.unqualified}"/>
+		  <zipfileset src="${dir.lib}/cxf_2.1.jar" includes="${includes.unqualified}"/>
+		  <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" includes="${includes.unqualified}"/>
+      <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" includes="${includes.unqualified}"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}" />
@@ -480,14 +479,14 @@
 			<zipfileset src="${dir.lib}/script.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.spring.lib}/spring-core.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.spring.lib}/spring.jar" includes="${includes.unqualified}" />
-		        <zipfileset src="${dir.lib}/neethi_2.0.4.jar" includes="${includes.unqualified}"/>
+		  <zipfileset src="${dir.lib}/neethi_2.0.4.jar" includes="${includes.unqualified}"/>
 			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
-       		        <zipfileset src="${dir.lib}/cxf_2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
-                        <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" excludes="${includes.unqualified}" prefix="fast-infoset"/>
-                        <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" excludes="${includes.unqualified}" prefix="geronimo"/>
-                        <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
-                        <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
-                        <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
+      <zipfileset src="${dir.lib}/cxf_2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
+      <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" excludes="${includes.unqualified}" prefix="fast-infoset"/>
+      <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" excludes="${includes.unqualified}" prefix="geronimo"/>
+      <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
+      <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
+      <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
 			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
@@ -534,7 +533,7 @@
 			<zipfileset src="${dir.lib}/script.jar" excludes="${includes.unqualified}" prefix="script" />
 			<zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core" />
 			<zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring" />
-       		        <zipfileset src="${dir.lib}/neethi_2.0.4.jar" excludes="${includes.unqualified}" prefix="neethi"/>
+      <zipfileset src="${dir.lib}/neethi_2.0.4.jar" excludes="${includes.unqualified}" prefix="neethi"/>
 		</jar>
 	</target>
 
@@ -543,14 +542,16 @@
 	<target name="package.init" depends="init,clean.package" description="Initialisation of directories etc. for packaging build">
 		<echo level="info" message="Initialising package area ${dir.package}" />
 		<property name="dir.package.lib" value="${dir.package}/lib" />
-		<!-- <property name="dir.package.lib.3rdparty" value="${dir.package.lib}/3rdparty" /> -->
 		<property name="dir.package.example" value="${dir.package}/example" />
 		<property name="dir.package.faq" value="${dir.package}" />
 		<property name="dir.package.sql" value="${dir.package}/sql" />
 		<property name="dir.package.javadocs" value="${dir.package}/javadocs" />
 		<property name="dir.package.licences" value="${dir.package}/licences" />
-		<mkdir dir="${dir.package.lib}" />
-		<!-- <mkdir dir="${dir.package.lib.3rdparty}" /> -->
+		<property name="dir.package.resources" value="${dir.package}/resources" />
+		<property name="dir.package.lib.3rdparty" value="${dir.package.resources}/lib" />
+		<mkdir dir="${dir.package.lib}"/>
+		<mkdir dir="${dir.package.resources}"/>
+		<mkdir dir="${dir.package.lib.3rdparty}"/> 
 		<mkdir dir="${dir.package.example}" />
 		<mkdir dir="${dir.package.sql}" />
 		<mkdir dir="${dir.package.javadocs}" />
@@ -565,13 +566,12 @@
 			<fileset dir="${dir.build.lib}" includes="*.jar,*.zip" excludes="bootstrap.jar,openadaptor-stub.jar" />
 		</copy>
 
-		<!-- This is no longer being copied.
-		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib}" />
+		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib} to ${dir.package.lib.3rdparty}" />
 		<copy todir="${dir.package.lib.3rdparty}">
 			<fileset dir="${dir.lib}" includes="*.jar,*.zip" />
 			<fileset dir="${dir.spring.lib}" includes="*.jar,*.zip" />
 		</copy>
-     -->
+		
 		<echo level="info" message="Copying log4j.properties" />
 		<copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties" />
 
@@ -580,11 +580,16 @@
 			<fileset dir="${dir.build.javadocs}" />
 		</copy>
 
-		<echo level="info" message="Copying Release Notes ${basedir}/ReleaseNotes.txt" />
+		<echo level="info" message="Copying release notes ${basedir}/ReleaseNotes.txt" />
 		<copy todir="${dir.package}" file="${basedir}/ReleaseNotes.txt" />
 
 		<echo level="info" message="Copying Licence file ${licence.file}" />
 		<copy todir="${dir.package}" file="${licence.file}" />
+		
+		<echo level="info" message="Copying 3rd party licences to ${dir.package.licences}"/>
+		<copy todir="${dir.package.licences}">
+			<fileset dir="${licence.3rdparty.dir}"/>
+		</copy>
 
 		<echo level="info" message="Copying Examples from ${dir.example} and ${dir.build.example}" />
 		<copy todir="${dir.package.example}">
