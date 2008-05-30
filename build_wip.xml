@@ -5,7 +5,6 @@
 		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
 		
 		Outstanding tasks...
-		* Make it test against the zipped package instead of the compiled classes.
 		* Build RMI ?
 		
 	</description>
@@ -36,7 +35,7 @@
 	<property name="suppress.example.doc" value="set"/>
 	-->
 	
-	<echo level="warning" message="Trying ${basedir}/checkout.properties for checkout properties" />
+	<echo level="info" message="Trying ${basedir}/checkout.properties for checkout properties" />
 	<property file="${basedir}/checkout.properties" />
 
 	<property name="hosted.upload.properties.file" value="${basedir}/src/hosting.properties"/>
@@ -45,11 +44,11 @@
 
 	<target name="init" description="Initialisation of tag,directories and classpaths">
 		<echo level="info" message="Initialising directories and classpaths" />
-		<tstamp />
+		<tstamp/>
 		<property name="debug" value="true" />
 		<!-- Initialise tag variable (unless it has already been explicitly set) -->
 		<property name="tag" value="trunk" />
-		<echo level="info" message="Initialised $tag value is ${tag}" />
+		<echo level="info" message="Initialised $tag value is: ${tag}" />
 		<property name="licence.dir" value="${basedir}" />
 		<property name="licence.3rdparty.dir" value="${basedir}/licences"/>
 		
@@ -156,7 +155,7 @@
 
 		<!-- Include the source paths, handy for stack trace info -->
 		<!-- Include ${dir.test.lib} to find log4j.properties -->
-		<echo level="warning" message="Tests require Licence file on CP, adding ${licence.dir}" />
+		<echo level="info" message="Tests require Licence file on CP, adding ${licence.dir} (not needed when testing using openadaptor.jar)" />
 		<path id="classpath.test">
 			<pathelement path="${dir.test.lib}" />
 			<pathelement path="${licence.dir}" />
@@ -299,7 +298,7 @@
 	</target>
 
 	<target name="test.suppressed" description="Warns of suppressed tests" if="suppress.tests">
-		<echo message="*** TEST EXECUTION HAS BEEN SUPPRESSED (suppress.tests is set) ***" />
+		<echo message="Test execution has been suppressed (as suppress.tests is set)" />
 	</target>
 
 	<!-- Spring Example validations -->
@@ -318,7 +317,7 @@
 	</target>
 
 	<target name="test.spring.examples.suppressed" description="Warns of suppressed spring examples validation" if="suppress.springcheck">
-		<echo message="*** SPRING EXAMPLES VALIDATION HAS BEEN SUPPRESSED (suppress.springcheck is set) ***" />
+		<echo message="Validation of spring examples has been suppressed (as suppress.springcheck is set)" />
 	</target>
 
 	<!-- Javadoc tasks -->
@@ -541,6 +540,7 @@
 
 	<target name="package.init" depends="init,clean.package" description="Initialisation of directories etc. for packaging build">
 		<echo level="info" message="Initialising package area ${dir.package}" />
+		<property name="dir.package.ext" value="${dir.package}/ext" />
 		<property name="dir.package.lib" value="${dir.package}/lib" />
 		<property name="dir.package.example" value="${dir.package}/example" />
 		<property name="dir.package.faq" value="${dir.package}" />
@@ -549,9 +549,10 @@
 		<property name="dir.package.licences" value="${dir.package}/licences" />
 		<property name="dir.package.resources" value="${dir.package}/resources" />
 		<property name="dir.package.lib.3rdparty" value="${dir.package.resources}/lib" />
-		<mkdir dir="${dir.package.lib}"/>
-		<mkdir dir="${dir.package.resources}"/>
-		<mkdir dir="${dir.package.lib.3rdparty}"/> 
+		<mkdir dir="${dir.package.ext}" />
+		<mkdir dir="${dir.package.lib}" />
+		<mkdir dir="${dir.package.resources}" />
+		<mkdir dir="${dir.package.lib.3rdparty}" /> 
 		<mkdir dir="${dir.package.example}" />
 		<mkdir dir="${dir.package.sql}" />
 		<mkdir dir="${dir.package.javadocs}" />
@@ -610,7 +611,13 @@
 		</copy>
 	</target>
 
-  <target name="test.package" depends="package" description="run all tests against packaged build in ${dir.package}">
+	<target name="skip.test.and.springcheck" description="No need to test and spring check if test.package is doing it">
+		<echo level="info" message="disabling tests and springcheck (if not explicitly requested) - test.package will do them"/>
+		<property name="suppress.tests" value="set"/>
+		<property name="suppress.springcheck" value="set"/>
+	</target>
+		
+  <target name="test.package" depends="skip.test.and.springcheck,package" description="run all tests against packaged build in ${dir.package}">
   	<!--
   	  The test src paths are currently required, as some of the tests load resources from these areas using the
   	  classpath.
@@ -642,7 +649,7 @@
   </target>
 
 	
-	<target name="zip" depends="package,test.package" description="Create a zip file with packaged build">
+	<target name="zip" depends="test.package" description="Create a zip file with packaged build">
 		<property name="oa.zip.prefix" value="openadaptor-${tag}" />
 		<property name="oa.zip.file" value="${dir.build}/${oa.zip.prefix}-bin.zip" />
 		<echo level="info" message="Creating zip file: ${dir.package} -> ${oa.zip.file} " />
