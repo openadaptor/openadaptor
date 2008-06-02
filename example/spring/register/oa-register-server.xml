@@ -100,7 +100,7 @@
   <bean id="registrationDbWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
 	<property name="jdbcConnection" ref="registrationDbConnection" />
 	<property name="writer">
-	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
 	    <property name="tableName" value="tblRegister" />
 	    <property name="outputColumns">
 			<list>
