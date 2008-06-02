@@ -821,7 +821,7 @@ JDBCWriteConnector. These are shown here:
   &lt;bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector"&gt;
    &lt;property name="jdbcConnection" ref="JdbcConnection" /&gt;
    &lt;property name="writer"&gt;
-    &lt;bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter"&gt;
+    &lt;bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter"&gt;
      &lt;property name="tableName" value="TRADE" /&gt;
     &lt;/bean&gt;
    &lt;/property&gt;
