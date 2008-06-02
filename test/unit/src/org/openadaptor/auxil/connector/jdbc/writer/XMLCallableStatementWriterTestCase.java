@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved.
+ Copyright (C) 2001 - 2008 The Software Conservancy as Trustee. All rights reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the
@@ -30,57 +30,23 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Types;
 
-import org.jmock.Mock;
+import org.dom4j.Document;
+import org.dom4j.Node;
 import org.jmock.core.Stub;
-import org.openadaptor.auxil.connector.jdbc.writer.map.MapCallableStatementWriter;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.auxil.connector.jdbc.writer.xml.XMLCallableStatementWriter;
 
-public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
+/**
+ * Defines a unit test for the {@link XMLCallableStatementWriter}.
+ *
+ * @author cawthorng
+ */
+public class XMLCallableStatementWriterTestCase extends AbstractXMLWriterTests {
 
   protected static String CatalogName = "MockCatalogName";
   protected static String StoredProcName = "MockStoredProcName";
-  protected static String MockTableName = "MockTableName";
-  protected static int ParameterCount = 4;
-  protected static String InitialiseQuery = "SELECT * FROM " + MockTableName + " WHERE 1=2";
-  protected static String PreparedStatementSQL = "{ CALL "+ StoredProcName +"(?,?,?,?,?)}";
-
-  protected static IOrderedMap SampleOrderedMapOne = new OrderedHashMap();
-
-  static {
-    SampleOrderedMapOne.add("Map One Param One");
-    SampleOrderedMapOne.add("Map One Param Two");
-    SampleOrderedMapOne.add("Map One Param Three");
-    SampleOrderedMapOne.add("Map One Param Four");
-    SampleOrderedMapOne.add("Map One Param Five");
-  }
-
-  protected static IOrderedMap SampleOrderedMapTwo = new OrderedHashMap();
-
-  static {
-    SampleOrderedMapTwo.add("Map Two Param One");
-    SampleOrderedMapTwo.add("Map Two Param Two");
-    SampleOrderedMapTwo.add("Map Two Param Three");
-    SampleOrderedMapTwo.add("Map Two Param Four");
-    SampleOrderedMapTwo.add("Map Two Param Five");
-  }
-
-  protected static IOrderedMap SampleOrderedMapThree = new OrderedHashMap();
-
-  static {
-    SampleOrderedMapThree.add("Map Three Param One");
-    SampleOrderedMapThree.add("Map Three Param Two");
-    SampleOrderedMapThree.add("Map Three Param Three");
-    SampleOrderedMapThree.add("Map Three Param Four");
-    SampleOrderedMapThree.add("Map Three Param Five");
-  }
-
-  protected Mock metaDataMock;
-  protected Mock statementMock;
-  protected Mock resultSetMock;
-  protected Mock resultSetMetaDataMock;
-
+  protected static String PreparedStatementSQL = "{ CALL "+ StoredProcName +"(?,?,?,?,?,?)}";
 
   protected void setUp() throws Exception {
     super.setUp();
@@ -90,17 +56,8 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     resultSetMetaDataMock = mock(ResultSetMetaData.class);
   }
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    metaDataMock = null;
-    statementMock = null;
-    resultSetMock = null;
-    resultSetMetaDataMock = null;
-  }
-
-
   protected ISQLWriter instantiateTestWriter() {
-    MapCallableStatementWriter writer = new MapCallableStatementWriter();
+    XMLCallableStatementWriter writer = new XMLCallableStatementWriter();
     writer.setCallableStatement(StoredProcName);
     return writer;
   }
@@ -120,39 +77,40 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
     metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
     connectionMock.expects(once()).method("getCatalog").will(returnValue(CatalogName));
     metaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
-    resultSetMock.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(new Stub[] {returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(false)}));
-//    resultSetMock.stubs().method("getInt").will(returnValue(java.sql.Types.NUMERIC));;//Any type will do?
-    resultSetMock.stubs().method("getInt").will(returnValue(2));;//Any type will do?
+    resultSetMock.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(new Stub[] {returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(false)}));
+    resultSetMock.stubs().method("getInt").will(returnValue(2));
     resultSetMock.stubs().method("getString").will(returnValue("Dummy ResultSet Info")); // Not being specific here as this only happens when logging set to debug
     resultSetMock.expects(atLeastOnce()).method("close");
     connectionMock.expects(once()).method("prepareStatement").with(eq(PreparedStatementSQL)).will(returnValue(preparedStatementMock.proxy()));
   }
 
   protected Object[] setUpSingletonDataAndDataExpections() {
-    Object[] data = new Object [] {SampleOrderedMapOne};
+    Object[] data = new Object [] {SampleXMLOne};
     preparedStatementMock.expects(once()).method("clearParameters");
-    for (int i = 0; i < SampleOrderedMapOne.size(); i++ ) {
-      preparedStatementMock.expects(once()).method("setObject").with(eq ( i+1), eq(SampleOrderedMapOne.get(i) ));
+    for (int i = 0; i < SampleXMLOne.getRootElement().nodeCount(); i++) {
+      Node node = SampleXMLOne.getRootElement().node(i);
+      preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
     }
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
     return data;
   }
 
   /**
-   * This method must be overrriden to generate test data consisting of a  batch.
+   * This method must be overrriden to generate test data consisting of a batch.
    * Associated mock expectations relating to this component must also be set. Note
-   * that these expectations are to be set assuming the underlying jdbc layer is confugured
-   * to eanble batch uploads.
+   * that these expectations are to be set assuming the underlying jdbc layer is configured
+   * to enable batch uploads.
    *
    * @return Object[]
    */
   protected Object[] setupWriteBatchDataAndExpectationsBatchingEnabled() {
-    Object[] data = new Object[] { SampleOrderedMapOne, SampleOrderedMapTwo, SampleOrderedMapThree };
+    Object[] data = new Object[] { SampleXMLOne, SampleXMLTwo, SampleXMLThree };
     preparedStatementMock.expects(atLeastOnce()).method("clearParameters");
     for (int dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      IOrderedMap dataElement = (IOrderedMap) data[dataIndex];
-      for (int i = 0; i < dataElement.size(); i++) {
-        preparedStatementMock.expects(once()).method("setObject").with(eq(i + 1), eq(dataElement.get(i)));
+      Document dataElement = (Document) data[dataIndex];
+      for (int i = 0; i < dataElement.getRootElement().nodeCount(); i++) {
+	Node node = dataElement.getRootElement().node(i);
+	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
       }
     }
     preparedStatementMock.expects(exactly(3)).method("addBatch");
@@ -169,27 +127,18 @@ public class MapCallableStatementWriterTestCase extends AbstractMapWriterTests {
    * @return Object[]
    */
   protected Object[] setupWriteBatchDataAndExpectationsBatchingDisabled() {
-    Object[] data = new Object[] { SampleOrderedMapOne, SampleOrderedMapTwo, SampleOrderedMapThree };
+    Object[] data = new Object[] { SampleXMLOne, SampleXMLTwo, SampleXMLThree };
     preparedStatementMock.expects(atLeastOnce()).method("clearParameters");
     for (int dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      IOrderedMap dataElement = (IOrderedMap) data[dataIndex];
-      for (int i = 0; i < dataElement.size(); i++) {
-        preparedStatementMock.expects(once()).method("setObject").with(eq(i + 1), eq(dataElement.get(i)));
+      Document dataElement = (Document) data[dataIndex];
+      for (int i = 0; i < dataElement.getRootElement().nodeCount(); i++) {
+	Node node = dataElement.getRootElement().node(i);
+	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
       }
     }
     preparedStatementMock.expects(never()).method("addBatch");
     preparedStatementMock.expects(never()).method("executeBatch");
     preparedStatementMock.expects(exactly(3)).method("executeUpdate").will(returnValue(1));
-    return data;
-  }
-
-  protected Object[] setupDataForWriteNotInitialised() {
-    Object[] data = new Object [] { SampleOrderedMapOne };
-    // Test should bail before any of these methods get called (with or without batching).
-    preparedStatementMock.expects(never()).method("clearParameters");
-    preparedStatementMock.expects(never()).method("executeUpdate");
-    preparedStatementMock.expects(never()).method("executeBatch");
-    preparedStatementMock.expects(never()).method("close");
     return data;
   }
 }

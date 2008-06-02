@@ -74,6 +74,7 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
    */
   public void testInitialise() {
     try {
+      setupInitialiseExpectations(true);
       testWriter.initialise((Connection)connectionMock.proxy());
     } catch (Exception e) {
       fail("Did not expect an exception here." + e);
@@ -90,9 +91,54 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
   }
 
   /**
-   * Check that hasBatchSupport is set correctly
+   * Check that hasBatchSupport is set correctly. In this case the underlying
+   * mock jdbc layer is set to support batching and we check that the writer
+   * correctly picks up on this.
    */
-  public abstract void testHasBatchSupport();
+  public void testHasBatchSupport() {
+    setupInitialiseExpectations(true);
+    testWriter.initialise((Connection) connectionMock.proxy());
+    assertTrue("Batching should be enabled", testWriter.hasBatchSupport());
+  }
+
+  /**
+  * Check that hasBatchSupport is set correctly. In this case the underlying
+  * mock jdbc layer is set to NOT support batching and we check that the writer
+  * correctly picks up on this.
+  */
+  public void testHasBatchSupportBatchingDisabled() {
+    setupInitialiseExpectations(false);
+    testWriter.initialise((Connection) connectionMock.proxy());
+    assertFalse("Should not support batching at this point", testWriter.hasBatchSupport());
+  }
+
+ /**
+   * Test writing a batch of three with batch support disabled.
+   */
+  public void testWriteBatchBatchingDisabled() {
+    Object[] data = setupWriteBatchDataAndExpectationsBatchingDisabled();
+
+    setupInitialiseExpectations(false);
+    testWriter.initialise((Connection) connectionMock.proxy());
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+
+  /**
+   * This method must be overriden to generate test data consisting of a  batch.
+   * Associated mock expectations relating to this component must also be set. Note
+   * that these expectations are to be set assuming the underlying jdbc layer is configured
+   * to disable batch uploads.
+   *
+   * @return Object[]
+   */
+  protected Object[] setupWriteBatchDataAndExpectationsBatchingDisabled() {
+    fail("Data and data expectations for the test 'Write Batch' are not set");
+    return new Object[0];
+  }
 
   /**
    * Test writing an empty batch. Should just be ignored.
@@ -105,24 +151,140 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
       fail("Unexpected Exception: " + e);
     }
   }
+  
+  /**
+   * Set the expectations of the jdbc mocks reasonably to enable the the writer
+   * to be initialised. NB this is a little circular at the moment ie. these
+   * expectations have been set with respect to what the writer already does.
+   *
+   * @param supportsBatch Set batch support on the JDBC Layer
+   */
+  protected void setupInitialiseExpectations(boolean supportsBatch) {
+    fail("You must set the default initialise expectations appropriately");
+  }
+
+//Test writing a single data element (i.e. a batch of one).
 
   /**
-   * Test writing a batch of one with default configuration.
+   * Test writing a batch of one with batch support enabled.
    */
-  public abstract void testWriteSingleton();
+  public void testWriteSingleton() {
+    Object[] data = setUpSingletonDataAndDataExpections();
+    setupInitialiseExpectations(true);
+    testWriter.initialise((Connection)connectionMock.proxy());
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
 
   /**
-   * Test writing a batch with default configuration.
+   * Test writing a batch of one with batch support disabled.
    */
-  public abstract void testWriteBatch();
+  public void testWriteSingletonBatchingDisabled() {
+    Object[] data = setUpSingletonDataAndDataExpections();
+    setupInitialiseExpectations(false);
+    testWriter.initialise((Connection) connectionMock.proxy());
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
+  
+  /**
+   * This method must be overrriden to generate test data consisting of a batch of size one.
+   * Associated mock expectations relating to this component must also be set.
+   *
+   * @return Object[]
+   */
+  protected Object[] setUpSingletonDataAndDataExpections() {
+    fail("Data and data expectations for the test 'Write Singleton' are not set");
+    return new Object[] { new Object() };
+  }
 
   /**
-   * Test writing a batch of one null element with default configuration.
+   * Test writing a batch of three with batch support enabled.
    */
-  public abstract void testWriteNullData();
+  public void testWriteBatch() {
+    Object[] data = setupWriteBatchDataAndExpectationsBatchingEnabled();
+    setupInitialiseExpectations(true);
+    testWriter.initialise((Connection) connectionMock.proxy());
+
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      fail("Unexpected Exception: " + e);
+    }
+  }
 
   /**
-   * Test writing a batch of one with without initialising the writer.
+   * This method must be overrriden to generate test data consisting of a  batch.
+   * Associated mock expectations relating to this component must also be set. Note
+   * that these expectations are to be set assuming the underlying jdbc layer is configured
+   * to eanble batch uploads.
+   *
+   * @return Object[]
    */
-  public abstract void testWriteNotInitialised();
+  protected Object[] setupWriteBatchDataAndExpectationsBatchingEnabled() {
+    fail("Data and data expectations for the test 'Write Batch' are not set");
+    return new Object[0];
+  }
+
+  /**
+   * Test writing a batch of one null element with default configuration. Should throw an SQLException.
+   */
+  public void testWriteNullData() {
+    Object[] data = setupWriteNullDataExpectations();
+    try {
+      testWriter.writeBatch(data);
+    } catch (SQLException e) {
+      return;
+    }
+    fail("Expected an SQLException");
+  }
+
+  /**
+   * Generate test data consisting of a batch with one Null element. Associated
+   * mock expectations relating to this component must also be set. This method
+   * must be overriden if the specific component being tested has different
+   * expectations.
+   *
+   * @return Object[]
+   */
+  protected Object[] setupWriteNullDataExpectations() {
+    Object[] data = new Object [] { null };
+    // Test should bail before any of these methods get called (with or without batching).
+    preparedStatementMock.expects(never()).method("clearParameters");
+    preparedStatementMock.expects(never()).method("executeUpdate");
+    preparedStatementMock.expects(never()).method("executeBatch");
+    preparedStatementMock.expects(never()).method("close");
+
+    setupInitialiseExpectations(false);
+    testWriter.initialise((Connection)connectionMock.proxy());
+    return data;
+  }
+
+  /**
+   * Test an attempt to write without first initialising the writer. This
+   * should normally never happen and shouldn't work. Currently throws a
+   * NullPointerException in this scenario.
+   */
+  public void testWriteNotInitialised() {
+    Object[] data = setupDataForWriteNotInitialised();
+    try {
+      testWriter.writeBatch(data);
+    } catch (NullPointerException e) {
+      return;
+    } catch (SQLException e) {
+      fail("Expected a NullPointerException");
+    }
+    fail("Expected a NullPointerException");
+  }
+  
+   protected Object[] setupDataForWriteNotInitialised() {
+     fail("Data and data expectations for the test 'Write Not Initialised' are not set");
+    return new Object[] {};
+   }
 }

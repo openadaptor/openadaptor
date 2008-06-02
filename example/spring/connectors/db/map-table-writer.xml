@@ -11,13 +11,14 @@
   This adaptor does the following...
     
     * reads data from stdin
-    * writes the data via a stored procedure call
+    * converts it into an ordered map
+    * writes the data via an insert statement
     
   It is designed to illustrate the basic structure of an adaptor that writes to a database.
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config storedproc-writer.xml -props db.props
+    java org.openadaptor.spring.SpringAdaptor -config map-table-writer.xml -props db.props
 
   You must supply db.props populated appropriately for your environment.
     
@@ -28,8 +29,6 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     <database jar>
-    
-  once running any data that read from std input is written into the test table.
   
    ]]>
  </description>
@@ -78,16 +77,16 @@
  </bean>
 
  <!-- 
-  The connection parameters referenced here should be defined in a separate properties file 
-  and referenced on the command line via -props <path-to-props-file> 
- -->
- <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
-  <description>This defines jdbc connection.</description>
-  <property name="driver" value="${sybase.driver}" />
-  <property name="url" value="${sybase.url}" />
-  <property name="username" value="${sybase.username}" />
-  <property name="password" value="${sybase.password}" />
- </bean>
+    The connection parameters referenced here should be defined in a separate properties file 
+      and referenced on the command line via -props <path-to-props-file> 
+    -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines a jdbc connection.</description>
+    <property name="driver" value="${db.driver}" />
+    <property name="url" value="${db.url}" />
+    <property name="username" value="${db.username}" />
+    <property name="password" value="${db.password}" />
+  </bean>
 
  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
   <description>
@@ -97,7 +96,7 @@
   <property name="jdbcConnection" ref="JdbcConnection" />
   <property name="preambleSQL" value="DELETE FROM WriterExample" />
   <property name="writer">
-   <bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter">
+   <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
     <description>When 'outputColumns' is not configured,map keys should match table columns</description>
     <property name="tableName" value="WriterExample" />
    </bean>

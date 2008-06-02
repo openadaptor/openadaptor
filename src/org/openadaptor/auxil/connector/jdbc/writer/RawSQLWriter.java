@@ -66,13 +66,6 @@ public class RawSQLWriter extends AbstractSQLWriter {
   protected PreparedStatement createBatchStatement(Object[] data) throws SQLException{    
     throw new SQLException("Batch writes are not supported");
   }
-//  protected PreparedStatement createBatchStatement(Object[] data) throws SQLException{    
-//    PreparedStatement ps=connection.prepareStatement(data[0].toString());
-//    for (int i=1;i<data.length;i++) {
-//      ps.addBatch(data[i].toString());
-//    }
-//    return ps;
-//  }
   
   /**
    * Create a prepared statement to write a single data record.
@@ -86,5 +79,12 @@ public class RawSQLWriter extends AbstractSQLWriter {
     }
     return connection.prepareStatement(datum.toString());
   }
-  
+
+  /**
+   * This implementation does not reuse a prepared statement, and so does
+   * nothing.
+   * @see org.openadaptor.auxil.connector.jdbc.writer.AbstractSQLWriter#initialiseReusablePreparedStatement()
+   */
+  protected void initialiseReusablePreparedStatement() {
+  }
 }

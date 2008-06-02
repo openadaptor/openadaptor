@@ -27,6 +27,7 @@
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -36,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +64,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   protected Connection connection;
   protected PreparedStatement reusablePreparedStatement=null;
   protected int[] argSqlTypes; //Might need the sql types for null columns.  
+  protected String[] outputColumns;
 
   private boolean batchSupport;
 
@@ -76,7 +79,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       this.connection=connection;
       batchSupport=checkBatchSupport();
       log.info("Writer does "+(batchSupport?"":"NOT ")+"have batch support");
-      reusablePreparedStatement=initialiseReusablePreparedStatement();
+      initialiseReusablePreparedStatement();
       if ((reusablePreparedStatement!=null) && (argSqlTypes==null)){ //Subclass didn't setup the argument types!
         String msg="Argument types not set for PreparedStatement calls. This may not work with null values!";
         log.warn(msg);
@@ -111,14 +114,48 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 
   /**
    * Initialise a reusable Prepared statement.
-   * If null, statement reuse is not possible, and
-   * one will have to be generated for each write.
    * <br>
-   * Subclasses must override this to allow reusable prepared statements.
-   * @return PreparedStatement - reusable prepared statement, or null if reuse is not possible.
+   * Subclasses must implement this to allow reusable prepared statements.
    */
-  protected PreparedStatement initialiseReusablePreparedStatement() {
-    return null; //By default PreparedStatement cannot be reused.
+  protected abstract void initialiseReusablePreparedStatement();
+  
+  /**
+   * This creates a reusable Prepared Statement for insert statements 
+   * into a table.
+   */
+  protected void initialiseReusableInsertStatement(String tableName) {
+    log.info("Initialising prepared statement for insertion into "+tableName+"...");
+    try {
+      //Load bean properties with database metadata values
+      if (outputColumns==null) {
+        setOutputColumns(getTableColumnNames(tableName, connection));
+      }
+      argSqlTypes=getPreparedStatementTypes(tableName, connection, outputColumns);
+      reusablePreparedStatement=generatePreparedStatement(connection, tableName, outputColumns);
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to initialise information for target table, " + e.toString(), e);
+    }
+  }
+  
+  /**
+   * This creates a reusable Prepared Statement for calls to a
+   * stored procedure.
+   */
+  protected void initialiseReusableStoredProcStatement(String procName) {
+    log.info("Initialising prepared statement for " + procName);
+    try {
+      argSqlTypes = getStoredProcArgumentTypes(procName, connection);
+      if (outputColumns != null) {
+        if (argSqlTypes.length != outputColumns.length) {
+          throw new SQLException("Proc expects " + argSqlTypes.length + " arguments, but outputColumns contains " + outputColumns.length);
+        }
+      }
+      String sql = generateStoredProcSQL(procName,argSqlTypes);
+      reusablePreparedStatement = connection.prepareStatement(sql);
+      log.debug("Reusable prepared statement is: " + sql);
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to create prepared statement for proc " + procName + " - " + e.toString(), e);
+    }
   }
 
   /**
@@ -293,13 +330,33 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     Statement s = connection.createStatement();
     log.debug("Executing SQL: " + sql);
     ResultSet rs=s.executeQuery(sql);
-    List names=new ArrayList();
     ResultSetMetaData rsmd=rs.getMetaData();
+    List names=new ArrayList(rsmd.getColumnCount());
 
     for (int i=0;i<rsmd.getColumnCount();i++) {
       names.add(rsmd.getColumnName(i+1));
     }
     return names;
+  }
+
+  /**
+   * Generate the SQL for a stored procedure call.
+   * It will add placeholders for the required number of arguments also.
+   * @param procName The name of the stored procedure to be used
+   * @param argCount The number of arguments expected by the proc.
+   * @return String containing an SQL call ready for compilation as a PreparedStatement
+   */
+  protected String generateStoredProcSQL(String procName,int[] sqlTypes) {
+    StringBuffer sqlString = new StringBuffer("{ CALL "+ procName + "(");
+    int args=sqlTypes.length;// Only need the number of args.
+    for (int i=0;i<args;i++) {
+      sqlString.append("?,");
+    }
+    if (args>0) { //Drop the last comma.
+      sqlString.deleteCharAt(sqlString.length()-1);
+    }
+    sqlString.append(")}");
+    return sqlString.toString();
   }
 
   /**
@@ -372,5 +429,31 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     return sqlTypes;
   }
 
+  /**
+   * Set the names of the columns to be used when writing output rows.
+   * <br>
+   * For concrete subclasses that write via {@link CallableStatement}s
+   * this property is optional.
+   * <br>
+   * For concrete subclasses that write to tables, this property is mandatory 
+   * for Maps, but optional for orderedMaps. If it is unspecified, the 
+   * incoming ordered map fields must correspond exactly to output fields.
+   * @param columns
+   */
+  public void setOutputColumns(final List columns) {
+    if (columns==null || columns.isEmpty()) {
+      outputColumns=null;
+    } else {
+      this.outputColumns=(String[])columns.toArray(new String[columns.size()]);
+    }
+  }
+  
+  /**
+   * Returns the names of the columns which are written on output.
+   * @return Unmodifiable List with names of the output columns.
+   */
+  public List getOutputColumns() {
+    return Collections.unmodifiableList(Arrays.asList(outputColumns));
+  }
 }
 

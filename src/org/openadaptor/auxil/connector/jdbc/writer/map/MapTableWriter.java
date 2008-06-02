@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.map;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -70,21 +70,8 @@ public class MapTableWriter extends AbstractMapWriter {
   /**
    * This creates a reusable Prepared Statement for inserts into the configured table.
    */
-  protected PreparedStatement initialiseReusablePreparedStatement() {
-    PreparedStatement reusablePreparedStatement=null;
-    log.info("Initialising prepared statement for insertion into "+tableName+"...");
-    try {
-      //Load bean properties with database metadata values
-      if (outputColumns==null) {
-        setOutputColumns(getTableColumnNames(tableName, connection));
-      }
-      argSqlTypes=getPreparedStatementTypes(tableName, connection, outputColumns);
-      reusablePreparedStatement=generatePreparedStatement(connection, tableName, outputColumns);
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to initialise information for target table, " + e.toString(), e);
-    }
-
-    return reusablePreparedStatement;
+  protected void initialiseReusablePreparedStatement() {
+    initialiseReusableInsertStatement(tableName);
   }
 
   /**

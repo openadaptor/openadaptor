@@ -25,17 +25,15 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.map;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.connector.jdbc.writer.AbstractSQLWriter;
 
 /**
  * Base class for writing Maps to JDBC databases
@@ -44,31 +42,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractMapWriter extends AbstractSQLWriter {
   private static final Log log = LogFactory.getLog(AbstractMapWriter.class);
-
-  protected String[] outputColumns;
-  /**
-   * Set the names of the columns to be used when writing output rows.
-   * <br>
-   * Mandatory for Maps, but optional for orderedMaps if unspecified, 
-   * the incoming ordered map fields must 
-   * correspond exactly to output fields.
-   * @param columns
-   */
-  public void setOutputColumns(final List columns) {
-    if (columns==null || columns.isEmpty()) {
-      outputColumns=null;
-    }
-    else {
-      this.outputColumns=(String[])columns.toArray(new String[columns.size()]);
-    }
-  }
-  /**
-   * Returns the names of the columns which are written on output.
-   * @return Unmodifiable List with names of the output columns.
-   */
-  public List getOutputColumns() {
-    return Collections.unmodifiableList(Arrays.asList(outputColumns));
-  }
 
   /**
    * Create prepared statement to write a batch of  maps.

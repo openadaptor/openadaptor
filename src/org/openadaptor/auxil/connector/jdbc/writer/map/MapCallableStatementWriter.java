@@ -25,7 +25,7 @@
  of the Software with other software or hardware.
 */
 
-package org.openadaptor.auxil.connector.jdbc.writer;
+package org.openadaptor.auxil.connector.jdbc.writer.map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,11 +40,11 @@ import java.util.Map;
 /**
  * Writer which will call a stored procedure to write records to a 
  * database.
- * 
+ * <p>
  * Note that outputColumns is mandatory unless all records will be 
  * IOrderedMap instances. This is because the order of fields for
  * other Maps is not defined, meaning that it would not be possible
- * to appropriately match fields to stored procecure parameters.
+ * to appropriately match fields to stored procedure parameters.
  * 
  * @author higginse
  * @since 3.2.2
@@ -77,26 +77,10 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
   }
 
   /**
-   * This creates a reusable Prepared Statement for inserts into the configured table.
+   * This creates a reusable Prepared Statement for calls to the configured stored proc.
    */
-  protected PreparedStatement initialiseReusablePreparedStatement() {
-    PreparedStatement reusablePreparedStatement=null;
-    log.info("Initialising prepared statement for "+procName);
-    try {
-      argSqlTypes=getStoredProcArgumentTypes(procName, connection);
-      if (outputColumns!=null) {
-        if (argSqlTypes.length != outputColumns.length){
-          throw new SQLException("Proc expects "+argSqlTypes.length+" arguments, but outputColumns contains "+outputColumns.length);
-        }
-      }
-      String sql=generateStoredProcSQL(procName,argSqlTypes);
-      reusablePreparedStatement=connection.prepareStatement(sql);
-      log.debug("Reusable prepared statement is: " +sql);
-      //Load bean properties with database metadata values
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to create prepared statement for proc " +procName+" - " + e.toString(), e);
-    }
-    return reusablePreparedStatement;
+  protected void initialiseReusablePreparedStatement() {
+    initialiseReusableStoredProcStatement(procName);
   }
 
   /**
@@ -146,24 +130,5 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
       colNames=(String[])om.keys().toArray(new String[om.size()]); 
     }
     setArguments(ps,map,colNames,argSqlTypes);
-  }
-  /**
-   * Generate the SQL for a stored procedure call.
-   * It will add placeholders for the required number of arguments also.
-   * @param procName The name of the stored procedure to be used
-   * @param argCount The number of arguments expected by the proc.
-   * @return String containing an SQL call ready for compilation as a PreparedStatement
-   */
-  private String generateStoredProcSQL(String procName,int[] sqlTypes) {
-    StringBuffer sqlString=new StringBuffer("{ CALL "+ procName + "(");
-    int args=sqlTypes.length;// Only need the number of args.
-    for (int i=0;i<args;i++) {
-      sqlString.append("?,");
-    }
-    if (args>0) { //Drop the last comma.
-      sqlString.deleteCharAt(sqlString.length()-1);
-    }
-    sqlString.append(")}");
-    return sqlString.toString();
   }
 }

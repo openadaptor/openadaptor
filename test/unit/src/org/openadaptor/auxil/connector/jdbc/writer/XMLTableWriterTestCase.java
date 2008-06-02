@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved.
+ Copyright (C) 2001 - 2008 The Software Conservancy as Trustee. All rights reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the
@@ -26,69 +26,40 @@
 */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Arrays;
+
+import org.dom4j.Document;
+import org.dom4j.Node;
 import org.jmock.Mock;
-import org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+import org.openadaptor.auxil.connector.jdbc.writer.xml.XMLTableWriter;
 
-import java.sql.*;
-import java.util.Map;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Sep 18, 2007 by oa3 Core Team
+/**
+ * Defines a unit test for the {@link XMLTableWriter}.
+ *
+ * @author cawthorng
  */
-
-public class MapTableWriterTestCase  extends AbstractMapWriterTests {
+public class XMLTableWriterTestCase extends AbstractXMLWriterTests {
 
   protected static String MockTableName = "MockTableName";
   protected static String InitialiseQuery = "SELECT * FROM " + MockTableName + " WHERE 1=2";
   protected static int ColumnCount = 6;
   protected static String[] ColumnNames = new String[] {"TRADEID", "BUYSELL", "SECID", "PARTYID", "QTY", "PRICE"};
   protected static String PreparedStatementSQL = "INSERT INTO " + MockTableName + "(TRADEID,BUYSELL,SECID,PARTYID,QTY,PRICE) VALUES (?,?,?,?,?,?)";
-
-  protected static Map SampleMapOne = new OrderedHashMap();
-  protected static Map SampleMapTwo = new OrderedHashMap();
-  protected static Map SampleMapThree = new OrderedHashMap();
-
-  static {
-    SampleMapOne.put(ColumnNames[0], new Integer(1));
-    SampleMapOne.put(ColumnNames[1], "B");
-    SampleMapOne.put(ColumnNames[2], new Integer(1));
-    SampleMapOne.put(ColumnNames[3], new Integer(1));
-    SampleMapOne.put(ColumnNames[4], new Integer(1000000));
-    SampleMapOne.put(ColumnNames[5], new Double(3.251));
-  }
-
-  static {
-    SampleMapTwo.put(ColumnNames[0], new Integer(2));
-    SampleMapTwo.put(ColumnNames[1], "S");
-    SampleMapTwo.put(ColumnNames[2], new Integer(2));
-    SampleMapTwo.put(ColumnNames[3], new Integer(2));
-    SampleMapTwo.put(ColumnNames[4], new Integer(2000000));
-    SampleMapTwo.put(ColumnNames[5], new Double(3.252));
-  }
-
-  static {
-    SampleMapThree.put(ColumnNames[0], new Integer(3));
-    SampleMapThree.put(ColumnNames[1], "X");
-    SampleMapThree.put(ColumnNames[2], new Integer(3));
-    SampleMapThree.put(ColumnNames[3], new Integer(3));
-    SampleMapThree.put(ColumnNames[4], new Integer(3000000));
-    SampleMapThree.put(ColumnNames[5], new Double(3.253));
-  }
-
-  protected Mock metaDataMock;
+  
   protected Mock typeGetStatementMock;
-  protected Mock statementMock;
   protected Mock typeResultSetMock;
-  protected Mock resultSetMock;
-  protected Mock resultSetMetaDataMock;
   protected Mock typeResultSetMetaDataMock;
 
-
   protected ISQLWriter instantiateTestWriter() {
-    MapTableWriter writer = new MapTableWriter();
+    XMLTableWriter writer = new XMLTableWriter();
     writer.setTableName(MockTableName);
+    writer.setOutputColumns(Arrays.asList(ColumnNames));
     return writer;
   }
 
@@ -97,22 +68,9 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
 
   protected void setUp() throws Exception {
     super.setUp();
-    metaDataMock = mock(DatabaseMetaData.class);
-    typeGetStatementMock=mock(Statement.class); //This is the call to get the arg types.
-    
-    statementMock = mock(Statement.class);
-    resultSetMock = mock(ResultSet.class);
-    typeResultSetMock=mock(ResultSet.class);
-    typeResultSetMetaDataMock=mock(ResultSetMetaData.class);
-    resultSetMetaDataMock = mock(ResultSetMetaData.class);
-  }
-
-  protected void tearDown() throws Exception {
-    super.tearDown();
-    metaDataMock = null;
-    statementMock = null;
-    resultSetMock = null;
-    resultSetMetaDataMock = null;
+    typeGetStatementMock = mock(Statement.class); //This is the call to get the arg types.
+    typeResultSetMock = mock(ResultSet.class);
+    typeResultSetMetaDataMock = mock(ResultSetMetaData.class);
   }
 
   /**
@@ -129,13 +87,6 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
     connectionMock.expects(atLeastOnce()).method("createStatement").will(
         onConsecutiveCalls(returnValue(typeGetStatementMock.proxy()), returnValue(typeGetStatementMock.proxy()),
             returnValue(statementMock.proxy())));
- 
-    //statementMock.expects(once()).method("executeQuery").with(eq(InitialiseQuery)).will(returnValue(resultSetMock.proxy()));
-    //resultSetMock.expects(once()).method("getMetaData").will(returnValue(resultSetMetaDataMock.proxy()));
-    //resultSetMetaDataMock.stubs().method("getColumnCount").will(returnValue(ColumnCount));
-    //for (int i = 0; i < ColumnCount ; i++) {
-    //  resultSetMetaDataMock.expects(once()).method("getColumnName").with(eq(i+1)).will(returnValue(ColumnNames[i]));
-    //}
     connectionMock.expects(once()).method("prepareStatement").with(eq(PreparedStatementSQL)).will(returnValue(preparedStatementMock.proxy()));
   }
   
@@ -144,11 +95,10 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
     typeResultSetMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(typeResultSetMetaDataMock.proxy()));
     typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnCount").will(returnValue(ColumnCount));
 
-    for (int i = 0; i < ColumnCount ; i++) {
-      typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnType").with(eq(i+1)).will(returnValue(java.sql.Types.VARCHAR));
+    for (int i = 0; i < ColumnCount; i++) {
+      typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnType").with(eq(i+1)).will(returnValue(Types.NUMERIC));
       typeResultSetMetaDataMock.expects(atLeastOnce()).method("getColumnName").with(eq(i+1)).will(returnValue(ColumnNames[i]));
     }
-      //typeResultSetMetaDataMock.expects(atLeastOnce()).method("getInt").will(returnValue(java.sql.Types.NUMERIC));
   }
 
   /**
@@ -167,25 +117,25 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
     }
   }
 
-
   protected Object[] setUpSingletonDataAndDataExpections() {
-    Object[] data = new Object [] {SampleMapOne};
+    Object[] data = new Object [] {SampleXMLOne};
     preparedStatementMock.expects(once()).method("clearParameters");
-    for (int i = 0; i < SampleMapOne.size(); i++ ) {
-      preparedStatementMock.expects(once()).method("setObject").with(eq ( i+1), eq(SampleMapOne.get(ColumnNames[i]) ));
+    for (int i = 0; i < ColumnNames.length; i++) {
+      Node node = SampleXMLOne.getRootElement().selectSingleNode(ColumnNames[i]);
+      preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
     }
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
     return data;
   }
 
-
   protected Object[] setupWriteBatchDataAndExpectationsBatchingEnabled() {
-    Object[] data = new Object [] {SampleMapOne, SampleMapTwo, SampleMapThree};
+    Object[] data = new Object[] { SampleXMLOne, SampleXMLTwo, SampleXMLThree };
     preparedStatementMock.expects(atLeastOnce()).method("clearParameters");
     for (int dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      Map dataElement = (Map) data[dataIndex];
-      for (int i = 0; i < dataElement.size(); i++) {
-        preparedStatementMock.expects(once()).method("setObject").with(eq(i + 1), eq(dataElement.get(ColumnNames[i])));
+      Document dataElement = (Document) data[dataIndex];
+      for (int i = 0; i < ColumnNames.length; i++) {
+	Node node = dataElement.getRootElement().selectSingleNode(ColumnNames[i]);
+	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
       }
     }
     preparedStatementMock.expects(atLeastOnce()).method("addBatch");
@@ -194,27 +144,18 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
   }
 
   protected Object[] setupWriteBatchDataAndExpectationsBatchingDisabled() {
-    Object[] data = new Object [] {SampleMapOne, SampleMapTwo, SampleMapThree};
+    Object[] data = new Object[] { SampleXMLOne, SampleXMLTwo, SampleXMLThree };
     preparedStatementMock.expects(atLeastOnce()).method("clearParameters");
     for (int dataIndex = 0; dataIndex < data.length; dataIndex++) {
-      Map dataElement = (Map) data[dataIndex];
-      for (int i = 0; i < dataElement.size(); i++) {
-        preparedStatementMock.expects(once()).method("setObject").with(eq(i + 1), eq(dataElement.get(ColumnNames[i])));
+      Document dataElement = (Document) data[dataIndex];
+      for (int i = 0; i < ColumnNames.length; i++) {
+	Node node = dataElement.getRootElement().selectSingleNode(ColumnNames[i]);
+	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
       }
     }
     preparedStatementMock.expects(never()).method("addBatch");
     preparedStatementMock.expects(never()).method("executeBatch");
     preparedStatementMock.expects(atLeastOnce()).method("executeUpdate").will(returnValue(1));
-    return data;
-  }
-
-  protected Object[] setupDataForWriteNotInitialised() {
-    Object[] data = new Object [] { SampleMapOne };
-    // Test should bail before any of these methods get called (with or without batching).
-    preparedStatementMock.expects(never()).method("clearParameters");
-    preparedStatementMock.expects(never()).method("executeUpdate");
-    preparedStatementMock.expects(never()).method("executeBatch");
-    preparedStatementMock.expects(never()).method("close");
     return data;
   }
 }

@@ -28,17 +28,28 @@ package org.openadaptor.auxil.connector.jdbc.writer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-/*
- * File: $Header: $
- * Rev:  $Revision: $
- * Created Sep 13, 2007 by oa3 Core Team
- */
 
 public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
 
   protected ISQLWriter instantiateTestWriter() {
     RawSQLWriter writer = new RawSQLWriter();
     return writer;
+  }
+  
+  protected void setupInitialiseExpectations(boolean supportsBatch) {
+  }
+  
+  protected Object[] setupWriteBatchDataAndExpectationsBatchingDisabled() {
+    return new Object[0];
+  }
+  
+  protected Object[] setUpSingletonDataAndDataExpections() {
+    String[] data = new String[] {"SELECT * FROM TABLE"};
+    connectionMock.expects(once()).method("prepareStatement").with(eq(data[0])).will(returnValue(preparedStatementMock.proxy()));
+    preparedStatementMock.expects(atLeastOnce()).method("executeUpdate").will(returnValue(1));
+    preparedStatementMock.expects(atLeastOnce()).method("close");
+    
+    return data;
   }
 
   protected void setMocksFor(ISQLWriter writer) {
