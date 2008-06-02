@@ -1262,7 +1262,7 @@ Sybase and HSQL, though others should be straightforward to create.
   &lt;bean id="HospitalWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector"&gt;
     &lt;property name="jdbcConnection" ref="jdbcConnection" /&gt;
     &lt;property name="writer"&gt;
-      &lt;bean class="org.openadaptor.auxil.connector.jdbc.writer.MapTableWriter"&gt;
+      &lt;bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter"&gt;
         &lt;property name="tableName" value="OA_Exception" /&gt;
       &lt;/bean&gt;
     &lt;/property&gt;
