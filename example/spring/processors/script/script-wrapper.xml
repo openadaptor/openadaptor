@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id$
+	$HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<description>
+		<![CDATA[  
+  This adaptor illustrates how incoming records may be wrapped in, say Maps.
+    
+    * reads all data in input/trades.txt
+    * converts to orderedmaps
+    * uses a script to wrap the incoming data.
+    * outputs to stdout
+    
+  It is designed to illustrate a simple use of a ScriptProcssor
+
+  It may be run as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript-filter.xml
+    
+  Classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  
+  It will generate output to stdout (console).
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+		</description>
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="OrderedMap" />
+						<ref bean="Wrapper" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/trades.txt" />
+		<property name="dataReader">
+		<description>Reader which ignores comment lines (first non whitespace is #)</description>
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<property name="excludeRegex" value="^\s*#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="OrderedMap"
+		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+			Convert to OrderedMap providing fields names
+		</description>
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<bean id="Wrapper" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+	 <description>
+	  Simple use of a ScriptProcessor to wrap an incoming record within a Map.
+    Note: CDATA section is used to avoid having to escape xml within the script.
+	 </description>
+	 <property name="script">
+	  <value>
+	   <![CDATA[
+       var orig=oa_data;
+       var outgoing=new java.util.HashMap();
+       outgoing.put("origData",oa_data);
+       outgoing.put("timestamp",new java.util.Date());
+       oa_data=outgoing;
+			  ]]>
+	  </value>
+	 </property>
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+</beans>
