@@ -343,7 +343,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * Generate the SQL for a stored procedure call.
    * It will add placeholders for the required number of arguments also.
    * @param procName The name of the stored procedure to be used
-   * @param argCount The number of arguments expected by the proc.
    * @return String containing an SQL call ready for compilation as a PreparedStatement
    */
   protected String generateStoredProcSQL(String procName,int[] sqlTypes) {

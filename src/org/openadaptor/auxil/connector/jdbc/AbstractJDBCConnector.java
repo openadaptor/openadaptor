@@ -36,10 +36,11 @@ import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
- * Abstract class for code common to both {@link JDBCReadConnector} and 
- * {@link JDBCWriteConnector}.
+ * Abstract class for code common to both {@link org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector JDBCReadConnector} 
+ * and {@link org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector JDBCWriteConnector}.
  * 
  * @author Kris Lachor
+ * @author Eddy Higgins
  */
 public abstract class AbstractJDBCConnector extends Component implements ITransactional{
 
@@ -73,7 +74,7 @@ public abstract class AbstractJDBCConnector extends Component implements ITransa
    * <br>
    * This property is manadatory
    *
-   * @param jdbcConnection the connection details for the database.
+   * @param connection the connection details for the database.
    */
   public void setJdbcConnection(final JDBCConnection connection) {
     jdbcConnection = connection;
