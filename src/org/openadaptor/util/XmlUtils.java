@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util;
 
@@ -33,15 +33,25 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.parsers.DOMParser;
+import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.jaxen.JaxenException;
+import org.jaxen.dom4j.Dom4jXPath;
+import org.jaxen.expr.Expr;
+import org.jaxen.expr.LocationPath;
+import org.jaxen.expr.Step;
+import org.jaxen.saxpath.Axis;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -315,5 +325,105 @@ public class XmlUtils {
     }
 
     return values;
+  }
+  //Some primarily Jaxen based utility methods, to assist in creating nodes from an XPath
+
+  public static org.dom4j.Node create(String xpath,org.dom4j.Document document) {
+    org.dom4j.Node result=null;
+    LocationPath lp=getLocationPath(xpath);
+    if (lp!=null) {
+      List steps=lp.getSteps();
+      Step lastStep=removeLeaf(steps);
+      String parentXpath=toXPath(steps, lp.isAbsolute());
+      //log.debug("Parent XPath: "+parentXpath);
+      org.dom4j.Node parent=document.selectSingleNode(parentXpath);
+      if (parent==null) {
+        //log.debug("Parent does not exist, need to recursively create ");
+        parent=create(parentXpath,document);
+      }
+      if (parent==null) { //Have to give up.
+        throw new RuntimeException("Failed to create node for xpath: "+xpath);
+      }
+      else {
+        //log.debug("Parent exists. Now need to add the last bit:" +lastStep.getText());
+        //log.debug("Axis is: "+Axis.lookup(lastStep.getAxis()));
+        String txt=lastStep.getText();
+        String name=txt.substring(txt.indexOf("::")+"::".length()); //+1 since "::" is two chars long.
+        if (parent instanceof Element) {
+          Element parentElement=(Element)parent;
+          switch(lastStep.getAxis()) {
+          case Axis.ATTRIBUTE:
+            Attribute newAttribute=DocumentHelper.createAttribute(null, name, "");
+            parentElement.add(newAttribute);
+            result=newAttribute;
+            break;
+          default:
+            Element element=DocumentHelper.createElement(name);
+          parentElement.add(element);
+          result=element;
+          break;
+          }
+        }
+        else {
+          throw new RuntimeException("Cannot create child of non-Element parent. XPath was: "+xpath);
+        }
+      }
+    }
+    else {
+      throw new RuntimeException("Failed to resolve XPath String: "+xpath);
+    }
+    return result;
+  }   
+
+  /**
+   * Try and create a LocationPath from a supplied XPath String.
+   * @param xpath String containing XPath to process
+   * @return LocationPath or null if not possible
+   */
+  private static LocationPath getLocationPath(String xpath) {
+    LocationPath lp=null;
+    try {
+      Expr xpathExpr=new Dom4jXPath(xpath).getRootExpr();
+      if (xpathExpr instanceof LocationPath) {
+        lp=(LocationPath)xpathExpr;
+      }
+    }
+    catch (JaxenException je) {
+      throw new RuntimeException("Got JaxenException: "+je.getMessage());
+    }
+    return lp;
+  } 
+
+  /**
+   * Generate an XPath expression from a list of Steps.
+   * <br>
+   * @param steps List containing XPath Steps.
+   * @param absolutePath flag to indicate if path is absolute.
+   * @return String containing the corresponding XPath.
+   */
+  private static String toXPath(List steps,boolean absolutePath) {
+    StringBuffer sb=new StringBuffer();
+    if (absolutePath) {
+      sb.append('/');
+    }
+    Iterator it=steps.iterator();
+    while (it.hasNext()){
+      Step step=(Step)it.next();
+      sb.append(step.getText()).append("/");
+    }
+    sb.deleteCharAt(sb.length()-1);//Drop last slash.
+    return sb.toString();   
+  }
+
+  /**
+   * Drop the last step in an XPath.
+   * <br>
+   * Useful when trying to find an existing ancestor for a non-existent
+   * node.
+   * @param steps
+   * @return
+   */
+  private static Step removeLeaf(List steps) {
+    return (Step)steps.remove(steps.size()-1);
   }
 }
