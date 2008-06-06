@@ -234,7 +234,8 @@ public class Dom4JDocumentMapFacade implements MapFacade {
       String attrName=attribute.getName();
       Attribute existing=element.attribute(attrName);
       if (existing!=null) {
-        old=element.remove(existing);
+        element.remove(existing);
+        old=existing;
       }
       element.add(attribute);
     }
