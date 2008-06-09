@@ -1,13 +1,20 @@
 <html>
   
   <head>
-    <title>openadaptor3 FAQ (versions 3.3+)</title>
+    <title>OpenAdaptor3 FAQ (versions 3.3+)</title>
       <STYLE TYPE="text/css">
-        .shell    { width: 90%; background-color: #EEEEEE }
+        .shell {
+		  background: rgb(235,235,235);
+		}
         .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
         .back     { text-align: right; font-size:9pt }
         .xml-txt  { font-family: Courier; font-size: 8pt; width: 90%; border: thin solid black; background: rgb(220,220,220);}
-        
+        h1,h2,h3,h4 {font-family: Arial}
+        p,ol,ul,th,td {
+		  font-family: Arial;
+		  font-size: 10pt;
+		  text-align: justified;
+		}
       </STYLE>
   </head>
   
@@ -89,12 +96,12 @@
       into the OpenAdaptor&nbsp;3.4+ codebase.
     </p>
     <p>
-      All other versions are now either in legacy maintenance mode (1.7.2.2) or no longer supported.
+      All other versions are now either in legacy maintenance mode (1.7.2.3) or no longer supported.
       Legacy maintenance mode means that our community is still actively helping people with queries,
       and that we are only patching significant bugs.
     </p>
     <p>
-      The supported migration path for legacy adaptors is to upgrade to 1.7.2.2 and then move to 3.x.
+      The supported migration path for legacy adaptors is to upgrade to 1.7.2.3 and then move to 3.x.
     </p>
     <table border="1">
       <tr>
@@ -123,7 +130,7 @@
         <td>
           <table>
             <tr><td>LEGACY (SUPPORTED)</td></tr>
-            <tr><td>Migrate to 1.7.2.2, and then to OpenAdaptor&nbsp;3.x.</td></tr>
+            <tr><td>Migrate to 1.7.2.3, and then to OpenAdaptor&nbsp;3.x.</td></tr>
           </table>
         </td>
         <td>
@@ -135,25 +142,23 @@
     <p>
       If you are migrating legacy OpenAdaptor&nbsp;1.x adaptors you may encounter
       <a href="#customcomponents">custom components</a> which may now be supported by standard
-      componentry in OpenAdaptor&nbsp;3.x.
+      components in OpenAdaptor&nbsp;3.x.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
-
     <a id="gettingstarted"></a>
     <h2>Getting started</h2>
-    <p>We recommend following these steps</p>
+    <p>We recommend following these steps:</p>
     <ol>
-      <li>read the <a href="http://www.openadaptor.org/docs/whitepaper.pdf">whitepaper</a></li>
-      <li>download the binary distribution from <a href="http://www.openadaptor.org/downloads.html">downloads</a></li>
-      <li>unzip</li>
-      <li>do the tutorial, contained in the distribution (example/tutorial/index.html)</li>
-      <li>read the general README (example/readme.html)</li>
-      <li>explore the spring examples, contained in the distribution (example/spring)</li>
+      <li>Read the <a href="http://www.openadaptor.org/docs/whitepaper.pdf">whitepaper</a>.</li>
+      <li>Download the binary distribution from <a href="http://www.openadaptor.org/downloads.html">downloads</a>.</li>
+      <li>Unzip.</li>
+      <li>Follow the tutorial contained in the distribution (example/tutorial/index.html).</li>
+      <li>Read the general README (example/readme.html).</li>
+      <li>Explore the Spring examples contained in the distribution (example/spring).</li>
     </ol>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="typicaldevsteps"></a>
@@ -165,25 +170,24 @@
     </p>
     <p>
       Writing a new adaptor is best done as an incremental process.
-      Start at one (or sometimes both) ends and test as you go along.
+      Start at one end (or sometimes both ends) and test as you go along.
     </p>
     <ol>
       <li>
         Analyse basic requirements (input; transformation; output(s); logging).
       </li>
       <li>
-        Get development environment set up so it can run a trivial example adaptor.
+        Set up development environment so it can run a trivial example adaptor.
       </li>
       <li>
         Create your new XML config file based on a skeleton file like the
         <a href="#xmlconfig">XML config example</a> below, with an empty Router.
       <li>
-        Add components that reads date from your input and writes to a file
+        Add components that read date from your input and write to a file
         (the file writing component will try to sensibly represent the data).
       </li>
       <li>
-        Run your adaptor, and examine the output.
-        Have you successfully captured the input data?
+        Run your adaptor, and examine the output. Have you successfully captured the input data?
       </li>
       <li>
         Gradually add more components, testing as you go.
@@ -192,42 +196,57 @@
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
-
     <a id="classpath"></a>
     <h2>How should I set my classpath?</h2>
-    <p>openadaptor lib directory contains the following</p>
+    <p>The OpenAdaptor lib directory contains the following:</p>
     
     <table>
-      <tr><td><b>log4j.properties</b></td><td>A sample log4j configuration file</td></tr>
-      <tr><td><b>openadaptor.jar</b></td><td>The actual openadaptor code</td></tr>
-      <tr><td><b>openadaptor-spring.jar</b></td><td>Helper classes for launching openadaptor processes based on spring configurations</td></tr>
-      <tr><td><b>openadaptor-depends.jar</b></td><td>Most of the 3rdparty jars, re-jarred as a single jar for convenience</td></tr>
-      <tr><td><b>3rdparty</b></td><td>The 3rd party jars</td></tr>
+      <tr><th align="left">log4j.properties</th><td>A sample log4j configuration file</td></tr>
+      <tr><th align="left">openadaptor.jar</th><td>The actual openadaptor code</td></tr>
+      <tr><th align="left">openadaptor-spring.jar</th><td>Helper classes for launching OpenAdaptor processes based on spring configurations</td></tr>
+      <tr><th align="left">openadaptor-depends.jar</th><td>Most of the 3rdparty jars, re-jarred as a single jar for convenience</td></tr>
+      <tr><th align="left">3rdparty</th><td>The 3rd party jars</td></tr>
     </table>
     
-    <p>Your classpath needs to contain <b>openadaptor.jar</b>. If you are using our spring helper
-    classes to run an adaptor / application then you will need <b>openadaptor-spring.jar</b>. You will also
-    need a subset of the 3rdparty jars upon which openadaptor relies, the easist approach is to include
-    <b>openadaptor-depends.jar</b>. So your classpath would be something like this...</p>
+    <p>Your classpath needs to contain <code>openadaptor.jar</code>. If you are using our Spring helper
+    classes to run an adaptor then you will need <code>openadaptor-spring.jar</code>. You will also
+    need a subset of the 3rdparty jars upon which OpenAdaptor relies; the easist approach is to include
+    <code>openadaptor-depends.jar</code>. So your classpath would be something like this:</p>
     
-    windows
-    <div class="shell"><pre>  set CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar</pre></div>
-    
-    *nix
-    <div class="shell"><pre>  CLASSPATH=lib:lib/openadaptor.jar:lib/openadaptor-spring.jar:lib/openadaptor-depends.jar
-  export CLASSPATH</pre></div>
-    
-    <p>example/bin contains a windows bat script and a bash profile that sets your CLASSPATH like this.
-      However you may decide to include just the 3rdparty jars that you need which is why we include the 3rdparty directory.</p>
-    
-    <p>post release 3.2.1, openadaptor comes with an additonal jar called <b>bootstrap.jar</b>. This contains
-    alternative helper classes that will bootstrap the classpath based on the location of the bootstrap.jar.
-    All you need in your classpath is bootstrap.jar. You can dump out the programs that can be run
-    from this bootstrap.jar like this</p>
+<h4>Windows</h4>
+<div class="shell"><pre>
 
-    <div class="shell"><pre>  java -jar bootstrap.jar</pre></div>
+set CLASSPATH=lib;lib/openadaptor.jar;lib/openadaptor-spring.jar;lib/openadaptor-depends.jar
+
+</pre></div>
+
+<h4>Unix</h4>
+<div class="shell"><pre>  
     
-    <p>This should print something like the following...</p>
+CLASSPATH=lib:lib/openadaptor.jar:lib/openadaptor-spring.jar:lib/openadaptor-depends.jar
+export CLASSPATH
+  	
+</pre></div>
+    
+    <p>
+    The example/bin directory contains a Windows batch script and a bash profile that sets your 
+    classpath like this. However you may decide to include just the 3rdparty jars that you need 
+    which is why we include the 3rdparty directory.
+    </p>
+    <p>
+    Post release 3.2.1, OpenAdaptor comes with an additonal jar called <code>bootstrap.jar</code>. This contains
+    alternative helper classes that will bootstrap the classpath based on the location of the jar file.
+    All you need in your classpath is <code>bootstrap.jar</code>. You can dump out the programs that can be run
+    from this jar file like this:
+    </p>
+
+<div class="shell"><pre>
+
+java -jar bootstrap.jar
+
+</pre></div>
+    
+    <p>This should print something like the following:</p>
     
     <div class="shell"><pre>  This jar contains the following programs :
     org.openadaptor.bootstrap.FileSystemExceptionManager
@@ -237,26 +256,41 @@
   When you run these they will bootstrap the classpath based on the location of this jar
   use -Dopenadaptor.lib=... to provide an additional location to search for classpath resources</pre></div>
     
-    <p>These bootstrapping programs will automatically construct the classpath based on the location
-    of the bootstrap.jar. The classpath will contain all the jars, zip and subdirectories. You can specify an additional directory
-    to search using the openadaptor.lib system property. <b>patch.jar</b> will always be placed at the
-    front of the classpath, it will load the contents of 3rdparty rather than openadaptor-depends.jar,
-    openadaptor-stub.jar will always be at the end of the classpath.</p>
+    <p>
+    These bootstrapping programs will automatically construct the classpath based on the location
+    of <code>bootstrap.jar</code>. The classpath will contain all the jars, zip and subdirectories. 
+    You can specify an additional directory to search using the <code>openadaptor.lib</code> system property. 
+    Any <code>patch.jar</code> will always be placed at the front of the classpath, it will load the 
+    contents of 3rdparty rather than <code>openadaptor-depends.jar</code>, and <code>openadaptor-stub.jar</code>
+    will always be at the end of the classpath.
+    </p>
     
-    <p>example 1:</p>
-    <div class="shell"><pre>   java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    <p>Example 1:</p>
+<div class="shell"><pre>
+
+java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml
+
+</pre></div>
     
-    <p>example 2:</p>
-    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
-  java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
+    <p>Example 2:</p>
+<div class="shell"><pre>
+
+SET CLASSPATH=lib\bootstrap.jar
+java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml
+
+</pre></div>
     
-    <p>example 3:</p>
-    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
-  java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
+    <p>Example 3:</p>
+<div class="shell"><pre>
+
+SET CLASSPATH=lib\bootstrap.jar
+java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml
+
+</pre></div>
     
     <p>
-      <b>Note: The command line syntax is under review following release of version 3.4,
-      and so the syntax might change in the next release.</b>
+      <b>Note:</b> The command line syntax is under review following release of version 3.4,
+      and the syntax may change in the next release.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
     
@@ -265,7 +299,7 @@
     <h2>What are in these XML config files?</h2>
     <p>
       The XML files are Spring 2.0 configuration files.
-      The OpenAdaptor 3.x components have been written as Spring "beans".
+      The OpenAdaptor 3.x components have been written as Spring beans.
     </p>
     <p>
       Please make use of the Spring &lt;description&gt; element as illustrated here.
@@ -369,45 +403,46 @@
   
   &lt;!-- Definitions of all of the beans referred to in the routing table come here. --&gt;
 &lt;/beans&gt;</pre></div>
+    
     <p>
       You can see an XML config fragment below for <a href="#jmsdoxml">reading legacy JMS DOXML</a>
       which shows a routing table and almost all of the beans referred to by it.
-      Note the way that we use <code>id</code> attribute to name and refer to beans:
-      this is the way that Spring works (and XML states that <code>id</code> is unique within file).
+      Note the way that we use the <code>id</code> attribute to name and refer to beans:
+      this is the way that Spring works (and XML states that <code>id</code> is unique within a file).
     </p>
     <p>
-      Spring also allows <code>name</code> attribute to be used to provide aliases, but
+      Spring also allows <code>name</code> attributes to be used to provide aliases, but
       we would advocate avoiding using this unless absolutely necessary (as you will get
       much poorer support from XML editing tools and XML Validation will not be able to
       spot some obvious bugs on your behalf).
     </p>
     <p>
-      Some bean ids will not be mentioned in the Router, e.g.
+      Some bean ids will not be referenced in the <code>Router</code>, e.g.
     </p>
     <ul>
       <li>Helper bean nested inside a top-level bean.</li>
-      <li>Helper bean at top-level and referred to directly/indirectly by a bean referred to in the Router.</li>
+      <li>Helper bean at top-level and referred to directly/indirectly by a bean referred to in the <code>Router</code>.</li>
       <li>Beans whose presence simply has the side effect of configuring adaptor services.</li>
     </ul>
     <p>
-      Examples of the last category are
-      <a href="#variables">Spring's PropertyPlaceholderConfigurer bean</a>
-      and
-      <a href="#registeringadaptors">OpenAdaptor's central registration config</a>.
+      Examples of the last category are Spring's 
+      <a href="#variables">PropertyPlaceholderConfigurer</a> bean
+      and OpenAdaptor's
+      <a href="#registeringadaptors">central registration</a> config.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="payloadneutral"></a>
     <h2>What does "payload neutral" mean for me?</h2>
     <p>
-      In OpenAdaptor version 1.x all data records were passed around as a custom Java type called DataObject.
-      Incoming data had to be a DataObject before it could be processed.
+      In OpenAdaptor version 1.x all data records were passed around as a custom Java type called 
+      <code>DataObject</code>. Incoming data had to be a <code>DataObject</code> before it could be 
+      processed.
     </p>
     <p>
       In OpenAdaptor version 3.x we have thrown away that restriction, and the data records passed
-      around simply needs to be of standard Java type Object.
+      around simply needs to be of standard Java type <code>Object</code>.
     </p>
     <p>
       So you can read data in from one place and write it out to another, without ever needing to
@@ -422,27 +457,27 @@
     <p>
       An objective of OpenAdaptor is to promote reuse of standard components, and so we had to
       settle on some standard payload formats to target our components at.  (Note this is just a
-      necessary restriction as to what individual components can handle: the framework itself is payload neutral).
+      necessary restriction as to what individual components can handle: the framework itself is 
+      payload neutral).
     </p>
     <p>
       We support a variety of payload formats, but with a special emphasis on Maps and XML.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
     
 
     <a id="xsltregexp"></a>
     <h2>Can I transform an XML payload using a regular expression in XSLT?</h2>
     <p>
-      No.  Whilst XSLT 1.1 has substring functions it lacks regular expression support.
+      No. Whilst XSLT 1.1 has substring functions it lacks regular expression support.
     </p>
     <p>
-      Instead you use one of our standard scripting components to
-      <a href="#scriptregexp">modify/filter using a JavaScript regular expression</a>.
+      Instead you can use one of our standard scripting components to modify/filter using a 
+      <a href="#scriptregexp">JavaScript regular expression</a>.
     </p>
     <p>
       There is no need to use an <code>org.openadaptor.auxil.convertor.xml.XmlToOrderedMapConvertor</code>
-      component because our standard modify/filter components understand XML payloads too.
+      component because our standard modify/filter components understand XML payloads.
     </p>
     <p>
       The OpenAdaptor XSLT component will meet most of your other XML transformation needs,
@@ -450,14 +485,13 @@
     </p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
-
     
 
     <a id="customcomponents"></a>
     <h2>What about custom components?</h2>
     <p>
       All versions of OpenAdaptor provide a suite of reusable components.
-      They can connect to datastores, and can process/filter data on its way through your adaptor.
+      They can connect to datastores, and process/filter data on its way through your adaptor.
     </p>
     <p>
       Similarly all versions of OpenAdaptor allow you to provide your own custom components.
@@ -490,11 +524,10 @@
     </ul>
     <p>
       As a rule of thumb, it is best to avoid/minimise using custom components as it makes
-      it easier to support/maintain your adaptor long term.
+      it easier to support/maintain your adaptor in the long term.
     </p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
-
     
 
     <hr>
@@ -506,16 +539,16 @@
     <a id="pipevrouter"></a>
     <h2>Should I use processors (List) or processMap (Map) to configure the Routing?</h2>
     <p>
-      The processors property is simple a convenience method which ultimately converts the
-      supplied list of components into a Map. It is useful to simplify the configuration where 
-      each component only needs to be connected to a single downstream component (i.e it is 
-      simply syntactic sugar adaptors with a single path).
+      The processors property is simply a convenience method which ultimately converts the
+      supplied list of components into a <code>Map</code>. It is useful to simplify the configuration 
+      where each component only needs to be connected to a single downstream component (i.e. it is 
+      simply syntactic sugar for adaptors with a single path).
     </p>
     <p>
       However, for production adaptors, it is likely that components may well fan out their
       output to more than one destination, in which case it would be necessary to convert the
-      List explicitly into a Map anyway; this being the case, it may well be useful to start
-      with a Map anyway. 
+      <code>List</code> explicitly into a <code>Map</code> anyway; this being the case, it may 
+      well be useful to start with a <code>Map</code>. 
     </p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
@@ -524,42 +557,37 @@
     <a id="discards"></a>
     <h2>How can I access/process discarded data?</h2>
     <p>
-      Configure the discardMap property to assign a destination for records that would be 
-      otherwise discarded from a component.
-      If the discardMap contains a key reference to a component which would otherwise be discarding
-      a record, it will instead forward the record to the referenced component(s) in the discardMap.
-      This mechanism offers considerable advantages over legacy OpenAdaptor (1.x ) where it was 
-      instead required to provide multiple inverted-logic filters to process 'active' and discarded
-      data successfully. In practice, this tended to lead to configuration errors.
+      Configure the <code>discardMap</code> property to assign a destination for records that would be 
+      otherwise discarded from a component. If the <code>discardMap</code> contains a key reference to 
+      a component which would otherwise be discarding a record, it will instead forward the record to 
+      the referenced component(s) in the <code>discardMap</code>. This mechanism offers considerable 
+      advantages over legacy OpenAdaptor (1.x ) where it was instead required to provide multiple 
+      inverted-logic filters to process 'active' and discarded data successfully. In practice, 
+      this tended to lead to configuration errors.
     </p>
-    <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
     
 
     <a id="exceptions"></a>
     <h2>How do I handle Exceptions?</h2>
     <p>Refer to the Tutorial for some examples on exception handling.</p>
-    <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
 
     <a id="logging"></a>
     <h2>How does logging work?</h2>
-    <p>openadaptor uses Apache Commons logging abstraction throughout, and is typically configured
+    <p>OpenAdaptor uses Apache Commons logging abstraction throughout, and is typically configured
     to use the Log4j implementation at runtime.</p>
-    <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
     
 
     <a id="hospital"></a>
     <h2>How do I hospitalise problematic records?</h2>
     <p>
-    Consult the Tutorial for information on Exception processing, and hospital-like functionality.
+    Consult the Tutorial for information on exception processing, and hospital-like functionality.
     </p>
-    <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
@@ -567,7 +595,8 @@
     <a id="javascriptnulls"></a>
     <h2>How do I handle <code>null</code> or missing record keys in JavaScript?</h2>
     <p>
-      It is the devloper's responsibility to explicitly handle <code>null</code> or missing record keys in JavaScript.
+      It is the devloper's responsibility to explicitly handle <code>null</code> or missing 
+      record keys in JavaScript.
     </p>
     <p>
       Typically you do this by using guard clauses that test for <code>null</code> in JavaScript
@@ -579,7 +608,7 @@
       or (b) the key does not exist in the record.
     </p>
     <p>
-      You can descriminate between cases (a) and (b) using the <code>oa_data.containsKey(keyname)</code> method.
+      You can discriminate between cases (a) and (b) using the <code>oa_data.containsKey(keyname)</code> method.
     </p>
     <div class="xml-txt"><pre>  &lt;bean id="FilterDateOfBirth" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;
@@ -605,7 +634,7 @@
     <a id="scriptregexp"></a>
     <h2>Can I modify/filter a Map or XML payload using a JavaScript regular expression?</h2>
     <p>
-      Yes.  You can use JavaScript regular expressions in the <code>script</code> property
+      Yes. You can use JavaScript regular expressions in the <code>script</code> property
       of:
     </p>
     <ul>
@@ -623,9 +652,6 @@
     &lt;/script&gt;
   &lt;/bean&gt;</pre></div> 
   
-  
-  XXXXXXXXXXXXXXXXX     Filter with a match example
-  
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -633,11 +659,8 @@
     <a id="javascriptarrays"></a>
     <h2>Can I use JavaScript arrays?</h2>
     <p>
-      Yes 
-    </p>
-    <p>
-      In your script you use <code>oa_data.get()</code>, <code>oa_data.put()</code>
-       where the value is a JavaScript native array.
+      Yes. In your script you use <code>oa_data.get()</code>, or <code>oa_data.put()</code>
+      where the value is a JavaScript native array.
     </p>
     <div class="xml-txt"><pre>  &lt;bean id="ParseAddress" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;
@@ -662,7 +685,6 @@
     <p>
       Yes, their scope is the script in which they are defined.
     </p>
-<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
@@ -679,10 +701,8 @@
     <a id="scriptingcomponents"></a>
     <h2>Can my JavaScript invoke other OpenAdaptor components?</h2>
     <p>
-      No, because this goes against the clean architecture of OpenAdaptor.
-    </p>
-    <p>
-      Instead you should use the <a href="filterorcondition">filter components or the if-then-else components</a>.
+      No, because this goes against the clean architecture of OpenAdaptor. Instead you should use 
+      the <a href="filterorcondition">filter components or if-then-else components</a>.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
@@ -691,24 +711,24 @@
     <a id="scriptscontrolflow"></a>
     <h2>Can I use JavaScript control flow inside my JavascriptProcessor scripts?</h2>
     <p>
-      Yes.  You write JavaScript in the normal way, and operate on the <code>oa_data</code> passed in
+      Yes. You write JavaScript in the normal way, and operate on the <code>oa_data</code> passed in
       which also doubles as the result object.
     </p>
     <p>
       Your condition expressions will typically involve data extracted from each incoming record.
-      It can also involve <a href="#variables">variables from a separate properties file or command line</a>
+      It can also involve <a href="#variables">variables</a> from a separate properties file or command line
       which are specific to this executing instance of the adaptor: these are evaluated when the adaptor
       is loaded and thereafter behave as literal string values.
     </p>
     <p>
-      As a design guideline we very strongly advocate avoiding writing long pieces of JavaScript (a screenful is long).
-      Instead break down your JavaScript into small blocks of defined functionality and place each
-      in a separate <code>ScriptProcessor</code>.
-      This makes it much easier to unit-test each piece of logic (we plan to provide some practical
-      help with this at the component level in the future) according to expected inputs and outputs.
-      It also allows you to take advantage of the discard and exception routing support of OpenAdaptor.
-      Note that hosting it in multiple components may mean using <code>ScriptFilterProcessor</code>
-      components to express branching logic as well as <code>ScriptProcessor</code> components.
+      As a design guideline we very strongly advocate avoiding writing long pieces of JavaScript 
+      (a screenful is long). Instead break down your JavaScript into small blocks of defined functionality 
+      and place each in a separate <code>ScriptProcessor</code>. This makes it much easier to unit-test 
+      each piece of logic (we plan to provide some practical help with this at the component level in the 
+      future) according to expected inputs and outputs. It also allows you to take advantage of the discard 
+      and exception routing support of OpenAdaptor. Note that hosting it in multiple components may mean 
+      using <code>ScriptFilterProcessor</code> components to express branching logic as well as 
+      <code>ScriptProcessor</code> components.
     </p>
     <div class="xml-txt"><pre>  &lt;bean id="DiscountedTrainFare" class="org.openadaptor.auxil.processor.script.ScriptProcessor"&gt;
     &lt;description&gt;Calcuate train fare discount applicable based on age (and for illustration) gender.&lt;/description&gt;
@@ -749,12 +769,10 @@
     <a id="filterorcondition"></a>
     <h2>Should I use a Filter or If-Condition-Else components or JavaScript?</h2>
     <p>
-      It depends: use the one that is most suitable.
-      It is reasonable to combine them.
+      It depends; use the one that is most suitable. It is reasonable to combine them.
       You should be guided by what makes your intent clearest (both in the XML config and
       in the <a href="#docgen">generated node map images</a>).
     </p>
-    <div class="shell"><pre>  </pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
@@ -846,39 +864,35 @@
     <h2>How can Eclipse IDE help me to write my adaptors?</h2>
     <p>
       This assumes that you have followed the <a href="#eclipseplugins">instructions in the previous section</a>
-      which explain which "Eclipse Plugins" to install (otherwise these feature will be unavailable).
+      which explain which Eclipse plugins to install (otherwise these features will be unavailable).
     </p>
     <ul>
       <li>XML syntax colouring and completion.</li>
       <li>
         XSD Schema aware editing <i>(requires you to correctly declare the Spring 2.0 XSD schema
-        <a href="#xmlconfig">in the <code>beans</code> element as in the XML config file examples</a>)</i>.
+        in the <code>beans</code> element as in the <a href="#xmlconfig">XML config file examples</a>)</i>.
       </li>
       <li>Spring Schema completion and navigation to bean definitions by "id" <i>(requires Spring IDE)</i>.</li>
-      <li>OpenAdaptor classes (source and JavaDoc)</li>
-      <li>OpenAdaptor properties (completion and JavaDoc)</li>
+      <li>OpenAdaptor classes (source and JavaDoc).</li>
+      <li>OpenAdaptor properties (completion and JavaDoc).</li>
       <li>Running adaptor XML files directly from within Eclipse.</li>
       <li><a href="#docgen">Generating documentation and images</a> from your adaptor XML config file using Ant target.</li>
     </ul>
-<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
     
     <a id="docgen"></a>
     <h2>How can I generate documentation and pictures for my adaptors?</h2>
     <p>
-      <b>This has been parameterised so that it can be re-used in your own build environment
+      This has been parameterised so that it can be re-used in your own build environment
       to generate documentation about your own adaptors.  We will publish instructions on how to
-      do this in due course.</b>
+      do this in due course.
     </p>
-<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
-
     <a id="variables"></a>
-    <h2>How do I set variables from a separate properties file or on the command line?</h2>
+    <h2>How do I set variables from a separate properties file or the command line?</h2>
     <p>
       You can define whichever properties you like and you have options in configuring the
       <a href="http://static.springframework.org/spring/docs/2.0.x/reference/beans.html#beans-factory-placeholderconfigurer">PropertyPlaceholderConfigurer</a>.
@@ -900,16 +914,16 @@
     &lt;/property&gt;
   &lt;/bean&gt;</pre></div>
     <p>
-      The above PropertyPlaceholderConfigurer configuration says to pick up these values
-      from the two specified Java Properties files, and to ovveride these settings with
-      values found in the Java SystemProperties (typically set with <code>-Dname=value</code>
+      The above <code>PropertyPlaceholderConfigurer</code> configuration says to pick up these values
+      from the two specified Java properties files, and to override these settings with
+      values found in the Java System properties (typically set with <code>-Dname=value</code>
       command line options).
     </p>
     <p>
       You then access the properties as <code>${myPropertyName}</code> within your XML config file.
     </p>
     <p>
-      See <a href="#runtimeparameters">runtime parameters</a> example below.
+      See the <a href="#runtimeparameters">runtime parameters</a> example below.
     </p>  
     <p>
       This parameterisation technique is also very valuable as it allows you to deploy
@@ -918,38 +932,36 @@
       as these will be in the environment specific Java Properties files.
     </p>
     <p>
-      <b>Note: We are planning to make this easier in the release after 3.2.1 (e.g. automatic detection of
-      <code>-D</code> properties causing a default PropertyPlaceholderConfigurer to be created in memory
-      if there is no user specified one).</b>
+      <b>Note:</b> We are planning to make this easier in the release after 3.2.1 (e.g. automatic detection of
+      <code>-D</code> properties causing a default <code>PropertyPlaceholderConfigurer</code> to be created 
+      in memory if there is no user specified one).
     <p>  
     <p class="back"><a href="#contents">back to contents</a></p>
 
     
-
     <a id="singleadaptormultiplefiles"></a>
     <h2>How can I split a single adaptor across multiple XML files?</h2>
     <p><i>
       In general it is best to avoid this and have a single XML config file per adaptor using
-      the PropertyPlaceholderConfigurer to pass in values as defined in
-      <a href="#variables">variables setting section</a> above.      
+      the <code>PropertyPlaceholderConfigurer</code> to pass in values as defined in
+      <a href="#variables">variables setting</a> above.      
     </i></p>
     <p>
-      These are Spring XML config files, so you can have multiple files that are combined together in a single adaptor.
-    </p>
-    <p>
-      Spring defines that each of these XML files must be a proper Spring XML file (including <code>&lt;beans&gt;</code> top-level element).
+      These are Spring XML config files, so you can have multiple files that are combined together in 
+      a single adaptor. Spring defines that each of these XML files must be a proper Spring XML file 
+      (including the <code>&lt;beans&gt;</code> top-level element).
     </p>
     <p> 
       There are two different ways that you can combine them:
     </p>
     <ol>
       <li>
-        Supply multiple XML filenames as SpringAdaptor command line arguments <b>(recommended)</b>.
+        Supply multiple XML filenames as <code>SpringAdaptor</code> command line arguments <b>(recommended)</b>.
       </li>
       <li> 
-        Use the <code>&lt;import resource="someFile.xml"/&gt;</code> element (must be first element(s)
+        Use the <code>&lt;import resource="someFile.xml"/&gt;</code> element (must be the first element(s)
         after <code>&lt;beans&gt;</code> tag of importing XML file) and then just supply the importing
-        XML filename on SpringAdaptor command line.
+        XML filename on <code>SpringAdaptor</code> command line.
       </li>
     </ol>
     <p>
@@ -964,7 +976,6 @@
     </p>
     <!-- <div class="shell"><pre>  </pre></div> -->
     <p class="back"><a href="#contents">back to contents</a></p>
-    
 
 
     <a id="multipleadaptorssinglefile"></a>
@@ -979,29 +990,31 @@
       Then you pass in the bean id you want to use as a <code>-adaptor</code> argument
       to the <code>SpringApplication</code> command line.
     </p>
-<!--    <div class="shell"><pre>  </pre></div>-->
     <p class="back"><a href="#contents">back to contents</a></p>
-    
 
 
     <a id="runtimeparameters"></a>
     <h2>How do I get JDBCReadConnector to pick up its input parameters at runtime?</h2>
     <p>
-      You can have a JDBCReadConnector, which executes a dynamic query,
-      i.e. a query which reads input parameters at runtime via command line or property file.
+      You can have a <code>JDBCReadConnector</code>, which executes a dynamic query,
+      i.e. a query which reads input parameters at runtime via command line or property file:
     </p>
     <div class="xml-txt"><pre>  &lt;bean id="Reader" class="org.openadaptor.auxil.jdbc.reader.JDBCReadConnector"&gt;
     &lt;property name="jdbcConnection" ref="JdbcConnection"/&gt;
     &lt;property name="sql" value="Select * from dbo.mydata where valid_from &gt; ${start} And valid_from &lt; ${end}"/&gt;
   &lt;/bean&gt;</pre></div>
     <p>
-      You then configure a PropertyPlaceholderConfigurer and pass in data as defined in
-      <a href="#variables">variables setting section</a> above.      
+      You then configure a <code>PropertyPlaceholderConfigurer</code> and pass in data as defined in
+      the <a href="#variables">variables setting section</a> above.      
     </p>
     <p>
       So then you could start your adaptor as follows:
     </p>
-    <div class="shell"><pre>  java -Dstart=whatever -Dend=whatever org.openadaptor... etc</pre></div>
+<div class="shell"><pre>
+
+java -Dstart=whatever -Dend=whatever org.openadaptor...
+
+</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
  
 
@@ -1016,28 +1029,25 @@
     <h2>Can I still Subscribe to JMS Messages published in DOXML by an OA1.x Publisher?</h2>
     <p>Yes :-)</p>
     <p>
-      We have provided a set of components to support this (they offer a useful level of backwards compatability).
-      We have tested these components using OpenAdaptor 1.7.2.2,
-      and would strongly recommend that you upgrade your publisher to this level first
-      (especially if you are using types other than Strings in your DOXML).
+      We have provided a set of components to support this (they offer a useful level of backwards 
+      compatability). We have tested these components using OpenAdaptor 1.7.2.2, and would strongly 
+      recommend that you upgrade your publisher to this level first (especially if you are using 
+      types other than Strings in your DOXML).
     </p>
     <p>The basic dataflow is:</p>
     <ol>
       <li>
-        "payload neutral" records are read off the wire by standard OpenAdaptor3 components.
+        "Payload neutral" records are read off the wire by standard OpenAdaptor 3 components.
       </li>
       <li>
         Then parsed as DOXML and the body (only) of the message is written out as plain XML by
-        a legacy openadaptor1.x component (from an OpenAdaptor 1.x jar on the classpath).
+        a legacy OpenAdaptor 1.x component (from an OpenAdaptor 1.x jar on the classpath).
       </li>
       <li>
-        Then treated as a vanilla XML payload by standard OpenAdaptor3 components
-        <a href="#payloadneutral">(see "payload neutral")</a>
+        Then treated as a vanilla XML payload by standard OpenAdaptor 3 components
+        (see <a href="#payloadneutral">"payload neutral"</a>).
       </li>
     </ol>
-    <p>
-      <b>::TODO:: Need to describe classpath...</b>
-    </p>
     <div class="xml-txt"><pre>  &lt;bean id="Router" class="org.openadaptor.core.router.Router"&gt;
     &lt;description&gt;
       The adaptor delegates it's message processing to a router.
@@ -1168,7 +1178,7 @@
     <p>
       Below is the XSLT transform used by the above example adaptor XML fragment
       (to map an incoming nested DOXML record to a one-level deep XML document record containing
-      the extracted content which is ripe for interpreting as a map).
+      the extracted content which is ripe for interpreting as a <code>Map</code>).
     </p>
     <div class="xml-txt"><pre>&lt;?xml version="1.0"?&gt;
 &lt;!--
@@ -1235,19 +1245,17 @@
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
-    
 
 
     <a id="registeringadaptors"></a>
     <h2>How can I register centrally which adaptors are running?</h2>
     <p>
-      Concept is that when your adaptors start up you would like them to HTTP(S) POST
-      some data to a central server (specific to your organisation!).
+      The concept is that when your adaptors start up you would like them to <code>POST</code>
+      some data to a central server (specific to your organisation).
     </p>
     <p>
-      We have a simple in-house implementation of this server-side
-      (with one URL for test and another for production)
-      which takes the data posted and writes it to a SQL database.
+      We have a simple in-house implementation of this server-side (with one URL for test and 
+      another for production) which takes the data posted and writes it to a SQL database.
     </p>
     <p>
       The client-side is part of the OpenAdaptor distribution, and is activated by
@@ -1268,25 +1276,25 @@
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
-
     <a id="running"></a>
     <h2>How can I run an adaptor as an NT Service?</h2>
-    <p>There are a number of utilities for running java programs as an NT service. Here are the
-    instructions for running one of the tutorial configurations using the Java Service Wrapper
-    <a href="http://wrapper.tanukisoftware.org">http://wrapper.tanukisoftware.org</a>.</p>
+    <p>There are a number of utilities for running Java programs as NT services. Here are the
+    instructions for running one of the tutorial configurations using the 
+    <a href="http://wrapper.tanukisoftware.org">Java Service Wrapper</a>.</p>
     
     <ol>
-      <li>Download the Java Service Wrapper for windows</li>
-      <li>unzip the distribution and copy the following files into the example/bin directory 
-        <code>wrapper.exe</code>, <code>wrapper.dll</code>, <code>wrapper.jar</code></li>
-      <li>create a configuration file called <code>wrapper.conf</code>, see example below</li>
-      <li>test the configuration using <code>wrapper.exe -c wrapper.conf</code></li>
-      <li>install as a service using <code>wrapper.exe -i wrapper.conf</code></li>
+      <li>Download the Java Service Wrapper for Windows.</li>
+      <li>Unzip the distribution and copy the following files into the example/bin directory: 
+        <code>wrapper.exe</code>, <code>wrapper.dll</code>, <code>wrapper.jar</code>.</li>
+      <li>Create a configuration file called <code>wrapper.conf</code>, see example below.</li>
+      <li>Test the configuration using <code>wrapper.exe -c wrapper.conf</code>.</li>
+      <li>Install as a service using <code>wrapper.exe -i wrapper.conf</code>.</li>
     </ol>
     
-    <h3>openadaptor 3.2.1 example config</h3>
+    <h3>OpenAdaptor 3.2.1 example config</h3>
     
-      <div class="shell"><pre>
+<div class="shell"><pre>
+
   wrapper.java.command           = c:\\installs\\jdk1.4.2\\bin\\java
   wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
 
@@ -1305,11 +1313,13 @@
   wrapper.ntservice.description  = openadaptor example service
   wrapper.ntservice.starttype    = AUTO_START
   wrapper.ntservice.interactive  = false
-     </pre></div>
+
+</pre></div>
     
-        <h3>post openadaptor 3.2.1 example config (this uses bootstrap spring launcher)</h3>
+        <h3>post OpenAdaptor 3.2.1 example config (this uses bootstrap Spring launcher)</h3>
     
-      <div class="shell"><pre>
+<div class="shell"><pre>
+
   wrapper.java.command           = c:\\installs\\jdk1.4.2\\bin\\java
   wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
 
@@ -1325,31 +1335,33 @@
   wrapper.ntservice.description  = openadaptor example service
   wrapper.ntservice.starttype    = AUTO_START
   wrapper.ntservice.interactive  = false
-   </pre></div>
+
+</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
         
         
     <a id="daemon"></a>
-    <h2>How can I run an adaptor as daemon process?</h2>
-    <p>There are a number of utilities for running java programs as daemon. Here are the
-    instructions for running one of the tutorial configurations using the Java Service Wrapper
-    <a href="http://wrapper.tanukisoftware.org">http://wrapper.tanukisoftware.org</a>.</p>
+    <h2>How can I run an adaptor as a daemon process?</h2>
+    <p>There are a number of utilities for running Java programs as daemon processes. Here are the
+    instructions for running one of the tutorial configurations using the 
+    <a href="http://wrapper.tanukisoftware.org">Java Service Wrapper</a>.</p>
     
     <ol>
-      <li>Download the Java Service Wrapper for your *nix platform</li>
-      <li>unzip the distribution and copy the following files into the <code>example/bin</code> directory 
-        <code>lib/libwrapper.so</code>, <code>bin/wrapper</code>, <code>lib/wrapper.jar</code></li>
-      <li>create a configuration file called <code>wrapper.conf</code>, see example below</li>
-      <li>copy the example script <code>src/bin/sh.script.in</code> to <code>wrapper.sh</code></li>
-      <li>edit <code>wrapper.sh</code> so that <code>WRAPPER_CONF="./wrapper.conf"</code></li>
-      <li>test the configuration using <code>./wrapper.sh console</code></li>
-      <li>run as a daemon using <code>./wrapper.sh start</code></li>
-      <li>stop daemon using <code>./wrapper.sh stop</code></li>
+      <li>Download the Java Service Wrapper for your *nix platform.</li>
+      <li>Unzip the distribution and copy the following files into the <code>example/bin</code> directory 
+        <code>lib/libwrapper.so</code>, <code>bin/wrapper</code>, <code>lib/wrapper.jar</code>.</li>
+      <li>Create a configuration file called <code>wrapper.conf</code>, see example below.</li>
+      <li>Copy the example script <code>src/bin/sh.script.in</code> to <code>wrapper.sh</code>.</li>
+      <li>Edit <code>wrapper.sh</code> so that <code>WRAPPER_CONF="./wrapper.conf"</code>.</li>
+      <li>Test the configuration using <code>./wrapper.sh console</code>.</li>
+      <li>Run as a daemon using <code>./wrapper.sh start</code>.</li>
+      <li>Stop the daemon using <code>./wrapper.sh stop</code>.</li>
     </ol>
     
-    <h3>openadaptor 3.2.1 example config</h3>
+    <h3>OpenAdaptor 3.2.1 example config</h3>
     
-    <div class="shell"><pre>
+<div class="shell"><pre>
+
   wrapper.java.command           = {your java home}/bin
   wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
 
@@ -1362,11 +1374,13 @@
   wrapper.java.classpath.3       = ../lib/openadaptor-spring.jar
   wrapper.java.classpath.4       = ../lib/openadaptor-depends.jar
   wrapper.java.classpath.5       = ../lib/3rdparty/jbossall-client.jar
-   </pre></div>
+
+</pre></div>
     
-        <h3>post openadaptor 3.2.1 example config (this uses bootstrap spring launcher)</h3>
+        <h3>post OpenAdaptor 3.2.1 example config (this uses bootstrap Spring launcher)</h3>
     
-  <div class="shell"><pre>
+<div class="shell"><pre>
+
   wrapper.java.command           = {your java home}/bin
   wrapper.java.mainclass         = org.tanukisoftware.wrapper.WrapperSimpleApp
 
@@ -1376,9 +1390,9 @@
 
   wrapper.java.classpath.1       = wrapper.jar
   wrapper.java.classpath.2       = ../lib/bootstrap.jar
-  </pre></div>
-    <p class="back"><a href="#contents">back to contents</a></p>
 
+</pre></div>
+    <p class="back"><a href="#contents">back to contents</a></p>
 
 
     <hr>
@@ -1397,7 +1411,6 @@
       </a>
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="examplesbrowsing"></a>
@@ -1420,14 +1433,12 @@
     <p class="back"><a href="#contents">back to contents</a></p>
 
 
-
     <a id="javadocbrowsing"></a>
     <h2>Can I browse the JavaDoc online?</h2>
     <p>
       <b>Soon to be added...</b>
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="sourcebrowsing"></a>
@@ -1439,7 +1450,6 @@
       </a>
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="eclipsesvn"></a>
@@ -1460,7 +1470,7 @@
       <li>Click Window &gt; Open Perspective &gt; Other &gt; SVN Repository Exploring.
       <li>Click Ok.  Move mouse to the SVN Repository explorer that appears.
       <li>Right click New &gt; Repository Location.
-      <li>Enter the URL as <code>https://openadaptor3.openadaptor.org/svn/openadaptor3</code>
+      <li>Enter the URL as <code>https://openadaptor3.openadaptor.org/svn/openadaptor3</code>.
       <li>Click Finish.
       <li>Go to the SVN Repository explorer and expand the project from the navigation menu.
       <li>You can see the project contents listed in folders.
@@ -1476,12 +1486,15 @@
       e.g. if you are behind a corporate firewall.
       Because Subclipse uses a separate Subversion library in the background, you will
       need to edit the config for that (typically <code>$HOME/.subversion/servers</code> as described in
-      <a href="http://svnbook.red-bean.com/en/1.1/ch07.html#svn-ch-7-sect-1.3.1">Subversion book</a>):
+      the <a href="http://svnbook.red-bean.com/en/1.1/ch07.html#svn-ch-7-sect-1.3.1">Subversion book</a>):
     </p>
-    <div class="shell"><pre>[global]
+<div class="shell"><pre>[global]
+
 http-proxy-host = myproxy.my.network
 http-proxy-port = 8080
-http-compression = yes</pre></div>
+http-compression = yes
+
+</pre></div>
     <p class="back"><a href="#contents">back to contents</a></p>
     
     
@@ -1495,26 +1508,25 @@ http-compression = yes</pre></div>
       with the Windows Shell (Explorer).
     </p>
     <ul>
-      <li>http://tortoisesvn.tigris.org/download.html</li>
-      <li>http://tortoisesvn.tigris.org/docs.html</li>
+      <li><a href="http://tortoisesvn.net/downloads">Download</a></li>
+      <li><a href="http://tortoisesvn.net/support">Documentation</a></li>
     </ul>
     <p>
-      Same proxying issues apply to TortoiseSVN as for
+      The same proxying issues apply to TortoiseSVN as for
       <a href="#eclipsesvn">corporate firewall traversal with Subclipse</a>
-      with the caveat that TortoiseSVN also provides a GUI for simple case
+      with the caveat that TortoiseSVN also provides a GUI for simple cases
       (under Settings &gt; Network) as well as allowing the standard file to
-      be used to configure all cases.
-      We still recommend configuring in the standard file as then all of your
-      local Subversion clients will be using the same configuration.
+      be used to configure all cases. We still recommend configuring in the 
+      standard file as then all of your local Subversion clients will be using 
+      the same configuration.
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
-
 
 
     <a id="eclipsetortoiseversions"></a>
     <h2>Which versions of Subclipse and TortoiseSVN work together?</h2>
     <p>
-      The underlying issue is that Subversion itself changed (around 1.2?).
+      The underlying issue is that Subversion itself changed (around version 1.2).
       It maintained compatibility of clients with servers, but it changed the format
       of checked out worktrees which means that different SVN clients cannot always
       be used on the same worktree.
