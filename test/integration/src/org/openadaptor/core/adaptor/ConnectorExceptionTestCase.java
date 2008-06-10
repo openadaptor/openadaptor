@@ -34,7 +34,6 @@
 package org.openadaptor.core.adaptor;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -146,7 +145,7 @@ public class ConnectorExceptionTestCase extends TestCase {
 //
 //		TestProcessor processor = new TestProcessor("p");
 //
-//    List expectedOutput=AdaptorTestCase.createStringList("p(x)", 7);
+//    java.util.List expectedOutput=AdaptorTestCase.createStringList("p(x)", 7);
 //		TestWriteConnector writeNode = new TestWriteConnector("o");
 //		writeNode.setExpectedOutput(expectedOutput);
 //		writeNode.setExceptionFrequency(2);
