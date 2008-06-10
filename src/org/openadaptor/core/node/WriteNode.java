@@ -182,10 +182,24 @@ public class WriteNode extends Node {
     	}
     } 
     else {
+      //This was not catching Exceptions (as of 3.4.1).
+      //This will just catch an exception and throw out the whole input array.
+      //Fix is insufficient - need to revisit batch writes, hence disabled.
+//      try {
+//        Object output= connector.deliver(inputs);
+//        if (output != null) {
+//          response.addOutput(output);
+//        }
+//      }
+//      catch (Exception e) {
+//        log.info(getId() + " caught "+ e.getClass().getName() + " [in batch]:" +e.getMessage());
+//        response.addException(new MessageException(inputs,e,getId(),fetchThreadName()));
+//      }
       Object output= connector.deliver(inputs);
       if (output != null) {
       	response.addOutput(output);
       }
+      
     }
     if ((resource != null) && (msg.getTransaction() != null)) {
       msg.getTransaction().delistForCommit(resource);
