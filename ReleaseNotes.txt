@@ -25,6 +25,14 @@ Connectors
    to choose to use the connection from this class at the same time not using
    the sqlWriter.
    
+ * JDBCWriteConnector - the two ISQLWriter implementations MapTableWriter and
+   MapCallableStatementWriter have moved to the new 
+   org.openadaptor.auxil.connector.jdbc.writer.map package.
+   
+ * JDBCWriteConnector - two new ISQLWriter implementations, XMLTableWriter and
+   XMLCallableStatementWriter added in org.openadaptor.auxil.connector.jdbc.writer.xml
+   package.
+   
  * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' property.
    Setting it to false causes the underlying IReadConnector not to be physically
    reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
@@ -49,6 +57,9 @@ Examples
    
  * Added example to illustrate how legacy 'Inspectors' may be approximated using scripts
    (example\spring\processors\script\script-inspector.xml)
+   
+ * Added examples for new ISQLWriter implementations in example\spring\connectors\db  
+   (xml-table-writer.xml and xml-storedproc-writer.xml)
 
 Miscellaneous
 =============
