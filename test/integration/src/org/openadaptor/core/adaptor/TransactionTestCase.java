@@ -35,22 +35,11 @@ public class TransactionTestCase extends TestCase {
     writeNode.setTransacted(true);
     writeNode.setExpectedCommitCount(5);
    
-    // create router
-    RoutingMap routingMap = new RoutingMap();
-    
     Map processMap = new HashMap();
     processMap.put(readNode, processor);
     processMap.put(processor, writeNode);
-    routingMap.setProcessMap(processMap);
-    Router router = new Router(routingMap);
     
-    // create adaptor
-    Adaptor adaptor = new Adaptor();
-    adaptor.setMessageProcessor(router);
-    adaptor.setRunInCallingThread(true);
-
-    // run adaptor
-    adaptor.run();
+    Adaptor adaptor = Adaptor.run(processMap);
     
     assertTrue(adaptor.getExitCode() == 0);
     writeNode.checkCommitCount();
@@ -74,27 +63,15 @@ public class TransactionTestCase extends TestCase {
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
     writeNode.setTransacted(true);
     writeNode.setExpectedCommitCount(5);
-   
-    // create router
-    RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
     processMap.put(readNode, processor);
     processMap.put(processor, writeNode);
-    routingMap.setProcessMap(processMap);
-    Router router = new Router(routingMap);
     
-    // create adaptor
-    Adaptor adaptor = new Adaptor();
-    adaptor.setMessageProcessor(router);
-    adaptor.setRunInCallingThread(true);
-
-    // run adaptor
-    adaptor.run();
+    Adaptor adaptor = Adaptor.run(processMap);
     
     assertTrue(adaptor.getExitCode() == 0);
     writeNode.checkCommitCount();
-
   }
 
   /**
@@ -119,27 +96,13 @@ public class TransactionTestCase extends TestCase {
 
     TestWriteConnector errorWriteNode = new TestWriteConnector("e");
     errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
-
-    // create router
-    RoutingMap routingMap = new RoutingMap();
     
     Map processMap = new HashMap();
     processMap.put(readNode, processor);
     processMap.put(processor, writeNode);
-    routingMap.setProcessMap(processMap);
     
-    Map exceptionMap = new HashMap();
-    exceptionMap.put("java.lang.Exception", errorWriteNode);
-    routingMap.setExceptionMap(exceptionMap);
-    Router router = new Router(routingMap);
-    
-    // create adaptor
-    Adaptor adaptor = new Adaptor();
-    adaptor.setMessageProcessor(router);
-    adaptor.setRunInCallingThread(true);
-
-    // run adaptor
-    adaptor.run();
+    /* Run the adaptor */
+    Adaptor adaptor = Adaptor.run(processMap, errorWriteNode);
     
     assertTrue(adaptor.getExitCode() == 0);
     writeNode.checkCommitCount();
@@ -150,6 +113,7 @@ public class TransactionTestCase extends TestCase {
    * test that write connector exception causes adaptor to fail if there
    * is no exception mapping
    *
+   * @todo revisit. A never-failing test.
    */
   public void testUncaughtWriteNodeException() {
 

@@ -551,25 +551,43 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * Static method that facilitates programmatic execution of an adaptor.
    * 
    * @param processMap - a map with adaptor processors.
+   * @return instance of an executed adaptor.
    */
-  public static void run(Map processMap){
+  public static Adaptor run(Map processMap){
+    return Adaptor.run(processMap, null);
+  }
+  
+  /**
+   * Static method that facilitates programmatic execution of an adaptor.
+   * 
+   * @param processMap - a map with adaptor processors.
+   * @param exceptionProcessor - an exception handler.
+   * @return instance of an executed adaptor.
+   */
+  public static Adaptor run(Map processMap, Object exceptionProcessor){
     Router router = new Router();
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
     router.setProcessMap(processMap);
+    if(exceptionProcessor != null){
+      router.setExceptionProcessor(exceptionProcessor);
+    }
     adaptor.run();
+    return adaptor;
   }
   
   /**
    * Static method that facilitates programmatic execution of an adaptor.
    * 
    * @param processors a list with adaptor processors.
+   * @return instance of an executed adaptor.
    */
-  public static void run(List processors){
+  public static Adaptor run(List processors){
     Router router = new Router();
     Adaptor adaptor = new Adaptor();
     adaptor.setMessageProcessor(router);
     router.setProcessors(processors);
     adaptor.run();
+    return adaptor;
   }
 }
