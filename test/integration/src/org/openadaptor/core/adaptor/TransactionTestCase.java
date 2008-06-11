@@ -84,9 +84,14 @@ public class TransactionTestCase extends TestCase {
     readNode.setExpectedCommitCount(5);
 
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
+    
+    /* Every second record will cause an exception */
     writeNode.setExceptionFrequency(2);
     writeNode.setTransacted(true);
+    
+    /* Three recordes should be committed, two rolled back */
     writeNode.setExpectedCommitCount(3);
+    writeNode.setExpectedRollbackCount(2);
 
     TestWriteConnector errorWriteNode = new TestWriteConnector("e");
     errorWriteNode.setExpectedOutput(AdaptorTestCase.createStringList("java.lang.RuntimeException:test:p(x)", 2));
@@ -100,7 +105,7 @@ public class TransactionTestCase extends TestCase {
     
     assertTrue(adaptor.getExitCode() == 0);
     writeNode.checkCommitCount();
-
+    writeNode.checkRollbackCount();
   }
 
   /**
