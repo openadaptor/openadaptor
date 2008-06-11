@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.openadaptor.core.exception.ConnectionException;
+
 /**
  * Basic (and default) implementation of {@link ITransaction} that collects and invokes
  * {@link ITransactionalResource}s.
@@ -42,6 +44,7 @@ public class Transaction extends AbstractTransaction {
 
   private boolean rollbackOnly = false;
   private List resources =  new ArrayList();
+  private List resourcesForRollback = new ArrayList();
   private Object LOCK = new Object();
   
   public Transaction(final long id, final long timeoutMs) {
@@ -50,6 +53,10 @@ public class Transaction extends AbstractTransaction {
   public void commit() {
     if (!rollbackOnly) {
       synchronized (LOCK) {
+        for (Iterator iter = resourcesForRollback.iterator(); iter.hasNext();) {
+          ITransactionalResource resource = (ITransactionalResource) iter.next();
+          resource.rollback(new RuntimeException("Marked for Rollback by Connector"));
+        }
         for (Iterator iter = resources.iterator(); iter.hasNext();) {
           ITransactionalResource resource = (ITransactionalResource) iter.next();
           resource.commit();
@@ -64,6 +71,18 @@ public class Transaction extends AbstractTransaction {
   }
 
   public void delistForRollback(Object resource) {
+    if (resource != null) {
+    synchronized (LOCK) {
+      try {        
+        boolean resourceWasEnlisted = resources.remove(resource); // Can only rollback resource if it was enlisted in the first place.
+        if (resourceWasEnlisted) {
+          resourcesForRollback.add(resource);
+        }
+      } catch (RuntimeException e) {
+        throw new RuntimeException("Unable to mark transaction resource for Rollback: ["+resource+"]", e);
+      }
+    }
+    }
   }
 
   public void enlist(Object resource) {
@@ -81,6 +100,10 @@ public class Transaction extends AbstractTransaction {
 
   public void rollback() {
     synchronized (LOCK) {
+      for (Iterator iter = resourcesForRollback.iterator(); iter.hasNext();) {
+        ITransactionalResource resource = (ITransactionalResource) iter.next();
+        resource.rollback(getErrorOrException());
+      }
       for (Iterator iter = resources.iterator(); iter.hasNext();) {
         ITransactionalResource resource = (ITransactionalResource) iter.next();
         resource.rollback(getErrorOrException());
