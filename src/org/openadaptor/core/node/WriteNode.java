@@ -178,6 +178,7 @@ public class WriteNode extends Node {
           }catch(Exception ex) {
             log.info(getId() + " caught " + ex.getClass().getName() + ":" + ex.getMessage());
             response.addException(new MessageException(inputs[i], ex, getId(), fetchThreadName()));
+            msg.getTransaction().delistForRollback(resource);
           }
     	}
     } 
