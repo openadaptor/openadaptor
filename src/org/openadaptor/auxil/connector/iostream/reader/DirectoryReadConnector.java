@@ -214,6 +214,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
           batch.add(data);
         } else {
           currentStreamDry = true;
+          closeInputStream(); // TODO Hack. Fix Axel's issue with locked files. Revisit urgently.
           break;
         }
       }
@@ -248,6 +249,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
     //Todo Could do postprocess here? If Txn mechanism proves troublesome.
     currentFile = null;
     super.closeInputStream();
+    //postProcessFiles();
   }
   
   /**
@@ -259,7 +261,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
       File nextProcessedFile= (File)iter.next();
       log.debug("Successfully processed: " + nextProcessedFile.getName());
       if (processedDir != null) {        
-        File target = new File(processedDir, nextProcessedFile.getName());        
+        File target = new File(processedDir, nextProcessedFile.getName());  
         boolean success = nextProcessedFile.renameTo(target);
         if (!success) {
           log.warn("Failed to move processed file: " + nextProcessedFile);
@@ -306,9 +308,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
    public void commit() {
       log.debug("Commit called on [" + getId() +"]");
       log.debug("Post-processing: " + processedFiles);
-      if (currentStreamDry) { // Only post process files if we are not in mid-stream.
+      if ((currentStreamDry) && !processedFiles.isEmpty() ){ // Only post process files if we are not in mid-stream.
         postProcessFiles();    
-      }
+      }      
     }
     public void rollback(Throwable e) {
       // Just don't post process the files so that they'll still be there for processing the next time around.     
