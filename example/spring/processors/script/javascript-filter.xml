@@ -29,25 +29,31 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     
-  writes to stdout
+  writes to stdout.
+  Discarded records go to output/discards.txt
   ]]>
 	</description>
 
 	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
-		<description>
-		</description>
-		<property name="messageProcessor">
-			<bean class="org.openadaptor.core.router.Router">
-				<property name="processors">
-					<list>
-						<ref bean="Reader" />
-						<ref bean="OrderedMap" />
-						<ref bean="js_filter" />
-						<ref bean="writer" />
-					</list>
-				</property>
-			</bean>
-		</property>
+	 <description></description>
+	 <property name="messageProcessor">
+	  <bean class="org.openadaptor.core.router.Router">
+	   <property name="processors">
+	    <list>
+	     <ref bean="Reader" />
+	     <ref bean="OrderedMap" />
+	     <ref bean="js_filter" />
+	     <ref bean="Writer" />
+	    </list>
+	   </property>
+	   <property name="discardMap">
+	    <map>
+	     <entry key-ref="js_filter" value-ref="DiscardWriter" />
+	    </map>
+	   </property>
+
+	  </bean>
+	 </property>
 	</bean>
 
 	<bean id="Reader"
@@ -98,7 +104,12 @@
 		</property>
 	</bean>
 
-	<bean id="writer"
+	<bean id="Writer"
 		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+  
+	<bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+	 <property name="filename" value="output/discards.txt" />
+	 <property name="append" value="false"></property>
+	</bean>
 
 </beans>
