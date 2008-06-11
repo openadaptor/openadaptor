@@ -60,6 +60,8 @@ public class TestWriteConnector extends LifecycleComponent implements IWriteConn
   private int count;
 
   private int expectedCommitCount = -1;
+  
+  private int expectedRollbackCount = -1;
 
   private TestTransactionalResource transactionalResource;
 
@@ -87,10 +89,10 @@ public class TestWriteConnector extends LifecycleComponent implements IWriteConn
 
     for (int i = 0; i < records.length; i++) {
       count++;
+      record(records[i].toString());
       if (exceptionFrequency > 0 && (count % exceptionFrequency == 0)) {
         throw new RuntimeException("test");
       }
-      record(records[i].toString());
     }
     return null;
   }
@@ -133,11 +135,21 @@ public class TestWriteConnector extends LifecycleComponent implements IWriteConn
           + transactionalResource.getCommittedCount());
     }
   }
+  
+  public void checkRollbackCount() {
+    if (expectedRollbackCount > 0 && transactionalResource.getRolledBackCount() != expectedRollbackCount) {
+      throw new RuntimeException("expected rollback count = " + expectedCommitCount + " actual = "
+          + transactionalResource.getRolledBackCount());
+    }
+  }
 
   public int getCommitCount() {
     return transactionalResource.getCommittedCount();
   }
 
+  public int getRollbackCounter(){
+    return transactionalResource.getRolledBackCount();
+  }
 
   private void record(String line) {
     log.debug("received [" + line + "]");
@@ -155,9 +167,13 @@ public class TestWriteConnector extends LifecycleComponent implements IWriteConn
     this.expectedCommitCount = expectedCommitCount;
   }
 
+  public void setExpectedRollbackCount(int expectedRollbackCount) {
+    this.expectedRollbackCount = expectedRollbackCount;
+  }
+  
   public void setTransacted(boolean transactional) {
     if (transactional) {
-      transactionalResource = new TestTransactionalResource();
+      transactionalResource = new TestTransactionalResource("Transactional resource for " + getId());
     } else {
       transactionalResource = null;
     }
