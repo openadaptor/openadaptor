@@ -129,7 +129,6 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
 
   public void connect() {
     count = 0;
-    transactionalResource = null;
   }
   
   public void disconnect() {

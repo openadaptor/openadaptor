@@ -17,20 +17,22 @@ import junit.framework.TestCase;
  */
 public class TransactionTestCase extends TestCase {
 
+  TestReadConnector readNode = new TestReadConnector("TestReader");
+  
+  TestProcessor processor = new TestProcessor("TestProcessor");
+  
+  TestWriteConnector writeNode = new TestWriteConnector("TestWriter");
+  
   /**
-   * test that we get the correct number of commits on transactional resources
+   * Test that we get the correct number of commits on transactional resources.
    */
   public void testCommitAll() {
 
-    TestReadConnector readNode = new TestReadConnector("i");
     readNode.setDataString("x");
     readNode.setMaxSend(5);
     readNode.setTransactional(true);
     readNode.setExpectedCommitCount(5);
-    
-    TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector writeNode = new TestWriteConnector("o");
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
     writeNode.setTransacted(true);
     writeNode.setExpectedCommitCount(5);
@@ -46,20 +48,16 @@ public class TransactionTestCase extends TestCase {
   }
 
   /**
-   * test that we get the correct number of commits on transactional resources
+   * Test that we get the correct number of commits on transactional resources.
    */
   public void testCommitAllWithBatch() {
 
-    TestReadConnector readNode = new TestReadConnector("i");
     readNode.setDataString("x");
     readNode.setMaxSend(5);
     readNode.setBatchSize(2);
     readNode.setTransactional(true);
     readNode.setExpectedCommitCount(5);
-    
-    TestProcessor processor = new TestProcessor("p");
 
-    TestWriteConnector writeNode = new TestWriteConnector("o");
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 5));
     writeNode.setTransacted(true);
     writeNode.setExpectedCommitCount(5);
@@ -80,15 +78,11 @@ public class TransactionTestCase extends TestCase {
    */
   public void testCaughtWriteNodeException() {
 
-    TestReadConnector readNode = new TestReadConnector("i");
     readNode.setDataString("x");
     readNode.setMaxSend(5);
     readNode.setTransactional(true);
     readNode.setExpectedCommitCount(5);
 
-    TestProcessor processor = new TestProcessor("p");
-
-    TestWriteConnector writeNode = new TestWriteConnector("o");
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
     writeNode.setExceptionFrequency(2);
     writeNode.setTransacted(true);
@@ -117,16 +111,12 @@ public class TransactionTestCase extends TestCase {
    */
   public void testUncaughtWriteNodeException() {
 
-    TestReadConnector readNode = new TestReadConnector("i");
     readNode.setDataString("x");
     readNode.setMaxSend(5);
     readNode.setBatchSize(2);
     readNode.setTransactional(true);
     readNode.setExpectedCommitCount(5);
 
-    TestProcessor processor = new TestProcessor("p");
-
-    TestWriteConnector writeNode = new TestWriteConnector("o");
     writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
     writeNode.setExceptionFrequency(4);
     readNode.setTransactional(true);
