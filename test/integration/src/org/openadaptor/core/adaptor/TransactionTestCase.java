@@ -74,7 +74,6 @@ public class TransactionTestCase extends TestCase {
 
   /**
    * test that write connector exceptions are trapped and routed correctly
-   *
    */
   public void testCaughtWriteNodeException() {
 
@@ -107,6 +106,38 @@ public class TransactionTestCase extends TestCase {
     writeNode.checkCommitCount();
     writeNode.checkRollbackCount();
   }
+  
+  /**
+   * test that write connector exceptions are trapped and routed correctly
+   */
+  public void testUncaughtWriteNodeException() {
+
+    readNode.setDataString("x");
+    readNode.setMaxSend(5);
+    readNode.setTransactional(true);
+    readNode.setExpectedCommitCount(5);
+
+    writeNode.setExpectedOutput(AdaptorTestCase.createStringList("p(x)", 3));
+    
+    /* Every second record will cause an exception */
+    writeNode.setExceptionFrequency(2);
+    writeNode.setTransacted(true);
+    
+    /* First record should be committed, the second (that shuts down the adaptor) - rolled back */
+    writeNode.setExpectedCommitCount(1);
+    writeNode.setExpectedRollbackCount(1);
+    
+    Map processMap = new HashMap();
+    processMap.put(readNode, processor);
+    processMap.put(processor, writeNode);
+    
+    /* Run the adaptor */
+    Adaptor adaptor = Adaptor.run(processMap);
+    
+    assertTrue(adaptor.getExitCode() != 0);
+    writeNode.checkCommitCount();
+    writeNode.checkRollbackCount();
+  }
 
   /**
    * test that write connector exception causes adaptor to fail if there
@@ -114,7 +145,7 @@ public class TransactionTestCase extends TestCase {
    *
    * @todo revisit. A never-failing test.
    */
-  public void testUncaughtWriteNodeException() {
+  public void testUncaughtWriteNodeException2() {
 
     readNode.setDataString("x");
     readNode.setMaxSend(5);
