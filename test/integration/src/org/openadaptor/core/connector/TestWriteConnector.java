@@ -127,7 +127,7 @@ public class TestWriteConnector extends LifecycleComponent implements IWriteConn
 
   }
 
-  private void checkCommitCount() {
+  public void checkCommitCount() {
     if (expectedCommitCount > 0 && transactionalResource.getCommittedCount() != expectedCommitCount) {
       throw new RuntimeException("expected commit count = " + expectedCommitCount + " actual = "
           + transactionalResource.getCommittedCount());

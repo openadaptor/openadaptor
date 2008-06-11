@@ -12,11 +12,13 @@ import org.openadaptor.core.router.RoutingMap;
 
 import junit.framework.TestCase;
 
+/**
+ * Integration tests for {@link Transaction}. 
+ */
 public class TransactionTestCase extends TestCase {
 
   /**
    * test that we get the correct number of commits on transactional resources
-   *
    */
   public void testCommitAll() {
 
@@ -51,12 +53,11 @@ public class TransactionTestCase extends TestCase {
     adaptor.run();
     
     assertTrue(adaptor.getExitCode() == 0);
-
+    writeNode.checkCommitCount();
   }
 
   /**
    * test that we get the correct number of commits on transactional resources
-   *
    */
   public void testCommitAllWithBatch() {
 
@@ -92,6 +93,7 @@ public class TransactionTestCase extends TestCase {
     adaptor.run();
     
     assertTrue(adaptor.getExitCode() == 0);
+    writeNode.checkCommitCount();
 
   }
 
@@ -140,6 +142,7 @@ public class TransactionTestCase extends TestCase {
     adaptor.run();
     
     assertTrue(adaptor.getExitCode() == 0);
+    writeNode.checkCommitCount();
 
   }
 
