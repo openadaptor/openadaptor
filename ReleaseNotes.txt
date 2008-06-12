@@ -69,6 +69,12 @@ Miscellaneous
    
  * Migration guidelines (draft): www/migration.html  
 
+
+Bug Fixes
+=========
+
+SC48: Transaction rollback when handling exceptions from IWriteConnectors.
+
 3rd Party
 =========
 
