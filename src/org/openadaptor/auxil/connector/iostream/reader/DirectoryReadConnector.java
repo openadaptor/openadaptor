@@ -63,7 +63,7 @@ import org.openadaptor.core.transaction.ITransactionalResource;
  * the property {@link #setProcessedDir(File)} is supplied then successfully
  * processed files will be moved to that directory. If for any reason the move
  * fails then a warning is logged and the processed file is left in the input 
- * area. 
+ * area. This feature was added in response to issue number SC49.
  * 
  * Defaults dataReader to {@link LineReader}
  * 
