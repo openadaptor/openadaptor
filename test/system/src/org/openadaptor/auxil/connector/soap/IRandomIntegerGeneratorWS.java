@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved.
+ Copyright (C) 2001 - 2008 The Software Conservancy as Trustee. All rights reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the
@@ -29,4 +29,5 @@ package org.openadaptor.auxil.connector.soap;
 
 public interface IRandomIntegerGeneratorWS {
   Integer getInt();
+  Double sum(int intVal, long longVal, float floatVal);
 }

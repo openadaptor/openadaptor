@@ -155,6 +155,30 @@ public class WebServicePollingReadConnectorTestCase extends TestCase {
     wsConnector.disconnect();
   }
   
+  public void testWebServicePollingReadConnectorWithParameters(){
+    List parameters = new ArrayList(3) {
+      {
+	add(new Integer(100));
+	add(new Long(100));
+	add(new Float(100.0));
+      }
+    };
+    wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS"  + "?wsdl");
+    wsConnector.setServiceName("sum");
+    wsConnector.setParameters(parameters);
+    wsConnector.connect();
+    new Thread(){
+      public void run() {
+        wsConnector.invoke();  
+      }
+    }.start();
+    Object[] data = wsConnector.next(0);
+    assertTrue(data.length == 1);
+    assertTrue(data[0] instanceof Double);
+    assertEquals(Double.parseDouble(data[0].toString()), 300.0d, 0d);
+    wsConnector.disconnect();
+  }
+  
   public void testValidateNoEndpoint(){
     wsConnector.setServiceName(TEST_SERVICE_NAME);
     List exceptions = new ArrayList();

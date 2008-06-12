@@ -38,22 +38,22 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 
+
 /**
  * WebServicePollingReadConnector calls a web service with a specified name and specified
  * endpoint. Returns web service's result for processing in subsequent nodes. At the moment 
- * it has fairly limitted capability - passing arguments to web services and using HTTP proxy 
- * server are not supported. 
+ * it has fairly limited capability - for instance using an HTTP proxy server is not supported. 
  * 
  * @author Kris Lachor
  */
 public class WebServicePollingReadConnector extends Component implements IReadConnector {
 
   private static final Log log = LogFactory.getLog(WebServicePollingReadConnector.class);
-
+  private static Object[] NO_PARAMETERS = new Object[0];
+  
   private String wsEndpoint = null;
-  
   private String serviceName = null;
-  
+  private List parameters;
   private Client client = null;
   
   /**
@@ -116,8 +116,8 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
   public Object [] invoke(){
     Object [] result = null;
     try {
-      result = client.invoke(serviceName, new Object[] {});
-      log.debug("Invoked the service. Result = " + (result != null ? result[0] : result));
+      result = client.invoke(serviceName, parameters != null ? parameters.toArray(new Object[parameters.size()]) : NO_PARAMETERS);
+      log.debug("Invoked the service. Result = " + (result != null && result.length > 0 ? result[0] : result));
     } catch (Exception e) {
       log.error("Call to web service failed: " + wsEndpoint + " " + serviceName);
       return null;
@@ -175,5 +175,25 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
    */
   public void setReaderContext(Object context) {
   }
- 
+
+  /**
+   * Returns the {@link List} of parameters.
+   * 
+   * @return the parameters
+   */
+  public List getParameters() {
+    return parameters;
+  }
+
+  /**
+   * Set the parameters that will be passed to the web service.
+   * <p>
+   * The types of the parameters must match the types of the 
+   * parameters to the target method, in the correct order. 
+   * 
+   * @param parameters the parameters to set
+   */
+  public void setParameters(List parameters) {
+    this.parameters = parameters;
+  }
 }
