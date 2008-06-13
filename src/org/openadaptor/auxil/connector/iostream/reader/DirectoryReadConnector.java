@@ -107,6 +107,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
 
   /**
    * The directory to copy processed files to.
+   * This feature was added in response to issue number SC49.
    * @return File Must be a Directory
    */
   public File getProcessedDir() {
@@ -115,6 +116,7 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
 
   /**
    * The directory to copy processed files to.
+   * This feature was added in response to issue number SC49.
    * @param processedDir Must be a directory.
    */
   public void setProcessedDir(File processedDir) {
