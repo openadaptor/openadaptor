@@ -33,8 +33,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +69,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   public static final String PROPERTY_START_TIMESTAMP   = "openadaptor.application.start";
 
   public static final String START_TIMESTAMP_FORMAT     = "yyyy/MM/dd HH:mm:ss";
-
+    
   private static final String[] BUILD_PROPERTIES_LOCATIONS={".openadaptor.properties","org/openadaptor/util/.openadaptor.properties"};
 
   private static final String[] LICENCE_LOCATIONS= {"licence.txt","org/openadaptor/util/licence.txt"};
@@ -106,6 +108,10 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
     log.info("classpath = " + System.getProperty("java.class.path", "not set"));
     log.info("java.version = "+System.getProperty("java.version","<unable to determine>"));
+    
+    log.info("Default locale for machine is " + Locale.getDefault().toString());
+    log.info("Default timezone for machine is " + TimeZone.getDefault().getID());
+
     // get system props
     props = new Properties();
     props.putAll(System.getProperties());
@@ -170,7 +176,6 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     Collections.sort(toLog);
     for (Iterator iter = toLog.iterator(); iter.hasNext();) {
       log.info("property, " + iter.next());
-
     }
 
     // if registration url is set then post
