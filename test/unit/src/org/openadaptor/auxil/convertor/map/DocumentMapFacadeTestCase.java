@@ -53,10 +53,11 @@ public class DocumentMapFacadeTestCase extends AbstractTestMapFacade {
     "<root><foo>45</foo></root>",
     "<root><foo><bar>leaf</bar></foo></root>",
     "<root><foo><bar>leaf1</bar><bar>leaf2</bar></foo></root>",
-    "<root><A><AB/><AC><AC1>ac1val</AC1></AC><AD>adval</AD></A><B><BA/></B></root>"
+    "<root><A><AB/><AC><AC1>ac1val</AC1></AC><AD>adval</AD></A><B><BA/></B></root>",
+    "<root xmlns='foo'><A><AB/><AC><AC1>ac1val</AC1></AC><AD>adval</AD></A><B><BA/></B></root>"
   };
 
-  protected static final int[] KEY_COUNT= { 2,3,3,8};
+  protected static final int[] KEY_COUNT= { 2,3,3,8,8 };
 
   protected Document[] docs;
   protected MapFacade[] facades;
@@ -186,6 +187,16 @@ public class DocumentMapFacadeTestCase extends AbstractTestMapFacade {
     facade.put(pasteKey,facade.get(cutKey));
 //    log.info(((Document)facade.getUnderlyingObject()).asXML());
  }
+  
+  public void testGetWithNamespace() {
+    logTest("getNS");
+    MapFacade facade=facades[4]; // This one has a default namespace set
+    String defaultNSPrefix = ((DocumentMapFacade)facade).getDefaultNamespacePrefix();
+    Object value = facade.get("/"+defaultNSPrefix+":root/"+defaultNSPrefix+":A/"+defaultNSPrefix+":AC/"+defaultNSPrefix+":AC1");
+    assertEquals("ac1val", value); // With the namespace prefix we find the value
+    Object nullValue = facade.get("/root/A/AC/AC1");
+    assertEquals(null, nullValue); // Without the namespace prefix we don't
+  }
    
 }
 
