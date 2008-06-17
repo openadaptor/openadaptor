@@ -309,6 +309,10 @@ public class JMSConnection extends Component {
     } catch (JMSException e) {
       throw new ConnectionException("Unable close jms connection for  [" + getId() + "]", e, this);
     }
+    finally {
+      connection = null;
+    }
+    
   }
 
   // JNDI Support
