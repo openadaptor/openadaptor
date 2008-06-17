@@ -68,14 +68,14 @@ public class OAClient {
     connect();
   }
     
-  /**
-   * Constructor.
-   * Constructs a write connector based on a Spring config and connects it.
-   */
-  public OAClient(String writerConfigURI){
-    writerBuilder = new SpringWriterBuilder(writerConfigURI);
-    connect();
-  }
+//  /**
+//   * Constructor.
+//   * Constructs a write connector based on a Spring config and connects it.
+//   */
+//  public OAClient(String writerConfigURI){
+//    writerBuilder = new SpringWriterBuilder(writerConfigURI);
+//    connect();
+//  }
 
   /**
    * Sends data to Openadaptor.
@@ -129,8 +129,8 @@ public class OAClient {
      * Creates a client with a web services writer definition - connects 
      * to an Openadaptor instance with a web service reader.
      */
-//    WriterBuilder writerBuilder = new WebServiceWriterBuilder("..some ws endpoint?wsdl");
-//    OAClient client = new OAClient(writerBuilder);
+    WriterBuilder writerBuilder = new WebServiceWriterBuilder("..some ws endpoint?wsdl");
+    OAClient client = new OAClient(writerBuilder);
     
     
     /* 
@@ -139,7 +139,7 @@ public class OAClient {
      * to the write connector defined in Spring config.
      */ 
 //    OAClient client = new OAClient("ws-client.xml");
-    OAClient client = new OAClient("http-client.xml");
+//    OAClient client = new OAClient("http-client.xml");
    
 
     /*
