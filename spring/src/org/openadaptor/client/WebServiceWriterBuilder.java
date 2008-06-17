@@ -40,8 +40,41 @@ public class WebServiceWriterBuilder implements WriterBuilder {
   
   private static final String DEFAULT_ENDPOINT = "http://localhost:9999/OAService?wsdl";
   
+  private static final String DEFAULT_WRITER_NAME = "OAWebServiceClient";
+  
   private WebServiceWriteConnector webServiceWriteConnector;
   
+  private String endpoint = DEFAULT_ENDPOINT;
+  
+  private String writerName = DEFAULT_WRITER_NAME;
+  
+  /**
+   * Constructor.
+   * 
+   * Assumes the default endpoint.
+   */
+  public WebServiceWriterBuilder() {
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param endpoint ws endpoint.
+   */
+  public WebServiceWriterBuilder(String endpoint) {
+    this.endpoint = endpoint;
+  }
+  
+  /**
+   * Constructor.
+   * 
+   * @param endpoint ws endpoint.
+   */
+  public WebServiceWriterBuilder(String endpoint, String writerName) {
+    this.endpoint = endpoint;
+    this.writerName = writerName;
+  }
+
   /**
    * Creates a <code>WebServiceWriteConnector</code>.
    */
@@ -49,9 +82,18 @@ public class WebServiceWriterBuilder implements WriterBuilder {
     if(webServiceWriteConnector!=null){
       return webServiceWriteConnector;
     }
-    webServiceWriteConnector = new WebServiceWriteConnector();
-    webServiceWriteConnector.setEndpoint(DEFAULT_ENDPOINT);
+    webServiceWriteConnector = new WebServiceWriteConnector(writerName);
+    webServiceWriteConnector.setEndpoint(endpoint);
     return webServiceWriteConnector;
+  }
+
+  /**
+   * Allows to overwrite the default endpoint;
+   * 
+   * @param endpoint new ws endpoint.
+   */
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
   }
 
 }
