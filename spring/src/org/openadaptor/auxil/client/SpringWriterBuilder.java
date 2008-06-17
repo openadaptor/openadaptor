@@ -24,25 +24,34 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.client;
+package org.openadaptor.auxil.client;
 
 import org.openadaptor.core.IWriteConnector;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 /**
- * Simple interface for creating an IWriteConnector (via Spring config, 
- * programmatically, ..).
- * 
  * @author Kris Lachor
- * @see SpringWriterBuilder
- * @see WebServiceWriterBuilder
  */
-public interface WriterBuilder {
+public class SpringWriterBuilder implements WriterBuilder {
   
-  /**
-   * Constructs an IWriteConnector.
-   * 
-   * @return a concrete IWriteConnector.
-   */
-  public IWriteConnector getWriter();
+  private IWriteConnector writeConnector;
+
+  private String configURI;
   
+  public SpringWriterBuilder(String writerConfigURI) {
+    this.configURI = writerConfigURI;
+  }
+
+  public IWriteConnector getWriter() {
+    if(writeConnector!=null){
+      return writeConnector;
+    }
+    Resource resource = new FileSystemResource(configURI);
+    XmlBeanFactory beanFactory = new XmlBeanFactory(resource);
+    Object writer = beanFactory.getBean("Writer");
+    return (IWriteConnector) writer;
+  }
+
 }
