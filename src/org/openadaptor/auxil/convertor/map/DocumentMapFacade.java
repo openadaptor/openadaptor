@@ -29,6 +29,7 @@ package org.openadaptor.auxil.convertor.map;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,8 +39,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.dom4j.Node;
+import org.dom4j.XPath;
 import org.openadaptor.core.exception.RecordException;
 import org.openadaptor.thirdparty.dom4j.Dom4jUtils;
 
@@ -80,6 +84,9 @@ public class DocumentMapFacade implements MapFacade {
    */
   protected String valueTypeAttributeName = null;
 
+  protected HashMap nsMap;
+  protected String defaultNamespacePrefix = "d";
+
   //protected boolean multiValuedAttributeSupport=true;
 
   //BEGIN Map implementation
@@ -108,6 +115,19 @@ public class DocumentMapFacade implements MapFacade {
   public void setValueTypeAttributeName(String valueTypeAttributeName) {
     this.valueTypeAttributeName = valueTypeAttributeName;
   }
+  
+  
+
+  public String getDefaultNamespacePrefix() {
+    return defaultNamespacePrefix;
+  }
+
+  public void setDefaultNamespacePrefix(String defaultNamespacePrefix) {
+    this.defaultNamespacePrefix = defaultNamespacePrefix;
+    if (document != null) {
+      cacheNamespaces(document);
+    }
+  }
 
   //END   Accessors
   /**
@@ -121,6 +141,7 @@ public class DocumentMapFacade implements MapFacade {
       throw new IllegalArgumentException("Document may not be null");
     }
     this.document=document;
+    cacheNamespaces(this.document);
   } 
 
   /**
@@ -182,7 +203,7 @@ public class DocumentMapFacade implements MapFacade {
     Object value = null;
     if (document != null) {
       //Note that this may throw a NPE, which is consistent with Map.get(null)
-      List nodes=document.selectNodes(key.toString());
+      List nodes=getNodes(key.toString());
       List values=new ArrayList(nodes.size());
       Iterator it=nodes.iterator();
       while (it.hasNext()) {
@@ -222,6 +243,22 @@ public class DocumentMapFacade implements MapFacade {
     }
     return value;
   }
+  
+  /**
+   * Redone to use the namespace Map if there is one.
+   * @param path
+   * @return
+   */
+  protected List getNodes(String path) {
+    if (nsMap == null) {
+      return document.selectNodes(path);
+    } else  {
+      // TODO Must be a way of setting the namespace once for the document.
+      XPath xpath = DocumentHelper.createXPath(path);
+      xpath.setNamespaceURIs(nsMap);
+      return xpath.selectNodes(document);
+     }
+  } 
 
   private boolean isLeaf(Element element) {
     return element.elements().isEmpty();
@@ -574,5 +611,25 @@ public class DocumentMapFacade implements MapFacade {
     }     
     return keySet;
   }
+  
+  /**
+   * Extract namespace information from the root element of the document. Apply the default
+   * prefix to the default namespace if there is one.
+   * @param document
+   */
+  private void cacheNamespaces(Document document) {
+    nsMap = new HashMap();   
+    Namespace ns = document.getRootElement().getNamespace();    
+    nsMap.put(getDefaultNamespacePrefix(), ns.getURI());   
+    log.debug("Default Namespace: prefix= [" + getDefaultNamespacePrefix() + "] URI= ["+ ns.getURI() + "]");
+    
+    List additionalNamespaces = document.getRootElement().additionalNamespaces();
+    Iterator nsIter = additionalNamespaces.iterator();
+    while (nsIter.hasNext()) {
+      Namespace nextNS = (Namespace)nsIter.next();
+      nsMap.put(nextNS.getPrefix(), nextNS.getURI());
+      log.debug("Next Namespace: prefix= [" + nextNS.getPrefix() + "] URI= ["+ nextNS.getURI() + "]");
+    }
+  }    
 
 }
