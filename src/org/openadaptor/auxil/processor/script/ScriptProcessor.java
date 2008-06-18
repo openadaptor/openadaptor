@@ -23,12 +23,13 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.processor.script;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import java.util.Map;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -94,6 +96,12 @@ public class ScriptProcessor extends Component implements IDataProcessor {
    */
   protected boolean boxReturnedArrays = false;
 
+  //Flag to log just once, the JVM Version -
+  // Either 1.5 and earlier or  1.6 and later
+  //Scripting implementation changed between versions.
+  //See Issue [SC53]
+  protected boolean jvmVersionLogged=false;
+
   public ScriptProcessor() {
     super();
   }
@@ -124,7 +132,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public void setBoxReturnedArrays(boolean boxReturnedArrays) {
     this.boxReturnedArrays=boxReturnedArrays;
   }
-  
+
   /**
    * This allows additional bindings, specified in the supplied map.
    * <br>
@@ -139,7 +147,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     this.additionalBindings=bindingMap;
   }
 
- 
+
   /**
    * This holds the last result from script execution.
    * 
@@ -289,15 +297,105 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   }
 
   /**
-   * create a ScriptEngine.
+   * Utility method to log jvm version info one time only.
+   * @param info String to log
+   */
+  private void logJVMVersion(String info) {
+    if (!jvmVersionLogged) {
+      log.info(info);
+      jvmVersionLogged=true;
+    }
+  }
+
+  /**
+   * Utility method to handle different return types for Java versions.
    * <br>
-   * Default behaivour is to call 
-   * new ScriptEngineManager().getEngineByName(language);
-   * @return creates ScriptEngine instance
+   * Part of a fix for [SC53] where VMs after 1.6 behave differently
+   * to 1.5 and earlier.
+   * On 1.5 and earlier ScriptEngineManager.getFactories() returns
+   * ScriptEngineFactory[], where as 1.6 returns a List.
+   * <br>
+   * This method normalises the resut to a List.
+   * @param factoryData Object containing either a ScriptEngineFactory[] or List
+   * @return List of ScriptEngineFactories
+   */
+  private  List getFactoryList(Object factoryData) {
+    List factories=null;
+    if (factoryData instanceof ScriptEngineFactory[] ) {
+      logJVMVersion("Java 1.5 or earlier version of scripting");
+      factories=Arrays.asList((ScriptEngineFactory[])factoryData);
+    }
+    else { //Assume it's a List
+      logJVMVersion("Java 1.6 or later version of scripting");
+      factories=(List)factoryData;
+    }
+    return factories;
+  }
+
+  /**
+   * Utility method to handle different return types for Java versions.
+   * <br>
+   * Part of a fix for [SC53] where VMs after 1.6 behave differently
+   * to 1.5 and earlier.
+   * On 1.5 and earlier ScriptEngineManager.getNames() returns
+   * a String[], where as 1.6 returns a List.
+   * <br>
+   * This method normalises the resut to a List.
+   * @param factoryData Either a String[] or List
+   * @return List of Strings containing names
+   */
+
+  private List getEngineNames(Object nameData) {
+    List names=null;
+    if (nameData instanceof String[] ) {
+      logJVMVersion("Java 1.5 or earlier version of scripting");
+      names=Arrays.asList((String[])nameData);
+    }
+    else { //Assume it's a list
+      logJVMVersion("Java 1.6 or later version of scripting");
+      names=(List)nameData;
+    }
+    return names;
+  }
+  /**
+   * Locates a ScriptEngine for the current language.
+   * <br>
+   * Complicated slightly by differences between implementations 
+   * in java 1.5 and earlier versus 1.6 and later.
+   * See Issue [SC52]
+   * <br>
+   * 
+   * @return ScriptEngine instance for the current language
    */
   protected ScriptEngine createScriptEngine() {
-    return new ScriptEngineManager().getEngineByName(language);
+    ScriptEngine engine=null;
+    ScriptEngineManager mgr=new ScriptEngineManager();
+    List factories=getFactoryList(mgr.getEngineFactories());
+    Iterator it=factories.iterator();
+    while (it.hasNext() && (engine==null)) {
+      ScriptEngineFactory factory=(ScriptEngineFactory)it.next();
+      try {
+        Iterator aliases=getEngineNames(factory.getNames()).iterator();
+        //Iterator aliases=factory.getNames().iterator();
+        while (aliases.hasNext()) {
+          if (language.equals(aliases.next())) {
+            log.debug("Found matching script engine for "+language);
+            engine=factory.getScriptEngine();
+            break;
+          }
+        }
+      }
+      catch (AbstractMethodError ame) {
+        log.debug("Failed to interrogate Factory - "+factory.getEngineName());
+      }
+    }
+    if (engine==null) {
+      log.error("Failed to find engine for language "+language);
+      throw new RuntimeException("Failed to find engine for language "+language);
+    }
+    return engine;
   }
+
 
   /**
    * Initialise the script engine.
@@ -334,7 +432,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     //Apply extra bindings, if any.
     applyBindings(scriptEngine,additionalBindings);
   }
-  
+
   /**
    * This will attempt to bind named objects into the ScriptEngine.
    * <br>
