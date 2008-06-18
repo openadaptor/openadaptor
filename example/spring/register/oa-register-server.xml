@@ -46,6 +46,7 @@
             <entry key-ref="exceptionConvertor" value-ref="exceptionWriter"/> 
   	      </map>
   		</property>
+  	    <property name="exceptionProcessor" ref="exceptionConvertor"/>
   	  </bean>
   	</property>
   </bean>
