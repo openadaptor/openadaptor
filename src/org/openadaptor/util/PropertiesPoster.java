@@ -76,12 +76,13 @@ public class PropertiesPoster {
   } // No instantiation allowed.
 
 
-  public static void asyncPost(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
+  public static Thread asyncPost(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
     AsyncPoster poster=new AsyncPoster(caller,registrationURL,properties);
     Thread posterThread=new Thread(poster,"Registration-Thread");
     log.debug("Launching new Thread to register asynchronously");
     posterThread.setDaemon(true);
     posterThread.start();
+    return posterThread;
   }
 
   public static void syncPost(String registrationURL, Properties properties) throws Exception {

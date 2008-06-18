@@ -275,6 +275,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       waitForRunnablesToStop();
       log.info("all runnables are stopped");
       stopNonRunnables();
+      
+      waitForRegistrationToComplete();
+      
     } catch (Throwable ex) {
       log.error("failed to start adaptor", ex);
       exitCode = 1;
@@ -461,6 +464,19 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       ILifecycleComponent component = (ILifecycleComponent) iter.next();
       if (!runnables.contains(component)) {
         stopLifecycleComponent(component);
+      }
+    }
+  }
+  
+  private void waitForRegistrationToComplete(){
+    //todo move max wait conf elsewhere
+    int maxSecsWait = 3;
+    if(registrationThread != null && registrationThread.isAlive()){
+      log.info("Waiting for registration to complete (max " + maxSecsWait + " seconds).");
+      try {
+        registrationThread.join(maxSecsWait * 1000);
+      } catch (InterruptedException e) {
+        log.warn("Interrupted while waiting for the registration thread to complete.");
       }
     }
   }

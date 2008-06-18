@@ -83,6 +83,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   private boolean registerOnlyOnce = true;
 
   private boolean registered;
+  
+  protected Thread registrationThread;
 
   private static String textFromClasspath(String[] locations) {
     return ClasspathUtils.loadStringFromClasspath(locations);
@@ -183,7 +185,7 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     if (url != null && url.length() > 0) {
       try {
         //Now using Async Registration:
-        PropertiesPoster.asyncPost(url, propsToRegister,this);
+        registrationThread = PropertiesPoster.asyncPost(url, propsToRegister,this);
 //        PropertiesPoster.syncPost(url,propsToRegister);
 
         registered = true;
@@ -193,17 +195,31 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       }
     }
     else{
-      log.info("Registration URL not provided. Registration skipped.");
+      log.info("Registration skipped (URL not provided).");
     }
     registered = true;
   }
 
   private String getRegistrationUrl() {
+  
+    /* If URL set as a property on this bean it has the highest priority */
     if (registrationUrl != null) {
       return registrationUrl;
-    } else {
-      return System.getProperty(PROPERTY_REGISTRATION_URL, null);
+    } 
+    
+    /* Otherwise check if URL set as a system property .*/
+    String sysPropertyRegistrationUrl =  System.getProperty(PROPERTY_REGISTRATION_URL, null);
+    if(sysPropertyRegistrationUrl!=null) {
+      return sysPropertyRegistrationUrl;
     }
+    
+    /* Finally check the one in .openadaptor.properties */
+    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_URL);
+    if(oaPropertyRegistrationUrl!=null){
+      return (String)oaPropertyRegistrationUrl;
+    }
+    
+    return null;
   }
 
   private static Properties filterProperties(Properties props) {
