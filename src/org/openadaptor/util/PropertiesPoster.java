@@ -48,6 +48,9 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.EncodingAwareObject;
+import org.openadaptor.auxil.client.OAClient;
+import org.openadaptor.auxil.client.WebServiceWriterBuilder;
+import org.openadaptor.auxil.client.WriterBuilder;
 
 /**
  * Adaptor registration is a process for collecting active adaptor information in a central location. If the property
@@ -82,9 +85,29 @@ public class PropertiesPoster {
   }
 
   public static void post(String registrationURL, Properties properties) throws Exception {
-    syncPost(registrationURL,properties);
+    if(registrationURL!=null && registrationURL.indexOf("wsdl")!=-1){
+      syncPostWS(registrationURL,properties);
+    }
+    else{
+      syncPost(registrationURL,properties);
+    }
   }
 
+  /**
+   * Sends registration data to a web service.
+   * 
+   * @param endpoint - Webservice endpoint.
+   * @param properties - data to be sent.
+   * @throws Exception
+   */
+  protected static void syncPostWS(String endpoint, Properties properties) throws Exception {
+    log.info("Attempt to register via a web service");
+    WriterBuilder wsWriterBuilder = new WebServiceWriterBuilder(endpoint, "OA3RegistrationWSCaller");
+    OAClient client = new OAClient(wsWriterBuilder);
+    client.send(properties);
+    log.error("Registration complete.");
+  }
+  
   /**
    * Utility method which will attempt to POST the supplied properties information to the supplied URL.
    * 
