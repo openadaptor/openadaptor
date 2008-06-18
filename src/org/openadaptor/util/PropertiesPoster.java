@@ -76,7 +76,7 @@ public class PropertiesPoster {
   } // No instantiation allowed.
 
 
-  public static void post(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
+  public static void asyncPost(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
     AsyncPoster poster=new AsyncPoster(caller,registrationURL,properties);
     Thread posterThread=new Thread(poster,"Registration-Thread");
     log.debug("Launching new Thread to register asynchronously");
@@ -84,12 +84,12 @@ public class PropertiesPoster {
     posterThread.start();
   }
 
-  public static void post(String registrationURL, Properties properties) throws Exception {
+  public static void syncPost(String registrationURL, Properties properties) throws Exception {
     if(registrationURL!=null && registrationURL.indexOf("wsdl")!=-1){
       syncPostWS(registrationURL,properties);
     }
     else{
-      syncPost(registrationURL,properties);
+      syncPostHttp(registrationURL,properties);
     }
   }
 
@@ -118,7 +118,7 @@ public class PropertiesPoster {
    * @param properties
    * @throws Exception
    */
-  protected static void syncPost(String registrationURL, Properties properties) throws Exception {
+  protected static void syncPostHttp(String registrationURL, Properties properties) throws Exception {
 
     URL url = new URL(registrationURL);
     String postData = generatePOSTData(properties);
@@ -256,6 +256,7 @@ class AsyncPoster implements Runnable {
     Object result=null;
     try {
       PropertiesPoster.syncPost(url,props);
+      result = "Complete.";
     }
     catch (Exception e) {
       result=e;

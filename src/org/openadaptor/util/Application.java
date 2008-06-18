@@ -182,15 +182,18 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     String url = getRegistrationUrl();
     if (url != null && url.length() > 0) {
       try {
-        //Uncomment this when we move to Async Registration.
-        //PropertiesPoster.post(url, propsToRegister,this);
-        PropertiesPoster.post(url,propsToRegister);
+        //Now using Async Registration:
+        PropertiesPoster.asyncPost(url, propsToRegister,this);
+//        PropertiesPoster.syncPost(url,propsToRegister);
 
         registered = true;
         log.info("posted registration properties to " + url);
       } catch (Exception e) {
         log.warn("failed to post registration properties : " + e.getMessage());
       }
+    }
+    else{
+      log.info("Registration URL not provided. Registration skipped.");
     }
     registered = true;
   }
