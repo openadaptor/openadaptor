@@ -34,14 +34,17 @@
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
   	<property name="messageProcessor">
   	  <bean class="org.openadaptor.core.router.Router">
-  		<property name="processors">
-  		  <list>
-  			<ref bean="registrationWsEndpoint" />
-  			<ref bean="propertiesUnmarshaller" />
-  			<ref bean="attributeMapper" />
-  			<ref bean="mapEnricherTimestamp" />
-  		    <ref bean="registrationDbWriter" />
-  		  </list>
+  		<property name="processMap">
+  		  <map>
+	        <!-- Normal flow -->
+	        <entry key-ref="registrationWsEndpoint" value-ref="propertiesUnmarshaller"/> 
+	        <entry key-ref="propertiesUnmarshaller" value-ref="attributeMapper"/> 
+	        <entry key-ref="attributeMapper" value-ref="mapEnricherTimestamp"/> 
+	        <entry key-ref="mapEnricherTimestamp" value-ref="registrationDbWriter"/> 
+	        
+  		    <!-- Exception processors -->
+            <entry key-ref="exceptionConvertor" value-ref="exceptionWriter"/> 
+  	      </map>
   		</property>
   	  </bean>
   	</property>
@@ -64,7 +67,7 @@
   </bean>
   
   <bean id="registrationDbConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
-    <description> Sybase database account configuration </description>
+    <description> Registration database account configuration </description>
     <property name="driver" value="${db.driver}"/>
     <property name="url" value="${db.url}"/>
     <property name="username" value="${db.username}"/>
@@ -124,4 +127,42 @@
 	</property>
   </bean>
   
+  <bean id="exceptionHandlerDbConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Exception handler database account configuration </description>
+    <property name="driver" value="${exhandler.db.driver}"/>
+    <property name="url" value="${exhandler.db.url}"/>
+    <property name="username" value="${exhandler.db.username}"/>
+    <property name="password" value="${exhandler.db.password}"/>
+  </bean>
+    
+  <bean id="exceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor">
+    <property name="adaptor" ref="Adaptor"/>
+  </bean>
+ 
+   <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="exceptionHandlerDbConnection" />
+	<property name="writer">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+		   <property name="tableName" value="OA_Exception" />
+		   <property name="outputColumns">
+			 <list>
+			   <value>TIMESTAMP</value> 
+			   <value>EXCEPTION_CLASS_NAME</value> 
+			   <value>EXCEPTION_MESSAGE</value> 
+			   <value>CAUSE_EXCEPTION_CLASS_NAME</value> 
+			   <value>CAUSE_EXCEPTION_MESSAGE</value> 
+			   <value>STACK_TRACE</value>
+			   <value>ADAPTOR_NAME</value> 
+			   <value>ORIGINATING_COMPONENT</value> 
+			   <value>THREAD_NAME</value> 
+			   <value>DATA_TYPE</value> 
+			   <value>DATA</value> 
+			   <value>FIXED</value> 
+			   <value>REPROCESSED</value> 
+			 </list>
+		   </property>   
+		</bean>
+	</property>
+  </bean>
+ 
 </beans>
