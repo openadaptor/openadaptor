@@ -29,6 +29,7 @@ package org.openadaptor.auxil.processor.script;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -101,6 +102,11 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   //Scripting implementation changed between versions.
   //See Issue [SC53]
   protected boolean jvmVersionLogged=false;
+
+  //Name of factory method for getting array (1.5) or List (1.6+) of ScriptEngineFactories
+  private static final String GET_ENGINE_FACTORIES="getEngineFactories";
+  //Name of factory method for getting array (1.5) or List (1.6+) of SriptEngine aliases
+  private static final String GET_NAMES_METHOD="getNames";
 
   public ScriptProcessor() {
     super();
@@ -357,6 +363,44 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     }
     return names;
   }
+  
+  /**
+   * Get List of Engine Factories for a ScriptEngineManager by reflection.
+   * <br>
+   * Has to be done at runtime as JRE 1.5 and JRE 1.6 differ.
+   * 1.5 will return a ScriptEngineFactory[], whilst 1.6+
+   * will return a List.
+   * @param mgr manager to get the list from  
+   * @return List containing ScriptEngineFactories.
+   */
+  private List getEngineFactories(ScriptEngineManager mgr) {
+    List factories=null;
+    Object result=exec(mgr,GET_ENGINE_FACTORIES);
+    if (result!=null) {
+      factories=getFactoryList(result);
+    }
+    return factories;
+  }
+  
+  /**
+   * Get List of Engine Alise for a ScriptEngineFactory by reflection.
+   * <br>
+   * Has to be done at runtime as JRE 1.5 and JRE 1.6 differ.
+   * 1.5 will return a String[], whilst 1.6+
+   * will return a List.
+   * @param factory to get the list from  
+   * @return List of Strings containing names..
+   */
+ 
+  private List getFactoryNames(ScriptEngineFactory factory) {
+    List names=null;
+    Object result=exec(factory,GET_NAMES_METHOD);
+    if (result!=null) {
+      names=getEngineNames(result);
+    }
+    return names;
+  }
+
   /**
    * Locates a ScriptEngine for the current language.
    * <br>
@@ -370,19 +414,24 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected ScriptEngine createScriptEngine() {
     ScriptEngine engine=null;
     ScriptEngineManager mgr=new ScriptEngineManager();
-    List factories=getFactoryList(mgr.getEngineFactories());
+    List factories=getEngineFactories(mgr);
     Iterator it=factories.iterator();
-    while (it.hasNext() && (engine==null)) {
+    while (it.hasNext() && (engine==null)) { //More factories to try, and no match yet.
       ScriptEngineFactory factory=(ScriptEngineFactory)it.next();
       try {
-        Iterator aliases=getEngineNames(factory.getNames()).iterator();
-        //Iterator aliases=factory.getNames().iterator();
-        while (aliases.hasNext()) {
-          if (language.equals(aliases.next())) {
-            log.debug("Found matching script engine for "+language);
-            engine=factory.getScriptEngine();
-            break;
+        List aliases=getFactoryNames(factory); 
+        if (aliases!=null) { //If null couldn't get any for factory.
+          Iterator aliasIterator=aliases.iterator();
+          while (aliasIterator.hasNext()) {
+            if (language.equals(aliasIterator.next())) {
+              log.debug("Found matching script engine for "+language);
+              engine=factory.getScriptEngine();
+              break;
+            }
           }
+        }
+        else {
+          log.debug("Failed to get names for factory "+factory.getEngineName());
         }
       }
       catch (AbstractMethodError ame) {
@@ -395,7 +444,6 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     }
     return engine;
   }
-
 
   /**
    * Initialise the script engine.
@@ -455,6 +503,32 @@ public class ScriptProcessor extends Component implements IDataProcessor {
         }
       }
     }
+  }
+  
+  /**
+   * Utility method to invoke a named no-arg method on an Object instance.
+   * <br>
+   * Used when finding script implementation methods at runtime - required
+   * as scripting behaviour changed between JRE 1.5 (add on) and JRE 1.6
+   * (built-in).
+   * @param instance any object instance
+   * @param methodName name of the no-arg method
+   * @return Object containing the result of the invocation.
+   */
+  private static Object exec(Object instance,String methodName) {
+    final Class[] EMPTY_CLASS_ARRAY=new Class[] {};
+    final Object[] EMPTY_ARGS=new Object[] {};
+    Object result=null;
+    Class instanceClass=instance.getClass();
+    log.debug("Finding method "+methodName+" for "+instanceClass.getName());
+    try {
+      Method method=instanceClass.getMethod(methodName, EMPTY_CLASS_ARRAY);
+      result=method.invoke(instance, EMPTY_ARGS);         
+    } 
+    catch (Exception e) {
+      log.warn("Failed to execute method "+methodName+" on "+instanceClass.getName()+": "+e);
+    } 
+    return result;
   }
 
 }
