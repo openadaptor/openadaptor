@@ -16,7 +16,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-register-server.xml -props db.properties
+    java org.openadaptor.spring.SpringAdaptor -config oa-register-server.xml -props db.properties
     
   You need the following in your classpath
   
