@@ -140,7 +140,7 @@
     <property name="adaptor" ref="Adaptor"/>
   </bean>
  
-   <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
 	<property name="jdbcConnection" ref="exceptionHandlerDbConnection" />
 	<property name="writer">
 	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
@@ -164,6 +164,11 @@
 		   </property>   
 		</bean>
 	</property>
+  </bean>
+ 
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Exposes JMX interface via http and rmi.</description>
+    <property name="port" value="8082"/>
   </bean>
  
 </beans>
