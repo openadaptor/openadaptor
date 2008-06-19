@@ -27,10 +27,13 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -151,7 +154,21 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
   }
 
   protected Object marshall(Object data) {
-    return data.toString();
+    String result = null;
+    if(data instanceof Properties){
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      Properties props = (Properties) data;
+      try {
+        props.store(bos, "");
+      } catch (IOException e) {
+        log.error("Error while marshalling properties.",e);
+      }
+      result = bos.toString();
+    }
+    else{
+      result = data.toString();
+    }
+    return result;
   }
 
 }
