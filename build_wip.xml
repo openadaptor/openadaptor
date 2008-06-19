@@ -458,7 +458,7 @@
 			<zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}" />
-			<zipfileset src="${dir.lib}/js_1_6R5.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/js.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/json.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/log4j-1.2.15.jar" includes="${includes.unqualified}" />
@@ -512,7 +512,7 @@
 			<zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools" />
 			<zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm" />
 			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs" />
-			<zipfileset src="${dir.lib}/js_1_6R5.jar" excludes="${includes.unqualified}" prefix="js" />
+			<zipfileset src="${dir.lib}/js.jar" excludes="${includes.unqualified}" prefix="js" />
 			<zipfileset src="${dir.lib}/json.jar" excludes="${includes.unqualified}" prefix="json" />
 			<zipfileset src="${dir.lib}/jta-spec_1.0.1.jar" excludes="${includes.unqualified}" prefix="jta-spec" />
 			<zipfileset src="${dir.lib}/log4j-1.2.15.jar" excludes="${includes.unqualified}" prefix="log4j" />

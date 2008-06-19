@@ -84,6 +84,7 @@ SC48: Transaction rollback when handling exceptions from IWriteConnectors.
              lib/xfire-all_1.2.3.jar to 1.2.6.
              lib/jetty-6.0.1.jar to 6.1.9 (related change in ServletContainer).
              lib/jetty-util-6.0.1.jar to 6.1.9 (related change in ServletContainer).
+             lib/js_1_6R5.jar replaced by js.jar, version 1.6R7 (related changes in build.xml)
  
  * Added (required for CXF):    
              lib/jaxws-api_2.1-1.jar.
