@@ -44,6 +44,8 @@ Processors
  
  * ExceptionToOrderedMapConvertor - correct detection of the message data type.
 
+ * Added Legacy DataObject type filter (& corresponding example)
+
 Examples
 ========
 
@@ -69,11 +71,12 @@ Miscellaneous
    
  * Migration guidelines (draft): www/migration.html  
 
-
 Bug Fixes
 =========
 
 SC48: Transaction rollback when handling exceptions from IWriteConnectors.
+
+SC53: ScriptProcessor fails when used with java 1.6. Symptoms are AbstractMethodErrors being thrown.
 
 3rd Party
 =========
