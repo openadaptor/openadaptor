@@ -217,6 +217,14 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
       return null;
     }
   }
+  
+  protected int getQueueLimit(){
+    return this.queueLimit;
+  }
+  
+  protected int getQueueSize(){
+    return this.queue.size();
+  }
 
   /**
    * {@link ITransactionalResource} implementation. One of these is returned if

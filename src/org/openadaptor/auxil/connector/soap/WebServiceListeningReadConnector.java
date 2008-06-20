@@ -38,13 +38,15 @@ import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
 import org.codehaus.xfire.transport.http.XFireServlet;
 import org.openadaptor.auxil.connector.http.ServletServingReadConnector;
+import org.openadaptor.core.jmx.Administrable;
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data
  * @author perryj
  *
  */
-public class WebServiceListeningReadConnector extends ServletServingReadConnector implements IStringDataProcessor {
+public class WebServiceListeningReadConnector extends ServletServingReadConnector 
+           implements IStringDataProcessor, Administrable {
 
   private static final Log log = LogFactory.getLog(WebServiceListeningReadConnector.class);
 
@@ -141,4 +143,26 @@ public class WebServiceListeningReadConnector extends ServletServingReadConnecto
   public void validate(List exceptions) {
   }
 
+  
+  public Object getAdmin() {
+    return new Admin();
+  }
+
+  public interface AdminMBean {
+    
+    int getQueueLimit();
+
+    int getQueueSize();
+  }
+  
+  public class Admin implements AdminMBean {
+
+    public int getQueueLimit() {
+      return WebServiceListeningReadConnector.this.getQueueLimit();
+    }
+
+    public int getQueueSize() {
+      return WebServiceListeningReadConnector.this.getQueueSize();
+    }
+  }
 }
