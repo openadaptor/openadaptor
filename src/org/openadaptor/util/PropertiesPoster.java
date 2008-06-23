@@ -106,7 +106,7 @@ public class PropertiesPoster {
     WriterBuilder wsWriterBuilder = new WebServiceWriterBuilder(endpoint, "OA3RegistrationWSCaller");
     OAClient client = new OAClient(wsWriterBuilder);
     client.send(properties);
-    log.error("Registration complete.");
+    log.info("Registration complete.");
   }
   
   /**
