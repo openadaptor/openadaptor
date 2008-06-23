@@ -470,8 +470,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   }
   
   private void waitForRegistrationToComplete(){
-    //todo move max wait conf elsewhere
-    int maxSecsWait = 5;
+    int maxSecsWait = getRegistrationTimeoutSecs();
     if(registrationThread != null && registrationThread.isAlive()){
       log.info("Waiting for registration to complete (max " + maxSecsWait + " seconds).");
       try {

@@ -62,6 +62,10 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static final String PROPERTY_REGISTRATION_URL = "openadaptor.registration.url";
 
+  private static final String PROPERTY_REGISTRATION_TIMEOUTSECS = "openadaptor.registration.timeoutsecs";
+  
+  private static final int DEFAULT_REGISTRATION_TIMEOUTSECS = 5;
+  
   private static final String PROPERTY_CONFIG_URL        = "openadaptor.config.url";
 
   private static final String PROPERTY_COMPONENT_ID      = "openadaptor.component.id";
@@ -77,6 +81,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   public static final String LICENCE_TEXT=loadLicence(LICENCE_LOCATIONS);
 
   private String registrationUrl;
+  
+  private int registrationTimeoutSecs = DEFAULT_REGISTRATION_TIMEOUTSECS;
 
   private Properties props;
 
@@ -221,6 +227,30 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     
     return null;
   }
+  
+  protected int getRegistrationTimeoutSecs(){
+    
+    int result = registrationTimeoutSecs;
+    
+    try {
+      /* Check  system property .*/
+      String registrationTimeoutSecsStr =  System.getProperty(PROPERTY_REGISTRATION_TIMEOUTSECS, null);
+      if(registrationTimeoutSecsStr!=null) {
+        result = Integer.parseInt(registrationTimeoutSecsStr);
+      }
+ 
+      /* Check .openadaptor.properties */
+      Object oaPropertyRegistrationTimeout = props.get(PROPERTY_REGISTRATION_TIMEOUTSECS);
+      if(oaPropertyRegistrationTimeout!=null){
+        String oaPropertyRegistrationTimeoutSt = ((String)oaPropertyRegistrationTimeout).trim();
+        result = Integer.parseInt(oaPropertyRegistrationTimeoutSt);
+      }
+    } catch (NumberFormatException e) {
+      log.error("Error while reading " + PROPERTY_REGISTRATION_TIMEOUTSECS);
+    }
+    
+    return result;
+  }
 
   private static Properties filterProperties(Properties props) {
     Properties newProps = new Properties();
@@ -281,11 +311,18 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   }
 
   /**
-   * 
    * @param registrationUrl a url to post application properties to
    */
   public void setRegistrationUrl(final String registrationUrl) {
     this.registrationUrl = registrationUrl;
+  }
+
+  /**
+   * @param registrationTimeoutSecs max time the registration thread will be given to complete in case
+   *                                when adaptor finishes first (before registration completes.
+   */
+  public void setRegistrationTimeoutSecs(int registrationTimeoutSecs) {
+    this.registrationTimeoutSecs = registrationTimeoutSecs;
   }
 
   /**
