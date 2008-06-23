@@ -287,6 +287,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
       }
       state = State.STOPPED;
+      log.info("Adaptor stopped normally.");
     }
 
     if (getExitCode() != 0) {
@@ -470,7 +471,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   
   private void waitForRegistrationToComplete(){
     //todo move max wait conf elsewhere
-    int maxSecsWait = 3;
+    int maxSecsWait = 5;
     if(registrationThread != null && registrationThread.isAlive()){
       log.info("Waiting for registration to complete (max " + maxSecsWait + " seconds).");
       try {
