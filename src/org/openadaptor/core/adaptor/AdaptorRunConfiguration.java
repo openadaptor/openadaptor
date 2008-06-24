@@ -265,7 +265,11 @@ public class AdaptorRunConfiguration {
     }
   }
 
+  /**
+   * Stops adaptor, waits for DEFAULT_RESTART_PAUSE ms and starts adaptor.
+   */
   public class RestartTask extends TimerTask {
+    
     private Adaptor adaptor;
 
     RestartTask(final Adaptor adaptor) {
