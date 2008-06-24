@@ -282,10 +282,7 @@
 		</junit>
 	</target>
 
-	<target name="test.unit.system.integration" depends="test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)"/>
-	
-	<target name="test.all" depends="clean.build.test,test.unit.system.integration" description="Perform clean+all tests (unit,integration,system)" unless="suppress.tests">
-
+	<target name="test.unit.system.integration" depends="test.unit,test.integration,test.system" description="Perform all tests (unit,integration,system)">
 		<echo level="info" message="Generating report from test execution" />
 		<junitreport todir="${dir.build.test.output}">
 			<fileset dir="${dir.build.test.output}" includes="TEST-*.xml" />
@@ -293,6 +290,8 @@
 		</junitreport>
 		<fail message="Tests failed: check ${dir.build.test.output}" if="test.failed" />
 	</target>
+	
+	<target name="test.all" depends="clean.build.test,test.unit.system.integration" description="Perform clean+all tests (unit,integration,system)" unless="suppress.tests"/>
 
 	<target name="test.suppressed" description="Warns of suppressed tests" if="suppress.tests">
 		<echo message="Test execution has been suppressed (as suppress.tests is set)" />
