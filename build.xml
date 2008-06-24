@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="openadaptor" default="cruise">
 	<description>
-		Ant build script for openadaptor
-		THIS IS A WORK IN PROGRESS, NOT FOR GENERAL USE (YET!)
-		
-		Outstanding tasks...
-		* Build RMI ?
-		
+		Second generation ant build script for openadaptor
 	</description>
 
 	<!-- 
@@ -643,12 +638,12 @@
 		</path>
 
     <echo level="info" message="Invoking test.unit.system.integration on package in ${dir.package}"/>
-    <ant antfile="build_wip.xml" target="test.unit.system.integration" inheritAll="false">
+    <ant antfile="build.xml" target="test.unit.system.integration" inheritAll="false">
       <reference refid="classpath.package.test" torefid="classpath.test"/>
     </ant>
 
     <echo level="info" message="Invoking test.spring.examples on package in ${dir.package}"/>
-    <ant antfile="build_wip.xml" target="test.spring.examples" inheritAll="false">
+    <ant antfile="build.xml" target="test.spring.examples" inheritAll="false">
     	<property name="dir.example" value="${dir.package.example}" />
     </ant>
   </target>
