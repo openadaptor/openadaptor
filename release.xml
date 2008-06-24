@@ -6,6 +6,7 @@
   <taskdef resource="svntask.properties"/>
 
   <property name="dir.checkout" value="checkout"/>
+	<property name="build.target" value="cruise"/>
   
   <condition property="url" value="${svn.root}/tags/${tag}">
     <isset property="tag"/>
@@ -51,13 +52,18 @@
   <!--target name="build">
     <ant antfile="build.xml" dir="${dir.checkout}" target="recompile.all"/>
     <ant antfile="build.xml" dir="${dir.checkout}" target="copyright.check"/>
-  </target-->
+  </target>
 
   <target name="build">
     <ant antfile="build.xml" dir="${dir.checkout}" target="build.all"/>
     <ant antfile="build.xml" dir="${dir.checkout}" target="example.doc"/>
     <ant antfile="build.xml" dir="${dir.checkout}" target="zippedpackage"/>
-  </target>
+  </target> -->
+	
+	<target name="build">
+		<echo level="info" message="Building target ${build.target} from checkout area ${dir.checkout}"/>
+		<ant antfile="build.xml" dir="${dir.checkout}" target="${build.target}"/>
+	</target>
   
   <!--target name="package">
     <ant antfile="package.xml" dir="${dir.checkout}" target="zippedpackage"/>

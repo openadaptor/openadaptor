@@ -269,6 +269,7 @@
 		<echo level="warning" message="Excluding **/WebService*TestCase.java" />
 		<echo level="warning" message="Excluding **/MQ*.java" />
 		<echo level="warning" message="Excluding **/TIBCO*.java" />
+		<echo level="warning" message="Excluding **/RMIConnectorTestCase.java"/>
 		<junit printsummary="${test.printsummary}" dir="${test.vm.dir}" showoutput="${test.showoutput}">
 			<classpath refid="classpath.test" />
 			<formatter type="${test.formatter}" />
@@ -277,6 +278,7 @@
 					<exclude name="**/WebService*TestCase.java" />
 					<exclude name="**/MQ*.java" />
 					<exclude name="**/TIBCO*.java" />
+					<exclude name="**/RMIConnectorTestCase.java"/>
 				</fileset>
 			</batchtest>
 		</junit>
