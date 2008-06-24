@@ -50,8 +50,11 @@ public class MapFacadeFactory  {
 
   private Map registeredFacades;
   private Map cachedFacades;
-  //ToDo: cach misses also - for performance.
+  //ToDo: cache misses also - for performance.
   
+  /**
+   * This is the default facadeGenerator for Dom4J Document objects.
+   */
   public static final IFacadeGenerator DEFAULT_DOM4J_FACADE_GENERATOR =
     new IFacadeGenerator() {
     public MapFacade generateFacade(Object object) {
@@ -65,6 +68,10 @@ public class MapFacadeFactory  {
     }
   };
 
+  /**
+   * Create a new facade factory.
+   * 
+   */
   public MapFacadeFactory() {
     registeredFacades=new HashMap();
     cachedFacades=new HashMap();
@@ -85,7 +92,7 @@ public class MapFacadeFactory  {
       //Yes - obtain the generator, and use it to generate a facade;
       generator =(IFacadeGenerator)registeredFacades.get(objectClass);
     }
-    else { //Not directly registered - check cacahe
+    else { //Not directly registered - check cache
       if (cachedFacades.containsKey(objectClass)) {
         generator=(IFacadeGenerator)cachedFacades.get(objectClass);
       }
