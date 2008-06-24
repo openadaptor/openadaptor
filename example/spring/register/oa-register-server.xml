@@ -32,6 +32,13 @@
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="runConfiguration">
+      <bean class="org.openadaptor.core.adaptor.AdaptorRunConfiguration">
+        <property name="restartCronExpression" value="0 0 1 * * ?">
+          <description>Restart at 1am every day</description>
+        </property>
+      </bean>
+    </property>
   	<property name="messageProcessor">
   	  <bean class="org.openadaptor.core.router.Router">
   		<property name="processMap">
@@ -64,7 +71,7 @@
         props.load(new java.io.ByteArrayInputStream(oa_data.toString().getBytes()));
         oa_data=props;
       </value>
-    </property>
+    </property>	
   </bean>
   
   <bean id="registrationDbConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
