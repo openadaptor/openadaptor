@@ -85,6 +85,8 @@ public class DocumentMapFacade implements MapFacade {
   protected String valueTypeAttributeName = null;
 
   protected HashMap nsMap;
+  
+  /** Prefix used as an alias for the default Namespace */
   protected String defaultNamespacePrefix = "d";
 
   //protected boolean multiValuedAttributeSupport=true;
@@ -116,12 +118,18 @@ public class DocumentMapFacade implements MapFacade {
     this.valueTypeAttributeName = valueTypeAttributeName;
   }
   
-  
-
+  /**
+   * Prefix used as an alias for the default Namespace.
+   * @return the prefix
+   */
   public String getDefaultNamespacePrefix() {
     return defaultNamespacePrefix;
   }
 
+  /**
+   * Set prefix used as an alias for the default Namespace.
+   * @param defaultNamespacePrefix
+   */
   public void setDefaultNamespacePrefix(String defaultNamespacePrefix) {
     this.defaultNamespacePrefix = defaultNamespacePrefix;
     if (document != null) {

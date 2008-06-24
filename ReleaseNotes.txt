@@ -70,12 +70,19 @@ Miscellaneous
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
    
- * Migration guidelines (draft): www/migration.html  
+ * Migration guidelines (draft): www/migration.html 
+ 
+ * DocumentMapFacade allows setting and retrieving prefixes for the default namespace. 
+   This prefix can be used with xpath. See setDefaultNamespacePrefix(String prefix) 
+   and getDefaultNamespacePrefix(). 
+ 	
 
 Bug Fixes
 =========
 
 SC48: Transaction rollback when handling exceptions from IWriteConnectors.
+
+SC53: A failed JMSConnection close does not clear the reference to the underlying jms connection.
 
 SC53: ScriptProcessor fails when used with java 1.6. Symptoms are AbstractMethodErrors being thrown.
 
