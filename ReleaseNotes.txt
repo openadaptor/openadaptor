@@ -86,6 +86,8 @@ SC53: A failed JMSConnection close does not clear the reference to the underlyin
 
 SC53: ScriptProcessor fails when used with java 1.6. Symptoms are AbstractMethodErrors being thrown.
 
+SC56: AdaptorRunConfiguration - transaction problem at restart.
+
 3rd Party
 =========
 
