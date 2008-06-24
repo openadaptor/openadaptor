@@ -174,6 +174,7 @@ public abstract class QueuingReadConnector extends Component implements IReadCon
         try {
           queue.wait(timeoutMs);
         } catch (InterruptedException e) {
+          log.error("Thread interruped", e);
         }
       }
 
