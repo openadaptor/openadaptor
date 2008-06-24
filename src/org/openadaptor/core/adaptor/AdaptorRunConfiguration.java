@@ -34,6 +34,7 @@ import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.node.ReadNode;
 import org.quartz.CronTrigger;
 
 /**
@@ -48,6 +49,8 @@ import org.quartz.CronTrigger;
  */
 public class AdaptorRunConfiguration {
 
+  private static final long DEFAULT_RESTART_PAUSE = ReadNode.DEFAULT_TIMEOUT_MS + 1000;
+  
   private static final Log log = LogFactory.getLog(AdaptorRunConfiguration.class);
 
   private int threadCount = 0;
@@ -271,8 +274,15 @@ public class AdaptorRunConfiguration {
 
     public void run() {
       Thread.currentThread().setName("timer");
-      log.info("restart task firing");
+      log.info("Stopping adaptor..");
       stop(adaptor);
+      try {
+        log.info("Adaptor stopped. Pausing for " + DEFAULT_RESTART_PAUSE + " ms.");
+        Thread.sleep(DEFAULT_RESTART_PAUSE);
+      } catch (InterruptedException e) {
+        log.error("Thread.sleep() interrupted.", e);
+      }
+      log.info("Starting adaptor..");
       start(adaptor);
     }
 
