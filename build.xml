@@ -47,7 +47,7 @@
 		<property name="licence.dir" value="${basedir}" />
 		<property name="licence.3rdparty.dir" value="${basedir}/licences"/>
 		
-		<property name="licence.file" value="licence.txt" />
+		<property name="licence.file" value="${licence.dir}/licence.txt" />
 		<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}" />
 		<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}" />
 		<property name="dir.src" value="${basedir}/src" />
