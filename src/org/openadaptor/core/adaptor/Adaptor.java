@@ -34,6 +34,7 @@ import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.*;
+import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
@@ -79,6 +80,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
      Administrable, ILifecycleListener {
 
   private static final Log log = LogFactory.getLog(Adaptor.class);
+
+  private static final long DEFAULT_TIMEOUT_MS = 1000;
 
   /**
    * IMessageProcessor that this adaptor delegates message processing to
@@ -139,6 +142,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    */
   private Thread shutdownHook = new ShutdownHook();
 
+  private long timeoutMs = DEFAULT_TIMEOUT_MS;
+
   public Adaptor() {
     super();
     transactionManager = new TransactionManager();
@@ -155,6 +160,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   
   public IMessageProcessor getMessageProcessor() {
     return this.processor;
+  }
+  
+  public long getTimeoutMs() {
+    return timeoutMs;
+  }
+
+  public void setTimeoutMs(long timeoutMs) {
+    this.timeoutMs = timeoutMs;
   }
 
   private void registerComponents() {
@@ -216,6 +229,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     if (component instanceof ITransactionInitiator) {
       ((ITransactionInitiator) component).setTransactionManager(transactionManager);
     }
+    if (component instanceof ReadNode) {
+      ((ReadNode) component).setTimeoutMs(timeoutMs );
+    }
   }
 
   /**
@@ -261,6 +277,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       Runtime.getRuntime().addShutdownHook(shutdownHook);
       state = State.STARTED;
       validate();
+      if (transactionManager != null) {
+        transactionManager.setTransactionTimeout(timeoutMs * 10);
+      }
       startNonRunnables();
       startRunnables();
       register();
