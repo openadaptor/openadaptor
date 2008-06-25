@@ -95,19 +95,19 @@
   <bean id="attributeMapper" class="org.openadaptor.auxil.processor.map.AttributeMapProcessor">
     <property name="map">
       <map>
-	    <entry key="adaptorname" value="fldAdaptorName"/>
-	    <entry key="adaptorid" value="fldAdaptorId"/>
-	    <entry key="oaversion" value="fldAdaptorVersion"/>
-	    <entry key="hostname" value="fldHostname"/>
-	    <entry key="ipaddress" value="fldIpAddress"/>
-	    <entry key="osname" value="fldOSName"/>
-	    <entry key="osversion" value="fldOSVersion"/>
-	    <entry key="username" value="fldUsername"/>
-	    <entry key="installdir" value="fldInstallDir"/>
-	    <entry key="javaversion" value="fldJavaVersion"/>
-	    <entry key="javaclasspath" value="fldJavaClasspath"/>
-	    <entry key="propertiesfile" value="fldPropertiesFile"/>
-	    <entry key="additionaldetails" value="fldAdditionalDetails"/>
+	    <entry key="adaptorname" value="AdaptorName"/>
+	    <entry key="adaptorid" value="AdaptorId"/>
+	    <entry key="oaversion" value="AdaptorVersion"/>
+	    <entry key="hostname" value="Hostname"/>
+	    <entry key="ipaddress" value="IpAddress"/>
+	    <entry key="osname" value="OSName"/>
+	    <entry key="osversion" value="OSVersion"/>
+	    <entry key="username" value="Username"/>
+	    <entry key="installdir" value="InstallDir"/>
+	    <entry key="javaversion" value="JavaVersion"/>
+	    <entry key="javaclasspath" value="JavaClasspath"/>
+	    <entry key="propertiesfile" value="PropertiesFile"/>
+	    <entry key="additionaldetails" value="AdditionalDetails"/>
 	  </map>
     </property>
   </bean>
@@ -116,23 +116,23 @@
 	<property name="jdbcConnection" ref="registrationDbConnection" />
 	<property name="writer">
 	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
-	    <property name="tableName" value="tblRegister" />
+	    <property name="tableName" value="OA_Register" />
 	    <property name="outputColumns">
 			<list>
-			  <value>fldAdaptorName</value> 
-			  <value>fldAdaptorId</value> 
-			  <value>fldAdaptorVersion</value>
-			  <value>fldHostname</value>
-			  <value>fldIpAddress</value>
-			  <value>fldOSName</value>
-			  <value>fldOSVersion</value>
-			  <value>fldUsername</value>
-			  <value>fldInstallDir</value>
-			  <value>fldJavaVersion</value>
-			  <value>fldJavaClasspath</value>
-			  <value>fldPropertiesFile</value>
-			  <value>fldAdditionalDetails</value>
-			  <value>fldTimestamp</value>
+			  <value>AdaptorName</value> 
+			  <value>AdaptorId</value> 
+			  <value>AdaptorVersion</value>
+			  <value>Hostname</value>
+			  <value>IpAddress</value>
+			  <value>OSName</value>
+			  <value>OSVersion</value>
+			  <value>Username</value>
+			  <value>InstallDir</value>
+			  <value>JavaVersion</value>
+			  <value>JavaClasspath</value>
+			  <value>PropertiesFile</value>
+			  <value>AdditionalDetails</value>
+			  <value>Timestamp</value>
 			</list>
 		 </property>   
 	  </bean>
