@@ -55,7 +55,7 @@ import org.openadaptor.auxil.client.WriterBuilder;
 /**
  * Adaptor registration is a process for collecting active adaptor information in a central location. If the property
  * <code>registrationUrl</code> is set within an adaptor bean, data regarding the adaptor and its configuration are
- * sent to the registration url using HTTP POST each time the adaptor is started.
+ * sent to the registration primaryUrl using HTTP POST each time the adaptor is started.
  * <p>
  * The server side of the registration process is a JBoss application server backed by a MySQL database which stores all
  * of the data received in a table
@@ -76,8 +76,9 @@ public class PropertiesPoster {
   } // No instantiation allowed.
 
 
-  public static Thread asyncPost(String registrationURL,Properties properties, IRegistrationCallbackListener caller) {
-    AsyncPoster poster=new AsyncPoster(caller,registrationURL,properties);
+  public static Thread asyncPost(String registrationPrimaryURL, String registrationFailoverURL,
+      Properties properties, IRegistrationCallbackListener caller) {
+    AsyncPoster poster=new AsyncPoster(caller,registrationPrimaryURL,registrationFailoverURL,properties);
     Thread posterThread=new Thread(poster,"Registration-Thread");
     log.debug("Launching new Thread to register asynchronously");
     posterThread.setDaemon(true);
@@ -244,23 +245,39 @@ public class PropertiesPoster {
 
 class AsyncPoster implements Runnable {
   private IRegistrationCallbackListener listener;
-  private String url;
+  private String primaryUrl;
+  private String failoverUrl;
   private Properties props;
 
-  public AsyncPoster(IRegistrationCallbackListener listener,String url, Properties props) {
+  public AsyncPoster(IRegistrationCallbackListener listener,String primaryUrl,String failoverUrl, Properties props) {
     this.listener=listener;
-    this.url=url;
+    this.primaryUrl=primaryUrl;
+    this.failoverUrl=failoverUrl;
     this.props=props;
   }
 
   public void run() {
     Object result=null;
+    boolean success = false;
+    /* First try primary URL */
     try {
-      PropertiesPoster.syncPost(url,props);
+      PropertiesPoster.syncPost(primaryUrl,props);
       result = "Complete.";
+      success = true;
     }
     catch (Exception e) {
       result=e;
+    }
+    /* If primary didn't work try failover*/
+    if(!success && failoverUrl!=null && failoverUrl.length()>0){
+      try {
+        PropertiesPoster.syncPost(failoverUrl,props);
+        result = "Complete (failover).";
+        success = true;
+      }
+      catch (Exception e) {
+        result=e;
+      }
     }
     listener.registrationCallbackEvent(this, result);
     PropertiesPoster.log.debug("Registration thread is done");

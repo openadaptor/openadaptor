@@ -60,8 +60,10 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   private static final String PROPERTY_HOSTNAME         = "openadaptor.hostname";
 
-  private static final String PROPERTY_REGISTRATION_URL = "openadaptor.registration.url";
+  private static final String PROPERTY_REGISTRATION_PRIMARY_URL = "openadaptor.registration.primary.url";
 
+  private static final String PROPERTY_REGISTRATION_FAILOVER_URL = "openadaptor.registration.failover.url";
+  
   private static final String PROPERTY_REGISTRATION_TIMEOUTSECS = "openadaptor.registration.timeoutsecs";
   
   private static final int DEFAULT_REGISTRATION_TIMEOUTSECS = 5;
@@ -80,7 +82,9 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 
   public static final String LICENCE_TEXT=loadLicence(LICENCE_LOCATIONS);
 
-  private String registrationUrl;
+  private String registrationPrimaryUrl;
+  
+  private String registrationFailoverUrl;
   
   private int registrationTimeoutSecs = DEFAULT_REGISTRATION_TIMEOUTSECS;
 
@@ -187,15 +191,17 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     }
 
     // if registration url is set then post
-    String url = getRegistrationUrl();
-    if (url != null && url.length() > 0) {
+    String primaryUrl = getRegistrationPrimaryUrl();
+    if (primaryUrl != null && primaryUrl.length() > 0) {
       try {
+        
+        String failoverUrl = getRegistrationFailoverUrl();
         //Now using Async Registration:
-        registrationThread = PropertiesPoster.asyncPost(url, propsToRegister,this);
+        registrationThread = PropertiesPoster.asyncPost(primaryUrl, failoverUrl, propsToRegister,this);
 //        PropertiesPoster.syncPost(url,propsToRegister);
 
         registered = true;
-        log.info("posted registration properties to " + url);
+//        log.info("posted registration properties to " + primaryUrl);
       } catch (Exception e) {
         log.warn("failed to post registration properties : " + e.getMessage());
       }
@@ -204,29 +210,53 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       log.info("Registration skipped (URL not provided).");
     }
     registered = true;
+    
   }
+ 
 
-  private String getRegistrationUrl() {
-  
+  private String getRegistrationPrimaryUrl() {
     /* If URL set as a property on this bean it has the highest priority */
-    if (registrationUrl != null) {
-      return registrationUrl;
+    if (registrationPrimaryUrl != null) {
+      return registrationPrimaryUrl;
     } 
     
     /* Otherwise check if URL set as a system property .*/
-    String sysPropertyRegistrationUrl =  System.getProperty(PROPERTY_REGISTRATION_URL, null);
+    String sysPropertyRegistrationUrl =  System.getProperty(PROPERTY_REGISTRATION_PRIMARY_URL, null);
     if(sysPropertyRegistrationUrl!=null) {
       return sysPropertyRegistrationUrl;
     }
     
     /* Finally check the one in .openadaptor.properties */
-    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_URL);
+    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_PRIMARY_URL);
     if(oaPropertyRegistrationUrl!=null){
       return (String)oaPropertyRegistrationUrl;
     }
     
     return null;
   }
+  
+  
+  private String getRegistrationFailoverUrl() {
+    /* If URL set as a property on this bean it has the highest priority */
+    if (registrationFailoverUrl != null) {
+      return registrationFailoverUrl;
+    } 
+    
+    /* Otherwise check if URL set as a system property .*/
+    String sysPropertyRegistrationUrl =  System.getProperty(PROPERTY_REGISTRATION_FAILOVER_URL, null);
+    if(sysPropertyRegistrationUrl!=null) {
+      return sysPropertyRegistrationUrl;
+    }
+    
+    /* Finally check the one in .openadaptor.properties */
+    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_FAILOVER_URL);
+    if(oaPropertyRegistrationUrl!=null){
+      return (String)oaPropertyRegistrationUrl;
+    }
+    
+    return null;
+  }
+  
   
   protected int getRegistrationTimeoutSecs(){
     
@@ -311,10 +341,17 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   }
 
   /**
-   * @param registrationUrl a url to post application properties to
+   * @param registrationPrimaryUrl a url to post application properties to
    */
-  public void setRegistrationUrl(final String registrationUrl) {
-    this.registrationUrl = registrationUrl;
+  public void setRegistrationPrimaryUrl(final String registrationPrimaryUrl) {
+    this.registrationPrimaryUrl = registrationPrimaryUrl;
+  }
+  
+  /**
+   * @param registrationFailoverUrl a failover url to post application properties to.
+   */
+  public void setRegistrationFailoverUrl(final String registrationFailoverUrl) {
+    this.registrationFailoverUrl = registrationFailoverUrl;
   }
 
   /**
