@@ -85,9 +85,9 @@
   <bean id="mapEnricherTimestamp" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
     <property name="script">
       <value>
-         oa_data.put("fldTimestamp", new java.util.Date());
+         oa_data.put("Timestamp", new java.util.Date());
          var log =Packages.org.apache.commons.logging.LogFactory.getLog("oa-register-server");
-         log.info(oa_data.get("fldOSName") + " " + oa_data.get("fldAdaptorVersion") + " " + oa_data.get("fldUsername"));
+         log.info(oa_data.get("OSName") + " " + oa_data.get("AdaptorVersion") + " " + oa_data.get("Username")  + " " + oa_data.get("PropertiesFile"));
       </value>
     </property>
   </bean>
