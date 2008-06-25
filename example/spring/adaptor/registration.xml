@@ -36,7 +36,7 @@
         </property>
       </bean>
     </property>
-    <property name="registrationUrl" value="${registration.url}"/>
+    <property name="registrationPrimaryUrl" value="${registration.url}"/>
     <property name="additionalRegistrationProps">
       <props>
         <prop key="purpose">Registration Example</prop>
