@@ -136,7 +136,13 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     super.start();
   }
 
-  protected void stopping() {
+  /**
+   * Hints to this ReadNode that it should start stopping. It is up to the ReadNode
+   * itself to gracefully finish processing current messages and then do all the clean-up
+   * necessary and stop.
+   * See SC57.
+   */
+  public void stop() {
     log.info(getId() + " stopping invoked");
     if (isState(State.STARTED)) {
       log.info(getId() + " is stopping");
@@ -144,10 +150,10 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     }
   }
 
-  public void stop() {
+  private void stopAndDisconnect() {
     log.info(getId() + " stop invoked");
     if (!isState(State.STOPPING)) {
-      stopping();
+      stop();
     }
     log.info(getId() + " no longer running");
     disconnectNoThrow();
@@ -197,17 +203,17 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         transaction.setErrorOrException(e);
         transaction.rollback();
       }
-      stopping();
+      stop();
     }
     finally {
-      stop();
+      stopAndDisconnect();
     }
   }
 
   public Response process(Message msg) {
     Response response = new Response();
     if (connector.isDry()) {
-      stopping();
+      stop();
       return response;
     }
     if (msg.getTransaction() != null) {

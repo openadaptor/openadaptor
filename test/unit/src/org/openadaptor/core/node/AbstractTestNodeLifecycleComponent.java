@@ -70,18 +70,26 @@ abstract public class AbstractTestNodeLifecycleComponent extends AbstractTestILi
   }
 
   public void testStartStop() {
+    startStopStatesCheck(State.STARTED, State.STOPPED);
+  }
+  
+  public void checkStartStopping() {
+    startStopStatesCheck(State.STARTED, State.STOPPING);
+  }
+  
+  protected void startStopStatesCheck(State startState, State endState) {
     assertTrue("Component should be in a stopped state initially.", testLifecycleComponent.isState(State.STOPPED));
     try {
       testLifecycleComponent.start();
     } catch (Exception e) {
       fail("Unexpected Exception while starting [" + e + "]");
     }
-    assertTrue("Component should now be started.", testLifecycleComponent.isState(State.STARTED));
+    assertTrue("Component should now be started.", testLifecycleComponent.isState(startState));
     try {
       testLifecycleComponent.stop();     
     } catch (Exception e) {
       fail("Unexpected Exception while stopping [" + e + "]");
     }
-    assertTrue("Component should now be stopped.", testLifecycleComponent.isState(State.STOPPED));
+    assertTrue("Component should now be stopped.", testLifecycleComponent.isState(endState));
   }
 }

@@ -30,6 +30,7 @@ import org.jmock.Mock;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,8 +85,12 @@ public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycl
   public void testStartStop() {
     // Set Connector expectations
     readConnectorMock.expects(once()).method("connect");
-    readConnectorMock.expects(once()).method("disconnect");
-    super.testStartStop();
+
+    // Now not expected to disconnect. 
+    // Final state expected to be State.STOPPING
+    // See SC57
+    //    readConnectorMock.expects(once()).method("disconnect");
+    super.startStopStatesCheck(State.STARTED, State.STOPPING);
   }
 
   public void testValidation() {
