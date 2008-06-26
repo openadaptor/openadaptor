@@ -255,7 +255,7 @@ public class DocumentMapFacade implements MapFacade {
   /**
    * Redone to use the namespace Map if there is one.
    * @param path
-   * @return
+   * @return List Nodes referenced by this path
    */
   protected List getNodes(String path) {
     if (nsMap == null) {
