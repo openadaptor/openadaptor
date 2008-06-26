@@ -91,6 +91,8 @@ SC53: ScriptProcessor fails when used with java 1.6. Symptoms are AbstractMethod
 
 SC56: AdaptorRunConfiguration - transaction problem at restart.
 
+SC57: Component lifecycle management problem when stopping adaptors externally.
+
 3rd Party
 =========
 
