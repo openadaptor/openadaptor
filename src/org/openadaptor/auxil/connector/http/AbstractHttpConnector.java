@@ -116,7 +116,12 @@ public abstract class AbstractHttpConnector extends Component {
     this.proxyPort = proxyPort;
   }
 
-  protected void setClient(HttpClient client) {
+  /**
+   * Sets the HTTP client.
+   * 
+   * @param client - an instance of HttpClient.
+   */
+  public void setClient(HttpClient client) {
     this.client = client;
   }
   
