@@ -193,7 +193,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       map.put(dataTypeColName, dataType); 
       
       /* data has to be String */
-      if(data!=null && !(data instanceof String)){
+      if(data!=null && !(data instanceof String) && convertPayloadToString){
         data = data.toString();
       }
       map.put(dataColName, data);
