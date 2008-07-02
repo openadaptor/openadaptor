@@ -117,6 +117,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   // default to the java.util.Date().toString() value
   private SimpleDateFormat timestampFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
 
+  private boolean convertPayloadToString = true;
+  
   /**
    * Default constructor.
    */
@@ -270,4 +272,21 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
     this.adaptor = adaptor;
   }
 
+  /**
+   * @return if true then message payload will always be converted to a String. Otherwise it'll
+   *         be stored in the ordered map in its original format.
+   */
+  public boolean isConvertPayloadToString() {
+    return convertPayloadToString;
+  }
+
+  /**
+   * Allows to overwrite the default value of <code>convertPayloadToString</code>.
+   * 
+   * @param convertPayloadToString if true then message payload will always be converted to a String. 
+   *        Otherwise it'll be stored in the ordered map in its original format.
+   */
+  public void setConvertPayloadToString(boolean convertPayloadToString) {
+    this.convertPayloadToString = convertPayloadToString;
+  }
 }

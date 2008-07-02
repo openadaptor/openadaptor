@@ -43,7 +43,9 @@ Connectors
 Processors
 ==========
  
- * ExceptionToOrderedMapConvertor - correct detection of the message data type.
+ * ExceptionToOrderedMapConvertor - 1. Correct detection of the message data type.
+   2. New property 'convertPayloadToString' that allows for keeping message payload
+   in its original form (default is true).
 
  * Added Legacy DataObject type filter (& corresponding example)
 

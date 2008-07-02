@@ -59,7 +59,23 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 		assertEquals("...", map.get(ExceptionToOrderedMapConvertor.COMPONENT));
 		assertEquals("''", map.get(ExceptionToOrderedMapConvertor.DATA));
 	}
-  
+
+  /**
+   * Tests  {@link ExceptionToOrderedMapConvertor#setConvertPayloadToString(boolean)}.
+   */
+  public void testConvertPayloadToString(){
+    MessageException exception = new MessageException(new Object(), new RuntimeException("RUNTIME"), "SOURCE");
+    Object result = convertor.convert(exception);
+    OrderedHashMap map = (OrderedHashMap)result;
+    testBasicAssertions(map);
+    assertTrue(map.get(ExceptionToOrderedMapConvertor.DATA) instanceof String);
+    
+    convertor.setConvertPayloadToString(false);
+    result = convertor.convert(exception);
+    map = (OrderedHashMap)result;
+    assertFalse(map.get(ExceptionToOrderedMapConvertor.DATA) instanceof String); 
+  }
+    
   private void testBasicAssertions(OrderedHashMap map) {
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.TIMESTAMP));
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.EXCEPTION_CLASS));
@@ -74,7 +90,6 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.DATA));
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.FIXED));
     assertTrue(map.containsKey(ExceptionToOrderedMapConvertor.REPROCESSED)); 
-    
   }
 
 }
