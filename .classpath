@@ -69,7 +69,7 @@
 	<classpathentry kind="lib" path="lib/quartz_1.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.6-bin.jar"/>
 	<classpathentry kind="lib" path="lib/jta-spec_1.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/js_1_6R5.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util_6.1.9.jar"/>
 	<classpathentry kind="lib" path="lib/jetty_6.1.9.jar"/>
 	<classpathentry kind="lib" path="lib/jdom_1.0.jar"/>
