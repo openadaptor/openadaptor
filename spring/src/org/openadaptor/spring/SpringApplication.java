@@ -93,17 +93,19 @@ public class SpringApplication {
   private Adaptor adaptor;
 
   public static void main(String[] args) {
+    int exitCode=0;
     try {
       SpringApplication app = new SpringApplication();
       app.parseArgs(args);
-      app.run();
-      System.exit(0);
-    } catch (Exception e) {
+      exitCode=app.run();   
+    } 
+    catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
       usage(System.err);
-      System.exit(1);
+      exitCode=1;
     }
+    System.exit(exitCode);
   }
 
   protected String getBeanId() {
@@ -193,7 +195,8 @@ public class SpringApplication {
     return buffer.toString();
   }
 
-  public void run() {
+  public int run() {
+    int exitCode=0;
     Runnable bean = getRunnableBean(createBeanFactory());
     if (bean instanceof Application) {
       ((Application)bean).setConfigData(getConfigUrlsString());
@@ -203,6 +206,10 @@ public class SpringApplication {
     }
     Thread.currentThread().setName(beanId);
     bean.run();
+    if (adaptor!=null) {
+      exitCode=adaptor.getExitCode();
+    }
+    return exitCode;
   }
 
   protected Runnable getRunnableBean(ListableBeanFactory factory) {

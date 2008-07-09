@@ -27,6 +27,8 @@
 
 package org.openadaptor.spring;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.springframework.beans.factory.ListableBeanFactory;
 
@@ -35,32 +37,28 @@ import org.springframework.beans.factory.ListableBeanFactory;
  * configuration.
  */
 public class SpringAdaptor extends SpringApplication {
+  private static Log log = LogFactory.getLog(SpringAdaptor.class);
 
   public static void main(String[] args) {
     SpringAdaptor springAdaptor = new SpringAdaptor();
-    springAdaptor.execute(args);
-    
-    /* Check for errors */
-    int exitCode = 0;
-    Adaptor adaptor = springAdaptor.getAdaptor();
-    if(adaptor!=null){
-      exitCode = adaptor.getExitCode();
-    }
-    
+    int exitCode = springAdaptor.execute(args);
+    log.debug("Exiting with code "+exitCode);
     System.exit(exitCode);
   }
   
   
-  public void execute(String [] args){
+  public int execute(String [] args){
+    int exitCode=0;
     try {  
       parseArgs(args);
-      run();
+      exitCode=run();
     } catch (Exception e) {
       System.err.println(e.getMessage());
       e.printStackTrace();
       usage(System.err);
-      System.exit(1);
+      exitCode=1;
     } 
+    return exitCode;
   }
 
   
