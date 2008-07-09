@@ -31,17 +31,23 @@ import org.openadaptor.core.adaptor.Adaptor;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 /**
- * helper class for launch openadaptor adaptor processes based on spring.
- * 
- * @author perryj
- *
+ * Helper class for launch openadaptor adaptor processes based on Spring 
+ * configuration.
  */
 public class SpringAdaptor extends SpringApplication {
 
   public static void main(String[] args) {
     SpringAdaptor springAdaptor = new SpringAdaptor();
     springAdaptor.execute(args);
-    System.exit(0);
+    
+    /* Check for errors */
+    int exitCode = 0;
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    if(adaptor!=null){
+      exitCode = adaptor.getExitCode();
+    }
+    
+    System.exit(exitCode);
   }
   
   
