@@ -80,6 +80,8 @@ Miscellaneous
  * DocumentMapFacade allows setting and retrieving prefixes for the default namespace. 
    This prefix can be used with xpath. See setDefaultNamespacePrefix(String prefix) 
    and getDefaultNamespacePrefix(). 
+   
+ * SpringAdaptor exits with a code based on Adaptor#exitCode (used to be 0).  
  	
 
 Bug Fixes
