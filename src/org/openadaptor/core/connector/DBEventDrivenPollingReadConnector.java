@@ -35,6 +35,7 @@ import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrdered
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.OAException;
+import org.openadaptor.core.transaction.ITransactional;
 import org.openadaptor.util.JDBCUtil;
 import org.openadaptor.util.ThreadUtil;
 
@@ -49,9 +50,11 @@ import java.sql.SQLException;
  * By default it calls a predefined stored procedure called OA3_GetNextQueuedEvent. 
  * Refer to openadaptor resources for the schema it is associated with.
  * 
+ * In response to issue SC59 this now implements ITransactional
+ * 
  * @author Kuldip Ottal, Kris Lachor
  */
-public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnector {
+public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnector implements ITransactional {
 
   private static final Log log = LogFactory.getLog(DBEventDrivenPollingReadConnector.class);
   
