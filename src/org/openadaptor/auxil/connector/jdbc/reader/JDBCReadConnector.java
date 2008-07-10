@@ -298,7 +298,18 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
    */
   private CallableStatement convertEventToStatement(IOrderedMap row) throws SQLException {
     int cols=row.size();
-
+    
+    /*
+     * By changing the event we invalidate any remaining result set. Close
+     * and null it to force a new query based on the new event.
+     * Added in response to issue SC60 .
+     */
+    if (rs != null ) {
+      JDBCUtil.closeNoThrow(rs);
+      rs = null;
+      dry = true;
+    }
+    
     /* create statement string */
     StringBuffer buffer = new StringBuffer();
     buffer.append("{ call ").append(row.get(EVENT_RS_STORED_PROC)).append(" (");   
