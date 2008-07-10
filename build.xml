@@ -53,7 +53,7 @@
 		<property name="dir.src" value="${basedir}/src" />
 		<property name="dir.lib" value="${basedir}/lib" />
 		<property name="dir.example" value="${basedir}/example" />
-		<property name="dir.faq" value="${basedir}/example" />
+		<property name="dir.faq" value="${basedir}/www" />
 		<property name="dir.sql" value="${basedir}/sql" />
 
 		<property name="dir.test" value="${basedir}/test" />
