@@ -83,7 +83,11 @@ Miscellaneous
    
  * SpringAdaptor exits with a code based on Adaptor#exitCode (used to be 0).  
  	
-
+ * The third party libraries that are used to construct openadaptor-depends.jar have 
+   been move in the package from lib/34dparty to resources/lib. This is to faciliate a 
+   future mechansim which will allow automatic generation of the classpath, recursively 
+   traversing the lib directory (tree) for jars.
+   
 Bug Fixes
 =========
 
