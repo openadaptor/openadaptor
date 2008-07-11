@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
+  $Id$
   $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,7 +26,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    resources/lib/hsqldb.jar
     
   This example relies on a hypersonic database running (http://www.hsqldb.org) to run
   up the server make sure hsqldb.jar is in your class path and run the following...

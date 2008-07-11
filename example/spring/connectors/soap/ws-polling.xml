@@ -25,7 +25,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/activation.jar
+    resources/lib/activation.jar
      
   To test the adaptor, the webservice it is connecting to needs to be running
   (see the ws-server.xml example or invoke your own webservice). 

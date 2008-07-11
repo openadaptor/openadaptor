@@ -28,7 +28,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    resources/lib/hsqldb.jar
     jbossall-client.jar (this is not distributed with openadaptor)
   
   This example relies on a hypersonic database running (http://www.hsqldb.org) to run

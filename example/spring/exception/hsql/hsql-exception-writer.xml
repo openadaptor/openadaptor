@@ -33,7 +33,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    resources/lib/hsqldb.jar
     
   once running any data read from std will be validated as XML. A valid XML contains a 'data' element,
   e.g: <data>hello world</data>.

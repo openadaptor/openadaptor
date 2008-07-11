@@ -29,7 +29,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    resources/lib/hsqldb.jar
     
   once running any data read from std input executed against the database, like this...
   
