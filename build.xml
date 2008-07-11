@@ -341,7 +341,6 @@
 		<ant antfile="docs.xml" dir="${dir.example}/tools" target="docs">
 			<property name="docgen.project.name" value="${ant.project.name}"/>
 			<property name="docgen.bin" value="${dir.example}/tools"/>
-			<property name="docgen.tag" value="$tag"/>
 			<property name="docgen.input.dir" value="${dir.example}"/>
 			<property name="docgen.output.dir" value="${dir.build.example}/docs"/>
 		</ant>
