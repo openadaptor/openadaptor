@@ -101,6 +101,11 @@ SC56: AdaptorRunConfiguration - transaction problem at restart.
 
 SC57: Component lifecycle management problem when stopping adaptors externally.
 
+SC59: DBEventDrivenPolling​ReadConnector doesn't participate in adaptor transactions
+
+SC60: DBEventDrivenPolling​ReadConnector skips every second row when an embedded JDBCReadConnector 
+      has batch size set to one.
+
 3rd Party
 =========
 
