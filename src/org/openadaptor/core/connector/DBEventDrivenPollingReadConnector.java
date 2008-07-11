@@ -47,7 +47,7 @@ import java.sql.SQLException;
  * A polling read connector that uses a stored procedure to poll for database events. 
  * These events must be in a specific format and this component will convert that into
  * a call to underlying connector to query the data that relates to the event. 
- * By default it calls a predefined stored procedure called OA3_GetNextQueuedEvent. 
+ * By default it calls a predefined stored procedure called OA_GetNextEvent. 
  * Refer to openadaptor resources for the schema it is associated with.
  * 
  * In response to issue SC59 this now implements ITransactional
