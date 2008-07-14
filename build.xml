@@ -46,8 +46,8 @@
 		<echo level="info" message="Initialised $tag value is: ${tag}" />
 		<property name="licence.dir" value="${basedir}" />
 		<property name="licence.3rdparty.dir" value="${basedir}/licences"/>
+		<property name="licence.file" value="licence.txt" />
 		
-		<property name="licence.file" value="${licence.dir}/licence.txt" />
 		<property name="build.timestamp" value="${DSTAMP}:${TSTAMP}" />
 		<echo level="info" message="Build [${tag}] timestamp: ${build.timestamp}" />
 		<property name="dir.src" value="${basedir}/src" />
@@ -202,12 +202,16 @@
 	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code" />
 
 	<target name="copy.configs" depends="compile" description="Copy build information to build area">
-		<echo level="info" message="Copying/building build and registration properties .openadaptor.properties,registration.properties" />
+		<echo level="info" message="Copying/building licence, build and registration properties licence.txt, .openadaptor.properties,registration.properties" />
 		<copy todir="${dir.build.classes}" overwrite="true">
 			<fileset dir="${dir.src}">
 				<include name=".openadaptor.properties" />
 				<include name="registration.properties" />
 			</fileset>
+			<fileset dir="${licence.dir}">
+				<include name="${licence.file}"/>
+			</fileset>
+			
 			<filterset>
 				<filter token="BUILDCOMPILER" value="${ant.java.version}" />
 				<filter token="BUILDTIME" value="${DSTAMP}:${TSTAMP}" />
@@ -354,7 +358,7 @@
 	<target name="copyright.validate" depends="init,init.support.tasks" description="checks copyright notices in code">
 		<echo level="info" message="Checking copyright notices on ${dir.src},${dir.spring.src},${dir.example}" />
 		<echo level="info" message="Automatic fix flag value: ${copyright.auto_fix}" />
-		<copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.file}">
+		<copyright update="${copyright.auto_fix}" backupdir="${dir.buildtools.backup}" copyright="${licence.dir}/${licence.file}">
 			<fileset dir="${dir.src}" includes="**/*.java" />
 			<fileset dir="${dir.spring.src}" includes="**/*.java" />
 			<fileset dir="${dir.example}" includes="**/*.java" />
@@ -365,19 +369,29 @@
 		<echo level="info" message="Creating jars from compiled classes to ${dir.build.lib}" />
 		<mkdir dir="${dir.build.lib}" />
 
+		<echo level="info" message="Building ${dir.build.lib}/openadaptor.jar"/>
 		<jar destfile="${dir.build.lib}/openadaptor.jar">
 	     <manifest>
 	        <attribute name="Main-Class" value="org.openadaptor.JarLauncher"/>
-	      </manifest>
+		  		<attribute name="Built-By" value="${user.name}"/>
+		  	  <attribute name="Build-Tag" value="${tag}"/>
+		  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
+	     </manifest>
 			<fileset dir="${dir.build.classes}" />
-			<fileset dir="${licence.dir}" includes="${licence.file}" />
 		</jar>
 
-		<echo level="warning" message="Explicitly copying .openadaptor-spring.xml into jar." />
+		<echo level="info" message="Building ${dir.build.lib}/openadaptor-spring.jar"/>
+		<echo level="warning" message="Explicitly copying .openadaptor-spring.xml (${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml) into jar." />
 		<jar destfile="${dir.build.lib}/openadaptor-spring.jar">
+	  	<manifest>
+	  		<attribute name="Built-By" value="${user.name}"/>
+	  	  <attribute name="Build-Tag" value="${tag}"/>
+	  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
+	  	</manifest>
 			<fileset dir="${dir.build.spring.classes}" />
 			<!-- ToDo: This is a hangover from old env. Should be possible to remove soon -->
-			<filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml" />
+			<!-- <filename name="${dir.spring.src}/org/openadaptor/spring/.openadaptor-spring.xml" /> -->
+			<fileset dir="${dir.spring.src}" includes="org/openadaptor/spring/.openadaptor-spring.xml"/>
 		</jar>
 
 		<!-- ToDo: Completely rework the bootstrap concept -->
@@ -393,6 +407,11 @@
 
 		<!-- ToDo: Check if we really need the stub jar; perhaps for testing only -->
 		<jar destfile="${dir.build.lib}/openadaptor-stub.jar">
+	  	<manifest>
+	  		<attribute name="Built-By" value="${user.name}"/>
+	  	  <attribute name="Build-Tag" value="${tag}"/>
+	  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
+	  	</manifest>
 			<fileset dir="${dir.build.stub.classes}" />
 		</jar>
 
@@ -401,6 +420,11 @@
 	<target name="src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.src}, ${dir.spring.src}" unless="suppress.src.jar">
 		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}" />
 		<jar destfile="${dir.build.lib}/openadaptor-src.jar">
+	  	<manifest>
+	  		<attribute name="Built-By" value="${user.name}"/>
+	  	  <attribute name="Build-Tag" value="${tag}"/>
+	  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
+	  	</manifest>
 			<fileset dir="${dir.src}" />
 			<fileset dir="${dir.spring.src}" />
 		</jar>
