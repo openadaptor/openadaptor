@@ -561,19 +561,17 @@
 
 	<target name="package.init" depends="init,clean.package" description="Initialisation of directories etc. for packaging build">
 		<echo level="info" message="Initialising package area ${dir.package}" />
-		<property name="dir.package.ext" value="${dir.package}/ext" />
 		<property name="dir.package.lib" value="${dir.package}/lib" />
 		<property name="dir.package.example" value="${dir.package}/example" />
 		<property name="dir.package.faq" value="${dir.package}" />
 		<property name="dir.package.sql" value="${dir.package}/sql" />
 		<property name="dir.package.javadocs" value="${dir.package}/javadocs" />
 		<property name="dir.package.licences" value="${dir.package}/licences" />
-		<property name="dir.package.resources" value="${dir.package}/resources" />
-		<property name="dir.package.lib.3rdparty" value="${dir.package.resources}/lib" />
-		<mkdir dir="${dir.package.ext}" />
+		<property name="dir.package.lib.3rdparty" value="${dir.package.lib}/opt" />
+		<property name="dir.package.lib.ext" value="${dir.package.lib}/ext" />
 		<mkdir dir="${dir.package.lib}" />
-		<mkdir dir="${dir.package.resources}" />
 		<mkdir dir="${dir.package.lib.3rdparty}" /> 
+		<mkdir dir="${dir.package.lib.ext}" />
 		<mkdir dir="${dir.package.example}" />
 		<mkdir dir="${dir.package.sql}" />
 		<mkdir dir="${dir.package.javadocs}" />
