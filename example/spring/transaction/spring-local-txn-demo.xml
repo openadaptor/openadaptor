@@ -38,7 +38,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    resources/lib/hsqldb.jar
+    lib/opt/hsqldb.jar
     (relevant jms client jars)
     
   once running any data read from std input executed against the database, like this...

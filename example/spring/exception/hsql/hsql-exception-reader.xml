@@ -30,7 +30,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    resources/lib/hsqldb.jar
+    lib/opt/hsqldb.jar
     
   once running any data in the hospital with the flag fixed set to true, and reprocessed to false,
   will be printed to stdout.
