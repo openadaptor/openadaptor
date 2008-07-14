@@ -25,7 +25,7 @@
 	    lib/openadaptor.jar
 	    lib/openadaptor-spring.jar
 	    lib/openadaptor-depends.jar
-	    resources/lib/activation.jar
+	    lib/opt/activation.jar
 	    
 	   Before executing the client program run server adaptor: soap/ws-server.xml   
     ]]></description>
