@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -39,7 +39,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    lib/opt/hsqldb.jar
     
   once running any data read from std will be validated as XML.
   ]]></description>

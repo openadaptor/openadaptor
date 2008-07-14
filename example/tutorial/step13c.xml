@@ -36,7 +36,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/hsqldb.jar
+    lib/opt/hsqldb.jar
     
   once running any data read from std will be validated as XML.
   ]]></description>
