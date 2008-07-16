@@ -318,6 +318,7 @@ public class JDBCConnection extends Component {
    */
   public void disconnect() throws SQLException{
     if (connection != null) {
+      log.debug("Closing JDBC connection.");
       connection.close();
       setConnection( null );
     }
