@@ -1,5 +1,6 @@
 Module Licencing:
-activation.jar
+
+activation.jar: sun_activation.license
 commons-codec_1.3.jar: apache.license
 commons-collections_3.2.jar: apache.license
 commons-httpclient_3.1.jar: apache.license
@@ -50,8 +51,8 @@ mail.jar: javamail.license
 	xfire-all_1.2.6.jar
 	xml-apis_from_xerces_2.9.0.jar
 	xstream-1.2.1.jar
-	script.jar
-	spring-core.jar
-	spring.jar
-	neethi_2.0.4.jar
+script.jar: sun_script.license
+spring-core.jar: apache.license
+spring.jar: apache.license
+neethi_2.0.4.jar: apache.license
 		  
