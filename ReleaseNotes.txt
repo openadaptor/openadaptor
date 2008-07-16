@@ -106,7 +106,7 @@ SC59: DBEventDrivenPollingReadConnector doesn't participate in adaptor transacti
 SC60: DBEventDrivenPollingReadConnector skips every second row when an embedded JDBCReadConnector 
       has batch size set to one.
       
-SC61: Checks if JDBC connection is active before performing a transaction rollback.      
+SC62: Checks if JDBC connection is active before performing a transaction rollback.      
 
 3rd Party
 =========
