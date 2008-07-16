@@ -52,7 +52,7 @@
   </bean>
   
   <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
-  <property name="filename" value="input/input.xml" />
+  <property name="filename" value="input/input-writer.xml" />
  </bean>
 
  <bean id="Dom4jConverter" class="org.openadaptor.thirdparty.dom4j.XmlToDom4jConvertor">
