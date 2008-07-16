@@ -148,6 +148,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
       log.info(getId() + " is stopping");
       setState(State.STOPPING);
     }
+    super.stop();
   }
 
   private void stopAndDisconnect() {
@@ -157,7 +158,6 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     }
     log.info(getId() + " no longer running");
     disconnectNoThrow();
-    super.stop();
   }
 
   private void disconnectNoThrow() {

@@ -87,10 +87,9 @@ public class ReadNodeLifecycleComponentTestCase extends AbstractTestNodeLifecycl
     readConnectorMock.expects(once()).method("connect");
 
     // Now not expected to disconnect. 
-    // Final state expected to be State.STOPPING
     // See SC57
     //    readConnectorMock.expects(once()).method("disconnect");
-    super.startStopStatesCheck(State.STARTED, State.STOPPING);
+    super.startStopStatesCheck(State.STARTED, State.STOPPED);
   }
 
   public void testValidation() {
