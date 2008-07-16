@@ -1,5 +1,5 @@
 Module Licencing:
-
+activation.jar
 commons-codec_1.3.jar: apache.license
 commons-collections_3.2.jar: apache.license
 commons-httpclient_3.1.jar: apache.license
@@ -18,94 +18,40 @@ geronimo-annotation_1.0_spec_1.1.1.jar: apache.license
 XmlSchema_1.4.2.jar: apache.license
 carol.jar: lgpl.license
 dom4j_1.6.1.jar: dom4j.license
-			jaxen_1.1-beta-9.jar
-			jaxrpc.jar
-			jaxws-api_2.1-1.jar
-			jdom_1.0.jar
-			jetty-util_6.1.9.jar
-			jetty_6.1.9.jar
-			jms.jar
-			jmxremote.jar
-			jmxri.jar
-			jmxtools.jar
-			jotm.jar
-			jotm_jrmp_stubs.jar
-			js.jar
-			json.jar
-			jta-spec_1.0.1.jar
-			log4j-1.2.15.jar
-			qname.jar
-			quartz_1.5.2.jar
-			resolver_from_xerces_2.9.0.jar
-			rome_0.9.jar
-			saaj.jar
-			serializer_from_xerces_2.9.0.jar
-			servlet-api_2.5-6.0.1.jar
-			stax-api_1.0.1.jar
-			velocity_1.4.jar
-			wsdl4j_1.6.2.jar
-			wstx-asl_3.0.1.jar
-			xercesImpl_2.9.0.jar
-			xfire-all_1.2.6.jar
-			xml-apis_from_xerces_2.9.0.jar
-			xstream-1.2.1.jar
-			script.jar
-			spring-core.jar
-			spring.jar
-		  neethi_2.0.4.jar
+jaxen_1.1-beta-9.jar: jaxen.license
+jaxrpc.jar: jaxrpc.license
+jaxws-api_2.1-1.jar: apache.license
+jdom_1.0.jar: jdom.license
+jetty-util_6.1.9.jar: apache.license
+jetty_6.1.9.jar: apache.license
+jms.jar: jms.license
+jmxremote.jar: sun_binary.license
+jmxri.jar: sun_binary.license
+	jmxtools.jar
+jotm.jar: jotm.license
+jotm_jrmp_stubs.jar: jotm.license
+js.jar: mpl-1.1.license,rhino_additional.license
+json.jar: json.license
+jta-spec_1.0.1.jar: jta.license
+log4j-1.2.15.jar: apache.license
+mail.jar: javamail.license
+	qname.jar
+	quartz_1.5.2.jar
+	resolver_from_xerces_2.9.0.jar
+	rome_0.9.jar
+	saaj.jar
+	serializer_from_xerces_2.9.0.jar
+	servlet-api_2.5-6.0.1.jar
+	stax-api_1.0.1.jar
+	velocity_1.4.jar
+	wsdl4j_1.6.2.jar
+	wstx-asl_3.0.1.jar
+	xercesImpl_2.9.0.jar
+	xfire-all_1.2.6.jar
+	xml-apis_from_xerces_2.9.0.jar
+	xstream-1.2.1.jar
+	script.jar
+	spring-core.jar
+	spring.jar
+	neethi_2.0.4.jar
 		  
-			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
-      cxf_2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
-      FastInfoset_1.2.2.jar" excludes="${includes.unqualified}" prefix="fast-infoset"/>
-      geronimo-annotation_1.0_spec_1.1.1.jar" excludes="${includes.unqualified}" prefix="geronimo"/>
-      jaxb-api_2.1.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
-      jaxb-impl_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
-      jaxb-xjc_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
-			XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
-			carol.jar" excludes="${includes.unqualified}" prefix="carol" />
-			commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
-			commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections" />
-			commons-httpclient_3.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient" />
-			commons-jxpath_1.2.jar" excludes="${includes.unqualified}" prefix="commons-jxpath" />
-			commons-lang_2.4.jar" excludes="${includes.unqualified}" prefix="commons-lang" />
-			commons-logging.jar" excludes="${includes.unqualified}" prefix="commons-logging" />
-			commons-net_1.2.2.jar" excludes="${includes.unqualified}" prefix="commons-net" />
-      commons-dbcp-1.2.2.jar" includes="${includes.unqualified}" prefix="commons-dbcp"/>
-      commons-pool-1.3.jar" includes="${includes.unqualified}" prefix="commons-pool"/>
-			dom4j_1.6.1.jar" excludes="${includes.unqualified}" prefix="dom4j" />
-			jaxen_1.1-beta-9.jar" excludes="${includes.unqualified}" prefix="jaxen" />
-			jaxrpc.jar" excludes="${includes.unqualified}" prefix="jaxrpc" />
-			jaxws-api_2.1-1.jar" excludes="${includes.unqualified}" prefix="jaxws-api" />
-			jdom_1.0.jar" excludes="${includes.unqualified}" prefix="jdom" />
-			jetty-util_6.1.9.jar" excludes="${includes.unqualified}" prefix="jetty-util" />
-			jetty_6.1.9.jar" excludes="${includes.unqualified}" prefix="jetty" />
-			jms.jar" excludes="${includes.unqualified}" prefix="jms" />
-			jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote" />
-			jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri" />
-			jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools" />
-			jotm.jar" excludes="${includes.unqualified}" prefix="jotm" />
-			jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs" />
-			js.jar" excludes="${includes.unqualified}" prefix="js" />
-			json.jar" excludes="${includes.unqualified}" prefix="json" />
-			jta-spec_1.0.1.jar" excludes="${includes.unqualified}" prefix="jta-spec" />
-			log4j-1.2.15.jar" excludes="${includes.unqualified}" prefix="log4j" />
-			qname.jar" excludes="${includes.unqualified}" prefix="qname" />
-			quartz_1.5.2.jar" excludes="${includes.unqualified}" prefix="quartz" />
-			resolver_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="resolver" />
-			rome_0.9.jar" excludes="${includes.unqualified}" prefix="rome" />
-			saaj.jar" excludes="${includes.unqualified}" prefix="saaj" />
-			serializer_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="serializer" />
-			servlet-api_2.5-6.0.1.jar" excludes="${includes.unqualified}" prefix="servlet-api" />
-			stax-api_1.0.1.jar" excludes="${includes.unqualified}" prefix="stax-api" />
-			velocity_1.4.jar" excludes="${includes.unqualified}" prefix="velocity" />
-			wsdl4j_1.6.2.jar" excludes="${includes.unqualified}" prefix="wsdl4j" />
-			wstx-asl_3.0.1.jar" excludes="${includes.unqualified}" prefix="wstx-asl" />
-			xercesImpl_2.9.0.jar" excludes="${includes.unqualified}" prefix="xercesImpl" />
-			xfire-all_1.2.6.jar" excludes="${includes.unqualified}" prefix="xfire-all" />
-			xml-apis_from_xerces_2.9.0.jar" excludes="${includes.unqualified}" prefix="xml-apis" />
-			xstream-1.2.1.jar" excludes="${includes.unqualified}" prefix="xstream" />
-			script.jar" excludes="${includes.unqualified}" prefix="script" />
-			<zipfileset src="${dir.spring.lib}/spring-core.jar" excludes="${includes.unqualified}" prefix="spring-core" />
-			<zipfileset src="${dir.spring.lib}/spring.jar" excludes="${includes.unqualified}" prefix="spring" />
-      neethi_2.0.4.jar" excludes="${includes.unqualified}" prefix="neethi"/>
-		</jar>
