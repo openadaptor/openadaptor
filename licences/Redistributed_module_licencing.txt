@@ -28,7 +28,7 @@ jetty_6.1.9.jar: apache.license
 jms.jar: jms.license
 jmxremote.jar: sun_binary.license
 jmxri.jar: sun_binary.license
-	jmxtools.jar
+jmxtools.jar: sun_binary.license
 jotm.jar: jotm.license
 jotm_jrmp_stubs.jar: jotm.license
 js.jar: mpl-1.1.license,rhino_additional.license
