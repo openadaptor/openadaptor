@@ -71,12 +71,19 @@ public class JDBCTransactionalResource implements ITransactionalResource {
   }
 
   /**
-   * Rollback transaction if connection is transactional
+   * Rollback transaction if connection is transactional.
+   * Checks if connection is active first (see SC61).
    */
   public void rollback(Throwable t) {
     try {
-      log.debug("JDBC Transaction rolled back");
-      connection.rollbackTransaction();
+      if(connection.isConnected()){
+        log.debug("JDBC Transaction rolled back");
+        connection.rollbackTransaction();
+      }
+      else{
+        log.error("Connection is disconnected, can't rollback.");
+        log.debug("JDBC Transaction roll back FAILED.");
+      }
     } catch (Exception e) {
       throw new RuntimeException("JDBC Exception on attempt to rollback a transaction using a JDBC connection", e);
     }

@@ -4,7 +4,7 @@ openadaptor3 production 3.4.2 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: 15th July 2008
+Date: 17th July 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.2
@@ -101,10 +101,12 @@ SC56: AdaptorRunConfiguration - transaction problem at restart.
 
 SC57: Component lifecycle management problem when stopping adaptors externally.
 
-SC59: DBEventDrivenPolling​ReadConnector doesn't participate in adaptor transactions
+SC59: DBEventDrivenPollingReadConnector doesn't participate in adaptor transactions.
 
-SC60: DBEventDrivenPolling​ReadConnector skips every second row when an embedded JDBCReadConnector 
+SC60: DBEventDrivenPollingReadConnector skips every second row when an embedded JDBCReadConnector 
       has batch size set to one.
+      
+SC61: Checks if JDBC connection is active before performing a transaction rollback.      
 
 3rd Party
 =========
