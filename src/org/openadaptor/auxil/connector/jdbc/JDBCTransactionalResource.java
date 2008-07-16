@@ -72,7 +72,7 @@ public class JDBCTransactionalResource implements ITransactionalResource {
 
   /**
    * Rollback transaction if connection is transactional.
-   * Checks if connection is active first (see SC61).
+   * Checks if connection is active first (see SC62).
    */
   public void rollback(Throwable t) {
     try {
