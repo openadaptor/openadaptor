@@ -13,6 +13,7 @@
     * writes the data to an OA registration database
     
   It is designed to serve as an Openadaptor registration backend.
+  It requires database with a schema (sample defined in sql\register\mysql\schema.sql) to be available.
 
   Run it like this...
     
@@ -29,6 +30,7 @@
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
   
+  Adaptors that wish to register require providing registration URL in registration.properties.
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

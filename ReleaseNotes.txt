@@ -68,6 +68,10 @@ Examples
 
 Miscellaneous
 =============
+ 
+ * Added registration mechanism to allow adaptors to register its properties such as
+   name, username, classpath, timestamp and more, in a central database 
+   (example\spring\register\oa-register-server.xml). 
 
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
@@ -75,7 +79,7 @@ Miscellaneous
  * Adaptor class now supports an extra property "timeoutMs". This is a timeout measured
  	 in milliseconds which will be applied as an override to all connector read timeouts.
    
- * Migration guidelines (draft): www/migration.html 
+ * OA1.x->OA3 migration guidelines (draft): www/migration.html. 
  
  * DocumentMapFacade allows setting and retrieving prefixes for the default namespace. 
    This prefix can be used with xpath. See setDefaultNamespacePrefix(String prefix) 
