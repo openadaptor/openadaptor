@@ -15,15 +15,14 @@ Connectors
 
  * JDBCReadConnector & JDBCWriteConnector - preambleSQL and postambleSQL properties
    renamed to afterConnectSql and beforeDisconnectSql, respectively. Setters for 
-   the old properties were deprecated.
+   old properties have been deprecated.
 
- * JDBCReadConnector - new properties preReadSql and postReadSql that get executed
-   right before the actual SQL that returns a result set, and right after the result
-   set has been read, respectively.
+ * JDBCReadConnector - new properties, preReadSql and postReadSql, get executed
+   before the 'main' SQL that returns a result set, and after the result set
+   has been read, respectively.
 
- * JDBCWriteConnector#connect - additional safety checks that allow a subclass 
-   to choose to use the connection from this class at the same time not using
-   the sqlWriter.
+ * JDBCWriteConnector#connect - additional safety checks to allow a subclass 
+   to use the connection from this class at the same time not using the sqlWriter.
    
  * JDBCWriteConnector - the two ISQLWriter implementations MapTableWriter and
    MapCallableStatementWriter have moved to the new 
@@ -36,6 +35,7 @@ Connectors
    |                                |                                             |
    |org.openadaptor.auxil.connector.|org.openadaptor.auxil.connector.             |  
    |jdbc.writer.MapTableWriter      |jdbc.writer.map.MapTableWriter               |
+   |(/MapCallableStatementWriter)   |(/MapCallableStatementWriter)                | 
    |                                |                                             | 
    |------------------------------------------------------------------------------|  
    
@@ -44,7 +44,7 @@ Connectors
    package.
    
  * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' property.
-   Setting it to false causes the underlying IReadConnector not to be physically
+   Set to false will cause the underlying IReadConnector not to be physically
    reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
    
  * WebServiceListeningReadConnector - changed default namespace in the response.
