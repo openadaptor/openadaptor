@@ -86,7 +86,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
-    adaptor.run();
+    adaptorRun();
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==3);
     assertTrue(writer.dataCollection.size()==3);
@@ -110,7 +110,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
-    adaptor.run();
+    adaptorRun();
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==1);
     assertTrue(writer.dataCollection.size()==1);
@@ -138,7 +138,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
-    adaptor.run();
+    adaptorRun();
     assertTrue(adaptor.getExitCode()==0);
     assertTrue(writer.counter==2);
     assertTrue(writer.dataCollection.size()==2);
@@ -183,7 +183,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     processMap.put(jdbcReader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
-    adaptor.run();
+    adaptorRun();
     assertTrue(adaptor.getExitCode()==1);
     log.debug("--- Beginning testValidation --");
   }
@@ -193,5 +193,19 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
    */
   public String getSchemaDefinition() {
     return SCHEMA;
+  }
+  
+  private void adaptorRun() {
+    adaptorRun(1000);
+  }
+  private void adaptorRun(long waitTimeMS) {
+    adaptor.run();
+    try {
+      log.debug("Sleeping for "+waitTimeMS+" milliseconds to allow adaptor to finish");
+      Thread.sleep(1000);
+    }
+    catch (InterruptedException ie) {
+      ;
+    }
   }
 }
