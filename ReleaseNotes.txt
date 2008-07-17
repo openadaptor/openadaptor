@@ -27,7 +27,17 @@ Connectors
    
  * JDBCWriteConnector - the two ISQLWriter implementations MapTableWriter and
    MapCallableStatementWriter have moved to the new 
-   org.openadaptor.auxil.connector.jdbc.writer.map package.
+   org.openadaptor.auxil.connector.jdbc.writer.map package. Configurations need
+   to be adjusted accordingly:
+   
+   |------------------------------------------------------------------------------|
+   |        OA 3.4.1                |            OA 3.4.2                         |    
+   |------------------------------------------------------------------------------|
+   |                                |                                             |
+   |org.openadaptor.auxil.connector.|org.openadaptor.auxil.connector.             |  
+   |jdbc.writer.MapTableWriter      |jdbc.writer.map.MapTableWriter               |
+   |                                |                                             | 
+   |------------------------------------------------------------------------------|  
    
  * JDBCWriteConnector - two new ISQLWriter implementations, XMLTableWriter and
    XMLCallableStatementWriter added in org.openadaptor.auxil.connector.jdbc.writer.xml
@@ -91,18 +101,7 @@ Miscellaneous
    been move in the package from lib/3rdparty to lib/opt. This is to faciliate a 
    future mechansim which will allow automatic generation of the classpath, recursively 
    traversing the lib directory (tree) for jars.
-   
- * MapTableWriter class has been moved to a different package:
- 
-|------------------------------------------------------------------------------|
-|        OA 3.4.1                |            OA 3.4.2                         |    
-|------------------------------------------------------------------------------|
-|                                |                                             |
-|org.openadaptor.auxil.connector.|org.openadaptor.auxil.connector.             |  
-|jdbc.writer.MapTableWriter      |jdbc.writer.map.MapTableWriter               |
-|                                |                                             | 
-|------------------------------------------------------------------------------|  
-   
+      
 Bug Fixes
 =========
 
