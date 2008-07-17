@@ -474,6 +474,7 @@
 			<zipfileset src="${dir.lib}/jmxremote.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jmxri.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jmxtools.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/jonas_timer.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jotm.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/js.jar" includes="${includes.unqualified}" />
@@ -528,6 +529,7 @@
 			<zipfileset src="${dir.lib}/jmxremote.jar" excludes="${includes.unqualified}" prefix="jmxremote" />
 			<zipfileset src="${dir.lib}/jmxri.jar" excludes="${includes.unqualified}" prefix="jmxri" />
 			<zipfileset src="${dir.lib}/jmxtools.jar" excludes="${includes.unqualified}" prefix="jmxtools" />
+			<zipfileset src="${dir.lib}/jonas_timer.jar" excludes="${includes.unqualified}" prefix="jonas_timer" />
 			<zipfileset src="${dir.lib}/jotm.jar" excludes="${includes.unqualified}" prefix="jotm" />
 			<zipfileset src="${dir.lib}/jotm_jrmp_stubs.jar" excludes="${includes.unqualified}" prefix="jotm_jrmp_stubs" />
 			<zipfileset src="${dir.lib}/js.jar" excludes="${includes.unqualified}" prefix="js" />
