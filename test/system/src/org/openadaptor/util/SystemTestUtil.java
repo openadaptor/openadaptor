@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
@@ -45,7 +47,9 @@ import org.springframework.core.io.UrlResource;
  * @author Kris Lachor
  */
 public class SystemTestUtil {
-  
+  private static final Log log =LogFactory.getLog(SystemTestUtil.class);
+  //Cludge to wait for adaptor to shutdown before continuing.
+  private static final long ADAPTOR_WAIT_TIMEOUT=250; 
   /**
    * Runs adaptor using a given Spring config file.
    * 
@@ -62,10 +66,44 @@ public class SystemTestUtil {
         caller, resourceLocation, configFile));
     String configPath = urlResource.getFile().getAbsolutePath();
     adaptor.addConfigUrl(configPath);
-    adaptor.run();
+    adaptorRun(adaptor);
     return adaptor;
   }
   
+  /**
+   * Run an adaptor, and wait for ADAPTOR_WAIT_TIMEOUT for it to complete.
+   * @param adaptor
+   */
+  public static void adaptorRun(SpringAdaptor adaptor) {
+    springAdaptorRun(adaptor,ADAPTOR_WAIT_TIMEOUT);
+  }
+  private static void springAdaptorRun(SpringAdaptor adaptor,long waitTimeMS) {
+    adaptor.run();
+    try {
+      log.debug("Sleeping for "+waitTimeMS+" milliseconds to allow adaptor to finish");
+      Thread.sleep(waitTimeMS);
+    }
+    catch (InterruptedException ie) {
+      ;
+    }
+  }
+  
+  public static void adaptorRun(Adaptor adaptor) {
+    adaptorRun(adaptor,ADAPTOR_WAIT_TIMEOUT);
+  }
+  
+  private static void adaptorRun(Adaptor adaptor,long waitTimeMS) {
+    adaptor.run();
+    try {
+      log.debug("Sleeping for "+waitTimeMS+" milliseconds to allow adaptor to finish");
+      Thread.sleep(waitTimeMS);
+    }
+    catch (InterruptedException ie) {
+      ;
+    }
+  }
+
+
   /**
    * Finds references to write connectors in a Spring adaptor that has been run.
    * If passed a reference to SpringAdaptor that has not been run, the result
