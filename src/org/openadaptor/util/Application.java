@@ -228,9 +228,11 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     }
     
     /* Finally check the one in registration.properties */
-    Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_PRIMARY_URL);
-    if(oaPropertyRegistrationUrl!=null){
-      return (String)oaPropertyRegistrationUrl;
+    if(registrationProps != null){
+      Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_PRIMARY_URL);
+      if(oaPropertyRegistrationUrl!=null){
+        return (String)oaPropertyRegistrationUrl;
+      }
     }
     
     return null;
@@ -250,9 +252,11 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     }
     
     /* Finally check the one in registration.properties */
-    Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_FAILOVER_URL);
-    if(oaPropertyRegistrationUrl!=null){
-      return (String)oaPropertyRegistrationUrl;
+    if(registrationProps != null){
+      Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_FAILOVER_URL);
+      if(oaPropertyRegistrationUrl!=null){
+        return (String)oaPropertyRegistrationUrl;
+      }
     }
     
     return null;
