@@ -1,0 +1,61 @@
+<html>
+  
+  <head>
+    <title>Openadaptor registration</title>
+      <STYLE TYPE="text/css">
+        .shell    { width: 90%; background-color: #EEEEEE }
+        .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
+        .back     { text-align: right; font-size:9pt }
+        .xml-txt  { font-family: Courier; font-size: 8pt; width: 90%; border: thin solid black; background: rgb(220,220,220);}
+        
+      </STYLE>
+  </head>
+  
+  <body>
+    <a id="contents"></a>
+    <h1>Openadaptor registration</h1>
+
+    <h3>1. Basics</h3>
+    <ol>
+      <li><a href="#whatIs">What is registration</a></li>
+    </ol>
+
+    <h3>2. Environment</h3>
+    <ol>
+      <li><a href="#server">Registration server</a></li>
+      <li><a href="#client">Registration client</a></li>
+    </ol>
+
+    <hr>
+    <h1>Basics</h1>
+    <a id="whatIs"></a>
+    <h2>What is registration</h2>
+    <p>
+      Registration is a process for keeping record of all instances of Openadaptor used in an organisation.
+      When an adaptor is started it sends information about its environment, such as OA version, Java version, operating system name
+      and more. That information is stored in a central repository.
+    </p>
+    
+    <h1>Environment</h1>
+
+    <a id="server"></a>
+    <h2>Registration server</h2>
+    <p>
+      Registration server is required to collect data sent by disparate adaptors. A sample adaptor has been
+      written that exposes a Webservice reader and a database writer. The adaptor's definition is in:
+      example\spring\register\oa-register-server.xml. The adaptor connects to a database where it 
+      expects a schema defined in sql\register\mysql\schema.sql (tested for MySql).
+    </p>
+
+    <a id="client"></a>
+    <h2>Registration client</h2>
+    <p>
+      Every adaptor with enabled registration (disabled by default) will attempt to send registration data
+      via a web service, right after it is started. Sending happens asynchronously and as such is safe -
+      absence of the registration server will not stop the adaptor from starting or stopping.    
+      Registration can be enabled by providing server's URL in registration.properties.
+    </p>
+
+
+  </body>
+</html>
