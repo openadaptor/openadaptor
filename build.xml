@@ -202,11 +202,10 @@
 	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code" />
 
 	<target name="copy.configs" depends="compile" description="Copy build information to build area">
-		<echo level="info" message="Copying/building licence, build and registration properties licence.txt, .openadaptor.properties,registration.properties" />
+		<echo level="info" message="Copying/building licence, build and licence.txt, .openadaptor.properties,registration.properties" />
 		<copy todir="${dir.build.classes}" overwrite="true">
 			<fileset dir="${dir.src}">
 				<include name=".openadaptor.properties" />
-				<include name="registration.properties" />
 			</fileset>
 			<fileset dir="${licence.dir}">
 				<include name="${licence.file}"/>
@@ -591,6 +590,9 @@
 			<fileset dir="${dir.lib}" includes="*.jar,*.zip" />
 			<fileset dir="${dir.spring.lib}" includes="*.jar,*.zip" />
 		</copy>
+	
+		<echo level="info" message="Copying registration.properties" />
+		<copy todir="${dir.package.lib}" file="${dir.src}/registration.properties" />
 		
 		<echo level="info" message="Copying log4j.properties" />
 		<copy todir="${dir.package.lib}" file="${dir.lib}/log4j.properties" />
