@@ -202,7 +202,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     adaptor.run();
     try {
       log.debug("Sleeping for "+waitTimeMS+" milliseconds to allow adaptor to finish");
-      Thread.sleep(1000);
+      Thread.sleep(waitTimeMS);
     }
     catch (InterruptedException ie) {
       ;
