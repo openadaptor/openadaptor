@@ -81,7 +81,7 @@ Miscellaneous
  
  * Added registration mechanism to allow adaptors to register its properties such as
    name, username, classpath, timestamp and more, in a central database 
-   (example\spring\register\oa-register-server.xml). 
+   (www\register.html, example\spring\register\oa-register-server.xml). 
 
  * Adaptor class has two static utility methods for programmatic invocation of adaptors.
    Simple.java (in example/src/...) demonstrates usage.
