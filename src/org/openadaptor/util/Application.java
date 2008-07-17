@@ -89,6 +89,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   private int registrationTimeoutSecs = DEFAULT_REGISTRATION_TIMEOUTSECS;
 
   private Properties props;
+  
+  private Properties registrationProps;
 
   private boolean registerOnlyOnce = true;
 
@@ -201,7 +203,6 @@ public class Application implements IComponent,IRegistrationCallbackListener {
 //        PropertiesPoster.syncPost(url,propsToRegister);
 
         registered = true;
-//        log.info("posted registration properties to " + primaryUrl);
       } catch (Exception e) {
         log.warn("failed to post registration properties : " + e.getMessage());
       }
@@ -226,8 +227,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       return sysPropertyRegistrationUrl;
     }
     
-    /* Finally check the one in .openadaptor.properties */
-    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_PRIMARY_URL);
+    /* Finally check the one in registration.properties */
+    Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_PRIMARY_URL);
     if(oaPropertyRegistrationUrl!=null){
       return (String)oaPropertyRegistrationUrl;
     }
@@ -248,8 +249,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       return sysPropertyRegistrationUrl;
     }
     
-    /* Finally check the one in .openadaptor.properties */
-    Object oaPropertyRegistrationUrl = props.get(PROPERTY_REGISTRATION_FAILOVER_URL);
+    /* Finally check the one in registration.properties */
+    Object oaPropertyRegistrationUrl = registrationProps.get(PROPERTY_REGISTRATION_FAILOVER_URL);
     if(oaPropertyRegistrationUrl!=null){
       return (String)oaPropertyRegistrationUrl;
     }
@@ -282,10 +283,12 @@ public class Application implements IComponent,IRegistrationCallbackListener {
     return result;
   }
 
-  private static Properties filterProperties(Properties props) {
+  private Properties filterProperties(Properties props) {
     Properties newProps = new Properties();
     props=props==null?new Properties():props; //Make sure it's not null.
-    Properties registrationProps = propertiesFromClasspath(REGISTRATION_PROPERTIES_LOCATIONS);
+    if(registrationProps==null){
+      registrationProps = propertiesFromClasspath(REGISTRATION_PROPERTIES_LOCATIONS);
+    }
     if (registrationProps!=null) {
       for (Iterator iter = registrationProps.keySet().iterator(); iter.hasNext();) {
         String key = (String) iter.next();
