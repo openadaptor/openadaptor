@@ -92,6 +92,17 @@ Miscellaneous
    future mechansim which will allow automatic generation of the classpath, recursively 
    traversing the lib directory (tree) for jars.
    
+ * MapTableWriter class has been moved to a different package:
+ 
+|------------------------------------------------------------------------------|
+|        OA 3.4.1                |            OA 3.4.2                         |    
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|org.openadaptor.auxil.connector.|org.openadaptor.auxil.connector.             |  
+|jdbc.writer.MapTableWriter      |jdbc.writer.map.MapTableWriter               |
+|                                |                                             | 
+|------------------------------------------------------------------------------|  
+   
 Bug Fixes
 =========
 
