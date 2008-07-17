@@ -37,6 +37,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 
 /**
@@ -46,53 +49,61 @@ import junit.framework.TestCase;
  * This class can be used as a superclass for any test cases that require a JDBCConnection.
  */
 public abstract class AbstractJDBCConnectionTests extends TestCase {
-  
-    private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
-    private static final String DB_URL="jdbc:hsqldb:mem:test";
-    private static final String DB_USER="sa";
-    private static final String DB_PASSWORD="";
+  private static final Log log =LogFactory.getLog(AbstractJDBCConnectionTests.class); 
+  private static final String DB_DRIVER="org.hsqldb.jdbcDriver";
+  private static final String DB_URL="jdbc:hsqldb:mem:test";
+  private static final String DB_USER="sa";
+  private static final String DB_PASSWORD="";
 
-    protected JDBCConnection jdbcConnection;
+  protected JDBCConnection jdbcConnection;
 
-    protected void setUp() throws Exception {
-      super.setUp();
+  protected void setUp() throws Exception {
+    log.debug("setUp() beginning");
+    super.setUp();
 
-      jdbcConnection = new JDBCConnection();
-      jdbcConnection.setDriver(DB_DRIVER);
-      jdbcConnection.setUrl(DB_URL);
-      jdbcConnection.setUsername(DB_USER);
-      jdbcConnection.setPassword(DB_PASSWORD);
-      Properties props = new Properties();
-      props.setProperty("shutdown", "true");
-      jdbcConnection.setProperties(props);
-      jdbcConnection.connect();
-      
-      /* run in schema if defined */
-      String schema = getSchemaDefinition();
-      if(null != schema){
-        PreparedStatement preparedStatement = jdbcConnection.getConnection().prepareStatement(schema);
-        preparedStatement.executeUpdate();
-        preparedStatement.close();
-      }
+    jdbcConnection = new JDBCConnection();
+    jdbcConnection.setDriver(DB_DRIVER);
+    jdbcConnection.setUrl(DB_URL);
+    jdbcConnection.setUsername(DB_USER);
+    jdbcConnection.setPassword(DB_PASSWORD);
+    Properties props = new Properties();
+    props.setProperty("shutdown", "true");
+    jdbcConnection.setProperties(props);
+    jdbcConnection.connect();
+
+    /* run in schema if defined */
+    String schema = getSchemaDefinition();
+    if(null != schema){
+      PreparedStatement preparedStatement = jdbcConnection.getConnection().prepareStatement(schema);
+      preparedStatement.executeUpdate();
+      preparedStatement.close();
     }
+    log.debug("setUp() complete");
+  }
 
-    protected void tearDown() throws Exception {
-      super.tearDown();
-      jdbcConnection.disconnect();
-      jdbcConnection = null;
-    }
+  protected void tearDown() throws Exception {
+    log.debug("tearDown() beginning");
+    super.tearDown();
+    jdbcConnection.disconnect();
+    jdbcConnection = null;
+    log.debug("teardown() ending");
+  }
 
-    public void testConnection() throws SQLException {
-      assertTrue("JDBCConnection not connected", jdbcConnection.isConnected());
-    }
+  public void testConnection() throws SQLException {
+    log.debug("--- Beginning testConnection --");
+    assertTrue("JDBCConnection not connected", jdbcConnection.isConnected());
+    log.debug("--- Ending testConnection --");
+  }
 
-    public void testDisconnection() throws SQLException {
-      jdbcConnection.disconnect();
-      assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
-    }
+  public void testDisconnection() throws SQLException {
+    log.debug("--- Beginning testDisconnection --");
+    jdbcConnection.disconnect();
+    assertFalse("JDBCConnection not disconnected", jdbcConnection.isConnected());
+    log.debug("--- Ending testDisconnection --");
+  }
 
-    /**
-     * @return DB schemat definition to be set up before the tests are run.
-     */
-    public abstract String getSchemaDefinition();
+  /**
+   * @return DB schemat definition to be set up before the tests are run.
+   */
+  public abstract String getSchemaDefinition();
 }

@@ -29,6 +29,8 @@ package org.openadaptor.auxil.connector.jdbc.reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.JDBCConnection;
 import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnectionTests;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
@@ -46,38 +48,41 @@ import org.openadaptor.util.TestComponent;
  * @author Kris Lachor
  */
 public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
-  
+  private static final Log log =LogFactory.getLog(JDBCReadConnectorTestCase.class);  
+
   protected static String COL1 = "COL1";
-  
+
   protected static String COL2 = "COL2";
-  
+
   private static String SCHEMA = "CREATE MEMORY TABLE OA_TEST(" + COL1 + " CHAR(32)," + COL2 + " CHAR(32)); "
-    + "INSERT INTO OA_TEST VALUES ('foo1', 'bar1'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2');"
-    + "INSERT INTO OA_TEST VALUES ('foo3', 'bar3')";
-  
+  + "INSERT INTO OA_TEST VALUES ('foo1', 'bar1'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2');"
+  + "INSERT INTO OA_TEST VALUES ('foo3', 'bar3')";
+
   protected static String SELECT_STMT_1 = "SELECT " + COL1 + ", " +  COL2 + " FROM OA_TEST";
-  
+
   protected Router router = new Router();
-  
+
   protected Map processMap = new HashMap();
-  
+
   protected Adaptor adaptor = new Adaptor();
-  
+
   JDBCReadConnector reader = assembleJDBCReader(SELECT_STMT_1);
-  
+
   TestComponent.TestWriteConnector writer = new TestComponent.TestWriteConnector();
-  
+
   protected void setUp() throws Exception {
+    log.info("setup() called. Delegating to "+super.getClass().getName());
     super.setUp();
     adaptor.setMessageProcessor(router);
   }
- 
+
   /**
    * Runs an adaptor that reads from the test table.
    * Doesn't use batches (batch size == 1 elem).
    * Ensures the writer received two records in one call.
    */
   public void testLoopingPollingReadConnectorBatchOne()throws Exception{
+    log.debug("--- Beginning testLoopingPollingReadConnectorBatchOne --");
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
     assertTrue(writer.counter==0);
@@ -92,13 +97,15 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
       assertEquals(row.get(COL1), "foo" + rowNo);
       assertEquals(row.get(COL2), "bar" + rowNo);
     }
+    log.debug("--- Ending testLoopingPollingReadConnectorBatchOne --");
   }
-  
+
   /**
    * Runs an adaptor that reads from the test table.
    * Uses looping polling read connector. Reads all elements in one batch.
    */
   public void testLoopingPollingReadConnectorBatchAll()throws Exception{
+    log.debug("--- Beginning testLoopingPollingReadConnectorBatchAll --");
     reader.setBatchSize(0);
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
@@ -118,13 +125,15 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
       assertEquals(row.get(COL1), "foo" + rowNo);
       assertEquals(row.get(COL2), "bar" + rowNo);
     }
+    log.debug("--- Ending testLoopingPollingReadConnectorBatchAll --");
   }
-  
+
   /**
    * Runs an adaptor that reads from the test table.
    * Uses looping polling read connector. Reads in batches of two elements.
    */
   public void testLoopingPollingReadConnectorBatchTwo()throws Exception{
+    log.debug("--- Beginning testLoopingPollingReadConnectorBatchTwo --");
     reader.setBatchSize(2);
     processMap.put(reader, writer);
     router.setProcessMap(processMap);
@@ -147,9 +156,10 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     assertNotNull(row.get(COL1));
     assertEquals(row.get(COL1), "foo3");
     assertEquals(row.get(COL2), "bar3");
+    log.debug("--- Ending testLoopingPollingReadConnectorBatchTwo --");
   }
-  
-  
+
+
   private JDBCReadConnector assembleJDBCReader(String sql){
     JDBCConnection jdbcConnection = new LocalHSQLJdbcConnection();
     JDBCReadConnector jdbcReader = new JDBCReadConnector();
@@ -165,6 +175,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
    * No connection set, should cause a validation exception.
    */
   public void testValidation() {
+    log.debug("--- Beginning testValidation --");
     JDBCReadConnector jdbcReader = new JDBCReadConnector();
     ResultSetToOrderedMapConverter resultSetConverter = new ResultSetToOrderedMapConverter();
     jdbcReader.setResultSetConverter(resultSetConverter);
@@ -174,8 +185,9 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
     assertTrue(writer.counter==0);
     adaptor.run();
     assertTrue(adaptor.getExitCode()==1);
+    log.debug("--- Beginning testValidation --");
   }
-  
+
   /**
    * @return test table definition.
    */
