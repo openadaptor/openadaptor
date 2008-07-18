@@ -4,7 +4,7 @@ openadaptor3 production 3.4.2 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: 17th July 2008
+Date: 18th July 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.2
