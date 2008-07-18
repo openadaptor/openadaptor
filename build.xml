@@ -587,10 +587,11 @@
 			<fileset dir="${dir.build.lib}" includes="*.jar,*.zip" excludes="bootstrap.jar,openadaptor-stub.jar" />
 		</copy>
 
-		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib} to ${dir.package.lib.3rdparty}" />
+		<echo level="info" message="Copying 3rd party jars from ${dir.lib},${dir.spring.lib},${dir.test.lib} to ${dir.package.lib.3rdparty}" />
 		<copy todir="${dir.package.lib.3rdparty}">
 			<fileset dir="${dir.lib}" includes="*.jar,*.zip" />
 			<fileset dir="${dir.spring.lib}" includes="*.jar,*.zip" />
+			<fileset dir="${dir.test.lib}" includes="hsqldb.jar"/>
 		</copy>
 	
 		<echo level="info" message="Copying registration.properties" />
