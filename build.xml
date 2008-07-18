@@ -453,7 +453,7 @@
       <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" includes="${includes.unqualified}"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" includes="${includes.unqualified}" />
-			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified}" />
+			<zipfileset src="${dir.lib}/carol.jar" includes="${includes.unqualified},carol-defaults.properties" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" includes="${includes.unqualified}" />
 			<zipfileset src="${dir.lib}/commons-httpclient_3.1.jar" includes="${includes.unqualified}" />
@@ -508,7 +508,7 @@
       <zipfileset src="${dir.lib}/jaxb-impl_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
       <zipfileset src="${dir.lib}/jaxb-xjc_2.1.6.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
 			<zipfileset src="${dir.lib}/XmlSchema_1.4.2.jar" excludes="${includes.unqualified}" prefix="XmlSchema" />
-			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified}" prefix="carol" />
+			<zipfileset src="${dir.lib}/carol.jar" excludes="${includes.unqualified},carol-defaults.properties" prefix="carol" />
 			<zipfileset src="${dir.lib}/commons-codec_1.3.jar" excludes="${includes.unqualified}" prefix="commons-codec" />
 			<zipfileset src="${dir.lib}/commons-collections_3.2.jar" excludes="${includes.unqualified}" prefix="commons-collections" />
 			<zipfileset src="${dir.lib}/commons-httpclient_3.1.jar" excludes="${includes.unqualified}" prefix="commons-httpclient" />
