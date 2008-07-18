@@ -105,7 +105,15 @@ public class PropertiesPoster {
   protected static void syncPostWS(String endpoint, Properties properties) throws Exception {
     log.info("Attempt to register via a web service");
     WriterBuilder wsWriterBuilder = new WebServiceWriterBuilder(endpoint, "OA3RegistrationWSCaller");
-    OAClient client = new OAClient(wsWriterBuilder);
+    OAClient client = null;
+    try{
+       client = new OAClient(wsWriterBuilder);
+    }
+    catch(java.lang.NoClassDefFoundError e){
+      log.error("Error while connecting to registration web service. Make sure activation.jar is on the classpath. Class not found: " + e.getMessage());
+      log.info("Registration failed.");
+      return;
+    }
     client.send(properties);
     log.info("Registration complete.");
   }
