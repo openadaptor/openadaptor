@@ -170,44 +170,6 @@
   for licencing reasons. So you will need to install these separately and add them to the classpath.
   Some of the example (Tibco and MQSeries) Spring configurations contain comments that relate to this.</p>
 
-<p>post release 3.2.1, OpenAdaptor comes with an additonal jar called <code>bootstrap.jar</code>. This contains
-    alternative helper classes that will bootstrap the classpath based on the location of the 
-    jar file. All you need in your classpath is <code>bootstrap.jar</code>. You can dump out 
-    the programs that can be run from this jar like this:</p>
-
-    <div class="shell"><pre>  java -jar bootstrap.jar</pre></div>
-    
-    <p>This will print something similar to the following:</p>
-    
-    <div class="shell"><pre>  This jar contains the following programs :
-    org.openadaptor.bootstrap.FileSystemExceptionManager
-    org.openadaptor.bootstrap.JDBCExceptionManager
-    org.openadaptor.bootstrap.SpringAdaptor
-    org.openadaptor.bootstrap.SpringApplication
-  When you run these they will bootstrap the classpath based on the location of this jar
-  use -Dopenadaptor.lib=... to provide an additional location to search for classpath resources</pre></div>
-    
-    <p>These bootstrapping programs will automatically construct the classpath based on the location
-    of <code>bootstrap.jar</code>. The classpath will contain all the jars, zip and subdirectories. 
-    You can specify an additional directory to search using the <code>openadaptor.lib</code> system property. 
-    Any <code>patch.jar</code> will always be placed at the front of the classpath, it will load 
-    the contents of 3rdparty rather than <code>openadaptor-depends.jar</code>, and 
-    <code>openadaptor-stub.jar</code> will always be at the end of the classpath.</p>
-    
-    <p>example 1:</p>
-    <div class="shell"><pre>   java -classpath lib\bootstrap.jar org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
-    
-    <p>example 2:</p>
-    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
-  java org.openadaptor.bootstrap.SpringAdaptor -config foo.xml</pre></div>
-    
-    <p>example 3:</p>
-    <div class="shell"><pre>  SET CLASSPATH=lib\bootstrap.jar
-  java -Dopenadaptor.lib=c:\tibco\tibrv\lib org.openadaptor.bootstrap.SpringAdaptor -config tibco.xml</pre></div>
-  
-<p class="back"><a href="#contents">back to contents</a></p>
-
-
 <!--
     Verfiying the Installation
 -->

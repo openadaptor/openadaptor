@@ -101,6 +101,9 @@ Miscellaneous
    been move in the package from lib/3rdparty to lib/opt. This is to faciliate a 
    future mechansim which will allow automatic generation of the classpath, recursively 
    traversing the lib directory (tree) for jars.
+   
+ * Launching adaptors via bootstrap.jar has been removed as this hasn't worked effectively.
+   A better mechanism is in the pipeline.
       
 Bug Fixes
 =========
