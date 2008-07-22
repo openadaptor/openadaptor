@@ -94,7 +94,7 @@ public abstract class AbstractXMLWriter extends AbstractSQLWriter {
   private void populateStatementFromOutputColumns(Element root) throws SQLException {
     for (int i = 0; i < outputColumns.length; i++) {
       Node node = root.selectSingleNode(outputColumns[i]);
-      populateParameter(i+1, node.getStringValue());
+      populateParameter(i+1, node != null ? node.getStringValue() : null);
     }
   }
   

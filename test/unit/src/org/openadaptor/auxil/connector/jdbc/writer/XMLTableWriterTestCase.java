@@ -135,7 +135,11 @@ public class XMLTableWriterTestCase extends AbstractXMLWriterTests {
       Document dataElement = (Document) data[dataIndex];
       for (int i = 0; i < ColumnNames.length; i++) {
 	Node node = dataElement.getRootElement().selectSingleNode(ColumnNames[i]);
-	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
+	if (node != null) {
+	  preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
+	} else {
+	  preparedStatementMock.expects(once()).method("setNull").with(eq(i+1), eq(Types.NUMERIC));
+	}
       }
     }
     preparedStatementMock.expects(atLeastOnce()).method("addBatch");
@@ -150,7 +154,11 @@ public class XMLTableWriterTestCase extends AbstractXMLWriterTests {
       Document dataElement = (Document) data[dataIndex];
       for (int i = 0; i < ColumnNames.length; i++) {
 	Node node = dataElement.getRootElement().selectSingleNode(ColumnNames[i]);
-	preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
+	if (node != null) {
+	  preparedStatementMock.expects(once()).method("setObject").with(eq(i+1), eq(node.getStringValue()), eq(Types.NUMERIC));
+	} else {
+	  preparedStatementMock.expects(once()).method("setNull").with(eq(i+1), eq(Types.NUMERIC));
+	}
       }
     }
     preparedStatementMock.expects(never()).method("addBatch");

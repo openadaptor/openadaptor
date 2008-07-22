@@ -51,7 +51,7 @@ public abstract class AbstractXMLWriterTests extends AbstractSQLWriterTests {
     try {
       SampleXMLOne = DocumentHelper.parseText("<?xml version=\"1.0\" encoding=\"UTF-8\"?><row><TRADEID>1</TRADEID><BUYSELL>B</BUYSELL><SECID>1</SECID><PARTYID>1</PARTYID><QTY>1000000</QTY><PRICE>3.251</PRICE></row>");
       SampleXMLTwo = DocumentHelper.parseText("<?xml version=\"1.0\" encoding=\"UTF-8\"?><row><TRADEID>2</TRADEID><BUYSELL>S</BUYSELL><SECID>2</SECID><PARTYID>2</PARTYID><QTY>2000000</QTY><PRICE>3.252</PRICE></row>");
-      SampleXMLThree = DocumentHelper.parseText("<?xml version=\"1.0\" encoding=\"UTF-8\"?><row><TRADEID>3</TRADEID><BUYSELL>X</BUYSELL><SECID>3</SECID><PARTYID>3</PARTYID><QTY>3000000</QTY><PRICE>3.253</PRICE></row>");
+      SampleXMLThree = DocumentHelper.parseText("<?xml version=\"1.0\" encoding=\"UTF-8\"?><row><TRADEID>3</TRADEID><SECID>3</SECID><PARTYID>3</PARTYID><QTY>3000000</QTY><PRICE>3.253</PRICE></row>");
     } catch (DocumentException e) {
       throw new RuntimeException(e);
     }
