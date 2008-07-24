@@ -53,7 +53,6 @@ public class W3CDocumentToXmlConvertor extends AbstractConvertor {
   /* (non-Javadoc)
    * @see org.openadaptor.auxil.convertor.AbstractConvertor#convert(java.lang.Object)
    */
-  @Override
   protected Object convert(Object record) {
     if (!(record instanceof Document)) {
       throw new RecordFormatException("Record is not an org.w3c.dom.Document. Record: " + record);
@@ -64,7 +63,7 @@ public class W3CDocumentToXmlConvertor extends AbstractConvertor {
     LSSerializer serializer = new LSSerializerImpl();
     SimpleDOMErrorHandler errorHandler = new SimpleDOMErrorHandler();
     serializer.getDomConfig().setParameter("error-handler", errorHandler);
-    serializer.getDomConfig().setParameter("format-pretty-print", prettyPrint);
+    serializer.getDomConfig().setParameter("format-pretty-print", Boolean.valueOf(prettyPrint));
     LSOutput output = new StringWriterLSOutput(dom.getInputEncoding());
     
     try {

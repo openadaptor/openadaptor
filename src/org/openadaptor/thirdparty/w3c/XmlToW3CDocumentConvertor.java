@@ -48,7 +48,6 @@ public class XmlToW3CDocumentConvertor extends AbstractConvertor {
   /* (non-Javadoc)
    * @see org.openadaptor.auxil.convertor.AbstractConvertor#convert(java.lang.Object)
    */
-  @Override
   protected Object convert(Object record) throws RecordException {
     if (!(record instanceof String)) {
       throw new RecordFormatException("Record is not an XML string. Record: " + record);
