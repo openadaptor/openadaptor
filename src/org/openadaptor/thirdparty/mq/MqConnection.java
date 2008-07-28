@@ -131,6 +131,9 @@ public class MqConnection extends Component {
   protected int mqCharacterSet = 0;
 
   protected boolean useAllContext = false;
+  
+  protected String mqReplyToQueueName = null;
+  protected String mqReplyToQueueManagerName = null;
 
   private Object transactionalResource;
 
@@ -388,7 +391,25 @@ public class MqConnection extends Component {
     this.mqCharacterSet = mqCharacterSet;
   }
 
+
+  public String getReplyToQueueName() {
+    return mqReplyToQueueName;
+  }
+
+  public void setReplyToQueueName(String mqReplyToQueueName) {
+    this.mqReplyToQueueName = mqReplyToQueueName;
+  }
+
+  public String getReplyToQueueManagerName() {
+    return mqReplyToQueueManagerName;
+  }
+
+  public void setReplyToQueueManagerName(String mqReplyToQueueManagerName) {
+    this.mqReplyToQueueManagerName = mqReplyToQueueManagerName;
+  }  
+  
   // End Bean Properties
+
 
   /**
    * Set up connection to MQ
@@ -397,6 +418,8 @@ public class MqConnection extends Component {
    */
   public void connectToMQ(boolean forRead) {
     log.debug("MqSource starting connection");
+    MQException.log = null;
+    //MQException.logExclude(MQException.MQRC_NO_MSG_AVAILABLE);
     // initialize MQ now
     MQEnvironment.channel = getChannelName();
     MQEnvironment.hostname = getHostName();
@@ -575,6 +598,12 @@ public class MqConnection extends Component {
       mqMsg.applicationIdData = mqContextUserAndPassword;
       if (mqCharacterSet != 0) {
         mqMsg.characterSet = mqCharacterSet;
+      }      
+      if (mqReplyToQueueName != null) { 
+        mqMsg.replyToQueueName = mqReplyToQueueName;
+      }
+      if (mqReplyToQueueManagerName != null) {
+        mqMsg.replyToQueueManagerName = mqReplyToQueueManagerName;
       }
       mqMsg.writeString(record);
       queue.put(mqMsg, putMessageOptions);
@@ -640,6 +669,7 @@ public class MqConnection extends Component {
     //
     
      getMessageOptions = new MQGetMessageOptions();
+     //getMessageOptions.options = MQC.MQGMO_WAIT;
      getMessageOptions.options = MQC.MQPMO_WAIT;
      if (isUseLocalTransactions()) {
     	 getMessageOptions.options |= MQC.MQPMO_SYNCPOINT;
