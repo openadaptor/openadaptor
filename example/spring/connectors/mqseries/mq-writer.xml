@@ -69,6 +69,10 @@
         <property name="mqCharacterSet" value="37"/>
         <property name="useLocalTransactions" value="false"/>
         <property name="useXATransactions" value="false"/>
+        <!-- Some more optional properties.
+        <property name="replyToQueueName" value="${mq.queue}"/>
+        <property name="replyToQueueManagerName" value="${mq.manager}"/>
+         -->
       </bean>
     </property>
   </bean>
