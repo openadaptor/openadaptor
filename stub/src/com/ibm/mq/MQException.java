@@ -1,11 +1,14 @@
 package com.ibm.mq;
 
+import java.io.OutputStreamWriter;
+
 import org.openadaptor.StubException;
 
 public class MQException extends Exception {
   
   public static final int MQRC_CONNECTION_BROKEN = 2009;
   public static final int MQRC_NO_MSG_AVAILABLE = 2033;
+  public static OutputStreamWriter log = null;
   
   public int reasonCode;
   
@@ -26,4 +29,7 @@ public class MQException extends Exception {
   public MQException(Throwable cause) {
     throw new StubException(StubException.WARN_MQ_JAR);
   }   
+  
+  public static void logExclude(int logCode) {
+  }
 }

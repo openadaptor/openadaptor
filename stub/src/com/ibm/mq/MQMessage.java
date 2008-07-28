@@ -3,6 +3,9 @@ package com.ibm.mq;
 import org.openadaptor.StubException;
 
 public class MQMessage extends MQMD {
+  
+  public java.lang.String replyToQueueName;
+  public java.lang.String replyToQueueManagerName;
 
   public java.lang.String readString(int i) throws java.io.IOException, java.io.EOFException {
     throw new StubException(StubException.WARN_MQ_JAR);
