@@ -376,7 +376,7 @@ public class MqConnection extends Component {
   }
 
   /**
-   * Charcter set in use. E.g. UK EBCDIC
+   * Character set in use. E.g. UK EBCDIC
    * 
    * @return character set id
    */
@@ -418,8 +418,10 @@ public class MqConnection extends Component {
    */
   public void connectToMQ(boolean forRead) {
     log.debug("MqSource starting connection");
-    MQException.log = null;
-    //MQException.logExclude(MQException.MQRC_NO_MSG_AVAILABLE);
+    // Following line will suppress all MQ log statements.
+    //MQException.log = null;
+    // Following suppresses that irritating Reason 2033 log statement that shows up when no message present
+    MQException.logExclude(new Integer(MQException.MQRC_NO_MSG_AVAILABLE));
     // initialize MQ now
     MQEnvironment.channel = getChannelName();
     MQEnvironment.hostname = getHostName();
@@ -669,7 +671,7 @@ public class MqConnection extends Component {
     //
     
      getMessageOptions = new MQGetMessageOptions();
-     //getMessageOptions.options = MQC.MQGMO_WAIT;
+     // getMessageOptions.options = MQC.MQGMO_WAIT;
      getMessageOptions.options = MQC.MQPMO_WAIT;
      if (isUseLocalTransactions()) {
     	 getMessageOptions.options |= MQC.MQPMO_SYNCPOINT;

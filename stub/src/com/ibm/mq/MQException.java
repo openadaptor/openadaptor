@@ -32,4 +32,7 @@ public class MQException extends Exception {
   
   public static void logExclude(int logCode) {
   }
+  
+  public static void logExclude(Integer logCode) {
+  }
 }
