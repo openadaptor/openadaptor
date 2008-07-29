@@ -81,4 +81,8 @@ public class AdaptorTestCase extends TestCase {
   public void testAdaptor5() {
     runAdaptor("adaptor5.xml");
   }
+  
+  public void testAdaptor6() {
+    runAdaptor("adaptor6.xml");
+  }
 }

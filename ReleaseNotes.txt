@@ -22,6 +22,12 @@ Examples
 Miscellaneous
 =============
 
+ * SpringAdaptor will automatically configure and register an Adaptor and associated Router
+   in the Spring context if they are not explicitly defined. This allows simple Adaptor
+   configurations to be defined just by declaring an ordered set of IComponents.
+   A bean defined with an id of ExceptionProcessor will be automatically set as the Router's 
+   exceptionProcessor.
+   
 Bug Fixes
 =========
 
