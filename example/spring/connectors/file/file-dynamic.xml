@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: $
+	$HeadURL: $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads delimited records from file
+    * converts delmited input into a map
+    * writes to file with a dynamically derived name
+    
+  It is designed to illustrate the basic structure of a file reader/writer adaptor
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config file-dynamic.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes output files to output/*.
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline Reader ->
+					MapConverter -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="MapConverter" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+		<property name="dataReader">
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<description>
+					This (regular expression) will exclude comments
+					(lines beginning with #)
+				</description>
+				<property name="excludeRegex" value="^#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+		  Strings are delimited by commas; each value in the string will be associated with the
+			corresponding 'name' in the generated map
+		</description>
+		<property name="delimiter" value="," />
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">
+		<description>This writer writes data to a file.</description>
+		<property name="filename" value="output/output.xml" />
+		<property name="append" value="true" />
+		<property name="script">
+		   <value>
+		   oa_data="output/"+oa_data.get("Counterparty")+".txt";
+		   </value>
+		</property>
+	</bean>
+
+</beans>

@@ -13,6 +13,9 @@ openadaptor 3.4.3
 Connectors
 ==========
 
+ * New DynamicFileWriteConnector allows writing to files with names dynamically 
+   derived from message content. 
+
 Processors
 ==========
 
