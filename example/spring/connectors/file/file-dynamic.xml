@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-	$Id: $
-	$HeadURL: $
+	$Id$
+	$HeadURL$
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -21,7 +21,7 @@
     
     java org.openadaptor.spring.SpringAdaptor -config file-dynamic.xml
     
-  You need the following in your classpath
+  You need the following in your classpath:
   
     lib
     lib/openadaptor.jar
