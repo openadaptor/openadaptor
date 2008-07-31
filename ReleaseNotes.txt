@@ -22,6 +22,9 @@ Processors
 Examples
 ========
 
+ * Added example of a file write connector with dynamically derived file names
+   (example\spring\connectors\file\file-dynamic.xml).
+
 Miscellaneous
 =============
 
