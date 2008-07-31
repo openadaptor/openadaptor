@@ -14,7 +14,7 @@ Connectors
 ==========
 
  * New DynamicFileWriteConnector allows writing to files with names dynamically 
-   derived from a message payload. 
+   derived from a message payload (SC68). 
 
 Processors
 ==========
