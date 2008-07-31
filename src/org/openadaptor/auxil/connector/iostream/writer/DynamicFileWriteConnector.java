@@ -26,19 +26,27 @@
  */
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.processor.script.ScriptProcessor;
+import org.openadaptor.core.IWriteConnector;
+import org.openadaptor.core.exception.ValidationException;
 
 /**
  * A write connector that opens and closes output stream for ever message that it receives.
  * Name of the file can be derived dynamically using script.
+ * 
+ * @author OA3 Core Team
  */
 public class DynamicFileWriteConnector extends FileWriteConnector {
 
   private static final Log log = LogFactory.getLog(DynamicFileWriteConnector.class);
   
   private ScriptProcessor scriptProcessor = new ScriptProcessor();
+  
+  private boolean scriptProvided = false;
     
   /**
    * Constructor.
@@ -113,11 +121,25 @@ public class DynamicFileWriteConnector extends FileWriteConnector {
   }
   
   /**
+   * In addition to FileWriteConnector validation checks if 'script' was set.
+   * 
+   * @see FileWriteConnector#validate(List)
+   * @see IWriteConnector#validate(List)
+   */
+  public void validate(List exceptions) {
+    super.validate(exceptions);
+    if (! scriptProvided) {
+      exceptions.add(new ValidationException("script property not set", this));
+    }
+  }
+  
+  /**
    * Sets the script that will derive a dynamic filename based on message payload.
    * 
    * @param script
    */
   public void setScript(String script) {
+    scriptProvided = true;
     scriptProcessor.setScript(script);
     scriptProcessor.validate(new java.util.ArrayList());
   }
