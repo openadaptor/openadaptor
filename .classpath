@@ -34,7 +34,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/dumbster.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/lib/jonas_timer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jonas_timer.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxremote.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
