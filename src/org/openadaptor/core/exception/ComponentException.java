@@ -33,13 +33,11 @@ import org.openadaptor.core.IComponent;
  * Base Runtime Exception that implementors of {@link IComponent} are encourage
  * to throw. Enables the loggin and exception management to identify which
  * component threw the exception.
- *
- * @deprecated Please use the appropriate OAException subclass instead.
  * 
  * @author Kevin Scully
  */
 
-public abstract class ComponentException extends OAException {
+public class ComponentException extends OAException {
 
   private static final long serialVersionUID = 1L;
 
@@ -50,7 +48,5 @@ public abstract class ComponentException extends OAException {
   public ComponentException(String msg, Throwable cause, IComponent c) {
     super(msg, cause, c);
   }
-
-
-
+  
 }
