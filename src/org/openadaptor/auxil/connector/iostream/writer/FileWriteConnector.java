@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.iostream.writer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.iostream.writer.string.LineWriter;
+import org.openadaptor.core.exception.ComponentException;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.util.FileUtils;
 
@@ -38,12 +39,21 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * A Write Connector that write data to a file (or stdout if the filename property
  * is not set).
+ * 
+ * The FileWriteConnector component now supports the ability to move the output files out of the
+ * way once they reach a predefined size or age. This is particularly useful if you
+ * are using the FileWriteConnector as a log of what the adaptor has processed. For example, you
+ * could arrange for the output file to be rolled over every day. The rollover process
+ * uses the same mechanics as the <i>moveExistingFileTo</i> property and rolled over files
+ * have a timestamp applied the end of their names.
  * 
  * @author OA3 Core Team
  */
@@ -58,10 +68,24 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   private boolean append = true;
 
   private String moveExistingFileTo = null;
+  
+  private String lastFileMovedTo = null;
 
   private boolean addTimestampToMovedFile = false;
 
   private String timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
+  
+  /**
+   * file size (in bytes) at which to perform a rollover. -1 indicates that
+   * there is no rollover
+   */
+  private long rolloverSize = -1;
+
+  /**
+   * rollover period (in milliseconds) to perform a rollover since the epoch
+   * (00:00:00 GMT, January 1, 1970). -1 indicates that there is no rollover
+   */
+  private long _rollover_period = -1;
   
   /**
    * Constructor
@@ -81,7 +105,20 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     setDataWriter(new LineWriter());
   }
 
-
+  private void moveOutputFile(){
+    String newFileName = moveExistingFileTo;
+    if (addTimestampToMovedFile) {
+      DateFormat dataFormat = new SimpleDateFormat(timestampFormat);
+      String formattedDate = dataFormat.format(new Date());
+      newFileName = moveExistingFileTo + "." + formattedDate;
+    }
+    File file = new File(filename);
+    if (file.exists()){
+      FileUtils.moveFile(filename, newFileName);
+      lastFileMovedTo = newFileName;
+    }
+  }
+  
   /**
    * Creates a file output stream. If <code>filename</code> is not set, the System.out
    * (console stream) is returned. 
@@ -95,15 +132,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   protected OutputStream getOutputStream() {
     if (filename != null) {
       if (moveExistingFileTo != null) {
-        if (addTimestampToMovedFile) {
-          DateFormat dataFormat = new SimpleDateFormat(timestampFormat);
-          String formattedDate = dataFormat.format(new Date());
-          moveExistingFileTo = moveExistingFileTo + "." + formattedDate;
-        }
-        File file = new File(filename);
-        if (file.exists()){
-          FileUtils.moveFile(filename, moveExistingFileTo);
-        }
+        moveOutputFile();
       }
       try {
         return new FileOutputStream(filename, append);
@@ -116,6 +145,18 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     }
   }
   
+  public Object deliver(Object[] data) {
+    //  check to see if there are any file size rollover options set
+    if (rolloverSize > -1) {
+        File f = new File(filename);
+        if (f.exists() && f.length() > rolloverSize) {
+            rolloverFile();
+        }
+    }
+    
+    return super.deliver(data);
+  }
+
   /**
    * Sets file name.
    * @param path
@@ -185,6 +226,223 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
   		this.timestampFormat = timestampFormat;
   		log.info("Timestamp will be formatted as " + timestampFormat);
   	}
+  }
+
+  /**
+   * validates that the supplied string representing the size at which
+   * the output file is rolled over to a new version and sets the
+   * rolloverSize property accordingly. The acceptable file sizes are:
+   * <p/>
+   * xG - x Gigabtyes
+   * xGb    - x Gigabytes
+   * xM - x megabytes
+   * xMb    - x megabytes
+   * xK - x kilobytes
+   * xKb    - x kilobytes
+   * xb - x bytes
+   *
+   * @param prop - the string to be parsesd
+   *
+   * @throws ComponentException - if an invalid file size is encountered
+   */
+  private void parseRolloverSize(String prop) throws ComponentException
+  {
+      if (prop == null || prop.equals("-1")) {
+          return;
+      }
+
+      // we attempt a conversion for a size indicater. If the rolloverSize
+      // variable has not been modified then we move on to the next size
+      // indicater. If the rolloverSize has still not been set at the end
+      // then we have an unparsible string and throw an error
+      parseSize(prop, "g", 1000000000);
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "gb", 1000000000);
+      }
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "m", 1000000);
+      }
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "mb", 1000000);
+      }
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "k", 1000);
+      }
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "kb", 1000);
+      }
+
+      if (rolloverSize == -1) {
+          parseSize(prop, "b", 1);
+      }
+
+      if (rolloverSize == -1) {
+          throw new ComponentException("Unrecognised rollover size: " + prop, this);
+      }
+
+      log.info(filename + " Rollover size set to " + prop + " (" +
+          rolloverSize +
+          " bytes)");
+  }
+
+  
+  /**
+   * validates that the supplied string representing the time period at
+   * which the output file is rolled over to a new version and sets the
+   * _rollover_date property accordingly. The acceptable periods are:
+   * <p/>
+   * xW - x weeks
+   * xD - x days
+   * xH - x hours
+   * xM - x minutes
+   * xS - x seconds
+   *
+   * @param prop - the string to be parsesd
+   *
+   * @throws IbafException - if an invalid period is encountered
+   */
+  private void parseRolloverDate(String prop) throws ComponentException{
+      if (prop == null) {
+          return;
+      }
+
+      // we attempt a conversion for a period indicater. If the _rollover_date
+      // variable has not been modified then we move on to the next period
+      // indicater. If the _rollover_date has still not been set at the end
+      // then we have an unparsible string and throw an error
+      parseDate(prop, "w", 7 * 24 * 60 * 60 * 1000);
+
+      if (_rollover_period == -1) {
+          parseDate(prop, "d", 24 * 60 * 60 * 1000);
+      }
+
+      if (_rollover_period == -1) {
+          parseDate(prop, "h", 60 * 60 * 1000);
+      }
+
+      if (_rollover_period == -1) {
+          parseDate(prop, "m", 60 * 1000);
+      }
+
+      if (_rollover_period == -1) {
+          parseDate(prop, "s", 1000);
+      }
+
+      if (_rollover_period == -1) {
+          throw new ComponentException("Unrecognised rollover period: " + prop, this);
+      }
+
+      log.info(filename + " Rollover date set to " + prop + " (" +
+          _rollover_period +
+          "ms)");
+  }
+  
+  
+  /**
+   * attempts to retrieve a valid number from the supplied string. This
+   * number is then multiplied by the mupltiplier and used for the
+   * rollover size. If the string does not fit the format then we simply
+   * leave the rollover size as it was and return.
+   *
+   * @param s - the string to be converted
+   * @param indicater - the file size indicater (eg. Gb, Mb, Kb, ...)
+   * @param multiplier - the value to multiply the rollover size by to
+   * convert to bytes (eg. 2Kb becomes 2000)
+   */
+  private void parseSize(String s, String indicater, int multiplier){
+      try {
+          DecimalFormat nf = new DecimalFormat("#,##0" + indicater);
+          Number n = nf.parse(s.toLowerCase());
+
+          rolloverSize = n.longValue() * multiplier;
+      }
+      catch (ParseException e) {
+      }
+  }
+  
+  /**
+   * attempts to retrieve a valid number from the supplied string. This
+   * number is then multiplied by the mupltiplier to convert it into
+   * milliseconds and used for the rollover period. If the string does
+   * not fit the format then we simply leave the rollover period as it
+   * was and return.
+   *
+   * @param s - the string to be converted
+   * @param indicater - the rollover period indicater (eg. M, W, D, ...)
+   * @param multiplier - the value to multiply the rollover period by to
+   * convert to milliseconds (eg. 2D becomes 2*24*60*60*1000)
+   */
+  private void parseDate(String s, String indicater, long multiplier){
+      try {
+          DecimalFormat nf = new DecimalFormat("#" + indicater);
+          Number n = nf.parse(s.toLowerCase());
+
+          _rollover_period = n.longValue() * multiplier;
+      }
+      catch (ParseException e) {
+      }
+  }
+
+  /**
+   * performs the file rollover
+   *
+   * @throws ComponentException
+   */
+  private void rolloverFile() throws ComponentException{
+    /*
+     * we use the moveFile() method to do the rollovers so we must
+     */
+    if (moveExistingFileTo == null) {
+      moveExistingFileTo = filename;
+      addTimestampToMovedFile = true;
+    }
+    
+    /*
+     * close the file. The file will be moved and a new one created as part
+     * of #connect()
+     */
+    try {
+      disconnect();
+      connect();
+    }
+    catch (Exception e) {
+      throw new ComponentException("", e, this);
+    }
+  }
+
+  
+  /**
+   * Sets the file rollover size. 
+   * 
+   * validates that the supplied string representing the size at which
+   * the output file is rolled over to a new version and sets the
+   * rolloverSize property accordingly. The acceptable file sizes are:
+   * <p/>
+   * xG - x Gigabtyes
+   * xGb    - x Gigabytes
+   * xM - x megabytes
+   * xMb    - x megabytes
+   * xK - x kilobytes
+   * xKb    - x kilobytes
+   * xb - x bytes
+   *
+   * @param prop - the string to be parsesd
+   * @throws ComponentException - if an invalid file size is encountered
+   */
+  public void setRolloverSize(String rolloverSizeStr) {
+    parseRolloverSize(rolloverSizeStr);
+  }
+
+  /**
+   * @return name of the last moved file.
+   */
+  public String getLastFileMovedTo() {
+    return lastFileMovedTo;
   }
 
 }

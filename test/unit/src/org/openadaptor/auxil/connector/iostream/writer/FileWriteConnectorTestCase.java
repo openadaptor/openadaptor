@@ -73,10 +73,10 @@ public class FileWriteConnectorTestCase extends TestCase {
     connector2.setMoveExistingFileTo(tempFile.getAbsolutePath() + "_old");
     connector2.setAddTimestampToMovedFile(true);
     runWriter(connector2);
-    String moveExistingFileTo = connector2.getMoveExistingFileTo();
+    String lastFileMovedTo = connector2.getLastFileMovedTo();
     
     verifyFileContent(tempFile.getAbsolutePath(), TEST_FILE_CONTENT);
-    verifyFileContent(moveExistingFileTo, TEST_FILE_CONTENT);
+    verifyFileContent(lastFileMovedTo, TEST_FILE_CONTENT);
   }
   
   private void runWriter(IWriteConnector connector) throws IOException{
