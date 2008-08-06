@@ -30,7 +30,7 @@ package org.openadaptor.core.exception;
 import org.openadaptor.core.IComponent;
 
 /**
- * Base Runtime Exception that implementors of {@link IComponent} are encourage
+ * Base OAException that implementors of {@link IComponent} are encourage
  * to throw. Enables the loggin and exception management to identify which
  * component threw the exception.
  * 
