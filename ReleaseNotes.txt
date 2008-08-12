@@ -40,7 +40,7 @@ Miscellaneous
 Bug Fixes
 =========
 
-
+SC69: Changes in removal of JVM shutdown hook.
 
 =================================================
 openadaptor3 production 3.4.2 Release Notes
