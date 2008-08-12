@@ -274,7 +274,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     registerComponents();
 
     try {
+      
+      /* 
+       * Register shutdown hook (remove old one first in case the same 
+       * adaptor is run multiple times).
+       */
+      Runtime.getRuntime().removeShutdownHook(shutdownHook);  
       Runtime.getRuntime().addShutdownHook(shutdownHook);
+      
       state = State.STARTED;
       validate();
       if (transactionManager != null) {
@@ -293,6 +300,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       log.info("waiting for runnables to stop");
       waitForRunnablesToStop();
       log.info("all runnables are stopped");
+ 
+      state = State.STOPPING;
       stopNonRunnables();
       
       waitForRegistrationToComplete();
@@ -302,7 +311,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       exitCode = 1;
       exitErrors.add(ex);
     } finally {
-      if (state != State.STOPPING) {
+      /* if the adaptor is already stopping the shutdown hook needs to be removed. */
+      if (state == State.STOPPING) {
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
       }
       state = State.STOPPED;
