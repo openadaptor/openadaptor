@@ -38,6 +38,8 @@ import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ExceptionHandlerProxy;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 
 /**
  * Utility class provides several components - connectors, processors, for the use
@@ -272,5 +274,31 @@ public class TestComponent {
       counter++;
       return super.process(data);
     } 
+  }
+  
+  
+  //
+  // Nodes
+  //
+  //
+  public static final class TestReadNode extends ReadNode{
+
+    public int stopCounter = 0;
+    
+    public void stop() {
+      stopCounter++;
+      super.stop();
+    }
+  }
+  
+  
+  public static final class TestWriteNode extends WriteNode{
+
+    public int stopCounter = 0;
+    
+    public void stop() {
+      stopCounter++;
+      super.stop();
+    }
   }
 }
