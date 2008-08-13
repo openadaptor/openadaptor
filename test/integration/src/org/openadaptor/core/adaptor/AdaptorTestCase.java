@@ -49,7 +49,11 @@ import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.processor.TestProcessor;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
+import org.openadaptor.util.TestComponent;
 
+/**
+ * Integration/system tests for {@link Adaptor}.
+ */
 public class AdaptorTestCase extends TestCase {
 
 	/**
@@ -76,11 +80,11 @@ public class AdaptorTestCase extends TestCase {
 		Map processMap = new HashMap();
 		processMap.put(readNode, writeNode);
 		routingMap.setProcessMap(processMap);
-    Router router = new Router(routingMap);
-    
-    // create router
-    Adaptor adaptor =  new Adaptor();
-    adaptor.setMessageProcessor(router);
+        Router router = new Router(routingMap);
+        
+        // create router
+        Adaptor adaptor =  new Adaptor();
+        adaptor.setMessageProcessor(router);
 		adaptor.setRunInCallingThread(true);
 		
 		// run adaptor
@@ -116,11 +120,11 @@ public class AdaptorTestCase extends TestCase {
 		Map processMap = new HashMap();
 		processMap.put(readNode, writeNode);
 		routingMap.setProcessMap(processMap);
-    Router router = new Router(routingMap);
-    
-    // create adaptor
-    Adaptor adaptor =  new Adaptor();
-    adaptor.setMessageProcessor(router);
+        Router router = new Router(routingMap);
+        
+        // create adaptor
+        Adaptor adaptor =  new Adaptor();
+        adaptor.setMessageProcessor(router);
 		adaptor.setRunInCallingThread(true);
 		
 		// run adaptor
@@ -381,6 +385,43 @@ public class AdaptorTestCase extends TestCase {
     assertTrue(adaptor.getExitCode() == 0);
   }
 
+  
+  /**
+   * ReadNode -> WriteNode.
+   * 
+   * Checks if the stop() methods on ReadNode and WriteNode are called 
+   * the right number of times. Excessive number may mean unnecessary 
+   * invocation of the shutdown hook.
+   */
+  public void testShutdown() {
+      
+    /* Needs reference to ReadNode and WriteNode so creating explicitely */
+    TestComponent.TestReadNode readNode = new TestComponent.TestReadNode();
+    TestReadConnector readConnector = new TestReadConnector("ReadConnector");
+    readConnector.setDataString("foobar");
+    readNode.setConnector(readConnector);
+  
+    TestComponent.TestWriteNode writeNode = new TestComponent.TestWriteNode();
+    TestWriteConnector writeConnector = new TestWriteConnector("WriteConnector");
+    writeConnector.setExpectedOutput(readConnector.getDataString());
+    writeNode.setConnector(writeConnector);
+    
+    /* Create process map */
+    Map processMap = new HashMap();
+    processMap.put(readNode, writeNode);
+     
+    /* Run adaptor */
+    Adaptor adaptor = Adaptor.run(processMap);
+    assertTrue(adaptor.getExitCode() == 0);
+    
+    /* ReadNode stops itself, then is stopped by the adaptor */
+    assertTrue(readNode.stopCounter==2);
+    
+    /* WriteNode is stopped by the adaptor only. */
+    assertTrue(writeNode.stopCounter==1);
+  }
+  
+  
 	public static List createStringList(String s, int n) {
 		ArrayList list = new ArrayList();
 		for (int i = 0; i < n; i++) {
