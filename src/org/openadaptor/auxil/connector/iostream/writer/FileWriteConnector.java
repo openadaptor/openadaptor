@@ -55,6 +55,31 @@ import java.util.Date;
  * uses the same mechanics as the <i>moveExistingFileTo</i> property and rolled over files
  * have a timestamp applied the end of their names.
  * 
+ * <table border="0">
+ * <tr>
+ * <td valign="top">RolloverSize</td> <td>[null] When set, causes the output file to be rolled over when it exceeds
+ * the give size. Uses our own notation:
+ * <br> xG  - x Gigabytes (that is 1,000,000,000 bytes, not 2^30 bytes)
+ * <br> xGb - x Gigabytes (that is 1,000,000,000 bytes, not 2^30 bytes)
+ * <br> xM  - x megabytes (that is 1,000,000 bytes, not 2^20 bytes)
+ * <br> xMb - x megabytes (that is 1,000,000 bytes, not 2^20 bytes)
+ * <br> xK  - x kilobytes (that is 1,000,000 bytes, not 2^10 or 1024 bytes)
+ * <br> xKb - x kilobytes (that is 1,000,000 bytes, not 2^10 or 1024 bytes)
+ * <br> xB  - x bytes</td>
+ * </tr>
+ * <tr><td>&nbsp;</td></tr>
+ * <tr>
+ * <td valign="top">RolloverPeriod</td > <td>[null] When set, causes the output file to be rolled over when the
+ * difference between its creation date and now exceeds the
+ * supplied period. Uses our own notation:
+ * <br> xW  - x weeks
+ * <br> xD  - x days
+ * <br> xH  - x hours
+ * <br> xM  - x minutes
+ * <br> xS  - x seconds</td>
+ * </tr>
+ * </table>
+ * 
  * @author OA3 Core Team
  */
 public class FileWriteConnector extends AbstractStreamWriteConnector {
