@@ -390,8 +390,8 @@ public class AdaptorTestCase extends TestCase {
    * ReadNode -> WriteNode.
    * 
    * Checks if the stop() methods on ReadNode and WriteNode are called 
-   * the right number of times. Excessive number may mean unnecessary 
-   * invocation of the shutdown hook.
+   * the right number of times. The test will NOT determine unnecessary invocation of
+   * shotdown hooks.
    */
   public void testShutdown1() {
       
@@ -414,34 +414,27 @@ public class AdaptorTestCase extends TestCase {
     Adaptor adaptor = Adaptor.run(processMap);
     assertTrue(adaptor.getExitCode() == 0);
     
-    /* ReadNode stops itself, then is stopped by the adaptor */
-    assertTrue(readNode.stopCounter==2);
+    /* ReadNode stops itself */
+    assertTrue(readNode.stopCounter==1);
     
-    /* WriteNode is stopped by the adaptor only. */
+    /* WriteNode is stopped by the adaptor. */
     assertTrue(writeNode.stopCounter==1);
+    
+    assertFalse(adaptor.hasShutdownHooks());
   }
   
   /**
-   * ReadNode -> WriteNode.
-   * 
-   * Checks if the stop() methods on ReadNode and WriteNode are called 
-   * the right number of times. Excessive number may mean wrong shut down
-   * sequence. The method will NOT determine unnecessary invocation of 
-   * shotdown hooks.
+   * Same as {@link #testShutdown1()} but ReadNode throws exception.
    */
   public void testShutdown2() {
       
     /* Needs reference to ReadNode and WriteNode so creating explicitely */
     TestComponent.TestReadNode readNode = new TestComponent.TestReadNode();
-    TestReadConnector readConnector = new TestReadConnector("ReadConnector");
-    readConnector.setDataString("foobar");
+    TestComponent.ExceptionThrowingReadConnector readConnector = new TestComponent.ExceptionThrowingReadConnector();
     readNode.setConnector(readConnector);
-    readConnector.setMaxSend(10);
-    readConnector.setIntervalMs(1000); 
   
     TestComponent.TestWriteNode writeNode = new TestComponent.TestWriteNode();
     TestWriteConnector writeConnector = new TestWriteConnector("WriteConnector");
-    writeConnector.setExpectedOutput(readConnector.getDataString());
     writeNode.setConnector(writeConnector);
     
     /* Create process map */
@@ -450,13 +443,16 @@ public class AdaptorTestCase extends TestCase {
      
     /* Run adaptor */
     Adaptor adaptor = Adaptor.run(processMap);
-    assertTrue(adaptor.getExitCode() == 0);
+    assertTrue(adaptor.getExitCode() == 1);
     
-    /* ReadNode stops itself, then is stopped by the adaptor */
-    assertTrue(readNode.stopCounter==2);
+    /* ReadNode stops itself as part of handling the exception */
+    assertTrue(readNode.stopCounter==1);
     
     /* WriteNode is stopped by the adaptor only. */
     assertTrue(writeNode.stopCounter==1);
+    
+    /* Adaptor handles shutdown before it exists.*/
+    assertFalse(adaptor.hasShutdownHooks());
   }
   
   
