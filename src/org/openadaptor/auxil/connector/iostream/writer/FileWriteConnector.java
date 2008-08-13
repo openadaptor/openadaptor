@@ -490,7 +490,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
    * 
    * validates that the supplied string representing the time period at
    * which the output file is rolled over to a new version and sets the
-   * _rollover_date property accordingly. The acceptable periods are:
+   * rolloverDate property accordingly. The acceptable periods are:
    * <p/>
    * xW - x weeks
    * xD - x days
