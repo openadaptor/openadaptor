@@ -136,6 +136,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * controls adaptor retry and start, stop, restart functionality
    */
   private AdaptorRunConfiguration runConfiguration;
+  
+  private boolean hasShutdownHooks = false;
 
   /**
    * shutdown hook
@@ -281,6 +283,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
        */
       Runtime.getRuntime().removeShutdownHook(shutdownHook);  
       Runtime.getRuntime().addShutdownHook(shutdownHook);
+      hasShutdownHooks = true;
       
       state = State.STARTED;
       validate();
@@ -314,6 +317,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       /* if the adaptor is already stopping the shutdown hook needs to be removed. */
       if (state == State.STOPPING) {
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        hasShutdownHooks = false;
       }
       state = State.STOPPED;
       log.info("Adaptor stopped normally.");
@@ -634,5 +638,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     router.setProcessors(processors);
     adaptor.run();
     return adaptor;
+  }
+
+  /**
+   * Checks if Adaptor has shutdown hooks installed. For system testing mostly.
+   * 
+   * @return true is shutdown hooks are installed, false otherwise.
+   */
+  protected boolean hasShutdownHooks() {
+    return hasShutdownHooks;
   }
 }
