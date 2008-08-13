@@ -85,7 +85,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
    * rollover period (in milliseconds) to perform a rollover since the epoch
    * (00:00:00 GMT, January 1, 1970). -1 indicates that there is no rollover
    */
-  private long _rollover_period = -1;
+  private long rolloverPeriod = -1;
   
   /**
    * Constructor
@@ -145,13 +145,35 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     }
   }
   
+  /**
+   * Delivers the data but first checks if the file needs to be rolled over,
+   * either because of being too large or too old.
+   */
   public Object deliver(Object[] data) {
-    //  check to see if there are any file size rollover options set
+    
+    /*  check to see if there are any file size rollover options set */
     if (rolloverSize > -1) {
-        File f = new File(filename);
-        if (f.exists() && f.length() > rolloverSize) {
-            rolloverFile();
-        }
+      File f = new File(filename);
+      if (f.exists() && f.length() > rolloverSize) {
+          rolloverFile();
+      }
+    }
+   
+    /* 
+     * check for any date based rollover options set
+     * Important note: we can use the lastmodified time on the file
+     * because the file's timestamp is initially set when it is
+     * created and is not updated until the Writer is closed. This
+     * means that lastModified() effectively returns the files
+     * creation date each time it is called.
+     */
+    if (rolloverPeriod > -1) {
+      File f = new File(filename);
+      Date now = new Date();
+      if (f.exists() &&
+          (now.getTime() - f.lastModified()) > rolloverPeriod) {
+          rolloverFile();
+      }
     }
     
     return super.deliver(data);
@@ -317,28 +339,28 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
       // then we have an unparsible string and throw an error
       parseDate(prop, "w", 7 * 24 * 60 * 60 * 1000);
 
-      if (_rollover_period == -1) {
+      if (rolloverPeriod == -1) {
           parseDate(prop, "d", 24 * 60 * 60 * 1000);
       }
 
-      if (_rollover_period == -1) {
+      if (rolloverPeriod == -1) {
           parseDate(prop, "h", 60 * 60 * 1000);
       }
 
-      if (_rollover_period == -1) {
+      if (rolloverPeriod == -1) {
           parseDate(prop, "m", 60 * 1000);
       }
 
-      if (_rollover_period == -1) {
+      if (rolloverPeriod == -1) {
           parseDate(prop, "s", 1000);
       }
 
-      if (_rollover_period == -1) {
+      if (rolloverPeriod == -1) {
           throw new ComponentException("Unrecognised rollover period: " + prop, this);
       }
 
       log.info(filename + " Rollover date set to " + prop + " (" +
-          _rollover_period +
+          rolloverPeriod +
           "ms)");
   }
   
@@ -382,7 +404,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
           DecimalFormat nf = new DecimalFormat("#" + indicater);
           Number n = nf.parse(s.toLowerCase());
 
-          _rollover_period = n.longValue() * multiplier;
+          rolloverPeriod = n.longValue() * multiplier;
       }
       catch (ParseException e) {
       }
@@ -438,6 +460,26 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     parseRolloverSize(rolloverSizeStr);
   }
 
+  /**
+   * Sets the rollover date.
+   * 
+   * validates that the supplied string representing the time period at
+   * which the output file is rolled over to a new version and sets the
+   * _rollover_date property accordingly. The acceptable periods are:
+   * <p/>
+   * xW - x weeks
+   * xD - x days
+   * xH - x hours
+   * xM - x minutes
+   * xS - x seconds
+   *
+   * @param prop - the string to be parsesd
+   * @throws ComponentException - if an invalid period is encountered
+   */
+  public void setRolloverDate(String rolloverDateStr){
+    parseRolloverDate(rolloverDateStr);
+  }
+  
   /**
    * @return name of the last moved file.
    */

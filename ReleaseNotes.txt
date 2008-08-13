@@ -16,8 +16,8 @@ Connectors
  * New DynamicFileWriteConnector allows writing to files with names dynamically 
    derived from a message payload (SC68). 
    
- * FileWriteConnector - ported rollover (based on file size) functionality from legacy
-   Openadaptor.   
+ * FileWriteConnector - ported rollover functionality (based on file size and file age)  
+   from legacy Openadaptor.   
 
 Processors
 ==========
