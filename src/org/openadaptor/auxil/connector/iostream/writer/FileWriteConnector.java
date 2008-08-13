@@ -139,8 +139,12 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
     }
     File file = new File(filename);
     if (file.exists()){
-      FileUtils.moveFile(filename, newFileName);
-      lastFileMovedTo = newFileName;
+      try {
+        FileUtils.moveFile(filename, newFileName);
+        lastFileMovedTo = newFileName;
+      } catch (RuntimeException e) {
+        log.error("File move unsuccessfull: " + filename + " to " + newFileName, e);
+      }
     }
   }
   

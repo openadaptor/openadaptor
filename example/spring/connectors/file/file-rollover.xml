@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: $
+	$HeadURL: $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads data from the console
+    * writes to file
+    
+  It is designed to illustrate the size-based rollover of the output file.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config file-rollover.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes output to  file output/output.txt
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline Reader -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+	    <description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+		<property name="dataReader">
+			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+		</property>
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to a file.</description>
+		<property name="filename" value="output/output.txt" />
+		<property name="rolloverSize" value="10b"/>
+	</bean>
+
+</beans>
