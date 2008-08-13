@@ -51,20 +51,6 @@
 		</property>
 	</bean>
 
-   <bean id="Poller" class="org.openadaptor.core.connector.LoopingPollingReadConnector">
-		<description>
-			Poller which wraps File Reader and polls infinitely every 30
-			seconds. (More example config parameters commented out in
-			config XML file.)
-		</description>
-		<property name="delegate" ref="Reader" />
-		<property name="pollLimit" value="0" />
-		<!--<property name="pollIntervalHours"  value="1"/>-->
-		<!--<property name="pollIntervalMins"   value="1"/>-->
-		<!--<property name="pollIntervalSecs"   value="30"/>-->
-		<property name="pollIntervalMs" value="3000" />
-	</bean>
-
 	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 		<description>
 			This read connector reads lines from a file.
