@@ -75,6 +75,7 @@ public class FileWriteConnectorTestCase extends TestCase {
     
     verifyFileContent(tempFile.getAbsolutePath(), TEST_FILE_CONTENT);
     verifyFileContent(lastFileMovedTo, TEST_FILE_CONTENT);
+    tempFile.delete();
   }
   
   /**
@@ -89,7 +90,7 @@ public class FileWriteConnectorTestCase extends TestCase {
     
     FileWriteConnector connector2 = new FileWriteConnector("writer");
     connector2.setFilename(tempFile.getAbsolutePath());
-    connector2.setRolloverSize("40b");
+    connector2.setRolloverSize("36b");
     /* File is too small to be rolled over at this point. */
     runWriter(connector2);
     
@@ -105,10 +106,44 @@ public class FileWriteConnectorTestCase extends TestCase {
      */
     runWriter(connector2);
     String lastFileMovedTo = connector2.getLastFileMovedTo();
+    assertNotNull(lastFileMovedTo);
     verifyFileContent(lastFileMovedTo, TEST_FILE_CONTENT + TEST_FILE_CONTENT + "larry\n");
     verifyFileContent(tempFile.getAbsolutePath(), "curly\nmo\n");
+    tempFile.delete();
   }
    
+  /**
+   * Tests if the existing file is rolled over when it reaches 
+   * certain age.
+   */
+  public void testRollover_age() throws Exception {
+    FileWriteConnector connector1 = new FileWriteConnector("writer");
+    File tempFile = File.createTempFile("xyz", ".txt", new File(DIR));
+    connector1.setFilename(tempFile.getAbsolutePath());
+    runWriter(connector1);
+    
+    FileWriteConnector connector2 = new FileWriteConnector("writer");
+    connector2.setFilename(tempFile.getAbsolutePath());
+    connector2.setRolloverDate("1s");
+    runWriter(connector2);
+    
+    /* 
+     * File wasn't old enough to be rolled over, output from second connector 
+     * should've been written to the same file.
+     */
+    verifyFileContent(tempFile.getAbsolutePath(), TEST_FILE_CONTENT + TEST_FILE_CONTENT);
+    
+    /*
+     * Wait long enough for the file to be old enough to be rolled over.
+     */
+    Thread.sleep(1100);
+    runWriter(connector2);
+    verifyFileContent(tempFile.getAbsolutePath(), TEST_FILE_CONTENT);
+    String lastFileMovedTo = connector2.getLastFileMovedTo();
+    verifyFileContent(lastFileMovedTo, TEST_FILE_CONTENT + TEST_FILE_CONTENT);
+    tempFile.delete();
+  }
+  
   private void runWriter(IWriteConnector connector) throws IOException{
     connector.connect();
     connector.deliver(new Object[] {"larry"});
