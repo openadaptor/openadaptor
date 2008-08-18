@@ -35,8 +35,9 @@ import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
- * A write connector that opens and closes output stream for ever message that it receives.
- * Name of the file can be derived dynamically using script.
+ * A write connector that opens and closes output stream for every message 
+ * that it receives. Allows for deriving the name of output file dynamically,
+ * using script and based on massage payload.
  * 
  * @author OA3 Core Team
  */
