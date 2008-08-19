@@ -43,9 +43,9 @@ import org.openadaptor.auxil.connector.jdbc.reader.AbstractResultSetConverter;
  */
 public class ResultSetToXMLConverter extends AbstractResultSetConverter {
 
-  private boolean convertToString = true;
-  private String rootElement = "row";
-  private boolean setTypeAttributes = false;
+  protected boolean convertToString = true;
+  protected String rootElement = "row";
+  protected boolean setTypeAttributes = false;
   
   public void setConvertToString(final boolean convertToString) {
     this.convertToString = convertToString;
@@ -76,5 +76,4 @@ public class ResultSetToXMLConverter extends AbstractResultSetConverter {
     }
     return convertToString ? (Object)doc.asXML() : doc;
   }
-
 }
