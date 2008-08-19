@@ -103,7 +103,6 @@ public class DynamicFileWriteConnectorTestCase extends TestCase {
   private void verifyFileContent(String filename, String expectedContent){
     String fileContents = ResourceUtil.readFileContents(filename);
     fileContents = ResourceUtil.removeCarriageReturns(fileContents);
-    System.out.println("!" + fileContents + "!");
     assertEquals(fileContents, expectedContent);
   }
 }
