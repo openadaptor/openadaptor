@@ -48,6 +48,8 @@ public class DynamicFileWriteConnectorTestCase extends TestCase {
   
   private static String DIR = "test/unit/output";
   
+  private static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  
   private static String TEST_MSG = "<test><record1>file1</record1><record2>file2</record2></test>";
   
   private static String SCRIPT1 = "oa_data=\"" + DIR + "/\"+oa_data.get('test/record1')+\".txt\";";
@@ -62,7 +64,13 @@ public class DynamicFileWriteConnectorTestCase extends TestCase {
     }
   }
   
+  /**
+   * Creates simple pipeline: reader -> accessor -> writer.
+   * Runs adaptor. Ensures a file with name based on msg payload was created
+   * and has the right content.
+   */
   public void test1() throws IOException {
+    /* Create reader, writer and accessor components */
     TestReadConnector reader = new TestReadConnector("reader");
     reader.setDataString(TEST_MSG);
     
@@ -75,22 +83,27 @@ public class DynamicFileWriteConnectorTestCase extends TestCase {
     ToSimpleRecordConvertor accessor = new ToSimpleRecordConvertor();
     accessor.setSimpleRecordAccessor(new Dom4jSimpleRecordAccessor());
     
+    /* Run adaptor*/
     List pipeline = Arrays.asList(new Object[]{reader, accessor, writer});
     Adaptor adaptor = Adaptor.run(pipeline);
-  
+    assertEquals(adaptor.getExitCode(), 0);
+
+    /* Check current file name in the writer */
     String dynamicFileName = writer.getFilename();
-    
-    
     assertNotNull(dynamicFileName);
     assertEquals(dynamicFileName, DIR + "/file1.txt");
-//    verifyFileContent(dynamicFileName, TEST_MSG);
-    
+
+    /* Verify content and delete both files. */
+    verifyFileContent(dynamicFileName, XML_HEADER + TEST_MSG + "\n");    
     tempFile.delete();
+    File dynamicFile = new File(dynamicFileName);
+    assertTrue(dynamicFile.delete());
   }
     
   private void verifyFileContent(String filename, String expectedContent){
     String fileContents = ResourceUtil.readFileContents(filename);
     fileContents = ResourceUtil.removeCarriageReturns(fileContents);
+    System.out.println("!" + fileContents + "!");
     assertEquals(fileContents, expectedContent);
   }
 }
