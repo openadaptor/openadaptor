@@ -184,12 +184,14 @@ public class HostedConnection {
 
     form.setParameter(LOGIN_USER_FIELD, userName);
     form.setParameter(LOGIN_PASSWORD_FIELD, password);
+    log.debug("Submitting login for "+userName);
     r=submit(form);
 
     //Success if we're not still on the login pae.
     boolean success=wc.getCurrentPage().getURL().toExternalForm().indexOf("TLogin") == -1;
     if (success) {
       log.info("Login successful");
+      log.debug("Current URL now: "+wc.getCurrentPage().getURL().toString());
     }
     else {
       fail("Login failed.");
