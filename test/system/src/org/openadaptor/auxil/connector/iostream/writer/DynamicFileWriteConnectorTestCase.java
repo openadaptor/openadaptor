@@ -46,7 +46,7 @@ import junit.framework.TestCase;
  */
 public class DynamicFileWriteConnectorTestCase extends TestCase {
   
-  private static String DIR = "test/unit/output";
+  private static String DIR = "test/system/output";
   
   private static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
   
