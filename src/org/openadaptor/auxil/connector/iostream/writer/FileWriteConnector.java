@@ -482,7 +482,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
    * xKb    - x kilobytes
    * xb - x bytes
    *
-   * @param prop - the string to be parsesd
+   * @param rolloverSizeStr - the string to be parsesd
    * @throws ComponentException - if an invalid file size is encountered
    */
   public void setRolloverSize(String rolloverSizeStr) {
@@ -502,7 +502,7 @@ public class FileWriteConnector extends AbstractStreamWriteConnector {
    * xM - x minutes
    * xS - x seconds
    *
-   * @param prop - the string to be parsesd
+   * @param rolloverDateStr - the string to be parsesd
    * @throws ComponentException - if an invalid period is encountered
    */
   public void setRolloverDate(String rolloverDateStr){
