@@ -176,7 +176,13 @@
 	<target name="compile.support" depends="make.dirs" description="Compile support tools (custom ant tasks etc.)">
 		<echo level="info" message="Compiling support tools ${dir.support.src}->${dir.build.support.classes}" />
 		<mkdir dir="${dir.build.support.classes}" />
-		<javac srcdir="${dir.support.src}" destdir="${dir.build.support.classes}" classpathref="classpath.support" debug="${debug}" />
+		<javac srcdir="${dir.support.src}" 
+			   destdir="${dir.build.support.classes}" 
+			   classpathref="classpath.support" 
+			   debug="${debug}" 
+			   source="1.4"
+			   target="1.4"
+		/>
 	</target>
 
 	<target name="compile.stub" depends="make.dirs" description="Compile stub classes: legacy oa,mq and tibrv">
@@ -184,19 +190,37 @@
 		<mkdir dir="${dir.build}" />
 		<mkdir dir="${dir.build.stub}" />
 		<mkdir dir="${dir.build.stub.classes}" />
-		<javac srcdir="${dir.stub.src}" destdir="${dir.build.stub.classes}" classpathref="classpath" debug="${debug}" />
+		<javac srcdir="${dir.stub.src}" 
+			   destdir="${dir.build.stub.classes}" 
+			   classpathref="classpath" 
+			   debug="${debug}" 
+			   source="1.4"
+			   target="1.4"
+		/>
 	</target>
 
 	<target name="compile.src" depends="compile.stub" description="Compile openadaptor source code">
 		<echo level="info" message="Compiling oa source ${dir.src}->${dir.build.classes}" />
 		<mkdir dir="${dir.build.classes}" />
-		<javac srcdir="${dir.src}" destdir="${dir.build.classes}" classpathref="classpath" debug="${debug}" />
+		<javac srcdir="${dir.src}" 
+			   destdir="${dir.build.classes}" 
+			   classpathref="classpath" 
+			   debug="${debug}" 
+			   source="1.4"
+		       target="1.4"
+		/>
 	</target>
 
 	<target name="compile.spring" depends="compile.src" description="Compile openadaptor spring source code">
 		<echo level="info" message="Compiling oa spring source ${dir.spring.src}->${dir.build.spring.classes}" />
 		<mkdir dir="${dir.build.spring.classes}" />
-		<javac srcdir="${dir.spring.src}" destdir="${dir.build.spring.classes}" classpathref="classpath.spring" debug="${debug}" />
+		<javac srcdir="${dir.spring.src}" 
+			   destdir="${dir.build.spring.classes}" 
+			   classpathref="classpath.spring" 
+			   debug="${debug}"
+			   source="1.4"
+			   target="1.4"
+		/>
 	</target>
 
 	<target name="compile" depends="compile.stub,compile.src,compile.spring,compile.support" description="Compile all source code" />
