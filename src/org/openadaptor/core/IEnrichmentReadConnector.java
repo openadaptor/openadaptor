@@ -31,12 +31,13 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.exception.ConnectionException;
 
 /**
- * Interface of an IReadConnector that can be plugged-in to an IEhancementProcessor.
+ * Interface of an IReadConnector that can be plugged-in to an {@link IEnrichmentProcessor}.
  * Essentially, the only difference between a plain {@link IReadConnector} is this 
- * connector should also be able to use parameters passed from the IEhancementProcessor.
+ * connector should also be able to use parameters passed from the {@link IEnrichmentProcessor}.
  * 
  * @author Kris Lachor
  * @since 3.4
+ * @see IEnrichmentProcessor
  */
 public interface IEnrichmentReadConnector extends IReadConnector {
   
