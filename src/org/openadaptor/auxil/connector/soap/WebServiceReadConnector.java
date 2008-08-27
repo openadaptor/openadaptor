@@ -46,9 +46,9 @@ import org.openadaptor.core.exception.ValidationException;
  * 
  * @author Kris Lachor
  */
-public class WebServicePollingReadConnector extends Component implements IReadConnector {
+public class WebServiceReadConnector extends Component implements IReadConnector {
 
-  private static final Log log = LogFactory.getLog(WebServicePollingReadConnector.class);
+  private static final Log log = LogFactory.getLog(WebServiceReadConnector.class);
   private static Object[] NO_PARAMETERS = new Object[0];
   
   private String wsEndpoint = null;
@@ -59,7 +59,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
   /**
    * Default constructor.
    */
-  public WebServicePollingReadConnector() {
+  public WebServiceReadConnector() {
     log.info("Created new web service polling read connector");
   }
 
@@ -68,7 +68,7 @@ public class WebServicePollingReadConnector extends Component implements IReadCo
    * 
    * @param id
    */
-  public WebServicePollingReadConnector(String id) {
+  public WebServiceReadConnector(String id) {
     super(id);
   }
 

@@ -17,7 +17,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-polling.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-reader.xml
     
   You need the following in your classpath
   
@@ -36,7 +36,7 @@
   	  <bean class="org.openadaptor.core.router.Router">
   		<property name="processors">
   		  <list>
-  			<ref bean="webServicePoller" />
+  			<ref bean="webServiceReader" />
   		    <ref bean="writer" />
   		  </list>
   		 </property>
@@ -44,7 +44,7 @@
   	</property>
   </bean>
 
-  <bean id="webServicePoller" class="org.openadaptor.auxil.connector.soap.WebServicePollingReadConnector">
+  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServicePollingReadConnector">
     <description>This is a polling connector, that calls a webservice.</description>
     <property name="wsEndpoint" value="http://localhost:9999/OAService?wsdl"/>
 	<property name="serviceName" value="process"/>
