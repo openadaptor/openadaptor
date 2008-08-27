@@ -57,7 +57,7 @@ import org.codehaus.xfire.test.EchoImpl;
  * 
  * @author Kris Lachor
  */
-public class WebServicePollingReadConnectorTestCase extends TestCase {
+public class WebServiceReadConnectorTestCase extends TestCase {
 
   public static final int PORT_NR = 9998;
   
@@ -71,7 +71,7 @@ public class WebServicePollingReadConnectorTestCase extends TestCase {
  
   private ServiceStarter serviceServer = null;
   
-  private WebServicePollingReadConnector wsConnector = new WebServicePollingReadConnector();
+  private WebServiceReadConnector wsConnector = new WebServiceReadConnector();
  
   protected void setUp() throws Exception {
     super.setUp();
@@ -140,7 +140,7 @@ public class WebServicePollingReadConnectorTestCase extends TestCase {
     Assert.assertTrue(intObj.intValue() < 100);
   }
   
-  public void testWebServicePollingReadConnector1(){
+  public void testWebServiceReadConnector1(){
     wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS"  + "?wsdl");
     wsConnector.setServiceName(TEST_SERVICE_NAME);
     wsConnector.connect();
@@ -155,7 +155,7 @@ public class WebServicePollingReadConnectorTestCase extends TestCase {
     wsConnector.disconnect();
   }
   
-  public void testWebServicePollingReadConnectorWithParameters(){
+  public void testWebServiceReadConnectorWithParameters(){
     List parameters = new ArrayList(3) {
       {
 	add(new Integer(100));
@@ -224,7 +224,7 @@ class ServiceStarter{
         
         /* Start the HTTP server */
         server = new XFireHttpServer();
-        server.setPort(WebServicePollingReadConnectorTestCase.PORT_NR);
+        server.setPort(WebServiceReadConnectorTestCase.PORT_NR);
         server.start();
     }
     
