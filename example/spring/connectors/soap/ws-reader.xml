@@ -44,7 +44,7 @@
   	</property>
   </bean>
 
-  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServicePollingReadConnector">
+  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceReadConnector">
     <description>This is a polling connector, that calls a webservice.</description>
     <property name="wsEndpoint" value="http://localhost:9999/OAService?wsdl"/>
 	<property name="serviceName" value="process"/>
