@@ -24,6 +24,9 @@ Connectors
 Processors
 ==========
 
+ * GenericEnrichmentProcessor - new 'discardInput' allows for treating input message
+   merely as a source of parameters for the enrichment read connector.
+
 Examples
 ========
 

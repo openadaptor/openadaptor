@@ -29,6 +29,8 @@ package org.openadaptor.auxil.processor;
 
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
@@ -41,6 +43,10 @@ import org.openadaptor.core.IEnrichmentProcessor;
  * @since Post 3.3
  */
 public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
+  
+  private static final Log log = LogFactory.getLog(GenericEnrichmentProcessor.class);
+  
+  private boolean discardInput = false;
   
   /**
    * If input is not an IOrderedMap, returns an empty list of parameters. 
@@ -77,6 +83,11 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
   public Object [] enrich(Object input, Object[] enrichmentData) {
     Object [] result = null;
     
+    if(discardInput){
+      log.info("Returning enrichment data only (discarding input message).");
+      return enrichmentData;
+    }
+    
     /* Retun original input if the reader didn't find anything */
     if(null==enrichmentData || enrichmentData.length==0){
        result = new Object[]{input};
@@ -95,6 +106,23 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
       }  
     }
     return result;
+  }
+
+  /**
+   * If set to true, the original message received by this processor will be treated
+   * only as a source of parameters for the enrichment read connector. The processor 
+   * will not pass the original message on to subsequent nodes. 
+   * 
+   * If set to false, there will be an attempt to merge the original message with 
+   * 'enrichment' data returned by the read connector.
+   * 
+   * Defaults to false.
+   * 
+   * @param discardInput 
+   * @todo unit/system test.
+   */
+  public void setDiscardInput(boolean discardInput) {
+    this.discardInput = discardInput;
   }
   
 }
