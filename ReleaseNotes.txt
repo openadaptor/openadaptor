@@ -4,7 +4,7 @@ openadaptor3 production 3.4.3 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: est. September 2008
+Date: est. October 2008
 Author: openadaptor Core Team
 
 openadaptor 3.4.3
@@ -24,8 +24,8 @@ Connectors
 Processors
 ==========
 
- * GenericEnrichmentProcessor - new 'discardInput' allows for treating input message
-   merely as a source of parameters for the enrichment read connector.
+ * GenericEnrichmentProcessor - new 'discardInput' property allows for treating input 
+   message merely as a source of parameters for the enrichment read connector.
 
 Examples
 ========
@@ -49,6 +49,7 @@ Bug Fixes
 =========
 
 SC69: Changes in removal of JVM shutdown hook.
+
 
 =================================================
 openadaptor3 production 3.4.2 Release Notes

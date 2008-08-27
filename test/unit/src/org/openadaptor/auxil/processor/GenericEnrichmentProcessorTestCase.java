@@ -484,7 +484,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
    * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).
    * Input is an IOrdredMap. Reader returned an IOrdredMap.
    */
-  public void testEnhance4(){
+  public void testEnrich4(){
     IOrderedMap input = new OrderedHashMap();
     input.put("foo1", "bar1");
     IOrderedMap data = new OrderedHashMap();
@@ -499,7 +499,25 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     assertEquals(resultMap.get("foo2"), "bar2");
   }
   
-
+  /**
+   * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).
+   * 'discardInput' property set to true.
+   */
+  public void testEnrich_DiscardInput(){
+    processor.setDiscardInput(true);
+    IOrderedMap input = new OrderedHashMap();
+    input.put("foo1", "bar1");
+    IOrderedMap data = new OrderedHashMap();
+    data.put("foo2", "bar2");
+    Object [] result = processor.enrich(input, new Object[]{data});
+    assertNotNull(result);
+    assertTrue(result.length==1);
+    assertTrue(result[0] instanceof IOrderedMap);
+    IOrderedMap resultMap = (IOrderedMap) result[0];
+    assertTrue(resultMap.size()==1);
+    assertEquals(resultMap.get("foo2"), "bar2");
+  }
+  
   /**
    * Inner mock.
    */
