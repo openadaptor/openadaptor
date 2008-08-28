@@ -21,7 +21,7 @@
     
     1) Start the Web service endpoint:
     
-       java -jar sum-ws-endpoint.jar
+       java SumWSEndpoint
     
     2) Run the adaptor:
     
@@ -34,6 +34,8 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     lib/opt/activation.jar
+    sum-ws-endpoint.jar
+    
      
   To test the adaptor, type two integers separated with a comma: 3,4
    
