@@ -29,24 +29,28 @@ package org.openadaptor.auxil.connector.soap;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.xfire.client.Client;
+import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 
 /**
- * WebServicePollingReadConnector calls a web service with a specified name and specified
+ * WebServiceReadConnector calls a web service with a specified name and specified
  * endpoint. Returns web service's result for processing in subsequent nodes. At the moment 
  * it has fairly limited capability - for instance using an HTTP proxy server is not supported. 
+ * Delegates to XFire to handle low level Web service/SOAP.
  * 
  * @author Kris Lachor
  */
-public class WebServiceReadConnector extends Component implements IReadConnector {
+public class WebServiceReadConnector extends Component implements IEnrichmentReadConnector {
 
   private static final Log log = LogFactory.getLog(WebServiceReadConnector.class);
   private static Object[] NO_PARAMETERS = new Object[0];
@@ -60,7 +64,7 @@ public class WebServiceReadConnector extends Component implements IReadConnector
    * Default constructor.
    */
   public WebServiceReadConnector() {
-    log.info("Created new web service polling read connector");
+    log.info("Created new web service read connector");
   }
 
   /**
@@ -73,7 +77,7 @@ public class WebServiceReadConnector extends Component implements IReadConnector
   }
 
   /**
-   * Connects to web service.
+   * Connects to web service using XFire Client.
    * 
    * @see IReadConnector#connect()
    */
@@ -89,6 +93,8 @@ public class WebServiceReadConnector extends Component implements IReadConnector
   }
   
   /**
+   * Closes the XFire web service Client.
+   * 
    * @see IReadConnector#disconnect()
    */
   public void disconnect(){
@@ -97,13 +103,37 @@ public class WebServiceReadConnector extends Component implements IReadConnector
   }
   
   /**
+   * Invokes the web service.
+   * 
    * @see IReadConnector#next(long)
+   * @see #invoke()
    */
   public Object[] next(long timeoutMs) {
     return invoke();
   }
   
   /**
+   * Uses values from <code>inputParameters</code> to set parameters
+   * for the web service. Invokes the web service.
+   * 
+   * @see IEnrichmentReadConnector#next(IOrderedMap, long)
+   * @see #invoke()
+   */
+  public Object[] next(IOrderedMap inputParameters, long timeout) {
+    log.debug("WS reader received dynamic parameters: " + inputParameters);
+    if(parameters==null){
+      parameters = new ArrayList();
+    }
+    else{
+      parameters.clear();
+    }
+    parameters.addAll(inputParameters.values());
+    return invoke();
+  }
+  
+  /**
+   * Always returns false.
+   * 
    * @see IReadConnector#isDry()
    */
   public boolean isDry() {
@@ -126,6 +156,10 @@ public class WebServiceReadConnector extends Component implements IReadConnector
   }
 
 
+  /**
+   * Ensures that <code>wsEndpoint</code> and <code>serviceName</code> properties
+   * have been set.
+   */
   public void validate(List exceptions) {
     log.debug("Validating wsEndpoing: " + wsEndpoint);
     if(null==wsEndpoint || wsEndpoint.indexOf("wsdl")==-1){
@@ -145,6 +179,11 @@ public class WebServiceReadConnector extends Component implements IReadConnector
     serviceName = name;
   }
 
+  /**
+   * Getter for Web Service endpoint.
+   * 
+   * @return the Web Service endpoint.
+   */
   public String getWsEndpoint() {
     return wsEndpoint;
   }
@@ -158,11 +197,18 @@ public class WebServiceReadConnector extends Component implements IReadConnector
     this.wsEndpoint = wsEndpoint;
   }
 
+  /**
+   * Getter for service name.
+   * 
+   * @return the service name.
+   */
   public String getServiceName() {
     return serviceName;
   }
   
   /**
+   * Reader has no specific context at the moment. Always returns null.
+   * 
    * @see IReadConnector#getReaderContext()
    * @return null
    */
@@ -196,4 +242,5 @@ public class WebServiceReadConnector extends Component implements IReadConnector
   public void setParameters(List parameters) {
     this.parameters = parameters;
   }
+
 }

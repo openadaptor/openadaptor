@@ -19,7 +19,9 @@ Connectors
  * FileWriteConnector - ported rollover functionality (based on file size and file age)  
    from legacy Openadaptor.   
    
- * WebServicePollingReadConnector renamed to WebServiceReadConnector.  
+ * WebServicePollingReadConnector: a)renamed to WebServiceReadConnector to match OA 
+   naming standards. b)now implements IEnrichmentReadConnector and can be used
+   with enrichment processors.  
 
 Processors
 ==========
