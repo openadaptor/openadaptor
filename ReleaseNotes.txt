@@ -37,6 +37,9 @@ Examples
    
  * Added example of a file write connector that rolls over output files
    (example\spring\connectors\file\file-rollover.xml).  
+   
+ * Added example of a Web service enrichment processor
+   (example\spring\processors\enrichment\soap\enrich-processor.xml).    
 
 Miscellaneous
 =============
