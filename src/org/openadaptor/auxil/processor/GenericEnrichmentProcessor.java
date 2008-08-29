@@ -27,6 +27,7 @@
 
 package org.openadaptor.auxil.processor;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -62,12 +63,25 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
     if(input instanceof IOrderedMap){
       IOrderedMap inputMap = (IOrderedMap) input;
       String [] paramsFieldNames = getParamsFieldNames();
+      if (log.isDebugEnabled()){
+        log.debug("Parameters for IEnrichmentReadConnector: ");
+      }
       if(paramsFieldNames != null){
         for(int i=0; i<paramsFieldNames.length; i++){
           Object value = inputMap.get(paramsFieldNames[i]);
           params.put(paramsFieldNames[i], value);  
+          if (log.isDebugEnabled()){
+            log.debug("key:" + paramsFieldNames[i] + ",value:" + value + "." );
+          }
         }
       }else{
+        if (log.isDebugEnabled()){
+          Iterator it = inputMap.keys().iterator();
+          while(it.hasNext()){
+            Object key = it.next();
+            log.debug("key:" + key + ",value:" + inputMap.get(key) + "." );
+          }
+        }
         params = inputMap;
       }
     }
