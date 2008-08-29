@@ -149,7 +149,7 @@ public class WebServiceReadConnector extends Component implements IEnrichmentRea
       result = client.invoke(serviceName, parameters != null ? parameters.toArray(new Object[parameters.size()]) : NO_PARAMETERS);
       log.debug("Invoked the service. Result = " + (result != null && result.length > 0 ? result[0] : result));
     } catch (Exception e) {
-      log.error("Call to web service failed: " + wsEndpoint + " " + serviceName);
+      log.error("Call to web service failed: " + wsEndpoint + " " + serviceName, e);
       return null;
     } 
     return result;
