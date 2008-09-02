@@ -29,6 +29,7 @@ package org.openadaptor.auxil.connector.jndi;
 
 import java.util.NoSuchElementException;
 
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -101,6 +102,12 @@ public class JNDISearch {
    * By default we do not join arrays.
    */
   protected String joinArraysWithSeparator = null; // By default don't join arrays
+  
+  /**
+   * Allows for suppressing NameNotFoundExceptions in JNDI lookups. If set to true the 
+   * exception will be logged only.
+   */
+  protected boolean ignoreFailedLookup = false;
 
   /**
    * Default constructor for a JNDI Search.
@@ -224,6 +231,16 @@ public class JNDISearch {
   }
 
   /**
+   * Allows for suppressing/ignoring NameNotFoundExceptions in JNDI lookups. If set to true the 
+   * exception will be logged only.
+   *  
+   * @param ignoreFailedLookup boolean flag
+   */
+  public void setIgnoreFailedLookup(boolean ignoreFailedLookup) {
+    this.ignoreFailedLookup = ignoreFailedLookup;
+  }
+  
+  /**
    * If <tt>true</tt> then multi-valued attributes will be returned as an array of values. If <tt>false</tt> then
    * the first retrieved attribute value of multi-valued attributes will be returned. All other values will be
    * discarded.
@@ -307,7 +324,17 @@ public class JNDISearch {
       String base = _searchBases[i];
       log.debug("Executing search against base: " + base + " using filter: " + _filter + " and constraints: "
           + searchControls + "");
-      results[i] = context.search(base, _filter, searchControls);
+      try {
+        results[i] = context.search(base, _filter, searchControls);
+      }catch(NameNotFoundException e) {
+        if (ignoreFailedLookup) {
+          results = new NamingEnumeration[0];   // e.g. we do not care if enrichment lookup failed
+          log.error("Ignoring NameNotFoundException from JNDI lookup", e);
+          break;
+        } else {
+         throw e;
+        }
+      }
     }
 
     if (useAttributes) { // Put the old ones back.
@@ -315,6 +342,7 @@ public class JNDISearch {
     }
     return new MultiBaseJNDISearchResults(this, results);
   }
+
 }
 
 /**
