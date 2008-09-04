@@ -60,7 +60,7 @@
     <property name="delegate" ref="reader"/>
     <property name="forceInitialPoll" value="true"/>
     <property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>
-    <property name="reconnect" value="false"/>
+    <property name="reconnectDelegateBetweenPolls" value="false"/>
   </bean>
   
   <bean id="reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">

@@ -23,17 +23,23 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
   }
 
   /**
-   * Tests 'out of the box' behaviour.
+   * Tests 'out of the box' behaviour. Polls one time and quits.
    */
   public void testDefault() {    
     assertTrue(runPoller(poller, reader.getDataString()) == 1);
   }
 
+  /**
+   * Tests poll limit.
+   */
   public void testLimit() {
     poller.setPollLimit(5);
     assertTrue(runPoller(poller, reader.getDataString()) == 5);
   }
 
+  /**
+   * Tests poll interval.
+   */
   public void testInterval() {
     poller.setPollLimit(2);
     poller.setPollIntervalSecs(1);
@@ -43,6 +49,28 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
     long durationMs = stop.getTime() - start.getTime();
     /* Polling should've taken at least 2 secs */
     assertTrue(durationMs >= 2000);
+  }
+  
+  /**
+   * Tests reconnectDelegateBetweenPolls = true (default).
+   */
+  public void testReconnectDelegateBetweenPollsTrue() {
+    poller.setPollLimit(2);
+    reader.setExpectedConnectCount(2);
+    assertTrue(runPoller(poller, reader.getDataString()) == 2);
+    reader.checkConnectCount();
+  }
+  
+  /**
+   * Tests reconnectDelegateBetweenPolls = false.
+   */
+  public void testReconnectDelegateBetweenPollsFalse() {
+    poller.setPollLimit(2);
+    poller.setReconnectDelegateBetweenPolls(false);
+    reader.setExpectedConnectCount(1);
+    /* The delegate will return one record only; after going dry it won't return anyting. */
+    assertTrue(runPoller(poller, reader.getDataString()) == 1);
+    reader.checkConnectCount();
   }
 
   
