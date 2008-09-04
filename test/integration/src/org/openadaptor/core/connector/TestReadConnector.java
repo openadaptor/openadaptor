@@ -60,6 +60,10 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
   
   private int expectedCommitCount = -1;
   
+  private int expectedConnectCount = -1;
+  
+  private int connectCount = 0;
+  
   private TestTransactionalResource transactionalResource = null;
 
   public TestReadConnector() {
@@ -92,7 +96,11 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
   public void setExceptionFrequency(int frequency) {
   	exceptionFrequency = frequency;
   }
-	
+
+  public void setExpectedConnectCount(int expectedConnectCount) {
+    this.expectedConnectCount = expectedConnectCount;
+  }
+  
   public boolean isDry() {
     return count >= maxSend;
   }
@@ -129,6 +137,7 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
 
   public void connect() {
     count = 0;
+    connectCount++;
   }
   
   public void disconnect() {
@@ -143,7 +152,14 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
           + " actual = " + transactionalResource.getCommittedCount());
     }
   }
-
+  
+  public void checkConnectCount() {
+    if (expectedConnectCount > 0 && connectCount != expectedConnectCount) {
+      throw new RuntimeException("expected connect count = " + expectedConnectCount 
+          + " actual = " + connectCount);
+    }
+  }
+  
   public Object getResource() {
     return transactionalResource;
   }
@@ -169,6 +185,5 @@ public class TestReadConnector extends Component implements IReadConnector, ITra
 
   public void validate(List exceptions) {
   }
-
 
 }
