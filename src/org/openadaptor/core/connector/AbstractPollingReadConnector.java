@@ -43,7 +43,7 @@ import java.util.List;
  * An abstract implementation of {@link IPollingReadConnector}. 
  * <br>
  * Based on the legacy <code>PollingReadConnector</code>.
- * When this connector polls, and the <code>reconnect</code> flag is true,
+ * When this connector polls, and the <code>reconnectDelegateBetweenPolls</code> flag is true,
  * it calls the following on the IReadConnector it is
  * wrapping...
  * <ul>
@@ -53,7 +53,7 @@ import java.util.List;
  * <li>{@link IReadConnector#disconnect()}
  * </ul>
  * 
- * If the <code>reconnect</code> flag is false, the following is called on 
+ * If the <code>reconnectDelegateBetweenPolls</code> flag is false, the following is called on 
  * the underlying IReadConnector:
  * 
  * <ul>
@@ -71,20 +71,23 @@ public abstract class AbstractPollingReadConnector extends Component implements 
   
   private static final int DEFAULT_RECONNECT_INTERVAL = 1000;
   
+  /** Makes one poll by default */
+  private static final int DEFAULT_POLL_LIMIT = 1;
+  
   private IReadConnector delegate;
   
   protected Date reconnectTime;
 
   protected Date startTime;
   
-  protected int limit = 1;
+  protected int limit = DEFAULT_POLL_LIMIT;
   
   private int count;
   
-  private boolean reconnect = true;
+  private boolean reconnectDelegateBetweenPolls = true;
   
   /**
-   * Flag used only in the 'reconnect = false' mode. Tells if there has been a call to 
+   * Flag used only in the 'reconnectDelegateBetweenPolls = false' mode. Tells if there has been a call to 
    * delegate#next() after refreshing the timers. If there was no such call, the 'dry' flag
    * on the underlying reader will be ignored, as even if the delegate shows it's dry it could have
    * new data appear in the external resource.
@@ -125,7 +128,7 @@ public abstract class AbstractPollingReadConnector extends Component implements 
    * It will call {@link #next(long)} on the <code>delegate</code>, but first makes
    * sure the time is right, i.e. we're past the <code>startTime</code> and 
    * the delegate isn't dry. 
-   * If the delegate <em>is</em dry, and we're past the <code>reconnectTime</code>
+   * If the delegate <em>is</em> dry, and we're past the <code>reconnectTime</code>
    * the delegate is disconnected and (re)connected again.
    * If the delegate is still dry despite a reconnection, it sleeps for 
    * the length of the <code>timeout</code>.
@@ -136,7 +139,7 @@ public abstract class AbstractPollingReadConnector extends Component implements 
     Date now = new Date();
 
     if (delegate.isDry() && now.after(reconnectTime)) {
-      if(reconnect){
+      if(reconnectDelegateBetweenPolls){
         log.info("Reconnecting underlying IReadConnector");
         disconnect();
         connect();
@@ -150,9 +153,9 @@ public abstract class AbstractPollingReadConnector extends Component implements 
       }
     }
 
-    /* If 'reconnect' flag is false, ingore the isDry() */
+    /* If 'reconnectDelegateBetweenPolls' flag is false, ingore the isDry() */
     if (!delegate.isDry() && now.after(startTime)
-        || (!reconnect && fresh && now.after(startTime))) {
+        || (!reconnectDelegateBetweenPolls && fresh && now.after(startTime))) {
       fresh = false;
       return delegate.next(timeoutMs);
     } else {
@@ -292,8 +295,8 @@ public abstract class AbstractPollingReadConnector extends Component implements 
    * not be reconnected after it turns dry. Instead, the value of the 'dry'
    * flag will be ignored and the underlying connector queried for data.
    */
-  public void setReconnect(boolean reconnect) {
-    this.reconnect = reconnect;
+  public void setReconnectDelegateBetweenPolls(boolean reconnectDelegateBetweenPolls) {
+    this.reconnectDelegateBetweenPolls = reconnectDelegateBetweenPolls;
   }
 
 }

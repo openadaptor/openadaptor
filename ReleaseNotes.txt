@@ -22,6 +22,11 @@ Connectors
  * WebServicePollingReadConnector: a)renamed to WebServiceReadConnector to match OA 
    naming standards. b)now implements IEnrichmentReadConnector and can be used
    with enrichment processors.  
+ 
+ * AbstractPollingReadConnector: the 'reconnect' property renamed to a more descriptive
+   'reconnectDelegateBetweenPolls'. Changes in adaptors' configs that use 
+   LoopingPollingReadConnectors or CronnablePollingReadConnectors need to be made
+   accordingly. 
 
 Processors
 ==========
