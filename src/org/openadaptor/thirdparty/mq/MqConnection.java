@@ -478,8 +478,15 @@ public class MqConnection extends Component {
                    null, // no dynamic q name 
                    null)); // no alternate user id 
          } else {
+           int openOptions;
+           if (useAllContext) {
+               openOptions = MQC.MQOO_OUTPUT | MQC.MQOO_SET_ALL_CONTEXT;
+           }
+           else {
+               openOptions = MQC.MQOO_OUTPUT;
+           }
            queue = (queueManager.accessQueue(getQueueName(), 
-               MQC.MQOO_OUTPUT,
+               openOptions,
                null, // default q manager 
                null, // no dynamic q name 
                null)); // no alternate user id 
@@ -602,10 +609,17 @@ public class MqConnection extends Component {
         mqMsg.characterSet = mqCharacterSet;
       }      
       if (mqReplyToQueueName != null) { 
+        log.debug("Setting ReplyToQueueName to: " + mqReplyToQueueName);
         mqMsg.replyToQueueName = mqReplyToQueueName;
+      } else {
+        log.debug("NOT setting ReplyToQueueName.");
       }
+      
       if (mqReplyToQueueManagerName != null) {
+        log.debug("Setting ReplyToQueueManagerName to: " + mqReplyToQueueManagerName);
         mqMsg.replyToQueueManagerName = mqReplyToQueueManagerName;
+      } else {
+        log.debug("NOT setting ReplyToQueueManagerName.");
       }
       mqMsg.writeString(record);
       queue.put(mqMsg, putMessageOptions);
@@ -703,6 +717,11 @@ public class MqConnection extends Component {
            putMessageOptions.options = MQC.MQPMO_SYNCPOINT; 
          }
        }
+     else {
+       if (useAllContext) { 
+         putMessageOptions.options = MQC.MQOO_SET_ALL_CONTEXT; 
+       }
+     }
  
   }
   
