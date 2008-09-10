@@ -7,4 +7,5 @@ public interface MQC {
   int MQPMO_SYNCPOINT = 2;
   int MQGMO_CONVERT = 16384;
   int MQOO_SET_ALL_CONTEXT = 2048;
+  int MQPMO_SET_IDENTITY_CONTEXT = 0;
 }
