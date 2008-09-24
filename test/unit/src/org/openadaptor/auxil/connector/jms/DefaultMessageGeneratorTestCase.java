@@ -25,6 +25,13 @@
  of the Software with other software or hardware.
 */
 package org.openadaptor.auxil.connector.jms;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+
+import org.jmock.Mock;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -35,7 +42,31 @@ package org.openadaptor.auxil.connector.jms;
  * Test DefaultMessageGenerator's implementation of the IMessageConvertor interface.
  */
 public class DefaultMessageGeneratorTestCase extends AbstractMessageGeneratorTests{
+  protected void setUp() throws Exception {
+    // TODO Auto-generated method stub
+    super.setUp();
+    messageText = "Test Text";
+  }
+
   protected IMessageGenerator createTestInstance() {
     return new DefaultMessageGenerator();
+  }
+
+  public void testSendObject() {
+    Mock sessionMock = new Mock(Session.class);
+    Mock objectMessageMock = new Mock(ObjectMessage.class);
+  
+    ObjectMessage message = (ObjectMessage)objectMessageMock.proxy();
+    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(message));
+    objectMessageMock.expects(once()).method("setObject").with(eq(messageObject));
+  
+    Message generatedMessage = null;
+  
+    try {
+      generatedMessage = testInstance.createMessage(messageObject, (Session) sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+    assertEquals("Didn't return the expected ObjectMessage.", message, generatedMessage );
   }
 }

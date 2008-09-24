@@ -44,8 +44,8 @@ public abstract class AbstractMessageGeneratorTests extends MockObjectTestCase {
 
   protected IMessageGenerator testInstance;
 
-  protected String messageText = "Test Text";
-  private TestObject messageObject = new TestObject();
+  protected String messageText;
+  protected TestObject messageObject = new TestObject();
 
 
   protected void setUp() throws Exception {
@@ -78,23 +78,7 @@ public abstract class AbstractMessageGeneratorTests extends MockObjectTestCase {
     assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
   }
 
-  public void testSendObject() {
-    Mock sessionMock = new Mock(Session.class);
-    Mock objectMessageMock = new Mock(ObjectMessage.class);
-
-    ObjectMessage message = (ObjectMessage)objectMessageMock.proxy();
-    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(message));
-    objectMessageMock.expects(once()).method("setObject").with(eq(messageObject));
-
-    Message generatedMessage = null;
-
-    try {
-      generatedMessage = testInstance.createMessage(messageObject, (Session) sessionMock.proxy());
-    } catch (JMSException e) {
-      fail("Unexpected JMSException: " + e );
-    }
-    assertEquals("Didn't return the expected ObjectMessage.", message, generatedMessage );
-  }
+  public abstract void testSendObject();
 
   protected class TestObject implements Serializable {
 
