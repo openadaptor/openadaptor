@@ -43,12 +43,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 
 /**
- * core functionality that is desirable for applications, outputs license, loads build
+ * Core functionality that is desirable for applications, outputs license, loads build
  * properties and if configured posts all the system properties to a url.
  * 
  * All the work is done in the constructor, so can be subclassed or instantiated by
  * top level application class (such as an adaptor).
- * 
  */
 public class Application implements IComponent,IRegistrationCallbackListener {
 
@@ -170,7 +169,8 @@ public class Application implements IComponent,IRegistrationCallbackListener {
   }
 
   /**
-   * called by subclasses that want to register with a url
+   * Called by subclasses that want to register with a url.
+   * Uses asynchronous registration. 
    */
   protected void register() {
 
@@ -198,9 +198,9 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       try {
         
         String failoverUrl = getRegistrationFailoverUrl();
-        //Now using Async Registration:
+
+        /* uses Async Registration */
         registrationThread = PropertiesPoster.asyncPost(primaryUrl, failoverUrl, propsToRegister,this);
-//        PropertiesPoster.syncPost(url,propsToRegister);
 
         registered = true;
       } catch (Exception e) {
@@ -211,7 +211,6 @@ public class Application implements IComponent,IRegistrationCallbackListener {
       log.info("Registration skipped (URL not provided).");
     }
     registered = true;
-    
   }
  
 
