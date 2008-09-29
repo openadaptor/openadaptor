@@ -60,6 +60,8 @@ Bug Fixes
 
 SC69: Changes in removal of JVM shutdown hook.
 
+SC73: Correct recognition of JVM 1.6 in registration.
+
 
 =================================================
 openadaptor3 production 3.4.2 Release Notes
