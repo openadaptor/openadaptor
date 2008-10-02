@@ -50,13 +50,13 @@ package org.openadaptor.core.jmx;
  * 
  * This enables the following...
  * 
- * <li>Hides MBean interface inside class that it relates too
+ * <li>Hides MBean interface inside class that it relates to
  * <li>Prevents you from having to expose a the management API as a public API
  * 
  * @author perryj
- *
  */
-
 public interface Administrable {
+  
   Object getAdmin();
+
 }
