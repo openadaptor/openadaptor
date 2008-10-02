@@ -39,11 +39,11 @@ public interface IRecordableComponent {
   
 	long getMessageCount();
 	
-	float getMaxProcessTime();
+	long getMaxProcessTime();
 	
-	float getMinProcessTime();
+	long getMinProcessTime();
 	
-	float getAvgProcessTime();
+	long getAvgProcessTime();
 
 	String getMessageType();
 }
