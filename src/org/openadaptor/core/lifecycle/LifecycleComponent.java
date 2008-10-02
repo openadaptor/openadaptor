@@ -98,11 +98,11 @@ public class LifecycleComponent extends Component implements ILifecycleComponent
     return new Admin();
   }
   
-  interface AdminMBean extends Component.AdminMBean {
+  public interface AdminMBean extends Component.AdminMBean {
     String getState();
   }
 
-  class Admin extends Component.Admin implements AdminMBean {
+  public class Admin extends Component.Admin implements AdminMBean {
     public String getState() {
       return LifecycleComponent.this.getState().toString();
     }
