@@ -34,19 +34,26 @@ import org.openadaptor.core.exception.MessageException;
 /**
  * This class should be used to "wrap" an IDataProcessor.
  * 
- * @author perryj
- *
+ * @author oa3 Core Team
  */
 public final class ProcessorNode extends Node {
 
   private boolean stripOutExceptions = false;
   
-  public ProcessorNode(String id) {
-    super(id);
-  }
-  
+  /**
+   * Constructor.
+   */
   public ProcessorNode() {
     super();
+  }
+ 
+  /**
+   * Constructor.
+   * 
+   * @param id - the id of this node.
+   */
+  public ProcessorNode(String id) {
+    super(id);
   }
   
   /**
@@ -58,11 +65,17 @@ public final class ProcessorNode extends Node {
     this.stripOutExceptions = stripOut;
   }
   
+  /**
+   * Returns its own Id. If that isn't set, returns Id of the processor it wraps.
+   */
   public String getId() {
     String id = super.getId();
     return id != null ? id : getProcessorId();
   }
   
+  /**
+   * Returns Id of this Node.
+   */
   public String toString() {
     return getId();
   }
