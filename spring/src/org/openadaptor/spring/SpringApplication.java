@@ -406,7 +406,7 @@ public class SpringApplication {
   private static void attemptToRegisterBean(Object bean, MBeanServer mbeanServer, String beanName) {
     if (!(bean instanceof MBeanServer)) {
       try {
-        ObjectName name = new ObjectName("beans:id=" + beanName);
+        ObjectName name = new ObjectName("openadaptor:id=" + beanName);
         mbeanServer.registerMBean(bean, name);
         log.info("registered bean " + beanName);
       } catch (NotCompliantMBeanException e) {
