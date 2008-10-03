@@ -27,6 +27,8 @@
 
 package org.openadaptor.core.recordable;
 
+import java.util.Date;
+
 /**
  * Represents a component that maintains runtime metrics about messages it
  * processed.
@@ -37,19 +39,29 @@ package org.openadaptor.core.recordable;
  */
 public interface IRecordableComponent {
   
-	long getMessageCount();
+	long [] getInputMsgCounts();
 	
-	long getMaxProcessTime();
+	long getProcessTimeMax();
 	
-	long getMinProcessTime();
+	long getProcessTimeMin();
 	
-	long getAvgProcessTime();
+	long getProcessTimeAvg();
     
-    long getMaxIntervalTime();
+    long getIntervalTimeMax();
     
-    long getMinIntervalTime();
+    long getIntervalTimeMin();
     
-    long getAvgIntervalTime();
+    long getIntervalTimeAvg();
 
-	String getMessageType();
+	String [] getInputMsgTypes();
+    
+    String [] getOutputMsgTypes();
+    
+    long getDiscardedMsgCount();
+    
+    long getOutputMsgCount();
+    
+    long getExceptionMsgCount();
+    
+    Date getStartedSince();
 }

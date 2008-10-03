@@ -27,9 +27,10 @@
 package org.openadaptor.auxil.metrics;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
@@ -42,7 +43,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  */
 public class ComponentMetrics implements IRecordableComponent{
 
-  Map msgCounter = new TreeMap();
+  Map inputMsgCounter = new HashMap();
   
   long minProcessTime = -1;
   
@@ -92,13 +93,13 @@ public class ComponentMetrics implements IRecordableComponent{
       return;
     }
     String msgPayloadType = msg.getData()[0].getClass().getName();
-    Object count = msgCounter.get(msgPayloadType);
+    Object count = inputMsgCounter.get(msgPayloadType);
     if(count==null){
-      msgCounter.put(msgPayloadType, new Integer(1));
+      inputMsgCounter.put(msgPayloadType, new Integer(1));
     }
     else{
       Integer countInt = (Integer) count;
-      msgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
+      inputMsgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
     }
    
   }
@@ -118,6 +119,7 @@ public class ComponentMetrics implements IRecordableComponent{
     if(minProcessTime>processTime || minProcessTime==-1){
       minProcessTime=processTime;
     }
+    outputMsgs++;
   }
 
   public void recordDiscardedMsgEnd(Message msg){
@@ -129,19 +131,19 @@ public class ComponentMetrics implements IRecordableComponent{
     exceptionMsgs++;
   }
   
-  public long getMessageCount(){
+  public long [] getInputMsgCounts(){
     long count = 0;
-    Iterator it = msgCounter.keySet().iterator();
+    Iterator it = inputMsgCounter.keySet().iterator();
     while(it.hasNext()){
       Object dataType = it.next();
-      Integer countInt = (Integer) msgCounter.get(dataType);
+      Integer countInt = (Integer) inputMsgCounter.get(dataType);
       count+= countInt.longValue();
     }
-    return count;
+    return new long[]{count};
   }
   
-  public long getAvgProcessTime() {
-    long msgCount = getMessageCount();
+  public long getProcessTimeAvg() {
+    long msgCount = getInputMsgCounts()[0];
     if(msgCount==0){
       return -1;
     }
@@ -150,24 +152,21 @@ public class ComponentMetrics implements IRecordableComponent{
     }
   }
 
-  public long getMinProcessTime() {
+  public long getProcessTimeMin() {
     return minProcessTime;
   }
   
-  public long getMaxProcessTime() {
+  public long getProcessTimeMax() {
     return maxProcessTime;
   }
 
-  public String getMessageType() {
-    return "UNKNOWN";
+  public String [] getInputMsgTypes() {
+    Set inputMsgTypes = inputMsgCounter.keySet();
+    return (String[]) inputMsgTypes.toArray(new String[]{});
   }
 
-  public Map getMessageCounterMap(){
-    return msgCounter;
-  }
-
-  public long getAvgIntervalTime() {
-    long msgCount = getMessageCount();
+  public long getIntervalTimeAvg() {
+    long msgCount = getInputMsgCounts()[0];
     if(msgCount==0){
       return -1;
     }
@@ -176,11 +175,36 @@ public class ComponentMetrics implements IRecordableComponent{
     }
   }
 
-  public long getMaxIntervalTime() {
+  public long getIntervalTimeMax() {
     return maxIntervalTime;
   }
 
-  public long getMinIntervalTime() {
+  public long getIntervalTimeMin() {
     return minIntervalTime;
+  }
+
+  public long getDiscardedMsgCount() {
+    return discardedMsgs;
+  }
+
+  public long getExceptionMsgCount() {
+    return exceptionMsgs;
+  }
+
+  public long getOutputMsgCount() {
+    return outputMsgs;
+  }
+
+  public String[] getOutputMsgTypes() {
+    return new String[]{"UNKNOWN"};
+  }
+
+  /**
+   * Checks how long the component has been started. Need to be a listener on
+   * component state changes. 
+   */
+  public Date getStartedSince() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
