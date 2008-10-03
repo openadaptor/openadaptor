@@ -26,6 +26,7 @@
  */
 package org.openadaptor.auxil.metrics;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,13 +50,44 @@ public class ComponentMetrics implements IRecordableComponent{
   
   long totalProcessTime = -1;
   
-  public long outputMsgs = 0;
+  long outputMsgs = 0;
   
-  public long discardedMsgs = 0;
+  long discardedMsgs = 0;
   
-  public long exceptionMsgs = 0;
+  long exceptionMsgs = 0;
   
-  public void recordMessage(Message msg){
+  private Date processStartTime;
+  
+  private Date processEndTime;
+  
+  long minIntervalTime = -1;
+  
+  long maxIntervalTime = -1;
+  
+  long totalIntervalTime = -1;
+  
+  
+  /**
+   * Indicates start of message processing. 
+   * Starts timers.
+   * 
+   * @param msg
+   */
+  public void recordMessageStart(Message msg){
+    processStartTime = new Date();
+    
+    /* calculate intervals */
+    if(! (processEndTime==null)){
+      long intervalTime = processStartTime.getTime() - processEndTime.getTime();
+      totalIntervalTime+=intervalTime;
+      if(maxIntervalTime<intervalTime){
+        maxIntervalTime=intervalTime;
+      }
+      if(minIntervalTime>intervalTime || minIntervalTime==-1){
+        minIntervalTime=intervalTime;
+      }
+    }
+    
     if(msg.getData().length==0){
       return;
     }
@@ -68,9 +100,17 @@ public class ComponentMetrics implements IRecordableComponent{
       Integer countInt = (Integer) count;
       msgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
     }
+   
   }
   
-  public void recordMessage(Message msg, long processTime){
+  /**
+   * 
+   * @param msg
+   * @param processTime
+   */
+  public void recordMessageEnd(Message msg){
+    processEndTime = new Date();
+    long processTime = processEndTime.getTime() - processStartTime.getTime();
     totalProcessTime+=processTime;
     if(maxProcessTime<processTime){
       maxProcessTime=processTime;
@@ -78,9 +118,17 @@ public class ComponentMetrics implements IRecordableComponent{
     if(minProcessTime>processTime || minProcessTime==-1){
       minProcessTime=processTime;
     }
-    recordMessage(msg);
   }
 
+  public void recordDiscardedMsgEnd(Message msg){
+    discardedMsgs++;
+  }
+  
+  
+  public void recordExceptionMsgEnd(Message msg){
+    exceptionMsgs++;
+  }
+  
   public long getMessageCount(){
     long count = 0;
     Iterator it = msgCounter.keySet().iterator();
@@ -94,7 +142,12 @@ public class ComponentMetrics implements IRecordableComponent{
   
   public long getAvgProcessTime() {
     long msgCount = getMessageCount();
-    return (long) (totalProcessTime/msgCount);
+    if(msgCount==0){
+      return -1;
+    }
+    else{
+      return (long) (totalProcessTime/msgCount);
+    }
   }
 
   public long getMinProcessTime() {
@@ -106,7 +159,28 @@ public class ComponentMetrics implements IRecordableComponent{
   }
 
   public String getMessageType() {
-    return null;
+    return "UNKNOWN";
   }
 
+  public Map getMessageCounterMap(){
+    return msgCounter;
+  }
+
+  public long getAvgIntervalTime() {
+    long msgCount = getMessageCount();
+    if(msgCount==0){
+      return -1;
+    }
+    else{
+      return (long) (totalIntervalTime/msgCount);
+    }
+  }
+
+  public long getMaxIntervalTime() {
+    return maxIntervalTime;
+  }
+
+  public long getMinIntervalTime() {
+    return minIntervalTime;
+  }
 }

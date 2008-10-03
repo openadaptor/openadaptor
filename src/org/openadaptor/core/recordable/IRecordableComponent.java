@@ -44,6 +44,12 @@ public interface IRecordableComponent {
 	long getMinProcessTime();
 	
 	long getAvgProcessTime();
+    
+    long getMaxIntervalTime();
+    
+    long getMinIntervalTime();
+    
+    long getAvgIntervalTime();
 
 	String getMessageType();
 }
