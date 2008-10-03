@@ -82,6 +82,7 @@ import java.util.*;
  */
 public class JMSPropertiesMessageGenerator implements IMessageGenerator {
   private Map _properties = new HashMap();
+  private boolean isXml = true;
 
   public Message createMessage(Object messageRecord, Session session)
       throws JMSException {
@@ -90,20 +91,35 @@ public class JMSPropertiesMessageGenerator implements IMessageGenerator {
     String path = null;
 
     try {
-      Document document;
+      Document document = null;
       String mr;
-      // Will cope with either a string with valid xml or a Dom4j Document.
-      if (messageRecord instanceof Document) {
-        document = (Document) messageRecord;
-        mr = document.asXML();
-      } else if (messageRecord instanceof String) {
-        mr = (String) messageRecord;
-        document = DocumentHelper.parseText(mr);
+      
+      if (getIsXml()) { // Will cope with either a string with valid xml or a Dom4j Document.
+        if (messageRecord instanceof Document) {
+          document = (Document) messageRecord;
+          mr = document.asXML();
+        } else if ((messageRecord instanceof String)) {
+          mr = (String) messageRecord;
+          document = DocumentHelper.parseText(mr);
+        } else { // Since we are creating a TextMessage
+          throw new RecordFormatException(
+              "Unsupported record type ["
+                  + messageRecord.getClass().getName()
+                  + "]. Must be either XML or a Dom4j Document.");
+        }
       } else {
-        throw new RecordFormatException("Unsupported record type ["
-            + messageRecord.getClass().getName()
-            + "]. Must be either XML or a Dom4j Document.");
+        try {
+          mr = (String)messageRecord;
+        } catch (ClassCastException cce) {
+          throw new RecordFormatException(
+          "Unsupported record type ["
+          + messageRecord.getClass().getName()
+          + "]. With isXML false this must be a String as we wish to create a TextMessage.");
+        }
+      
+        
       }
+      
 
       // Now convert to TextMessage and return
       TextMessage tm = session.createTextMessage();
@@ -111,17 +127,18 @@ public class JMSPropertiesMessageGenerator implements IMessageGenerator {
       for (Iterator keys = _properties.keySet().iterator(); keys.hasNext();) {
         key = (String) keys.next();
         path = (String) _properties.get(key);
-
+        if( path.startsWith("//") && this.getIsXml() && document != null ) { // we have an XPath
         // use xpath to get the value from the message
         Node node = document.selectSingleNode(path);
         if (node != null) {
           value = node.getText();
           tm.setStringProperty(key, value);
         } else {
-          throw new ProcessingException("Invalid Message Property Path ["
-              + path + "]");
+          throw new ProcessingException("XPATH with value [" + path + "] does not exist in XML");
         }
-
+        } else { // we have a literal
+          tm.setStringProperty(key, path) ;
+        }
       }
 
       tm.setText(mr);
@@ -140,4 +157,14 @@ public class JMSPropertiesMessageGenerator implements IMessageGenerator {
   public Map getProperties() {
     return this._properties;
   }
+
+  public boolean getIsXml() {
+    return isXml;
+  }
+
+  public void setIsXml(boolean isXml) {
+    this.isXml = isXml;
+  }
+  
+  
 }
