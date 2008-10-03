@@ -29,15 +29,23 @@ package org.openadaptor.core.recordable;
 
 import java.util.Date;
 
+import org.openadaptor.core.lifecycle.ILifecycleListener;
+
 /**
  * Represents a component that maintains runtime metrics about messages it
  * processed.
  * 
  * DRAFT. NOT READY FOR USE.
  * 
+ * TODO change name to IComponentMetrics. IComponentMetrics will be a new interface,
+ * with one method returning IComponentMetrics. All Nodes will be RecordableComponents.
+ * 
+ * TODO this interface should not need to extends from ILifcecleListener, it's got nothing 
+ * to do with it. The implementation can implement ILifecycleListener though. 
+ * 
  * @author Kris Lachor
  */
-public interface IRecordableComponent {
+public interface IComponentMetrics extends ILifecycleListener{
   
 	long [] getInputMsgCounts();
 	

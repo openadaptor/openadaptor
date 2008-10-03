@@ -32,7 +32,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.openadaptor.core.Message;
-import org.openadaptor.core.recordable.IRecordableComponent;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.recordable.IComponentMetrics;
 
 /**
  * Class that maintains all metrics associated with one Node.
@@ -41,7 +43,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class ComponentMetrics implements IRecordableComponent{
+public class ComponentMetrics implements IComponentMetrics{
 
   Map inputMsgCounter = new HashMap();
   
@@ -66,6 +68,8 @@ public class ComponentMetrics implements IRecordableComponent{
   long maxIntervalTime = -1;
   
   long totalIntervalTime = -1;
+  
+  Date lastStarted = null;
   
   
   /**
@@ -204,7 +208,15 @@ public class ComponentMetrics implements IRecordableComponent{
    * component state changes. 
    */
   public Date getStartedSince() {
-    // TODO Auto-generated method stub
-    return null;
+    return lastStarted;
+  }
+
+  public void stateChanged(ILifecycleComponent component, State newState) {
+    if(newState == State.STARTED){
+      lastStarted = new Date();
+    }
+    else{
+      lastStarted = null;
+    }
   }
 }
