@@ -67,6 +67,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   private static final Log log =LogFactory.getLog(ScriptProcessor.class);
   public static final String DEFAULT_LANGUAGE="js"; //Javascript is the default language.
   public static final String DEFAULT_DATA_BINDING="oa_data"; //Bound name for data records
+  public static final String DEFAULT_LOG_BINDING="oa_log"; //Bound name for logging
 
   protected ScriptEngine scriptEngine;
   protected String language=DEFAULT_LANGUAGE;
@@ -76,6 +77,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected boolean compile = true;
   protected Object lastResult = null;
   protected String dataBinding = DEFAULT_DATA_BINDING;
+  protected String logBinding= DEFAULT_LOG_BINDING;
   //This allows additional bindings
   protected Map additionalBindings=null;
 
@@ -125,6 +127,17 @@ public class ScriptProcessor extends Component implements IDataProcessor {
 
   public void setDataBinding(String dataBinding) {
     this.dataBinding = dataBinding;
+  }
+
+  /**
+   * This sets the name to which the script logging will
+   * be bound for use within scripts.
+   * <br>
+   * Defaults to {@link #DEFAULT_LOG_BINDING}
+   * @param logBinding
+   */
+  public void setLogBinding(String logBinding) {
+    this.logBinding = logBinding;
   }
 
   /**
@@ -477,6 +490,8 @@ public class ScriptProcessor extends Component implements IDataProcessor {
         throw new ValidationException(failMsg, e, this);
       }
     }
+    //Apply binding to allow scripts to access logging
+    scriptEngine.put(logBinding, log);
     //Apply extra bindings, if any.
     applyBindings(scriptEngine,additionalBindings);
   }
