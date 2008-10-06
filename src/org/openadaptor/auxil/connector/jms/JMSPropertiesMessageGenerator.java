@@ -72,9 +72,17 @@ import java.util.*;
  * name of of the property on the JMS message and the value is used via xpath to
  * get the value from the XML message being passed in.
  * </p>
+ * <p>
+ * If the value does not begin with // then it is treated as is and added to the properties.
+ * </p>
+ * <p>
+ * The 'isXml' property is optional and defaults to true if not supplied. When set to false
+ * the input is assumed not to be XML so no parsing is done to prevent XML errors from
+ * being thrown. This also causes all map entries to be treated literally
+ * </p>
  * <p> 
  * The input to this Message Generator is expected to be either a String 
- * containing valid XML or a Dom4j Document.
+ * containing valid XML or a Dom4j Document if 'isXml' is true or a String otherwise.
  * </p>
  * 
  * Contributed by: Martin Mooney<br>

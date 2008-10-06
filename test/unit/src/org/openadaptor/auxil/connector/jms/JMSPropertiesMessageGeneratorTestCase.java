@@ -198,6 +198,88 @@ public class JMSPropertiesMessageGeneratorTestCase extends
 
     fail("Didn't throw expected ProcessingException" );
   }
+  
+  /**
+   * Test to ensure that a literal property is treated correctly.
+   */
+  public void testLiteralMessageProperty() {
+    Map testMap = new HashMap();
+    String literal = "A Literal String";
+    testMap.put("key1", literal);
+    ((JMSPropertiesMessageGenerator)testInstance).setProperties(testMap);
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(once()).method("setStringProperty").with(eq("key1"), eq(literal));
+    Message generatedMessage = null;
+    
+    try {
+      generatedMessage = testInstance.createMessage(messageText, (Session)sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+
+    assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
+  }
+  
+  /**
+   * Test to ensure that a mix of literal and xpath properties are treated correctly.
+   */
+  public void testMixedMessageProperties() {
+    Map testMap = new HashMap();
+    String literal = "A Literal String";
+    testMap.put("key1", literal);
+    testMap.put("key2", "//field1");
+    ((JMSPropertiesMessageGenerator)testInstance).setProperties(testMap);
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(once()).method("setStringProperty").with(eq("key1"), eq(literal));
+    textMessageMock.expects(once()).method("setStringProperty").with(eq("key2"), eq("test"));
+    Message generatedMessage = null;
+    
+    try {
+      generatedMessage = testInstance.createMessage(messageText, (Session)sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+
+    assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
+  }
+  
+  public void testIsXml() {
+    JMSPropertiesMessageGenerator testGenerator = (JMSPropertiesMessageGenerator)testInstance;
+    assertTrue("Initial value for isXml should be true", testGenerator.getIsXml());
+    testGenerator.setIsXml(false);
+    assertFalse("Value for isXml should be false at this point", testGenerator.getIsXml());
+    
+    String testText = "This is not XML";
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(testText));
+
+    try {
+      testInstance.createMessage(testText, (Session)sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    } catch (RecordFormatException rfe) {
+      fail("Unexpected RecordFormatException: " + rfe );
+    }
+
+    
+  }
    
   
 }
