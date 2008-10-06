@@ -34,6 +34,8 @@ Processors
  * GenericEnrichmentProcessor - new 'discardInput' property allows for treating input 
    message merely as a source of parameters for the enrichment read connector.
 
+ * ScriptProcessor - added binding to allow scripts to access logging facility.
+ 
 Examples
 ========
 
