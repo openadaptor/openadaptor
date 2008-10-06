@@ -14,26 +14,27 @@
     * prefixes "hello" to the front
     * writes to stdout
     
-  It is designed to illustrate the basic structure of an adaptor in spring.
+  It is designed to illustrate the use of scripts within openadaptor. It also shows how 
+  scripts may include logging statements.
 
-  Run it like this...
+  It may be invoked as follows:
     
     java org.openadaptor.spring.SpringAdaptor -config javascript.xml
     
-  You need the followinDJg in your classpath
+  The classpath should include the following:
   
     lib
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
      
-  Once it is running it will wait for command line input
+  When launched, it will wait for command line input.
     
   type something like this...
     
-    mum
+    Dolly
     
-  ...and you should see it converted to something like this...
+  ...and it should be converted to something like this...
   
     hello mum!    
   ]]></description>
@@ -64,7 +65,9 @@
     <property name="language" value="js"/>
     <property name="script">
       <value>
+        oa_log.debug("About to process record: "+oa_data);
         oa_data = "Hello " + oa_data + "!";
+        oa_log.debug("Record processed :-)");
       </value>
     </property>
   </bean>
