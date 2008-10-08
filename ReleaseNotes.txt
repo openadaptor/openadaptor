@@ -27,6 +27,12 @@ Connectors
    'reconnectDelegateBetweenPolls'. Changes in adaptors' configs that use 
    LoopingPollingReadConnectors or CronnablePollingReadConnectors need to be made
    accordingly. 
+   
+ * A new IMessageGenerator for generating JMS Messages has been added to the JMS Connector
+   package. This class 'JMSPropertiesMessageGenerator' allows the definition of literal
+   values for message properties or when an XML payload is supplied xpath to extract a 
+   message property value from the XML document itself. This component was contributed
+   by Martin Mooney.
 
 Processors
 ==========
@@ -47,6 +53,9 @@ Examples
    
  * Added example of a Web service enrichment processor
    (example\spring\processors\enrichment\soap\enrich-processor.xml).    
+   
+ * Added an example of reading from a database and generating csv output.
+   (example\spring\processors\csv\db-csv.xml)
 
 Miscellaneous
 =============

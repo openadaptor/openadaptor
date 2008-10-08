@@ -11,7 +11,7 @@
   This adaptor does the following...
     
     * reads delimited records from stdin
-    * converts delmited input into a map
+    * converts delimited input into a map
     * converts map to xml
     * writes to stdout
     
