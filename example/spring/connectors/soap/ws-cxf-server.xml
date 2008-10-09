@@ -16,6 +16,8 @@
   web service, typically you want to do this to allow a non java application
   use openadaptor functionality.
 
+  Low level handling of Web services is delegated to the CXF framework.
+
   Run it like this...
     
     java org.openadaptor.spring.SpringAdaptor -config ws-cxf-server.xml
@@ -26,7 +28,7 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/activation.jar
+    lib/opt/activation.jar
      
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
@@ -51,7 +53,7 @@
   <bean id="webServiceServer" class="org.openadaptor.auxil.connector.soap.WebServiceCXFListeningReadConnector">
     <description>This is a read connector, that exposes a webservice.</description>
     <property name="serviceName" value="OAService"/>
-    <!--  property name="port" value="9999"/-->
+    <property name="port" value="9999"/>
   </bean>
   
   <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">

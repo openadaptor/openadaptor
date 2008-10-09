@@ -28,12 +28,12 @@
 package org.openadaptor.auxil.connector.soap;
 
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.openadaptor.core.connector.QueuingReadConnector;
 import org.openadaptor.core.jmx.Administrable;
+import org.apache.cxf.aegis.databinding.XFireCompatibilityServiceConfiguration;
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data.
@@ -48,7 +48,9 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
 
   private String serviceName = "openadaptorws";
   
-  private String namespace = "http://www.openadaptor.org";
+//  private String namespace = "http://www.openadaptor.org";
+  
+  private int port = 8080;
 
   /**
    * Default constructor.
@@ -73,12 +75,14 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   }
 
   /**
-   * Sets up a CXF webservice.
+   * Programmatic publishing of an Endpoint.
    */
   public void connect() {
     ServerFactoryBean svrFactory = new ServerFactoryBean();
     svrFactory.setServiceClass(IStringDataProcessor.class);
-    svrFactory.setAddress("http://localhost:9999/" + serviceName);
+    String endpointUrl = "http://localhost:" + port + "/" + serviceName;
+    svrFactory.getServiceFactory().getServiceConfigurations().add(0, new XFireCompatibilityServiceConfiguration());
+    svrFactory.setAddress(endpointUrl);
     svrFactory.setServiceBean(this);
     svrFactory.create();
     log.info("Started WS Endpoint");
@@ -93,11 +97,14 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
     enqueue(s);
   }
 
-
   public void validate(List exceptions) {
   }
 
   public void disconnect() { 
+  }
+  
+  public void setPort(final int port) {
+    this.port = port;
   }
   
   /**
