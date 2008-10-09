@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: ws-server.xml 1409 2008-04-29 10:00:19Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/soap/ws-server.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * exposes a webservice that clients can send data to
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of exposing an adaptor as a
+  web service, typically you want to do this to allow a non java application
+  use openadaptor functionality.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config ws-cxf-server.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/3rdparty/activation.jar
+     
+  Once it is running it will echo the webservice endpoint to the log, you can put
+  this into a web browser and verify that you can see the wsdl.
+  
+  To test it fully you can either run the ws-writer.xml example which processes data by invoking
+  a webservice, or use any SOAP clients such as soapUI (http://www.soapui.org/).
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  	  <bean class="org.openadaptor.core.router.Router">
+  		<property name="processors">
+  		  <list>
+  			<ref bean="webServiceServer" />
+  		    <ref bean="writer" />
+  		  </list>
+  		 </property>
+  	  </bean>
+  	</property>
+  </bean>
+
+  <bean id="webServiceServer" class="org.openadaptor.auxil.connector.soap.WebServiceCXFListeningReadConnector">
+    <description>This is a read connector, that exposes a webservice.</description>
+    <property name="serviceName" value="OAService"/>
+    <!--  property name="port" value="9999"/-->
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that writes to the console.</description>
+  </bean>
+  
+</beans>
