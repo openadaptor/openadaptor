@@ -27,8 +27,11 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +49,9 @@ import org.openadaptor.core.exception.ConnectionException;
  * Binds to a webservice endpoint and delivers data by calling a method
  * on this service.
  * 
- * @author perryj, Kris Lachor
+ * This connector subsumes the XFire based {@link WebServiceWriteConnector}.
+ * 
+ * @author Kris Lachor
  */
 public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
 
@@ -58,8 +63,14 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
 
   private String endpoint;
   
+  /**
+   * HTTP proxy is not yet supported.
+   */
   protected String httpProxyHost;
   
+  /**
+   * HTTP proxy is not yet supported.
+   */
   protected String httpProxyPort;
   
   private DynamicClientFactory dcf = DynamicClientFactory.newInstance();
@@ -96,7 +107,7 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
   }
  
   /**
-   * Creates a web service client based on <code>endpoint</code> WSDL defition.
+   * Creates a web service client based on <code>endpoint</code> WSDL definition.
    */
   public void connect() {
     try {
@@ -145,7 +156,7 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
    * 
    * @param data - an array with data to be passed to the web service.
    * TODO review the fact of connecting and disconnecting the client here - this
-   *      is also implemetned in {@link #connect()}, {@link #disconnect()} and
+   *      is also implemented in {@link #connect()}, {@link #disconnect()} and
    *      called by the framework.
    */
   public Object deliver(Object[] data) {
@@ -169,13 +180,33 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
   }
 
   protected Object marshall(Object data) {
-    return data.toString();
+    String result = null;
+    if(data instanceof Properties){
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      Properties props = (Properties) data;
+      try {
+        props.store(bos, "");
+      } catch (IOException e) {
+        log.error("Error while marshalling properties.",e);
+      }
+      result = bos.toString();
+    }
+    else{
+      result = data.toString();
+    }
+    return result;
   }
 
+  /**
+   * HTTP proxy is not yet supported.
+   */
   public void setHttpProxyHost(String httpProxyHost) {
     this.httpProxyHost = httpProxyHost;
   }
 
+  /**
+   * HTTP proxy is not yet supported.
+   */
   public void setHttpProxyPort(String httpProxyPort) {
     this.httpProxyPort = httpProxyPort;
   }

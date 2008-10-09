@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.soap;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.openadaptor.core.connector.QueuingReadConnector;
 import org.openadaptor.core.jmx.Administrable;
@@ -51,6 +52,8 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
 //  private String namespace = "http://www.openadaptor.org";
   
   private int port = 8080;
+  
+  private Server server;
 
   /**
    * Default constructor.
@@ -78,14 +81,19 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
    * Programmatic publishing of an Endpoint.
    */
   public void connect() {
-    ServerFactoryBean svrFactory = new ServerFactoryBean();
-    svrFactory.setServiceClass(IStringDataProcessor.class);
-    String endpointUrl = "http://localhost:" + port + "/" + serviceName;
-    svrFactory.getServiceFactory().getServiceConfigurations().add(0, new XFireCompatibilityServiceConfiguration());
-    svrFactory.setAddress(endpointUrl);
-    svrFactory.setServiceBean(this);
-    svrFactory.create();
-    log.info("Started WS Endpoint");
+    if(server==null){
+	  ServerFactoryBean svrFactory = new ServerFactoryBean();
+	  svrFactory.setServiceClass(IStringDataProcessor.class);
+	  String endpointUrl = "http://localhost:" + port + "/" + serviceName;
+      svrFactory.getServiceFactory().getServiceConfigurations().add(0, new XFireCompatibilityServiceConfiguration());
+	  svrFactory.setAddress(endpointUrl);
+      svrFactory.setServiceBean(this);
+	  server = svrFactory.create();
+	  log.info("Created and started WS Endpoint");
+    }else{
+      server.start();
+      log.info("Started WS Endpoint");
+    }
   }
 
   /**
@@ -101,6 +109,9 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   }
 
   public void disconnect() { 
+	if(null==server){
+	  server.stop();
+	}
   }
   
   public void setPort(final int port) {

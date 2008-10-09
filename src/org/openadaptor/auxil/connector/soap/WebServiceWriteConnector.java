@@ -47,6 +47,8 @@ import org.openadaptor.core.exception.ConnectionException;
  * Binds to a webservice endpoint and delivers data by calling a method
  * on this service.
  * 
+ * This connector is now subsumed by the CXF based {@WebServiceCXFWriteConnector}.
+ * 
  * @author perryj, Kris Lachor
  */
 public class WebServiceWriteConnector extends AbstractWriteConnector {
@@ -90,7 +92,7 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
   }
  
   /**
-   * Creates a web service client based on <code>endpoint</code> WSDL defition.
+   * Creates a web service client based on <code>endpoint</code> WSDL definition.
    */
   public void connect() {
     try {
@@ -130,7 +132,7 @@ public class WebServiceWriteConnector extends AbstractWriteConnector {
    * 
    * @param data - an array with data to be passed to the web service.
    * TODO review the fact of connecting and disconnecting the client here - this
-   *      is also implemetned in {@link #connect()}, {@link #disconnect()} and
+   *      is also implemented in {@link #connect()}, {@link #disconnect()} and
    *      called by the framework.
    */
   public Object deliver(Object[] data) {

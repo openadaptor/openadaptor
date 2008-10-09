@@ -15,6 +15,8 @@
   It is designed to illustrate the basic structure of exposing an adaptor as a
   web service, typically you want to do this to allow a non java application
   use openadaptor functionality.
+  
+  Low level handling of Web services is delegated to the XFire framework.
 
   Run it like this...
     
@@ -31,7 +33,7 @@
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
   
-  To test it fully you can either run the wsclient.xml example which processes data by invoking
+  To test it fully you can either run the ws-client.xml example which processes data by invoking
   a webservice, or use any SOAP clients such as soapUI (http://www.soapui.org/).
   ]]></description>
 

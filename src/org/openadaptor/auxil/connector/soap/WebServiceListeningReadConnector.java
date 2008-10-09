@@ -41,7 +41,9 @@ import org.openadaptor.auxil.connector.http.ServletServingReadConnector;
 import org.openadaptor.core.jmx.Administrable;
 
 /**
- * ReadConnector that exposes a webservice which allows external clients to send it data
+ * ReadConnector that exposes a webservice which allows external clients to send it data.
+ * Going forwards this connector will be subsumed by {@link WebServiceCXFListeningReadConnector},
+ * its CXF based equivalent.
  * @author perryj
  *
  */
