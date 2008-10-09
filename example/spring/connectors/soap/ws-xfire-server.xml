@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-server.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-xfire-server.xml
     
   You need the following in your classpath
   

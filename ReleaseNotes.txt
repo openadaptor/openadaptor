@@ -21,8 +21,12 @@ Connectors
    
  * WebServicePollingReadConnector: a)renamed to WebServiceReadConnector to match OA 
    naming standards. b)now implements IEnrichmentReadConnector and can be used
-   with enrichment processors.  
- 
+   with enrichment processors.
+   
+ * New CXF based Web service connectors: WebServiceCXFListeningReadConnector,
+   WebServiceCXFWriteConnector. The connectors are equivalents of the existing 
+   XFire based connectors. 
+       
  * AbstractPollingReadConnector: the 'reconnect' property renamed to a more descriptive
    'reconnectDelegateBetweenPolls'. Changes in adaptors' configs that use 
    LoopingPollingReadConnectors or CronnablePollingReadConnectors need to be made
@@ -32,7 +36,7 @@ Connectors
    package. This class 'JMSPropertiesMessageGenerator' allows the definition of literal
    values for message properties or when an XML payload is supplied xpath to extract a 
    message property value from the XML document itself. This component was contributed
-   by Martin Mooney.
+   by Martin Mooney.    
 
 Processors
 ==========
@@ -45,17 +49,20 @@ Processors
 Examples
 ========
 
- * Added example of a file write connector with dynamically derived file names
+ * Added an example of a file write connector with dynamically derived file names
    (example\spring\connectors\file\file-dynamic.xml).
    
- * Added example of a file write connector that rolls over output files
+ * Added an example of a file write connector that rolls over output files
    (example\spring\connectors\file\file-rollover.xml).  
    
- * Added example of a Web service enrichment processor
+ * Added an example of a Web service enrichment processor
    (example\spring\processors\enrichment\soap\enrich-processor.xml).    
    
- * Added an example of reading from a database and generating csv output.
-   (example\spring\processors\csv\db-csv.xml)
+ * Added examples of CXF based Web service connectors
+   (example\spring\connectors\soap\ws-cxf-server.xml and ws-cxf-writer.xml).  
+   
+ * Added an example of reading from a database and generating csv output
+   (example\spring\processors\csv\db-csv.xml).
 
 Miscellaneous
 =============
