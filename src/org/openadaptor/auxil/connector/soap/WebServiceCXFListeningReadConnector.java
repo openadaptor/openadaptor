@@ -33,14 +33,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.jmx.Administrable;
 
 /**
- * Draft of a CXF framework based Web service endpoint.
- * Not ready for use.
+ * ReadConnector that exposes a webservice which allows external clients to send it data.
+ * This connector subsumes the XFire based {@link WebServiceListeningReadConnector}.
  * 
  * @author Kris Lachor
  */
-public class WebServiceCXFListeningReadConnector extends QueuingReadConnector implements IStringDataProcessor {
+public class WebServiceCXFListeningReadConnector extends QueuingReadConnector implements IStringDataProcessor,
+           Administrable{
 
   private static final Log log = LogFactory.getLog(WebServiceCXFListeningReadConnector.class);
 
@@ -71,7 +73,7 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   }
 
   /**
-   * Set up webservice
+   * Sets up a CXF webservice.
    */
   public void connect() {
     ServerFactoryBean svrFactory = new ServerFactoryBean();
@@ -79,6 +81,7 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
     svrFactory.setAddress("http://localhost:9999/" + serviceName);
     svrFactory.setServiceBean(this);
     svrFactory.create();
+    log.info("Started WS Endpoint");
   }
 
   /**
@@ -95,6 +98,33 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   }
 
   public void disconnect() { 
+  }
+  
+  /**
+   * @see Administrable
+   */
+  public Object getAdmin() {
+    return new Admin();
+  }
+
+  /**
+   * @see Administrable
+   */
+  public interface AdminMBean {
+    int getQueueLimit();
+
+    int getQueueSize();
+  }
+  
+  public class Admin implements AdminMBean {
+
+    public int getQueueLimit() {
+      return WebServiceCXFListeningReadConnector.this.getQueueLimit();
+    }
+
+    public int getQueueSize() {
+      return WebServiceCXFListeningReadConnector.this.getQueueSize();
+    }
   }
 
 }
