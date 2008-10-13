@@ -53,7 +53,7 @@ import org.openadaptor.core.exception.ValidationException;
 public class WebServiceReadConnector extends Component implements IEnrichmentReadConnector {
 
   private static final Log log = LogFactory.getLog(WebServiceReadConnector.class);
-  private static Object[] NO_PARAMETERS = new Object[0];
+  protected static Object[] NO_PARAMETERS = new Object[0];
   
   private String wsEndpoint = null;
   private String serviceName = null;

@@ -146,7 +146,7 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
    * Sets the web service client to null.
    */
   public void disconnect() {
-    client = null;
+    client.destroy();
   }
 
   /**

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  $Id$
-  $HeadURL$
+  $Id: ws-xfire-reader.xml 1791 2008-10-09 14:52:53Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/soap/ws-xfire-reader.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -17,7 +17,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-xfire-reader.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-cxf-reader.xml
     
   You need the following in your classpath
   
@@ -54,7 +54,7 @@
 	<property name="pauseOnlyAfterMsgs" value="2"/>
   </bean>
 
-  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceReadConnector">
+  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceCXFReadConnector">
     <description>This is a polling connector, that calls a webservice.</description>
     <property name="wsEndpoint" value="http://localhost:9999/OAService?wsdl"/>
 	<property name="serviceName" value="process"/>
