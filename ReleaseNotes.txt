@@ -24,8 +24,8 @@ Connectors
    with enrichment processors.
    
  * New CXF based Web service connectors: WebServiceCXFListeningReadConnector,
-   WebServiceCXFWriteConnector. The connectors are equivalents of the existing 
-   XFire based connectors. 
+   WebServiceCXFWriteConnector, WebServiceCXFReadConnector. The connectors are 
+   equivalents of the existing XFire based connectors. 
        
  * AbstractPollingReadConnector: the 'reconnect' property renamed to a more descriptive
    'reconnectDelegateBetweenPolls'. Changes in adaptors' configs that use 
@@ -59,7 +59,7 @@ Examples
    (example\spring\processors\enrichment\soap\enrich-processor.xml).    
    
  * Added examples of CXF based Web service connectors
-   (example\spring\connectors\soap\ws-cxf-server.xml and ws-cxf-writer.xml).  
+   (example\spring\connectors\soap\ws-cxf-server.xml, ws-cxf-writer.xml and ws-cxf-reader.xml).  
    
  * Added an example of reading from a database and generating csv output
    (example\spring\processors\csv\db-csv.xml).
