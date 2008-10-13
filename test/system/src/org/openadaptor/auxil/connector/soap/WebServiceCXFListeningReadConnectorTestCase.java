@@ -33,16 +33,19 @@ import junit.framework.TestCase;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
-import org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector;
 
-public class WebServiceListeningReadConnectorTestCase extends TestCase {
+/**
+ * System tests for {@link WebServiceCXFListeningReadConnector}.
+ * Based on {@link WebServiceListeningReadConnectorTestCase}.
+ */
+public class WebServiceCXFListeningReadConnectorTestCase extends TestCase {
 
   public void testAxis() {
 
-    WebServiceListeningReadConnector service = new WebServiceListeningReadConnector();
+    WebServiceCXFListeningReadConnector service = new WebServiceCXFListeningReadConnector();
 
     try {
-      // connect (this starts jetty)
+      // connect (starts the service)
       service.setPort(9999);
       service.connect();
 
@@ -65,7 +68,7 @@ public class WebServiceListeningReadConnectorTestCase extends TestCase {
         e.printStackTrace();
       }
     } finally {
-      // stop jetty
+      // stop service
       service.disconnect();
     }
   }

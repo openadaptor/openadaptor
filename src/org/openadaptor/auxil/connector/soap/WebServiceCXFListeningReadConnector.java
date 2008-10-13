@@ -34,7 +34,6 @@ import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.openadaptor.core.connector.QueuingReadConnector;
 import org.openadaptor.core.jmx.Administrable;
-import org.apache.cxf.aegis.databinding.XFireCompatibilityServiceConfiguration;
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data.
@@ -85,7 +84,6 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
 	  ServerFactoryBean svrFactory = new ServerFactoryBean();
 	  svrFactory.setServiceClass(IStringDataProcessor.class);
 	  String endpointUrl = "http://localhost:" + port + "/" + serviceName;
-      svrFactory.getServiceFactory().getServiceConfigurations().add(0, new XFireCompatibilityServiceConfiguration());
 	  svrFactory.setAddress(endpointUrl);
       svrFactory.setServiceBean(this);
 	  server = svrFactory.create();
@@ -112,6 +110,21 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
 	if(null==server){
 	  server.stop();
 	}
+  }
+  
+  /**
+   * Create and return wsdl string
+   *
+   * @return String return wsdl string
+   */
+  public String getEndpoint() {
+	if(server==null){
+      return null;
+	}
+    String endpointAddress = server.getEndpoint().getEndpointInfo().getAddress();
+    String wsdl = endpointAddress + "?wsdl";
+    log.debug("Endpoint: " + wsdl);
+    return wsdl;
   }
   
   public void setPort(final int port) {
