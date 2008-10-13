@@ -44,6 +44,10 @@ import org.openadaptor.core.IReadConnector;
  * (a XFire equivalent). Future Web service connectors development will involve CXF connectors only,
  * XFire based connectors are to be gradually phased out.
  * 
+ * NOTE: Class requires JVM 1.5.
+ * NOTE: Use of the Dynamic compiler requires a full JDK to be available. 
+ *       It generates java code and calls off to "javac" to compile the code.
+ * 
  * @author Kris Lachor
  */
 public class WebServiceCXFReadConnector extends WebServiceReadConnector implements IEnrichmentReadConnector {
@@ -52,6 +56,9 @@ public class WebServiceCXFReadConnector extends WebServiceReadConnector implemen
  
   private Client client;
   
+  /**
+   * See comments in {@link WebServiceCXFWriteConnector%dcf}.
+   */
   private DynamicClientFactory dcf = DynamicClientFactory.newInstance();
   
   /**
@@ -97,6 +104,9 @@ public class WebServiceCXFReadConnector extends WebServiceReadConnector implemen
 
   /**
    * Invokes webservice via CXF client.
+   * 
+   * Groovy Web services support for dynamic clients (comming soon, accoring to CXF's website)
+   * may provide alternative ways of calling the service in the future. 
    */
   public Object [] invoke(){
     Object [] result = null;

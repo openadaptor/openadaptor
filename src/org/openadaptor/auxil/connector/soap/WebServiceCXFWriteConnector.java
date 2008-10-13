@@ -50,6 +50,13 @@ import org.openadaptor.core.exception.ConnectionException;
  * on this service.
  * 
  * This connector subsumes the XFire based {@link WebServiceWriteConnector}.
+ * Because XFire based connector may be phased out in the future this 
+ * connector doesn't extend {@link WebServiceWriteConnector}, event though
+ * big part of functionality is the same. 
+ * 
+ * NOTE: Class requires JVM 1.5.
+ * NOTE: Use of the Dynamic compiler requires a full JDK to be available. 
+ *       It generates java code and calls off to "javac" to compile the code.
  * 
  * @author Kris Lachor
  */
@@ -73,6 +80,14 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
    */
   protected String httpProxyPort;
   
+  /**
+   * DynamicClientFactory, when used to create a CXF Client, will go an extra 
+   * step compared to the ClientFactoryBean, and generate and compile JAXB POJOs
+   * in the background. Although not used by OA at the moment, in the 
+   * future they may be combined with a use of dynamic languages such as Groovy.
+   * 
+   * CXF documentation is not clear on how to use ClientFactoryBean at this time.
+   */
   private DynamicClientFactory dcf = DynamicClientFactory.newInstance();
 
   /**
@@ -153,6 +168,10 @@ public class WebServiceCXFWriteConnector extends AbstractWriteConnector {
    * Invokes the web service defined in <code>endpoint</code> WSDL.
    * Call the web service as many times as there are elements in the
    * <code>data</code> array.
+   * 
+   * NOTE:  Groovy Web services support for dynamic clients (comming soon, 
+   * accoring to CXF's website) may provide alternative ways of calling 
+   * the service in the future. 
    * 
    * @param data - an array with data to be passed to the web service.
    * TODO review the fact of connecting and disconnecting the client here - this
