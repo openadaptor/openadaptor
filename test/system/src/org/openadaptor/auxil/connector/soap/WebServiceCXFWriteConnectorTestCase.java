@@ -33,37 +33,24 @@
 
 package org.openadaptor.auxil.connector.soap;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
-import junit.framework.TestCase;
-
-import org.codehaus.xfire.service.Service;
-import org.codehaus.xfire.service.binding.ObjectServiceFactory;
-import org.codehaus.xfire.service.invoker.BeanInvoker;
-import org.codehaus.xfire.transport.http.XFireServlet;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
 
 /**
- * System tests for {@link WebServiceWriteConnector}.
+ * System tests for {@link WebServiceCXFWriteConnectorTestCase}.
+ * Also test compatibility between {@link WebServiceWriteConnector} and {@link WebServiceCXFWriteConnector}.
  */
-public class WebServiceWriteConnectorTestCase extends TestCase {
+public class WebServiceCXFWriteConnectorTestCase extends WebServiceWriteConnectorTestCase {
 
   /**
    * Starts up web service server.
-   * Programmatically assembles an adaptor with one read node and WebServiceWriteConnector
+   * Programmatically assembles an adaptor with one read node and WebServiceCXFWriteConnector
    * as the write node.
    * Runs the adaptor, ensures the server received expected data.
    */
@@ -75,7 +62,7 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
     /* Create adaptor to invoke webservice */
     TestReadConnector readNode = new TestReadConnector("in");
     readNode.setDataString("foobar");
-    WebServiceWriteConnector writeNode = new WebServiceWriteConnector("out");
+    WebServiceCXFWriteConnector writeNode = new WebServiceCXFWriteConnector("out");
     writeNode.setEndpoint("http://localhost:8191/MyService?wsdl");
     writeNode.setMethodName("process");
     
@@ -93,73 +80,6 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
     List results = impl.getData();
     assertTrue(results.size() == 1);
     assertTrue(results.get(0).equals("foobar"));
-  }
- 
-  /**
-   * Starts a web service.
-   */
-  protected MyServiceImpl runUpWebService(){
-	MyServiceImpl impl = new MyServiceImpl();
-	Server server = new Server(8191);
-	Context root = new Context(server, "/",Context.SESSIONS);
-	root.addServlet(new ServletHolder(new MyServlet(MyService.class, impl, "MyService")), "/*");
-	try {
-	  server.start();
-	} catch (Exception e) {
-	  fail("failed to start jetty");
-	}  
-	return impl;
-  }
-  
-  /**
-   * Web service interface.
-   */
-  public interface MyService {
-    void process(String s);
-  }
-  
-  /**
-   * Web service implementation.
-   */
-  public class MyServiceImpl implements MyService {
-
-    private List data = new ArrayList();
-    
-    public void process(String s) {
-      System.err.println("got data " + s);
-      data.add(s);
-    }
-    
-    public List getData() {
-      return Collections.unmodifiableList(data);
-    }
-  }
-  
-  /**
-   * XFireServlet, runs as web service server.
-   */
-  public class MyServlet extends XFireServlet {
-
-    private static final long serialVersionUID = 1L;
-
-    private Class myService;
-    private Object myServiceImpl;
-    private String serviceName;
-    
-    MyServlet(final Class myService, final Object myServiceImpl, final String serviceName) {
-      this.myService = myService;
-      this.myServiceImpl = myServiceImpl;
-      this.serviceName = serviceName;
-    }
-    
-    public void init() throws ServletException
-    {
-      super.init();
-      ObjectServiceFactory factory = new ObjectServiceFactory(getXFire().getTransportManager(), null);
-      Service service = factory.create(myService, serviceName, null, null);
-      service.setInvoker(new BeanInvoker(myServiceImpl));
-      getController().getServiceRegistry().register(service);
-    }
   }
 
 }
