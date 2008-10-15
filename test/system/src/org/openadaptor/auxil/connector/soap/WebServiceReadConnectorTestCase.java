@@ -53,7 +53,7 @@ import org.codehaus.xfire.test.Echo;
 import org.codehaus.xfire.test.EchoImpl;
 
 /**
- * Unit tests for {@link WebServicePollingReadConnector}.
+ * Unit tests for {@link WebServiceReadConnector}.
  * 
  * @author Kris Lachor
  */

@@ -87,7 +87,7 @@ public class ThrottlingReadConnector extends Component implements IPollingReadCo
   public Object[] next(long timeoutMs) {	
   	if(intervalMs != -1 ){
       
-      /* Sleep only if pauseOnlyAfterMsgs not set or equal msgCounter */
+      /* Sleep only if pauseOnlyAfterMsgs not set or equal inputMsgCounter */
       if( !(pauseOnlyAfterMsgs!=-1 && msgCounter++!=pauseOnlyAfterMsgs)){
   	    try {
   	      log.debug("Sleeping for " + intervalMs + " before next read.");	
