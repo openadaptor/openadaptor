@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: file.xml 1728 2008-08-13 13:42:09Z lachork $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/file/file.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads swift records from file
+    * converts records into SwiftMessage Objects
+    * writes messages to console (stdout)
+    
+  It is designed to illustrate the basic structure of a file reader/writer adaptor
+
+  It may be started as follows
+    java org.openadaptor.spring.SpringAdaptor -config swift-reader.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>Pipeline to read from file and write to file
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="SwiftConvertor"/>
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description></description>
+		<property name="filename" value="input/incoming_domestic_payment.swift" />
+				<property name="dataReader">
+			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+		</property>
+	</bean>
+
+	<bean id="SwiftConvertor" class="org.openadaptor.auxil.convertor.swift.SwiftConvertor">
+	  <description>
+	     Default output format (0) is Raw Swift (text)
+	     format 1 is Swift as XML
+	     format 2 is SwiftMessage java object
+	  </description>
+	  <property name="outputFormat" value="0" />
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to a file.</description>
+	</bean>
+
+</beans>

@@ -97,5 +97,6 @@
 	<classpathentry kind="lib" path="support/lib/httpunit.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pool-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/wife.jar" sourcepath="test/lib/wife-src.zip"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
