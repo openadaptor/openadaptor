@@ -45,6 +45,7 @@ serializer_from_xerces_2.9.0.jar: apache.license
 servlet-api_2.5-6.0.1.jar: apache.license
 stax-api_1.0.1.jar: apache.license
 velocity_1.4.jar: apache.license
+wife.jar: lgpl.license
 wsdl4j_1.6.2.jar: cpl.license
 wstx-asl_3.0.1.jar: apache.license
 xercesImpl_2.9.0.jar: apache.license
@@ -55,3 +56,4 @@ script.jar: sun_script.license
 spring-core.jar: apache.license
 spring.jar: apache.license
 neethi_2.0.4.jar: apache.license
+
