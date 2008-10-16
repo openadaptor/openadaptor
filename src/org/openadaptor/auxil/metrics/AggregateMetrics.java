@@ -45,9 +45,9 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class AgregateMetrics implements IComponentMetrics {
+public class AggregateMetrics implements IComponentMetrics {
 
-  private static final Log log = LogFactory.getLog(AgregateMetrics.class);
+  private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
   //TODO alternatively, this may hold IRecordableComponents
   Set componentMetrics = new HashSet();
