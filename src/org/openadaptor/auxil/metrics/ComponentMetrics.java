@@ -72,7 +72,15 @@ public class ComponentMetrics implements IComponentMetrics{
   Date lastStarted = null;
   
   boolean enabled = true;
+
   
+  /**
+   * Constructor.
+   */
+  public ComponentMetrics() {
+    super();
+  }
+
   /**
    * Indicates start of message processing. 
    * Starts timers.

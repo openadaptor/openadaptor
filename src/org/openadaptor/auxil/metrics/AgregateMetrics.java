@@ -27,10 +27,16 @@
 package org.openadaptor.auxil.metrics;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
  * Class that agregates metrics from all components in an adaptor.
@@ -41,99 +47,137 @@ import org.openadaptor.core.recordable.IComponentMetrics;
  */
 public class AgregateMetrics implements IComponentMetrics {
 
-  /* (non-Javadoc)
+  private static final Log log = LogFactory.getLog(AgregateMetrics.class);
+  
+  //TODO alternatively, this may hold IRecordableComponents
+  Set componentMetrics = new HashSet();
+  
+  private boolean enabled = true;
+  
+  /**
+   * Disables metrics recording across entire adaptor.
+   * 
    * @see org.openadaptor.core.recordable.IComponentMetrics#disable()
    */
   public void disable() {
-    // TODO Auto-generated method stub
-
+    log.info("Disabling metrics recording in all recordable components");
+    Iterator it = componentMetrics.iterator();
+    while(it.hasNext()){
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      detailedMetrics.disable();
+    }
+    enabled = false;
   }
 
-  /* (non-Javadoc)
+  /**
+   * Enables metrics recording across entire adaptor.
+   * 
    * @see org.openadaptor.core.recordable.IComponentMetrics#enable()
    */
   public void enable() {
-    // TODO Auto-generated method stub
-
+    log.info("Enabling metrics recording in all recordable components");
+    Iterator it = componentMetrics.iterator();
+    while(it.hasNext()){
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      detailedMetrics.enable();
+    }
+    enabled = true;
   }
 
-  /* (non-Javadoc)
+  /**
+   * TODO unclear what this should return. 
+   * 
    * @see org.openadaptor.core.recordable.IComponentMetrics#enabled()
    */
   public boolean enabled() {
-    // TODO Auto-generated method stub
-    return false;
+    return enabled;
   }
 
-  /* (non-Javadoc)
+  /**
+   * Returns a sum of discarded messages from all recordable components.
+   * 
    * @see org.openadaptor.core.recordable.IComponentMetrics#getDiscardedMsgCount()
    */
   public long getDiscardedMsgCount() {
-    // TODO Auto-generated method stub
-    return 0;
+    Iterator it = componentMetrics.iterator();
+    long discardedCount = 0;
+    while(it.hasNext()){
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      discardedCount+=detailedMetrics.getDiscardedMsgCount();
+    }
+    log.info("Sum of discarded messages in all recordable components: " + discardedCount);
+    return discardedCount;
   }
 
-  /* (non-Javadoc)
+  /**
+   * Returns a sum of messages that caused an exception from all recordable components.
+   * 
    * @see org.openadaptor.core.recordable.IComponentMetrics#getExceptionMsgCount()
    */
   public long getExceptionMsgCount() {
-    // TODO Auto-generated method stub
-    return 0;
+    Iterator it = componentMetrics.iterator();
+    long exceptionMsgsCount = 0;
+    while(it.hasNext()){
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      exceptionMsgsCount+=detailedMetrics.getExceptionMsgCount();
+    }
+    log.info("Sum of messages that caused an exception in all recordable components: " + exceptionMsgsCount);
+    return exceptionMsgsCount;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getInputMsgCounts()
    */
   public long[] getInputMsgCounts() {
-    // TODO Auto-generated method stub
+    //Need to get hold of the nodes at the start of the pipeline
     return null;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getInputMsgTypes()
    */
   public String[] getInputMsgTypes() {
-    // TODO Auto-generated method stub
+    //Need to get hold of the nodes at the start of the pipeline
     return null;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeAvg()
    */
   public long getIntervalTimeAvg() {
-    // TODO Auto-generated method stub
+    // Need to get hold of the first and last nodes in the pipeline
     return 0;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMax()
    */
   public long getIntervalTimeMax() {
-    // TODO Auto-generated method stub
+    // Need to get hold of the first and last nodes in the pipeline
     return 0;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMin()
    */
   public long getIntervalTimeMin() {
-    // TODO Auto-generated method stub
+    // Need to get hold of the first and last nodes in the pipeline
     return 0;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getOutputMsgCount()
    */
   public long getOutputMsgCount() {
-    // TODO Auto-generated method stub
+    // need to get hold of last nodes in the pipeline
     return 0;
   }
 
-  /* (non-Javadoc)
+  /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getOutputMsgTypes()
    */
   public String[] getOutputMsgTypes() {
-    // TODO Auto-generated method stub
+    // need to get hold of last nodes in the pipeline
     return null;
   }
 
@@ -177,4 +221,11 @@ public class AgregateMetrics implements IComponentMetrics {
 
   }
 
+  /**
+   * Adds metrics that will be included as part of these agregate metrics.
+   */
+  public void addRecordableComponent(IRecordableComponent recordableComponent){
+    log.info("Adding component metrics to agregate: " + recordableComponent);
+    componentMetrics.add(recordableComponent.getMetrics());
+  }
 }
