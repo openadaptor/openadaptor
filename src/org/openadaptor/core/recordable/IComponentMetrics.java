@@ -72,4 +72,10 @@ public interface IComponentMetrics extends ILifecycleListener{
     long getExceptionMsgCount();
     
     Date getStartedSince();
+    
+    boolean enabled();
+    
+    void enable();
+    
+    void disable();
 }

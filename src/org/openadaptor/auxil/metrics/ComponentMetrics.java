@@ -71,6 +71,7 @@ public class ComponentMetrics implements IComponentMetrics{
   
   Date lastStarted = null;
   
+  boolean enabled = true;
   
   /**
    * Indicates start of message processing. 
@@ -79,6 +80,10 @@ public class ComponentMetrics implements IComponentMetrics{
    * @param msg
    */
   public void recordMessageStart(Message msg){
+    if(!enabled){
+      return;
+    }
+    
     processStartTime = new Date();
     
     /* calculate intervals */
@@ -114,6 +119,9 @@ public class ComponentMetrics implements IComponentMetrics{
    * @param processTime
    */
   public void recordMessageEnd(Message msg){
+    if(!enabled){
+      return;
+    }
     processEndTime = new Date();
     long processTime = processEndTime.getTime() - processStartTime.getTime();
     totalProcessTime+=processTime;
@@ -127,11 +135,17 @@ public class ComponentMetrics implements IComponentMetrics{
   }
 
   public void recordDiscardedMsgEnd(Message msg){
+    if(!enabled){
+      return;
+    }
     discardedMsgs++;
   }
   
   
   public void recordExceptionMsgEnd(Message msg){
+    if(!enabled){
+      return;
+    }
     exceptionMsgs++;
   }
   
@@ -218,5 +232,17 @@ public class ComponentMetrics implements IComponentMetrics{
     else{
       lastStarted = null;
     }
+  }
+
+  public void disable() {
+    this.enabled = false;
+  }
+
+  public void enable() {
+    this.enabled = true;
+    
+  }
+  public boolean enabled() {
+    return this.enabled;
   }
 }
