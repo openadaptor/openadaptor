@@ -36,6 +36,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IComponentMetrics;
@@ -53,7 +54,13 @@ public class ComponentMetrics implements IComponentMetrics{
   
   private static String UNKNOWN = "Unknown";
   
+  private static String NONE = "None";
+  
+  private static String MESSAGES_OF_TYPE = " messages of type ";
+  
   Map inputMsgCounter = new HashMap();
+  
+  Map outputMsgCounter = new HashMap();
   
   long minProcessTime = -1;
   
@@ -123,15 +130,6 @@ public class ComponentMetrics implements IComponentMetrics{
   public void recordComponentStop(){
     componentStopTime = new Date();
   }
-  
-  public String getDuration() {
-    String durationStr = null;
-    if(componentStartTime!=null && componentStopTime!=null){
-      long duration = componentStopTime.getTime() - componentStartTime.getTime();
-      durationStr = periodFormatter.print(new Period(duration));
-    }
-    return durationStr;
-  }
 
   /**
    * Indicates start of message processing. 
@@ -178,7 +176,7 @@ public class ComponentMetrics implements IComponentMetrics{
    * @param msg
    * @param processTime
    */
-  public void recordMessageEnd(Message msg){
+  public void recordMessageEnd(Message msg, Response response){
     if(!enabled){
       return;
     }
@@ -192,6 +190,23 @@ public class ComponentMetrics implements IComponentMetrics{
       minProcessTime=processTime;
     }
     outputMsgs++;
+    
+    Object [] collatedOutput = response.getCollatedOutput();
+    if(collatedOutput.length==0){
+      return;
+    }
+    //TODO check all outupt types
+    String msgPayloadType = collatedOutput[0].getClass().getName();
+    Object count = outputMsgCounter.get(msgPayloadType);
+    if(count==null){
+      outputMsgCounter.put(msgPayloadType, new Integer(1));
+    }
+    else{
+      //TODO use longs
+      Integer countInt = (Integer) count;
+      outputMsgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
+    }
+    
   }
 
   public void recordDiscardedMsgEnd(Message msg){
@@ -220,13 +235,72 @@ public class ComponentMetrics implements IComponentMetrics{
     return new long[]{count};
   }
   
-  public String getProcessTimeAvg() {
+  //TODO was copy&paste of input
+  public long [] getOutputMsgCounts(){
+    long count = 0;
+    Iterator it = outputMsgCounter.keySet().iterator();
+    while(it.hasNext()){
+      Object dataType = it.next();
+      Integer countInt = (Integer) outputMsgCounter.get(dataType);
+      count+= countInt.longValue();
+    }
+    return new long[]{count};
+  }
+  
+  public String getOutputMsgs() {
+    StringBuffer outputMsgs = new StringBuffer();
+    if(getOutputMsgCounts()[0]==0){
+      outputMsgs.append(NONE);
+    }
+    Iterator it = outputMsgCounter.keySet().iterator();
+    boolean first = true;
+    while(it.hasNext()){
+      if(first){
+        first = false;
+      }
+      else{
+        outputMsgs.append("/n");
+      }
+      Object dataType = it.next();
+      Integer countInt = (Integer) outputMsgCounter.get(dataType);
+      outputMsgs.append(countInt);
+      outputMsgs.append(MESSAGES_OF_TYPE);
+      outputMsgs.append(dataType);
+    }
+    return outputMsgs.toString();
+  }
+
+  
+  public String getInputMsgs() {
+    StringBuffer inputMsgs = new StringBuffer();
+    if(getInputMsgCounts()[0]==0){
+      inputMsgs.append(NONE);
+    }
+    Iterator it = inputMsgCounter.keySet().iterator();
+    boolean first = true;
+    while(it.hasNext()){
+      if(first){
+        first = false;
+      }
+      else{
+        inputMsgs.append("/n");
+      }
+      Object dataType = it.next();
+      Integer countInt = (Integer) inputMsgCounter.get(dataType);
+      inputMsgs.append(countInt);
+      inputMsgs.append(MESSAGES_OF_TYPE);
+      inputMsgs.append(dataType);
+    }
+    return inputMsgs.toString();
+  }
+  
+  public String getProcessTime() {
     long msgCount = getInputMsgCounts()[0];
     long timeAvgMs = -1;
     if(msgCount!=0){
       timeAvgMs = (long) (totalProcessTime/msgCount);
     }
-    return formatDuration(timeAvgMs);
+    return formatDuration(timeAvgMs, minProcessTime, maxProcessTime);
   }
 
   private String formatDuration(long duration){
@@ -244,6 +318,26 @@ public class ComponentMetrics implements IComponentMetrics{
     return sb.toString();
   }
   
+  private String formatDuration(long duration, long durationMin, long durationMax){
+    StringBuffer sb = new StringBuffer();
+    if(duration==0){
+      sb.append("Less than 1 ");
+      sb.append(MILLISECONDS);
+    }
+    else if(duration==-1){
+      sb.append(UNKNOWN);
+    }
+    else{
+      sb.append(periodFormatter.print(new Period(duration)));
+      sb.append(" (min ");
+      sb.append(formatDuration(durationMin));
+      sb.append(", max ");
+      sb.append(periodFormatter.print(new Period(durationMax)));
+      sb.append(")");
+    }
+    return sb.toString();
+  }
+  
   public String getProcessTimeMin() {
     return formatDuration(minProcessTime);
   }
@@ -257,13 +351,13 @@ public class ComponentMetrics implements IComponentMetrics{
     return (String[]) inputMsgTypes.toArray(new String[]{});
   }
 
-  public String getIntervalTimeAvg() {
+  public String getIntervalTime() {
     long msgCount = getInputMsgCounts()[0];
     long timeAvgMs = -1;
     if(msgCount!=0){
       timeAvgMs = (long) (totalIntervalTime/msgCount);
     }
-    return formatDuration(timeAvgMs);
+    return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime);
   }
 
   public String getIntervalTimeMax() {
@@ -322,4 +416,5 @@ public class ComponentMetrics implements IComponentMetrics{
   public boolean enabled() {
     return this.enabled;
   }
+ 
 }

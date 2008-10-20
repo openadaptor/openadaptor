@@ -27,8 +27,6 @@
 
 package org.openadaptor.core.recordable;
 
-import java.util.Date;
-
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
@@ -45,29 +43,31 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
  * 
  * @author Kris Lachor
  */
-public interface IComponentMetrics extends ILifecycleListener{
+public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
   
-	long [] getInputMsgCounts();
+//	long [] getInputMsgCounts();
 	
-	String getProcessTimeMax();
+    String getInputMsgs();
+    
+//	String getProcessTimeMax();
 	
-	String getProcessTimeMin();
+//	String getProcessTimeMin();
 	
-	String getProcessTimeAvg();
+	String getProcessTime();
     
-    String getIntervalTimeMax();
+//    String getIntervalTimeMax();
     
-    String getIntervalTimeMin();
+//    String getIntervalTimeMin();
     
-    String getIntervalTimeAvg();
+    String getIntervalTime();
 
-	String [] getInputMsgTypes();
+//	String [] getInputMsgTypes();
     
-    String [] getOutputMsgTypes();
+//    String [] getOutputMsgTypes();
     
     long getDiscardedMsgCount();
     
-    long getOutputMsgCount();
+//    long getOutputMsgCount();
     
     long getExceptionMsgCount();
     
@@ -78,6 +78,4 @@ public interface IComponentMetrics extends ILifecycleListener{
     void enable();
     
     void disable();
-    
-    String getDuration();
 }

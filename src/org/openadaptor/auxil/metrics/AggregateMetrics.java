@@ -142,9 +142,9 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeAvg()
+   * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTime()
    */
-  public String getIntervalTimeAvg() {
+  public String getIntervalTime() {
     // Need to get hold of the first and last nodes in the pipeline
     return null;
   }
@@ -184,7 +184,7 @@ public class AggregateMetrics implements IComponentMetrics {
   /* (non-Javadoc)
    * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeAvg()
    */
-  public String getProcessTimeAvg() {
+  public String getProcessTime() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -230,6 +230,16 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   public String getDuration() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getInputMsgs() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getOutputMsgs() {
     // TODO Auto-generated method stub
     return null;
   }
