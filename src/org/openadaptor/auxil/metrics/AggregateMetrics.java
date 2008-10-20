@@ -144,25 +144,25 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeAvg()
    */
-  public long getIntervalTimeAvg() {
+  public String getIntervalTimeAvg() {
     // Need to get hold of the first and last nodes in the pipeline
-    return 0;
+    return null;
   }
 
   /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMax()
    */
-  public long getIntervalTimeMax() {
+  public String getIntervalTimeMax() {
     // Need to get hold of the first and last nodes in the pipeline
-    return 0;
+    return null;
   }
 
   /**
    * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMin()
    */
-  public long getIntervalTimeMin() {
+  public String getIntervalTimeMin() {
     // Need to get hold of the first and last nodes in the pipeline
-    return 0;
+    return null;
   }
 
   /**
@@ -184,31 +184,31 @@ public class AggregateMetrics implements IComponentMetrics {
   /* (non-Javadoc)
    * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeAvg()
    */
-  public long getProcessTimeAvg() {
+  public String getProcessTimeAvg() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   /* (non-Javadoc)
    * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeMax()
    */
-  public long getProcessTimeMax() {
+  public String getProcessTimeMax() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   /* (non-Javadoc)
    * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeMin()
    */
-  public long getProcessTimeMin() {
+  public String getProcessTimeMin() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   /* (non-Javadoc)
    * @see org.openadaptor.core.recordable.IComponentMetrics#getStartedSince()
    */
-  public Date getStartedSince() {
+  public String getUptime() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -227,5 +227,10 @@ public class AggregateMetrics implements IComponentMetrics {
   public void addRecordableComponent(IRecordableComponent recordableComponent){
     log.info("Adding component metrics to agregate: " + recordableComponent);
     componentMetrics.add(recordableComponent.getMetrics());
+  }
+
+  public String getDuration() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

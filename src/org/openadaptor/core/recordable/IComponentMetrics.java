@@ -49,17 +49,17 @@ public interface IComponentMetrics extends ILifecycleListener{
   
 	long [] getInputMsgCounts();
 	
-	long getProcessTimeMax();
+	String getProcessTimeMax();
 	
-	long getProcessTimeMin();
+	String getProcessTimeMin();
 	
-	long getProcessTimeAvg();
+	String getProcessTimeAvg();
     
-    long getIntervalTimeMax();
+    String getIntervalTimeMax();
     
-    long getIntervalTimeMin();
+    String getIntervalTimeMin();
     
-    long getIntervalTimeAvg();
+    String getIntervalTimeAvg();
 
 	String [] getInputMsgTypes();
     
@@ -71,11 +71,13 @@ public interface IComponentMetrics extends ILifecycleListener{
     
     long getExceptionMsgCount();
     
-    Date getStartedSince();
+    String getUptime();
     
     boolean enabled();
     
     void enable();
     
     void disable();
+    
+    String getDuration();
 }

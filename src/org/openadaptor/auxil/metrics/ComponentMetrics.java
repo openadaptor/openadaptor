@@ -31,6 +31,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
@@ -45,6 +49,10 @@ import org.openadaptor.core.recordable.IComponentMetrics;
  */
 public class ComponentMetrics implements IComponentMetrics{
 
+  private static String MILLISECONDS = "ms";
+  
+  private static String UNKNOWN = "Unknown";
+  
   Map inputMsgCounter = new HashMap();
   
   long minProcessTime = -1;
@@ -63,6 +71,10 @@ public class ComponentMetrics implements IComponentMetrics{
   
   private Date processEndTime;
   
+  private Date componentStartTime;
+  
+  private Date componentStopTime;
+  
   long minIntervalTime = -1;
   
   long maxIntervalTime = -1;
@@ -73,12 +85,52 @@ public class ComponentMetrics implements IComponentMetrics{
   
   boolean enabled = true;
 
+  PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
+  .printZeroRarelyLast()
+  .appendYears()
+  .appendSuffix(" year", " years")
+  .appendSeparator(" ")
+  .appendMonths()
+  .appendSuffix(" month", " months")
+  .appendSeparator(" ")
+  .appendDays()
+  .appendSuffix(" day", " days")
+  .appendSeparator(" ")
+  .appendHours()
+  .appendSuffix(" hour", " hours")
+  .appendSeparator(" ")
+  .appendMinutes()
+  .appendSuffix(" min", " mins")
+  .appendSeparator(" ")
+  .appendSeconds()
+  .appendSuffix(" sec", " secs")
+  .appendSeparator(" ")
+  .appendMillis()
+  .appendSuffix(" millisec", " " + MILLISECONDS)
+  .toFormatter();
   
   /**
    * Constructor.
    */
   public ComponentMetrics() {
     super();
+  }
+
+  public void recordComponentStart(){
+    componentStartTime = new Date();
+  }
+  
+  public void recordComponentStop(){
+    componentStopTime = new Date();
+  }
+  
+  public String getDuration() {
+    String durationStr = null;
+    if(componentStartTime!=null && componentStopTime!=null){
+      long duration = componentStopTime.getTime() - componentStartTime.getTime();
+      durationStr = periodFormatter.print(new Period(duration));
+    }
+    return durationStr;
   }
 
   /**
@@ -168,22 +220,36 @@ public class ComponentMetrics implements IComponentMetrics{
     return new long[]{count};
   }
   
-  public long getProcessTimeAvg() {
+  public String getProcessTimeAvg() {
     long msgCount = getInputMsgCounts()[0];
-    if(msgCount==0){
-      return -1;
+    long timeAvgMs = -1;
+    if(msgCount!=0){
+      timeAvgMs = (long) (totalProcessTime/msgCount);
     }
-    else{
-      return (long) (totalProcessTime/msgCount);
-    }
+    return formatDuration(timeAvgMs);
   }
 
-  public long getProcessTimeMin() {
-    return minProcessTime;
+  private String formatDuration(long duration){
+    StringBuffer sb = new StringBuffer();
+    if(duration==0){
+      sb.append("Less than 1 ");
+      sb.append(MILLISECONDS);
+    }
+    else if(duration==-1){
+      sb.append(UNKNOWN);
+    }
+    else{
+      sb.append(periodFormatter.print(new Period(duration)));
+    }
+    return sb.toString();
   }
   
-  public long getProcessTimeMax() {
-    return maxProcessTime;
+  public String getProcessTimeMin() {
+    return formatDuration(minProcessTime);
+  }
+  
+  public String getProcessTimeMax() {
+    return formatDuration(maxProcessTime);
   }
 
   public String [] getInputMsgTypes() {
@@ -191,22 +257,21 @@ public class ComponentMetrics implements IComponentMetrics{
     return (String[]) inputMsgTypes.toArray(new String[]{});
   }
 
-  public long getIntervalTimeAvg() {
+  public String getIntervalTimeAvg() {
     long msgCount = getInputMsgCounts()[0];
-    if(msgCount==0){
-      return -1;
+    long timeAvgMs = -1;
+    if(msgCount!=0){
+      timeAvgMs = (long) (totalIntervalTime/msgCount);
     }
-    else{
-      return (long) (totalIntervalTime/msgCount);
-    }
+    return formatDuration(timeAvgMs);
   }
 
-  public long getIntervalTimeMax() {
-    return maxIntervalTime;
+  public String getIntervalTimeMax() {
+    return formatDuration(maxIntervalTime);
   }
 
-  public long getIntervalTimeMin() {
-    return minIntervalTime;
+  public String getIntervalTimeMin() {
+    return formatDuration(minIntervalTime);
   }
 
   public long getDiscardedMsgCount() {
@@ -222,15 +287,19 @@ public class ComponentMetrics implements IComponentMetrics{
   }
 
   public String[] getOutputMsgTypes() {
-    return new String[]{"UNKNOWN"};
+    return new String[]{UNKNOWN};
   }
 
   /**
    * Checks how long the component has been started. Need to be a listener on
    * component state changes. 
    */
-  public Date getStartedSince() {
-    return lastStarted;
+  public String getUptime() {
+    if(lastStarted==null){
+      return UNKNOWN;
+    }
+    long uptime = new Date().getTime() - lastStarted.getTime();
+    return  formatDuration(uptime);
   }
 
   public void stateChanged(ILifecycleComponent component, State newState) {
