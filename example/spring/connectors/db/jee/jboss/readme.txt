@@ -15,7 +15,7 @@ oahsqldb-ds.xml - defines a Hypersonic DataSource
 oa-service.xml - exposes openadaptor as JBoss service
 
 When the JBoss instance is running, an adaptor exposed as JMX managed bean should be 
-available via JBoss web console at http://localhost:8080  (under openadaptor.org).
+available via JBoss web console at http://localhost:8080/web-console (under openadaptor.org).
 Adaptor can be kicked of via runSpringAdaptor() method run with the name of 
 adaptor config file (readerDS.xml) as argument.
 

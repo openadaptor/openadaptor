@@ -4,9 +4,10 @@
   $HeadURL$
  -->
 <!--  
-Descriptor of JMX managed spring adaptor bean that will be available through JBoss console and will allow for kicking off openadaptor after it's been deployed to JBoss.
-Openadaptor jars needs to be made available to JBoss (by being copied to the appropriate JBoss server lib area). 
-This file needs to be copied to an auto-deploy area of JBoss.
+Descriptor of JMX managed spring adaptor bean that will be available through JBoss console
+and will allow for kicking off openadaptor after it's been deployed to JBoss.
+Openadaptor jars needs to be made available to JBoss (by being copied to the appropriate 
+JBoss server lib area). This file needs to be copied to an auto-deploy area of JBoss.
 -->
 
 <server>
