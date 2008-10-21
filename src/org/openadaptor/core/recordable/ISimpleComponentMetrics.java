@@ -27,11 +27,28 @@
 package org.openadaptor.core.recordable;
 
 /**
+ * Interface simple metrics associated with one Node.
+ * 
+ * DRAFT. NOT READY FOR USE.
  * 
  * @author Kris Lachor
  */
 public interface ISimpleComponentMetrics {
 
-  String getOutputMsgs();
-   
+    String getOutputMsgs();
+  
+   /**
+    * Time it took to process messages.
+    */
+    String getProcessTime();
+    
+    String getIntervalTime();
+    
+    long getDiscardedMsgCount();
+    
+    long getExceptionMsgCount();
+    
+    String getUptime();
+    
+    String getInputMsgs();
 }

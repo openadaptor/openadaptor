@@ -45,34 +45,22 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
  */
 public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
   
-//	long [] getInputMsgCounts();
+	long [] getInputMsgCounts();
+    
+	String getProcessTimeMax();
 	
-    String getInputMsgs();
+	String getProcessTimeMin();
     
-//	String getProcessTimeMax();
-	
-//	String getProcessTimeMin();
-	
-	String getProcessTime();
+    String getIntervalTimeMax();
     
-//    String getIntervalTimeMax();
-    
-//    String getIntervalTimeMin();
-    
-    String getIntervalTime();
+    String getIntervalTimeMin();
 
-//	String [] getInputMsgTypes();
+	String [] getInputMsgTypes();
     
-//    String [] getOutputMsgTypes();
+    String [] getOutputMsgTypes();
     
-    long getDiscardedMsgCount();
-    
-//    long getOutputMsgCount();
-    
-    long getExceptionMsgCount();
-    
-    String getUptime();
-    
+    long getOutputMsgCount();
+   
     boolean enabled();
     
     void enable();
