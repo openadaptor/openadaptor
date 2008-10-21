@@ -39,6 +39,6 @@ public interface IRecordableComponent {
   /**
    * @return message volume and processing time metrics relating to this component.
    */
-  IComponentMetrics getMetrics();
+  IDetailedComponentMetrics getMetrics();
   
 }

@@ -39,7 +39,7 @@ import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
 
 /**
  * Class that maintains all metrics associated with one Node.
@@ -48,7 +48,7 @@ import org.openadaptor.core.recordable.IComponentMetrics;
  * 
  * @author Kris Lachor
  */
-public class ComponentMetrics implements IComponentMetrics{
+public class ComponentMetrics implements IDetailedComponentMetrics{
 
   private static String MILLISECONDS = "ms";
   

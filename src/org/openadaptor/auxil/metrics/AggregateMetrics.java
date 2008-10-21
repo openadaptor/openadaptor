@@ -35,7 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
@@ -45,7 +45,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class AggregateMetrics implements IComponentMetrics {
+public class AggregateMetrics implements IDetailedComponentMetrics {
 
   private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
@@ -57,13 +57,13 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * Disables metrics recording across entire adaptor.
    * 
-   * @see org.openadaptor.core.recordable.IComponentMetrics#disable()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#disable()
    */
   public void disable() {
     log.info("Disabling metrics recording in all recordable components");
     Iterator it = componentMetrics.iterator();
     while(it.hasNext()){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
       detailedMetrics.disable();
     }
     enabled = false;
@@ -72,13 +72,13 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * Enables metrics recording across entire adaptor.
    * 
-   * @see org.openadaptor.core.recordable.IComponentMetrics#enable()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#enable()
    */
   public void enable() {
     log.info("Enabling metrics recording in all recordable components");
     Iterator it = componentMetrics.iterator();
     while(it.hasNext()){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
       detailedMetrics.enable();
     }
     enabled = true;
@@ -87,7 +87,7 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * TODO unclear what this should return. 
    * 
-   * @see org.openadaptor.core.recordable.IComponentMetrics#enabled()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#enabled()
    */
   public boolean enabled() {
     return enabled;
@@ -96,13 +96,13 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * Returns a sum of discarded messages from all recordable components.
    * 
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getDiscardedMsgCount()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getDiscardedMsgCount()
    */
   public long getDiscardedMsgCount() {
     Iterator it = componentMetrics.iterator();
     long discardedCount = 0;
     while(it.hasNext()){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
       discardedCount+=detailedMetrics.getDiscardedMsgCount();
     }
     log.info("Sum of discarded messages in all recordable components: " + discardedCount);
@@ -112,13 +112,13 @@ public class AggregateMetrics implements IComponentMetrics {
   /**
    * Returns a sum of messages that caused an exception from all recordable components.
    * 
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getExceptionMsgCount()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getExceptionMsgCount()
    */
   public long getExceptionMsgCount() {
     Iterator it = componentMetrics.iterator();
     long exceptionMsgsCount = 0;
     while(it.hasNext()){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
       exceptionMsgsCount+=detailedMetrics.getExceptionMsgCount();
     }
     log.info("Sum of messages that caused an exception in all recordable components: " + exceptionMsgsCount);
@@ -126,7 +126,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getInputMsgCounts()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getInputMsgCounts()
    */
   public long[] getInputMsgCounts() {
     //Need to get hold of the nodes at the start of the pipeline
@@ -134,7 +134,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getInputMsgTypes()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getInputMsgTypes()
    */
   public String[] getInputMsgTypes() {
     //Need to get hold of the nodes at the start of the pipeline
@@ -142,7 +142,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTime()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTime()
    */
   public String getIntervalTime() {
     // Need to get hold of the first and last nodes in the pipeline
@@ -150,7 +150,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMax()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTimeMax()
    */
   public String getIntervalTimeMax() {
     // Need to get hold of the first and last nodes in the pipeline
@@ -158,7 +158,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getIntervalTimeMin()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTimeMin()
    */
   public String getIntervalTimeMin() {
     // Need to get hold of the first and last nodes in the pipeline
@@ -166,7 +166,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getOutputMsgCount()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getOutputMsgCount()
    */
   public long getOutputMsgCount() {
     // need to get hold of last nodes in the pipeline
@@ -174,7 +174,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /**
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getOutputMsgTypes()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getOutputMsgTypes()
    */
   public String[] getOutputMsgTypes() {
     // need to get hold of last nodes in the pipeline
@@ -182,7 +182,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeAvg()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeAvg()
    */
   public String getProcessTime() {
     // TODO Auto-generated method stub
@@ -190,7 +190,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeMax()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeMax()
    */
   public String getProcessTimeMax() {
     // TODO Auto-generated method stub
@@ -198,7 +198,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getProcessTimeMin()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeMin()
    */
   public String getProcessTimeMin() {
     // TODO Auto-generated method stub
@@ -206,7 +206,7 @@ public class AggregateMetrics implements IComponentMetrics {
   }
 
   /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IComponentMetrics#getStartedSince()
+   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getStartedSince()
    */
   public String getUptime() {
     // TODO Auto-generated method stub

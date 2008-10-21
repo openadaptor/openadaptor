@@ -23,47 +23,32 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
-
+ */
 package org.openadaptor.core.recordable;
 
-import org.openadaptor.core.lifecycle.ILifecycleListener;
-
 /**
- * Represents a component that maintains runtime metrics about messages it
- * processed.
+ * Interface simple metrics associated with one Node.
  * 
  * DRAFT. NOT READY FOR USE.
  * 
- * TODO change name to IComponentMetrics. IComponentMetrics will be a new interface,
- * with one method returning IComponentMetrics. All Nodes will be RecordableComponents.
- * 
- * TODO this interface should not need to extends from ILifcecleListener, it's got nothing 
- * to do with it. The implementation can implement ILifecycleListener though. 
- * 
  * @author Kris Lachor
  */
-public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
-  
-	long [] getInputMsgCounts();
-    
-	String getProcessTimeMax();
-	
-	String getProcessTimeMin();
-    
-    String getIntervalTimeMax();
-    
-    String getIntervalTimeMin();
+public interface IComponentMetrics {
 
-	String [] getInputMsgTypes();
+    String getOutputMsgs();
+  
+   /**
+    * Time it took to process messages.
+    */
+    String getProcessTime();
     
-    String [] getOutputMsgTypes();
+    String getIntervalTime();
     
-    long getOutputMsgCount();
-   
-    boolean enabled();
+    long getDiscardedMsgCount();
     
-    void enable();
+    long getExceptionMsgCount();
     
-    void disable();
+    String getUptime();
+    
+    String getInputMsgs();
 }
