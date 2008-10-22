@@ -37,6 +37,7 @@ import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IDetailedComponentMetrics;
@@ -50,6 +51,10 @@ import org.openadaptor.core.recordable.IDetailedComponentMetrics;
  */
 public class ComponentMetrics implements IDetailedComponentMetrics{
 
+  public static String ARRAY_OF ="array_of_";
+  
+  public static String HETEROGENEOUS_TYPES = "heterogeneous_types";
+  
   private static String MILLISECONDS = "ms";
   
   private static String UNKNOWN = "Unknown";
@@ -58,9 +63,9 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   
   private static String MESSAGES_OF_TYPE = " messages of type ";
   
-  Map inputMsgCounter = new HashMap();
+  private Map inputMsgCounter = new HashMap();
   
-  Map outputMsgCounter = new HashMap();
+  private Map outputMsgCounter = new HashMap();
   
   long minProcessTime = -1;
   
@@ -93,28 +98,28 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   boolean enabled = true;
 
   PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
-  .printZeroRarelyLast()
-  .appendYears()
-  .appendSuffix(" year", " years")
-  .appendSeparator(" ")
-  .appendMonths()
-  .appendSuffix(" month", " months")
-  .appendSeparator(" ")
-  .appendDays()
-  .appendSuffix(" day", " days")
-  .appendSeparator(" ")
-  .appendHours()
-  .appendSuffix(" hour", " hours")
-  .appendSeparator(" ")
-  .appendMinutes()
-  .appendSuffix(" min", " mins")
-  .appendSeparator(" ")
-  .appendSeconds()
-  .appendSuffix(" sec", " secs")
-  .appendSeparator(" ")
-  .appendMillis()
-  .appendSuffix(" millisec", " " + MILLISECONDS)
-  .toFormatter();
+    .printZeroRarelyLast()
+    .appendYears()
+    .appendSuffix(" year", " years")
+    .appendSeparator(" ")
+    .appendMonths()
+    .appendSuffix(" month", " months")
+    .appendSeparator(" ")
+    .appendDays()
+    .appendSuffix(" day", " days")
+    .appendSeparator(" ")
+    .appendHours()
+    .appendSuffix(" hour", " hours")
+    .appendSeparator(" ")
+    .appendMinutes()
+    .appendSuffix(" min", " mins")
+    .appendSeparator(" ")
+    .appendSeconds()
+    .appendSuffix(" sec", " secs")
+    .appendSeparator(" ")
+    .appendMillis()
+    .appendSuffix(" millisec", " " + MILLISECONDS)
+    .toFormatter();
   
   /**
    * Constructor.
@@ -132,7 +137,22 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   }
 
   /**
-   * Indicates start of message processing. 
+   * Records input message. The <code>inputMsgCounter</code> maps types of input 
+   * messages to the number of occurences. A distintion is made of messages with
+   * single elements and messages with arrays of elements. Furthermore, when
+   * dealing with an array or elements a check is made of elements are of the
+   * same type. Samples of <code>inputMsgCounter</code> are:
+   * 
+   * a)
+   * java.lang.String -> 3434
+   * ----------------------------------
+   * b)
+   * array_of_java.lang.String -> 123
+   * ----------------------------------
+   * c)
+   * array_of_heterogeneous_types -> 3
+   * java.lang.Short -> 15
+   * 
    * Starts timers.
    * 
    * @param msg
@@ -141,7 +161,6 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     if(!enabled){
       return;
     }
-    
     processStartTime = new Date();
     
     /* calculate intervals */
@@ -156,20 +175,50 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
       }
     }
     
-    if(msg.getData().length==0){
+    Object [] data = msg.getData();
+    if(data.length==0){
       return;
     }
-    String msgPayloadType = msg.getData()[0].getClass().getName();
-    Object count = inputMsgCounter.get(msgPayloadType);
+    StringBuffer msgPayloadType = new StringBuffer();
+    
+    /* If data made up of more than one element it'll be described as an array */
+    if(data.length>1){
+      msgPayloadType.append(ARRAY_OF);
+      
+      /* Check if array holds homogeneous or heterogeneous types */
+      String firstClass = data[0].getClass().getName();
+      boolean sameTypes = true;
+      for(int i=1; i<data.length; i++){
+        if(! data[i].getClass().getName().equals(firstClass)){
+          sameTypes = false;
+          break;
+        }
+      }
+      if(sameTypes){
+        msgPayloadType.append(data[0].getClass().getName());
+      }
+      else{
+        msgPayloadType.append(HETEROGENEOUS_TYPES);
+      }
+    }
+    
+    /* Data holds one element*/
+    else{
+      msgPayloadType.append(data[0].getClass().getName());
+    }
+    String msgPayloadTypeStr = msgPayloadType.toString();
+  
+    /* Increase the counter */
+    Object count = inputMsgCounter.get(msgPayloadTypeStr);
     if(count==null){
-      inputMsgCounter.put(msgPayloadType, new Integer(1));
+      inputMsgCounter.put(msgPayloadTypeStr, new Long(1));
     }
     else{
-      Integer countInt = (Integer) count;
-      inputMsgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
+      Long countLong = (Long) count;
+      inputMsgCounter.put(msgPayloadTypeStr, new Long(countLong.longValue()+1));
     }
-   
   }
+  
   
   /**
    * 
@@ -180,35 +229,90 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     if(!enabled){
       return;
     }
-    processEndTime = new Date();
-    long processTime = processEndTime.getTime() - processStartTime.getTime();
-    totalProcessTime+=processTime;
-    if(maxProcessTime<processTime){
-      maxProcessTime=processTime;
+   
+    if(processStartTime!=null){
+      processEndTime = new Date();
+      long processTime = processEndTime.getTime() - processStartTime.getTime();
+      totalProcessTime+=processTime;
+      if(maxProcessTime<processTime){
+        maxProcessTime=processTime;
+      }
+      if(minProcessTime>processTime || minProcessTime==-1){
+        minProcessTime=processTime;
+      }
     }
-    if(minProcessTime>processTime || minProcessTime==-1){
-      minProcessTime=processTime;
+    else{
+      throw new OAException("Could not match input and output messages.");
     }
+     
     outputMsgs++;
     
     Object [] collatedOutput = response.getCollatedOutput();
     if(collatedOutput.length==0){
       return;
     }
-    //TODO check all outupt types
-    String msgPayloadType = collatedOutput[0].getClass().getName();
-    Object count = outputMsgCounter.get(msgPayloadType);
-    if(count==null){
-      outputMsgCounter.put(msgPayloadType, new Integer(1));
-    }
-    else{
-      //TODO use longs
-      Integer countInt = (Integer) count;
-      outputMsgCounter.put(msgPayloadType, new Integer(countInt.intValue()+1));
+    
+//    String msgPayloadType = collatedOutput[0].getClass().getName();
+//    Object count = outputMsgCounter.get(msgPayloadType);
+//    if(count==null){
+//      outputMsgCounter.put(msgPayloadType, new Long(1));
+//    }
+//    else{
+//      Long countLong = (Long) count;
+//      outputMsgCounter.put(msgPayloadType, new Long(countLong.intValue()+1));
+//    }
+
+    //--------------------------------
+//    Object [] collatedOutput = response.getCollatedOutput();
+    StringBuffer msgPayloadType = new StringBuffer();
+    
+    /* If data made up of more than one element it'll be described as an array */
+    if(collatedOutput.length==1){
+
+      Object [] output = (Object[]) collatedOutput[0]; 
+      if(output.length>1){
+        msgPayloadType.append(ARRAY_OF);
+        
+        /* Check if array holds homogeneous or heterogeneous types */
+        String firstClass = output[0].getClass().getName();
+        boolean sameTypes = true;
+        for(int i=1; i<output.length; i++){
+          if(! output[i].getClass().getName().equals(firstClass)){
+            sameTypes = false;
+            break;
+          }
+        }
+        if(sameTypes){
+          msgPayloadType.append(output[0].getClass().getName());
+        }
+        else{
+          msgPayloadType.append(HETEROGENEOUS_TYPES);
+        }
+      }
+      /* collatedOutput holds one element*/
+      else{
+        msgPayloadType.append(output[0].getClass().getName());
+      }
     }
     
+//    /* collatedOutput holds one element*/
+//    else{
+//      msgPayloadType.append( ((Object[])collatedOutput[0])[0].getClass().getName());
+//    }
+    String msgPayloadTypeStr = msgPayloadType.toString();
+  
+    /* Increase the counter */
+    Object count = outputMsgCounter.get(msgPayloadTypeStr);
+    if(count==null){
+      outputMsgCounter.put(msgPayloadTypeStr, new Long(1));
+    }
+    else{
+      Long countLong = (Long) count;
+      outputMsgCounter.put(msgPayloadTypeStr, new Long(countLong.longValue()+1));
+    }
   }
 
+  
   public void recordDiscardedMsgEnd(Message msg){
     if(!enabled){
       return;
@@ -415,6 +519,22 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   }
   public boolean enabled() {
     return this.enabled;
+  }
+
+  protected Date getProcessStartTime() {
+    return processStartTime;
+  }
+
+  protected Map getInputMsgCounter() {
+    return inputMsgCounter;
+  }
+
+  protected Date getProcessEndTime() {
+    return processEndTime;
+  }
+
+  protected Map getOutputMsgCounter() {
+    return outputMsgCounter;
   }
  
 }

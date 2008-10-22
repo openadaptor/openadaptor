@@ -30,17 +30,19 @@ package org.openadaptor.core.recordable;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
- * Represents a component that maintains runtime metrics about messages it
- * processed.
+ * Represents a class that maintains runtime metrics for an {@link IRecordableComponent}
+ * and the messages it processes.
+ * 
+ * This interface extends {@IComponentMetrics} with more detailed methods that
+ * return mostly numeric (as opposed to Strings) data that can be further processed
+ * to generate reports etc.
  * 
  * DRAFT. NOT READY FOR USE.
+ *
+ * TODO this interface should not need to extends from ILifcecleListener (nothing to do with it).
+ * implementations can implement ILifecycleListener. 
  * 
- * TODO change name to IDetailedComponentMetrics. IDetailedComponentMetrics will be a new interface,
- * with one method returning IDetailedComponentMetrics. All Nodes will be RecordableComponents.
- * 
- * TODO this interface should not need to extends from ILifcecleListener, it's got nothing 
- * to do with it. The implementation can implement ILifecycleListener though. 
- * 
+ * @see IComponentMetrics, ComponentMetrics, IRecordableComponent
  * @author Kris Lachor
  */
 public interface IDetailedComponentMetrics extends IComponentMetrics, ILifecycleListener{

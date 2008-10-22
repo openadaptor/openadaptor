@@ -27,10 +27,11 @@
 package org.openadaptor.core.recordable;
 
 /**
- * Interface simple metrics associated with one Node.
+ * Interface simple metrics associated with an {@link IRecordableComponent}.
  * 
  * DRAFT. NOT READY FOR USE.
  * 
+ * @see IComponentMetrics, ComponentMetrics, IRecordableComponent
  * @author Kris Lachor
  */
 public interface IComponentMetrics {
