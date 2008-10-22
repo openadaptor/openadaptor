@@ -38,7 +38,7 @@ import junit.framework.TestCase;
  */
 public class ComponentMetricsUnitTestCase extends TestCase {
 
-  ComponentMetrics metrics = new ComponentMetrics();
+  ComponentMetrics metrics = new ComponentMetrics(true);
   
   Object [] testData1 = new Object[]{"foo"};
   
@@ -54,28 +54,6 @@ public class ComponentMetricsUnitTestCase extends TestCase {
   
   Message testMsg3 = new Message(testData3, testSender, null);
    
-  /* (non-Javadoc)
-   * @see junit.framework.TestCase#setUp()
-   */
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordComponentStart()}.
-//   */
-//  public void testRecordComponentStart() {
-////    fail("Not yet implemented");
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordComponentStop()}.
-//   */
-//  public void testRecordComponentStop() {
-//    fail("Not yet implemented");
-//  }
-//
-
   /**
    * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics
    * #recordMessageStart(org.openadaptor.core.Message)}.
@@ -109,7 +87,6 @@ public class ComponentMetricsUnitTestCase extends TestCase {
     assertEquals(metrics.getInputMsgCounter().get(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES), new Long(2));
   }
 
- 
   /**
    * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
    */
@@ -143,7 +120,57 @@ public class ComponentMetricsUnitTestCase extends TestCase {
     assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(1));
     assertEquals(metrics.getOutputMsgCounter().get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
   }
+   
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
+   */
+  public void testGetInputMsgs() {
+    assertEquals( metrics.getInputMsgs(), ComponentMetrics.NONE);
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg2);
+    assertEquals( metrics.getInputMsgs(),"1" + ComponentMetrics.MESSAGES_OF_TYPE + ComponentMetrics.ARRAY_OF + "java.lang.String/n"
+                                        +"2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String"); 
+                                        
+  }
+
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
+   */
+  public void testGetOutputMsgs() {
+    assertEquals( metrics.getOutputMsgs(), ComponentMetrics.NONE);
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals(metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals(metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    response = new Response(); 
+    response.addOutput(testData2);
+    metrics.recordMessageStart(testMsg2);
+    metrics.recordMessageEnd(testMsg2, response);
+    assertEquals( metrics.getOutputMsgs(),"1" + ComponentMetrics.MESSAGES_OF_TYPE + ComponentMetrics.ARRAY_OF + "java.lang.String/n"
+                                         +"2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String"); 
+  }
   
+///**
+//* Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordComponentStart()}.
+//*/
+//public void testRecordComponentStart() {
+//// fail("Not yet implemented");
+//}
+//
+///**
+//* Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordComponentStop()}.
+//*/
+//public void testRecordComponentStop() {
+// fail("Not yet implemented");
+//}
+//
   
 //
 //  /**
@@ -174,19 +201,11 @@ public class ComponentMetricsUnitTestCase extends TestCase {
 //    fail("Not yet implemented");
 //  }
 //
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
-//   */
-//  public void testGetOutputMsgs() {
-//    fail("Not yet implemented");
-//  }
+
 //
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
-//   */
-//  public void testGetInputMsgs() {
-//    fail("Not yet implemented");
-//  }
+  
+ 
+  
 //
 //  /**
 //   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getProcessTime()}.

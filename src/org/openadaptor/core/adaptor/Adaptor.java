@@ -29,12 +29,16 @@ package org.openadaptor.core.adaptor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.*;
 import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
@@ -42,6 +46,7 @@ import org.openadaptor.core.transaction.TransactionManager;
 import org.openadaptor.util.Application;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +82,8 @@ import java.util.Map;
  * 
  */
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
-     Administrable, ILifecycleListener {
-
+     Administrable, ILifecycleListener, IRecordableComponent {
+ 
   private static final Log log = LogFactory.getLog(Adaptor.class);
 
   private static final long DEFAULT_TIMEOUT_MS = 1000;
@@ -138,7 +143,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   private AdaptorRunConfiguration runConfiguration;
   
   private boolean hasShutdownHooks = false;
-
+  
+  /** Metrics disabled by default .*/
+  private boolean metricsEnabled = false;
+  
+  private ComponentMetrics metrics = new ComponentMetrics();
+  
   /**
    * shutdown hook
    */
@@ -234,6 +244,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     if (component instanceof ReadNode) {
       ((ReadNode) component).setTimeoutMs(timeoutMs );
     }
+    
+    /* enable recording metrics in all components if necessary */
+    if(component instanceof IRecordableComponent && this.metricsEnabled){
+      ((IRecordableComponent) component).setMetricsEnabled(true);
+      log.debug("component " + component.getId() + " - enabled metrics");
+    }
   }
 
   /**
@@ -270,7 +286,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     if (state != State.STOPPED) {
       throw new RuntimeException("adaptor is currently " + state.toString());
     }
-
+    
     exitCode = 0;
     exitErrors = new ArrayList();
     registerComponents();
@@ -550,9 +566,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     return new Admin();
   }
 
-  public interface AdminMBean {
+  public interface AdminMBean extends IComponentMetrics{
     String dumpState();
-
+ 
     void exit();
 
     void interrupt();
@@ -584,8 +600,71 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       Adaptor.this.interruptRunnables();
     }
 
+    /**
+     * @see IComponentMetrics#getIntervalTime()
+     */
+    public String getIntervalTime() {
+      return metrics.getIntervalTime();
+    }
+
+    /**
+     * @see IComponentMetrics#getProcessTime()
+     */
+    public String getProcessTime() {
+      return metrics.getProcessTime();
+    }
+
+    /**
+     * @see IComponentMetrics#getUptime()
+     */
+    public String getUptime() {
+      return metrics.getUptime();
+    }
+
+    /**
+     * @see IComponentMetrics#getInputMsgs()
+     */
+    public String getInputMsgs() {
+      return metrics.getInputMsgs();
+    }
+
+    /**
+     * @see IComponentMetrics#getOutputMsgs()
+     */
+    public String getOutputMsgs() {
+      return metrics.getOutputMsgs();
+    }
+
+    /**
+     * @see IComponentMetrics#setMetricsEnabled(boolean)
+     */
+    public void setMetricsEnabled(boolean metricsEnabled) {
+      metrics.setMetricsEnabled(metricsEnabled); 
+    }
+
+    /**
+     * @see IComponentMetrics#isMetricsEnabled()
+     */
+    public boolean isMetricsEnabled() {
+      return metrics.isMetricsEnabled();
+    }
+
+    /**
+     * @see IComponentMetrics#getDiscardedMsgCount()
+     */
+    public long getDiscardedMsgCount() {
+      return metrics.getDiscardedMsgCount();
+    }
+
+    /**
+     * @see IComponentMetrics#getExceptionMsgCount()
+     */
+    public long getExceptionMsgCount() {
+      return metrics.getExceptionMsgCount();
+    }
   }
 
+  
   /**
    * Returns the state of this adaptor.
    * Method primarily for JMX use.
@@ -647,5 +726,41 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    */
   protected boolean hasShutdownHooks() {
     return hasShutdownHooks;
+  }
+
+  /**
+   * Returns metrics for this adaptor.
+   * 
+   * @see IRecordableComponent#getMetrics()
+   */
+  public IDetailedComponentMetrics getMetrics() {
+    return metrics;
+  }
+
+  /**
+   * True if metrics recording is enabled for this adaptor. 
+   */
+  public boolean isMetricsEnabled() {
+    return metricsEnabled;
+  }
+
+  /**
+   * Enables/disabled metrics recording for this adaptor. 
+   */
+  public void setMetricsEnabled(boolean metricsEnabled) {
+    this.metricsEnabled = metricsEnabled;    
+  }
+  
+  /**
+   * TODO comments
+   * @return
+   */
+  public Collection getMessageProcessors(){ 
+    if(processor instanceof Router){
+      return ((Router) processor).getRoutingMap().getMessageProcessors();
+    }
+    else{
+      return null;
+    }
   }
 }

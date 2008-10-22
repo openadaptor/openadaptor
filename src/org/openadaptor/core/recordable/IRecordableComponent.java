@@ -26,6 +26,8 @@
  */
 package org.openadaptor.core.recordable;
 
+import org.openadaptor.core.IComponent;
+
 /**
  * A recordable component is capable of producing metrics that describe 
  * message volume and processing time.
@@ -34,11 +36,14 @@ package org.openadaptor.core.recordable;
  * 
  * @author Kris Lachor
  */
-public interface IRecordableComponent {
+public interface IRecordableComponent extends IComponent{
 
   /**
    * @return message volume and processing time metrics relating to this component.
    */
   IDetailedComponentMetrics getMetrics();
   
+  void setMetricsEnabled(boolean metricsEnabled);
+ 
+  boolean isMetricsEnabled();
 }

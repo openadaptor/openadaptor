@@ -52,4 +52,8 @@ public interface IComponentMetrics {
     String getUptime();
     
     String getInputMsgs();
+    
+    void setMetricsEnabled(boolean metricsEnabled);
+    
+    boolean isMetricsEnabled();
 }

@@ -243,4 +243,14 @@ public class AggregateMetrics implements IDetailedComponentMetrics {
     // TODO Auto-generated method stub
     return null;
   }
+
+  public void setMetricsEnabled(boolean metricsEnabled) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public boolean isMetricsEnabled() {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

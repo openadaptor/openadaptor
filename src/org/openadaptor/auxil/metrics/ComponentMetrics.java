@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -41,6 +43,7 @@ import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
  * Class that maintains all metrics associated with one Node.
@@ -50,28 +53,36 @@ import org.openadaptor.core.recordable.IDetailedComponentMetrics;
  * @author Kris Lachor
  */
 public class ComponentMetrics implements IDetailedComponentMetrics{
-
-  public static String ARRAY_OF ="array_of_";
   
-  public static String HETEROGENEOUS_TYPES = "heterogeneous_types";
+  private static final Log log = LogFactory.getLog(ComponentMetrics.class.getName());
   
-  private static String MILLISECONDS = "ms";
+  public static final String ARRAY_OF ="array_of_";
   
-  private static String UNKNOWN = "Unknown";
+  public static final String HETEROGENEOUS_TYPES = "heterogeneous_types";
   
-  private static String NONE = "None";
+  private static final String MILLISECONDS = "ms";
   
-  private static String MESSAGES_OF_TYPE = " messages of type ";
+  private static final String UNKNOWN = "Unknown";
+  
+  protected static final String NONE = "None";
+  
+  protected static String MESSAGES_OF_TYPE = " message(s) of type ";
+  
+  private static final String LESS_THAN_ONE =  "less than 1 ";
+  
+  private static final String METRICS_DISABLED = "Metrics recording DISABLED";
   
   private Map inputMsgCounter = new HashMap();
   
   private Map outputMsgCounter = new HashMap();
   
+  private IRecordableComponent monitoredComponent;
+  
   long minProcessTime = -1;
   
   long maxProcessTime = -1;
   
-  long totalProcessTime = -1;
+  long totalProcessTime = 0;
   
   long outputMsgs = 0;
   
@@ -91,11 +102,11 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   
   long maxIntervalTime = -1;
   
-  long totalIntervalTime = -1;
+  long totalIntervalTime = 0;
   
   Date lastStarted = null;
   
-  boolean enabled = true;
+  boolean enabled = false;
 
   PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
     .printZeroRarelyLast()
@@ -126,6 +137,20 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
    */
   public ComponentMetrics() {
     super();
+  }
+  
+  
+  
+  public ComponentMetrics(boolean enabled) {
+    super();
+    this.enabled = enabled;
+  }
+
+
+
+  public ComponentMetrics(IRecordableComponent monitoredComponent) {
+    this();
+    this.monitoredComponent = monitoredComponent;
   }
 
   public void recordComponentStart(){
@@ -174,6 +199,7 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
         minIntervalTime=intervalTime;
       }
     }
+    String id = monitoredComponent==null?"Unknown":monitoredComponent.getId();
     
     Object [] data = msg.getData();
     if(data.length==0){
@@ -252,53 +278,46 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
       return;
     }
     
-//    String msgPayloadType = collatedOutput[0].getClass().getName();
-//    Object count = outputMsgCounter.get(msgPayloadType);
-//    if(count==null){
-//      outputMsgCounter.put(msgPayloadType, new Long(1));
-//    }
-//    else{
-//      Long countLong = (Long) count;
-//      outputMsgCounter.put(msgPayloadType, new Long(countLong.intValue()+1));
-//    }
-
-    //--------------------------------
-//    Object [] collatedOutput = response.getCollatedOutput();
     StringBuffer msgPayloadType = new StringBuffer();
     
-    /* If data made up of more than one element it'll be described as an array */
+    /* If the node did not split the message into multiple messages */
     if(collatedOutput.length==1){
 
-      Object [] output = (Object[]) collatedOutput[0]; 
-      if(output.length>1){
-        msgPayloadType.append(ARRAY_OF);
-        
-        /* Check if array holds homogeneous or heterogeneous types */
-        String firstClass = output[0].getClass().getName();
-        boolean sameTypes = true;
-        for(int i=1; i<output.length; i++){
-          if(! output[i].getClass().getName().equals(firstClass)){
-            sameTypes = false;
-            break;
+      /* Dealing with a batch */
+      if(collatedOutput[0].getClass().isArray()){
+      
+        Object [] output = (Object[]) collatedOutput[0]; 
+        if(output.length>1){
+          msgPayloadType.append(ARRAY_OF);
+          
+          /* Check if array holds homogeneous or heterogeneous types */
+          String firstClass = output[0].getClass().getName();
+          boolean sameTypes = true;
+          for(int i=1; i<output.length; i++){
+            if(! output[i].getClass().getName().equals(firstClass)){
+              sameTypes = false;
+              break;
+            }
+          }
+          if(sameTypes){
+            msgPayloadType.append(output[0].getClass().getName());
+          }
+          else{
+            msgPayloadType.append(HETEROGENEOUS_TYPES);
           }
         }
-        if(sameTypes){
+        /* batch holds one element */
+        else{
           msgPayloadType.append(output[0].getClass().getName());
         }
-        else{
-          msgPayloadType.append(HETEROGENEOUS_TYPES);
-        }
+        
       }
-      /* collatedOutput holds one element*/
+      /* Dealing with a single element */
       else{
-        msgPayloadType.append(output[0].getClass().getName());
+        msgPayloadType.append(collatedOutput[0].getClass().getName()); 
       }
     }
-    
-//    /* collatedOutput holds one element*/
-//    else{
-//      msgPayloadType.append( ((Object[])collatedOutput[0])[0].getClass().getName());
-//    }
+   
     String msgPayloadTypeStr = msgPayloadType.toString();
   
     /* Increase the counter */
@@ -328,13 +347,16 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     exceptionMsgs++;
   }
   
+  /**
+   * How many input messages entered the component. 
+   */
   public long [] getInputMsgCounts(){
     long count = 0;
     Iterator it = inputMsgCounter.keySet().iterator();
     while(it.hasNext()){
       Object dataType = it.next();
-      Integer countInt = (Integer) inputMsgCounter.get(dataType);
-      count+= countInt.longValue();
+      Long countLong = (Long) inputMsgCounter.get(dataType);
+      count+= countLong.longValue();
     }
     return new long[]{count};
   }
@@ -345,13 +367,19 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     Iterator it = outputMsgCounter.keySet().iterator();
     while(it.hasNext()){
       Object dataType = it.next();
-      Integer countInt = (Integer) outputMsgCounter.get(dataType);
-      count+= countInt.longValue();
+      Long countLong = (Long) outputMsgCounter.get(dataType);
+      count+= countLong.longValue();
     }
     return new long[]{count};
   }
   
+  /**
+   * Collates numeric data about messages that left the component, in human readable format.
+   */
   public String getOutputMsgs() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
     StringBuffer outputMsgs = new StringBuffer();
     if(getOutputMsgCounts()[0]==0){
       outputMsgs.append(NONE);
@@ -366,16 +394,22 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
         outputMsgs.append("/n");
       }
       Object dataType = it.next();
-      Integer countInt = (Integer) outputMsgCounter.get(dataType);
-      outputMsgs.append(countInt);
+      Long countLong = (Long) outputMsgCounter.get(dataType);
+      outputMsgs.append(countLong);
       outputMsgs.append(MESSAGES_OF_TYPE);
       outputMsgs.append(dataType);
     }
     return outputMsgs.toString();
   }
 
-  
+
+  /**
+   * Collates numeric data about messages that entered the component, in human readable format.
+   */
   public String getInputMsgs() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
     StringBuffer inputMsgs = new StringBuffer();
     if(getInputMsgCounts()[0]==0){
       inputMsgs.append(NONE);
@@ -390,8 +424,8 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
         inputMsgs.append("/n");
       }
       Object dataType = it.next();
-      Integer countInt = (Integer) inputMsgCounter.get(dataType);
-      inputMsgs.append(countInt);
+      Long countLong = (Long) inputMsgCounter.get(dataType);
+      inputMsgs.append(countLong);
       inputMsgs.append(MESSAGES_OF_TYPE);
       inputMsgs.append(dataType);
     }
@@ -399,6 +433,9 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   }
   
   public String getProcessTime() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
     long msgCount = getInputMsgCounts()[0];
     long timeAvgMs = -1;
     if(msgCount!=0){
@@ -410,7 +447,7 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   private String formatDuration(long duration){
     StringBuffer sb = new StringBuffer();
     if(duration==0){
-      sb.append("Less than 1 ");
+      sb.append(LESS_THAN_ONE);
       sb.append(MILLISECONDS);
     }
     else if(duration==-1){
@@ -456,6 +493,9 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   }
 
   public String getIntervalTime() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
     long msgCount = getInputMsgCounts()[0];
     long timeAvgMs = -1;
     if(msgCount!=0){
@@ -535,6 +575,14 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
 
   protected Map getOutputMsgCounter() {
     return outputMsgCounter;
+  }
+
+  public void setMetricsEnabled(boolean metricsEnabled) {
+    enabled = metricsEnabled;
+  }
+
+  public boolean isMetricsEnabled() {
+    return enabled;
   }
  
 }
