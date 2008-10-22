@@ -5,7 +5,9 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 	<description>
 		<![CDATA[    
   This adaptor does the following...
@@ -55,11 +57,14 @@
 
 	<bean id="SwiftConvertor" class="org.openadaptor.auxil.convertor.swift.SwiftConvertor">
 	  <description>
-	     Default output format (0) is Raw Swift (text)
-	     format 1 is Swift as XML
-	     format 2 is SwiftMessage java object
+	     Default output format is raw swift text (SwiftConvertor.FORMAT_SWIFT_RAW)
+	     Other options are:
+	     Swift message as XML (SwiftConvertor.FORMAT_SWIFT_XML)
+	     Swift message as Java Object (SwiftConvertor.FORMAT_SWIFT_OBJECT)
 	  </description>
-	  <property name="outputFormat" value="0" />
+	  <property name="outputFormat">
+	    <util:constant static-field="org.openadaptor.auxil.convertor.swift.SwiftConvertor.FORMAT_SWIFT_RAW"/>
+	  </property>
 	</bean>
 
 	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
