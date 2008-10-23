@@ -17,7 +17,7 @@
   data by calling a webservice.
 
   Run it like this...
-    
+
     java org.openadaptor.spring.SpringAdaptor -config ws-xfire-writer.xml
     
   You need the following in your classpath
