@@ -16,7 +16,7 @@
     * converts records into SwiftMessage Objects
     * writes messages to console (stdout)
     
-  It is designed to illustrate the basic structure of a file reader/writer adaptor
+  It is designed to illustrate the basic structure of an adaptor which uses swift messages
 
   It may be started as follows
     java org.openadaptor.spring.SpringAdaptor -config swift-reader.xml
@@ -34,8 +34,7 @@
 	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
 		<property name="messageProcessor">
 			<bean class="org.openadaptor.core.router.Router">
-				<description>Pipeline to read from file and write to file
-				</description>
+				<description>Pipeline to read from file, convert swift message and write to console</description>
 				<property name="processors">
 					<list>
 						<ref bean="Reader" />
@@ -50,7 +49,7 @@
 	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 		<description></description>
 		<property name="filename" value="input/incoming_domestic_payment.swift" />
-				<property name="dataReader">
+		<property name="dataReader">
 			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
 		</property>
 	</bean>
@@ -63,12 +62,12 @@
 	     Swift message as Java Object (SwiftConvertor.FORMAT_SWIFT_OBJECT)
 	  </description>
 	  <property name="outputFormat">
-	    <util:constant static-field="org.openadaptor.auxil.convertor.swift.SwiftConvertor.FORMAT_SWIFT_RAW"/>
+	    <util:constant static-field="org.openadaptor.auxil.convertor.swift.SwiftConvertor.FORMAT_SWIFT_OBJECT"/>
 	  </property>
 	</bean>
 
 	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-		<description>This writer writes data to a file.</description>
+		<description>Without a filenam configures, this will just write to the console (stdout)</description>
 	</bean>
 
 </beans>
