@@ -140,7 +140,7 @@ public class DBEventDrivenPollingReadConnector extends AbstractPollingReadConnec
    * gets next statement to execute against the database, by calling
    * the eventPollSP and converting its ResultSet to a CallableStatement
    */
-  private IOrderedMap getNextEvent() {
+  protected IOrderedMap getNextEvent() {
     IOrderedMap event = null;
     ResultSet rs = null;
     try {
