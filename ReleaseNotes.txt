@@ -77,8 +77,12 @@ Miscellaneous
    
 Bug Fixes
 =========
+SC66: Added support for setting ReplyToQueueName and ReplyToQueueManagerName by MqConnection. 
+      Also suppressed the "MQJE001: Completion Code 2, Reason 2033" log statement. 
 
 SC69: Changes in removal of JVM shutdown hook.
+
+SC72: The value for mqContextUserAndPassword was not being set by MqConnection.
 
 SC73: Correct recognition of JVM 1.6 in registration.
 
