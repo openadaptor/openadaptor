@@ -42,7 +42,9 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
  * TODO this interface should not need to extends from ILifcecleListener (nothing to do with it).
  * implementations can implement ILifecycleListener. 
  * 
- * @see IComponentMetrics, ComponentMetrics, IRecordableComponent
+ * @see IComponentMetrics
+ * @see ComponentMetrics 
+ * @see IRecordableComponent
  * @author Kris Lachor
  */
 public interface IDetailedComponentMetrics extends IComponentMetrics, ILifecycleListener{

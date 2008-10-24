@@ -247,9 +247,10 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   
   
   /**
+   * Records end of message processing. 
    * 
-   * @param msg
-   * @param processTime
+   * @param msg holds the original message that entered the component.
+   * @param response holds the response to the original message. 
    */
   public void recordMessageEnd(Message msg, Response response){
     if(!enabled){

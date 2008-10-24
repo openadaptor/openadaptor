@@ -31,7 +31,9 @@ package org.openadaptor.core.recordable;
  * 
  * DRAFT. NOT READY FOR USE.
  * 
- * @see IComponentMetrics, ComponentMetrics, IRecordableComponent
+ * @see IComponentMetrics
+ * @see ComponentMetrics 
+ * @see IRecordableComponent
  * @author Kris Lachor
  */
 public interface IComponentMetrics {
@@ -45,8 +47,10 @@ public interface IComponentMetrics {
     
     String getIntervalTime();
     
+    //TODO to be moved under getOutputMsgs wings
     long getDiscardedMsgCount();
     
+    //TODO to be moved under getOutputMsgs wings
     long getExceptionMsgCount();
     
     String getUptime();

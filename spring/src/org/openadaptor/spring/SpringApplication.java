@@ -54,6 +54,8 @@ import javax.management.ObjectName;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -367,7 +369,6 @@ public class SpringApplication {
   }
 
   private static void setComponentIds(ListableBeanFactory factory) {
-    //String[] beanNames = factory.getBeanDefinitionNames();
     String[] beanNames = factory.getBeanNamesForType(IComponent.class);
     for (int i = 0; i < beanNames.length; i++) {      
       Object bean = factory.getBean(beanNames[i]);
@@ -390,15 +391,43 @@ public class SpringApplication {
     if (mbeanServer == null && jmxPort != 0) {
       mbeanServer = new org.openadaptor.core.jmx.MBeanServer(jmxPort);
     }
+    
+    /* 
+     * Accesses message processors from the adaptor. Message processors that 
+     * under the hood wrap IRead & IWriteConnectors, IData & IEnrichmentProcessors
+     * are capable of exposing component level metrics. Here they're registered
+     * with the JMX server. 
+     */
+    Object adaptorObj = getFirstBeanOfType(factory, Adaptor.class);
+    Map messageProcessorsByName = new HashMap();
+    if(adaptorObj != null){
+      Collection messageProcessors = ((Adaptor) adaptorObj).getMessageProcessors();
+      Iterator it = messageProcessors.iterator();
+      while(it.hasNext()){
+        IComponent messageProcessor = (IComponent) it.next();
+        messageProcessorsByName.put(messageProcessor.getId(), messageProcessor);
+      }
+    }
+    
+    /* Registers components with JMX server */
     if (mbeanServer != null) {
       attemptToRegisterBean(new FactoryConfig(configUrls), mbeanServer, "Config");
       String[] beanNames = factory.getBeanDefinitionNames();
       for (int i = 0; i < beanNames.length; i++) {
+
+        /* Register the bean */
         Object bean = factory.getBean(beanNames[i]);
         if (bean instanceof Administrable) {
-          bean = ((Administrable) bean).getAdmin();
+            bean = ((Administrable) bean).getAdmin();
         }
         attemptToRegisterBean(bean, mbeanServer, beanNames[i]);
+       
+        /* Now register the message processor corresponding to the bean */
+        IComponent msgProcessor = (IComponent) messageProcessorsByName.get(beanNames[i]);
+        if(msgProcessor != null && msgProcessor instanceof Administrable){
+          bean = ((Administrable) msgProcessor).getAdmin();
+          attemptToRegisterBean(bean, mbeanServer, beanNames[i] + "Node");
+        }
       }
     }
   }
@@ -418,7 +447,7 @@ public class SpringApplication {
   }
 
   private static Object getFirstBeanOfType(ListableBeanFactory factory, Class beanClass) {
-    Map beanMap = factory.getBeansOfType(MBeanServer.class);
+    Map beanMap = factory.getBeansOfType(beanClass);
     for (Iterator iter = beanMap.values().iterator(); iter.hasNext();) {
       return iter.next();
     }

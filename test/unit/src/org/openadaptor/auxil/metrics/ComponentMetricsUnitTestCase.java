@@ -89,6 +89,7 @@ public class ComponentMetricsUnitTestCase extends TestCase {
 
   /**
    * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
+   * Sends various types of messages sequentially.
    */
   public void testRecordMessageEnd() {
     
@@ -120,6 +121,26 @@ public class ComponentMetricsUnitTestCase extends TestCase {
     assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(1));
     assertEquals(metrics.getOutputMsgCounter().get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
   }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
+   * Sends two messages; sends 2nd before 1st is finished.
+   */
+  public void testRecordMessageEndThreadSafe() {
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertNotNull(metrics.getProcessEndTime()); 
+    assertEquals(metrics.getInputMsgCounter().size(),1);
+    assertNotNull(metrics.getOutputMsgCounter());
+    assertEquals(metrics.getOutputMsgCounter().size(),1);
+    assertTrue(metrics.getOutputMsgCounter().keySet().contains("java.lang.String"));
+    assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(2));
+  }
+  
    
   /**
    * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.

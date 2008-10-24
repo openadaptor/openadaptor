@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentProcessor;
@@ -41,9 +42,14 @@ import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
+import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
+import org.openadaptor.auxil.metrics.ComponentMetrics;
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.router.Router;
 
 /**
@@ -71,18 +77,31 @@ import org.openadaptor.core.router.Router;
  * @see Adaptor
  * @see Router
  */
-public class Node extends LifecycleComponent implements IMessageProcessor {
-
+public class Node extends LifecycleComponent implements IMessageProcessor, Administrable, IRecordableComponent {
+     
 	private static final Log log = LogFactory.getLog(Node.class);
 	
 	private IMessageProcessor messageProcessor;
 
 	private IDataProcessor processor;
 
+    /**
+     * Metrics associated with this node.
+     */
+    private ComponentMetrics metrics = new ComponentMetrics();
+    
+    /**
+     * Constructor.
+     * 
+     * @param id an identifier.
+     * @param processor an IDataProcessor 'wrapped' by this node. 
+     * @param next 
+     */
 	public Node(final String id, final IDataProcessor processor, final IMessageProcessor next) {
 		super(id);
 		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
 		this.messageProcessor = next;
+        metrics = new ComponentMetrics(this);
 	}
 
 	public Node(final String id, final IDataProcessor processor) {
@@ -138,7 +157,9 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
     
 
 	public Response process(Message msg) {
-		
+      
+		metrics.recordMessageStart(msg);
+      
 		Response response = new Response();
 		
 		Object[] inputs = msg.getData();
@@ -153,11 +174,14 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
 					for (int j = 0; j < outputs.length; j++) {
 						response.addOutput(outputs[j]);
 					}
+                    metrics.recordMessageEnd(msg, response);
 				} else {
 					response.addDiscardedInput(inputs[i]);
+                    metrics.recordDiscardedMsgEnd(msg);
 				}
 			} catch (Exception e) {
 				response.addException(new MessageException(inputs[i], e, getId(), fetchThreadName()));
+                metrics.recordExceptionMsgEnd(msg);
 			}
 		}
 			
@@ -209,4 +233,79 @@ public class Node extends LifecycleComponent implements IMessageProcessor {
     return Thread.currentThread().getName();
   }
   
+  public IDetailedComponentMetrics getMetrics() {
+    return metrics;
+  }
+  
+  /**
+   * @see IRecordableComponent#isMetricsEnabled()
+   */
+  public boolean isMetricsEnabled() {
+    return metrics.isMetricsEnabled();
+  }
+
+  /**
+   * @see IRecordableComponent#setMetricsEnabled(boolean)
+   */
+  public void setMetricsEnabled(boolean metricsEnabled) {
+    metrics.setMetricsEnabled(metricsEnabled);
+  }
+
+  
+  /**
+   * @return inner class instance that implements {@link Component.AdminMBean}
+   */
+  public Object getAdmin() {
+    return new Admin();
+  }
+
+  /**
+   * MBean interface exposed via JMX console.
+   */
+  public interface AdminMBean extends LifecycleComponent.AdminMBean, IComponentMetrics{
+  }
+ 
+  /**
+   * Implementation of the interface exposed via JMX. 
+   */
+  public class Admin extends LifecycleComponent.Admin implements AdminMBean {
+
+    public String getProcessTime() {
+      return metrics.getProcessTime();
+    }
+
+    public String getIntervalTime() {
+      return metrics.getIntervalTime();
+    }
+
+    public long getDiscardedMsgCount() {
+      return metrics.getDiscardedMsgCount();
+    }
+
+    public long getExceptionMsgCount() {
+      return metrics.getExceptionMsgCount();
+    }
+
+    public String getUptime() {
+      return metrics.getUptime();
+    }
+
+    public String getInputMsgs() {
+      return metrics.getInputMsgs();
+    }
+
+    public String getOutputMsgs() {
+      return metrics.getOutputMsgs();
+    }
+
+    public void setMetricsEnabled(boolean metricsEnabled) {
+      metrics.setMetricsEnabled(metricsEnabled);
+    }
+
+    public boolean isMetricsEnabled() {
+      return metrics.isMetricsEnabled();
+    }
+
+  }
+
 }

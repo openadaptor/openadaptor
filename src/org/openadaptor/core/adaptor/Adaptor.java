@@ -29,7 +29,6 @@ package org.openadaptor.core.adaptor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -144,10 +143,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   
   private boolean hasShutdownHooks = false;
   
-  /** Metrics disabled by default .*/
-  private boolean metricsEnabled = false;
-  
-  private ComponentMetrics metrics = new ComponentMetrics();
+  /**
+   * Metrics for this adaptor.
+   */
+  private IDetailedComponentMetrics metrics = null;
   
   /**
    * shutdown hook
@@ -168,6 +167,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       throw new RuntimeException("message processor has already been set");
     }
     this.processor = processor;
+    
+    /* if the processor has metrics treat them as 'global' Adaptor ones */
+    if(processor instanceof IRecordableComponent){
+      this.metrics = ((IRecordableComponent) processor).getMetrics();
+    }
   }
   
   public IMessageProcessor getMessageProcessor() {
@@ -246,7 +250,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
     
     /* enable recording metrics in all components if necessary */
-    if(component instanceof IRecordableComponent && this.metricsEnabled){
+    if(component instanceof IRecordableComponent && this.isMetricsEnabled()){  
       ((IRecordableComponent) component).setMetricsEnabled(true);
       log.debug("component " + component.getId() + " - enabled metrics");
     }
@@ -741,19 +745,20 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * True if metrics recording is enabled for this adaptor. 
    */
   public boolean isMetricsEnabled() {
-    return metricsEnabled;
+    return metrics.isMetricsEnabled();
   }
 
   /**
-   * Enables/disabled metrics recording for this adaptor. 
+   * Enables/disables metrics recording for this adaptor. 
    */
   public void setMetricsEnabled(boolean metricsEnabled) {
-    this.metricsEnabled = metricsEnabled;    
+    this.metrics.setMetricsEnabled(metricsEnabled);
   }
   
   /**
-   * TODO comments
-   * @return
+   * Returns a collection of message processors as defined in the Router.
+   * 
+   * @return a collection of message processors.
    */
   public Collection getMessageProcessors(){ 
     if(processor instanceof Router){

@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
@@ -48,12 +49,14 @@ import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.transaction.ITransaction;
 
 /**
  * Shared implementation of a {@link Router} and {@link Pipeline}.
  */
-public class AbstractRouter extends Component implements ILifecycleComponentContainer {
+public class AbstractRouter extends Component implements ILifecycleComponentContainer, IRecordableComponent {
 
   private static Log log = LogFactory.getLog(AbstractRouter.class);
 
@@ -65,14 +68,30 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   protected IAutoboxer autoboxer=new Autoboxer();
   
+  private ComponentMetrics metrics = new ComponentMetrics();
+  
+  /**
+   * If set to true, discarding messages will be looged in INFO level. Default level is DEBUG
+   */
   private boolean logDiscardAsInfo = false;
   
   private boolean ignoreExceptionProcessorErrors = false;
+
+  /** Metrics disabled by default .*/
+  private boolean metricsEnabled = false;
   
+  /**
+   * Constructor.
+   */
   public AbstractRouter() {
     super();
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param id - a component id.
+   */
   public AbstractRouter(String id) {
     super(id);
   }
@@ -133,7 +152,10 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       realSender = (IMessageProcessor)msg.getSender();
     }
     // return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
-    return process(msg, routingMap.getProcessDestinations(realSender));
+    metrics.recordMessageStart(msg);
+    Response response = process(msg, routingMap.getProcessDestinations(realSender));
+    metrics.recordMessageEnd(msg, response);
+    return response;
   }
 
   /**
@@ -148,7 +170,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     }
     for (Iterator iter = destinations.iterator(); iter.hasNext();) {
       IMessageProcessor processor = (IMessageProcessor) iter.next();
-      process(msg,processor);
+       process(msg,processor);
     }
     return new Response();
   }
@@ -158,7 +180,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
    * @param msg Message to be processed
    * @param processor target which should be processing the message.
    */
-  private void process(Message msg, IMessageProcessor processor) {
+  protected void process(Message msg, IMessageProcessor processor) {
     processResponse(processor,processor.process(msg),msg.getTransaction());
   }
 
@@ -224,6 +246,9 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     return routingMap.getMessageProcessors();
   }
 
+  /**
+   * If set to true, discarding messages will be looged in INFO level. Default level is DEBUG
+   */
   public void setLogDiscardAsInfo(boolean logDiscardAsInfo) {
     this.logDiscardAsInfo = logDiscardAsInfo;
   }
@@ -237,25 +262,26 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
 		boolean ignoreExceptionProcessorErrors) {
 	this.ignoreExceptionProcessorErrors = ignoreExceptionProcessorErrors;
   }
- 
-// Disabled - these are no longer used. 
-//  public Response process(Message msg, String destinationId) throws MessageException {
-//    IMessageProcessor processor = (IMessageProcessor) componentMap.get(destinationId);
-//    if (processor != null) {
-//      return process(msg, processor);
-//    } else {
-//      throw new RuntimeException("no processor with id " + destinationId);
-//    }
-//  }
-//
-//  private Response process(Message msg, IMessageProcessor processor) throws MessageException {
-//    Response response = processor.process(msg);
-//    if (response.containsExceptions()) {
-//      throw (MessageException) response.getCollatedExceptions()[0];
-//    } else {
-//      processResponse(processor, response, msg.getTransaction());
-//      return new Response();
-//    }
-//  }
 
+  /**
+   * @see IRecordableComponent#getMetrics()
+   */
+  public IDetailedComponentMetrics getMetrics() {
+    return metrics;
+  }
+
+  /**
+   * @see IRecordableComponent#isMetricsEnabled()
+   */
+  public boolean isMetricsEnabled() {
+    return metrics.isMetricsEnabled();
+  }
+
+  /**
+   * @see IRecordableComponent#setMetricsEnabled(boolean)
+   */
+  public void setMetricsEnabled(boolean metricsEnabled) {
+    metrics.setMetricsEnabled(metricsEnabled);
+  }
+ 
 }

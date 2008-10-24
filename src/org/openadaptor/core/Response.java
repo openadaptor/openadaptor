@@ -116,7 +116,8 @@ public class Response {
   }
 
   /**
-   * extracts all the output data from a Response, thus disregarding other types of Response data and their relative order.
+   * extracts all the output data from a Response, thus disregarding other types of Response data and 
+   * their relative order.
    * @return collated data that is the result of sucessfully processing some input data
    */
   public Object[] getCollatedOutput() {

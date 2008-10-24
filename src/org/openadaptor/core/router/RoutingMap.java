@@ -42,8 +42,6 @@ import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.node.Node;
 
-
-
 /**
  * The default implementation of {@link IRoutingMap}.
  * 
@@ -66,7 +64,6 @@ import org.openadaptor.core.node.Node;
  * @see IMessageProcessor
  * @see MessageException
  * @see IAutoboxer
- *
  */
 public class RoutingMap implements IRoutingMap,Cloneable {
 
@@ -266,7 +263,7 @@ public class RoutingMap implements IRoutingMap,Cloneable {
 
   /**
    * Checks if <code>processor</code> has already been autoboxed in 
-   * processMap. Returns the box if found.
+   * the processMap. Returns the box if found.
    * 
    * @param processor a processor
    * @return boxed processor if any can be found
@@ -287,7 +284,7 @@ public class RoutingMap implements IRoutingMap,Cloneable {
   }
 
   /**
-   * checks that the keys and values are actually IMessageProcessor instances and autoboxes
+   * Checks that the keys and values are actually IMessageProcessor instances and autoboxes
    * single IMessageProcessor values into a unary list
    */
   private void populateMap(Map map, Map checkedMap) {
@@ -408,6 +405,5 @@ public class RoutingMap implements IRoutingMap,Cloneable {
     obj.exceptionMap = Collections.unmodifiableMap(exceptionMap);
     return obj;
   }
-
 
 }
