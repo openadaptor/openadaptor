@@ -51,6 +51,8 @@ public interface IDetailedComponentMetrics extends IComponentMetrics, ILifecycle
   
 	long [] getInputMsgCounts();
     
+    long [] getOutputMsgCounts();
+    
 	String getProcessTimeMax();
 	
 	String getProcessTimeMin();

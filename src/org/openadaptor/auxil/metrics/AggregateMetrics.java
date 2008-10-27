@@ -253,4 +253,9 @@ public class AggregateMetrics implements IDetailedComponentMetrics {
     // TODO Auto-generated method stub
     return false;
   }
+
+  public long[] getOutputMsgCounts() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
