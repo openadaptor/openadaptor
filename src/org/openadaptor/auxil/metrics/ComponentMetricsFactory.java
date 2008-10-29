@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
@@ -46,8 +46,8 @@ public class ComponentMetricsFactory {
   private ComponentMetricsFactory() {
   }
  
-  public static IDetailedComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
-    IDetailedComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
+  public static IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
+    IComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
     for(Iterator it = aggregateMetricsCol.iterator(); it.hasNext();){
       AggregateMetrics aggregateMetrics = (AggregateMetrics) it.next();
       aggregateMetrics.addComponentMetrics(componentMetrics);
@@ -55,11 +55,11 @@ public class ComponentMetricsFactory {
     return componentMetrics;
   }
   
-  public static IDetailedComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
+  public static IComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
     AggregateMetrics aggregateMetrics = new AggregateMetrics(recordableComponent);
     aggregateMetricsCol.add(aggregateMetrics);
     for(Iterator it = standardMetricsCol.iterator(); it.hasNext();){
-      IDetailedComponentMetrics componentMetrics = (IDetailedComponentMetrics) it.next();
+      IComponentMetrics componentMetrics = (IComponentMetrics) it.next();
       aggregateMetrics.addComponentMetrics(componentMetrics);
     }
     return aggregateMetrics;

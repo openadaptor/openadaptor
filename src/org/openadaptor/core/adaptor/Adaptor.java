@@ -36,8 +36,8 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.*;
 import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 import org.openadaptor.core.recordable.IComponentMetrics;
-import org.openadaptor.core.recordable.IDetailedComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactionInitiator;
@@ -147,7 +147,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   /**
    * Metrics for this adaptor.
    */
-  private IDetailedComponentMetrics metrics = null;
+  private IComponentMetrics metrics = null;
   
   /**
    * shutdown hook
@@ -575,7 +575,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     return new Admin();
   }
 
-  public interface AdminMBean extends IComponentMetrics{
+  public interface AdminMBean extends ISimpleComponentMetrics{
     String dumpState();
  
     void exit();
@@ -610,63 +610,63 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
 
     /**
-     * @see IComponentMetrics#getIntervalTime()
+     * @see ISimpleComponentMetrics#getIntervalTime()
      */
     public String getIntervalTime() {
       return metrics.getIntervalTime();
     }
 
     /**
-     * @see IComponentMetrics#getProcessTime()
+     * @see ISimpleComponentMetrics#getProcessTime()
      */
     public String getProcessTime() {
       return metrics.getProcessTime();
     }
 
     /**
-     * @see IComponentMetrics#getUptime()
+     * @see ISimpleComponentMetrics#getUptime()
      */
     public String getUptime() {
       return metrics.getUptime();
     }
 
     /**
-     * @see IComponentMetrics#getInputMsgs()
+     * @see ISimpleComponentMetrics#getInputMsgs()
      */
     public String getInputMsgs() {
       return metrics.getInputMsgs();
     }
 
     /**
-     * @see IComponentMetrics#getOutputMsgs()
+     * @see ISimpleComponentMetrics#getOutputMsgs()
      */
     public String getOutputMsgs() {
       return metrics.getOutputMsgs();
     }
 
     /**
-     * @see IComponentMetrics#setMetricsEnabled(boolean)
+     * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
      */
     public void setMetricsEnabled(boolean metricsEnabled) {
       metrics.setMetricsEnabled(metricsEnabled); 
     }
 
     /**
-     * @see IComponentMetrics#isMetricsEnabled()
+     * @see ISimpleComponentMetrics#isMetricsEnabled()
      */
     public boolean isMetricsEnabled() {
       return metrics.isMetricsEnabled();
     }
 
     /**
-     * @see IComponentMetrics#getDiscardedMsgCount()
+     * @see ISimpleComponentMetrics#getDiscardedMsgCount()
      */
     public long getDiscardedMsgCount() {
       return metrics.getDiscardedMsgCount();
     }
 
     /**
-     * @see IComponentMetrics#getExceptionMsgCount()
+     * @see ISimpleComponentMetrics#getExceptionMsgCount()
      */
     public long getExceptionMsgCount() {
       return metrics.getExceptionMsgCount();
@@ -746,7 +746,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * 
    * @see IRecordableComponent#getMetrics()
    */
-  public IDetailedComponentMetrics getMetrics() {
+  public IComponentMetrics getMetrics() {
     return metrics;
   }
 

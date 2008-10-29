@@ -26,35 +26,40 @@
  */
 package org.openadaptor.core.recordable;
 
-import org.openadaptor.core.IComponent;
 
 /**
- * A recordable component is capable of producing metrics that describe 
- * message volume and processing time.
+ * Interface simple metrics associated with an {@link IRecordableComponent}.
  * 
- * Recording metrics for a particular IRecordableComponent can be switched
- * on and off, also at runtime via the JMX console.
+ * DRAFT. NOT READY FOR USE.
  * 
- * NOT READY FOR USE.
- * 
+ * @see ISimpleComponentMetrics
+ * @see ComponentMetrics 
+ * @see IRecordableComponent
  * @author Kris Lachor
  */
-public interface IRecordableComponent extends IComponent{
+public interface ISimpleComponentMetrics {
 
-  /**
-   * Various metrics related to this component.
-   * 
-   * @return message volume and processing time metrics relating to this component.
-   */
-  IComponentMetrics getMetrics();
-
-  /**
-   * Enables or disables recording metrics for this component. 
-   */
-  void setMetricsEnabled(boolean metricsEnabled);
- 
-  /**
-   * Checks if metrics are being recorded for this component.
-   */
-  boolean isMetricsEnabled();
+  
+    String getOutputMsgs();
+  
+   /**
+    * Time it took to process messages.
+    */
+    String getProcessTime();
+    
+    String getIntervalTime();
+    
+    //TODO to be moved under getOutputMsgs wings
+    long getDiscardedMsgCount();
+    
+    //TODO to be moved under getOutputMsgs wings
+    long getExceptionMsgCount();
+    
+    String getUptime();
+    
+    String getInputMsgs();
+    
+    void setMetricsEnabled(boolean metricsEnabled);
+    
+    boolean isMetricsEnabled();
 }

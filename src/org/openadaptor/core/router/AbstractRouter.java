@@ -35,7 +35,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.metrics.AggregateMetrics;
 import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IComponent;
@@ -50,7 +49,7 @@ import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleComponentContainer;
 import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
-import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.transaction.ITransaction;
 
@@ -69,7 +68,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   protected IAutoboxer autoboxer=new Autoboxer();
   
-  private AggregateMetrics metrics = (AggregateMetrics) ComponentMetricsFactory.newAggregateMetrics(this);
+  private IComponentMetrics metrics = ComponentMetricsFactory.newAggregateMetrics(this);
   
   /**
    * If set to true, discarding messages will be looged in INFO level. Default level is DEBUG
@@ -267,7 +266,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   /**
    * @see IRecordableComponent#getMetrics()
    */
-  public IDetailedComponentMetrics getMetrics() {
+  public IComponentMetrics getMetrics() {
     return metrics;
   }
 

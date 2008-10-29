@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.node.WriteNode;
-import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
@@ -44,7 +44,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class AggregateMetrics extends ComponentMetrics implements IDetailedComponentMetrics {
+public class AggregateMetrics extends ComponentMetrics  {
 
   private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
@@ -53,11 +53,15 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
   protected AggregateMetrics(IRecordableComponent recordableComponent) {
     super(recordableComponent);
   }
+ 
+  public AggregateMetrics(IRecordableComponent monitoredComponent, boolean enabled) {
+    super(monitoredComponent, enabled);
+  }
 
   /**
    * Returns a sum of discarded messages from all recordable components.
    * 
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getDiscardedMsgCount()
+   * @see org.openadaptor.core.recordable.IComponentMetrics#getDiscardedMsgCount()
    */
   public long getDiscardedMsgCount() {
     if(!enabled){
@@ -66,7 +70,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
     Iterator it = componentMetrics.iterator();
     long discardedCount = 0;
     while(it.hasNext()){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       discardedCount+=detailedMetrics.getDiscardedMsgCount();
     }
     log.info("Sum of discarded messages in all recordable components: " + discardedCount);
@@ -76,7 +80,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
   /**
    * Returns a sum of messages that caused an exception from all recordable components.
    * 
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getExceptionMsgCount()
+   * @see org.openadaptor.core.recordable.IComponentMetrics#getExceptionMsgCount()
    */
   public long getExceptionMsgCount() {
     if(!enabled){
@@ -85,7 +89,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
     Iterator it = componentMetrics.iterator();
     long exceptionMsgsCount = 0;
     while(it.hasNext()){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       exceptionMsgsCount+=detailedMetrics.getExceptionMsgCount();
     }
     log.info("Sum of messages that caused an exception in all recordable components: " + exceptionMsgsCount);
@@ -93,7 +97,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
   }
 
   
-  public void addComponentMetrics(IDetailedComponentMetrics componentMetrics){
+  public void addComponentMetrics(IComponentMetrics componentMetrics){
     this.componentMetrics.add(componentMetrics);
   }
 
@@ -103,7 +107,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
     }
     long [] outputMsgs = new long[1];
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       if(isLastInPipeline(detailedMetrics.getComponent())){
         outputMsgs[0]+=detailedMetrics.getOutputMsgCounts()[0];
       }
@@ -124,7 +128,7 @@ public class AggregateMetrics extends ComponentMetrics implements IDetailedCompo
       outputMsgs.append(NONE);
     }
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       if(isLastInPipeline(detailedMetrics.getComponent())){
         
         boolean first = true;

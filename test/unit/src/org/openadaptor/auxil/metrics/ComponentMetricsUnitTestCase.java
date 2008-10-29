@@ -38,7 +38,7 @@ import junit.framework.TestCase;
  */
 public class ComponentMetricsUnitTestCase extends TestCase {
 
-  ComponentMetrics metrics = new ComponentMetrics(null);
+  ComponentMetrics metrics = new ComponentMetrics(null, true);
   
   Object [] testData1 = new Object[]{"foo"};
   

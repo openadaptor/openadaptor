@@ -37,13 +37,12 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
-import org.openadaptor.core.IComponent;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
-import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
@@ -53,7 +52,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class ComponentMetrics implements IDetailedComponentMetrics{
+public class ComponentMetrics implements IComponentMetrics{
   
   private static final Log log = LogFactory.getLog(ComponentMetrics.class.getName());
   
@@ -132,28 +131,18 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     .appendMillis()
     .appendSuffix(" millisec", " " + MILLISECONDS)
     .toFormatter();
-  
-//  /**
-//   * Constructor.
-//   */
-//  protected ComponentMetrics() {
-//    super();
-//  }
-//  
-//  
-//  
-//  protected ComponentMetrics(boolean enabled) {
-//    super();
-//    this.enabled = enabled;
-//  }
-
 
 
   protected ComponentMetrics(IRecordableComponent monitoredComponent) {
-//    this();
     this.monitoredComponent = monitoredComponent;
   }
 
+  protected ComponentMetrics(IRecordableComponent monitoredComponent, boolean enabled) {
+    this.monitoredComponent = monitoredComponent;
+    this.enabled = enabled;
+  }
+
+  
   public void recordComponentStart(){
     componentStartTime = new Date();
   }
@@ -551,18 +540,6 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     }
   }
 
-  public void disable() {
-    this.enabled = false;
-  }
-
-  public void enable() {
-    this.enabled = true;
-    
-  }
-  public boolean enabled() {
-    return this.enabled;
-  }
-
   protected Date getProcessStartTime() {
     return processStartTime;
   }
@@ -587,7 +564,7 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     return enabled;
   }
 
-  public IComponent getComponent() {
+  public IRecordableComponent getComponent() {
     return monitoredComponent;
   }
  

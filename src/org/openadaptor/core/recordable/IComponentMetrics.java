@@ -23,44 +23,64 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
- */
+*/
+
 package org.openadaptor.core.recordable;
 
-import org.openadaptor.core.IComponent;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
- * Interface simple metrics associated with an {@link IRecordableComponent}.
+ * Represents a class that maintains runtime metrics for an {@link IRecordableComponent}
+ * and the messages it processes.
+ * 
+ * This interface extends {@ISimpleComponentMetrics} with more detailed methods that
+ * return mostly numeric (as opposed to Strings) data that can be further processed
+ * to generate reports etc.
  * 
  * DRAFT. NOT READY FOR USE.
+ *
+ * TODO this interface should not need to extends from ILifcecleListener (nothing to do with it).
+ * implementations can implement ILifecycleListener. 
  * 
- * @see IComponentMetrics
+ * @see ISimpleComponentMetrics
  * @see ComponentMetrics 
  * @see IRecordableComponent
  * @author Kris Lachor
  */
-public interface IComponentMetrics {
+public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
+  
+	long [] getInputMsgCounts();
+    
+    long [] getOutputMsgCounts();
+    
+	String getProcessTimeMax();
+	
+	String getProcessTimeMin();
+    
+    String getIntervalTimeMax();
+    
+    String getIntervalTimeMin();
 
-  
-    String getOutputMsgs();
-  
-   /**
-    * Time it took to process messages.
-    */
-    String getProcessTime();
+	String [] getInputMsgTypes();
     
-    String getIntervalTime();
+    String [] getOutputMsgTypes();
     
-    //TODO to be moved under getOutputMsgs wings
-    long getDiscardedMsgCount();
+    long getOutputMsgCount();
+   
     
-    //TODO to be moved under getOutputMsgs wings
-    long getExceptionMsgCount();
+    /**
+     * TODO should be IRecordableComponent??
+     * @return the component for which these metrics are recorded.
+     */
+    IRecordableComponent getComponent();
     
-    String getUptime();
+    public void recordMessageStart(Message msg);
     
-    String getInputMsgs();
+    public void recordMessageEnd(Message msg, Response response);
     
-    void setMetricsEnabled(boolean metricsEnabled);
+    public void recordDiscardedMsgEnd(Message msg);
     
-    boolean isMetricsEnabled();
+    public void recordExceptionMsgEnd(Message msg);
 }
