@@ -211,12 +211,22 @@
 				<tokenfilter>
 					<!-- Apply regexps to whole of input file at once: -->
 					<filetokenizer />
-					<!-- Pull the name of each cookbook example out of its CVS Header comment,
-               and add as "id" attribute to its "beans" element (preserving schema namespace attributes): -->
-					<replaceregex pattern="(${filecomment.path.pattern1})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-					<replaceregex pattern="(${filecomment.path.pattern2})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-					<replaceregex pattern="(${filecomment.path.pattern3})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
-					<replaceregex pattern="(${filecomment.path.pattern4})([^.]+?)(\.xml .*?&lt;beans)[^&gt;]*&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot;&gt;" />
+					<!--
+						Here we change the beans namespace to a dummy one - otherwise the xsl transforms
+            don't match on 'beans' elements. Other namespaces e.g. xmlns:util will be preserved
+            unmodified
+					  -->
+					<replaceregex pattern="(xmlns=)" flags="sg" replace="xmlns:dummy=" />
+					
+					<!--
+             Pull the name of each cookbook example out of its CVS Header comment,
+             and add as "id" attribute to its "beans" element (preserving schema namespace attributes):
+           -->				
+					<replaceregex pattern="(${filecomment.path.pattern1})([^.]+?)(\.xml .*?&lt;beans)([^&gt;]*)&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot; \4&gt;" />
+					<replaceregex pattern="(${filecomment.path.pattern2})([^.]+?)(\.xml .*?&lt;beans)([^&gt;]*)&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot; \4&gt;" />
+					<replaceregex pattern="(${filecomment.path.pattern3})([^.]+?)(\.xml .*?&lt;beans)([^&gt;]*)&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot; \4&gt;" />
+					<replaceregex pattern="(${filecomment.path.pattern4})([^.]+?)(\.xml .*?&lt;beans)([^&gt;]*)&gt;" flags="sg" replace="\1\2\3 id=&quot;\2&quot; \4&gt;" />
+	
 					<!-- Cope (dumbly) with up to 3 underscores in bean relative path filename (map to minus sign): -->
 					<replaceregex pattern="(beans id=&quot;[^&quot;_]*?)_([^&quot;]*?&quot;)" flags="sg" replace="\1-\2" />
 					<replaceregex pattern="(beans id=&quot;[^&quot;_]*?)_([^&quot;]*?&quot;)" flags="sg" replace="\1-\2" />
