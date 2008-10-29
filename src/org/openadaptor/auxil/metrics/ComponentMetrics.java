@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.OAException;
@@ -70,7 +71,7 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
   
   private static final String LESS_THAN_ONE =  "less than 1 ";
   
-  private static final String METRICS_DISABLED = "Metrics recording DISABLED";
+  protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
   
   private Map inputMsgCounter = new HashMap();
   
@@ -132,24 +133,24 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
     .appendSuffix(" millisec", " " + MILLISECONDS)
     .toFormatter();
   
-  /**
-   * Constructor.
-   */
-  public ComponentMetrics() {
-    super();
-  }
-  
-  
-  
-  public ComponentMetrics(boolean enabled) {
-    super();
-    this.enabled = enabled;
-  }
+//  /**
+//   * Constructor.
+//   */
+//  protected ComponentMetrics() {
+//    super();
+//  }
+//  
+//  
+//  
+//  protected ComponentMetrics(boolean enabled) {
+//    super();
+//    this.enabled = enabled;
+//  }
 
 
 
-  public ComponentMetrics(IRecordableComponent monitoredComponent) {
-    this();
+  protected ComponentMetrics(IRecordableComponent monitoredComponent) {
+//    this();
     this.monitoredComponent = monitoredComponent;
   }
 
@@ -584,6 +585,10 @@ public class ComponentMetrics implements IDetailedComponentMetrics{
 
   public boolean isMetricsEnabled() {
     return enabled;
+  }
+
+  public IComponent getComponent() {
+    return monitoredComponent;
   }
  
 }

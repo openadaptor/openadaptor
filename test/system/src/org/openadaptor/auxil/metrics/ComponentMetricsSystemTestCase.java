@@ -37,7 +37,7 @@ import org.openadaptor.util.SystemTestUtil;
 import junit.framework.TestCase;
 
 /**
- * System tests for {@link ComponentMetrics}.
+ * System tests for {@link ComponentMetrics} and recording metrics in general.
  * 
  * @author Kris Lachor
  */
@@ -61,7 +61,8 @@ public class ComponentMetricsSystemTestCase extends TestCase {
     /* Check Adaptor's metrics are disabled */
     assertFalse(adaptor.getMetrics().isMetricsEnabled());
     assertEquals(adaptor.getMetrics().getInputMsgCounts()[0], 0);
-    
+    assertEquals(adaptor.getMetrics().getOutputMsgCounts().length, 0);
+     
     /* same checks for all Nodes */
     Iterator it = adaptor.getMessageProcessors().iterator();
     while(it.hasNext()){
@@ -70,6 +71,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
         IRecordableComponent recComp = (IRecordableComponent) mProcessor;
         assertFalse(recComp.getMetrics().isMetricsEnabled());
         assertEquals(recComp.getMetrics().getInputMsgCounts()[0], 0);
+        assertEquals(recComp.getMetrics().getOutputMsgCounts()[0], 0);
       }
     }
   }
@@ -86,6 +88,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
     /* Check Adaptor's metrics are enabled */
     assertTrue(adaptor.getMetrics().isMetricsEnabled());
     assertEquals(adaptor.getMetrics().getInputMsgCounts()[0], 1);
+    assertEquals(adaptor.getMetrics().getOutputMsgCounts()[0], 1);
     
     /* same checks for all Nodes */
     Iterator it = adaptor.getMessageProcessors().iterator();
@@ -95,6 +98,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
         IRecordableComponent recComp = (IRecordableComponent) mProcessor;
         assertTrue(recComp.getMetrics().isMetricsEnabled());
         assertEquals(recComp.getMetrics().getInputMsgCounts()[0], 1);
+        assertEquals(adaptor.getMetrics().getOutputMsgCounts()[0], 1);
       }
     }
   }

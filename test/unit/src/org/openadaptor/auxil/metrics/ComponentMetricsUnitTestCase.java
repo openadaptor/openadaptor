@@ -38,7 +38,7 @@ import junit.framework.TestCase;
  */
 public class ComponentMetricsUnitTestCase extends TestCase {
 
-  ComponentMetrics metrics = new ComponentMetrics(true);
+  ComponentMetrics metrics = new ComponentMetrics(null);
   
   Object [] testData1 = new Object[]{"foo"};
   
@@ -178,7 +178,7 @@ public class ComponentMetricsUnitTestCase extends TestCase {
                                          +"2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String"); 
   }
   
-///**
+///** TODO
 //* Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordComponentStart()}.
 //*/
 //public void testRecordComponentStart() {

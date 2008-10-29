@@ -24,43 +24,44 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.core.recordable;
+package org.openadaptor.auxil.metrics;
 
-import org.openadaptor.core.IComponent;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+
+import org.openadaptor.core.recordable.IDetailedComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
- * Interface simple metrics associated with an {@link IRecordableComponent}.
  * 
- * DRAFT. NOT READY FOR USE.
- * 
- * @see IComponentMetrics
- * @see ComponentMetrics 
- * @see IRecordableComponent
  * @author Kris Lachor
  */
-public interface IComponentMetrics {
+public class ComponentMetricsFactory {
+  
+  private static Collection standardMetricsCol = new HashSet();
+  
+  private static Collection aggregateMetricsCol = new HashSet();
 
+  private ComponentMetricsFactory() {
+  }
+ 
+  public static IDetailedComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
+    IDetailedComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
+    for(Iterator it = aggregateMetricsCol.iterator(); it.hasNext();){
+      AggregateMetrics aggregateMetrics = (AggregateMetrics) it.next();
+      aggregateMetrics.addComponentMetrics(componentMetrics);
+    }
+    return componentMetrics;
+  }
   
-    String getOutputMsgs();
-  
-   /**
-    * Time it took to process messages.
-    */
-    String getProcessTime();
-    
-    String getIntervalTime();
-    
-    //TODO to be moved under getOutputMsgs wings
-    long getDiscardedMsgCount();
-    
-    //TODO to be moved under getOutputMsgs wings
-    long getExceptionMsgCount();
-    
-    String getUptime();
-    
-    String getInputMsgs();
-    
-    void setMetricsEnabled(boolean metricsEnabled);
-    
-    boolean isMetricsEnabled();
+  public static IDetailedComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
+    AggregateMetrics aggregateMetrics = new AggregateMetrics(recordableComponent);
+    aggregateMetricsCol.add(aggregateMetrics);
+    for(Iterator it = standardMetricsCol.iterator(); it.hasNext();){
+      IDetailedComponentMetrics componentMetrics = (IDetailedComponentMetrics) it.next();
+      aggregateMetrics.addComponentMetrics(componentMetrics);
+    }
+    return aggregateMetrics;
+  }
 }

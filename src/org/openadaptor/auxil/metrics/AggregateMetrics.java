@@ -26,15 +26,14 @@
  */
 package org.openadaptor.auxil.metrics;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.lifecycle.ILifecycleComponent;
-import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.IComponent;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.recordable.IDetailedComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
@@ -45,52 +44,14 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class AggregateMetrics implements IDetailedComponentMetrics {
+public class AggregateMetrics extends ComponentMetrics implements IDetailedComponentMetrics {
 
   private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
-  //TODO alternatively, this may hold IRecordableComponents
   Set componentMetrics = new HashSet();
   
-  private boolean enabled = true;
-  
-  /**
-   * Disables metrics recording across entire adaptor.
-   * 
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#disable()
-   */
-  public void disable() {
-    log.info("Disabling metrics recording in all recordable components");
-    Iterator it = componentMetrics.iterator();
-    while(it.hasNext()){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
-      detailedMetrics.disable();
-    }
-    enabled = false;
-  }
-
-  /**
-   * Enables metrics recording across entire adaptor.
-   * 
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#enable()
-   */
-  public void enable() {
-    log.info("Enabling metrics recording in all recordable components");
-    Iterator it = componentMetrics.iterator();
-    while(it.hasNext()){
-      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
-      detailedMetrics.enable();
-    }
-    enabled = true;
-  }
-
-  /**
-   * TODO unclear what this should return. 
-   * 
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#enabled()
-   */
-  public boolean enabled() {
-    return enabled;
+  protected AggregateMetrics(IRecordableComponent recordableComponent) {
+    super(recordableComponent);
   }
 
   /**
@@ -99,6 +60,9 @@ public class AggregateMetrics implements IDetailedComponentMetrics {
    * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getDiscardedMsgCount()
    */
   public long getDiscardedMsgCount() {
+    if(!enabled){
+      return -1;
+    }
     Iterator it = componentMetrics.iterator();
     long discardedCount = 0;
     while(it.hasNext()){
@@ -115,6 +79,9 @@ public class AggregateMetrics implements IDetailedComponentMetrics {
    * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getExceptionMsgCount()
    */
   public long getExceptionMsgCount() {
+    if(!enabled){
+      return -1;
+    }
     Iterator it = componentMetrics.iterator();
     long exceptionMsgsCount = 0;
     while(it.hasNext()){
@@ -125,137 +92,70 @@ public class AggregateMetrics implements IDetailedComponentMetrics {
     return exceptionMsgsCount;
   }
 
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getInputMsgCounts()
-   */
-  public long[] getInputMsgCounts() {
-    //Need to get hold of the nodes at the start of the pipeline
-    return null;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getInputMsgTypes()
-   */
-  public String[] getInputMsgTypes() {
-    //Need to get hold of the nodes at the start of the pipeline
-    return null;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTime()
-   */
-  public String getIntervalTime() {
-    // Need to get hold of the first and last nodes in the pipeline
-    return null;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTimeMax()
-   */
-  public String getIntervalTimeMax() {
-    // Need to get hold of the first and last nodes in the pipeline
-    return null;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getIntervalTimeMin()
-   */
-  public String getIntervalTimeMin() {
-    // Need to get hold of the first and last nodes in the pipeline
-    return null;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getOutputMsgCount()
-   */
-  public long getOutputMsgCount() {
-    // need to get hold of last nodes in the pipeline
-    return 0;
-  }
-
-  /**
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getOutputMsgTypes()
-   */
-  public String[] getOutputMsgTypes() {
-    // need to get hold of last nodes in the pipeline
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeAvg()
-   */
-  public String getProcessTime() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeMax()
-   */
-  public String getProcessTimeMax() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getProcessTimeMin()
-   */
-  public String getProcessTimeMin() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.openadaptor.core.recordable.IDetailedComponentMetrics#getStartedSince()
-   */
-  public String getUptime() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.openadaptor.core.lifecycle.ILifecycleListener#stateChanged(org.openadaptor.core.lifecycle.ILifecycleComponent, org.openadaptor.core.lifecycle.State)
-   */
-  public void stateChanged(ILifecycleComponent component, State newState) {
-    // TODO Auto-generated method stub
-
-  }
-
-  /**
-   * Adds metrics that will be included as part of these agregate metrics.
-   */
-  public void addRecordableComponent(IRecordableComponent recordableComponent){
-    log.info("Adding component metrics to agregate: " + recordableComponent);
-    componentMetrics.add(recordableComponent.getMetrics());
-  }
-
-  public String getDuration() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public String getInputMsgs() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public String getOutputMsgs() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public void setMetricsEnabled(boolean metricsEnabled) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  public boolean isMetricsEnabled() {
-    // TODO Auto-generated method stub
-    return false;
+  
+  public void addComponentMetrics(IDetailedComponentMetrics componentMetrics){
+    this.componentMetrics.add(componentMetrics);
   }
 
   public long[] getOutputMsgCounts() {
-    // TODO Auto-generated method stub
-    return null;
+    if(!enabled){
+      return new long[0];
+    }
+    long [] outputMsgs = new long[1];
+    for(Iterator it = componentMetrics.iterator(); it.hasNext();){
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      if(isLastInPipeline(detailedMetrics.getComponent())){
+        outputMsgs[0]+=detailedMetrics.getOutputMsgCounts()[0];
+      }
+    }
+    log.info("Sum of output messages in all recordable components: " + outputMsgs[0]);
+    return outputMsgs;
+  }
+  
+  /**
+   * Collates numeric data about messages that left the component, in human readable format.
+   */
+  public String getOutputMsgs() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
+    StringBuffer outputMsgs = new StringBuffer();
+    if(getOutputMsgCounts()[0]==0){
+      outputMsgs.append(NONE);
+    }
+    for(Iterator it = componentMetrics.iterator(); it.hasNext();){
+      IDetailedComponentMetrics detailedMetrics = (IDetailedComponentMetrics) it.next();
+      if(isLastInPipeline(detailedMetrics.getComponent())){
+        
+        boolean first = true;
+        for(int i=0; i<detailedMetrics.getOutputMsgTypes().length; i++){
+          if(first){
+            first = false;
+          }
+          else{
+            outputMsgs.append("/n");
+          }
+          Object dataType = detailedMetrics.getOutputMsgTypes()[i];
+          long count = detailedMetrics.getOutputMsgCounts()[i];
+          outputMsgs.append(count);
+          outputMsgs.append(MESSAGES_OF_TYPE);
+          outputMsgs.append(dataType);
+        }
+      }
+    }
+    
+        
+    return outputMsgs.toString();
+  }
+
+ 
+  /**
+   * TODO comments
+   */
+  private boolean isLastInPipeline(IComponent component){
+    if(component instanceof WriteNode){
+      return true;
+    }
+    return false;
   }
 }

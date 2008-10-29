@@ -47,6 +47,7 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
 import org.openadaptor.auxil.metrics.ComponentMetrics;
+import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.recordable.IDetailedComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.recordable.IComponentMetrics;
@@ -88,7 +89,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     /**
      * Metrics associated with this node.
      */
-    private ComponentMetrics metrics = new ComponentMetrics();
+    private ComponentMetrics metrics = (ComponentMetrics) ComponentMetricsFactory.newStandardMetrics(this);
     
     /**
      * Constructor.
@@ -101,7 +102,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 		super(id);
 		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
 		this.messageProcessor = next;
-        metrics = new ComponentMetrics(this);
+//        metrics = new ComponentMetrics(this);
 	}
 
 	public Node(final String id, final IDataProcessor processor) {
@@ -251,6 +252,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     metrics.setMetricsEnabled(metricsEnabled);
   }
 
+  protected IRecordableComponent getRecordableComponent(){
+    return this;
+  }
+  
   
   /**
    * @return inner class instance that implements {@link Component.AdminMBean}
@@ -304,6 +309,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 
     public boolean isMetricsEnabled() {
       return metrics.isMetricsEnabled();
+    }
+
+    public IComponent getComponent() {
+      return getRecordableComponent();
     }
 
   }

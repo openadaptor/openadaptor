@@ -35,7 +35,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.metrics.ComponentMetrics;
+import org.openadaptor.auxil.metrics.AggregateMetrics;
+import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
@@ -68,7 +69,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   
   protected IAutoboxer autoboxer=new Autoboxer();
   
-  private ComponentMetrics metrics = new ComponentMetrics();
+  private AggregateMetrics metrics = (AggregateMetrics) ComponentMetricsFactory.newAggregateMetrics(this);
   
   /**
    * If set to true, discarding messages will be looged in INFO level. Default level is DEBUG

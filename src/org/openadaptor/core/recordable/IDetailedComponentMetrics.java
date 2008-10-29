@@ -27,6 +27,7 @@
 
 package org.openadaptor.core.recordable;
 
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
@@ -72,4 +73,10 @@ public interface IDetailedComponentMetrics extends IComponentMetrics, ILifecycle
     void enable();
     
     void disable();
+    
+    /**
+     * TODO should be IRecordableComponent??
+     * @return the component for which these metrics are recorded.
+     */
+    IComponent getComponent();
 }

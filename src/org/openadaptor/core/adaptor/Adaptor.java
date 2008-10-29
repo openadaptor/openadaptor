@@ -29,6 +29,7 @@ package org.openadaptor.core.adaptor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -565,6 +566,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       }
     }
   }
+  
+  protected IRecordableComponent getRecordableComponent(){
+    return this;
+  }
 
   public Object getAdmin() {
     return new Admin();
@@ -665,6 +670,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
      */
     public long getExceptionMsgCount() {
       return metrics.getExceptionMsgCount();
+    }
+
+    public IComponent getComponent() {
+      return getRecordableComponent();
     }
   }
 
