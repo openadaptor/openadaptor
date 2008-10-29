@@ -74,7 +74,9 @@ Miscellaneous
    configurations to be defined just by declaring an ordered set of IComponents.
    A bean defined with an id of ExceptionProcessor will be automatically set as the Router's 
    exceptionProcessor.
-   
+ 
+ * The automatic example/tutorial documentation generation mechanism has been tweaked slightly.
+ 
 Bug Fixes
 =========
 SC66: Added support for setting ReplyToQueueName and ReplyToQueueManagerName by MqConnection. 
