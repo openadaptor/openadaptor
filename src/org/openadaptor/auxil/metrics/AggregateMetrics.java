@@ -26,6 +26,7 @@
  */
 package org.openadaptor.auxil.metrics;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -161,5 +162,9 @@ public class AggregateMetrics extends ComponentMetrics{
       return true;
     }
     return false;
+  }
+
+  public Collection getComponentMetrics() {
+    return componentMetrics;
   }
 }

@@ -66,6 +66,8 @@ public class ComponentMetrics implements IComponentMetrics{
   
   protected static final String NONE = "None";
   
+  private static final String NOT_APPLICABLE = "N/A";
+  
   protected static String MESSAGES_OF_TYPE = " message(s) of type ";
   
   private static final String LESS_THAN_ONE =  "less than 1 ";
@@ -442,7 +444,7 @@ public class ComponentMetrics implements IComponentMetrics{
       sb.append(MILLISECONDS);
     }
     else if(duration==-1){
-      sb.append(UNKNOWN);
+      sb.append(NOT_APPLICABLE);
     }
     else{
       sb.append(periodFormatter.print(new Period(duration)));
@@ -457,7 +459,7 @@ public class ComponentMetrics implements IComponentMetrics{
       sb.append(MILLISECONDS);
     }
     else if(duration==-1){
-      sb.append(UNKNOWN);
+      sb.append(NOT_APPLICABLE);
     }
     else{
       sb.append(periodFormatter.print(new Period(duration)));

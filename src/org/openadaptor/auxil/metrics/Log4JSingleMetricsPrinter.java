@@ -24,34 +24,47 @@
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
  */
-package org.openadaptor.core.recordable;
+package org.openadaptor.auxil.metrics;
 
-import org.openadaptor.auxil.metrics.Log4JSingleMetricsPrinter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IMetricsPrinter;
 
 /**
- * Prints component metrics to an external resource.
+ * An {@link IMetricsPrinter} that sends a selection of metrics to
+ * a logger.
  * 
- * @see Log4JSingleMetricsPrinter
- * @see Adaptor#setMetricsPrinter
+ * @see IMetricsPrinter
+ * @see Log4JAggregateMetricsPrinter
  * @author Kris Lachor
  */
-public interface IMetricsPrinter {
+public class Log4JSingleMetricsPrinter implements IMetricsPrinter {
+
+  private static final Log log = LogFactory.getLog(Log4JSingleMetricsPrinter.class.getName());
+  
+  protected void printMetrics(IComponentMetrics metrics, String name){
+    StringBuffer sb = new StringBuffer();
+    sb.append("----- Metrics for " + name+ "-----\n");
+    sb.append("Input messages :        " + metrics.getInputMsgs() + "\n");
+    sb.append("Output messages:        " + metrics.getOutputMsgs() + "\n");
+    sb.append("Msg processing time:    " + metrics.getProcessTime() + "\n");
+    sb.append("Between msgs idle time: " + metrics.getIntervalTime() + "\n");
+    sb.append("Component uptime:       " + metrics.getUptime());
+    log.info(sb.toString());  
+  }
 
   /**
-   * Prints or persits metrics to a external resource, for example a console,
-   * an audit file, a database.
-   * 
-   * @param metrics component metrics to be printed/persisted.
+   * @see org.openadaptor.core.recordable.IMetricsPrinter#print(org.openadaptor.core.recordable.IComponentMetrics)
    */
-  void print(IComponentMetrics metrics);
-  
+  public void print(IComponentMetrics metrics, String description) {
+    printMetrics(metrics, description);
+  }
+
   /**
-   * Prints or persits metrics to a external resource, for example a console,
-   * an audit file, a database.
-   * 
-   * @param metrics component metrics to be printed/persisted.
-   * @param description metrics' name.
+   * @see org.openadaptor.core.recordable.IMetricsPrinter#print(org.openadaptor.core.recordable.IComponentMetrics)
    */
-  void print(IComponentMetrics metrics, String description);
-  
+  public void print(IComponentMetrics metrics) {
+    printMetrics(metrics, metrics.getComponent().getId());
+  }
 }

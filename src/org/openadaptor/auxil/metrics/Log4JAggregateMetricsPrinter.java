@@ -26,44 +26,44 @@
  */
 package org.openadaptor.auxil.metrics;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IMetricsPrinter;
 
 /**
  * An {@link IMetricsPrinter} that sends a selection of metrics to
- * a logger.
+ * a logger. If the printed metrics of are {@link AggregateMetrics}
+ * it also prints all the metrics contained in it.
  * 
+ * @see Log4JSingleMetricsPrinter
+ * @see IMetricsPrinter
  * @author Kris Lachor
  */
-public class Log4JMetricsPrinter implements IMetricsPrinter {
-
-  private static final Log log = LogFactory.getLog(Log4JMetricsPrinter.class.getName());
+public class Log4JAggregateMetricsPrinter extends Log4JSingleMetricsPrinter {
   
-
-  private void printMetrics(IComponentMetrics metrics, String name){
-    StringBuffer sb = new StringBuffer();
-    sb.append("Metrics for " + name+ "\n");
-    sb.append("Input messages :       " + metrics.getInputMsgs() + "\n");
-    sb.append("Output messages:       " + metrics.getInputMsgs() + "\n");
-    sb.append("Msg processing time:   " + metrics.getProcessTime() + "\n");
-    sb.append("Between msg idle time: " + metrics.getIntervalTime() + "\n");
-    sb.append("Component uptime:      " + metrics.getUptime() );
-    log.info(sb.toString());  
-  }
-
   /**
    * @see org.openadaptor.core.recordable.IMetricsPrinter#print(org.openadaptor.core.recordable.IComponentMetrics)
    */
   public void print(IComponentMetrics metrics, String description) {
     printMetrics(metrics, description);
+    if(metrics instanceof AggregateMetrics){
+      Collection componentMetrics = ((AggregateMetrics)metrics).getComponentMetrics();
+      if(componentMetrics==null){
+        return;
+      }
+      for(Iterator it=componentMetrics.iterator();it.hasNext();){
+        IComponentMetrics singleMetrics = (IComponentMetrics) it.next();
+        printMetrics(singleMetrics, singleMetrics.getComponent().getId());
+      }
+    }
   }
 
   /**
    * @see org.openadaptor.core.recordable.IMetricsPrinter#print(org.openadaptor.core.recordable.IComponentMetrics)
    */
   public void print(IComponentMetrics metrics) {
-    printMetrics(metrics, metrics.getComponent().getId());
+    print(metrics, metrics.getComponent().getId());
   }
 }
