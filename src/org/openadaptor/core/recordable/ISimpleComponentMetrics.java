@@ -26,40 +26,70 @@
  */
 package org.openadaptor.core.recordable;
 
+import org.openadaptor.core.IMessageProcessor;
 
 /**
- * Interface simple metrics associated with an {@link IRecordableComponent}.
+ * An interface that represents simple metrics associated with an 
+ * {@link IRecordableComponent}. An {@link IRecordableComponent} 
+ * will typically be any of the {@link IMessageProcessor}s that 
+ * form the adaptor's processing pipeline, or the adaptor itself.
  * 
- * DRAFT. NOT READY FOR USE.
+ * These simple metrics are typically represented as text/Strings and 
+ * are meant to be human-readable, for example via a JMX console,
+ * rather than used for further computer processing.
  * 
- * @see ISimpleComponentMetrics
+ * @see IComponentMetrics
  * @see ComponentMetrics 
  * @see IRecordableComponent
  * @author Kris Lachor
  */
 public interface ISimpleComponentMetrics {
 
+    /**
+     * @return description of quantities and data types of messages
+     *         that enter the component.
+     */
+    String getInputMsgs();
   
+    /**
+     * @return description of quantities and data types of messages
+     *         that leave the component. Includes information on
+     *         discards and exceptions.
+     */  
     String getOutputMsgs();
   
    /**
-    * Time it took to process messages.
+    * @return descriptive information about the time the component
+    *         took to process messages, for example minimal time,
+    *         maximal time, average time.
     */
     String getProcessTime();
     
+    /**
+     * @return descriptive information about the idle time between
+     *        processing messages. Includes min, max and average idle
+     *        time.
+     */
     String getIntervalTime();
     
-    //TODO to be moved under getOutputMsgs wings
-    long getDiscardedMsgCount();
-    
-    //TODO to be moved under getOutputMsgs wings
-    long getExceptionMsgCount();
-    
+    /**
+     * @return the component uptime, in a human-readable format.
+     */ 
     String getUptime();
     
-    String getInputMsgs();
-    
+    /**
+     * Enables or disables capturing metrics for the component. Capturing
+     * metrics involves a certain performance overhead, and therefore
+     * in some adaptors in may be desirable to enable them only on ad-hoc
+     * basis. 
+     * 
+     * @param metricsEnabled true if metrics are to be enabled, false if disabled.
+     */
     void setMetricsEnabled(boolean metricsEnabled);
     
+    /**
+     * @return true if metrics capturing is currently enabled, false otherwise.
+     */
     boolean isMetricsEnabled();
+    
 }

@@ -27,60 +27,89 @@
 
 package org.openadaptor.core.recordable;
 
+import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
-import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
- * Represents a class that maintains runtime metrics for an {@link IRecordableComponent}
- * and the messages it processes.
+ * Represents a class that records runtime metrics for an 
+ * {@link IRecordableComponent} and the messages it processes. 
+ * An {@link IRecordableComponent} will typically be any of the 
+ * {@link IMessageProcessor}s that form the adaptor's processing 
+ * pipeline, or the adaptor itself.
  * 
- * This interface extends {@ISimpleComponentMetrics} with more detailed methods that
- * return mostly numeric (as opposed to Strings) data that can be further processed
- * to generate reports etc.
- * 
- * DRAFT. NOT READY FOR USE.
- *
- * TODO this interface should not need to extends from ILifcecleListener (nothing to do with it).
- * implementations can implement ILifecycleListener. 
+ * This interface extends {@link ISimpleComponentMetrics} with more detailed 
+ * methods that return mostly numeric data that can be further processed 
+ * and computed to achieve things like generating adaptor's reports,
+ * storing audit data, generating charts and graphs from an adaptor's
+ * run.
  * 
  * @see ISimpleComponentMetrics
  * @see ComponentMetrics 
  * @see IRecordableComponent
  * @author Kris Lachor
  */
-public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
-  
-	long [] getInputMsgCounts();
-    
-    long [] getOutputMsgCounts();
-    
-	String getProcessTimeMax();
-	
-	String getProcessTimeMin();
-    
-    String getIntervalTimeMax();
-    
-    String getIntervalTimeMin();
+public interface IComponentMetrics extends ISimpleComponentMetrics{
 
-	String [] getInputMsgTypes();
+  /**
+   * Records the start of a message processing in the monitored component.
+   * It should be called by the corresponding {@link IRecordableComponent}
+   * when only the message enters the component.
+   * 
+   * @param msg a message traversing the adaptor's pipeline, as 
+   *        it enters the monitored component.
+   */
+  void recordMessageStart(Message msg);
+  
+  /**
+   * Records the end of a message processing in the monitored component.
+   * It should be called by the corresponding {@link IRecordableComponent}
+   * when right before the response leaves the component to be processed
+   * by subsequent nodes in the pipeline.
+   * 
+   * @param msg a message traversing the adaptor's pipeline, as 
+   *        it enters the monitored component.
+   * @param response a response to the input msg; the output from 
+   *        the monitored component, a result of a successfull 
+   *        message processing.
+   */
+  void recordMessageEnd(Message msg, Response response);
+  
+  void recordDiscardedMsgEnd(Message msg);
+  
+  public void recordExceptionMsgEnd(Message msg);
+
+  long [] getInputMsgCounts();
     
-    String [] getOutputMsgTypes();
+  long [] getOutputMsgCounts();
     
-    long getOutputMsgCount();
+  String getProcessTimeMax();
+	 
+  String getProcessTimeMin();
+    
+  String getIntervalTimeMax();
+    
+  String getIntervalTimeMin();
+ 
+  String [] getInputMsgTypes();
+    
+  String [] getOutputMsgTypes();
    
-    
-    /**
-     * TODO should be IRecordableComponent??
-     * @return the component for which these metrics are recorded.
-     */
-    IRecordableComponent getComponent();
-    
-    public void recordMessageStart(Message msg);
-    
-    public void recordMessageEnd(Message msg, Response response);
-    
-    public void recordDiscardedMsgEnd(Message msg);
-    
-    public void recordExceptionMsgEnd(Message msg);
+  long getOutputMsgCount();
+   
+  /**
+   * @return number of messages discarded by the component.
+   */
+  long getDiscardedMsgCount();
+  
+  /**
+   * @return number of messages that resulted in an exception.
+   */
+  long getExceptionMsgCount();
+  
+  /**
+   * @return the component for which these metrics are recorded.
+   */
+  IRecordableComponent getComponent();
+  
 }
