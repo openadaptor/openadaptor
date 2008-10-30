@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: $
+  $HeadURL: $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  Illustrates how to view adaptors metrics via JMX console. 
+  
+Run it like this...
+
+    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config metrics-jmx.xml
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
+  This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
+  reference implementation and automatically runs a http adaptor which you can browse 
+  at http://localhost:8082).
+  
+  The optional vm argument -Dcom.sun.management.jmxremote will also permit the adaptor to be monitored
+  locally via jconsole (1.5+).
+    
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+	<property name="messageProcessor">
+		<bean class="org.openadaptor.core.router.RouterWithMetrics">
+			<description>
+				This creates the simple pipeline reader -> inspector ->
+				mapConverter -> xmlConvertor -> writer.
+			</description>
+			<property name="processors">
+				<list>
+					<ref bean="reader" />
+					<ref bean="inspector" />
+					<ref bean="mapConverter" />
+					<ref bean="xmlConverter" />
+					<ref bean="consoleWriter" />
+				</list>
+			</property>
+			<property name="exceptionProcessor" ref="exceptionConsoleWriter"/>
+		    <property name="metricsEnabled" value="true"/>
+		</bean>
+	</property>
+  </bean>
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+	<description>
+		This read connector reads lines from a file.
+	</description>
+	<property name="filename" value="input/metrics.txt" />
+	<property name="dataReader">
+		<bean
+			class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+			<description>
+				This (regular expression) will exclude comments
+				(lines beginning with #)
+			</description>
+			<property name="excludeRegex" value="^#.*" />
+		</bean>
+	</property>
+  </bean>
+	
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Embed this in your config to expose jmx interface via http and rmi.</description>
+    <property name="port" value="8082"/>
+  </bean>
+  
+  <bean id="inspector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+	 <property name="script">
+	  <value>
+	  importPackage(Packages.javax.swing);
+	  var log =Packages.org.apache.commons.logging.LogFactory.getLog("dom4j->w3c");
+      log.info("Delaying message. JOptionPane should pop up. Click OK. Watch JMX console for inspectorNode.");
+	  JOptionPane.showMessageDialog(null,oa_data,"delays message. Just click OK",JOptionPane.PLAIN_MESSAGE);
+	  </value>
+	 </property>
+  </bean>
+  
+  <bean id="mapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+	<description>
+	  Strings are delimited by commas; each value in the string will be associated with the
+		corresponding 'name' in the generated map
+	</description>
+	<property name="delimiter" value="," />
+	<property name="fieldNames">
+		<list>
+			<value>Side</value>
+			<value>Qty</value>
+			<value>SecurityId</value>
+			<value>Counterparty</value>
+			<value>Price</value>
+		</list>
+	</property>
+  </bean>
+	
+  <bean id="xmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+	<description>Convert the map into XML</description>
+	<property name="rootElementTag" value="record" />
+  </bean>
+	
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+	
+  <bean id="exceptionConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>
