@@ -36,6 +36,7 @@ import org.openadaptor.core.Response;
 import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.*;
 import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.recordable.IMetricsPrinter;
 import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
@@ -148,6 +149,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * Metrics for this adaptor.
    */
   private IComponentMetrics metrics = null;
+  
+  /**
+   * Metrics printer. See the setter for more info.
+   */
+  private IMetricsPrinter metricsPrinter;
   
   /**
    * shutdown hook
@@ -341,6 +347,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         hasShutdownHooks = false;
       }
       state = State.STOPPED;
+      /* print metrics */
+      if(metricsPrinter!=null && metrics!=null && metrics.isMetricsEnabled()){
+        metricsPrinter.print(metrics, "Adaptor");
+      }
       log.info("Adaptor stopped normally.");
     }
 
@@ -776,5 +786,19 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     else{
       return null;
     }
+  }
+
+  /**
+   * Optional. Sets a metrics printer for this adaptor. Property will 
+   * take effect only if the Router has enabled metrics, it will be 
+   * ignored otherwise. 
+   * 
+   * Metrics will be printed just before the Adaptor exits and only 
+   * if it exits gracefully (i.e. not via 'kill -9', Ctrl+C etc.). 
+   * 
+   * @param metricsPrinter
+   */
+  public void setMetricsPrinter(IMetricsPrinter metricsPrinter) {
+    this.metricsPrinter = metricsPrinter;
   }
 }

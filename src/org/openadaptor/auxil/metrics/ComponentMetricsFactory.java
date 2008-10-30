@@ -34,7 +34,11 @@ import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
- * 
+ * A class that oversees creation of all {@link IComponentMetrics} 
+ * in an adaptor. It ensures that all {@link AggregateMetrics} are
+ * always aware of all detailed {@link ComponentMetrics} in the 
+ * system.
+ *
  * @author Kris Lachor
  */
 public class ComponentMetricsFactory {
@@ -43,9 +47,18 @@ public class ComponentMetricsFactory {
   
   private static Collection aggregateMetricsCol = new HashSet();
 
+  /**
+   * Private constructor.
+   */
   private ComponentMetricsFactory() {
   }
  
+  /**
+   * Creates an instance of {@link ComponentMetrics}.
+   * 
+   * @param recordableComponent the component for which metrics are created.
+   * @return an instance of {@link ComponentMetrics}.
+   */
   public static IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
     IComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
     for(Iterator it = aggregateMetricsCol.iterator(); it.hasNext();){
@@ -55,6 +68,12 @@ public class ComponentMetricsFactory {
     return componentMetrics;
   }
   
+  /**
+   * Creates an instance of {@link AggregateMetrics}.
+   * 
+   * @param recordableComponent the component for which metrics are created.
+   * @return an instance of {@link AggregateMetrics}.
+   */
   public static IComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
     AggregateMetrics aggregateMetrics = new AggregateMetrics(recordableComponent);
     aggregateMetricsCol.add(aggregateMetrics);

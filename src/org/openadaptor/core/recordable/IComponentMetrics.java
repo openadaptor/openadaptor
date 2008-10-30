@@ -75,14 +75,22 @@ public interface IComponentMetrics extends ISimpleComponentMetrics{
    */
   void recordMessageEnd(Message msg, Response response);
   
+  /**
+   * 
+   * @param msg
+   */
   void recordDiscardedMsgEnd(Message msg);
   
   public void recordExceptionMsgEnd(Message msg);
 
   long [] getInputMsgCounts();
-    
+ 
+  String [] getInputMsgTypes();
+  
   long [] getOutputMsgCounts();
-    
+  
+  String [] getOutputMsgTypes();
+  
   String getProcessTimeMax();
 	 
   String getProcessTimeMin();
@@ -91,9 +99,7 @@ public interface IComponentMetrics extends ISimpleComponentMetrics{
     
   String getIntervalTimeMin();
  
-  String [] getInputMsgTypes();
     
-  String [] getOutputMsgTypes();
    
   long getOutputMsgCount();
    

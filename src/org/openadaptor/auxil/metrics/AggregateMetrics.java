@@ -44,7 +44,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  * 
  * @author Kris Lachor
  */
-public class AggregateMetrics extends ComponentMetrics  {
+public class AggregateMetrics extends ComponentMetrics{
 
   private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
