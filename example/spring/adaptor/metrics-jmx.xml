@@ -31,7 +31,7 @@ Run it like this...
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
 	<property name="messageProcessor">
-		<bean class="org.openadaptor.core.router.RouterWithMetrics">
+		<bean class="org.openadaptor.core.router.Router">
 			<description>
 				This creates the simple pipeline reader -> inspector ->
 				mapConverter -> xmlConvertor -> writer.
