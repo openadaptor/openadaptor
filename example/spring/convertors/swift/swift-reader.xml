@@ -48,7 +48,7 @@
 
 	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 		<description></description>
-		<property name="filename" value="input/incoming_domestic_payment.swift" />
+		<property name="filename" value="input/mt103_customer_transfer.swift" />
 		<property name="dataReader">
 			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
 		</property>
