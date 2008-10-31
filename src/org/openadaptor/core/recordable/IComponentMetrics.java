@@ -31,6 +31,7 @@ import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
  * Represents a class that records runtime metrics for an 
@@ -50,7 +51,7 @@ import org.openadaptor.core.Response;
  * @see IRecordableComponent
  * @author Kris Lachor
  */
-public interface IComponentMetrics extends ISimpleComponentMetrics{
+public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleListener{
 
   /**
    * Records the start of a message processing in the monitored component.

@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentProcessor;
@@ -46,7 +45,6 @@ import org.openadaptor.core.jmx.Administrable;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.LifecycleComponent;
-import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
@@ -89,7 +87,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     /**
      * Metrics associated with this node.
      */
-    private ComponentMetrics metrics = (ComponentMetrics) ComponentMetricsFactory.newStandardMetrics(this);
+    private IComponentMetrics metrics = (IComponentMetrics) ComponentMetricsFactory.newStandardMetrics(this);
     
     /**
      * Constructor.
@@ -102,7 +100,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 		super(id);
 		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
 		this.messageProcessor = next;
-//        metrics = new ComponentMetrics(this);
+        addListener(metrics);
 	}
 
 	public Node(final String id, final IDataProcessor processor) {

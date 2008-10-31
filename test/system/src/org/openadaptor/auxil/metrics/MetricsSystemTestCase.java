@@ -27,9 +27,11 @@
 package org.openadaptor.auxil.metrics;
 
 import java.util.Iterator;
+import java.util.Arrays;
 
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.spring.SpringAdaptor;
 import org.openadaptor.util.SystemTestUtil;
@@ -37,11 +39,12 @@ import org.openadaptor.util.SystemTestUtil;
 import junit.framework.TestCase;
 
 /**
- * System tests for {@link ComponentMetrics} and recording metrics in general.
+ * System tests for {@link ComponentMetrics}, {@link AggregateMetrics} 
+ * and recording metrics in general.
  * 
  * @author Kris Lachor
  */
-public class ComponentMetricsSystemTestCase extends TestCase {
+public class MetricsSystemTestCase extends TestCase {
 
   private static final String RESOURCE_LOCATION = "test/system/src/";
   
@@ -62,6 +65,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
     assertFalse(adaptor.getMetrics().isMetricsEnabled());
     assertEquals(adaptor.getMetrics().getInputMsgCounts().length, 0);
     assertEquals(adaptor.getMetrics().getOutputMsgCounts().length, 0);
+    assertEquals(adaptor.getMetrics().getUptime(), ComponentMetrics.UNKNOWN);
      
     /* same checks for all Nodes */
     Iterator it = adaptor.getMessageProcessors().iterator();
@@ -72,6 +76,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
         assertFalse(recComp.getMetrics().isMetricsEnabled());
         assertEquals(recComp.getMetrics().getInputMsgCounts().length, 0);
         assertEquals(recComp.getMetrics().getOutputMsgCounts().length, 0);
+        assertEquals(recComp.getMetrics().getUptime(), ComponentMetrics.UNKNOWN);
       }
     }
   }
@@ -87,8 +92,14 @@ public class ComponentMetricsSystemTestCase extends TestCase {
     
     /* Check Adaptor's metrics are enabled */
     assertTrue(adaptor.getMetrics().isMetricsEnabled());
-    assertEquals(adaptor.getMetrics().getInputMsgCounts()[0], 1);
-    assertEquals(adaptor.getMetrics().getOutputMsgCounts()[0], 1);
+
+    assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgCounts(), new long[]{1}));
+    assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgTypes(), new String[]{"java.lang.String"}));
+
+    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgCounts(), new long[]{1}));
+
+    //TODO
+//    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgTypes(), new String[]{"java.lang.String"}));
     
     /* same checks for all Nodes */
     Iterator it = adaptor.getMessageProcessors().iterator();
@@ -97,10 +108,33 @@ public class ComponentMetricsSystemTestCase extends TestCase {
       if(mProcessor instanceof IRecordableComponent){
         IRecordableComponent recComp = (IRecordableComponent) mProcessor;
         assertTrue(recComp.getMetrics().isMetricsEnabled());
-        assertEquals(recComp.getMetrics().getInputMsgCounts()[0], 1);
-        assertEquals(adaptor.getMetrics().getOutputMsgCounts()[0], 1);
+        
+        assertTrue(Arrays.equals(recComp.getMetrics().getInputMsgCounts(), new long[]{1}));
+        assertTrue(Arrays.equals(recComp.getMetrics().getOutputMsgCounts(), new long[]{1}));
+        
+        //TODO check types?
       }
     }
   }
   
+  /**
+   * Runs adaptor with enabled metrics. Check components' uptime.
+   */
+  public void testUptime() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    
+    IComponentMetrics adaptorMetrics = adaptor.getMetrics();
+    
+    //TODO Router/Adaptor doesn't do uptime atm
+//    assertTrue(! ComponentMetrics.UNKNOWN.equals(adaptorMetrics.getUptime()));
+    
+    for(Iterator it=adaptor.getMessageProcessors().iterator(); it.hasNext(); ){
+      IMessageProcessor mProcessor = (IMessageProcessor) it.next();
+      if(mProcessor instanceof IRecordableComponent){
+        IRecordableComponent recComp = (IRecordableComponent) mProcessor;
+        assertTrue(! ComponentMetrics.UNKNOWN.equals(recComp.getMetrics().getUptime()));
+      }
+    }
+  }
 }

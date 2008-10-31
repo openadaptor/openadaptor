@@ -35,8 +35,6 @@ import org.openadaptor.core.IComponent;
  * Recording metrics for a particular IRecordableComponent can be switched
  * on and off, also at runtime via the JMX console.
  * 
- * NOT READY FOR USE.
- * 
  * @author Kris Lachor
  */
 public interface IRecordableComponent extends IComponent{

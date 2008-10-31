@@ -30,10 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -41,6 +38,7 @@ import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
 import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
+import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
@@ -50,19 +48,18 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
  * Class that records and computes message metrics for a single {@link IRecordableComponent}}.
  * 
  * @see IComponentMetrics
+ * @see IRecordableComponent
  * @author Kris Lachor
  */
-public class ComponentMetrics implements IComponentMetrics{
-  
-  private static final Log log = LogFactory.getLog(ComponentMetrics.class.getName());
-  
+public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
+   
   public static final String ARRAY_OF ="array_of_";
   
   public static final String HETEROGENEOUS_TYPES = "heterogeneous_types";
   
   private static final String MILLISECONDS = "ms";
   
-  private static final String UNKNOWN = "Unknown";
+  protected static final String UNKNOWN = "Unknown";
   
   protected static final String NONE = "None";
   
@@ -106,33 +103,38 @@ public class ComponentMetrics implements IComponentMetrics{
   
   long totalIntervalTime = 0;
   
+  /** When the component last chagned state to STARTED */
   Date lastStarted = null;
+
+  /** When the component last chagned state to STOPPED */
+  Date lastStopped = null;
   
+  /** Are metrics enabled */
   boolean enabled = false;
 
-  PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
-    .printZeroRarelyLast()
-    .appendYears()
-    .appendSuffix(" year", " years")
-    .appendSeparator(" ")
-    .appendMonths()
-    .appendSuffix(" month", " months")
-    .appendSeparator(" ")
-    .appendDays()
-    .appendSuffix(" day", " days")
-    .appendSeparator(" ")
-    .appendHours()
-    .appendSuffix(" hour", " hours")
-    .appendSeparator(" ")
-    .appendMinutes()
-    .appendSuffix(" min", " mins")
-    .appendSeparator(" ")
-    .appendSeconds()
-    .appendSuffix(" sec", " secs")
-    .appendSeparator(" ")
-    .appendMillis()
-    .appendSuffix(" millisec", " " + MILLISECONDS)
-    .toFormatter();
+  private PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
+              .printZeroRarelyLast()
+              .appendYears()
+              .appendSuffix(" year", " years")
+              .appendSeparator(" ")
+              .appendMonths()
+              .appendSuffix(" month", " months")
+              .appendSeparator(" ")
+              .appendDays()
+              .appendSuffix(" day", " days")
+              .appendSeparator(" ")
+              .appendHours()
+              .appendSuffix(" hour", " hours")
+              .appendSeparator(" ")
+              .appendMinutes()
+              .appendSuffix(" min", " mins")
+              .appendSeparator(" ")
+              .appendSeconds()
+              .appendSuffix(" sec", " secs")
+              .appendSeparator(" ")
+              .appendMillis()
+              .appendSuffix(" millisec", " " + MILLISECONDS)
+              .toFormatter();
 
 
   /**
@@ -154,15 +156,6 @@ public class ComponentMetrics implements IComponentMetrics{
     this.monitoredComponent = monitoredComponent;
     this.enabled = enabled;
   }
-
-//  
-//  public void recordComponentStart(){
-//    componentStartTime = new Date();
-//  }
-//  
-//  public void recordComponentStop(){
-//    componentStopTime = new Date();
-//  }
 
   /**
    * Records input message. The <code>inputMsgCounter</code> maps types of input 
@@ -202,7 +195,6 @@ public class ComponentMetrics implements IComponentMetrics{
         minIntervalTime=intervalTime;
       }
     }
-    String id = monitoredComponent==null?"Unknown":monitoredComponent.getId();
     
     Object [] data = msg.getData();
     if(data.length==0){
@@ -335,7 +327,9 @@ public class ComponentMetrics implements IComponentMetrics{
     }
   }
 
-  
+  /**
+   * @see IComponentMetrics#recordDiscardedMsgEnd(Message)
+   */
   public void recordDiscardedMsgEnd(Message msg){
     if(!enabled){
       return;
@@ -343,7 +337,9 @@ public class ComponentMetrics implements IComponentMetrics{
     discardedMsgs++;
   }
   
-  
+  /**
+   * @see IComponentMetrics#recordExceptionMsgEnd(Message) 
+   */
   public void recordExceptionMsgEnd(Message msg){
     if(!enabled){
       return;
@@ -381,6 +377,20 @@ public class ComponentMetrics implements IComponentMetrics{
     return result;
   }
   
+  /**
+   * @see IComponentMetrics#getInputMsgTypes()
+   */
+  public String [] getInputMsgTypes() {
+    return (String[]) inputMsgCounter.keySet().toArray(new String[]{});
+  }
+  
+  /**
+   * @see IComponentMetrics#getOutputMsgTypes()
+   */
+  public String[] getOutputMsgTypes() {
+    return (String[]) outputMsgCounter.keySet().toArray(new String[]{});
+  }
+
   /**
    * Collates numeric data about messages that left the component, in human readable format.
    */
@@ -470,7 +480,7 @@ public class ComponentMetrics implements IComponentMetrics{
   private String formatDuration(long duration, long durationMin, long durationMax){
     StringBuffer sb = new StringBuffer();
     if(duration==0){
-      sb.append("Less than 1 ");
+      sb.append(LESS_THAN_ONE);
       sb.append(MILLISECONDS);
     }
     else if(duration==-1){
@@ -478,9 +488,9 @@ public class ComponentMetrics implements IComponentMetrics{
     }
     else{
       sb.append(periodFormatter.print(new Period(duration)));
-      sb.append(" (min ");
+      sb.append(" (min: ");
       sb.append(formatDuration(durationMin));
-      sb.append(", max ");
+      sb.append(", max: ");
       sb.append(periodFormatter.print(new Period(durationMax)));
       sb.append(")");
     }
@@ -493,11 +503,6 @@ public class ComponentMetrics implements IComponentMetrics{
   
   public String getProcessTimeMax() {
     return formatDuration(maxProcessTime);
-  }
-
-  public String [] getInputMsgTypes() {
-    Set inputMsgTypes = inputMsgCounter.keySet();
-    return (String[]) inputMsgTypes.toArray(new String[]{});
   }
 
   public String getIntervalTime() {
@@ -520,20 +525,18 @@ public class ComponentMetrics implements IComponentMetrics{
     return formatDuration(minIntervalTime);
   }
 
+  /**
+   * @see IComponentMetrics#getDiscardedMsgCount()
+   */
   public long getDiscardedMsgCount() {
     return discardedMsgs;
   }
 
+  /**
+   * @see IComponentMetrics#getExceptionMsgCount()
+   */
   public long getExceptionMsgCount() {
     return exceptionMsgs;
-  }
-
-  public long getOutputMsgCount() {
-    return outputMsgs;
-  }
-
-  public String[] getOutputMsgTypes() {
-    return new String[]{UNKNOWN};
   }
 
   /**
@@ -541,19 +544,30 @@ public class ComponentMetrics implements IComponentMetrics{
    * component state changes. 
    */
   public String getUptime() {
-    if(lastStarted==null){
+    long uptime = 0;
+    if(!enabled || lastStarted==null){
       return UNKNOWN;
     }
-    long uptime = new Date().getTime() - lastStarted.getTime();
-    return  formatDuration(uptime);
+    else if(lastStopped!=null && lastStopped.after(lastStarted)){
+      uptime = lastStopped.getTime() - lastStarted.getTime(); 
+    }
+    else{
+      uptime = new Date().getTime() - lastStarted.getTime();
+    }
+    return formatDuration(uptime);
   }
 
+  /**
+   * Monitors component start and stop times.
+   * 
+   * @see ILifecycleListener#stateChanged(ILifecycleComponent, State)
+   */
   public void stateChanged(ILifecycleComponent component, State newState) {
     if(newState == State.STARTED){
       lastStarted = new Date();
     }
-    else{
-      lastStarted = null;
+    else if(newState == State.STOPPED){
+      lastStopped = new Date();
     }
   }
 
