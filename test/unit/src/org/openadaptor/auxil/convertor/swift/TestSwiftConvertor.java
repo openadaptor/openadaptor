@@ -1,7 +1,5 @@
 package org.openadaptor.auxil.convertor.swift;
 
-import java.util.ArrayList;
-
 import net.sourceforge.wife.services.ConversionService;
 import net.sourceforge.wife.services.IConversionService;
 import net.sourceforge.wife.swift.model.SwiftMessage;
@@ -9,10 +7,8 @@ import net.sourceforge.wife.swift.model.SwiftMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.delimited.AbstractDelimitedStringConvertor;
-import org.openadaptor.auxil.processor.script.ScriptProcessorTestCase;
 import org.openadaptor.core.AbstractTestIDataProcessor;
 import org.openadaptor.core.IDataProcessor;
-import org.openadaptor.core.exception.RecordException;
 /**
  * Common unit tests for {@link AbstractDelimitedStringConvertor}.
  */
