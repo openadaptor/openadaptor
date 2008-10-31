@@ -137,13 +137,13 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
   long getExceptionMsgCount();
  
   
-  String getProcessTimeMax();
+  long getProcessTimeMax();
 	 
-  String getProcessTimeMin();
+  long getProcessTimeMin();
     
-  String getIntervalTimeMax();
+  long getIntervalTimeMax();
     
-  String getIntervalTimeMin();
+  long getIntervalTimeMin();
  
   /**
    * @return the component for which these metrics are recorded.

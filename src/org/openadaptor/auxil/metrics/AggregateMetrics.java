@@ -26,11 +26,13 @@
  */
 package org.openadaptor.auxil.metrics;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IComponent;
@@ -97,63 +99,41 @@ public class AggregateMetrics extends ComponentMetrics{
     return exceptionMsgsCount;
   }
 
-  
+  /**
+   * TODO
+   */
   public void addComponentMetrics(IComponentMetrics componentMetrics){
     this.componentMetrics.add(componentMetrics);
   }
 
-  public long[] getOutputMsgCounts() {
-    if(!enabled){
-      return new long[0];
-    }
-    long [] outputMsgs = new long[1];
-    for(Iterator it = componentMetrics.iterator(); it.hasNext();){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
-      if(isLastInPipeline(detailedMetrics.getComponent())){
-        outputMsgs[0]+=detailedMetrics.getOutputMsgCounts()[0];
-      }
-    }
-    log.info("Sum of output messages in all recordable components: " + outputMsgs[0]);
-    return outputMsgs;
-  }
-  
   /**
-   * Collates numeric data about messages that left the component, in human readable format.
+   * TODO
    */
-  public String getOutputMsgs() {
-    if(!enabled){
-      return METRICS_DISABLED;
-    }
-    StringBuffer outputMsgs = new StringBuffer();
-    if(getOutputMsgCounts()[0]==0){
-      outputMsgs.append(NONE);
-    }
+  public long[] getOutputMsgCounts() {
+    long [] msgCounts = new long[0];
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
-      IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
-      if(isLastInPipeline(detailedMetrics.getComponent())){
-        
-        boolean first = true;
-        for(int i=0; i<detailedMetrics.getOutputMsgTypes().length; i++){
-          if(first){
-            first = false;
-          }
-          else{
-            outputMsgs.append("/n");
-          }
-          Object dataType = detailedMetrics.getOutputMsgTypes()[i];
-          long count = detailedMetrics.getOutputMsgCounts()[i];
-          outputMsgs.append(count);
-          outputMsgs.append(MESSAGES_OF_TYPE);
-          outputMsgs.append(dataType);
-        }
+      IComponentMetrics compMetrics = (IComponentMetrics) it.next();
+      if(isLastInPipeline(compMetrics.getComponent())){
+        msgCounts = ArrayUtils.addAll(msgCounts, compMetrics.getInputMsgCounts());
       }
     }
-    
-        
-    return outputMsgs.toString();
+    return msgCounts;
   }
 
- 
+  /**
+   * TODO
+   */
+  public String[] getOutputMsgTypes() {
+    Collection msgTypes = new HashSet();
+    for(Iterator it = componentMetrics.iterator(); it.hasNext();){
+      IComponentMetrics compMetrics = (IComponentMetrics) it.next();
+      if(isLastInPipeline(compMetrics.getComponent())){
+        msgTypes.addAll(Arrays.asList(compMetrics.getInputMsgTypes()));
+      }
+    }
+    return (String[]) msgTypes.toArray(new String[0]);
+  }
+  
   /**
    * TODO comments
    */

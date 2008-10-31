@@ -46,6 +46,7 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 
 /**
  * Class that records and computes message metrics for a single {@link IRecordableComponent}}.
+ * TODO comments
  * 
  * @see IComponentMetrics
  * @see IRecordableComponent
@@ -92,10 +93,6 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   protected Date processStartTime;
   
   protected Date processEndTime;
-  
-  private Date componentStartTime;
-  
-  private Date componentStopTime;
   
   long minIntervalTime = -1;
   
@@ -392,36 +389,6 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   }
 
   /**
-   * Collates numeric data about messages that left the component, in human readable format.
-   */
-  public String getOutputMsgs() {
-    if(!enabled){
-      return METRICS_DISABLED;
-    }
-    StringBuffer outputMsgs = new StringBuffer();
-    if(getOutputMsgCounts().length == 0){
-      outputMsgs.append(NONE);
-    }
-    Iterator it = outputMsgCounter.keySet().iterator();
-    boolean first = true;
-    while(it.hasNext()){
-      if(first){
-        first = false;
-      }
-      else{
-        outputMsgs.append("/n");
-      }
-      Object dataType = it.next();
-      Long countLong = (Long) outputMsgCounter.get(dataType);
-      outputMsgs.append(countLong);
-      outputMsgs.append(MESSAGES_OF_TYPE);
-      outputMsgs.append(dataType);
-    }
-    return outputMsgs.toString();
-  }
-
-
-  /**
    * Collates numeric data about messages that entered the component, in human readable format.
    */
   public String getInputMsgs() {
@@ -450,16 +417,25 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     return inputMsgs.toString();
   }
   
-  public String getProcessTime() {
-    if(!enabled){
-      return METRICS_DISABLED;
+  /**
+   * Collates numeric data about messages that left the component, in human readable format.
+   */
+  public String getOutputMsgs() {
+    StringBuffer outputMsgs = new StringBuffer();
+    if(getOutputMsgCounts().length == 0){
+      outputMsgs.append(NONE);
     }
-    long msgCount = getInputMsgCounts()[0];
-    long timeAvgMs = -1;
-    if(msgCount!=0){
-      timeAvgMs = (long) (totalProcessTime/msgCount);
+    long [] outMsgCounts = getOutputMsgCounts();
+    String [] outMsgTypes = getOutputMsgTypes();
+    for(int i=0;i<outMsgCounts.length;i++){
+      if(i>0){
+        outputMsgs.append("/n");
+      }
+      outputMsgs.append(outMsgCounts[i]);
+      outputMsgs.append(MESSAGES_OF_TYPE);
+      outputMsgs.append(outMsgTypes[i]);
     }
-    return formatDuration(timeAvgMs, minProcessTime, maxProcessTime);
+    return outputMsgs.toString();
   }
 
   private String formatDuration(long duration){
@@ -476,7 +452,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     }
     return sb.toString();
   }
-  
+
   private String formatDuration(long duration, long durationMin, long durationMax){
     StringBuffer sb = new StringBuffer();
     if(duration==0){
@@ -496,20 +472,60 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     }
     return sb.toString();
   }
-  
-  public String getProcessTimeMin() {
-    return formatDuration(minProcessTime);
+
+  /**
+   * @see IComponentMetrics#getProcessTimeMin()
+   */
+  public long getProcessTimeMin() {
+    return minProcessTime;
   }
   
-  public String getProcessTimeMax() {
-    return formatDuration(maxProcessTime);
+  /**
+   * @see IComponentMetrics#getProcessTimeMax()
+   */
+  public long getProcessTimeMax() {
+    return maxProcessTime;
   }
 
+  /**
+   * @see ISimpleComponentMetrics#getProcessTime()
+   */
+  public String getProcessTime() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
+    if(maxProcessTime==-1){
+      /* Hasn't processed anything yet */
+      return UNKNOWN;
+    }
+    long [] intpuMsgCounts = getInputMsgCounts();
+    long msgCount = 0;
+    for(int i=0; i<intpuMsgCounts.length; i++){
+      msgCount+=intpuMsgCounts[i];
+    }
+    long timeAvgMs = -1;
+    if(msgCount!=0){
+      //TODO check if processing finished.
+      timeAvgMs = (long) (totalProcessTime/msgCount);
+    }
+    return formatDuration(timeAvgMs, minProcessTime, maxProcessTime);
+  }
+  
+  /**
+   * @see ISimpleComponentMetrics#getIntervalTime()
+   */
   public String getIntervalTime() {
     if(!enabled){
       return METRICS_DISABLED;
     }
-    long msgCount = getInputMsgCounts()[0];
+    if(maxIntervalTime==-1){
+      return UNKNOWN;
+    }
+    long [] intpuMsgCounts = getInputMsgCounts();
+    long msgCount = 0;
+    for(int i=0; i<intpuMsgCounts.length; i++){
+      msgCount+=intpuMsgCounts[i];
+    }
     long timeAvgMs = -1;
     if(msgCount!=0){
       timeAvgMs = (long) (totalIntervalTime/msgCount);
@@ -517,12 +533,18 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime);
   }
 
-  public String getIntervalTimeMax() {
-    return formatDuration(maxIntervalTime);
+  /**
+   * @see IComponentMetrics#getIntervalTimeMin()
+   */
+  public long getIntervalTimeMin() {
+    return minIntervalTime;
   }
-
-  public String getIntervalTimeMin() {
-    return formatDuration(minIntervalTime);
+  
+  /**
+   * @see IComponentMetrics#getIntervalTimeMax()
+   */
+  public long getIntervalTimeMax() {
+    return maxIntervalTime;
   }
 
   /**
@@ -556,7 +578,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     }
     return formatDuration(uptime);
   }
-
+ 
   /**
    * Monitors component start and stop times.
    * 

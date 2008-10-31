@@ -95,8 +95,10 @@ public class MetricsSystemTestCase extends TestCase {
 
     assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgCounts(), new long[]{1}));
     assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgTypes(), new String[]{"java.lang.String"}));
+    assertNotNull(adaptor.getMetrics().getInputMsgs());
 
     assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgCounts(), new long[]{1}));
+    assertNotNull(adaptor.getMetrics().getOutputMsgs());
 
     //TODO
 //    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgTypes(), new String[]{"java.lang.String"}));
@@ -110,6 +112,7 @@ public class MetricsSystemTestCase extends TestCase {
         assertTrue(recComp.getMetrics().isMetricsEnabled());
         
         assertTrue(Arrays.equals(recComp.getMetrics().getInputMsgCounts(), new long[]{1}));
+        assertNotNull(recComp.getMetrics().getInputMsgs());
         assertTrue(Arrays.equals(recComp.getMetrics().getOutputMsgCounts(), new long[]{1}));
         
         //TODO check types?
