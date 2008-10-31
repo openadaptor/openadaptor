@@ -76,33 +76,54 @@ public interface IComponentMetrics extends ISimpleComponentMetrics{
   void recordMessageEnd(Message msg, Response response);
   
   /**
+   * Records the end of processing of a massage that is discarded.
    * 
-   * @param msg
+   * @param msg the discarded message.
    */
   void recordDiscardedMsgEnd(Message msg);
   
+  /**
+   * Records the end of processing of a message that results in an
+   * exception. 
+   * 
+   * @param msg a message that resulted in a processing error/exception.
+   */
   public void recordExceptionMsgEnd(Message msg);
 
+  /**
+   * Returns the count of input messages. Messages of different data type 
+   * have separate counters. Names of data types can be checked with
+   * {@link #getInputMsgTypes()}.
+   * 
+   * @return an array of input message counts.
+   */
   long [] getInputMsgCounts();
  
+  /**
+   * Returns types of input messages. Indexes of the return array
+   * will correspond to an array of counts returned by {@link #getInputMsgCounts()}.
+   * 
+   * @return an array of input message types.
+   */
   String [] getInputMsgTypes();
   
+  /**
+   * Returns the count of outupt messages. Messages of different data type 
+   * have separate counters. Names of data types can be checked with
+   * {@link #getOutputMsgTypes()}.
+   * 
+   * @return an array of input message counts.
+   */
   long [] getOutputMsgCounts();
   
+  /**
+   * Returns types of output messages. Indexes of the return array
+   * will correspond to an array of counts returned by {@link #getOutputMsgCounts()}.
+   * 
+   * @return an array of input message types.
+   */
   String [] getOutputMsgTypes();
-  
-  String getProcessTimeMax();
-	 
-  String getProcessTimeMin();
-    
-  String getIntervalTimeMax();
-    
-  String getIntervalTimeMin();
  
-    
-   
-  long getOutputMsgCount();
-   
   /**
    * @return number of messages discarded by the component.
    */
@@ -112,7 +133,16 @@ public interface IComponentMetrics extends ISimpleComponentMetrics{
    * @return number of messages that resulted in an exception.
    */
   long getExceptionMsgCount();
+ 
   
+  String getProcessTimeMax();
+	 
+  String getProcessTimeMin();
+    
+  String getIntervalTimeMax();
+    
+  String getIntervalTimeMin();
+ 
   /**
    * @return the component for which these metrics are recorded.
    */

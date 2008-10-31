@@ -178,6 +178,8 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     /* if the processor has metrics treat them as 'global' Adaptor ones */
     if(processor instanceof IRecordableComponent){
       this.metrics = ((IRecordableComponent) processor).getMetrics();
+      String enabled =  metrics.isMetricsEnabled() ? "ENABLED" : "DISABLED";
+      log.info("Global metrics are " + enabled);
     }
   }
   

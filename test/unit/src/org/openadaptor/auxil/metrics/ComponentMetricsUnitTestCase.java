@@ -54,132 +54,131 @@ public class ComponentMetricsUnitTestCase extends TestCase {
   
   Message testMsg3 = new Message(testData3, testSender, null);
   
-  public void test1(){
-    assertTrue(true);
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics
+   * #recordMessageStart(org.openadaptor.core.Message)}.
+   */
+  public void testRecordMessageStart() {
+    /* 1st message consists of a single String */
+    metrics.recordMessageStart(testMsg1);
+    assertNotNull(metrics.processStartTime);
+    assertNotNull(metrics.inputMsgCounter);
+    assertEquals(metrics.inputMsgCounter.size(),1);
+    assertTrue(metrics.inputMsgCounter.keySet().contains("java.lang.String"));
+    assertEquals(metrics.inputMsgCounter.get("java.lang.String"), new Long(1));
+    
+    /* 2nd is an array of Strings */
+    metrics.recordMessageStart(testMsg2);
+    assertEquals(metrics.inputMsgCounter.size(),2);
+    assertTrue(metrics.inputMsgCounter.keySet().contains(ComponentMetrics.ARRAY_OF + "java.lang.String"));
+    assertEquals(metrics.inputMsgCounter.get("java.lang.String"), new Long(1));
+    assertEquals(metrics.inputMsgCounter.get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
+    
+    /* 3rd is an array with data of different types */
+    metrics.recordMessageStart(testMsg3);
+    assertEquals(metrics.inputMsgCounter.size(),3);
+    assertTrue(metrics.inputMsgCounter.keySet().contains(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES));
+    assertEquals(metrics.inputMsgCounter.get(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES), new Long(1));
+
+    /* pass one more msg with heterogeneous types, check counters */
+    metrics.recordMessageStart(testMsg3);
+    assertEquals(metrics.inputMsgCounter.size(),3);
+    assertTrue(metrics.inputMsgCounter.keySet().contains(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES));
+    assertEquals(metrics.inputMsgCounter.get(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES), new Long(2));
   }
-//  
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics
-//   * #recordMessageStart(org.openadaptor.core.Message)}.
-//   */
-//  public void testRecordMessageStart() {
-//    /* 1st message consists of a single String */
-//    metrics.recordMessageStart(testMsg1);
-//    assertNotNull(metrics.getProcessStartTime());
-//    assertNotNull(metrics.getInputMsgCounter());
-//    assertEquals(metrics.getInputMsgCounter().size(),1);
-//    assertTrue(metrics.getInputMsgCounter().keySet().contains("java.lang.String"));
-//    assertEquals(metrics.getInputMsgCounter().get("java.lang.String"), new Long(1));
-//    
-//    /* 2nd is an array of Strings */
-//    metrics.recordMessageStart(testMsg2);
-//    assertEquals(metrics.getInputMsgCounter().size(),2);
-//    assertTrue(metrics.getInputMsgCounter().keySet().contains(ComponentMetrics.ARRAY_OF + "java.lang.String"));
-//    assertEquals(metrics.getInputMsgCounter().get("java.lang.String"), new Long(1));
-//    assertEquals(metrics.getInputMsgCounter().get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
-//    
-//    /* 3rd is an array with data of different types */
-//    metrics.recordMessageStart(testMsg3);
-//    assertEquals(metrics.getInputMsgCounter().size(),3);
-//    assertTrue(metrics.getInputMsgCounter().keySet().contains(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES));
-//    assertEquals(metrics.getInputMsgCounter().get(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES), new Long(1));
-//
-//    /* pass one more msg with heterogeneous types, check counters */
-//    metrics.recordMessageStart(testMsg3);
-//    assertEquals(metrics.getInputMsgCounter().size(),3);
-//    assertTrue(metrics.getInputMsgCounter().keySet().contains(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES));
-//    assertEquals(metrics.getInputMsgCounter().get(ComponentMetrics.ARRAY_OF + ComponentMetrics.HETEROGENEOUS_TYPES), new Long(2));
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
-//   * Sends various types of messages sequentially.
-//   */
-//  public void testRecordMessageEnd() {
-//    
-//    /* 1st response consists of a single String */
-//    Response response = new Response(); 
-//    response.addOutput(testData1);
-//    try {
-//      /* Should throw exception due to unmatch output message */
-//      metrics.recordMessageEnd(testMsg1, response);
-//      assertTrue(false);
-//    } catch (Exception e) {
-//    }
-//    metrics.recordMessageStart(testMsg1);
-//    metrics.recordMessageEnd(testMsg1, response);
-//    assertNotNull(metrics.getProcessEndTime()); 
-//    assertNotNull(metrics.getOutputMsgCounter());
-//    assertEquals(metrics.getOutputMsgCounter().size(),1);
-//    
-//    assertTrue(metrics.getOutputMsgCounter().keySet().contains("java.lang.String"));
-//    assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(1));
-//    
-//    /* 2nd response is an array of Strings */
-//    metrics.recordMessageStart(testMsg2);
-//    response = new Response(); 
-//    response.addOutput(testData2);
-//    metrics.recordMessageEnd(testMsg2, response);
-//    assertEquals(metrics.getOutputMsgCounter().size(),2);
-//    assertTrue(metrics.getOutputMsgCounter().keySet().contains(ComponentMetrics.ARRAY_OF + "java.lang.String"));
-//    assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(1));
-//    assertEquals(metrics.getOutputMsgCounter().get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
-//  }
-//  
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
-//   * Sends two messages; sends 2nd before 1st is finished.
-//   */
-//  public void testRecordMessageEndThreadSafe() {
-//    Response response = new Response(); 
-//    response.addOutput(testData1);
-//    metrics.recordMessageStart(testMsg1);
-//    metrics.recordMessageStart(testMsg1);
-//    metrics.recordMessageEnd(testMsg1, response);
-//    metrics.recordMessageEnd(testMsg1, response);
-//    assertNotNull(metrics.getProcessEndTime()); 
-//    assertEquals(metrics.getInputMsgCounter().size(),1);
-//    assertNotNull(metrics.getOutputMsgCounter());
-//    assertEquals(metrics.getOutputMsgCounter().size(),1);
-//    assertTrue(metrics.getOutputMsgCounter().keySet().contains("java.lang.String"));
-//    assertEquals(metrics.getOutputMsgCounter().get("java.lang.String"), new Long(2));
-//  }
-//  
-//   
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
-//   */
-//  public void testGetInputMsgs() {
-//    assertEquals( metrics.getInputMsgs(), ComponentMetrics.NONE);
-//    metrics.recordMessageStart(testMsg1);
-//    assertEquals( metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
-//    metrics.recordMessageStart(testMsg1);
-//    assertEquals( metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
-//    metrics.recordMessageStart(testMsg2);
-//    assertEquals( metrics.getInputMsgs(),"1" + ComponentMetrics.MESSAGES_OF_TYPE + ComponentMetrics.ARRAY_OF + "java.lang.String/n"
-//                                        +"2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String"); 
-//                                        
-//  }
-//
-//  /**
-//   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
-//   */
-//  public void testGetOutputMsgs() {
-//    assertEquals( metrics.getOutputMsgs(), ComponentMetrics.NONE);
-//    Response response = new Response(); 
-//    response.addOutput(testData1);
-//    metrics.recordMessageStart(testMsg1);
-//    metrics.recordMessageEnd(testMsg1, response);
-//    assertEquals(metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
-//    metrics.recordMessageStart(testMsg1);
-//    metrics.recordMessageEnd(testMsg1, response);
-//    assertEquals(metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
-//    response = new Response(); 
-//    response.addOutput(testData2);
-//    metrics.recordMessageStart(testMsg2);
-//    metrics.recordMessageEnd(testMsg2, response);
-//    assertEquals( metrics.getOutputMsgs(),"1" + ComponentMetrics.MESSAGES_OF_TYPE + ComponentMetrics.ARRAY_OF + "java.lang.String/n"
-//                                         +"2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String"); 
-//  }
+
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
+   * Sends various types of messages sequentially.
+   */
+  public void testRecordMessageEnd() {
+    
+    /* 1st response consists of a single String */
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    try {
+      /* Should throw exception due to unmatch output message */
+      metrics.recordMessageEnd(testMsg1, response);
+      assertTrue(false);
+    } catch (Exception e) {
+    }
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertNotNull(metrics.processEndTime); 
+    assertNotNull(metrics.outputMsgCounter);
+    assertEquals(metrics.outputMsgCounter.size(),1);
+    
+    assertTrue(metrics.outputMsgCounter.keySet().contains("java.lang.String"));
+    assertEquals(metrics.outputMsgCounter.get("java.lang.String"), new Long(1));
+    
+    /* 2nd response is an array of Strings */
+    metrics.recordMessageStart(testMsg2);
+    response = new Response(); 
+    response.addOutput(testData2);
+    metrics.recordMessageEnd(testMsg2, response);
+    assertEquals(metrics.outputMsgCounter.size(),2);
+    assertTrue(metrics.outputMsgCounter.keySet().contains(ComponentMetrics.ARRAY_OF + "java.lang.String"));
+    assertEquals(metrics.outputMsgCounter.get("java.lang.String"), new Long(1));
+    assertEquals(metrics.outputMsgCounter.get(ComponentMetrics.ARRAY_OF + "java.lang.String"), new Long(1));
+  }
+  
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message, org.openadaptor.core.Response)}.
+   * Sends two messages; sends 2nd before 1st is finished.
+   */
+  public void testRecordMessageEndThreadSafe() {
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertNotNull(metrics.processEndTime); 
+    assertEquals(metrics.inputMsgCounter.size(),1);
+    assertNotNull(metrics.outputMsgCounter);
+    assertEquals(metrics.outputMsgCounter.size(),1);
+    assertTrue(metrics.outputMsgCounter.keySet().contains("java.lang.String"));
+    assertEquals(metrics.outputMsgCounter.get("java.lang.String"), new Long(2));
+  }
+  
+   
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
+   */
+  public void testGetInputMsgs() {
+    assertEquals( metrics.getInputMsgs(), ComponentMetrics.NONE);
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg2);
+    assertTrue( metrics.getInputMsgs().indexOf("1" + ComponentMetrics.MESSAGES_OF_TYPE 
+               + ComponentMetrics.ARRAY_OF + "java.lang.String") != -1);
+    assertTrue( metrics.getInputMsgs().indexOf("2" + ComponentMetrics.MESSAGES_OF_TYPE 
+               + "java.lang.String") != -1);
+  }
+
+  /**
+   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
+   */
+  public void testGetOutputMsgs() {
+    assertEquals( metrics.getOutputMsgs(), ComponentMetrics.NONE);
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals(metrics.getInputMsgs(), "1" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals(metrics.getInputMsgs(), "2" + ComponentMetrics.MESSAGES_OF_TYPE + "java.lang.String");
+    response = new Response(); 
+    response.addOutput(testData2);
+    metrics.recordMessageStart(testMsg2);
+    metrics.recordMessageEnd(testMsg2, response);
+    assertTrue( metrics.getOutputMsgs().indexOf("1" + ComponentMetrics.MESSAGES_OF_TYPE 
+               + ComponentMetrics.ARRAY_OF + "java.lang.String") != -1);
+    assertTrue( metrics.getOutputMsgs().indexOf("2" + ComponentMetrics.MESSAGES_OF_TYPE 
+               + "java.lang.String") != -1);
+  }
   
 }

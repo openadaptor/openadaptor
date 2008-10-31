@@ -44,12 +44,12 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.State;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
+import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 
 /**
- * Class that maintains all metrics associated with one Node.
+ * Class that records and computes message metrics for a single {@link IRecordableComponent}}.
  * 
- * DRAFT. NOT READY FOR USE.
- * 
+ * @see IComponentMetrics
  * @author Kris Lachor
  */
 public class ComponentMetrics implements IComponentMetrics{
@@ -73,12 +73,12 @@ public class ComponentMetrics implements IComponentMetrics{
   private static final String LESS_THAN_ONE =  "less than 1 ";
   
   protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
-  
-  private Map inputMsgCounter = new HashMap();
-  
-  private Map outputMsgCounter = new HashMap();
-  
+
   private IRecordableComponent monitoredComponent;
+  
+  protected Map inputMsgCounter = new HashMap();
+  
+  protected Map outputMsgCounter = new HashMap();
   
   long minProcessTime = -1;
   
@@ -92,9 +92,9 @@ public class ComponentMetrics implements IComponentMetrics{
   
   long exceptionMsgs = 0;
   
-  private Date processStartTime;
+  protected Date processStartTime;
   
-  private Date processEndTime;
+  protected Date processEndTime;
   
   private Date componentStartTime;
   
@@ -135,23 +135,34 @@ public class ComponentMetrics implements IComponentMetrics{
     .toFormatter();
 
 
+  /**
+   * Constructor.
+   * 
+   * @param monitoredComponent the associated recordable component.
+   */
   protected ComponentMetrics(IRecordableComponent monitoredComponent) {
     this.monitoredComponent = monitoredComponent;
   }
 
+  /**
+   * Constructor.
+   * 
+   * @param monitoredComponent the associated recordable component.
+   * @param enabled wheather or not the metrics are to be enabled.
+   */
   protected ComponentMetrics(IRecordableComponent monitoredComponent, boolean enabled) {
     this.monitoredComponent = monitoredComponent;
     this.enabled = enabled;
   }
 
-  
-  public void recordComponentStart(){
-    componentStartTime = new Date();
-  }
-  
-  public void recordComponentStop(){
-    componentStopTime = new Date();
-  }
+//  
+//  public void recordComponentStart(){
+//    componentStartTime = new Date();
+//  }
+//  
+//  public void recordComponentStop(){
+//    componentStopTime = new Date();
+//  }
 
   /**
    * Records input message. The <code>inputMsgCounter</code> maps types of input 
@@ -542,32 +553,24 @@ public class ComponentMetrics implements IComponentMetrics{
     }
   }
 
-  protected Date getProcessStartTime() {
-    return processStartTime;
-  }
-
-  protected Map getInputMsgCounter() {
-    return inputMsgCounter;
-  }
-
-  protected Date getProcessEndTime() {
-    return processEndTime;
-  }
-
-  protected Map getOutputMsgCounter() {
-    return outputMsgCounter;
-  }
-
+  /**
+   * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
+   */
   public void setMetricsEnabled(boolean metricsEnabled) {
     enabled = metricsEnabled;
   }
 
+  /**
+   * @see ISimpleComponentMetrics#isMetricsEnabled()
+   */
   public boolean isMetricsEnabled() {
     return enabled;
   }
 
+  /**
+   * @see IComponentMetrics#getComponent()
+   */
   public IRecordableComponent getComponent() {
     return monitoredComponent;
   }
- 
 }
