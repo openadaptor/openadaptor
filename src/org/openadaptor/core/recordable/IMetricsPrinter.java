@@ -27,12 +27,13 @@
 package org.openadaptor.core.recordable;
 
 import org.openadaptor.auxil.metrics.Log4JSingleMetricsPrinter;
+import org.openadaptor.core.adaptor.Adaptor;
 
 /**
  * Prints component metrics to an external resource.
  * 
  * @see Log4JSingleMetricsPrinter
- * @see Adaptor#setMetricsPrinter
+ * @see Adaptor#setMetricsPrinter(IMetricsPrinter)
  * @author Kris Lachor
  */
 public interface IMetricsPrinter {

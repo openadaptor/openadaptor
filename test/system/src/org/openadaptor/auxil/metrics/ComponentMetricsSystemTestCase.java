@@ -60,7 +60,7 @@ public class ComponentMetricsSystemTestCase extends TestCase {
     
     /* Check Adaptor's metrics are disabled */
     assertFalse(adaptor.getMetrics().isMetricsEnabled());
-    assertEquals(adaptor.getMetrics().getInputMsgCounts()[0], 0);
+    assertEquals(adaptor.getMetrics().getInputMsgCounts().length, 0);
     assertEquals(adaptor.getMetrics().getOutputMsgCounts().length, 0);
      
     /* same checks for all Nodes */
@@ -70,8 +70,8 @@ public class ComponentMetricsSystemTestCase extends TestCase {
       if(mProcessor instanceof IRecordableComponent){
         IRecordableComponent recComp = (IRecordableComponent) mProcessor;
         assertFalse(recComp.getMetrics().isMetricsEnabled());
-        assertEquals(recComp.getMetrics().getInputMsgCounts()[0], 0);
-        assertEquals(recComp.getMetrics().getOutputMsgCounts()[0], 0);
+        assertEquals(recComp.getMetrics().getInputMsgCounts().length, 0);
+        assertEquals(recComp.getMetrics().getOutputMsgCounts().length, 0);
       }
     }
   }

@@ -258,7 +258,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
   
   
   /**
-   * @return inner class instance that implements {@link Component.AdminMBean}
+   * @return inner class instance that implements Component.AdminMBean.
    */
   public Object getAdmin() {
     return new Admin();

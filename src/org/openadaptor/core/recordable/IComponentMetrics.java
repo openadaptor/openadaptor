@@ -27,6 +27,7 @@
 
 package org.openadaptor.core.recordable;
 
+import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -45,7 +46,7 @@ import org.openadaptor.core.Response;
  * run.
  * 
  * @see ISimpleComponentMetrics
- * @see ComponentMetrics 
+ * @see ComponentMetrics
  * @see IRecordableComponent
  * @author Kris Lachor
  */

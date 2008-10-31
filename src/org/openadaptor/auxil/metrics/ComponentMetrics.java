@@ -352,29 +352,33 @@ public class ComponentMetrics implements IComponentMetrics{
   }
   
   /**
-   * How many input messages entered the component. 
+   * How many input messages entered the component. Separate counters
+   * per message types.
+   * 
+   * @see IComponentMetrics#getInputMsgCounts()
    */
   public long [] getInputMsgCounts(){
-    long count = 0;
-    Iterator it = inputMsgCounter.keySet().iterator();
-    while(it.hasNext()){
-      Object dataType = it.next();
-      Long countLong = (Long) inputMsgCounter.get(dataType);
-      count+= countLong.longValue();
-    }
-    return new long[]{count};
+    return getMsgCounts(inputMsgCounter);
   }
   
-  //TODO was copy&paste of input
+  /**
+   * How many input messages left the component. Separate counters
+   * per message types.
+   * 
+   * @see IComponentMetrics#getOutputMsgCounts()
+   */
   public long [] getOutputMsgCounts(){
-    long count = 0;
-    Iterator it = outputMsgCounter.keySet().iterator();
-    while(it.hasNext()){
-      Object dataType = it.next();
-      Long countLong = (Long) outputMsgCounter.get(dataType);
-      count+= countLong.longValue();
+    return getMsgCounts(outputMsgCounter);
+  }
+  
+  private long [] getMsgCounts(Map msgCounter){
+    long [] result = new long[msgCounter.keySet().size()];
+    int i=0;
+    for(Iterator it=msgCounter.keySet().iterator(); it.hasNext();){     
+      Long countLong = (Long) msgCounter.get(it.next());
+      result[i++] = countLong.longValue();
     }
-    return new long[]{count};
+    return result;
   }
   
   /**
@@ -385,7 +389,7 @@ public class ComponentMetrics implements IComponentMetrics{
       return METRICS_DISABLED;
     }
     StringBuffer outputMsgs = new StringBuffer();
-    if(getOutputMsgCounts()[0]==0){
+    if(getOutputMsgCounts().length == 0){
       outputMsgs.append(NONE);
     }
     Iterator it = outputMsgCounter.keySet().iterator();
@@ -415,7 +419,7 @@ public class ComponentMetrics implements IComponentMetrics{
       return METRICS_DISABLED;
     }
     StringBuffer inputMsgs = new StringBuffer();
-    if(getInputMsgCounts()[0]==0){
+    if(getInputMsgCounts().length==0){
       inputMsgs.append(NONE);
     }
     Iterator it = inputMsgCounter.keySet().iterator();

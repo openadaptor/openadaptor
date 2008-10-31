@@ -143,7 +143,7 @@ public class ComponentMetricsUnitTestCase extends TestCase {
   
    
   /**
-   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
+   * Test for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgs()}.
    */
   public void testGetInputMsgs() {
     assertEquals( metrics.getInputMsgs(), ComponentMetrics.NONE);
@@ -159,7 +159,7 @@ public class ComponentMetricsUnitTestCase extends TestCase {
   }
 
   /**
-   * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
+   * Test for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgs()}.
    */
   public void testGetOutputMsgs() {
     assertEquals( metrics.getOutputMsgs(), ComponentMetrics.NONE);
@@ -179,6 +179,55 @@ public class ComponentMetricsUnitTestCase extends TestCase {
                + ComponentMetrics.ARRAY_OF + "java.lang.String") != -1);
     assertTrue( metrics.getOutputMsgs().indexOf("2" + ComponentMetrics.MESSAGES_OF_TYPE 
                + "java.lang.String") != -1);
+  }
+  
+  /**
+   * Test for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getInputMsgCounts()}
+   */
+  public void testGetInputMsgCounts(){
+    assertEquals( metrics.getInputMsgCounts().length, 0);
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgCounts().length, 1);
+    assertEquals( metrics.getInputMsgCounts()[0], 1);
+    metrics.recordMessageStart(testMsg1);
+    assertEquals( metrics.getInputMsgCounts().length, 1);
+    assertEquals( metrics.getInputMsgCounts()[0], 2);
+    metrics.recordMessageStart(testMsg2);
+    assertEquals( metrics.getInputMsgCounts().length, 2);
+    assertTrue( metrics.getInputMsgCounts()[0] != 0);
+    assertTrue( metrics.getInputMsgCounts()[1] != 0);
+    assertEquals( metrics.getInputMsgCounts()[0] + metrics.getInputMsgCounts()[1], 3);
+  }
+  
+  /**
+   * Test for {@link org.openadaptor.auxil.metrics.ComponentMetrics#getOutputMsgCounts()}
+   */
+  public void testGetOutputMsgCounts(){
+    assertEquals( metrics.getOutputMsgCounts().length, 0);
+    
+    /* 1st msg */
+    metrics.recordMessageStart(testMsg1);
+    Response response = new Response(); 
+    response.addOutput(testData1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals( metrics.getOutputMsgCounts().length, 1);
+    assertEquals( metrics.getOutputMsgCounts()[0], 1);
+    
+    /* 2nd msg */
+    metrics.recordMessageStart(testMsg1);
+    metrics.recordMessageEnd(testMsg1, response);
+    assertEquals( metrics.getOutputMsgCounts().length, 1);
+    assertEquals( metrics.getOutputMsgCounts()[0], 2);
+    
+    /* 3rd msg */
+    metrics.recordMessageStart(testMsg2);
+    response = new Response(); 
+    response.addOutput(testData2);
+    metrics.recordMessageEnd(testMsg2, response);
+    assertEquals( metrics.getOutputMsgCounts().length, 2);
+    assertTrue( metrics.getOutputMsgCounts()[0] != 0);
+    assertTrue( metrics.getOutputMsgCounts()[1] != 0);
+    assertEquals( metrics.getOutputMsgCounts()[0] + metrics.getOutputMsgCounts()[1], 3);
   }
   
 }

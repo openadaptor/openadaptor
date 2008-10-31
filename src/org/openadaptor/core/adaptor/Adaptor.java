@@ -671,14 +671,14 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
 
     /**
-     * @see ISimpleComponentMetrics#getDiscardedMsgCount()
+     * @see IComponentMetrics#getDiscardedMsgCount()
      */
     public long getDiscardedMsgCount() {
       return metrics.getDiscardedMsgCount();
     }
 
     /**
-     * @see ISimpleComponentMetrics#getExceptionMsgCount()
+     * @see IComponentMetrics#getExceptionMsgCount()
      */
     public long getExceptionMsgCount() {
       return metrics.getExceptionMsgCount();
