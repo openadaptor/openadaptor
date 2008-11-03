@@ -45,12 +45,13 @@ public class Log4JSingleMetricsPrinter implements IMetricsPrinter {
   
   protected void printMetrics(IComponentMetrics metrics, String name){
     StringBuffer sb = new StringBuffer();
-    sb.append("----- Metrics for " + name+ "-----\n");
-    sb.append("Input messages :        " + metrics.getInputMsgs() + "\n");
-    sb.append("Output messages:        " + metrics.getOutputMsgs() + "\n");
-    sb.append("Msg processing time:    " + metrics.getProcessTime() + "\n");
-    sb.append("Between msgs idle time: " + metrics.getIntervalTime() + "\n");
-    sb.append("Component uptime:       " + metrics.getUptime());
+    sb.append("----- Metrics for " + name+ " -----\n");
+    sb.append("Input messages :            " + metrics.getInputMsgs() + "\n");
+    sb.append("Output messages:            " + metrics.getOutputMsgs() + "\n");
+    sb.append("Discards and exceptions:    " + metrics.getDiscardsAndExceptions() + "\n");
+    sb.append("Avg msg processing time:    " + metrics.getProcessTime() + "\n");
+    sb.append("Avg between msgs idle time: " + metrics.getIntervalTime() + "\n");
+    sb.append("Component uptime:           " + metrics.getUptime());
     log.info(sb.toString());  
   }
 

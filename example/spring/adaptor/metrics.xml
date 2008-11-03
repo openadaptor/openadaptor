@@ -7,11 +7,20 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[  
-  Illustrates how to view adaptors metrics via JMX console. 
+  
+  Illustrates how to enable adaptors metrics, how to view them via a JMX console and how to 
+  have them printed to an external resource, such as the log file. 
+  
+  The adaptor does the following:
+    * reads delimited records from file
+    * stops processing and waits for a user action (to introduce delay)
+    * converts delmited input into a map
+    * converts map to xml
+    * writes to file
   
 Run it like this...
 
-    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config metrics-jmx.xml
+    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config metrics.xml
 
   You need the following in your classpath
 
@@ -26,10 +35,25 @@ Run it like this...
   
   The optional vm argument -Dcom.sun.management.jmxremote will also permit the adaptor to be monitored
   locally via jconsole (1.5+).
+  
+  Once the adaptor is running open at watch the JMX console (http://localhost:8082) for either 
+  the Adaptor bean or the individual components in the pipeline (their metrics are named <component_name>-metrics).
+  
+  The 3rd input message has incorrectly formatted to cause (and show in metrics) an exception. 
     
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+	   Adaptor's metrics recording is switched on via the 'metricsEnabled' property
+	   on the associated Router (Adaptor inherits Router's metrics settings).
+	   
+	   Metrics, if enabled, can be viewed via a JMX console at the runtime, or
+	   printed at the end of adaptor's run (or both). To view via JMX console
+	   the MBeanServer has to be defined as below. To print to the logs/the console
+	   etc, the 'metricsPrinter' property on the Adaptor has to be set.
+	   Custom metrics printers can be defined.
+	</description>
 	<property name="messageProcessor">
 		<bean class="org.openadaptor.core.router.Router">
 			<description>
@@ -49,6 +73,8 @@ Run it like this...
 		    <property name="metricsEnabled" value="true"/>
 		</bean>
 	</property>
+	<property name="metricsPrinter" ref="adaptorMetricsPrinter"/>
+    <!-- property name="metricsPrinter" ref="allMetricsPrinter"/-->
   </bean>
   
   <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
@@ -109,5 +135,21 @@ Run it like this...
   <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
 	
   <bean id="exceptionConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  	
+  <bean id="adaptorMetricsPrinter" class="org.openadaptor.auxil.metrics.Log4JSingleMetricsPrinter">
+    <description>
+	  Prints adaptor's metrics to the log4j logger.
+	  To define your own way of printing/handling metrics implement the
+	  org.openadaptor.core.recordable.IMetricsPrinter interface.
+	</description>
+  </bean>
+ 
+  <bean id="allMetricsPrinter" class="org.openadaptor.auxil.metrics.Log4JAggregateMetricsPrinter">
+    <description>
+	  Prints all metrics (the adaptor's and all its recordable components) to the log4j logger.
+	  To define your own way of printing/handling metrics implement the
+	  org.openadaptor.core.recordable.IMetricsPrinter interface.
+	</description>
+  </bean>
   
 </beans>

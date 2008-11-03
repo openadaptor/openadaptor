@@ -422,11 +422,11 @@ public class SpringApplication {
         }
         attemptToRegisterBean(bean, mbeanServer, beanNames[i]);
        
-        /* Now register the message processor corresponding to the bean */
+        /* Register the message processor corresponding to the bean */
         IComponent msgProcessor = (IComponent) messageProcessorsByName.get(beanNames[i]);
         if(msgProcessor != null && msgProcessor instanceof Administrable){
           bean = ((Administrable) msgProcessor).getAdmin();
-          attemptToRegisterBean(bean, mbeanServer, beanNames[i] + "Node");
+          attemptToRegisterBean(bean, mbeanServer, beanNames[i] + "-metrics");
         }
       }
     }

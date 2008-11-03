@@ -71,6 +71,8 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   private static final String LESS_THAN_ONE =  "less than 1 ";
   
   protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
+  
+  private static final String SEPARATOR = ", ";
 
   private IRecordableComponent monitoredComponent;
   
@@ -436,7 +438,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     String [] outMsgTypes = getOutputMsgTypes();
     for(int i=0;i<outMsgCounts.length;i++){
       if(i>0){
-        outputMsgs.append(",\n");
+        outputMsgs.append(SEPARATOR);
       }
       outputMsgs.append(outMsgCounts[i]);
       outputMsgs.append(MESSAGES_OF_TYPE);
