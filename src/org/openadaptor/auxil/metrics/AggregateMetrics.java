@@ -76,7 +76,7 @@ public class AggregateMetrics extends ComponentMetrics{
       IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       discardedCount+=detailedMetrics.getDiscardedMsgCount();
     }
-    log.info("Sum of discarded messages in all recordable components: " + discardedCount);
+    log.debug("Sum of discarded messages in all recordable components: " + discardedCount);
     return discardedCount;
   }
 
@@ -95,7 +95,7 @@ public class AggregateMetrics extends ComponentMetrics{
       IComponentMetrics detailedMetrics = (IComponentMetrics) it.next();
       exceptionMsgsCount+=detailedMetrics.getExceptionMsgCount();
     }
-    log.info("Sum of messages that caused an exception in all recordable components: " + exceptionMsgsCount);
+    log.debug("Sum of messages that caused an exception in all recordable components: " + exceptionMsgsCount);
     return exceptionMsgsCount;
   }
 
