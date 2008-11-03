@@ -58,6 +58,12 @@ public interface ISimpleComponentMetrics {
      *         discards and exceptions.
      */  
     String getOutputMsgs();
+    
+    /**
+     * @return information about discarded messages and messages that
+     *        caused exceptions.
+     */
+    String getDiscardsAndExceptions();
   
    /**
     * @return descriptive information about the time the component

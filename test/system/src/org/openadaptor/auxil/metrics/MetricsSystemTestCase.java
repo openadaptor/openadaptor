@@ -31,6 +31,8 @@ import java.util.Arrays;
 
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.adaptor.Adaptor;
+import org.openadaptor.core.node.ReadNode;
+import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.spring.SpringAdaptor;
@@ -51,6 +53,8 @@ public class MetricsSystemTestCase extends TestCase {
   private static final String ADAPTOR_1 = "metrics-adaptor1.xml";
   
   private static final String ADAPTOR_2 = "metrics-adaptor2.xml";
+  
+  private static final String ADAPTOR_3 = "metrics-adaptor3.xml";
   
   /**
    * Runs adaptor with a reader and a writer. Reader sends one message (String). 
@@ -128,10 +132,9 @@ public class MetricsSystemTestCase extends TestCase {
     Adaptor adaptor = springAdaptor.getAdaptor();
     
     IComponentMetrics adaptorMetrics = adaptor.getMetrics();
+    assertTrue(! ComponentMetrics.UNKNOWN.equals(adaptorMetrics.getUptime()));
     
-    //TODO Router/Adaptor doesn't do uptime atm
-//    assertTrue(! ComponentMetrics.UNKNOWN.equals(adaptorMetrics.getUptime()));
-    
+    /* same checks for all Nodes */
     for(Iterator it=adaptor.getMessageProcessors().iterator(); it.hasNext(); ){
       IMessageProcessor mProcessor = (IMessageProcessor) it.next();
       if(mProcessor instanceof IRecordableComponent){
@@ -140,4 +143,49 @@ public class MetricsSystemTestCase extends TestCase {
       }
     }
   }
+  
+  /**
+   * Runs adaptor with enabled metrics. One message sent. Checks the min, max and avg process
+   * times are the same.
+   */
+  public void testProcessTime() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    
+    ComponentMetrics adaptorMetrics = (ComponentMetrics) adaptor.getMetrics();
+   
+    assertEquals(adaptorMetrics.getProcessTimeAvg(), adaptorMetrics.getProcessTimeMin());
+    assertEquals(adaptorMetrics.getProcessTimeAvg(), adaptorMetrics.getProcessTimeMax());
+  }
+  
+  /**
+   * Runs adaptor with enabled metrics. One message sent. Processor throws excepion.
+   */
+  public void testRecordingExceptions() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_3);
+    Adaptor adaptor = springAdaptor.getAdaptor();
+    
+    ComponentMetrics adaptorMetrics = (ComponentMetrics) adaptor.getMetrics();
+   
+    assertEquals(adaptorMetrics.getExceptionMsgCount(), 1);
+    assertNotSame(adaptorMetrics.getDiscardsAndExceptions(), ComponentMetrics.NONE);
+    
+    for(Iterator it=adaptor.getMessageProcessors().iterator(); it.hasNext(); ){
+      IMessageProcessor mProcessor = (IMessageProcessor) it.next();
+      if(mProcessor instanceof IRecordableComponent){
+        IRecordableComponent recComp = (IRecordableComponent) mProcessor;
+        if(recComp instanceof ReadNode || recComp instanceof WriteNode){
+          assertEquals(recComp.getMetrics().getExceptionMsgCount(), 0);
+          assertEquals(recComp.getMetrics().getDiscardsAndExceptions(), ComponentMetrics.NONE);
+        }
+        else{
+          assertEquals(recComp.getMetrics().getExceptionMsgCount(), 1);	
+          assertNotSame(recComp.getMetrics().getDiscardsAndExceptions(), ComponentMetrics.NONE);
+        }
+      }
+    }
+    
+    
+  }
+  
 }

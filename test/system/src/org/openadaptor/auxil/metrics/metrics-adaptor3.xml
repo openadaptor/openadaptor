@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="router"/>
+  </bean>
+  
+  <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+	  <list>
+	    <ref bean="reader" />
+	    <ref bean="exceptionThrowingProcessor" />
+	    <ref bean="writer" />
+	  </list>
+	</property>    
+    <property name="metricsEnabled" value="true"/>
+  </bean>
+    
+  <bean id="reader" class="org.openadaptor.util.TestComponent$TestReadConnector"/>
+  
+  <bean id="exceptionThrowingProcessor" class="org.openadaptor.util.TestComponent$ExceptionThrowingDataProcessor"/>
+  
+  <bean id="writer" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
+ 
+</beans>

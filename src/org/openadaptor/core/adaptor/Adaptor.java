@@ -303,6 +303,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     exitCode = 0;
     exitErrors = new ArrayList();
     registerComponents();
+    
+    if(metrics!=null){
+      metrics.recordComponentStart();
+    }
 
     try {
       
@@ -349,7 +353,10 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         hasShutdownHooks = false;
       }
       state = State.STOPPED;
-      /* print metrics */
+      /* handle metrics */
+      if(metrics!=null){
+        metrics.recordComponentStop();
+      }
       if(metricsPrinter!=null && metrics!=null && metrics.isMetricsEnabled()){
         metricsPrinter.print(metrics, "Adaptor");
       }
@@ -671,22 +678,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     }
 
     /**
-     * @see IComponentMetrics#getDiscardedMsgCount()
+     * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
      */
-    public long getDiscardedMsgCount() {
-      return metrics.getDiscardedMsgCount();
-    }
+	public String getDiscardsAndExceptions() {
+	  return metrics.getDiscardsAndExceptions();
+	}
 
-    /**
-     * @see IComponentMetrics#getExceptionMsgCount()
-     */
-    public long getExceptionMsgCount() {
-      return metrics.getExceptionMsgCount();
-    }
-
-    public IComponent getComponent() {
-      return getRecordableComponent();
-    }
   }
 
   

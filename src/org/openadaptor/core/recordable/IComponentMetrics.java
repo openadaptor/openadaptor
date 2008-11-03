@@ -31,6 +31,7 @@ import org.openadaptor.auxil.metrics.ComponentMetrics;
 import org.openadaptor.core.IMessageProcessor;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 
 /**
@@ -45,6 +46,10 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
  * and computed to achieve things like generating adaptor's reports,
  * storing audit data, generating charts and graphs from an adaptor's
  * run.
+ * 
+ * Extends {@link ILifecycleListener} to be able to automatically 
+ * record starts and stops of those monitored components that are
+ * {@link ILifecycleComponent}s.
  * 
  * @see ISimpleComponentMetrics
  * @see ComponentMetrics
@@ -71,8 +76,8 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    * 
    * @param msg a message traversing the adaptor's pipeline, as 
    *        it enters the monitored component.
-   * @param response a response to the input msg; the output from 
-   *        the monitored component, a result of a successfull 
+   * @param response a response to the input message; the output from 
+   *        the monitored component, a result of a successful 
    *        message processing.
    */
   void recordMessageEnd(Message msg, Response response);
@@ -91,6 +96,22 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    * @param msg a message that resulted in a processing error/exception.
    */
   public void recordExceptionMsgEnd(Message msg);
+  
+  /**
+   * Records the start of the monitored component. Calling this method
+   * is required only by those IRecordableComponents that are not
+   * ILifecycleComponents, in which case their start and stop will be
+   * recorded automatically.
+   */
+  public void recordComponentStart();
+  
+  /**
+   * Records the stop of the monitored component. Calling this method
+   * is required only by those IRecordableComponents that are not
+   * ILifecycleComponents, in which case their start and stop will be
+   * recorded automatically.
+   */
+  public void recordComponentStop();
 
   /**
    * Returns the count of input messages. Messages of different data type 
@@ -110,7 +131,7 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
   String [] getInputMsgTypes();
   
   /**
-   * Returns the count of outupt messages. Messages of different data type 
+   * Returns the count of output messages. Messages of different data type 
    * have separate counters. Names of data types can be checked with
    * {@link #getOutputMsgTypes()}.
    * 

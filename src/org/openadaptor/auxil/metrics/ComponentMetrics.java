@@ -108,6 +108,9 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   
   /** Are metrics enabled */
   boolean enabled = false;
+  
+  /** Flag that indicates if the component is currently processing a message. */
+  boolean currentlyProcessing = false;
 
   private PeriodFormatter periodFormatter = new PeriodFormatterBuilder()
               .printZeroRarelyLast()
@@ -180,6 +183,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       return;
     }
     processStartTime = new Date();
+    currentlyProcessing = true;
     
     /* calculate intervals */
     if(! (processEndTime==null)){
@@ -248,7 +252,6 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     if(!enabled){
       return;
     }
-   
     if(processStartTime!=null){
       processEndTime = new Date();
       long processTime = processEndTime.getTime() - processStartTime.getTime();
@@ -268,6 +271,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     
     Object [] collatedOutput = response.getCollatedOutput();
     if(collatedOutput.length==0){
+      currentlyProcessing=false;
       return;
     }
     
@@ -322,6 +326,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       Long countLong = (Long) count;
       outputMsgCounter.put(msgPayloadTypeStr, new Long(countLong.longValue()+1));
     }
+    currentlyProcessing = false;
   }
 
   /**
@@ -332,6 +337,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       return;
     }
     discardedMsgs++;
+    currentlyProcessing = false;
   }
   
   /**
@@ -342,6 +348,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       return;
     }
     exceptionMsgs++;
+    currentlyProcessing = false;
   }
   
   /**
@@ -429,13 +436,30 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     String [] outMsgTypes = getOutputMsgTypes();
     for(int i=0;i<outMsgCounts.length;i++){
       if(i>0){
-        outputMsgs.append("/n");
+        outputMsgs.append(",\n");
       }
       outputMsgs.append(outMsgCounts[i]);
       outputMsgs.append(MESSAGES_OF_TYPE);
       outputMsgs.append(outMsgTypes[i]);
     }
     return outputMsgs.toString();
+  }
+  
+  /**
+   * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
+   */
+  public String getDiscardsAndExceptions() {
+	StringBuffer exDisMsgs = new StringBuffer();  
+	if(getExceptionMsgCount()==0 && getDiscardedMsgCount()==0){
+	  exDisMsgs.append(NONE);	
+	}
+	else{
+	  exDisMsgs.append(getDiscardedMsgCount());
+	  exDisMsgs.append(" discarded message(s), ");
+	  exDisMsgs.append(getExceptionMsgCount());
+	  exDisMsgs.append(" exception(s).");
+	}
+	return exDisMsgs.toString();
   }
 
   private String formatDuration(long duration){
@@ -487,6 +511,26 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     return maxProcessTime;
   }
 
+  protected long getProcessTimeAvg(){
+    if(maxProcessTime==-1){
+      /* Hasn't processed anything yet */
+      return -1;
+    }
+    long [] intpuMsgCounts = getInputMsgCounts();
+    long msgCount = 0;
+    for(int i=0; i<intpuMsgCounts.length; i++){
+      msgCount+=intpuMsgCounts[i];
+    }
+    if(currentlyProcessing){
+      msgCount--;
+    }
+    long timeAvgMs = -1;
+    if(msgCount!=0){
+      timeAvgMs = (long) (totalProcessTime/msgCount);
+    }  
+    return timeAvgMs;
+  }
+  
   /**
    * @see ISimpleComponentMetrics#getProcessTime()
    */
@@ -498,16 +542,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       /* Hasn't processed anything yet */
       return UNKNOWN;
     }
-    long [] intpuMsgCounts = getInputMsgCounts();
-    long msgCount = 0;
-    for(int i=0; i<intpuMsgCounts.length; i++){
-      msgCount+=intpuMsgCounts[i];
-    }
-    long timeAvgMs = -1;
-    if(msgCount!=0){
-      //TODO check if processing finished.
-      timeAvgMs = (long) (totalProcessTime/msgCount);
-    }
+    long timeAvgMs = getProcessTimeAvg();
     return formatDuration(timeAvgMs, minProcessTime, maxProcessTime);
   }
   
@@ -594,6 +629,20 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   }
 
   /**
+   * @see IComponentMetrics#recordComponentStart()
+   */
+  public void recordComponentStart() {
+	lastStarted = new Date();
+  }
+
+  /**
+   * @see IComponentMetrics#recordComponentStop()
+   */
+  public void recordComponentStop() {
+	lastStopped = new Date();
+  }
+  
+  /**
    * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
    */
   public void setMetricsEnabled(boolean metricsEnabled) {
@@ -613,4 +662,5 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   public IRecordableComponent getComponent() {
     return monitoredComponent;
   }
+
 }

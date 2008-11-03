@@ -270,6 +270,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
  
   /**
    * Implementation of the interface exposed via JMX. 
+   * TODO comments
    */
   public class Admin extends LifecycleComponent.Admin implements AdminMBean {
 
@@ -279,14 +280,6 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 
     public String getIntervalTime() {
       return metrics.getIntervalTime();
-    }
-
-    public long getDiscardedMsgCount() {
-      return metrics.getDiscardedMsgCount();
-    }
-
-    public long getExceptionMsgCount() {
-      return metrics.getExceptionMsgCount();
     }
 
     public String getUptime() {
@@ -309,9 +302,9 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
       return metrics.isMetricsEnabled();
     }
 
-    public IComponent getComponent() {
-      return getRecordableComponent();
-    }
+	public String getDiscardsAndExceptions() {
+	  return metrics.getDiscardsAndExceptions();
+	}
 
   }
 
