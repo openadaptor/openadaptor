@@ -104,7 +104,7 @@ Run it like this...
 	  <value>
 	  importPackage(Packages.javax.swing);
 	  var log =Packages.org.apache.commons.logging.LogFactory.getLog("dom4j->w3c");
-      log.info("Delaying message. JOptionPane should pop up. Click OK. Watch JMX console for inspectorNode.");
+      log.info("Delaying message. JOptionPane should pop up. Click OK. Watch JMX console (Adaptor or inspector-metrics).");
 	  JOptionPane.showMessageDialog(null,oa_data,"delays message. Just click OK",JOptionPane.PLAIN_MESSAGE);
 	  </value>
 	 </property>
