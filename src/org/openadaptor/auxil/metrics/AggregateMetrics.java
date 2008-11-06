@@ -26,11 +26,10 @@
  */
 package org.openadaptor.auxil.metrics;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -51,8 +50,13 @@ public class AggregateMetrics extends ComponentMetrics{
 
   private static final Log log = LogFactory.getLog(AggregateMetrics.class);
   
-  Set componentMetrics = new HashSet();
-  
+  Collection componentMetrics = new ArrayList();
+
+  /**
+   * Constructor. 
+   * 
+   * @param recordableComponent
+   */
   protected AggregateMetrics(IRecordableComponent recordableComponent) {
     super(recordableComponent);
   }
@@ -111,6 +115,7 @@ public class AggregateMetrics extends ComponentMetrics{
    */
   public long[] getOutputMsgCounts() {
     long [] msgCounts = new long[0];
+    System.out.println("Size " + componentMetrics.size() );
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
       IComponentMetrics compMetrics = (IComponentMetrics) it.next();
       if(isLastInPipeline(compMetrics.getComponent())){
@@ -124,7 +129,7 @@ public class AggregateMetrics extends ComponentMetrics{
    * TODO
    */
   public String[] getOutputMsgTypes() {
-    Collection msgTypes = new HashSet();
+    Collection msgTypes = new ArrayList();
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
       IComponentMetrics compMetrics = (IComponentMetrics) it.next();
       if(isLastInPipeline(compMetrics.getComponent())){

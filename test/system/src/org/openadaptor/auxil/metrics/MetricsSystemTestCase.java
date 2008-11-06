@@ -56,6 +56,8 @@ public class MetricsSystemTestCase extends TestCase {
   
   private static final String ADAPTOR_3 = "metrics-adaptor3.xml";
   
+  private static final String ADAPTOR_4 = "metrics-adaptor4.xml";
+  
   /**
    * Runs adaptor with a reader and a writer. Reader sends one message (String). 
    * Metrics are disabled.
@@ -165,7 +167,7 @@ public class MetricsSystemTestCase extends TestCase {
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_3);
     Adaptor adaptor = springAdaptor.getAdaptor();
     
-    ComponentMetrics adaptorMetrics = (ComponentMetrics) adaptor.getMetrics();
+    IComponentMetrics adaptorMetrics = (IComponentMetrics) adaptor.getMetrics();
    
     assertEquals(adaptorMetrics.getExceptionMsgCount(), 1);
     assertNotSame(adaptorMetrics.getDiscardsAndExceptions(), ComponentMetrics.NONE);
@@ -184,8 +186,20 @@ public class MetricsSystemTestCase extends TestCase {
         }
       }
     }
+  }
+  
+  /**
+   * Tests AggregateMetrics (metrics used by Adaptor/Router). Two parallel write nodes.
+   */
+  public void testAggregateMetricsFanOut() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_4);
+    IComponentMetrics metrics = (IComponentMetrics) springAdaptor.getAdaptor().getMetrics();
+    assertTrue(Arrays.equals(metrics.getInputMsgCounts(), new long[]{1}));
+    assertTrue(Arrays.equals(metrics.getInputMsgTypes(), new String[]{"java.lang.String"}));
     
-    
+    /* Messages going to fan-out are from then on counted as separate messages */
+    assertTrue(Arrays.equals(metrics.getOutputMsgCounts(), new long[]{1,1}));
+    assertTrue(Arrays.equals(metrics.getOutputMsgTypes(), new String[]{"java.lang.String", "java.lang.String"}));
   }
   
 }

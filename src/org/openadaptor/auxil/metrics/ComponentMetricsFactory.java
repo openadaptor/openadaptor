@@ -26,8 +26,8 @@
  */
 package org.openadaptor.auxil.metrics;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 
 import org.openadaptor.core.recordable.IComponentMetrics;
@@ -43,9 +43,9 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  */
 public class ComponentMetricsFactory {
   
-  private static Collection standardMetricsCol = new HashSet();
+  private static Collection standardMetricsCol = new ArrayList();
   
-  private static Collection aggregateMetricsCol = new HashSet();
+  private static Collection aggregateMetricsCol = new ArrayList();
 
   /**
    * Private constructor.

@@ -232,6 +232,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     return Thread.currentThread().getName();
   }
   
+  /**
+   * @return metrics associated with this Node.
+   * @see IRecordableComponent.
+   */
   public IComponentMetrics getMetrics() {
     return metrics;
   }

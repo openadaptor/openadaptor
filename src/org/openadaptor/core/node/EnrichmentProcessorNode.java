@@ -162,6 +162,14 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
     return outputs;
   }
   
+  /**
+   * In addition to calling superclass {@link Node#validate(List)}, runs the 
+   * validation of the enrichment processor.
+   * 
+   * @see ILifecycleComponent#validate(List)
+   * @see Node#validate(List)
+   * @see IEnrichmentProcessor#validate(List)
+   */
   public void validate(List exceptions) {
     super.validate(exceptions);
     enrichmentProcessor.validate(exceptions);

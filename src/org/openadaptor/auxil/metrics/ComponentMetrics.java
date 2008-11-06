@@ -431,10 +431,10 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    */
   public String getOutputMsgs() {
     StringBuffer outputMsgs = new StringBuffer();
-    if(getOutputMsgCounts().length == 0){
+    long [] outMsgCounts = getOutputMsgCounts();
+    if(outMsgCounts.length == 0){
       outputMsgs.append(NONE);
     }
-    long [] outMsgCounts = getOutputMsgCounts();
     String [] outMsgTypes = getOutputMsgTypes();
     for(int i=0;i<outMsgCounts.length;i++){
       if(i>0){
