@@ -65,9 +65,16 @@ Examples
    
  * Added an example of reading from a database and generating csv output
    (example\spring\processors\csv\db-csv.xml).
+   
+ * Added an example of an adaptor with enabled metrics recording 
+   (example\spring\adaptor\metrics.xml).  
 
 Miscellaneous
 =============
+
+ * New functionality of recording quantitative and temporal metrics about the payload 
+   that traverses an adaptor (SC77). 
+   More information at http://www.openadaptor.org/metrics.html 
 
  * SpringAdaptor will automatically configure and register an Adaptor and associated Router
    in the Spring context if they are not explicitly defined. This allows simple Adaptor
@@ -79,6 +86,7 @@ Miscellaneous
  
 Bug Fixes
 =========
+
 SC66: Added support for setting ReplyToQueueName and ReplyToQueueManagerName by MqConnection. 
       Also suppressed the "MQJE001: Completion Code 2, Reason 2033" log statement. 
 
