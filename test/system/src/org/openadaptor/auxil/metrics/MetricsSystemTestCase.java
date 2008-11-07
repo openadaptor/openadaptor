@@ -99,13 +99,21 @@ public class MetricsSystemTestCase extends TestCase {
     /* Check Adaptor's metrics are enabled */
     assertTrue(adaptor.getMetrics().isMetricsEnabled());
 
-    assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgCounts(), new long[]{1}));
-    assertTrue(Arrays.equals(adaptor.getMetrics().getInputMsgTypes(), new String[]{"java.lang.String"}));
-    assertNotNull(adaptor.getMetrics().getInputMsgs());
+    IComponentMetrics metrics = adaptor.getMetrics();
+    
+    assertTrue(Arrays.equals(metrics.getInputMsgCounts(), new long[]{1}));
+    assertTrue(Arrays.equals(metrics.getInputMsgTypes(), new String[]{"java.lang.String"}));
+    assertNotNull(metrics.getInputMsgs());
 
-    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgCounts(), new long[]{1}));
-    assertNotNull(adaptor.getMetrics().getOutputMsgs());
+    assertTrue(Arrays.equals(metrics.getOutputMsgCounts(), new long[]{1}));
+    assertNotNull(metrics.getOutputMsgs());
 
+    assertTrue(metrics.getProcessTimeMin() <= metrics.getProcessTimeAvg());
+    assertTrue(metrics.getProcessTimeAvg() <= metrics.getProcessTimeMax());
+    
+    assertTrue(metrics.getIntervalTimeMin() <= metrics.getIntervalTimeAvg());
+    assertTrue(metrics.getIntervalTimeAvg() <= metrics.getIntervalTimeMax());
+    
     //TODO
 //    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgTypes(), new String[]{"java.lang.String"}));
     
@@ -114,12 +122,25 @@ public class MetricsSystemTestCase extends TestCase {
     while(it.hasNext()){
       IMessageProcessor mProcessor = (IMessageProcessor) it.next();
       if(mProcessor instanceof IRecordableComponent){
-        IRecordableComponent recComp = (IRecordableComponent) mProcessor;
-        assertTrue(recComp.getMetrics().isMetricsEnabled());
+        metrics = ((IRecordableComponent) mProcessor).getMetrics();
+        assertTrue(metrics.isMetricsEnabled());
         
-        assertTrue(Arrays.equals(recComp.getMetrics().getInputMsgCounts(), new long[]{1}));
-        assertNotNull(recComp.getMetrics().getInputMsgs());
-        assertTrue(Arrays.equals(recComp.getMetrics().getOutputMsgCounts(), new long[]{1}));
+        assertTrue(Arrays.equals(metrics.getInputMsgCounts(), new long[]{1}));
+        assertNotNull(metrics.getInputMsgs());
+        
+        /* Write node won't have output messages */
+        if(mProcessor instanceof WriteNode){
+          assertTrue(Arrays.equals(metrics.getOutputMsgCounts(), new long[0]));
+        }
+        else{
+          assertTrue(Arrays.equals(metrics.getOutputMsgCounts(), new long[]{1}));
+        }
+        
+        assertTrue(metrics.getProcessTimeMin() <= metrics.getProcessTimeAvg());
+        assertTrue(metrics.getProcessTimeAvg() <= metrics.getProcessTimeMax());
+        
+        assertTrue(metrics.getIntervalTimeMin() <= metrics.getIntervalTimeAvg());
+        assertTrue(metrics.getIntervalTimeAvg() <= metrics.getIntervalTimeMax());
         
         //TODO check types?
       }

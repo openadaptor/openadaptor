@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
@@ -61,6 +62,9 @@ public class ComponentMetricsFactory {
    */
   public static IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
     IComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
+    if(recordableComponent instanceof ILifecycleComponent){
+      ((ILifecycleComponent) recordableComponent).addListener(componentMetrics);
+    }
     for(Iterator it = aggregateMetricsCol.iterator(); it.hasNext();){
       AggregateMetrics aggregateMetrics = (AggregateMetrics) it.next();
       aggregateMetrics.addComponentMetrics(componentMetrics);

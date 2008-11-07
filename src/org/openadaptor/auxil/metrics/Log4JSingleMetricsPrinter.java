@@ -44,6 +44,9 @@ public class Log4JSingleMetricsPrinter implements IMetricsPrinter {
   private static final Log log = LogFactory.getLog(Log4JSingleMetricsPrinter.class.getName());
   
   protected void printMetrics(IComponentMetrics metrics, String name){
+    if(!metrics.isMetricsEnabled()){
+      return;
+    }
     StringBuffer sb = new StringBuffer();
     sb.append("----- Metrics for " + name+ " -----\n");
     sb.append("Input messages :            " + metrics.getInputMsgs() + "\n");

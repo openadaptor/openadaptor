@@ -84,9 +84,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 
 	private IDataProcessor processor;
 
-    /**
-     * Metrics associated with this node.
-     */
+    /** Metrics associated with this node. */
     private IComponentMetrics metrics = (IComponentMetrics) ComponentMetricsFactory.newStandardMetrics(this);
     
     /**
@@ -100,7 +98,6 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 		super(id);
 		this.processor = processor != null ? processor : IDataProcessor.NULL_PROCESSOR;
 		this.messageProcessor = next;
-        addListener(metrics);
 	}
 
 	public Node(final String id, final IDataProcessor processor) {
@@ -258,7 +255,6 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     return this;
   }
   
-  
   /**
    * @return inner class instance that implements Component.AdminMBean.
    */
@@ -279,37 +275,36 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
   public class Admin extends LifecycleComponent.Admin implements AdminMBean {
 
     public String getProcessTime() {
-      return metrics.getProcessTime();
+      return getMetrics().getProcessTime();
     }
 
     public String getIntervalTime() {
-      return metrics.getIntervalTime();
+      return getMetrics().getIntervalTime();
     }
 
     public String getUptime() {
-      return metrics.getUptime();
+      return getMetrics().getUptime();
     }
 
     public String getInputMsgs() {
-      return metrics.getInputMsgs();
+      return getMetrics().getInputMsgs();
     }
 
     public String getOutputMsgs() {
-      return metrics.getOutputMsgs();
+      return getMetrics().getOutputMsgs();
     }
 
+    public String getDiscardsAndExceptions() {
+      return getMetrics().getDiscardsAndExceptions();
+    }
+    
     public void setMetricsEnabled(boolean metricsEnabled) {
-      metrics.setMetricsEnabled(metricsEnabled);
+      getMetrics().setMetricsEnabled(metricsEnabled);
     }
 
     public boolean isMetricsEnabled() {
-      return metrics.isMetricsEnabled();
+      return getMetrics().isMetricsEnabled();
     }
-
-	public String getDiscardsAndExceptions() {
-	  return metrics.getDiscardsAndExceptions();
-	}
-
   }
 
 }

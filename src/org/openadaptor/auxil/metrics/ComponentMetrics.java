@@ -46,7 +46,7 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 
 /**
  * Class that records and computes message metrics for a single 
- * {@link IRecordableComponent}}.
+ * {@link IRecordableComponent}.
  * 
  * 
  * @see IComponentMetrics
@@ -514,22 +514,52 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     return maxProcessTime;
   }
 
-  protected long getProcessTimeAvg(){
-    if(maxProcessTime==-1){
-      /* Hasn't processed anything yet */
-      return -1;
-    }
+  /**
+   * Gets total of input messages (irrespective of message types).
+   */
+  private long getInputMsgsCount(){
     long [] intpuMsgCounts = getInputMsgCounts();
     long msgCount = 0;
     for(int i=0; i<intpuMsgCounts.length; i++){
       msgCount+=intpuMsgCounts[i];
     }
+    return msgCount;
+  }
+  
+  /**
+   * @see IComponentMetrics#getProcessTimAvg()
+   */
+  public long getProcessTimeAvg(){
+    if(maxProcessTime==-1){
+      /* Hasn't processed anything yet */
+      return -1;
+    }
+    long msgCount = getInputMsgsCount();
     if(currentlyProcessing){
       msgCount--;
     }
     long timeAvgMs = -1;
     if(msgCount!=0){
       timeAvgMs = (long) (totalProcessTime/msgCount);
+    }  
+    return timeAvgMs;
+  }
+  
+  /**
+   * @see IComponentMetrics#getIntervalTimeAvg()
+   */
+  public long getIntervalTimeAvg(){
+    if(maxIntervalTime==-1){
+      /* Hasn't processed at least 2 messages yet */
+      return -1;
+    }
+    long intervalsCount = getInputMsgsCount() - 1;
+    if(currentlyProcessing){
+      intervalsCount--;
+    }
+    long timeAvgMs = -1;
+    if(intervalsCount!=0){
+      timeAvgMs = (long) (totalIntervalTime/intervalsCount);
     }  
     return timeAvgMs;
   }
@@ -559,15 +589,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     if(maxIntervalTime==-1){
       return UNKNOWN;
     }
-    long [] intpuMsgCounts = getInputMsgCounts();
-    long msgCount = 0;
-    for(int i=0; i<intpuMsgCounts.length; i++){
-      msgCount+=intpuMsgCounts[i];
-    }
-    long timeAvgMs = -1;
-    if(msgCount!=0){
-      timeAvgMs = (long) (totalIntervalTime/msgCount);
-    }
+    long timeAvgMs = getIntervalTimeAvg();
     return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime);
   }
 
@@ -665,5 +687,4 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   public IRecordableComponent getComponent() {
     return monitoredComponent;
   }
-
 }

@@ -162,12 +162,18 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    *         one message.
    */
   long getProcessTimeMax();
-	 
+  
   /**
    * @return minimal time in milliseconds the component took to process
    *         one message.
    */
   long getProcessTimeMin();
+  
+  /**
+   * @return average time in milliseconds the component took to process
+   *         one message.
+   */
+  long getProcessTimeAvg();
     
   /**
    * @return maximum in milliseconds of 'idle' time, i.e. the time between
@@ -180,6 +186,12 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    *         processing two subsequent messages. 
    */
   long getIntervalTimeMin();
+  
+  /**
+   * @return average in milliseconds of 'idle' time, i.e. the time between
+   *         processing two subsequent messages. 
+   */
+  long getIntervalTimeAvg();
  
   /**
    * @return the component for which these metrics are recorded.

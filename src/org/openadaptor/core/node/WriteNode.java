@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IWriteConnector;
@@ -42,6 +43,8 @@ import org.openadaptor.core.Response.ExceptionBatch;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.MessageException;
 import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.recordable.IComponentMetrics;
+import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransactional;
 
@@ -75,25 +78,29 @@ public class WriteNode extends Node {
     
     private boolean suppressDisconnectionErrors = true;
 	
+    /** Metrics associated with this node. */
+    private IComponentMetrics metrics = ComponentMetricsFactory.newStandardMetrics(this);
+    
     /**
      * Constructor.
      */
 	public WriteNode() {
-		super();
+		this(null);
 	}
 	
     /**
-     * Constructor.
+     * Constructor. Disabled metrics in the superclass.
      */
 	public WriteNode(String id) {
 		super(id);
+        super.setMetricsEnabled(false);
 	}
 
     /**
      * Constructor.
      */
 	public WriteNode(String id, final IWriteConnector connector) {
-		super(id);
+		this(id);
 		this.connector = connector;
 	}
 
@@ -141,6 +148,9 @@ public class WriteNode extends Node {
    * @see org.openadaptor.core.IMessageProcessor#process(Message)
    */  
   public Response process(Message msg) {
+    
+    metrics.recordMessageStart(msg);
+    
     Object resource = null;
     if ((connector instanceof ITransactional) && (msg.getTransaction() != null)) {
       resource = ((ITransactional)connector).getResource();
@@ -212,6 +222,7 @@ public class WriteNode extends Node {
     if ((resource != null) && (msg.getTransaction() != null)) {
       msg.getTransaction().delistForCommit(resource);
     }
+    metrics.recordMessageEnd(msg, response);
   	return response;
   }
 
@@ -264,5 +275,26 @@ public class WriteNode extends Node {
    */
   public void setSuppressDisconnectionErrors(boolean suppressDisconnectionErrors) {
     this.suppressDisconnectionErrors = suppressDisconnectionErrors;
+  }
+
+  /**
+   * @see IRecordableComponent#isMetricsEnabled()
+   */
+  public boolean isMetricsEnabled() {
+    return metrics.isMetricsEnabled();
+  }
+
+  /**
+   * @see IRecordableComponent#setMetricsEnabled(boolean)
+   */
+  public void setMetricsEnabled(boolean metricsEnabled) { 
+    metrics.setMetricsEnabled(metricsEnabled);
+  }
+
+  /**
+   * @see IRecordableComponent#getMetrics()
+   */
+  public IComponentMetrics getMetrics() {
+    return metrics;
   }
 }
