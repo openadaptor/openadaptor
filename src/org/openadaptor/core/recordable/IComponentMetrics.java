@@ -83,7 +83,7 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
   void recordMessageEnd(Message msg, Response response);
   
   /**
-   * Records the end of processing of a massage that is discarded.
+   * Records the end of processing of a massage that is being discarded.
    * 
    * @param msg the discarded message.
    */
@@ -157,18 +157,32 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    */
   long getExceptionMsgCount();
  
-  
+  /**
+   * @return maximum time in milliseconds the component took to process
+   *         one message.
+   */
   long getProcessTimeMax();
 	 
+  /**
+   * @return minimal time in milliseconds the component took to process
+   *         one message.
+   */
   long getProcessTimeMin();
     
+  /**
+   * @return maximum in milliseconds of 'idle' time, i.e. the time between
+   *         processing two subsequent messages. 
+   */
   long getIntervalTimeMax();
     
+  /**
+   * @return minimum in milliseconds of 'idle' time, i.e. the time between
+   *         processing two subsequent messages. 
+   */
   long getIntervalTimeMin();
  
   /**
    * @return the component for which these metrics are recorded.
    */
   IRecordableComponent getComponent();
-  
 }

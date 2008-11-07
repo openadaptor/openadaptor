@@ -40,10 +40,16 @@ import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 
 /**
- * Class that agregates metrics from all components in an adaptor.
+ * Class that maintains metrics on the adaptor/router level.
+ * Some of the metrics, such as the count and types of output 
+ * messages are not easy to capture via direct calls to methods
+ * like {@link ComponentMetrics#recordMessageEnd(org.openadaptor.core.Message,
+ * org.openadaptor.core.Response)}. Instead, they are derived
+ * from metrics associated with WriteNodes' metrics.
+ * For that to be possible this class maintains references 
+ * to all detailed metrics in an Adaptor.
  * 
- * DRAFT. NOT READY FOR USE.
- * 
+ * @see ComponentMetrics
  * @author Kris Lachor
  */
 public class AggregateMetrics extends ComponentMetrics{
@@ -61,6 +67,9 @@ public class AggregateMetrics extends ComponentMetrics{
     super(recordableComponent);
   }
  
+  /**
+   * Constructor.
+   */
   public AggregateMetrics(IRecordableComponent monitoredComponent, boolean enabled) {
     super(monitoredComponent, enabled);
   }
@@ -104,18 +113,28 @@ public class AggregateMetrics extends ComponentMetrics{
   }
 
   /**
-   * TODO
+   * Adds detailed component metrics to a collection of metrics that
+   * is used as basis for deriving values such as the count and 
+   * types of output messages by this metrics. 
    */
   public void addComponentMetrics(IComponentMetrics componentMetrics){
     this.componentMetrics.add(componentMetrics);
   }
 
   /**
-   * TODO
+   * @return a collection of metrics that is used for deriving values 
+   *         such as the count and types of output messages by this metrics. 
+   */
+  public Collection getComponentMetrics() {
+    return componentMetrics;
+  }
+  
+  /**
+   * @return an output message count derived from input messages to 
+   *         all write nodes in the adaptor. 
    */
   public long[] getOutputMsgCounts() {
     long [] msgCounts = new long[0];
-    System.out.println("Size " + componentMetrics.size() );
     for(Iterator it = componentMetrics.iterator(); it.hasNext();){
       IComponentMetrics compMetrics = (IComponentMetrics) it.next();
       if(isLastInPipeline(compMetrics.getComponent())){
@@ -126,7 +145,8 @@ public class AggregateMetrics extends ComponentMetrics{
   }
 
   /**
-   * TODO
+   * @return output message types derived from from input messages to 
+   *         all write nodes in the adaptor. 
    */
   public String[] getOutputMsgTypes() {
     Collection msgTypes = new ArrayList();
@@ -140,16 +160,13 @@ public class AggregateMetrics extends ComponentMetrics{
   }
   
   /**
-   * TODO comments
+   * Checks if the component is the last component in the adaptor's 
+   * pipeline, by checking its type being a WriteNode. 
    */
   private boolean isLastInPipeline(IComponent component){
     if(component instanceof WriteNode){
       return true;
     }
     return false;
-  }
-
-  public Collection getComponentMetrics() {
-    return componentMetrics;
   }
 }

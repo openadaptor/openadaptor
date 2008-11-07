@@ -16,7 +16,7 @@
     * stops processing and waits for a user action (to introduce delay)
     * converts delmited input into a map
     * converts map to xml
-    * writes to file
+    * writes to the console
   
 Run it like this...
 

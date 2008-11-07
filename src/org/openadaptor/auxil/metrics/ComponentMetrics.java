@@ -45,8 +45,9 @@ import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 
 /**
- * Class that records and computes message metrics for a single {@link IRecordableComponent}}.
- * TODO comments
+ * Class that records and computes message metrics for a single 
+ * {@link IRecordableComponent}}.
+ * 
  * 
  * @see IComponentMetrics
  * @see IRecordableComponent
