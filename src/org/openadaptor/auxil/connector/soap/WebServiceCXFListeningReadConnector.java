@@ -30,6 +30,9 @@ package org.openadaptor.auxil.connector.soap;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.net.InetAddress;
+
+import javax.xml.namespace.QName;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.endpoint.Server;
@@ -52,9 +55,11 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   
   private static final String HTTP_PREFIX = "http://";
 
-  private String serviceName = "openadaptorws";
+  private static final String NAMESPACE = "http://www.openadaptor.org";
   
-//  private String namespace = "http://www.openadaptor.org";
+  private static final String DEFAULT_SERVICENAME = "OAService";
+  
+  private String serviceName = DEFAULT_SERVICENAME;
   
   private int port = 8080;
   
@@ -89,6 +94,7 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
     if(server==null){
 	  ServerFactoryBean svrFactory = new ServerFactoryBean();
 	  svrFactory.setServiceClass(IStringDataProcessor.class);
+      QName namespace = new QName(NAMESPACE, serviceName);
       InetAddress localMachine = null;
       try {
         localMachine = java.net.InetAddress.getLocalHost();
@@ -101,6 +107,7 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
 	  String endpointUrl = HTTP_PREFIX + hostname + ":" + port + "/" + serviceName;
 	  svrFactory.setAddress(endpointUrl);
       svrFactory.setServiceBean(this);
+      svrFactory.setServiceName(namespace);
 	  server = svrFactory.create();
 	  log.info("Created and started WS Endpoint " + getEndpoint());
     }else{
