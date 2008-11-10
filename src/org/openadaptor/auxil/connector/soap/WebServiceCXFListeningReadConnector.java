@@ -27,13 +27,17 @@
 
 package org.openadaptor.auxil.connector.soap;
 
+import java.net.UnknownHostException;
 import java.util.List;
+import java.net.InetAddress;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.frontend.ServerFactoryBean;
 import org.openadaptor.core.connector.QueuingReadConnector;
+import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.jmx.Administrable;
+
 
 /**
  * ReadConnector that exposes a webservice which allows external clients to send it data.
@@ -45,6 +49,8 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
            Administrable{
 
   private static final Log log = LogFactory.getLog(WebServiceCXFListeningReadConnector.class);
+  
+  private static final String HTTP_PREFIX = "http://";
 
   private String serviceName = "openadaptorws";
   
@@ -83,14 +89,23 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
     if(server==null){
 	  ServerFactoryBean svrFactory = new ServerFactoryBean();
 	  svrFactory.setServiceClass(IStringDataProcessor.class);
-	  String endpointUrl = "http://localhost:" + port + "/" + serviceName;
+      InetAddress localMachine = null;
+      try {
+        localMachine = java.net.InetAddress.getLocalHost();
+      } catch (UnknownHostException e) {
+        String errMsg = "Unable to determine hostname";
+        log.error(errMsg, e);
+        throw new ConnectionException(errMsg);
+      }
+      String hostname = localMachine.getCanonicalHostName();
+	  String endpointUrl = HTTP_PREFIX + hostname + ":" + port + "/" + serviceName;
 	  svrFactory.setAddress(endpointUrl);
       svrFactory.setServiceBean(this);
 	  server = svrFactory.create();
-	  log.info("Created and started WS Endpoint");
+	  log.info("Created and started WS Endpoint " + getEndpoint());
     }else{
       server.start();
-      log.info("Started WS Endpoint");
+      log.info("Started WS Endpoint " + getEndpoint());
     }
   }
 
