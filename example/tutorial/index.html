@@ -1261,7 +1261,9 @@ in the example as a <code>FileWriteConnector</code>.
 <h3>c) The Message Hospital</h3>
 <p>
 Lastly, an exception handler conventionally called the Message Hospital can be used to write exceptions to a 
-predefined table in a database. Excepting that the Message Hospital respects the format of the table it is 
+predefined table in a database (see <a href="#step9">Step  9: Writing to a Database</a> for guidance on
+how to setup an appopriate HSQL database for this example). Excepting that the Message Hospital respects the 
+format of the table it is 
 writing to, there is nothing special about it. It uses two standard components - 
 <code>ExceptionToOrderedMapConverter</code> to convert exceptions to a map, and <code>JDBCWriteConnector</code>
 to store the exceptions in the database.
