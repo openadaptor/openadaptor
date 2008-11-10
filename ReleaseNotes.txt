@@ -84,6 +84,8 @@ Miscellaneous
  
  * The automatic example/tutorial documentation generation mechanism has been tweaked slightly.
  
+ * Tutorial modified slightly (added links to clarify hsql setup for hospital examples).
+ 
 Bug Fixes
 =========
 

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
-	<pluginVersion><![CDATA[2.0.2.v200712142013]]></pluginVersion>
+	<pluginVersion><![CDATA[2.1.0.v200808011800]]></pluginVersion>
 	<configSuffixes>
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
 		<config>example/spring/adaptor/router.xml</config>
 		<config>example/spring/connectors/rss/rss.xml</config>
-		<config>example/spring/exceptions/exception.xml</config>
 		<config>example/spring/processors/xml/validate.xml</config>
 		<config>example/spring/connectors/socket/writer.xml</config>
 		<config>example/spring/adaptor/registration.xml</config>
@@ -22,23 +22,16 @@
 		<config>example/spring/adaptor/jmx.xml</config>
 		<config>example/spring/connectors/socket/reader.xml</config>
 		<config>example/spring/connectors/jms/subscriber.xml</config>
-		<config>example/spring/processors/group/Processorgroup.xml</config>
-		<config>example/spring/convertors/json/tojson.xml</config>
 		<config>example/spring/connectors/tibco/publisher.xml</config>
 		<config>example/spring/connectors/tibco/subscriber.xml</config>
-		<config>example/spring/connectors/file/directoryreadconnector.xml</config>
 		<config>example/spring/connectors/file/file.xml</config>
 		<config>example/spring/connectors/rmi/server.xml</config>
 		<config>example/spring/connectors/rmi/client.xml</config>
-		<config>example/spring/connectors/mqseries/mq_reader.xml</config>
-		<config>example/spring/legacy/doxml_reader.xml</config>
 		<config>example/spring/connectors/jms/publisher.xml</config>
 		<config>example/spring/connectors/db/reader.xml</config>
 		<config>example/spring/connectors/jndi/reader.xml</config>
 		<config>example/spring/connectors/db/poller.xml</config>
-		<config>example/spring/exceptions/exception2.xml</config>
 		<config>example/spring/connectors/mail/reader.xml</config>
-		<config>example/spring/connectors/mqseries/mq_writer.xml</config>
 	</configs>
 	<configSets>
 	</configSets>
