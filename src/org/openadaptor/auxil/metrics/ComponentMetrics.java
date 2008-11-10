@@ -136,7 +136,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
               .appendSuffix(" sec", " secs")
               .appendSeparator(" ")
               .appendMillis()
-              .appendSuffix(" millisec", " " + MILLISECONDS)
+              .appendSuffix(" " + MILLISECONDS, " " + MILLISECONDS)
               .toFormatter();
 
 
@@ -182,7 +182,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @param msg
    */
   public void recordMessageStart(Message msg){
-    if(!enabled){
+    if(!enabled || msg==null){
       return;
     }
     processStartTime = new Date();
@@ -252,7 +252,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @param response holds the response to the original message. 
    */
   public void recordMessageEnd(Message msg, Response response){
-    if(!enabled){
+    if(!enabled || msg==null || response==null){
       return;
     }
     if(processStartTime!=null){
@@ -336,7 +336,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @see IComponentMetrics#recordDiscardedMsgEnd(Message)
    */
   public void recordDiscardedMsgEnd(Message msg){
-    if(!enabled){
+    if(!enabled || msg==null){
       return;
     }
     discardedMsgs++;
@@ -347,7 +347,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @see IComponentMetrics#recordExceptionMsgEnd(Message) 
    */
   public void recordExceptionMsgEnd(Message msg){
-    if(!enabled){
+    if(!enabled || msg==null){
       return;
     }
     exceptionMsgs++;

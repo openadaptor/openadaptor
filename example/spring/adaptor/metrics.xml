@@ -13,7 +13,8 @@
   
   The adaptor does the following:
     * reads delimited records from file
-    * stops processing and waits for a user action (to introduce delay)
+    * stops processing in an 'inspector' and waits for a user action 
+      (to introduce delay). Graphical environment/X server necessary.
     * converts delmited input into a map
     * converts map to xml
     * writes to the console
