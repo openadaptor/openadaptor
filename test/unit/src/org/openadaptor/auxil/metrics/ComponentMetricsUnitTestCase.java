@@ -96,12 +96,12 @@ public class ComponentMetricsUnitTestCase extends TestCase {
     /* 1st response consists of a single String */
     Response response = new Response(); 
     response.addOutput(testData1);
-    try {
-      /* Should throw exception due to unmatch output message */
-      metrics.recordMessageEnd(testMsg1, response);
-      assertTrue(false);
-    } catch (Exception e) {
-    }
+//    try {
+//      /* Should throw exception due to unmatch output message */
+//      metrics.recordMessageEnd(testMsg1, response);
+//      assertTrue(false);
+//    } catch (Exception e) {
+//    }
     metrics.recordMessageStart(testMsg1);
     metrics.recordMessageEnd(testMsg1, response);
     assertNotNull(metrics.processEndTime); 
