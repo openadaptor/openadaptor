@@ -174,6 +174,11 @@ public interface IComponentMetrics extends ISimpleComponentMetrics, ILifecycleLi
    *         one message.
    */
   long getProcessTimeAvg();
+  
+  /**
+   * @return time in milliseconds of last message processing.
+   */
+  long getProcessTimeLast();
     
   /**
    * @return maximum in milliseconds of 'idle' time, i.e. the time between

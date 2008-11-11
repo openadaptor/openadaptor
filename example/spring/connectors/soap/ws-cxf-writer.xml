@@ -26,7 +26,8 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/3rdparty/activation.jar
+    lib/opt/activation.jar
+    lib/opt/cxf_2.1.jar
   
   Once it is running you need to type some data into the command line, for the
   processing to succeed, the webservice it is connecting to needs to be running

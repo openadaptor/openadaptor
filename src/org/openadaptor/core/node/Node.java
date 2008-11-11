@@ -270,41 +270,63 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
  
   /**
    * Implementation of the interface exposed via JMX. 
-   * TODO comments
    */
   public class Admin extends LifecycleComponent.Admin implements AdminMBean {
 
+    /**
+     * @see ISimpleComponentMetrics#getProcessTime()
+     */
     public String getProcessTime() {
       return getMetrics().getProcessTime();
     }
 
+    /**
+     * @see ISimpleComponentMetrics#getIntervalTime()
+     */
     public String getIntervalTime() {
       return getMetrics().getIntervalTime();
     }
 
+    /**
+     * @see ISimpleComponentMetrics#getUptime()
+     */
     public String getUptime() {
       return getMetrics().getUptime();
     }
 
+    /**
+     * @see ISimpleComponentMetrics#getInputMsgs()
+     */
     public String getInputMsgs() {
       return getMetrics().getInputMsgs();
     }
 
+    /**
+     * @see ISimpleComponentMetrics#getOutputMsgs()
+     */
     public String getOutputMsgs() {
       return getMetrics().getOutputMsgs();
     }
 
+    /**
+     * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
+     */
     public String getDiscardsAndExceptions() {
       return getMetrics().getDiscardsAndExceptions();
     }
     
+    /**
+     * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
+     */
     public void setMetricsEnabled(boolean metricsEnabled) {
       getMetrics().setMetricsEnabled(metricsEnabled);
     }
 
+    /**
+     * @see ISimpleComponentMetrics#isMetricsEnabled()
+     */
     public boolean isMetricsEnabled() {
       return getMetrics().isMetricsEnabled();
     }
   }
-
 }

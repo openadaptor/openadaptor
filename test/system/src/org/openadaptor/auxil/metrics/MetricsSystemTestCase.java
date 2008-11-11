@@ -59,10 +59,10 @@ public class MetricsSystemTestCase extends TestCase {
   private static final String ADAPTOR_4 = "metrics-adaptor4.xml";
   
   /**
-   * Runs adaptor with a reader and a writer. Reader sends one message (String). 
+   * Adaptor with a reader and a writer. Sends one message (String). 
    * Metrics are disabled.
    */
-  public void testMetricsDisabled() throws Exception{
+  public void testDisabled() throws Exception{
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_1);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertTrue(adaptor.getExitCode()==0);
@@ -88,10 +88,10 @@ public class MetricsSystemTestCase extends TestCase {
   }
   
   /**
-   * Runs adaptor with a reader and a writer. Reader sends one message (String). 
-   * Metrics are enabled.
+   * Adaptor with a reader and a writer. Sends one message (String). 
+   * Metrics enabled.
    */
-  public void testMetricsEnabled() throws Exception{
+  public void testEnabled() throws Exception{
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertTrue(adaptor.getExitCode()==0);
@@ -113,9 +113,8 @@ public class MetricsSystemTestCase extends TestCase {
     
     assertTrue(metrics.getIntervalTimeMin() <= metrics.getIntervalTimeAvg());
     assertTrue(metrics.getIntervalTimeAvg() <= metrics.getIntervalTimeMax());
-    
-    //TODO
-//    assertTrue(Arrays.equals(adaptor.getMetrics().getOutputMsgTypes(), new String[]{"java.lang.String"}));
+        
+    assertTrue(Arrays.equals(metrics.getOutputMsgTypes(), new String[]{"java.lang.String"}));
     
     /* same checks for all Nodes */
     Iterator it = adaptor.getMessageProcessors().iterator();
@@ -134,6 +133,7 @@ public class MetricsSystemTestCase extends TestCase {
         }
         else{
           assertTrue(Arrays.equals(metrics.getOutputMsgCounts(), new long[]{1}));
+          assertTrue(Arrays.equals(metrics.getOutputMsgTypes(), new String[]{"java.lang.String"}));  
         }
         
         assertTrue(metrics.getProcessTimeMin() <= metrics.getProcessTimeAvg());
@@ -141,14 +141,14 @@ public class MetricsSystemTestCase extends TestCase {
         
         assertTrue(metrics.getIntervalTimeMin() <= metrics.getIntervalTimeAvg());
         assertTrue(metrics.getIntervalTimeAvg() <= metrics.getIntervalTimeMax());
-        
-        //TODO check types?
+   
+        assertTrue(Arrays.equals(metrics.getInputMsgTypes(), new String[]{"java.lang.String"}));
       }
     }
   }
   
   /**
-   * Runs adaptor with enabled metrics. Check components' uptime.
+   * Adaptor with enabled metrics. Check components' uptime.
    */
   public void testUptime() throws Exception {
     SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
@@ -168,7 +168,7 @@ public class MetricsSystemTestCase extends TestCase {
   }
   
   /**
-   * Runs adaptor with enabled metrics. One message sent. Checks the min, max and avg process
+   * Adaptor with enabled metrics. One message sent. Checks the min, max and avg process
    * times are the same.
    */
   public void testProcessTime() throws Exception {

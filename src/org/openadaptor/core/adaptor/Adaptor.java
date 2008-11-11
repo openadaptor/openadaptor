@@ -589,103 +589,6 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     return this;
   }
 
-  public Object getAdmin() {
-    return new Admin();
-  }
-
-  public interface AdminMBean extends ISimpleComponentMetrics{
-    String dumpState();
- 
-    void exit();
-
-    void interrupt();
-  }
-
-  public class Admin implements AdminMBean {
-
-    public void exit() {
-      Adaptor.this.exit(true);
-    }
-
-    public String dumpState() {
-      StringBuffer buffer = new StringBuffer();
-      buffer.append("<table>");
-      buffer.append("<tr><td>Adaptor</td><td/>");
-      buffer.append("<td>").append(Adaptor.this.state.toString()).append("</td></tr>");
-      ArrayList components = new ArrayList();
-      components.addAll(Adaptor.this.components);
-      for (Iterator iter = components.iterator(); iter.hasNext();) {
-        ILifecycleComponent component = (ILifecycleComponent) iter.next();
-        buffer.append("<tr><td/>");
-        buffer.append("<td>").append(component.getId()).append("</td>");
-        buffer.append("<td>").append(component.getState().toString()).append("</td></tr>");
-      }
-      return buffer.toString();
-    }
-
-    public void interrupt() {
-      Adaptor.this.interruptRunnables();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getIntervalTime()
-     */
-    public String getIntervalTime() {
-      return metrics.getIntervalTime();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getProcessTime()
-     */
-    public String getProcessTime() {
-      return metrics.getProcessTime();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getUptime()
-     */
-    public String getUptime() {
-      return metrics.getUptime();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getInputMsgs()
-     */
-    public String getInputMsgs() {
-      return metrics.getInputMsgs();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getOutputMsgs()
-     */
-    public String getOutputMsgs() {
-      return metrics.getOutputMsgs();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
-     */
-    public void setMetricsEnabled(boolean metricsEnabled) {
-      metrics.setMetricsEnabled(metricsEnabled); 
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#isMetricsEnabled()
-     */
-    public boolean isMetricsEnabled() {
-      return metrics.isMetricsEnabled();
-    }
-
-    /**
-     * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
-     */
-	public String getDiscardsAndExceptions() {
-	  return metrics.getDiscardsAndExceptions();
-	}
-
-  }
-
-  
   /**
    * Returns the state of this adaptor.
    * Method primarily for JMX use.
@@ -799,4 +702,127 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
   public void setMetricsPrinter(IMetricsPrinter metricsPrinter) {
     this.metricsPrinter = metricsPrinter;
   }
+
+  /**
+   * @see Administrable#getAdmin()
+   */
+  public Object getAdmin() {
+    return new Admin();
+  }
+  
+  /**
+   * Interface exposed via JMX.
+   */
+  public interface AdminMBean extends ISimpleComponentMetrics{
+  
+    /**
+     * Dumps adaptor's state.
+     * 
+     * @return this adaptor's state formatted as HTML table
+     */
+    String dumpState();
+ 
+    /**
+     * Gracefully exits the adaptor.
+     */
+    void exit();
+
+    void interrupt();
+  }
+
+  /**
+   * Implementation of the interface exposed via JMX. 
+   */
+  public class Admin implements AdminMBean {
+
+    /**
+     * @see AdminMBean#exit()
+     */
+    public void exit() {
+      Adaptor.this.exit(true);
+    }
+
+    /**
+     * @see AdminMBean#dumpState()
+     */
+    public String dumpState() {
+      StringBuffer buffer = new StringBuffer();
+      buffer.append("<table>");
+      buffer.append("<tr><td>Adaptor</td><td/>");
+      buffer.append("<td>").append(Adaptor.this.state.toString()).append("</td></tr>");
+      ArrayList components = new ArrayList();
+      components.addAll(Adaptor.this.components);
+      for (Iterator iter = components.iterator(); iter.hasNext();) {
+        ILifecycleComponent component = (ILifecycleComponent) iter.next();
+        buffer.append("<tr><td/>");
+        buffer.append("<td>").append(component.getId()).append("</td>");
+        buffer.append("<td>").append(component.getState().toString()).append("</td></tr>");
+      }
+      return buffer.toString();
+    }
+
+    /**
+     * @see AdminMBean#interrupt()
+     */
+    public void interrupt() {
+      Adaptor.this.interruptRunnables();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getIntervalTime()
+     */
+    public String getIntervalTime() {
+      return metrics.getIntervalTime();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getProcessTime()
+     */
+    public String getProcessTime() {
+      return metrics.getProcessTime();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getUptime()
+     */
+    public String getUptime() {
+      return metrics.getUptime();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getInputMsgs()
+     */
+    public String getInputMsgs() {
+      return metrics.getInputMsgs();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getOutputMsgs()
+     */
+    public String getOutputMsgs() {
+      return metrics.getOutputMsgs();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#setMetricsEnabled(boolean)
+     */
+    public void setMetricsEnabled(boolean metricsEnabled) {
+      metrics.setMetricsEnabled(metricsEnabled); 
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#isMetricsEnabled()
+     */
+    public boolean isMetricsEnabled() {
+      return metrics.isMetricsEnabled();
+    }
+
+    /**
+     * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
+     */
+    public String getDiscardsAndExceptions() {
+      return metrics.getDiscardsAndExceptions();
+    }
+  }
+
 }

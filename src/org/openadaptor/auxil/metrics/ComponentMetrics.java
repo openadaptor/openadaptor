@@ -31,12 +31,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
-import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 import org.openadaptor.core.lifecycle.ILifecycleListener;
 import org.openadaptor.core.lifecycle.State;
@@ -48,6 +49,7 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
  * Class that records and computes message metrics for a single 
  * {@link IRecordableComponent}.
  * 
+ * Not thread-safe. 
  * 
  * @see IComponentMetrics
  * @see IRecordableComponent
@@ -55,25 +57,18 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
  */
 public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    
-  public static final String ARRAY_OF ="array_of_";
-  
-  public static final String HETEROGENEOUS_TYPES = "heterogeneous_types";
-  
-  private static final String MILLISECONDS = "ms";
-  
+  /* Constants */
+  private   static final Log log = LogFactory.getLog(ComponentMetrics.class.getName());
+  public    static final String ARRAY_OF ="array_of_";
+  public    static final String HETEROGENEOUS_TYPES = "heterogeneous_types";
+  private   static final String MILLISECONDS = "ms";
   protected static final String UNKNOWN = "Unknown";
-  
   protected static final String NONE = "None";
-  
-  private static final String NOT_APPLICABLE = "N/A";
-  
-  protected static String MESSAGES_OF_TYPE = " message(s) of type ";
-  
-  private static final String LESS_THAN_ONE =  "less than 1 ";
-  
+  private   static final String NOT_APPLICABLE = "N/A";
+  protected static final String MESSAGES_OF_TYPE = " message(s) of type ";
+  private   static final String LESS_THAN_ONE =  "less than 1 ";
   protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
-  
-  private static final String SEPARATOR = ", ";
+  private   static final String SEPARATOR = ", ";
 
   private IRecordableComponent monitoredComponent;
   
@@ -84,6 +79,8 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   long minProcessTime = -1;
   
   long maxProcessTime = -1;
+  
+  long lastProcessTime = -1;
   
   long totalProcessTime = 0;
   
@@ -127,16 +124,16 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
               .appendSuffix(" day", " days")
               .appendSeparator(" ")
               .appendHours()
-              .appendSuffix(" hour", " hours")
+              .appendSuffix("h", "h")
               .appendSeparator(" ")
               .appendMinutes()
               .appendSuffix(" min", " mins")
               .appendSeparator(" ")
               .appendSeconds()
-              .appendSuffix(" sec", " secs")
+              .appendSuffix("s", "s")
               .appendSeparator(" ")
               .appendMillis()
-              .appendSuffix(" " + MILLISECONDS, " " + MILLISECONDS)
+              .appendSuffix(MILLISECONDS, MILLISECONDS)
               .toFormatter();
 
 
@@ -162,24 +159,23 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
 
   /**
    * Records input message. The <code>inputMsgCounter</code> maps types of input 
-   * messages to the number of occurences. A distintion is made of messages with
-   * single elements and messages with arrays of elements. Furthermore, when
-   * dealing with an array or elements a check is made of elements are of the
-   * same type. Samples of <code>inputMsgCounter</code> are:
+   * messages to the number of occurences. A distintion is made between messages 
+   * with single elements and arrays. When dealing with an array or elements a 
+   * check is made of elements are of the same type. 
+   * Examples of <code>inputMsgCounter</code> are:
    * 
-   * a)
-   * java.lang.String -> 3434
-   * ----------------------------------
-   * b)
-   * array_of_java.lang.String -> 123
-   * ----------------------------------
-   * c)
-   * array_of_heterogeneous_types -> 3
-   * java.lang.Short -> 15
+   * <ul>
+   * <li>java.lang.String          -> 3434</li>
+   * <li>array_of_java.lang.String -> 123</li>
+   * <li>
+   * array_of_heterogeneous_types  -> 3
+   * java.lang.Short               -> 15
+   * </li>
+   * </ul>
    * 
    * Starts timers.
    * 
-   * @param msg
+   * @param msg the recorded message.
    */
   public void recordMessageStart(Message msg){
     if(!enabled || msg==null){
@@ -244,7 +240,6 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     }
   }
   
-  
   /**
    * Records end of message processing. 
    * 
@@ -259,6 +254,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       processEndTime = new Date();
       long processTime = processEndTime.getTime() - processStartTime.getTime();
       totalProcessTime+=processTime;
+      lastProcessTime=processTime;
       if(maxProcessTime<processTime){
         maxProcessTime=processTime;
       }
@@ -267,7 +263,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       }
     }
     else{
-      throw new OAException("Could not match input and output messages.");
+      log.warn("Could not match input and output messages.");
     }
      
     outputMsgs++;
@@ -512,6 +508,13 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    */
   public long getProcessTimeMax() {
     return maxProcessTime;
+  }
+  
+  /**
+   * @see IComponentMetrics#getProcessTimeLast()
+   */
+  public long getProcessTimeLast() {
+    return lastProcessTime;
   }
 
   /**
