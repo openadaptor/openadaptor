@@ -154,7 +154,7 @@ public class ValueMapEnrichmentProcessor extends GenericEnrichmentProcessor
    * Enriches input data with extra data from the reader.
    * If reader did not return any extra data, original data is not modified in any way.
    * 
-   * @see IEnrichmentProcessor#enrich(Object, Object[]) 
+   * @see org.openadaptor.core.IEnrichmentProcessor#enrich(Object, Object[]) 
    */
   public Object [] enrich(Object input, Object[] enrichmentData) {
     Object [] result = null;
