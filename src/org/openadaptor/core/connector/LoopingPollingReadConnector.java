@@ -32,6 +32,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.transaction.ITransactional;
 
 /**
@@ -47,8 +48,17 @@ import org.openadaptor.core.transaction.ITransactional;
  * 
  * Out of the box, without setting any polling intervals the adaptor will perform 
  * a single poll and then exit</li>.
+ *
+ * By setting the <code>pollInterval</code> you will cause it to repeatedly poll, with the
+ * specified poll interval between poll attempts.
+ *
+ * By setting the <code>pollInterval</code> and the <code>pollBackOff</code> you will cause it
+ * to repeatedly poll (with the specified poll interval between attempts) until an empty set of
+ * results is received when it will back off (for the specified poll back off) before continuing
+ * the normal polling.  This is useful if you are polling an event source and wish to pick up data
+ * when it is present, and then go to sleep for a bit when no data is present.
  * 
- * @author Fred Perry, Kris Lachor
+ * @author Fred Perry, Kris Lachor, Andrew Shire
  * @see CronnablePollingReadConnector
  * @see ThrottlingReadConnector
  */
@@ -57,6 +67,11 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
   private static final Log log = LogFactory.getLog(LoopingPollingReadConnector.class);
   
   private long intervalMs = -1;
+  
+  private long backoffMs = -1;
+  
+  private boolean dataReceived = true;
+  private Date backedOffUntil = null;
   
   /**
    * Constructor.
@@ -81,15 +96,31 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
    */
   public void connect() {
     super.connect();
-    calculateReconnectTime();
+    // REMOVED calculateReconnectTime(); [as called at end of super.connect() and was causing double-advancement]
   }
 
+  public Object[] next(long timeoutMs) throws OAException {
+    Object[] result = super.next(timeoutMs);
+    if (backoffMs > -1) {
+      boolean oldDataReceived = dataReceived;
+      dataReceived = (result != null) && (result.length > 0);
+      if (!dataReceived && !oldDataReceived && backedOffUntil==null) {
+        // We finished the previous batch of results and this batch is empty and we are not currently backed-off. 
+        reconnectTime = new Date(new Date().getTime() + backoffMs);  // back-off relative to now
+        backedOffUntil = reconnectTime;
+        log.debug("backing off: next poll time = " + reconnectTime.toString());
+      }
+    }
+    return result;
+  }
+  
   /**
-   * Recalculates <code>reconnectTime</code> as the currect <code>reconnectTime</code> 
-   * plus <code>intervalMs</code>.
+   * Recalculates <code>reconnectTime</code> as the current <code>reconnectTime</code> 
+   * plus <code>intervalMs</code> and removes it from being in backed off state.
    */
   protected void calculateReconnectTime() {
     reconnectTime = new Date(reconnectTime.getTime() + intervalMs);
+    backedOffUntil = null;  // disable back-off mode so that our reconnectTime is respected
     log.debug("next poll time = " + reconnectTime.toString());
   }
   
@@ -99,6 +130,9 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
    * @param intervalMs set the adaptor to poll every X milliseconds
    */
   public void setPollIntervalMs(long intervalMs) {
+    if (this.intervalMs > -1)
+      log.warn("Multiple poll interval property settings detected. " + "[pollIntervalMS] will take precedence");
+
     this.intervalMs = intervalMs;
   }
 
@@ -150,5 +184,60 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
   
   
   
+  /**
+   * Optional
+   * 
+   * @param backoff set the backoff time for adaptor polling in seconds (when last call to underlying connector returned no data)
+   */
+  public void setPollBackOffMS(long backoffMS) {
+    if (this.backoffMs > -1)
+      log.warn("Multiple poll backoff property settings detected. " + "[pollBackOffMS] will take precedence");
+
+    this.backoffMs = backoffMs;
+  }
+
+  /**
+   * Optional
+   * 
+   * @param backoff set the backoff time for adaptor polling in seconds (when last call to underlying connector returned no data)
+   */
+  public void setPollBackOffSecs(final int backoff) {
+    if (backoffMs > -1)
+      log.warn("Multiple poll backoff property settings detected. " + "[pollBackOffSecs] will take precedence");
+
+    this.backoffMs = backoff * 1000;
+  }
+
+  /**
+   * Optional
+   * 
+   * @param backoff set the backoff time for adaptor polling in minutes (when last call to underlying connector returned no data)
+   */
+  public void setPollBackOffMins(final int backoff) {
+    if (backoffMs > -1)
+      log.warn("Multiple poll backoff property settings detected. " + "[pollBackOffMins] will take precedence");
+
+    this.backoffMs = backoff * 60 * 1000;
+  }
+
+  /**
+   * Optional
+   * 
+   * @param backoff set the backoff time for adaptor polling in hours (when last call to underlying connector returned no data)
+   */
+  public void setPollBackOffHours(final int backoff) {
+    if (backoffMs > -1)
+      log.warn("Multiple poll backoff property settings detected. " + "[pollBackOffHours] will take precedence");
+
+    this.backoffMs = backoff * 60 * 60 * 1000;
+  }
   
+  /**
+   * @return backoff time interval between two subsequent calls to the underlying connector when last call returned no data
+   *         #next() (in milliseconds)
+   */
+  public long getPollBackOffMs() {
+    return backoffMs;
+  }
+
 }
