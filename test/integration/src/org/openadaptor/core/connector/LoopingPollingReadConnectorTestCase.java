@@ -47,8 +47,8 @@ public class LoopingPollingReadConnectorTestCase extends TestCase {
     assertTrue(runPoller(poller, reader.getDataString()) == 2);
     Date stop = new Date();
     long durationMs = stop.getTime() - start.getTime();
-    /* Polling should've taken at least 2 secs */
-    assertTrue(durationMs >= 2000);
+    /* Polling should've taken at least 0 + 1 secs */
+    assertTrue(durationMs >= 1000);
   }
   
   /**
