@@ -89,15 +89,6 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
     super(id);
   }
 
-  /**
-   * Delegates to the super class, then recalculates the <code>reconnectTime</code>.
-   * 
-   * @see AbstractPollingReadConnector#connect()
-   */
-  public void connect() {
-    super.connect();
-    // REMOVED calculateReconnectTime(); [as called at end of super.connect() and was causing double-advancement]
-  }
 
   public Object[] next(long timeoutMs) throws OAException {
     Object[] result = super.next(timeoutMs);
@@ -187,7 +178,7 @@ public class LoopingPollingReadConnector extends AbstractPollingReadConnector im
   /**
    * Optional
    * 
-   * @param backoff set the backoff time for adaptor polling in seconds (when last call to underlying connector returned no data)
+   * @param backoffMS set the backoff time for adaptor polling in seconds (when last call to underlying connector returned no data)
    */
   public void setPollBackOffMS(long backoffMS) {
     if (this.backoffMs > -1)
