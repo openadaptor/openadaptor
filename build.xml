@@ -471,7 +471,6 @@
 			</manifest>
 			<!-- ordered list of jars, only includes qualified resources -->
 	      <zipfileset src="${dir.lib}/joda-time-1.5.2.jar" includes="${includes.unqualified}"/>	
-		  <zipfileset src="${dir.lib}/cxf_2.1.jar" includes="${includes.unqualified}"/>
 		  <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" includes="${includes.unqualified}"/>
       <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" includes="${includes.unqualified}"/>
@@ -527,7 +526,6 @@
 		  <zipfileset src="${dir.lib}/neethi_2.0.4.jar" includes="${includes.unqualified}"/>
 			<!-- ordered list of jars, includes non-qualified resources but with prefix -->
 			<zipfileset src="${dir.lib}/joda-time-1.5.2.jar" excludes="${includes.unqualified}" prefix="joda-time"/>
-      <zipfileset src="${dir.lib}/cxf_2.1.jar" excludes="${includes.unqualified}" prefix="cxf"/>
       <zipfileset src="${dir.lib}/FastInfoset_1.2.2.jar" excludes="${includes.unqualified}" prefix="fast-infoset"/>
       <zipfileset src="${dir.lib}/geronimo-annotation_1.0_spec_1.1.1.jar" excludes="${includes.unqualified}" prefix="geronimo"/>
       <zipfileset src="${dir.lib}/jaxb-api_2.1.jar" excludes="${includes.unqualified}" prefix="jaxb"/>
