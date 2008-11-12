@@ -28,7 +28,6 @@ package org.openadaptor;
 
 /**
  * Utility class to allow launch of Adaptors directly from jar files.
- * THIS IS STILL A PROTOTYPE CLASS - DO NOT USE
  * @author higginse
  *
  */

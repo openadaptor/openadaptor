@@ -50,8 +50,6 @@ import javax.swing.filechooser.FileFilter;
 /**
  * Launch class for Openadaptor Adaptor instances.
  * <br>
- * <B>CURRENTLY THIS IS A PROTOTYPE AND NOT FOR PRODUCTION USE</B>
- * <br>
  * The Launcher will work as follows:
  * <br>
  * It will establish a classpath based on the value of System property 
@@ -162,12 +160,18 @@ public class Launcher implements Runnable {
         }
       }
       catch(Throwable t) { //If it can't do GUI, then we just give up on it.
-        log.warn("Failed to select config vi GUI dialog - "+t.getMessage());
+        log.warn("Failed to select config via GUI dialog - "+t.getMessage());
       }
       notifyAll(); //Notify waiting threads that the UI is done.
     }
   }
 
+  /**
+   * Get commandline arguments from user via GUI or command line.
+   * This will attempt to Launch a GUI to prompt the user for Launch arguments.
+   * If this fails, it will attempt to us stdin instead.
+   * @return String[] containing arguments as if they were provided on the command line
+   */
   private String[] promptForLaunchArgs() {
     final List chooserArgs=new ArrayList();
     String[] args=null;
@@ -385,10 +389,10 @@ public class Launcher implements Runnable {
   }
 
   /**
-   * @param args
+   * openadaptor application entry point
+   * @param args command line arguments for adaptor
    */
   public static void main(String[] args) {
-    System.err.println("THIS PROTOTYPE CLASS IS NOT YET READY FOR PRODUCTION USE");
     new Launcher(args).run();
   }
 
