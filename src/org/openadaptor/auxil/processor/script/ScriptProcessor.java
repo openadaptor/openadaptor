@@ -248,7 +248,8 @@ public class ScriptProcessor extends Component implements IDataProcessor {
       scriptEngine.put(dataBinding, data);
       if (compiledScript != null) {
         lastResult = compiledScript.eval();
-      } else {
+      } 
+      else {
         if (script != null) {
           lastResult = scriptEngine.eval(script);
         } 
@@ -267,7 +268,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
       }
       return (Object[])data;
     } catch (ScriptException e) {
-      throw new ProcessingException("failed to compile script, " + e.getMessage()
+      throw new ProcessingException("failed to execute script, " + e.getMessage()
           + " line " + e.getLineNumber() + " col " + e.getColumnNumber(), e, this);
     } catch (FileNotFoundException e) {
       throw new ConnectionException("failed to load script file, " + e.getMessage()

@@ -86,6 +86,7 @@ Miscellaneous
  
  * Tutorial modified slightly (added links to clarify hsql setup for hospital examples).
  
+ * Fixed typo in ScriptProcessor (it logged failed script execution as failed script compilation).
 Bug Fixes
 =========
 
