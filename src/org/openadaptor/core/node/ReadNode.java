@@ -29,11 +29,13 @@ package org.openadaptor.core.node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.*;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.lifecycle.IRunnable;
 import org.openadaptor.core.lifecycle.State;
+import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.transaction.ITransaction;
 import org.openadaptor.core.transaction.ITransactionInitiator;
@@ -82,12 +84,18 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   private Object prevReaderContext;
   
+  /** Metrics associated with this node. */
+  private IComponentMetrics metrics = (IComponentMetrics) ComponentMetricsFactory.newReaderMetrics(this);
+  
   public ReadNode() {
-    super();
+    this(null);
   }
 
   public ReadNode(String id) {
     super(id);
+    /* Substitute Node's metrics with own */
+    super.setMetricsEnabled(false);
+    super.setMetrics(metrics);
   }
 
   public ReadNode(final String id, final IReadConnector connector) {
@@ -281,5 +289,4 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
   public Throwable getExitError() {
     return exitThrowable;
   }
-
 }

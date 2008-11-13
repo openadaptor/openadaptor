@@ -63,8 +63,10 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   public    static final String HETEROGENEOUS_TYPES = "heterogeneous_types";
   private   static final String MILLISECONDS = "ms";
   protected static final String UNKNOWN = "Unknown";
+  protected static final long   UNKNOWN_LONG = -1;
   protected static final String NONE = "None";
-  private   static final String NOT_APPLICABLE = "N/A";
+  protected static final long   NONE_LONG = 0;
+  protected static final String NOT_APPLICABLE = "N/A";
   protected static final String MESSAGES_OF_TYPE = " message(s) of type ";
   private   static final String LESS_THAN_ONE =  "less than 1";
   protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
@@ -76,29 +78,29 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   
   protected Map outputMsgCounter = new HashMap();
   
-  long minProcessTime = -1;
+  long minProcessTime = UNKNOWN_LONG;
   
-  long maxProcessTime = -1;
+  long maxProcessTime = UNKNOWN_LONG;
   
-  long lastProcessTime = -1;
+  long lastProcessTime = UNKNOWN_LONG;
   
-  long totalProcessTime = 0;
+  long totalProcessTime = NONE_LONG;
   
-  long outputMsgs = 0;
+  long outputMsgs = NONE_LONG;
   
-  long discardedMsgs = 0;
+  long discardedMsgs = NONE_LONG;
   
-  long exceptionMsgs = 0;
+  long exceptionMsgs = NONE_LONG;
   
   protected Date processStartTime;
   
   protected Date processEndTime;
   
-  long minIntervalTime = -1;
+  long minIntervalTime = UNKNOWN_LONG;
   
-  long maxIntervalTime = -1;
+  long maxIntervalTime = UNKNOWN_LONG;
   
-  long totalIntervalTime = 0;
+  long totalIntervalTime = NONE_LONG;
   
   /** When the component last chagned state to STARTED */
   Date lastStarted = null;
@@ -191,7 +193,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       if(maxIntervalTime<intervalTime){
         maxIntervalTime=intervalTime;
       }
-      if(minIntervalTime>intervalTime || minIntervalTime==-1){
+      if(minIntervalTime>intervalTime || minIntervalTime==UNKNOWN_LONG){
         minIntervalTime=intervalTime;
       }
     }
@@ -258,7 +260,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       if(maxProcessTime<processTime){
         maxProcessTime=processTime;
       }
-      if(minProcessTime>processTime || minProcessTime==-1){
+      if(minProcessTime>processTime || minProcessTime==UNKNOWN_LONG){
         minProcessTime=processTime;
       }
     }
@@ -473,7 +475,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       sb.append(LESS_THAN_ONE);
       sb.append(MILLISECONDS);
     }
-    else if(duration==-1){
+    else if(duration==UNKNOWN_LONG){
       sb.append(NOT_APPLICABLE);
     }
     else{
@@ -488,7 +490,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       sb.append(LESS_THAN_ONE);
       sb.append(MILLISECONDS);
     }
-    else if(duration==-1){
+    else if(duration==UNKNOWN_LONG){
       sb.append(NOT_APPLICABLE);
     }
     else{
@@ -497,7 +499,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       sb.append(formatDuration(durationMin));
       sb.append(", max: ");
       sb.append(periodFormatter.print(new Period(durationMax)));
-      if(durationLast!=-1){
+      if(durationLast!=UNKNOWN_LONG){
         sb.append(", last: ");
         sb.append(formatDuration(durationLast));
       }
@@ -543,15 +545,15 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @see IComponentMetrics#getProcessTimAvg()
    */
   public long getProcessTimeAvg(){
-    if(maxProcessTime==-1){
+    if(maxProcessTime==UNKNOWN_LONG){
       /* Hasn't processed anything yet */
-      return -1;
+      return UNKNOWN_LONG;
     }
     long msgCount = getInputMsgsCount();
     if(currentlyProcessing){
       msgCount--;
     }
-    long timeAvgMs = -1;
+    long timeAvgMs = UNKNOWN_LONG;
     if(msgCount!=0){
       timeAvgMs = (long) (totalProcessTime/msgCount);
     }  
@@ -562,15 +564,15 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @see IComponentMetrics#getIntervalTimeAvg()
    */
   public long getIntervalTimeAvg(){
-    if(maxIntervalTime==-1){
+    if(maxIntervalTime==UNKNOWN_LONG){
       /* Hasn't processed at least 2 messages yet */
-      return -1;
+      return UNKNOWN_LONG;
     }
     long intervalsCount = getInputMsgsCount() - 1;
     if(currentlyProcessing){
       intervalsCount--;
     }
-    long timeAvgMs = -1;
+    long timeAvgMs = UNKNOWN_LONG;
     if(intervalsCount!=0){
       timeAvgMs = (long) (totalIntervalTime/intervalsCount);
     }  
@@ -584,7 +586,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     if(!enabled){
       return METRICS_DISABLED;
     }
-    if(maxProcessTime==-1){
+    if(maxProcessTime==UNKNOWN_LONG){
       /* Hasn't processed anything yet */
       return UNKNOWN;
     }
@@ -599,11 +601,11 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     if(!enabled){
       return METRICS_DISABLED;
     }
-    if(maxIntervalTime==-1){
+    if(maxIntervalTime==UNKNOWN_LONG){
       return UNKNOWN;
     }
     long timeAvgMs = getIntervalTimeAvg();
-    return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime, -1);
+    return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime, UNKNOWN_LONG);
   }
 
   /**

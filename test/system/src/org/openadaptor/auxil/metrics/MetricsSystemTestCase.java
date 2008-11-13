@@ -49,14 +49,11 @@ import junit.framework.TestCase;
 public class MetricsSystemTestCase extends TestCase {
 
   private static final String RESOURCE_LOCATION = "test/system/src/";
-  
   private static final String ADAPTOR_1 = "metrics-adaptor1.xml";
-  
   private static final String ADAPTOR_2 = "metrics-adaptor2.xml";
-  
   private static final String ADAPTOR_3 = "metrics-adaptor3.xml";
-  
   private static final String ADAPTOR_4 = "metrics-adaptor4.xml";
+  private static final String ADAPTOR_5 = "metrics-adaptor5.xml";
   
   /**
    * Adaptor with a reader and a writer. Sends one message (String). 
@@ -197,9 +194,13 @@ public class MetricsSystemTestCase extends TestCase {
       IMessageProcessor mProcessor = (IMessageProcessor) it.next();
       if(mProcessor instanceof IRecordableComponent){
         IRecordableComponent recComp = (IRecordableComponent) mProcessor;
-        if(recComp instanceof ReadNode || recComp instanceof WriteNode){
+        if(recComp instanceof WriteNode){
           assertEquals(recComp.getMetrics().getExceptionMsgCount(), 0);
           assertEquals(recComp.getMetrics().getDiscardsAndExceptions(), ComponentMetrics.NONE);
+        }
+        else if(recComp instanceof ReadNode){
+          assertEquals(recComp.getMetrics().getExceptionMsgCount(), 0);
+          assertEquals(recComp.getMetrics().getDiscardsAndExceptions(), ReaderMetrics.NOT_APPLICABLE_FOR_READERS);
         }
         else{
           assertEquals(recComp.getMetrics().getExceptionMsgCount(), 1);	
@@ -223,4 +224,25 @@ public class MetricsSystemTestCase extends TestCase {
     assertTrue(Arrays.equals(metrics.getOutputMsgTypes(), new String[]{"java.lang.String", "java.lang.String"}));
   }
   
+  /**
+   * Recreates a problem found in testing, where an adaptor reads one line from a file,
+   * processes it and the reader reports negative between message time interval (instead of unknown).
+   */
+  public void testTimeInterval() throws Exception {
+    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_5);
+    assertTrue(springAdaptor.getAdaptor().getExitCode()==0);
+    IComponentMetrics metrics = (IComponentMetrics) springAdaptor.getAdaptor().getMetrics();
+    assertEquals(metrics.getIntervalTimeAvg(), -1);
+    assertEquals(metrics.getIntervalTimeMin(), -1);
+    assertEquals(metrics.getIntervalTimeMax(), -1);
+    for(Iterator it= springAdaptor.getAdaptor().getMessageProcessors().iterator(); it.hasNext(); ){
+      IMessageProcessor mProcessor = (IMessageProcessor) it.next();
+      if(mProcessor instanceof IRecordableComponent){
+        metrics = ((IRecordableComponent) mProcessor).getMetrics();
+        assertEquals(metrics.getIntervalTimeAvg(), -1);
+        assertEquals(metrics.getIntervalTimeMin(), -1);
+        assertEquals(metrics.getIntervalTimeMax(), -1);
+      }
+    }
+  }
 }

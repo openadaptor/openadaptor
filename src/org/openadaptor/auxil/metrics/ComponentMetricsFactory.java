@@ -62,14 +62,27 @@ public class ComponentMetricsFactory {
    */
   public static IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
     IComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
+    updateAggregateMetrics(recordableComponent, componentMetrics);
+    return componentMetrics;
+  }
+  
+  private static void updateAggregateMetrics(IRecordableComponent recordableComponent, IComponentMetrics metrics){
     if(recordableComponent instanceof ILifecycleComponent){
-      ((ILifecycleComponent) recordableComponent).addListener(componentMetrics);
+      ((ILifecycleComponent) recordableComponent).addListener(metrics);
     }
     for(Iterator it = aggregateMetricsCol.iterator(); it.hasNext();){
       AggregateMetrics aggregateMetrics = (AggregateMetrics) it.next();
-      aggregateMetrics.addComponentMetrics(componentMetrics);
+      aggregateMetrics.addComponentMetrics(metrics);
     }
-    return componentMetrics;
+  }
+
+  /**
+   * Creates an instance of {@link ReaderMetrics}.
+   */
+  public static IComponentMetrics newReaderMetrics(IRecordableComponent recordableComponent){
+   IComponentMetrics readerMetrics = new ReaderMetrics(recordableComponent);
+   updateAggregateMetrics(recordableComponent, readerMetrics);
+   return readerMetrics;
   }
   
   /**

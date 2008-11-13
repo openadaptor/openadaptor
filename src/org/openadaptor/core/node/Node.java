@@ -255,6 +255,10 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
     return this;
   }
   
+  protected void setMetrics(IComponentMetrics metrics){
+    this.metrics = metrics;
+  }
+  
   /**
    * @return inner class instance that implements Component.AdminMBean.
    */
