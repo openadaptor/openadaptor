@@ -66,7 +66,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   protected static final String NONE = "None";
   private   static final String NOT_APPLICABLE = "N/A";
   protected static final String MESSAGES_OF_TYPE = " message(s) of type ";
-  private   static final String LESS_THAN_ONE =  "less than 1 ";
+  private   static final String LESS_THAN_ONE =  "less than 1";
   protected static final String METRICS_DISABLED = "Metrics recording DISABLED";
   private   static final String SEPARATOR = ", ";
 
@@ -427,6 +427,9 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * Collates numeric data about messages that left the component, in human readable format.
    */
   public String getOutputMsgs() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
     StringBuffer outputMsgs = new StringBuffer();
     long [] outMsgCounts = getOutputMsgCounts();
     if(outMsgCounts.length == 0){
@@ -448,6 +451,9 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
    * @see ISimpleComponentMetrics#getDiscardsAndExceptions()
    */
   public String getDiscardsAndExceptions() {
+    if(!enabled){
+      return METRICS_DISABLED;
+    }
 	StringBuffer exDisMsgs = new StringBuffer();  
 	if(getExceptionMsgCount()==0 && getDiscardedMsgCount()==0){
 	  exDisMsgs.append(NONE);	
@@ -476,7 +482,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     return sb.toString();
   }
 
-  private String formatDuration(long duration, long durationMin, long durationMax){
+  private String formatDuration(long duration, long durationMin, long durationMax, long durationLast){
     StringBuffer sb = new StringBuffer();
     if(duration==0){
       sb.append(LESS_THAN_ONE);
@@ -491,6 +497,10 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       sb.append(formatDuration(durationMin));
       sb.append(", max: ");
       sb.append(periodFormatter.print(new Period(durationMax)));
+      if(durationLast!=-1){
+        sb.append(", last: ");
+        sb.append(formatDuration(durationLast));
+      }
       sb.append(")");
     }
     return sb.toString();
@@ -579,7 +589,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       return UNKNOWN;
     }
     long timeAvgMs = getProcessTimeAvg();
-    return formatDuration(timeAvgMs, minProcessTime, maxProcessTime);
+    return formatDuration(timeAvgMs, minProcessTime, maxProcessTime, lastProcessTime);
   }
   
   /**
@@ -593,7 +603,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
       return UNKNOWN;
     }
     long timeAvgMs = getIntervalTimeAvg();
-    return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime);
+    return formatDuration(timeAvgMs, minIntervalTime, maxIntervalTime, -1);
   }
 
   /**

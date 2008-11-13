@@ -346,19 +346,20 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       exitCode = 1;
       exitErrors.add(ex);
     } finally {
+      /* handle metrics */
+      if(metrics!=null){
+        metrics.recordComponentStop();
+        if(metricsPrinter!=null){
+          metricsPrinter.print(metrics, "Adaptor");
+        }
+      }
+      
       /* if the adaptor is already stopping the shutdown hook needs to be removed. */
       if (state == State.STOPPING) {
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
         hasShutdownHooks = false;
       }
       state = State.STOPPED;
-      /* handle metrics */
-      if(metrics!=null){
-        metrics.recordComponentStop();
-      }
-      if(metricsPrinter!=null && metrics!=null && metrics.isMetricsEnabled()){
-        metricsPrinter.print(metrics, "Adaptor");
-      }
       log.info("Adaptor stopped normally.");
     }
 
