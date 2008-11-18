@@ -60,7 +60,7 @@ public class ComponentMetricsFactory {
    * @param recordableComponent the component for which metrics are created.
    * @return an instance of {@link ComponentMetrics}.
    */
-  public static IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
+  public static synchronized IComponentMetrics newStandardMetrics(IRecordableComponent recordableComponent){
     IComponentMetrics componentMetrics = new ComponentMetrics(recordableComponent);
     updateAggregateMetrics(recordableComponent, componentMetrics);
     return componentMetrics;
@@ -79,7 +79,7 @@ public class ComponentMetricsFactory {
   /**
    * Creates an instance of {@link ReaderMetrics}.
    */
-  public static IComponentMetrics newReaderMetrics(IRecordableComponent recordableComponent){
+  public static synchronized IComponentMetrics newReaderMetrics(IRecordableComponent recordableComponent){
    IComponentMetrics readerMetrics = new ReaderMetrics(recordableComponent);
    updateAggregateMetrics(recordableComponent, readerMetrics);
    return readerMetrics;
@@ -91,7 +91,7 @@ public class ComponentMetricsFactory {
    * @param recordableComponent the component for which metrics are created.
    * @return an instance of {@link AggregateMetrics}.
    */
-  public static IComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
+  public static synchronized IComponentMetrics newAggregateMetrics(IRecordableComponent recordableComponent){
     AggregateMetrics aggregateMetrics = new AggregateMetrics(recordableComponent);
     aggregateMetricsCol.add(aggregateMetrics);
     for(Iterator it = standardMetricsCol.iterator(); it.hasNext();){

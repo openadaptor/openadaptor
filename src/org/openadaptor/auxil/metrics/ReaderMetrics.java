@@ -38,7 +38,7 @@ import org.openadaptor.core.recordable.IRecordableComponent;
  */
 public class ReaderMetrics extends ComponentMetrics{
 
-  protected static final String NOT_APPLICABLE_FOR_READERS = "N/A for readers";
+  protected static final String NOT_APPLICABLE_FOR_READERS = "N/A for ReadConnectors";
   
   /**
    * Constructor.
@@ -48,75 +48,78 @@ public class ReaderMetrics extends ComponentMetrics{
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public String getDiscardsAndExceptions() {
     return NOT_APPLICABLE_FOR_READERS;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public String getInputMsgs() {
     return NOT_APPLICABLE_FOR_READERS;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public String getIntervalTime() {
     return NOT_APPLICABLE_FOR_READERS;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public String getProcessTime() {
     return NOT_APPLICABLE_FOR_READERS;
-  }
+  } 
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getIntervalTimeAvg() {
     return UNKNOWN_LONG;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getIntervalTimeMax() {
     return UNKNOWN_LONG;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getIntervalTimeMin() {
     return UNKNOWN_LONG;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getProcessTimeAvg() {
     return UNKNOWN_LONG;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getProcessTimeLast() {
     return UNKNOWN_LONG;
   }
 
   /**
-   * @return info that this isn't applicable to readers
+   * @return message that this method is not applicable to ReadConnectors
    */
   public long getProcessTimeMax() {
     return UNKNOWN_LONG;
   }
 
+  /**
+   * @return message that this method is not applicable to ReadConnectors
+   */
   public long getProcessTimeMin() {
     return UNKNOWN_LONG;
   }
