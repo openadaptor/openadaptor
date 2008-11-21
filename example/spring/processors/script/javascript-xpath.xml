@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id:$
-  $HeadURL:$
+  $Id$
+  $HeadURL$
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -81,22 +81,29 @@
   </bean>
 
   <bean id="Accessor" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
-    <description>Add a Simplerecord accessor that understands simplified xpath expressions.</description>
+    <description>Add a SimpleRecord accessor that understands simplified XPath expressions.</description>
     <property name="simpleRecordAccessor">
       <bean class="org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
     </property>
   </bean>
-
+  
   <bean id="AddOpinion" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
-    <description>Add an opinion including the title if present.</description>
+    <description>
+      Add an opinion including the title if present.
+      Note that it can only cope with a single book as Dom4jSimpleRecordAccessor only supports
+      a subset of simplified XPath expressions.
+      
+      Script is both legal javascript and legal groovy (defaults to javascript unless you set the language property).
+    </description>
+    <!-- <property name="language" value="groovy" /> -->
     <property name="script">
-      <value>
+      <value><![CDATA[
       if( oa_data.get('book/title') == null ) {
         oa_data.put( 'opinion', 'Can\'t tell you what this book is called but it is indeed a fine book');
       } else {
         oa_data.put( 'opinion', (oa_data.get('book/title') + ' is indeed a fine book' ) );
       }
-      </value>
+      ]]></value>
     </property>
   </bean>
   

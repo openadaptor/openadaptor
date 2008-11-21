@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: javascript-xpath.xml 1282 2008-03-05 14:06:03Z higginse $
+  $HeadURL: https://www.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/script/javascript-xpath.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This adaptor does the following...
+    
+    * reads xml from file
+    * validates the xml (traps errors and forwards them to stdout)
+    * language sensitively adds an 'opinion' attribute to each book in the box using the 'title' contents if available
+    * writes to stdout
+    
+  It's intended to show you how to use Ruby scripting and manipulate XML.
+  The validation is not strictly necessary but useful for this example.
+    
+  Run it like this...
+    
+    java -Djruby.home=${RUBY_HOME} org.openadaptor.spring.SpringAdaptor -config ruby-xpath.xml 
+    
+  You need the following in your classpath 
+
+    jruby/lib/jruby-engine.jar
+    jruby/lib/jruby.jar
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  The ruby-engine provides JSR223 scripting integration.
+     
+  Once it is running it will read input from the configured file (input/inputboxes.xml)
+  and it will insert a book review opinion for each book in each box. 
+    
+  This example builds upon javascript-xpath.xml, as when using ruby we have much richer XML support
+  and can handle things like multiple nested elements of the same type.
+  
+  The example shows how "oa_data" is automatically bound to the incoming/outgoing record, and can
+  be read/assigned from within the ruby script.
+  We also demonstrate creating additional bindings from bean properties to ruby variables
+  (using "lang" as an example) including how to detect when no setting for this variable has
+  been injected into the ruby script.
+  
+  The same work is done by groovy-xpath.xml, ruby-xpath.xml and jython-xpath.xml.
+  The implementations each use DOM/XPath libraries available in their standard distributions,
+  and so their performance is dependent both on the speed of the scripting runtime and of those
+  libraries.
+  So direct comparisons over their speed is not representative, but in this particular case
+  groovy was significantly faster (jython was a bit faster than ruby but the ruby code used
+  is much cleaner than the jython code used).
+  We've left the metrics in for you to see for yourself -- note that there is a significant
+  set up overhead when using scripting so you will want to push through hundreds or thousands
+  of boxes to get representative timings (rather than the single box in the example file) and
+  you will also want to redirect stdout to file.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Validator"/>
+            <ref bean="AddOpinion"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+        <property name="exceptionProcessor" ref="ErrorWriter"/>
+        <property name="metricsEnabled" value="true"/> 
+      </bean>
+    </property>
+    <!-- <property name="metricsPrinter" ref="adaptorMetricsPrinter"/> -->
+    <property name="metricsPrinter" ref="allMetricsPrinter"/>
+  </bean>    
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read entire contents of input file</description>
+     <property name="filename" value="input/inputboxes.xml"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.RegexMultiLineReader">
+        <property name="startLineRegex" value="\w*&lt;box&gt;"/>
+        <property name="endLineRegex" value="\w*&lt;/box&gt;"/>
+        <property name="includeRecordDelimiters" value="true"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>
+      This processor validates the data as an xml string.
+      Ensure that the xml has book as root.
+    </description>
+    <property name="schemaURL" value="input/bookbox.xsd"/>
+  </bean>
+
+  <bean id="AddOpinion" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Add an opinion including the title if present.</description>
+    <property name="language" value="jruby" />
+    <property name="additionalBindings">
+      <description>Data objects to bind to Ruby variables (demonstrates parameterising script).</description>
+      <map>
+        <entry key="lang" value="fr_fr" />
+      </map>
+    </property>
+    <property name="script">
+      <value><![CDATA[
+      # XML parse the input string:
+      require 'rexml/document'
+      include REXML    
+      doc = Document.new($oa_data)
+      
+      # Default the reviewing language (if not bound to a value by a bean property definition):
+      $lang = 'en_gb' if not $lang
+      
+      # Update the parsed XML model by iterating over the book elements:
+      doc.each_element("//book") { |book|
+        # Make sure there is an opinion element in our chosen language:
+        opinion = book.elements["opinion[@lang='#{$lang}']"]
+        if not opinion
+          opinion = book.add_element("opinion", {"lang" => $lang})
+        end
+        
+        # Find out the most appropriate title given our chosen language:
+        bookTitle = book.elements["title[@lang='#{$lang}']"]
+        if not bookTitle
+          bookTitle = book.elements["title[@lang='en_us']"]
+          if not bookTitle
+            bookTitle = book.elements["title"]
+          end
+        end
+
+        # Update the text body of the opinion element in our chosen language:
+        if not bookTitle
+          opinion.text = "Can\'t tell you what this book is called but it is indeed a fine book"
+        else
+          opinion.text = bookTitle[0].value + " is indeed a fine book"
+        end
+      }
+
+      # Write the updated XML model out as a string (did not work when I tried to write direct
+      # to $oa_data and in any case doc.write() appends so we need to set it to empty string):
+      result = ""
+      doc.write(result, indent=2)
+      $oa_data = result
+      ]]></value>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+  <bean id="ErrorWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+  <!--
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Embed this in your config to expose jmx interface via http and rmi.</description>
+    <property name="port" value="8082"/>
+  </bean>
+   -->
+    
+  <bean id="adaptorMetricsPrinter" class="org.openadaptor.auxil.metrics.Log4JSingleMetricsPrinter">
+    <description>
+    Prints adaptor's metrics to the log4j logger.
+    To define your own way of printing/handling metrics implement the
+    org.openadaptor.core.recordable.IMetricsPrinter interface.
+    </description>
+  </bean>
+ 
+  <bean id="allMetricsPrinter" class="org.openadaptor.auxil.metrics.Log4JAggregateMetricsPrinter">
+    <description>
+    Prints all metrics (the adaptor's and all its recordable components) to the log4j logger.
+    To define your own way of printing/handling metrics implement the
+    org.openadaptor.core.recordable.IMetricsPrinter interface.
+    </description>
+  </bean>
+    
+</beans>
