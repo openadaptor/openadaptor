@@ -37,6 +37,23 @@ Connectors
    values for message properties or when an XML payload is supplied xpath to extract a 
    message property value from the XML document itself. This component was contributed
    by Martin Mooney.    
+   
+ * JMSConnection now has a new property 'useXa' which defaults to 'false'. JMSConnection
+   will no longer allow xa transactions be managed by openadaptor's transaction managers
+   unless set to 'true'. This breaks backwards compatibility as previously the JMSConnection 
+   attempted to derive the transaction type automatically. For non-XA transactions everything 
+   works as before and 'useXa' can be effectively ignored.
+   
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.2                   |             OA 3.4.3                       |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | Rely entirely on ConnectionFactory | As well as ConnectionFactory, JMSConnection|  
+   | config to determine transaction    | must also have property 'useXa' set true.  |
+   | type. XA Transactions take priority| Without this only non-XA transactioning    |
+   | over other transaction config      | can be used. Default is 'false'.           | 
+   | options                            |                                            | 
+   |---------------------------------------------------------------------------------|   
 
 Processors
 ==========
@@ -99,6 +116,8 @@ SC72: The value for mqContextUserAndPassword was not being set by MqConnection.
 
 SC73: Correct recognition of JVM 1.6 in registration.
 
+SC79: Added property 'useXa' to JMSConnection rather than simply rely on the ConnectionFactory 
+      config.
 
 =================================================
 openadaptor3 production 3.4.2 Release Notes
