@@ -85,6 +85,10 @@ Examples
    
  * Added an example of an adaptor with enabled metrics recording 
    (example\spring\adaptor\metrics.xml).  
+   
+ * New script examples: example\spring\processors\script\ruby-xpath.xml, groovy-xpath.xml,
+   jython-xpath.xml (usage will require additional libraries which are not bundled with 
+   Openadaptor). 
 
 Miscellaneous
 =============
