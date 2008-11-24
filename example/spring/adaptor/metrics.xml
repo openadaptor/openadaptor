@@ -8,16 +8,20 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <description><![CDATA[  
   
-  Illustrates how to enable adaptors metrics, how to view them via a JMX console and how to 
-  have them printed to an external resource, such as the log file. 
+  Illustrates how to:
+    * enable adaptors metrics
+    * view metrics via a JMX console 
+    * print metrics to an external resource, such as the log file. 
   
   The adaptor does the following:
     * reads delimited records from file
     * stops processing in an 'inspector' and waits for a user action 
       (to introduce delay). Graphical environment/X server necessary.
-    * converts delmited input into a map
+    * converts delmited data into a map
     * converts map to xml
     * writes to the console
+    * uses a console based exception processor
+    * exposes JMX interface  
   
 Run it like this...
 
@@ -37,11 +41,15 @@ Run it like this...
   The optional vm argument -Dcom.sun.management.jmxremote will also permit the adaptor to be monitored
   locally via jconsole (1.5+).
   
-  Once the adaptor is running open at watch the JMX console (http://localhost:8082) for either 
-  the Adaptor bean or the individual components in the pipeline (their metrics are named <component_name>-metrics).
+  Once the adaptor is running open at watch the JMX console (http://localhost:8082), best either 
+  the Adaptor bean or the individual components in the pipeline (their metrics are named 
+  <component_name>-metrics).
   
   The 3rd input message has incorrectly formatted to cause (and show in metrics) an exception. 
-    
+  
+  Watch log/console output when the adaptor exits, adaptor-level metrics will be printed.
+   
+  Change the metricsPrinter property on the Adaptor to allMetricsPrinter, re-run the adaptor.  
   ]]></description>
   
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
