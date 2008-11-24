@@ -493,6 +493,9 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
     else if(duration==UNKNOWN_LONG){
       sb.append(NOT_APPLICABLE);
     }
+    else if(duration == durationMin){
+      sb.append(formatDuration(duration));
+    }
     else{
       sb.append(periodFormatter.print(new Period(duration)));
       sb.append(" (min: ");
