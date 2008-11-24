@@ -158,6 +158,9 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
    * shutdown hook
    */
   private Thread shutdownHook = new ShutdownHook();
+  
+  /** Indicates invocation of the shutdown hook */
+  private boolean shutdownInProgress = false;
 
   private long timeoutMs = DEFAULT_TIMEOUT_MS;
 
@@ -316,6 +319,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       Runtime.getRuntime().removeShutdownHook(shutdownHook);  
       Runtime.getRuntime().addShutdownHook(shutdownHook);
       hasShutdownHooks = true;
+      shutdownInProgress = false;
       
       state = State.STARTED;
       validate();
@@ -354,8 +358,11 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
         }
       }
       
-      /* if the adaptor is already stopping the shutdown hook needs to be removed. */
-      if (state == State.STOPPING) {
+      /* 
+       * if the adaptor is already stopping (and stop not triggered via shutdown hook) 
+       * the shutdown hook needs to be removed. 
+       */
+      if (state == State.STOPPING && !shutdownInProgress) {
         Runtime.getRuntime().removeShutdownHook(shutdownHook);
         hasShutdownHooks = false;
       }
@@ -570,6 +577,7 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
     public void run() {
       log.info("shutdownhook invoked, calling exit()");
       try {
+        Adaptor.this.shutdownInProgress=true;
         Adaptor.this.exit(false);
       } catch (Throwable t) {
         log.error("uncaught error or exception", t);
