@@ -57,6 +57,8 @@
     <property name="connectionFactoryName" value="${jms.xats.connectionFactoryName.1}"/>
     <property name="username" value="${jms.username}"/>
     <property name="password" value="${jms.password}"/>
+    <!-- useXa must be set true otherwise the connection overrides the use of xa transactions -->
+    <property name="useXa" value="true"/>
   </bean>
 
   <!-- Reader that polls a jms queue -->
@@ -71,6 +73,8 @@
     <property name="connectionFactoryName" value="${jms.xaqs.connectionFactoryName.1}"/>
     <property name="username" value="${jms.username}"/>
     <property name="password" value="${jms.password}"/>
+    <!-- useXa must be set true otherwise the connection overrides the use of xa transactions -->
+    <property name="useXa" value="true"/>
   </bean>
   
   <!-- writer that publishes data onto a queue -->

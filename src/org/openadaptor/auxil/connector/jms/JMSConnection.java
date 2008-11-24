@@ -95,6 +95,8 @@ public class JMSConnection extends Component {
   private Context ctx;
 
   private Connection connection = null;
+  
+  private boolean useXa = false;
 
   // Connection Support
 
@@ -170,14 +172,31 @@ public class JMSConnection extends Component {
   }
 
   protected Session createSessionFor(boolean isTransacted, int acknowledgeMode) {
-    Session newSession;
+    Session newSession = null;
     try {
-      if (!isTransacted && (connection instanceof XAConnection)) {
-        newSession = ((XAConnection) connection).createXASession();
+      if (isUseXa()) {
+        if (isTransacted) {
+          if (connection instanceof XAConnection) {
+            log.info("Creating JMS XASession");
+            newSession = ((XAConnection) connection).createXASession();  
+          }
+          else {
+            log.error("JMSConnection configured to use XA but unable to create XASession.");
+            throw new ConnectionException("JMSConnection configured to use XA but unable to create XASession.", this);
+          }
+        } 
+        else {
+          log.info("Configured to use XA Transactions but Connector is not transacted. Defaulting to non-XA Session");
+        }
       }
       else {
+        log.info("Configured to use local transactions.");
+      }      
+      if(newSession == null) { // Got this far without creating an XASession so create a Session instead.
+        log.info("Creating JMS Session.");
         newSession = (connection.createSession(isTransacted, acknowledgeMode));
       }
+    
     } catch (JMSException jmse) {
       throw new ConnectionException("Unable to create session from connection", jmse, this);
     }
@@ -266,7 +285,7 @@ public class JMSConnection extends Component {
     if (username == null || username.compareTo("") == 0) {
       useUsername = false;
     }
-    if (factory instanceof XAConnectionFactory) {
+    if (isUseXa() && factory instanceof XAConnectionFactory) {
       if (useUsername) {
         newConnection = ((XAConnectionFactory) factory).createXAConnection(username, password);
       } else {
@@ -406,6 +425,16 @@ public class JMSConnection extends Component {
   protected String getClientID() {
     return clientID;
   }
+
+  public boolean isUseXa() {
+    return useXa;
+  }
+
+  public void setUseXa(boolean useXa) {
+    this.useXa = useXa;
+  }
+  
+  
   // End Bean Properties
 
 

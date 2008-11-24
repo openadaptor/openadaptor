@@ -38,6 +38,7 @@ import org.openadaptor.core.exception.RecordFormatException;
 import org.openadaptor.core.transaction.ITransactional;
 
 import javax.jms.*;
+
 import java.util.List;
 
 /**
@@ -285,11 +286,17 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
    */
   private Object createTransactionalResource(Session newSession) {
     Object resource = null;
-    if (isTransacted && isTransactedSession(newSession)) {
-      resource = new JMSTransactionalResource(newSession);
+    if (isTransacted) {
+      if (!jmsConnection.isUseXa() && isTransactedSession(newSession)) {
+        log.info(this.getId()+" creating local transaction resource.");
+        resource = new JMSTransactionalResource(newSession);
+      } else if (jmsConnection.isUseXa() && newSession instanceof XASession) {
+        log.info(this.getId()+" supplying XAResouce as transaction resource.");
+        resource = ((XASession) newSession).getXAResource();
+      }
     }
-    else if (newSession instanceof XASession) {
-      resource = ((XASession) newSession).getXAResource();
+    else {
+      log.info("JMSReadConnector ["+getId()+"] not transacted. Not creating transaction resource.");
     }
     return resource;
   }

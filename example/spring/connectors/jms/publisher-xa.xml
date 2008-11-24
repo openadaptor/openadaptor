@@ -72,6 +72,8 @@
     <property name="connectionFactoryName" value="${jms.xatp.connectionFactoryName.1}"/>
     <property name="username" value="${jms.username}"/>
     <property name="password" value="${jms.password}"/>
+    <!-- useXa must be set true otherwise the connection overrides the use of xa transactions -->
+    <property name="useXa" value="true"/>
   </bean>
   
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">

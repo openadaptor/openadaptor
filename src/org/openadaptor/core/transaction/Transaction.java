@@ -31,7 +31,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.node.WriteNode;
 
 /**
  * Basic (and default) implementation of {@link ITransaction} that collects and invokes
@@ -41,6 +44,8 @@ import org.openadaptor.core.exception.ConnectionException;
  * 
  */
 public class Transaction extends AbstractTransaction {
+  
+  private static final Log log = LogFactory.getLog(Transaction.class);
 
   private boolean rollbackOnly = false;
   private List resources =  new ArrayList();
@@ -86,15 +91,22 @@ public class Transaction extends AbstractTransaction {
   }
 
   public void enlist(Object resource) {
-    if (resource instanceof ITransactionalResource) {
-      synchronized (LOCK) {
-        if (!resources.contains(resource)) {
-          ((ITransactionalResource)resource).begin();
-          resources.add(resources.size(), resource);
+    if (resource != null) {
+      if (resource instanceof ITransactionalResource) {
+        synchronized (LOCK) {
+          if (!resources.contains(resource)) {
+            ((ITransactionalResource) resource).begin();
+            resources.add(resources.size(), resource);
+          }
         }
+      } else {
+        throw new RuntimeException(
+            "attempt to enlist resource that is not an instance of "
+                + ITransactionalResource.class.getName()
+                + " it is an instance of " + resource.getClass().getName());
       }
     } else {
-      throw new RuntimeException("attempt to enlist resource that is not an instance of " + ITransactionalResource.class.getName());
+      log.warn("Not enlisting a NULL transaction resource.");
     }
   }
 
