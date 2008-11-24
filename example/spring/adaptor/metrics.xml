@@ -17,7 +17,7 @@
     * reads delimited records from file
     * stops processing in an 'inspector' and waits for a user action 
       (to introduce delay). Graphical environment/X server necessary.
-    * converts delmited data into a map
+    * converts delimited data into a map
     * converts map to xml
     * writes to the console
     * uses a console based exception processor

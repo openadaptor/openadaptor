@@ -10,8 +10,8 @@
 		<![CDATA[    
   This adaptor does the following...
     
-    * reads data from the console
-    * writes to file
+    * reads data from a file, line by line
+    * writes to file. Output file is rolled over if it's reached the rolloverSize 
     
   It is designed to illustrate the size-based rollover of the output file.
 
@@ -26,7 +26,7 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     
-  writes output to  file output/output.txt
+  writes output to the output/ folder.
   ]]>
 	</description>
 
@@ -38,15 +38,15 @@
 				</description>
 				<property name="processors">
 					<list>
-						<ref bean="Reader" />
-						<ref bean="Writer" />
+						<ref bean="reader" />
+						<ref bean="writer" />
 					</list>
 				</property>
 			</bean>
 		</property>
 	</bean>
 
-	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+	<bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
 	    <description>
 			This read connector reads lines from a file.
 		</description>
@@ -56,10 +56,14 @@
 		</property>
 	</bean>
 
-	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-		<description>This writer writes data to a file.</description>
+	<bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>
+		  This writer writes data to a file. Output file is rolled over if
+		  it has reached the 'rolloverSize'.
+		</description>
 		<property name="filename" value="output/output.txt" />
 		<property name="rolloverSize" value="10b"/>
+		<property name="append" value="true"/>
 	</bean>
 
 </beans>

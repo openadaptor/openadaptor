@@ -15,7 +15,8 @@
     * conversts to XML	
     * writes to file with a dynamically derived name
     
-  It is designed to illustrate the basic structure of a file reader/writer adaptor
+  It is designed to illustrate an adaptor with a file write connector that derives file names from 
+  message payload, using script.
 
   Run it like this...
     
