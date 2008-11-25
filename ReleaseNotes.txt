@@ -32,6 +32,15 @@ Connectors
    LoopingPollingReadConnectors or CronnablePollingReadConnectors need to be made
    accordingly. 
    
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.2                   |             OA 3.4.3                       |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | LoopingPollingReadConnectors and   | LoopingPollingReadConnectors and           |  
+   | CronnablePollingReadConnector:     | CronnablePollingReadConnector:             |
+   | property 'reconnect'               | property 'reconnectDelegateBetweenPolls'   |
+   |---------------------------------------------------------------------------------|   
+   
  * A new IMessageGenerator for generating JMS Messages has been added to the JMS Connector
    package. This class 'JMSPropertiesMessageGenerator' allows the definition of literal
    values for message properties or when an XML payload is supplied xpath to extract a 
