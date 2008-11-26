@@ -34,8 +34,9 @@
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
   
-  To test it fully you can either run the ws-writer.xml example which processes data by invoking
-  a webservice, or use any SOAP clients such as soapUI (http://www.soapui.org/).
+  To test it fully you can either run the ws-cxf-writer.xml or ws-xfire-writer.xml 
+  example which processes data by invoking a webservice, or use any SOAP clients 
+  such as soapUI (http://www.soapui.org/).
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

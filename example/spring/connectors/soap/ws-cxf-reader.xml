@@ -29,7 +29,7 @@
     lib/opt/cxf_2.1.jar
      
   To test the adaptor, the webservice it is connecting to needs to be running
-  (see the ws-xfire-server.xml example or invoke your own webservice). 
+  (see the ws-cxf-server.xml example or invoke your own webservice). 
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

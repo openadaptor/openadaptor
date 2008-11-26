@@ -18,7 +18,7 @@
 
   Run it like this...
     
-    java org.openadaptor.spring.SpringAdaptor -config ws-writer.xml
+    java org.openadaptor.spring.SpringAdaptor -config ws-cxf-writer.xml
     
   You need the following in your classpath
   
@@ -31,7 +31,7 @@
   
   Once it is running you need to type some data into the command line, for the
   processing to succeed, the webservice it is connecting to needs to be running
-  (see the ws-server.xml example). 
+  (see the ws-cxf-server.xml example). 
    
   Use JVM 1.5 only; CXF appears to have issues with any other JVM version. 
    
