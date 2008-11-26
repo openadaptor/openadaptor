@@ -47,7 +47,7 @@ import org.openadaptor.core.exception.ConnectionException;
  * Binds to a webservice endpoint and delivers data by calling a method
  * on this service.
  * 
- * This connector is now subsumed by the CXF based {@WebServiceCXFWriteConnector}.
+ * This connector is now subsumed by the CXF based {@link WebServiceCXFWriteConnector}.
  * 
  * @author perryj, Kris Lachor
  */

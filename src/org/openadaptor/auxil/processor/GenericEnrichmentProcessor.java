@@ -133,7 +133,7 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
    * Defaults to false.
    * 
    * @param discardInput 
-   * @todo unit/system test.
+   * todo: unit/system test.
    */
   public void setDiscardInput(boolean discardInput) {
     this.discardInput = discardInput;

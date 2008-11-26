@@ -545,7 +545,7 @@ public class ComponentMetrics implements IComponentMetrics, ILifecycleListener{
   }
   
   /**
-   * @see IComponentMetrics#getProcessTimAvg()
+   * @see IComponentMetrics#getProcessTimeAvg()
    */
   public long getProcessTimeAvg(){
     if(maxProcessTime==UNKNOWN_LONG){

@@ -231,7 +231,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
   
   /**
    * @return metrics associated with this Node.
-   * @see IRecordableComponent.
+   * @see IRecordableComponent
    */
   public IComponentMetrics getMetrics() {
     return metrics;
