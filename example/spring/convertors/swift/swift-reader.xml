@@ -68,7 +68,7 @@
 	</bean>
 
 	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
-		<description>Without a filenam configures, this will just write to the console (stdout)</description>
+		<description>Without a filename configured, this will just write to the console (stdout)</description>
 	</bean>
 
 </beans>
