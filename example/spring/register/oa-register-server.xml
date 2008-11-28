@@ -30,7 +30,8 @@
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.
   
-  Adaptors that wish to register require providing registration URL in registration.properties.
+  Other adaptors that wish to register require providing registration URL in their
+  lib/registration.properties
   ]]></description>
 
   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
