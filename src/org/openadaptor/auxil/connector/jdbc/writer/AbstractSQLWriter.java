@@ -67,6 +67,9 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   protected String[] outputColumns;
 
   private boolean batchSupport;
+  
+  //Potentially log database version info, but only once
+  private boolean debug_db_version_not_logged=true; //flag indicating db version info has not yet been logged
 
   /**
    * Initialise the writer.
@@ -391,11 +394,17 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    */
   protected int[] getStoredProcArgumentTypes(String storedProcName,Connection connection) throws SQLException {
     //Fix for #SC36: MapCallableStatementWriter misses first argument for Oracle databases
-    // Now it checks eacy columnType, and only includes IN or INOUT types.
+    // Now it checks each columnType, and only includes IN or INOUT types.
     // ToDo: Further validation of this approach. Perhaps OUT should also be included?
     DatabaseMetaData dmd = connection.getMetaData();
+    if (debug_db_version_not_logged && log.isDebugEnabled()) {
+      log.debug("      DB Name (version major/minor): "+dmd.getDatabaseProductName()+"("+dmd.getDatabaseMajorVersion()+"/"+dmd.getDatabaseMinorVersion()+")");
+      log.debug("   DB Version: "+dmd.getDatabaseProductVersion());     
+    }
     List sqlTypeList=new ArrayList();
-    ResultSet rs = dmd.getProcedureColumns(connection.getCatalog(),"%",storedProcName,"%");
+    String catalog=connection.getCatalog();
+    log.debug("Catalog for stored proc "+storedProcName+" is "+catalog);
+    ResultSet rs = dmd.getProcedureColumns(catalog,"%",storedProcName,"%");
     //If RS is empty, then we have failed in our mission.
     if (!rs.next()) { //First rs is return value.
       rs.close();
@@ -405,12 +414,19 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     do { //Verify that each argument is an IN or INOUT arg type.
       int type=rs.getInt(5); //Need to check if it is a result, or an input arg.
+      int dataType=rs.getInt(6); // DATA_TYPE is column six!
+      if (log.isDebugEnabled()) {
+        log.debug("Catalog="+rs.getString(1)+
+            "; Schema="+rs.getString(2)+
+            "; Proc="+rs.getString(3)+ 
+            "; Column=" + rs.getString(4) + 
+            "; ParamType="+spTypeToString(type)+"("+type+")"+
+            "; DataType=" + dataType + 
+            "; TypeName=" + rs.getString(7));
+      }     
       if (type==DatabaseMetaData.procedureColumnIn || type==DatabaseMetaData.procedureColumnInOut) {
         log.debug("Argument of type "+type+" is IN or INOUT");
-        sqlTypeList.add(new Integer(rs.getInt(6))); // DATA_TYPE is column six!
-        if (log.isDebugEnabled()) {
-          log.debug("Catalog=" + rs.getString(1) + "; Schema=" + rs.getString(2) + ";; Proc=" + rs.getString(3) + "; Column=" + rs.getString(4) + "; Type=" + rs.getString(6) + "; TypeName=" + rs.getString(7));
-        }
+        sqlTypeList.add(Integer.valueOf(dataType)); // DATA_TYPE is column six!
       }
       else {
         log.debug("Ignoring column of type " +type+" as it is neither IN nor INOUT");
@@ -426,6 +442,34 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     rs.close(); 
     return sqlTypes;
+  }
+  
+  private static final String spTypeToString(int type) {
+    String result;
+    switch(type) {
+    case DatabaseMetaData.procedureColumnUnknown: // 0
+      result="unknown";
+      break;
+    case DatabaseMetaData.procedureColumnIn: // 1
+      result="IN";
+      break;
+    case DatabaseMetaData.procedureColumnInOut: // 2
+      result="INOUT";
+      break;
+    case DatabaseMetaData.procedureColumnOut: //3
+      result="OUT";
+      break;
+    case DatabaseMetaData.procedureColumnReturn: // 4
+      result="RETURN";
+      break;
+    case DatabaseMetaData.procedureColumnResult: // 5
+      result="RESULT";
+      break;
+    default: //This *should* never arise
+      result="Illegal value for procedureColumn type";
+    break;
+    }
+    return result;
   }
 
   /**
