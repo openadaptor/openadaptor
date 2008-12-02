@@ -1,4 +1,32 @@
 =================================================
+openadaptor3 production 3.4.4 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: ???
+Author: openadaptor Core Team
+
+openadaptor 3.4.4
+=======
+
+Connectors
+==========
+
+Processors
+==========
+
+Examples
+========
+
+Miscellaneous
+=============
+
+Bug Fixes
+=========
+
+
+=================================================
 openadaptor3 production 3.4.3 Release Notes
 
 See licence.txt for Licence information.
