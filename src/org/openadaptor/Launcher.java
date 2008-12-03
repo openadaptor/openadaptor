@@ -32,11 +32,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,7 +79,7 @@ import javax.swing.filechooser.FileFilter;
  *
  */
 public class Launcher implements Runnable {
-  private  final MiniLog log=new MiniLog();
+  private final MiniLog log=new MiniLog();
   protected static final String PROP_PREFIX="oa.";
   public static final String PROP_OA_GEN_CP="genclasspath";
   public static final String PROP_OA_HOME="home";
@@ -474,7 +476,8 @@ public class Launcher implements Runnable {
   public static String deriveOAHomePath() {
     String libDir=getClassJarDirectory(Launcher.class);
     File libFile=new File(libDir);
-    String oaHomePath=libFile.getParent();
+    //String oaHomePath=libFile.getParent();
+    String oaHomePath=getDecodedParentPath(libFile);
     return oaHomePath;
   }
 
@@ -490,8 +493,18 @@ public class Launcher implements Runnable {
     String result=null;
 
     File file=getClassFile(classToLocate);
-    result=file.getParent();
+    //result=file.getParent();
+    result=getDecodedParentPath(file);
     return result;
+  }
+  
+  private static String getDecodedParentPath(File file) {
+    String parentPath=file.getParent();
+    try {
+      parentPath= URLDecoder.decode(parentPath, "UTF-8");
+    } 
+    catch (UnsupportedEncodingException uee) {} //Ignore it - nothing we can do anyway
+    return parentPath;
   }
 
   class AdaptorConfigFilter extends FileFilter {

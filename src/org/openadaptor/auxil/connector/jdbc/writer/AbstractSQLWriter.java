@@ -399,7 +399,8 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     DatabaseMetaData dmd = connection.getMetaData();
     if (debug_db_version_not_logged && log.isDebugEnabled()) {
       log.debug("      DB Name (version major/minor): "+dmd.getDatabaseProductName()+"("+dmd.getDatabaseMajorVersion()+"/"+dmd.getDatabaseMinorVersion()+")");
-      log.debug("   DB Version: "+dmd.getDatabaseProductVersion());     
+      log.debug("   DB Version: "+dmd.getDatabaseProductVersion());
+      debug_db_version_not_logged=false; //Don't report it any more.
     }
     List sqlTypeList=new ArrayList();
     String catalog=connection.getCatalog();

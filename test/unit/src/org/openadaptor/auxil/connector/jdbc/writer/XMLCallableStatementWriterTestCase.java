@@ -74,6 +74,12 @@ public class XMLCallableStatementWriterTestCase extends AbstractXMLWriterTests {
    */
   protected void setupInitialiseExpectations(boolean supportsBatch) {
     connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(metaDataMock.proxy()));
+    
+    metaDataMock.stubs().method("getDatabaseProductName").will(returnValue("Mock Stub DB Product Name"));
+    metaDataMock.stubs().method("getDatabaseMajorVersion").will(returnValue(1));
+    metaDataMock.stubs().method("getDatabaseMinorVersion").will(returnValue(1));
+    metaDataMock.stubs().method("getDatabaseProductVersion").will(returnValue("Mock Stub DB Product version"));
+    
     metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
     connectionMock.expects(once()).method("getCatalog").will(returnValue(CatalogName));
     metaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
