@@ -77,7 +77,11 @@ public class RawSQLWriter extends AbstractSQLWriter {
     if (datum==null) {
       throw new SQLException("Cannot create Statement from null data");
     }
-    return connection.prepareStatement(datum.toString());
+    String datumString=datum.toString();
+    if (log.isDebugEnabled()) {
+      log.debug("SQL: "+datumString);
+    }
+    return connection.prepareStatement(datumString);
   }
 
   /**
