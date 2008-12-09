@@ -62,7 +62,8 @@
     <property name="script">
       <value>
         importPackage(Packages.org.dom4j.io);
-        //Illustrate some logging for good measure.
+        //Illustrate some logging for good measure (this is not actually necessary as
+        //the script processor's log is already available as bound variable oa_log)
         var log =Packages.org.apache.commons.logging.LogFactory.getLog("dom4j->w3c");
         log.info("Converting: "+oa_data.getClass().getName());
         oa_data=new DOMWriter().write(oa_data);
