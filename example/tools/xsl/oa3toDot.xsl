@@ -100,8 +100,8 @@
     <xsl:value-of select="$graphName" />
     {
     graph [ ];
-    node [ shape=rectangle, style=filled, fontname=Helvetica, fontsize="10", color=pink ];
-    edge [ fontname=Helvetica, fontsize="9" ];
+    node [ shape=rectangle, style=filled, fontname=Courier, fontsize=10, fontcolor=black ];
+    edge [ fontname=Courier, fontsize=9 ];
 
     <!-- Insert nodes for all top-level beans: -->
     <xsl:apply-templates select="beans:beans/beans:bean" />
