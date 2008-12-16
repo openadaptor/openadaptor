@@ -86,6 +86,8 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   //cloning strategy has been devised
   //ToDo: Remove this (promote to Router or similar)
   private ObjectCloner cloner=new ObjectCloner();
+  
+  private boolean synchronised=false;
 
   /**
    * If true, then converted values will always be wrapped
@@ -226,6 +228,27 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   public ScriptEngine getScriptEngine() {
     return scriptEngine;
   }
+  
+  /**
+   * Used to force synchronisation on calls to the {@link #process} method.
+   * @param synchronised
+   */
+  public void setSynchronised(boolean synchronised) {
+  	this.synchronised=synchronised;
+  }
+  
+  public boolean getSynchronised() {return synchronised;}
+  
+  public Object[] process(Object data) {
+  	if (synchronised) {
+  		synchronized(this) {//Synchronisation required
+  			return doProcess(data); 		
+  		}
+  	}
+  	else { //Nike - just do it ;-)
+  		return doProcess(data);
+  	}
+  }
   /**
    * Process a data item.
    * It will bind the data using the configured databinding, to
@@ -237,7 +260,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
    * file, then the file will be read each time a datum is being processed. This
    * should be avoided for obvious reasons :-)
    */
-  public synchronized Object[] process(Object data) {
+  protected Object[] doProcess(Object data) {
     if (data==null) { //conform to IDataProcessor contract.
       throw new NullRecordException("Null record not permitted");
     }

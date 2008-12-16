@@ -63,7 +63,7 @@ public class MapScriptProcessor extends ScriptProcessor {
    * Actual processing is delegated to the superclass.
    *
    */
-  public synchronized Object[] process(Object data) {
+  protected  Object[] doProcess(Object data) {
     if (data==null) {
       throwNullRecordException();
     }
@@ -95,7 +95,7 @@ public class MapScriptProcessor extends ScriptProcessor {
       }
     }
 
-    Object[] result=super.process(data);
+    Object[] result=super.doProcess(data);
     if (result.length>0) {
       updateValues((Map)scriptEngine.get(dataBinding),keys);
     }

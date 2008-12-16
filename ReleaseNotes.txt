@@ -15,6 +15,10 @@ Connectors
 
 Processors
 ==========
+ * Default ScriptProcessor behaviour has been modified slightly. 
+   Previously, all calls to process() method were forcibly synchronised.
+   This has now been changed to force synchronisation only if the 
+   synchronised property is set to true
 
 Examples
 ========
