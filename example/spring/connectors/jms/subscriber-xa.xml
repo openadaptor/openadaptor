@@ -17,8 +17,22 @@
   to a jms topic It also illustrates configuring basic jta transaction
   management.
 
-  See the accompanying readme.txt for information on how to run this example.
+  Run this example like this...
 
+  java org.openadaptor.spring.SpringAdaptor -config subscriber-xa.xml -props ../../../config/jms_*.properties
+  
+  using the appropriate jms property file.
+
+  Suggested Classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    appropiate jms client jars
+    
+  The jars for JOTM are included in lib/openadaptor-depends.jar by default.
+  
   To verify that this is working you need put some data on the topic, the
   corresponding publisher example should do this.
   ]]></description>

@@ -15,9 +15,21 @@
   It is designed to illustrate the basic structure of an adaptor that processes
   data by publishing to a JMS topic.
 
-  See the accompanying readme.txt for information on how to run this example.
+  Run this example like this...
+
+  java org.openadaptor.spring.SpringAdaptor -config publisher.xml -props ../../../config/jms_*.properties
+  
+  using the appropriate jms property file.
+
+  Suggested Classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    appropiate jms client jars
      
-  Once it is running you need to type some data into the command line. To
+  Once the example is running you need to type some data into the command line. To
   verify that this is working you need to be running the corresponding
   subscriber example.
   ]]></description>

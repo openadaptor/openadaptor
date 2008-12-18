@@ -17,14 +17,28 @@
   data by publishing to a JMS topic. It also illustrates configuring basic
   jta transaction management.
 
-  See the accompanying readme.txt for information on how to run this example.
+  Run this example like this...
+
+  java org.openadaptor.spring.SpringAdaptor -config publisher-xa.xml -props ../../../config/jms_*.properties
+  
+  using the appropriate jms property file.
+
+  Suggested Classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    appropiate jms client jars
+    
+  The jars for JOTM are included in lib/openadaptor-depends.jar by default.
 
   Once it is running you need to type some data into the command line. To
   verify that this is working you need to be running the corresponding
   subscriber example.
   
-  The transaction in which the publisher participates has certain timeout (default = 1 min).
-  If no data is typed after that period the transaction rolls back.
+  The transaction in which the publisher participates has a defined timeout (default = 1 min).
+  If no data is typed during that period the transaction rolls back.
   ]]></description>
   
  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">

@@ -19,7 +19,21 @@
     is transacted using a JTA transaction manager (JOTM by default) to manage a
     distributed transaction including both connectors
 
-    See the accompanying readme.txt for information on how to run this example.
+    Run this example like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config pubsub-xa.xml -props ../../../config/jms_*.properties
+  
+    using the appropriate jms property file.
+
+    Suggested Classpath
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+       appropiate jms client jars
+    
+    The jars for JOTM are included in lib/openadaptor-depends.jar by default.
     
     Once it is running you need to publish some data to the topic subscribed to.
     You can use the publisher example for this.
