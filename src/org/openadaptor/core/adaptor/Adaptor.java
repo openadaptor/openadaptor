@@ -40,6 +40,7 @@ import org.openadaptor.core.recordable.ISimpleComponentMetrics;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.router.Router;
+import org.openadaptor.core.router.TopologyAnalyser;
 import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.TransactionManager;
@@ -330,6 +331,12 @@ public class Adaptor extends Application implements IMessageProcessor, ILifecycl
       startRunnables();
       register();
 
+      //Not ready for production use yet.
+//      if (processor instanceof Router) {
+//        TopologyAnalyser analyser=new TopologyAnalyser(((Router)processor).getRoutingMap());
+//        System.out.println(analyser.toStringVerbose());
+//      }
+      
       if (runRunnablesInCallingThread) {
         runRunnable();
       } else {
