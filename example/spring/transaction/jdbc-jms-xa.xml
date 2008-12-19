@@ -27,7 +27,7 @@
 
     Run it like this...
     
-      java org.openadaptor.spring.SpringAdaptor -config jdbcjmsXA.xml -props transaction-examples.properties
+      java org.openadaptor.spring.SpringAdaptor -config jdbcjmsXA.xml -props ../../config/transaction-examples-*.properties
     
     You need the following in your classpath
   
