@@ -105,10 +105,12 @@ public class AdaptorRunConfiguration {
   }
 
   /**
-   * Called when stopping Adaptor via JMX console.
+   * Called when stopping Adaptor via JMX console. 
    */
   public void setExitFlag() {
-    timer.cancel();
+    if(timer!=null){
+      timer.cancel();
+    }
     exit = true;
     synchronized (this) {
       this.notify();
