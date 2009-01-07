@@ -29,6 +29,7 @@ Miscellaneous
 Bug Fixes
 =========
 
+SC81: Exception when stopping Adaptor with AdaptorRunconfiguration via 'kill PID'
 
 =================================================
 openadaptor3 production 3.4.3 Release Notes
