@@ -72,30 +72,6 @@ public class AdaptorRunConfiguration {
   private int failCount = 0;
 
   private boolean exit = false;
-  
-  public void setRestartAfterFailCronExpression(String expression) {
-    restartAfterFailCronExpression = checkCronExpression(expression);
-  }
-
-  public void setRestartAfterFailDelayMs(long restartDelayMs) {
-    this.restartAfterFailDelayMs = restartDelayMs;
-  }
-
-  public void setRestartAfterFailLimit(int restartLimit) {
-    this.restartAfterFailLimit = restartLimit;
-  }
-
-  public void setStartCronExpression(String expression) {
-    startCronExpression = checkCronExpression(expression);
-  }
-
-  public void setStopCronExpression(String expression) {
-    stopCronExpression = checkCronExpression(expression);
-  }
-
-  public void setRestartCronExpression(String expression) {
-    restartCronExpression = checkCronExpression(expression);
-  }
 
   public void run(Adaptor adaptor) {
     if (startCronExpression == null) {
@@ -128,6 +104,9 @@ public class AdaptorRunConfiguration {
     return expression;
   }
 
+  /**
+   * Called when stopping Adaptor via JMX console.
+   */
   public void setExitFlag() {
     timer.cancel();
     exit = true;
@@ -138,7 +117,6 @@ public class AdaptorRunConfiguration {
 
   private void start(Adaptor adaptor) {
     if (!exit) {
-
       Date stopTime = null;
       
       if (stopCronExpression != null) {
@@ -293,5 +271,29 @@ public class AdaptorRunConfiguration {
     public String toString() {
       return "restart";
     }
+  }
+  
+  public void setRestartAfterFailCronExpression(String expression) {
+    restartAfterFailCronExpression = checkCronExpression(expression);
+  }
+
+  public void setRestartAfterFailDelayMs(long restartDelayMs) {
+    this.restartAfterFailDelayMs = restartDelayMs;
+  }
+
+  public void setRestartAfterFailLimit(int restartLimit) {
+    this.restartAfterFailLimit = restartLimit;
+  }
+
+  public void setStartCronExpression(String expression) {
+    startCronExpression = checkCronExpression(expression);
+  }
+
+  public void setStopCronExpression(String expression) {
+    stopCronExpression = checkCronExpression(expression);
+  }
+
+  public void setRestartCronExpression(String expression) {
+    restartCronExpression = checkCronExpression(expression);
   }
 }
