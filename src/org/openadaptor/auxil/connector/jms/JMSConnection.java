@@ -45,7 +45,7 @@ import java.util.List;
  * is written to use JMS 1.1 compliant code.
  * <p/>
  * Primary purpose is to manage a single JMS Connection. Also responsible for JNDI lookups for ConnectionFactories
- * and Destinations. Delegates This to an instance of JNDOConnection
+ * and Destinations. Delegates This to an instance of JNDIConnection
  * <p/>
  * Main Properties
  * <ul>
@@ -55,6 +55,7 @@ import java.util.List;
  * <li><b>password</b>                  Password to authenticate the JMS Connection (optional)
  * <li><b>clientID</b>                  Default is not set. Use with caution. ConnectionFactory must be configured to allow the clientID to be set.
  * <li><b>jndiConnection</b>            JndiConnection used for lookups
+ * <li><b>useXA</b>                     False by default. Will only set up an XA Session is this is true and the using Connector is transacted.
  * </ul>
  * <p/>
  */

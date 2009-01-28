@@ -75,10 +75,14 @@
     <property name="useXa" value="true"/>
   </bean>
 
-  <!-- Reader that polls a jms queue -->
+  <!-- 
+    The reader that polls a jms topic Note that we have to set 'transacted' to 
+    true in spite of configuring an XA capable connection via the ConnectionFactory.
+    -->
   <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
     <property name="destinationName" value="${jms.t.destinationName.1}"/>
     <property name="jmsConnection" ref="JmsReaderConnection"/>
+    <property name="transacted" value="true"/>
   </bean>
   
   <!-- jms connection for queue we wish to publish to -->
@@ -91,10 +95,14 @@
     <property name="useXa" value="true"/>
   </bean>
   
-  <!-- writer that publishes data onto a queue -->
+  <!--  
+    The writer that publishes data onto a queue. Note that we have to set 'transacted' to 
+    true in spite of configuring an XA capable connection via the ConnectionFactory.
+    -->
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
     <property name="destinationName" value="${jms.q.destinationName.1}"/>
     <property name="jmsConnection" ref="JmsWriterConnection"/>
+    <property name="transacted" value="true"/>
   </bean>
 
 </beans>

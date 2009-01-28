@@ -90,10 +90,15 @@
     <property name="useXa" value="true"/>
   </bean>
   
+  <!--  
+    The writer that publishes data onto a topic. Note that we have to set 'transacted' to 
+    true in spite of configuring an XA capable connection via the ConnectionFactory.
+  -->  
   <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
-    <description>writer that publishes data onto a queue.</description>
+    <description>writer that publishes data onto a topic.</description>
     <property name="destinationName" value="${jms.t.destinationName.1}"/>
     <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="transacted" value="true"/>
   </bean>
 
 </beans>

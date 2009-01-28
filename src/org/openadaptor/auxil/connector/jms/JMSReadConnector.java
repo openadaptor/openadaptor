@@ -52,7 +52,7 @@ import java.util.List;
  * <ul>
  * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
  * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
- * <li><b>transacted</b>                If true then a transacted session is acquired and a TransactionalResource created even if XA resources are available.
+ * <li><b>transacted</b>                False by default. If true then a TransactionalResource is acquired as long as either the JMS Session is transacted or XA resources are available.
  * <li><b>durable</b>                   Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
  * <li><b>durableSubscriptionName</b>   Defaults to the <code>destinationName</code>. The name used to create the durable topic subscription.
  * <li><b>messageSelector</b>           Not set by default.
@@ -278,8 +278,10 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   /**
    * Create a transactional resource for this connector.<br>
-   * If transacted is true then a JMSTransactionalResource is always returned. If transacted
-   * is false and an XAResource is available then the XAResource is returned. Null otherwise,
+   * If transacted is true then a JMSTransactionalResource is returned if not using XA and the JMS Session is transacted. 
+   * If transacted is true and using XA and a JMS XASession is available then return the XAResource.
+   * If transacted is false then Null is returned. 
+   * A Null resource is also returned in any other scenario.
    *
    * @param newSession
    * @return TransactionalResource, XAResource or null
