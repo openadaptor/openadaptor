@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
     [[
-    Copyright (C) 2006 - 2008 The Software Conservancy as Trustee. All rights
+    Copyright (C) 2006 - 2009 The Software Conservancy as Trustee. All rights
     reserved.
 
     Permission is hereby granted, free of charge, to any person obtaining a
