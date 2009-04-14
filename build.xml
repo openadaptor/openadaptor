@@ -385,6 +385,7 @@
 			<fileset dir="${dir.src}" includes="**/*.java" />
 			<fileset dir="${dir.spring.src}" includes="**/*.java" />
 			<fileset dir="${dir.example}" includes="**/*.java" />
+			<fileset dir="${dir.support}" includes="**/*.java" />
 		</copyright>
 	</target>
 
