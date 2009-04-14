@@ -97,7 +97,7 @@ public class CopyrightTask extends Task {
 
   public void setCopyright(String filename) {
     try {
-      copyright = "/*\n" + readInputStreamContents(new FileInputStream(filename)) + "\n*/\n";
+      copyright = "/*\n" + readInputStreamContents(new FileInputStream(filename)) + "*/\n";
     } catch (IOException e) {
       throw new RuntimeException("IOException, " + e.getMessage(), e);
     }
