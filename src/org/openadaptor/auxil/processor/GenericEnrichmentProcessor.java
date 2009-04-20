@@ -37,9 +37,15 @@ import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.IEnrichmentProcessor;
 
 /**
- * An enrichment processor with generic implementations of preparing parameters and 
+ * An {@link IEnrichmentProcessor} with generic implementations for preparing parameters and 
  * enhancing input data. 
  * 
+ * These generic implementations cover only the most common scenarios of preparing a query
+ * for the embedded {@link IReadConnector} and enriching the input data with the result
+ * from the {@link IReadConnector}'s query. See {@link #prepareParameters(Object)}
+ * and {@link #enrich(Object, Object[])} for details. Often users may want
+ * to overwrite these implementations in a subclass to suit their needs.
+ *
  * @author Kris Lachor
  * @since Post 3.3
  */
@@ -47,10 +53,19 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
   
   private static final Log log = LogFactory.getLog(GenericEnrichmentProcessor.class);
   
+  /**
+   * @see #setDiscardInput(boolean)
+   */
   private boolean discardInput = false;
   
   /**
+   * @see #setEnrichmentElementName(String)
+   */
+  private String enrichmentElementName;
+  
+  /**
    * If input is not an IOrderedMap, returns an empty list of parameters. 
+   * 
    * If input is an IOrderedMap, checks specific field names or field indexes
    * have been requested (by setting properties on {@link AbstractEnrichmentProcessor}.
    * If no specific fields were requested, returns the original input, otherwise returns
@@ -89,8 +104,18 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
   }
   
   /**
-   * Enriches input data with extra data from the reader.
-   * If reader did not return any extra data, original data is not modified in any way.
+   * Enriches input data with extra data from the embedded read connector. The return result
+   * from this method will be the actual output of the enrichment processor. 
+   * 
+   * If the {@link #discardInput} flag is set, the original input data will always be discarded
+   * and only the enrichmentData will be returned.
+   * 
+   * If the {@link #discardInput} flag is unset, and if the reader did not return any extra data, 
+   * the original data is not modified in any way and returned as the output from this processor.
+   * 
+   * If the reader returned enrichment data and the input data (to the processor) is in the 
+   * form of an IOrderedMap,the enrichment data will be added as subsequent element(s) to the 
+   * input Map. 
    * 
    * @see IEnrichmentProcessor#enrich(Object, Object[]) 
    */
@@ -98,17 +123,23 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
     Object [] result = null;
     
     if(discardInput){
-      log.info("Returning enrichment data only (discarding input message).");
+      /* GenericEnrichmentProcessorTestCase#testEnrich_DiscardInput() */
+      log.info("Returning enrichment data only (discarding the input message).");
       return enrichmentData;
     }
     
     /* Retun original input if the reader didn't find anything */
-    if(null==enrichmentData || enrichmentData.length==0){
+    if( null==enrichmentData || enrichmentData.length==0 ){
+       /* GenericEnrichmentProcessorTestCase#testEnrich_testEnrich1() */
        result = new Object[]{input};
     }
-    /* or add enrichment data as next element to input */
-    else{    
-      if(input instanceof OrderedHashMap){
+    else if(input instanceof OrderedHashMap){
+      if(enrichmentElementName==null){
+       /* 
+        * or add enrichment data as next element(s) to input if the input is an IOrderedMap. 
+        * This means the contents for the input map and the enrichment map will be merged.
+        */
+        /* GenericEnrichmentProcessorTestCase#testEnrich_testEnrich4() */
         result = new Object[enrichmentData.length];
         for(int i=0; i<enrichmentData.length; i++){
           result[i]=((OrderedHashMap)input).clone();   
@@ -116,8 +147,16 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
         }
       }
       else{
-        result = enrichmentData; 
-      }  
+        result = new Object[]{((OrderedHashMap)input).clone()};   
+        ((OrderedHashMap)result[0]).put(enrichmentElementName, enrichmentData);
+      }
+    }
+    else{
+      /* 
+       * GenericEnrichmentProcessorTestCase#testEnrich_testEnrich1() 
+       * GenericEnrichmentProcessorTestCase#testEnrich_testEnrich2() 
+       */
+      result = enrichmentData;   
     }
     return result;
   }
@@ -133,10 +172,27 @@ public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
    * Defaults to false.
    * 
    * @param discardInput 
-   * todo: unit/system test.
    */
   public void setDiscardInput(boolean discardInput) {
     this.discardInput = discardInput;
   }
+
+  /**
+   * An optional property that affects the way the input and enrichment data are 
+   * merged together. Takes effect only when both input and enrichment data in 
+   * the form of a {@link Map}.
+   * 
+   * If the property is not set, the input and enrichment maps will be merged by
+   * adding all elements of the enrichment map to he input map (the keys of the 
+   * enrichment and input map will be on a par).
+   * 
+   * If the property is set, the enrichment data will be added to the input map
+   * always as one element under the key {@link #enrichmentElementName}.  
+   * 
+   * @param enrichmentElementName
+   */
+  public void setEnrichmentElementName(String enrichmentElementName) {
+    this.enrichmentElementName = enrichmentElementName;
+  }  
   
 }
