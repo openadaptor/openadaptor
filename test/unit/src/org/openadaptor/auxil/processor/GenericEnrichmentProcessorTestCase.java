@@ -48,11 +48,11 @@ import org.openadaptor.core.node.EnrichmentProcessorNode;
 import org.jmock.cglib.MockObjectTestCase;
 
 /**
- * Draft of unit tests for {@link GenericEnrichmentProcessor}.
+ * Unit tests for {@link GenericEnrichmentProcessor}.
+ * Many of the tests were written to ensure the {@link GenericEnrichmentProcessor} is
+ * compatible with the {@link JNDIEnhancementProcessor} (now deleted) that it replaced.
  * 
  * @author Kris Lachor
- * @todo ported only testValidatex() methods from JNDIEnhancementProcessorTestCase,
- *       all other are remaining
  */
 public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
 
@@ -293,7 +293,6 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     assertTrue(false);
   }
   
-  
   /**
    * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#prepareParameters(Object)}.
    * Input is null.
@@ -466,7 +465,7 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
   
   /**
    * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).
-   * Reader returned multiple objects.
+   * Input is an Object, returned enrichment data is an array of Objects.
    */
   public void testEnrich3(){
     Object input = new Object();
@@ -479,10 +478,10 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     assertEquals(result[2], data3); 
   }
   
-  
   /**
    * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).
    * Input is an IOrdredMap. Reader returned an IOrdredMap.
+   * The enrichmentElementName property is unset.
    */
   public void testEnrich4(){
     IOrderedMap input = new OrderedHashMap();
@@ -498,6 +497,32 @@ public class GenericEnrichmentProcessorTestCase extends MockObjectTestCase {
     assertEquals(resultMap.get("foo1"), "bar1");
     assertEquals(resultMap.get("foo2"), "bar2");
   }
+  
+  /**
+   * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).
+   * Input is an IOrdredMap. Reader returned an IOrdredMap. The enrichmentElementName property 
+   * is set.
+   */
+  public void testEnrich_enrichmentElementName(){
+    processor.setEnrichmentElementName("enrichmentData");
+    IOrderedMap input = new OrderedHashMap();
+    input.put("foo1", "bar1");
+    IOrderedMap data = new OrderedHashMap();
+    data.put("foo2", "bar2");
+    Object [] result = processor.enrich(input, new Object[]{data});
+    assertNotNull(result);
+    assertTrue(result.length==1);
+    assertTrue(result[0] instanceof IOrderedMap);
+    IOrderedMap resultMap = (IOrderedMap) result[0];
+    assertTrue(resultMap.size()==2);
+    assertEquals(resultMap.get("foo1"), "bar1");
+    Object [] enrichmentData = (Object []) resultMap.get("enrichmentData");
+    assertTrue(enrichmentData.length==1);
+    assertTrue(enrichmentData[0] instanceof IOrderedMap);
+    IOrderedMap enrichmentDataMap = (IOrderedMap) enrichmentData[0];
+    assertEquals(enrichmentDataMap.get("foo2"), "bar2");
+  }
+  
   
   /**
    * Tests {@link org.openadaptor.auxil.processor.GenericEnrichmentProcessor#enrich(Object, Object[]).

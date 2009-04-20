@@ -19,6 +19,9 @@ Processors
    Previously, all calls to process() method were forcibly synchronised.
    This has now been changed to force synchronisation only if the 
    synchronised property is set to true
+   
+ * (SC83) GenericEnrichmentProcessor: new 'enrichmentElementName' property allows to
+   further customise the way the input and enrichment data are merged together.   
 
 Examples
 ========
