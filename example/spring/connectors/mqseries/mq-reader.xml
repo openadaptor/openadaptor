@@ -26,6 +26,7 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     mq.jar  (this is not distributed with openadaptor)
+    connector-api.jar (From JCA. Certain versions of MQ may not require this. Also not distributed)
   
   Once it is running, verify that this is working you need to be running the corresponding mq-writer example.
   
