@@ -114,6 +114,10 @@ public class Launcher implements Runnable {
   private boolean generateClasspath=false;
 
 
+  /**
+   * Launch an adaptor, possibly generating CP as we go
+   * @param args arts to launch with.
+   */
   protected Launcher(String[] args) {
     launchArgs=extractSystemProperties(args);
 
@@ -129,7 +133,15 @@ public class Launcher implements Runnable {
       //Fudge argument into a format for SpringAdaptor.
       String[] tmpArgs=new String[launchArgs.length*2];
       for (int i=0;i<launchArgs.length;i++){
-        tmpArgs[i*2]="-config";
+      	String arg=launchArgs[i];
+      	String springPrefix= "-config";
+      	//Fudge to use props files as -props instead of -config
+      	String lArg=arg.toLowerCase();
+      	if ( lArg.endsWith(".props") || lArg.endsWith(".properties")) {
+      		log.debug("Treating"+arg+" as -props argument");
+      		springPrefix="-props";
+      	}
+        tmpArgs[i*2]=springPrefix;
         tmpArgs[i*2+1]=launchArgs[i];
       }
       launchArgs=tmpArgs;
