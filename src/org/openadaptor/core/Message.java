@@ -38,19 +38,19 @@ import org.openadaptor.core.transaction.ITransaction;
  */
 public class Message {
 
-  /*
+  /**
    * A reference to the object that initiated the processing, this is not necessarily the
    * caller of {@link IMessageProcessor#process} nor is it necessarily a IMessageProcessor.
    */
   private Object sender;
   
   /**
-   * The data that should be processed as single transaction
+   * The data that should be processed as a single transaction.
    */
-	private Object[] data;
+  private Object[] data;
   
   /**
-   * The {@link ITransaction} that is associated with the processing of this Message
+   * The {@link ITransaction} that is associated with the processing of this Message.
    */
   private ITransaction transaction;
 	
@@ -68,14 +68,17 @@ public class Message {
     this(new Object[] {data},sender,transaction);
   }
   
-	public Object getSender() {
-		return sender;
-	}
-	
-	public Object[] getData() {
-		return data;
-	}
+  public Object getSender() {
+  	return sender;
+  }
+  
+  public Object[] getData() {
+  	return data;
+  }
 
+  /**
+   * @return a transaction related to this message.
+   */
   public ITransaction getTransaction() {
     return transaction;
   }
