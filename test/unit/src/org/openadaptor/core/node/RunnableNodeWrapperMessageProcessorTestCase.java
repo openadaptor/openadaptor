@@ -47,7 +47,7 @@ public class RunnableNodeWrapperMessageProcessorTestCase extends
     expectedResponse.addOutput(responsePayload);
     messageProcessorDelegateMock.expects(atLeastOnce()).method("process").will(returnValue(expectedResponse));
     
-    Message message = new Message(new Object[] { inputPayload }, null, null);
+    Message message = new Message(new Object[] { inputPayload }, null, null, null);
     
     Response response = testMessageProcessor.process(message);
     assertTrue("Expected a real response object", response != null);

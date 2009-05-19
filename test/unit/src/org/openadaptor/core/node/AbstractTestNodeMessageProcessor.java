@@ -65,7 +65,7 @@ abstract public class AbstractTestNodeMessageProcessor extends AbstractTestIMess
 
   public void testProcessWithNoProcessorSet() {
     ((Node)testMessageProcessor).setProcessor(IDataProcessor.NULL_PROCESSOR); // this seems to be the default unset value
-    Message message = new Message(new Object[] {inputPayload}, null, null);
+    Message message = new Message(new Object[] {inputPayload}, null, null, null);
     Response response = testMessageProcessor.process(message);
     assertTrue("Expected a real response object", response != null);
     assertTrue("Expected Batch size of one in the response", response.getBatches().size() == 1);

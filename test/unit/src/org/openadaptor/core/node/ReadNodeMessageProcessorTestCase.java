@@ -80,7 +80,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
   public void testNullFromConnector() {
     readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(null));
-    Message message = new Message(new Object[]{}, null, null);
+    Message message = new Message(new Object[]{}, null, null, null);
     Response response = testMessageProcessor.process(message);
     assertTrue("Expected a Response", response != null);
     assertTrue("Expected no data", response.getCollatedOutput().length == 0);
@@ -89,7 +89,7 @@ public class ReadNodeMessageProcessorTestCase extends AbstractTestNodeMessagePro
   public void testNoDataFromConnector() {
     readConnectorMock.stubs().method("isDry").will(returnValue(false));
     readConnectorMock.expects(once()).method("next").will(returnValue(new Object[] {}));
-    Message message = new Message(new Object[]{}, null, null);
+    Message message = new Message(new Object[]{}, null, null, null);
     Response response = testMessageProcessor.process(message);
     assertTrue("Expected a Response", response != null);
     assertTrue("Expected no data", response.getCollatedOutput().length == 0);

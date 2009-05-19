@@ -67,7 +67,7 @@ public class ProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessa
   }
 
   public void testProcessWithBatch() {
-    Message message = new Message(data, null, null);
+    Message message = new Message(data, null, null, null);
     for (int i=0; i < data.length; i++) {
       testProcessorMock.expects(once()).method("process").with(eq(data[i])).will(returnValue(new Object[] { data[i] }));
     }
@@ -82,7 +82,7 @@ public class ProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessa
     for (int i=0; i < data.length; i++) {
       testProcessorMock.expects(once()).method("process").with(eq(exceptionData[i])).will(returnValue(new Object[] { exceptionData[i] }));
     }
-    Response response = testMessageProcessor.process(new Message(exceptionData, null, null));
+    Response response = testMessageProcessor.process(new Message(exceptionData, null, null, null));
     Object[] output = response.getCollatedOutput();
     assertFalse(equals(data, output));
   }
@@ -92,7 +92,7 @@ public class ProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessa
       testProcessorMock.expects(once()).method("process").with(eq(data[i])).will(returnValue(new Object[] { data[i] }));
     }
     ((ProcessorNode)testMessageProcessor).setStripOutExceptions(true);
-    Response response = testMessageProcessor.process(new Message(exceptionData, null, null));
+    Response response = testMessageProcessor.process(new Message(exceptionData, null, null, null));
     Object[] output = response.getCollatedOutput();
     assertTrue(equals(data, output));
   }

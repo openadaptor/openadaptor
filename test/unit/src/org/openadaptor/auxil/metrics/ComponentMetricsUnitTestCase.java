@@ -48,11 +48,11 @@ public class ComponentMetricsUnitTestCase extends TestCase {
 
   Object testSender = new Object();
   
-  Message testMsg1 = new Message(testData1, testSender, null);
+  Message testMsg1 = new Message(testData1, testSender, null, null);
   
-  Message testMsg2 = new Message(testData2, testSender, null);
+  Message testMsg2 = new Message(testData2, testSender, null, null);
   
-  Message testMsg3 = new Message(testData3, testSender, null);
+  Message testMsg3 = new Message(testData3, testSender, null, null);
   
   /**
    * Test method for {@link org.openadaptor.auxil.metrics.ComponentMetrics

@@ -28,12 +28,12 @@ public class AdaptorRunConfigurationTest extends TestCase {
     adaptor.setMessageProcessor(r);
     return adaptor;
   }
+  
   private Adaptor createTestAdaptor(Object[] pipeline) {
     return createTestAdaptor(pipeline,null);
   }
 
   public void testStop() {
-
     MyTestReadConnector reader = new MyTestReadConnector();
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
@@ -48,11 +48,9 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(reader.connectedRanAndDisconnected());
     assertTrue(processor.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
-    
   }
 
   public void testRestart() {
-
     MyTestReadConnector reader = new MyTestReadConnector();
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
@@ -69,11 +67,9 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(processor.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 3);
-    
   }
   
   public void testStartStop() {
-
     MyTestReadConnector reader = new MyTestReadConnector();
     MyTestProcessor processor = new MyTestProcessor();
     MyTestWriteConnector writer = new MyTestWriteConnector();
@@ -91,11 +87,9 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(processor.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 2);
-    
   }
 
   public void testRestartOnFail() {
-
     MyTestReadConnector reader = new MyTestReadConnector();
     TestProcessor processor = new TestProcessor();
     processor.setExceptionFrequency(2);
@@ -112,11 +106,9 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(reader.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 3);
-    
   }
 
   public void testRestartOnFailWithCron() {
-
     MyTestReadConnector reader = new MyTestReadConnector();
     TestProcessor processor = new TestProcessor();
     processor.setExceptionFrequency(2);
@@ -133,7 +125,6 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(reader.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 2);
-    
   }
 
   public void testStopAndRestart() {
@@ -154,7 +145,6 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(processor.connectedRanAndDisconnected());
     assertTrue(writer.connectedRanAndDisconnected());
     assertTrue(reader.getRunCount() == 3);
-    
   }
   
   class TestComponent extends Component {

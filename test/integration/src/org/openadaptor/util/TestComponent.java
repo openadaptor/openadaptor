@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2001 - 2007 The Software Conservancy as Trustee. All rights reserved.
+ Copyright (C) 2001 - 2009 The Software Conservancy as Trustee. All rights reserved.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of
  this software and associated documentation files (the "Software"), to deal in the
@@ -29,12 +29,14 @@ package org.openadaptor.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentReadConnector;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ExceptionHandlerProxy;
@@ -55,6 +57,8 @@ public class TestComponent {
   
   public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION AND SHOULD BE IGNORED.";
   
+  public static String TEST_METADATA_KEY = "Hello";
+  public static String TEST_METADATA_VALUE = "Uncle Jimmy";
   //
   // IReadConnectors
   //
@@ -62,9 +66,13 @@ public class TestComponent {
   
   /**
    * A read connector that returns one item of data (a String) then becomes dry.
+   * Also implements {@link IMetadataAware} and populates message metadata with
+   * a sample key-value pair.
    */
-  public static class TestReadConnector implements IReadConnector {
+  public static class TestReadConnector implements IReadConnector, IMetadataAware{
     private boolean isDry = false;
+    
+    private Map metadata;
     
     public void connect() {}
     public void disconnect() {}
@@ -77,11 +85,17 @@ public class TestComponent {
       return result;
     }
    
-    public Object[] next(long timeoutMs) { 
+    public Object[] next(long timeoutMs) {
+      /* Sample metadata can be accessed by downstream components.*/
+      metadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
       return new String[]{"Dummy read connector test data"}; 
     }
     
     public void validate(List exceptions) {}
+    
+    public void setMetadata(Map metadata) {
+      this.metadata = metadata;  
+    }
   }
   
   
