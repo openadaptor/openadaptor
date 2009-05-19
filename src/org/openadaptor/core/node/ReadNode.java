@@ -190,7 +190,7 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         if (getTransactionManager() != null) {
           transaction = getTransactionManager().getTransaction();
         }
-        Response response = process(new Message(new Object[]{}, null, transaction));
+        Response response = process(new Message(new Object[]{}, null, transaction, null));
         log.debug("Response is: " + response);
         if (transaction != null) {
           if (transaction.getErrorOrException() == null) {
@@ -227,13 +227,16 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     if (msg.getTransaction() != null) {
       enlistConnector(msg.getTransaction());
     }
+    if(connector instanceof IMetadataAware){
+      ((IMetadataAware) connector).setMetadata(msg.getMetadata());
+    }
     Object[] data = getNext();
     if (data != null && data.length != 0) {
       if (connector.getReaderContext() == prevReaderContext) {
         resetProcessor(connector.getReaderContext());
         prevReaderContext = connector.getReaderContext();
       }
-      Message newMessage = new Message(data, this, msg.getTransaction());
+      Message newMessage = new Message(data, this, msg.getTransaction(), msg.getMetadata());
       response = super.process(newMessage);
     } else {
       // Ideally we should still process through the IDataProcessor.

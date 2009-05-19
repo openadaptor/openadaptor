@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openadaptor.core.exception.MessageException;
@@ -66,6 +67,8 @@ public class Response {
   private List batches = new ArrayList();
 
   private Set types = new HashSet();
+  
+  private Map matadata = null;
 
   /**
    * adds some data that is a result of sucessfully processing some input data to the response.
@@ -275,4 +278,13 @@ public class Response {
   public class ExceptionBatch extends DataBatch {
     private static final long serialVersionUID = DataBatch.serialVersionUID;
   }
+
+  public void setMatadata(Map matadata) {
+    this.matadata = matadata;
+  }
+
+  public Map getMatadata() {
+    return matadata;
+  }
+  
 }

@@ -91,7 +91,7 @@ public final class ProcessorNode extends Node {
          newData[i] = data[i];
        }
      }
-     msg = new Message(newData, msg.getSender(), msg.getTransaction());
+     msg = new Message(newData, msg.getSender(), msg.getTransaction(), msg.getMetadata());
    }
    return super.process(msg);
   }

@@ -27,7 +27,9 @@
 
 package org.openadaptor.core;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openadaptor.core.transaction.ITransaction;
 
@@ -50,22 +52,28 @@ public class Message {
   private Object[] data;
   
   /**
+   * Optional metadata that describes or relates to this message.
+   */
+  private Map metadata;
+  
+  /**
    * The {@link ITransaction} that is associated with the processing of this Message.
    */
   private ITransaction transaction;
 	
-  public Message(final Object[] data, final Object sender, final ITransaction transaction) {
+  public Message(final Object[] data, final Object sender, final ITransaction transaction, final Map metadata) {
     this.data = data;
     this.sender = sender;
     this.transaction = transaction;
+    this.metadata = metadata!=null?metadata:new HashMap();
   }
 
-  public Message(final List data, final Object sender, final ITransaction transaction) {
-    this((Object[]) data.toArray(new Object[data.size()]),sender,transaction);
+  public Message(final List data, final Object sender, final ITransaction transaction, final Map metadata) {
+    this((Object[]) data.toArray(new Object[data.size()]),sender,transaction, metadata);
   }
   
-  public Message(final Object data, final Object sender, final ITransaction transaction) {
-    this(new Object[] {data},sender,transaction);
+  public Message(final Object data, final Object sender, final ITransaction transaction, final Map metadata) {
+    this(new Object[] {data},sender,transaction, metadata);
   }
   
   public Object getSender() {
@@ -74,6 +82,13 @@ public class Message {
   
   public Object[] getData() {
   	return data;
+  }
+
+  /** 
+   * @return metadata that describes or relates to this message.
+   */
+  public Map getMetadata() {
+    return metadata;
   }
 
   /**

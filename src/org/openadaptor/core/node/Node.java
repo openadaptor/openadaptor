@@ -35,6 +35,7 @@ import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
@@ -158,6 +159,12 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
       
 		Response response = new Response();
 		
+        response.setMatadata(msg.getMetadata());
+        
+        if(processor instanceof IMetadataAware){
+          ((IMetadataAware) processor).setMetadata(msg.getMetadata());
+        }
+        
 		Object[] inputs = msg.getData();
 		
 		// call processor for each element in the batch
@@ -191,7 +198,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
 		if (messageProcessor != null) {
           if (!response.containsExceptions()) {
             if (!response.isEmpty()) {  // Don't pass on the message if there is no data
-              msg = new Message(response.getCollatedOutput(), this, msg.getTransaction());
+              msg = new Message(response.getCollatedOutput(), this, msg.getTransaction(), msg.getMetadata());
           	  response = callChainedMessageProcessor(msg);
             }
           } else {

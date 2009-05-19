@@ -48,7 +48,7 @@ public class RunnableNodeWrapper extends AbstractNodeRunner {
     try {
       log.info(getId() + " running");
       while (isStillRunning()) {
-        Response response = target.process(new Message(new Object[]{}, null, null));        
+        Response response = target.process(new Message(new Object[]{}, null, null, null));        
         log.debug("Response is: " + response);
       }
     }

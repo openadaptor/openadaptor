@@ -189,7 +189,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     for (Iterator iter = batches.iterator(); iter.hasNext();) {
       DataBatch batch = (DataBatch) iter.next();
       if (batch instanceof OutputBatch) {
-        process(new Message(batch.getData(),node,transaction),routingMap.getProcessDestinations(node));
+        process(new Message(batch.getData(),node,transaction, response.getMatadata()),routingMap.getProcessDestinations(node));
       } 
       else if (batch instanceof DiscardBatch) {
         if (logDiscardAsInfo) {
@@ -198,7 +198,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
         else {
           log.debug(node.toString() + " discarded " + batch.size() + " input(s)");
         }
-        process(new Message(batch.getData(),node,transaction),routingMap.getDiscardDestinations(node));
+        process(new Message(batch.getData(),node,transaction, response.getMatadata()),routingMap.getDiscardDestinations(node));
       } 
       else if (batch instanceof ExceptionBatch) {
         processExceptions(node, batch.getData(), transaction);
@@ -212,7 +212,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       MessageException messageException=(MessageException)exceptions[i];
       List destinations = routingMap.getExceptionDestinations(node, messageException.getException());
       if (destinations.size() > 0) {
-        Message msg = new Message(messageException, node, transaction);
+        Message msg = new Message(messageException, node, transaction, null);
         process(msg, destinations);
       } else {
         log.error("uncaught exception from " + node.toString(), messageException.getException());
