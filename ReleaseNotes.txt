@@ -25,6 +25,8 @@ Processors
 
 Examples
 ========
+ * Added an example that demonstrates use of message metadata
+   (example\spring\adaptor\metadata.xml).  
 
 Miscellaneous
 =============
