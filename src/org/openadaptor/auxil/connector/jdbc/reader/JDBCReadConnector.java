@@ -55,6 +55,7 @@ import java.sql.*;
  * Associates an IResultSetConverter with the connector, by default this 
  * is <code>ResultSetToOrderedMapConverter</code>.
  * 
+ * @see LoopingPollingReadConnector, DBEventDrivenPollingReadConnector, ThrottlingReadConnector
  * @author Eddy Higgins, Kris Lachor
  */
 public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichmentReadConnector, ITransactional{
@@ -95,6 +96,9 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
 
   protected boolean dry = false;
 
+  /**
+   * @see #setBatchSize(int)
+   */
   protected int batchSize = IResultSetConverter.CONVERT_ONE;
 
   /**
