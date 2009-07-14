@@ -97,8 +97,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    * Some databases such as Hypersonic will automatically convert them to boolean values,
    * but others such as Postgres need to have them set directly as booleans.
    */
-  private Object FIXED_COLUMN_DEFAUL_VALUE        = "false";
-  private Object REPROCESSED_COLUMN_DEFAULT_VALUE = "false";
+  private Object FIXED_COLUMN_DEFAUL_VALUE        = new Boolean(false);
+  private Object REPROCESSED_COLUMN_DEFAULT_VALUE = new Boolean(false);
   
   /* 
    * Values of FIXED and PREPROCESSED columns set to their defaults. Can be overwritten
