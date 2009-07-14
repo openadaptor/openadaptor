@@ -21,7 +21,11 @@ Processors
    synchronised property is set to true
    
  * (SC83) GenericEnrichmentProcessor: new 'enrichmentElementName' property allows to
-   further customise the way the input and enrichment data are merged together.   
+   further customise the way the input and enrichment data are merged together.  
+   
+ * (SC80) Default values of FIXED and REPROCESSED columns in ExceptionToOrderedMapConvertor
+   can now be overwritten via setters, to enable collaboration with databases such
+   as Postgres. Contributed by Johannes Nicolai.   
 
 Examples
 ========
