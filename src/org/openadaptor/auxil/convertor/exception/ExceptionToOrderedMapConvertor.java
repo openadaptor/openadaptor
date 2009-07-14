@@ -126,67 +126,77 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    * @return an IOrderedMap representation of the MessageException contents
    */
   protected Object convert(Object record) {
-      if(! (record instanceof MessageException)){
-        log.error("Exception handling error.");   
-        return null;
-      }
-      MessageException messageException = (MessageException) record;
-      IOrderedMap map = new OrderedHashMap();
-      map.put(timestampColName, timestampFormat.format(new java.util.Date()));
-      map.put(exceptionClassColName, messageException.getException().getClass().getName());
-      map.put(exceptionMessageColName, messageException.getException().getMessage());
-      
-      Throwable cause = messageException.getException().getCause();
-      if(cause!=null){
-    	map.put(causeExceptionClassColName, cause.getClass().getName());
-        map.put(causeExceptionMessageColName, cause.getMessage());
-      }
-      else{
-    	map.put(causeExceptionClassColName, noCauseException);
-        map.put(causeExceptionMessageColName, noCauseException);
-      }
-      
-      Exception exception = messageException.getException();
-      StringBuffer stackTraceBuf = new StringBuffer();
-      StackTraceElement [] stackTrace = exception.getStackTrace();
+    if(! (record instanceof MessageException)){
+      log.error("Exception handling error.");   
+      return null;
+    }
+    MessageException messageException = (MessageException) record;
+    IOrderedMap map = new OrderedHashMap();
+    map.put(timestampColName, timestampFormat.format(new java.util.Date()));
+    map.put(exceptionClassColName, messageException.getException().getClass().getName());
+    map.put(exceptionMessageColName, messageException.getException().getMessage());
+    
+    Throwable cause = messageException.getException().getCause();
+    if(cause!=null){
+  	map.put(causeExceptionClassColName, cause.getClass().getName());
+      map.put(causeExceptionMessageColName, cause.getMessage());
+    }
+    else{
+  	map.put(causeExceptionClassColName, noCauseException);
+      map.put(causeExceptionMessageColName, noCauseException);
+    }
+    
+    String stackTrace = getStackTraceAsString(messageException.getException());
+    map.put(stackTraceColName, stackTrace);
+    
+    String adaptorName = null==adaptor ? unknownAdaptorName : adaptor.getId();
+    map.put(adaptorColName, adaptorName);
+    String component = messageException.getOriginatingModule();
+    map.put(componentColName, null==component ? unknownComponentName : component);
+            
+    Object data = messageException.getData();
+    String dataType = null;  
+    if(data!=null){
+      dataType = data.getClass().getName();
+    }
+    map.put(dataTypeColName, dataType); 
+    
+    /* data has to be String */
+    if(data!=null && !(data instanceof String) && convertPayloadToString){
+      data = data.toString();
+    }
+    map.put(dataColName, data);
+ 
+    map.put(fixedColName, "false");
+    map.put(reprocessedColName, "false");
+    map.put(threadNameColName, messageException.getOriginatingThreadName());
+    messageException.getException().getCause();
+    return map;       
+  }
+  
+  /**
+   * Converts stack trace of an exception (and its root cause) to a String.
+   * @param exception the processed exception.
+   * @return stack trace as a String.
+   */
+  private String getStackTraceAsString(Exception exception){
+    StringBuffer stackTraceBuf = new StringBuffer();
+    StackTraceElement [] stackTrace = exception.getStackTrace();
+    for(int i=0; i<stackTrace.length; i++){
+    stackTraceBuf.append(stackTrace[i]);
+    stackTraceBuf.append("\n"); 
+    }
+    /* Append cause exception stack trace */
+    Throwable cause = exception.getCause();
+    if(cause!=null){
+      stackTraceBuf.append("\n\n");
+      stackTrace = cause.getStackTrace();
       for(int i=0; i<stackTrace.length; i++){
-    	stackTraceBuf.append(stackTrace[i]);
-    	stackTraceBuf.append("\n");	
+        stackTraceBuf.append(stackTrace[i]);
+        stackTraceBuf.append("\n");   
       }
-      /* Append cause exception stack trace */
-      if(cause!=null){
-    	stackTraceBuf.append("\n\n");
-	    stackTrace = cause.getStackTrace();
-        for(int i=0; i<stackTrace.length; i++){
-    	  stackTraceBuf.append(stackTrace[i]);
-    	  stackTraceBuf.append("\n");	
-        }
-  	  }
-      map.put(stackTraceColName, stackTraceBuf.toString());
-      
-      String adaptorName = null==adaptor ? unknownAdaptorName : adaptor.getId();
-      map.put(adaptorColName, adaptorName);
-      String component = messageException.getOriginatingModule();
-      map.put(componentColName, null==component ? unknownComponentName : component);
-              
-      Object data = messageException.getData();
-      String dataType = null;  
-      if(data!=null){
-        dataType = data.getClass().getName();
-      }
-      map.put(dataTypeColName, dataType); 
-      
-      /* data has to be String */
-      if(data!=null && !(data instanceof String) && convertPayloadToString){
-        data = data.toString();
-      }
-      map.put(dataColName, data);
-   
-      map.put(fixedColName, "false");
-      map.put(reprocessedColName, "false");
-      map.put(threadNameColName, messageException.getOriginatingThreadName());
-      messageException.getException().getCause();
-      return map;       
+    }
+    return stackTraceBuf.toString();
   }
   
   public void setTimestampFormat(String timestampFormat) { 
