@@ -38,8 +38,11 @@ import org.openadaptor.core.IComponent;
 import org.openadaptor.core.exception.MessageException;
 
 /**
- * Converts a MessageException to an ordered map. This is to allow for further
- * custom processing of exceptions, such as persisting them in a database.
+ * The class is often useful as part of the exception processing pipeline.  
+ * It converts a {@link MessageException} to an ordered map. This is to allow for further
+ * custom processing of exceptions, such as persisting them in a database, to achieve
+ * behaviour known in the legacy Openadaptor as The Hospital (section 13c of the tutorial 
+ * provides more details on The Hospital).
  * 
  * @author Kris Lachor
  */
@@ -57,64 +60,42 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    * in the database - public setters allow for overriding the defaults.
    */
   
-  static final String TIMESTAMP = "TIMESTAMP";
-  
-  static final String EXCEPTION_CLASS = "EXCEPTION_CLASS_NAME";
-  
-  static final String EXCEPTION_MESSAGE = "EXCEPTION_MESSAGE";
-  
-  static final String CAUSE_EXCEPTION_CLASS = "CAUSE_EXCEPTION_CLASS_NAME";
-  
+  static final String TIMESTAMP               = "TIMESTAMP";
+  static final String EXCEPTION_CLASS         = "EXCEPTION_CLASS_NAME";
+  static final String EXCEPTION_MESSAGE       = "EXCEPTION_MESSAGE";
+  static final String CAUSE_EXCEPTION_CLASS   = "CAUSE_EXCEPTION_CLASS_NAME";
   static final String CAUSE_EXCEPTION_MESSAGE = "CAUSE_EXCEPTION_MESSAGE";
-  
-  static final String STACK_TRACE = "STACK_TRACE";
-  
-  static final String ADAPTOR_NAME = "ADAPTOR_NAME";
-  
-  static final String COMPONENT = "ORIGINATING_COMPONENT";
-  
-  static final String THREAD_NAME = "THREAD_NAME";
-  
-  static final String DATA_TYPE = "DATA_TYPE";
-  
-  static final String DATA = "DATA";
-  
-  static final String FIXED = "FIXED";
-  
-  static final String REPROCESSED = "REPROCESSED";
+  static final String STACK_TRACE             = "STACK_TRACE";
+  static final String ADAPTOR_NAME            = "ADAPTOR_NAME";
+  static final String COMPONENT               = "ORIGINATING_COMPONENT";
+  static final String THREAD_NAME             = "THREAD_NAME";
+  static final String DATA_TYPE               = "DATA_TYPE";
+  static final String DATA                    = "DATA";
+  static final String FIXED                   = "FIXED";
+  static final String REPROCESSED             = "REPROCESSED";
   
   
   /* Field names, initialised to defaults */
   
-  private String timestampColName = TIMESTAMP;
-  
-  private String exceptionClassColName = EXCEPTION_CLASS;
-  
-  private String exceptionMessageColName = EXCEPTION_MESSAGE;
-  
-  private String causeExceptionClassColName = CAUSE_EXCEPTION_CLASS;
-  
+  private String timestampColName             = TIMESTAMP;
+  private String exceptionClassColName        = EXCEPTION_CLASS;
+  private String exceptionMessageColName      = EXCEPTION_MESSAGE;
+  private String causeExceptionClassColName   = CAUSE_EXCEPTION_CLASS;
   private String causeExceptionMessageColName = CAUSE_EXCEPTION_MESSAGE;
-  
-  private String stackTraceColName = STACK_TRACE;  
-  
-  private String adaptorColName = ADAPTOR_NAME;
-  
-  private String componentColName = COMPONENT;
-  
-  private String dataTypeColName = DATA_TYPE;
-  
-  private String dataColName = DATA;
-  
-  private String fixedColName = FIXED;
-  
-  private String reprocessedColName = REPROCESSED;
-  
-  private String threadNameColName = THREAD_NAME;
+  private String stackTraceColName            = STACK_TRACE;  
+  private String adaptorColName               = ADAPTOR_NAME;
+  private String componentColName             = COMPONENT;
+  private String dataTypeColName              = DATA_TYPE;
+  private String dataColName                  = DATA;
+  private String fixedColName                 = FIXED;
+  private String reprocessedColName           = REPROCESSED;
+  private String threadNameColName            = THREAD_NAME;
   
  
-  // the format the exception timestamp will have in the ordered map
-  // default to the java.util.Date().toString() value
+  /** 
+   * the format the exception timestamp will have in the ordered map
+   * default to the java.util.Date().toString() value
+   */
   private SimpleDateFormat timestampFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
 
   private boolean convertPayloadToString = true;
