@@ -50,16 +50,14 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
-  private static final String NO_CAUSE_EXCEPTION = "No cause exception detected.";
-  
-  /* Optional property allowing to retrieve an adaptor's name */
-  private IComponent adaptor;
+  private static final String NO_CAUSE_EXCEPTION     = "No cause exception detected.";
+  private static final String UNKNOWN_ADAPTOR_NAME   = "Unknown";
+  private static final String UNKNOWN_COMPONENT_NAME = "Unknown";
   
   /* 
    * Default ordered map field names. Ideally, these should correspond to column names
    * in the database - public setters allow for overriding the defaults.
    */
-  
   static final String TIMESTAMP               = "TIMESTAMP";
   static final String EXCEPTION_CLASS         = "EXCEPTION_CLASS_NAME";
   static final String EXCEPTION_MESSAGE       = "EXCEPTION_MESSAGE";
@@ -74,9 +72,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   static final String FIXED                   = "FIXED";
   static final String REPROCESSED             = "REPROCESSED";
   
-  
-  /* Field names, initialised to defaults */
-  
+  /* Field names, initialised to defaults defined above. */
   private String timestampColName             = TIMESTAMP;
   private String exceptionClassColName        = EXCEPTION_CLASS;
   private String exceptionMessageColName      = EXCEPTION_MESSAGE;
@@ -91,7 +87,14 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String reprocessedColName           = REPROCESSED;
   private String threadNameColName            = THREAD_NAME;
   
- 
+  /* Optional property allowing to retrieve an adaptor's name */
+  private IComponent adaptor;
+  
+  /* Messges for missing non-critical data, initialised to defaults. */
+  private String noCauseException     = NO_CAUSE_EXCEPTION;
+  private String unknownAdaptorName   = UNKNOWN_ADAPTOR_NAME;
+  private String unknownComponentName = UNKNOWN_COMPONENT_NAME;
+  
   /** 
    * the format the exception timestamp will have in the ordered map
    * default to the java.util.Date().toString() value
@@ -139,8 +142,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
         map.put(causeExceptionMessageColName, cause.getMessage());
       }
       else{
-    	map.put(causeExceptionClassColName, NO_CAUSE_EXCEPTION);
-        map.put(causeExceptionMessageColName, NO_CAUSE_EXCEPTION);
+    	map.put(causeExceptionClassColName, noCauseException);
+        map.put(causeExceptionMessageColName, noCauseException);
       }
       
       Exception exception = messageException.getException();
@@ -161,10 +164,10 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   	  }
       map.put(stackTraceColName, stackTraceBuf.toString());
       
-      String adaptorName = null==adaptor ? "Unknown" : adaptor.getId();
+      String adaptorName = null==adaptor ? unknownAdaptorName : adaptor.getId();
       map.put(adaptorColName, adaptorName);
       String component = messageException.getOriginatingModule();
-      map.put(componentColName, null==component ? "Unknown" : component);
+      map.put(componentColName, null==component ? unknownComponentName : component);
               
       Object data = messageException.getData();
       String dataType = null;  
@@ -270,4 +273,33 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   public void setConvertPayloadToString(boolean convertPayloadToString) {
     this.convertPayloadToString = convertPayloadToString;
   }
+
+  /**
+   * Allows to overwrite the default message when no cause exception was found.
+   * 
+   * @param noCauseException new message
+   */
+  public void setNoCauseException(String noCauseException) {
+    this.noCauseException = noCauseException;
+  }
+
+  /**
+   * Allows to overwrite the default message when the name of the adaptor could not be determined.
+   * 
+   * @param noCauseException new message
+   */
+  public void setUnknownAdaptorName(String unknownAdaptorName) {
+    this.unknownAdaptorName = unknownAdaptorName;
+  }
+
+  /**
+   * Allows to overwrite the default message when the name of the component that threw the 
+   * exception could not be determined.
+   * 
+   * @param noCauseException new message
+   */
+  public void setUnknownComponentName(String unknownComponentName) {
+    this.unknownComponentName = unknownComponentName;
+  }
+  
 }
