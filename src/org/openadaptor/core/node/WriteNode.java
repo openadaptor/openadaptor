@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
 import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.Message;
 import org.openadaptor.core.Response;
@@ -158,6 +159,10 @@ public class WriteNode extends Node {
         log.debug(getId() + " enlisting in transaction");
         msg.getTransaction().enlist(resource);
       }
+    }
+    
+    if(connector instanceof IMetadataAware){
+      ((IMetadataAware) connector).setMetadata(msg.getMetadata());
     }
   
     Response processorResponse = super.process(msg);
