@@ -54,6 +54,11 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private static final String UNKNOWN_ADAPTOR_NAME   = "Unknown";
   private static final String UNKNOWN_COMPONENT_NAME = "Unknown";
   
+  /* Messges for missing non-critical data, initialised to defaults. */
+  private String noCauseException     = NO_CAUSE_EXCEPTION;
+  private String unknownAdaptorName   = UNKNOWN_ADAPTOR_NAME;
+  private String unknownComponentName = UNKNOWN_COMPONENT_NAME;
+  
   /* 
    * Default ordered map field names. Ideally, these should correspond to column names
    * in the database - public setters allow for overriding the defaults.
@@ -87,13 +92,23 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String reprocessedColName           = REPROCESSED;
   private String threadNameColName            = THREAD_NAME;
   
+  /* 
+   * Default values of FIXED and REPROCESSED column are set to "false" (Strings).
+   * Some databases such as Hypersonic will automatically convert them to boolean values,
+   * but others such as Postgres need to have them set directly as booleans.
+   */
+  private Object FIXED_COLUMN_DEFAUL_VALUE        = "false";
+  private Object REPROCESSED_COLUMN_DEFAULT_VALUE = "false";
+  
+  /* 
+   * Values of FIXED and PREPROCESSED columns set to their defaults. Can be overwritten
+   * via setters.
+   */
+  private Object fixedColumnValue       = FIXED_COLUMN_DEFAUL_VALUE;
+  private Object reprocessedColumnValue = REPROCESSED_COLUMN_DEFAULT_VALUE;
+  
   /* Optional property allowing to retrieve an adaptor's name */
   private IComponent adaptor;
-  
-  /* Messges for missing non-critical data, initialised to defaults. */
-  private String noCauseException     = NO_CAUSE_EXCEPTION;
-  private String unknownAdaptorName   = UNKNOWN_ADAPTOR_NAME;
-  private String unknownComponentName = UNKNOWN_COMPONENT_NAME;
   
   /** 
    * the format the exception timestamp will have in the ordered map
@@ -167,8 +182,8 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
     }
     map.put(dataColName, data);
  
-    map.put(fixedColName, "false");
-    map.put(reprocessedColName, "false");
+    map.put(fixedColName, fixedColumnValue);
+    map.put(reprocessedColName, reprocessedColumnValue);
     map.put(threadNameColName, messageException.getOriginatingThreadName());
     messageException.getException().getCause();
     return map;       
@@ -310,6 +325,24 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    */
   public void setUnknownComponentName(String unknownComponentName) {
     this.unknownComponentName = unknownComponentName;
+  }
+
+  /**
+   * Default values of FIXED and REPROCESSED column are set to "false" (Strings).
+   * Some databases such as Hypersonic will automatically convert them to boolean values,
+   * but others such as Postgres need to have them set directly as booleans.
+   */
+  public void setFixedColumnValue(Object fixedColumnValue) {
+    this.fixedColumnValue = fixedColumnValue;
+  }
+
+  /** 
+   * Default values of FIXED and REPROCESSED column are set to "false" (Strings).
+   * Some databases such as Hypersonic will automatically convert them to boolean values,
+   * but others such as Postgres need to have them set directly as booleans.
+   */
+  public void setReprocessedColumnValue(Object reprocessedColumnValue) {
+    this.reprocessedColumnValue = reprocessedColumnValue;
   }
   
 }
