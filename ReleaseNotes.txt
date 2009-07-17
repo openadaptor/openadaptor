@@ -12,6 +12,7 @@ openadaptor 3.4.4
 
 Connectors
 ==========
+ * (SC43) 
 
 Processors
 ==========
@@ -24,7 +25,7 @@ Processors
    further customise the way the input and enrichment data are merged together.  
    
  * (SC80) Default values of FIXED and REPROCESSED columns in ExceptionToOrderedMapConvertor
-   can now be overwritten via setters, to enable collaboration with databases such
+   can now be overwritten via setters, enabling collaboration with databases such
    as Postgres. Contributed by Johannes Nicolai.   
 
 Examples
@@ -34,6 +35,8 @@ Examples
 
 Miscellaneous
 =============
+
+ * Support for message metadata. (SC84)
 
 Bug Fixes
 =========

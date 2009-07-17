@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.connector.DBEventDrivenPollingReadConnector;
@@ -44,7 +45,11 @@ import java.sql.*;
 
 /**
  * Generic JDBC polling read connector that replaced several pre 3.3 JDBC read connectors:
- *
+ * 
+ * Associated with this connector is an IResultSetConverter, by default this is 
+ * <code>ResultSetToOrderedMapConverter</code>.
+ * 
+ * For those who migrate from Openadaptor 3.2.x to 3.3+:
  * The (pre 3.3) JDBCReadConnector is equivalent to this connector with the LoopingPollingReadConnector
  * with no parameters.
  * The (pre 3.3) JDBCPollConnector is equivalent to this connector with the LoopingPollingReadConnector 
@@ -52,10 +57,8 @@ import java.sql.*;
  * The (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
  * DBEventDrivenPollingReadConnector. 
  * 
- * Associates an IResultSetConverter with the connector, by default this 
- * is <code>ResultSetToOrderedMapConverter</code>.
- * 
  * @see LoopingPollingReadConnector, DBEventDrivenPollingReadConnector, ThrottlingReadConnector
+ * @see ResultSetToOrderedMapConverter, ResultSetToXMLConverter
  * @author Eddy Higgins, Kris Lachor
  */
 public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichmentReadConnector, ITransactional{
@@ -249,19 +252,23 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
 
 
   /**
-   * Sets input parameters on the SQL query with parameter placeholders.
-   * Then calls #next(long).
+   * The method is used in the context of an enrichment processor. In the 'standalone'
+   * mode, i.e. when the this read connector is not embedded in an enrichment processor,
+   * the {{@link #next(long)} method is used directly.
+   * 
+   * First replaces parameter placeholders on the SQL query with concrete values.
+   * Then calls #next(long). Also sets the internal flag for <code>enrichmentMode</code>
+   * to true.
    * 
    * @see #next(long)
    * @see #setParametersForQuery(IOrderedMap)
+   * @see IEnrichmentProcessor
    * @return Object[] array of objects from resultset
    */  
   public Object[] next(IOrderedMap inputParameters, long timeout) {    
     enrichmentMode = true;
     if(inputParameters != null){
-      for(int i=1; i<=inputParameters.size(); i++){
-        setParametersForQuery(inputParameters);
-      }     
+      setParametersForQuery(inputParameters);
     }
     else{     
       log.info("No input parameters for enrichment call");
@@ -270,8 +277,12 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
   }
 
   /**
-   * Replaces parameters placeholders in <code>sql</code>, with concrete values
+   * Replaces parameter placeholders in <code>sql</code>, with concrete values
    * from <code>inputParameters</code>. 
+   * 
+   * During the substitution, the n-th substitution parameter (character '?') in the sql statement
+   * will be replaced with the n-th value in the ordered map. Only the order of the entries, not 
+   * the actual value of the keys in the ordered map, is considered during the substitution.
    * 
    * @see JDBCReadConnector#next(IOrderedMap, long)
    */
@@ -404,7 +415,7 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
   }
   
   /**
-   * Set sql statement to be executed
+   * Set sql statement to be executed.
    *
    * @param sql
    */
