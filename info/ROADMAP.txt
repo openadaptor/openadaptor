@@ -1,0 +1,24 @@
+
+1. Deleting ladders.
+
+   Ladder table should have a 'enabled' or 'disabledTimestamp' columns. Deleting Ladders should just change
+   the enabled flag. 
+   
+2. Transfering ownership. 
+
+3. Optional messaging when challenging players. 
+
+   Text field should be optional. Probably also best to persist the message in a database. 
+   
+4. Multiple comments for a match - both players should be able to add. May try to fit in the same match table rather
+   than multiple tables.
+   
+5. Lengths of fields in the user registration form. There was a problem with validation of either address or postcode.
+
+6. Ladders should also have city, country and postcode associated with them.  
+
+7. Management console - changing the max diff for challenge flag.       
+
+8. Search form more advanced. 
+
+9. Ladder - new flag - search'able or not. 
