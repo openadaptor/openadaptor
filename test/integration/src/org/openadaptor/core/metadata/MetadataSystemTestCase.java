@@ -52,10 +52,11 @@ public class MetadataSystemTestCase extends TestCase {
   
   /**
    * Starts a simple adaptor that does not throw exceptions,
-   * ensures there were no calls to the exceptionProcessor. Validates metadata set in 
-   * the read connector and a processor.
+   * ensures there were no calls to the exceptionProcessor. 
+   * 
+   * Validates metadata set in the read connector and processor.
    */
-  public void testModifyMetadata(){
+  public void testModifyMetadataInProcessor(){
     processMap.put(new TestComponent.TestReadConnector(), new MetadataDataProcessor());
     processMap.put(new MetadataDataProcessor(), new MetadataAccessingWriteConnector2());
     router.setProcessMap(processMap);
@@ -66,14 +67,17 @@ public class MetadataSystemTestCase extends TestCase {
     assertTrue(eHandler.counter == 0);
   }
   
+  
+  
   /**
    * A processor based on {@link TestComponent.DummyDataProcessor} that also
    * accesses and adds to the message metadata.
    */
-  public static final class MetadataDataProcessor extends Component implements IDataProcessor, IMetadataAware {
+  public static class MetadataDataProcessor extends Component implements IDataProcessor, IMetadataAware {
+    
     public int counter = 0;
     
-    private Map metadata;
+    protected Map metadata;
     
     public Object[] process(Object data) {
       counter++;
@@ -88,6 +92,15 @@ public class MetadataSystemTestCase extends TestCase {
       this.metadata = metadata;
     }
   }
+  
+  public static final class MetadataDataProcessorSplitMessage extends MetadataDataProcessor {
+    public Object[] process(Object data) {
+      counter++;
+      metadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+      return new Object[]{data, data};
+    }
+  }
+    
   
   /**
    * A write connector based on {@link TestComponent.TestWriteConnector} that also
@@ -135,6 +148,25 @@ public class MetadataSystemTestCase extends TestCase {
    * Different validation than in the writer connector above.
    */
   protected class MetadataAccessingWriteConnector2 extends MetadataAccessingWriteConnector{
+    public Object deliver(Object[] data) {
+      /* Check the metadata */
+      if(metadata.size()!=2){
+        throw new RuntimeException("Wrong metadata size");
+      }
+      if(!metadata.get(TestComponent.TEST_METADATA_KEY).equals(TestComponent.TEST_METADATA_VALUE)){
+        throw new RuntimeException("Wrong metadata content. Missing metadata added by the read connector");
+      }
+      if(metadata.get(TEST_METADATA_KEY)==null || !metadata.get(TEST_METADATA_KEY).equals(TEST_METADATA_VALUE)){
+        throw new RuntimeException("Wrong metadata content. Missing metadata added by the processor");
+      }
+      return null;
+    }
+  }
+  
+  /**
+   * 
+   */
+  protected class MetadataAccessingWriteConnectorSplitMessage extends MetadataAccessingWriteConnector{
     public Object deliver(Object[] data) {
       /* Check the metadata */
       if(metadata.size()!=2){
