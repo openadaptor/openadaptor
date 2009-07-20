@@ -21,4 +21,6 @@
 
 8. Search form more advanced. 
 
-9. Ladder - new flag - search'able or not. 
+9. Ladder - new flag - search'able or not. Defaults to false. 
+
+10. New check box in ladder management. 
