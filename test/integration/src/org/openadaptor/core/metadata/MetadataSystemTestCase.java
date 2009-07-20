@@ -16,11 +16,11 @@ import org.openadaptor.util.TestComponent;
 import junit.framework.TestCase;
 
 /**
- * Integration tests for the metadata. 
+ * Integration/system tests for the metadata. 
  * 
  * @author Kris Lachor
  */
-public class MetadataTestCase extends TestCase {
+public class MetadataSystemTestCase extends TestCase {
   
   public static String TEST_METADATA_KEY = "Processor";
   public static String TEST_METADATA_VALUE = "Metadata";
