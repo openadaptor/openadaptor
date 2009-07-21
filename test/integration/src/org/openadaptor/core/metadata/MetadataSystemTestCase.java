@@ -9,6 +9,7 @@ import java.util.Map;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMetadataAware;
+import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
@@ -65,8 +66,11 @@ public class MetadataSystemTestCase extends TestCase {
     expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
     IWriteConnector writeConnector = new MetadataAccessingWriteConnector(expectedMetadata);
-    processMap.put(new TestComponent.TestReadConnector(), new MetadataDataProcessor());
-    processMap.put(new MetadataDataProcessor(), writeConnector);
+    Map addToMetadata = new HashMap();
+    addToMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IDataProcessor processor = new MetadataDataProcessor(addToMetadata);
+    processMap.put(new TestComponent.TestReadConnector(), processor);
+    processMap.put(processor, writeConnector);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -75,7 +79,46 @@ public class MetadataSystemTestCase extends TestCase {
     assertTrue(eHandler.counter == 0);
   }
   
-  
+  /**
+   * Starts a simple adaptor that does not throw exceptions,
+   * ensures there were no calls to the exceptionProcessor. 
+   * 
+   * Tests a fan-out. The read connector fans out to two different processors.
+   * First processor add something else than the second processor to the metadata.
+   * 
+   * Two different write connectors verify the metadata for both has been different. 
+   */
+  public void testModifyMetadataFanout(){
+    Map expectedMetadata1 = new HashMap();
+    expectedMetadata1.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    expectedMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IWriteConnector writeConnector1 = new MetadataAccessingWriteConnector(expectedMetadata1);
+    
+    Map expectedMetadata2 = new HashMap();
+    expectedMetadata2.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    expectedMetadata2.put("foo", "bar");
+    IWriteConnector writeConnector2 = new MetadataAccessingWriteConnector(expectedMetadata2);
+    
+    
+    Map addToMetadata1 = new HashMap();
+    addToMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IDataProcessor processor1 = new MetadataDataProcessor(addToMetadata1);
+    Map addToMetadata2 = new HashMap();
+    addToMetadata2.put("foo", "bar");
+    IDataProcessor processor2 = new MetadataDataProcessor(addToMetadata2);
+    
+    IReadConnector readConnector = new TestComponent.TestReadConnector();
+    processMap.put(readConnector, processor1);
+    processMap.put(readConnector, processor2);
+    processMap.put(processor1, writeConnector1);
+    processMap.put(processor2, writeConnector2);
+    router.setProcessMap(processMap);
+    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    adaptor.run();
+    assertTrue(eHandler.counter == 0);
+  }
   
   /**
    * A processor based on {@link TestComponent.DummyDataProcessor} that also
@@ -87,9 +130,15 @@ public class MetadataSystemTestCase extends TestCase {
     
     protected Map metadata;
     
+    protected Map addToMetadata;
+    
+    public MetadataDataProcessor(Map addToMetadata) {
+      this.addToMetadata = addToMetadata;
+    }
+
     public Object[] process(Object data) {
       counter++;
-      metadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+      metadata.putAll(addToMetadata);
       return new Object[]{data};
     }
     
@@ -102,9 +151,13 @@ public class MetadataSystemTestCase extends TestCase {
   }
   
   public static final class MetadataDataProcessorSplitMessage extends MetadataDataProcessor {
+    
+    public MetadataDataProcessorSplitMessage(Map addToMetadata) {
+      super(addToMetadata);
+    }
+
     public Object[] process(Object data) {
-      counter++;
-      metadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+      super.process(data);
       return new Object[]{data, data};
     }
   }
