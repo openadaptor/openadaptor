@@ -2,6 +2,7 @@ package org.openadaptor.core.metadata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,10 @@ public class MetadataSystemTestCase extends TestCase {
    * the read connector.
    */
   public void testAccessMetadata(){
-    processMap.put(new TestComponent.TestReadConnector(), new MetadataAccessingWriteConnector());
+    Map expectedMetadata = new HashMap();
+    expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    IWriteConnector writeConnector = new MetadataAccessingWriteConnector(expectedMetadata);
+    processMap.put(new TestComponent.TestReadConnector(), writeConnector);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -57,8 +61,12 @@ public class MetadataSystemTestCase extends TestCase {
    * Validates metadata set in the read connector and processor.
    */
   public void testModifyMetadataInProcessor(){
+    Map expectedMetadata = new HashMap();
+    expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    expectedMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IWriteConnector writeConnector = new MetadataAccessingWriteConnector(expectedMetadata);
     processMap.put(new TestComponent.TestReadConnector(), new MetadataDataProcessor());
-    processMap.put(new MetadataDataProcessor(), new MetadataAccessingWriteConnector2());
+    processMap.put(new MetadataDataProcessor(), writeConnector);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
@@ -114,7 +122,13 @@ public class MetadataSystemTestCase extends TestCase {
     public int counter = 0;
     
     public List dataCollection = new ArrayList();
+  
+    private Map expectedMetadata;
     
+    public MetadataAccessingWriteConnector(Map expectedMetadata) {
+      this.expectedMetadata = expectedMetadata;
+    }
+
     public void connect() {}
     
     public void disconnect() {}
@@ -127,13 +141,16 @@ public class MetadataSystemTestCase extends TestCase {
        dataCollection.add(data);
        
        /* Check the metadata */
-       if(metadata.size()!=1){
+       if(metadata.size()!= expectedMetadata.size()){
          throw new RuntimeException("Wrong metadata size");
        }
-       if(!metadata.get(TestComponent.TEST_METADATA_KEY).equals(TestComponent.TEST_METADATA_VALUE)){
-         throw new RuntimeException("Wrong metadata content");
-       }
-       
+       Iterator it = expectedMetadata.keySet().iterator();
+       while(it.hasNext()){
+         Object key = it.next();
+         if(!metadata.get(key).equals(expectedMetadata.get(key))){
+           throw new RuntimeException("Wrong metadata content");
+         }
+       }       
        return null;
     }
     
@@ -144,42 +161,5 @@ public class MetadataSystemTestCase extends TestCase {
     }
   }
   
-  /**
-   * Different validation than in the writer connector above.
-   */
-  protected class MetadataAccessingWriteConnector2 extends MetadataAccessingWriteConnector{
-    public Object deliver(Object[] data) {
-      /* Check the metadata */
-      if(metadata.size()!=2){
-        throw new RuntimeException("Wrong metadata size");
-      }
-      if(!metadata.get(TestComponent.TEST_METADATA_KEY).equals(TestComponent.TEST_METADATA_VALUE)){
-        throw new RuntimeException("Wrong metadata content. Missing metadata added by the read connector");
-      }
-      if(metadata.get(TEST_METADATA_KEY)==null || !metadata.get(TEST_METADATA_KEY).equals(TEST_METADATA_VALUE)){
-        throw new RuntimeException("Wrong metadata content. Missing metadata added by the processor");
-      }
-      return null;
-    }
-  }
-  
-  /**
-   * 
-   */
-  protected class MetadataAccessingWriteConnectorSplitMessage extends MetadataAccessingWriteConnector{
-    public Object deliver(Object[] data) {
-      /* Check the metadata */
-      if(metadata.size()!=2){
-        throw new RuntimeException("Wrong metadata size");
-      }
-      if(!metadata.get(TestComponent.TEST_METADATA_KEY).equals(TestComponent.TEST_METADATA_VALUE)){
-        throw new RuntimeException("Wrong metadata content. Missing metadata added by the read connector");
-      }
-      if(metadata.get(TEST_METADATA_KEY)==null || !metadata.get(TEST_METADATA_KEY).equals(TEST_METADATA_VALUE)){
-        throw new RuntimeException("Wrong metadata content. Missing metadata added by the processor");
-      }
-      return null;
-    }
-  }
   
 }
