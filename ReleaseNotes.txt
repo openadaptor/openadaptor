@@ -27,7 +27,9 @@ Processors
  * (SC80) Default values of FIXED and REPROCESSED columns in ExceptionToOrderedMapConvertor
    can now be overwritten via setters, enabling collaboration with databases such
    as Postgres. Contributed by Johannes Nicolai.   
-
+     
+ * (SC87) ScriptConditionProcessor now validates ifProcessor and thenProcessor.
+ 
 Examples
 ========
  * Added an example that demonstrates use of message metadata

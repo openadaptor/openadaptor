@@ -109,6 +109,10 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
     return output;
   }
   
+  /**
+   * Checks that scriptProcessor, ifPrcessor and thenProcessor were all set.
+   * Calls {@link #validate(List)} on each of: scriptProcessor, ifPrcessor and thenProcessor (SC87).
+   */
   public void validate(List exceptions) {
     if (exceptions==null) { //IDataProcessor requires a non-null List
       throw new IllegalArgumentException("exceptions List may not be null");
@@ -122,8 +126,14 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
     if (ifProcessor == null) {
       exceptions.add(new ValidationException("ifProcessor property not set", this));
     }
+    else{
+      ifProcessor.validate(exceptions);
+    }
     if (thenProcessor == null) {
       exceptions.add(new ValidationException("thenProcessor property not set", this));
+    }
+    else{
+      thenProcessor.validate(exceptions);
     }
   }
   
