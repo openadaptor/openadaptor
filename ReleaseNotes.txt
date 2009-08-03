@@ -12,7 +12,8 @@ openadaptor 3.4.4
 
 Connectors
 ==========
- * (SC43) 
+ * (SC43) setParametersForQuery in JDBCReadConnector gets called for every 
+   supplied parameter.
 
 Processors
 ==========
@@ -28,7 +29,7 @@ Processors
    can now be overwritten via setters, enabling collaboration with databases such
    as Postgres. Contributed by Johannes Nicolai.   
      
- * (SC87) ScriptConditionProcessor now validates ifProcessor and thenProcessor.
+ * (SC87, SC88) ScriptConditionProcessor now validates and resets ifProcessor and thenProcessor.
  
 Examples
 ========

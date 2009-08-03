@@ -138,12 +138,14 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
   }
   
   /**
-   * TODO call reset on ifProcessor and elseProcessor?
+   * Calls {@link #reset(Object)} on each of: scriptProcessor, ifPrcessor and thenProcessor (SC88).
    * 
    * @see IDataProcessor#reset(Object)
    */
   public void reset(Object context) {
     scriptProcessor.reset(context);   
+    ifProcessor.reset(context);
+    thenProcessor.reset(context);
   }
 
 }
