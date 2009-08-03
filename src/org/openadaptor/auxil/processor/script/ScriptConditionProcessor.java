@@ -38,14 +38,13 @@ import org.openadaptor.core.exception.ValidationException;
 
 /**
  * Wrapper around a ScriptProcessor which allows alternate processing
- * depending on the result of the executed script
+ * depending on the result of the executed script.
  * 
  * Note: This has been changed to use delegation rather than
  * inheritance to allow the use of alternate ScriptProcessor types,
  * such as MapFilterProcessor.
  * 
  * @author higginse
- * 
  */
 
 public class ScriptConditionProcessor extends Component implements IDataProcessor {
@@ -55,16 +54,22 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
   private IDataProcessor ifProcessor;
   private IDataProcessor thenProcessor;
 
+  /**
+   * Constructor.
+   */
   public ScriptConditionProcessor() {
     super();
   }
 
+  /**
+   * Constructor.
+   */
   public ScriptConditionProcessor(String id) {
     super(id);
   }
   
   /**
-   * Assign the delegate ScriptProcessor which while actually
+   * Assign the delegate ScriptProcessor which will actually
    * execute the script.
    * 
    * @param scriptProcessor
@@ -72,6 +77,10 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
   public void setScriptProcessor(ScriptProcessor scriptProcessor) {
     this.scriptProcessor=scriptProcessor;
   }
+  
+  /**
+   * @return the delegate processor that actually executes the script.
+   */
   public ScriptProcessor getScriptProcessor() {
     return scriptProcessor;
   }
@@ -110,13 +119,19 @@ public class ScriptConditionProcessor extends Component implements IDataProcesso
     else {
       scriptProcessor.validate(exceptions);
     }
-   if (ifProcessor == null) {
+    if (ifProcessor == null) {
       exceptions.add(new ValidationException("ifProcessor property not set", this));
     }
     if (thenProcessor == null) {
       exceptions.add(new ValidationException("thenProcessor property not set", this));
     }
   }
+  
+  /**
+   * TODO call reset on ifProcessor and elseProcessor?
+   * 
+   * @see IDataProcessor#reset(Object)
+   */
   public void reset(Object context) {
     scriptProcessor.reset(context);   
   }
