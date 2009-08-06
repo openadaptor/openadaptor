@@ -92,6 +92,15 @@ public class Message {
   }
 
   /**
+   * Sets metadata that describes or relates to this message.
+   * 
+   * @param metadata
+   */
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;
+  }
+  
+  /**
    * @return a transaction related to this message.
    */
   public ITransaction getTransaction() {

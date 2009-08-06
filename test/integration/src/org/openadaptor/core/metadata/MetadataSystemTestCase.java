@@ -18,7 +18,7 @@ import org.openadaptor.util.TestComponent;
 import junit.framework.TestCase;
 
 /**
- * Integration/system tests for the metadata. 
+ * Integration/system tests for handling of the metadata. 
  * 
  * @author Kris Lachor
  */
@@ -39,18 +39,23 @@ public class MetadataSystemTestCase extends TestCase {
   
   /**
    * Starts a simple adaptor that does not throw exceptions,
-   * ensures there were no calls to the exceptionProcessor. Validates metadata set in 
-   * the read connector.
+   * ensures there were no calls to the exceptionProcessor. 
+   * 
+   * Read connector -> Metadata validating write connector
+   * 
+   * The write connector validates metadata set in the read connector.
    */
   public void testAccessMetadata(){
     Map expectedMetadata = new HashMap();
     expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
-    IWriteConnector writeConnector = new MetadataAccessingWriteConnector(expectedMetadata);
+    
+    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
     processMap.put(new TestComponent.TestReadConnector(), writeConnector);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
+    
     adaptor.run();
     assertTrue(eHandler.counter == 0);
   }
@@ -59,13 +64,16 @@ public class MetadataSystemTestCase extends TestCase {
    * Starts a simple adaptor that does not throw exceptions,
    * ensures there were no calls to the exceptionProcessor. 
    * 
+   * Read connector -> Metadata enriching processor -> Metadata validating write connector
+   * 
    * Validates metadata set in the read connector and processor.
    */
   public void testModifyMetadataInProcessor(){
     Map expectedMetadata = new HashMap();
     expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
-    IWriteConnector writeConnector = new MetadataAccessingWriteConnector(expectedMetadata);
+    
+    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
     Map addToMetadata = new HashMap();
     addToMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
     IDataProcessor processor = new MetadataDataProcessor(addToMetadata);
@@ -75,30 +83,35 @@ public class MetadataSystemTestCase extends TestCase {
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
+    
     adaptor.run();
     assertTrue(eHandler.counter == 0);
   }
   
   /**
-   * Starts a simple adaptor that does not throw exceptions,
+   * Tests the Router#cloneMetadataOnFanout flag set to true;
+   * 
+   * Starts a simple adaptor (that does not throw exceptions),
    * ensures there were no calls to the exceptionProcessor. 
    * 
    * Tests a fan-out. The read connector fans out to two different processors.
-   * First processor add something else than the second processor to the metadata.
+   * First processor adds something else than the second processor to the metadata.
    * 
+   * Read connector -> Metadata enriching processor 1 -> Metadata validating write connector 1
+   *                -> Metadata enriching processor 2 -> Metadata validating write connector 2
+   *                
    * Two different write connectors verify the metadata for both has been different. 
    */
-  public void testModifyMetadataFanout(){
+  public void testModifyMetadataFanout_CloneMetadataOnFanout_ON(){
     Map expectedMetadata1 = new HashMap();
     expectedMetadata1.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
-    IWriteConnector writeConnector1 = new MetadataAccessingWriteConnector(expectedMetadata1);
+    IWriteConnector writeConnector1 = new MetadataValidatingWriteConnector(expectedMetadata1);
     
     Map expectedMetadata2 = new HashMap();
     expectedMetadata2.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata2.put("foo", "bar");
-    IWriteConnector writeConnector2 = new MetadataAccessingWriteConnector(expectedMetadata2);
-    
+    IWriteConnector writeConnector2 = new MetadataValidatingWriteConnector(expectedMetadata2);
     
     Map addToMetadata1 = new HashMap();
     addToMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
@@ -107,19 +120,69 @@ public class MetadataSystemTestCase extends TestCase {
     addToMetadata2.put("foo", "bar");
     IDataProcessor processor2 = new MetadataDataProcessor(addToMetadata2);
     
+    List fanOutList = new ArrayList();
+    fanOutList.add(processor1);
+    fanOutList.add(processor2);
+    
     IReadConnector readConnector = new TestComponent.TestReadConnector();
-    processMap.put(readConnector, processor1);
-    processMap.put(readConnector, processor2);
+    processMap.put(readConnector, fanOutList);
     processMap.put(processor1, writeConnector1);
     processMap.put(processor2, writeConnector2);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
     assertTrue(eHandler.counter == 0);
     router.setExceptionProcessor(eHandler);
+    router.setCloneMetadataOnFanout(true);
+    
     adaptor.run();
     assertTrue(eHandler.counter == 0);
   }
   
+  /**
+   * Tests the Router#cloneMetadataOnFanout flag set to false (default). Based on
+   * testModifyMetadataFanout_CloneMetadataOnFanout_ON.
+   */
+  public void testModifyMetadataFanout_CloneMetadataOnFanout_OFF(){
+    Map expectedMetadata1 = new HashMap();
+    expectedMetadata1.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    expectedMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IWriteConnector writeConnector1 = new MetadataValidatingWriteConnector(expectedMetadata1);
+    
+    Map expectedMetadata2 = new HashMap();
+    expectedMetadata2.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    expectedMetadata2.put("foo", "bar");
+    
+    /* Extra element expected in Metadata (added in branch 1) */
+    expectedMetadata2.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+  
+    IWriteConnector writeConnector2 = new MetadataValidatingWriteConnector(expectedMetadata2);
+    
+    Map addToMetadata1 = new HashMap();
+    addToMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    IDataProcessor processor1 = new MetadataDataProcessor(addToMetadata1);
+    Map addToMetadata2 = new HashMap();
+    addToMetadata2.put("foo", "bar");
+    
+    IDataProcessor processor2 = new MetadataDataProcessor(addToMetadata2);
+    
+    List fanOutList = new ArrayList();
+    fanOutList.add(processor1);
+    fanOutList.add(processor2);
+    
+    IReadConnector readConnector = new TestComponent.TestReadConnector();
+    processMap.put(readConnector, fanOutList);
+    processMap.put(processor1, writeConnector1);
+    processMap.put(processor2, writeConnector2);
+    router.setProcessMap(processMap);
+    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    
+    adaptor.run();
+    assertTrue(eHandler.counter == 0);
+  }
+  
+ 
   /**
    * A processor based on {@link TestComponent.DummyDataProcessor} that also
    * accesses and adds to the message metadata.
@@ -165,9 +228,12 @@ public class MetadataSystemTestCase extends TestCase {
   
   /**
    * A write connector based on {@link TestComponent.TestWriteConnector} that also
-   * validates the metadata.
+   * validates the metadata set in previous components.
+   * 
+   * Expected metadata is passed in to the constructor. Failed validation results
+   * in a RuntimeException from {@link #deliver(Object[])}
    */
-  protected class MetadataAccessingWriteConnector extends Component 
+  protected class MetadataValidatingWriteConnector extends Component 
        implements IWriteConnector, IMetadataAware {
     
     protected Map metadata;
@@ -178,7 +244,7 @@ public class MetadataSystemTestCase extends TestCase {
   
     private Map expectedMetadata;
     
-    public MetadataAccessingWriteConnector(Map expectedMetadata) {
+    public MetadataValidatingWriteConnector(Map expectedMetadata) {
       this.expectedMetadata = expectedMetadata;
     }
 
@@ -195,7 +261,7 @@ public class MetadataSystemTestCase extends TestCase {
        
        /* Check the metadata */
        if(metadata.size()!= expectedMetadata.size()){
-         throw new RuntimeException("Wrong metadata size");
+         throw new RuntimeException("Wrong metadata size. " + "Expected " + expectedMetadata.size() + ". Received " + metadata.size());
        }
        Iterator it = expectedMetadata.keySet().iterator();
        while(it.hasNext()){
@@ -213,6 +279,5 @@ public class MetadataSystemTestCase extends TestCase {
       this.metadata = metadata;
     }
   }
-  
   
 }

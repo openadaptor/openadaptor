@@ -39,7 +39,7 @@ Examples
 Miscellaneous
 =============
 
- * Support for message metadata. (SC84)
+ * Support for message metadata. (SC84, SC89)
 
 Bug Fixes
 =========

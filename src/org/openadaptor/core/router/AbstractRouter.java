@@ -52,6 +52,7 @@ import org.openadaptor.core.lifecycle.ILifecycleComponentManager;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
 import org.openadaptor.core.transaction.ITransaction;
+import org.openadaptor.util.ObjectCloner;
 
 /**
  * Shared implementation of a {@link Router} and {@link Pipeline}.
@@ -79,6 +80,16 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
 
   /** Metrics disabled by default .*/
   private boolean metricsEnabled = false;
+  
+  /** See description at the setter method. */
+  private boolean cloneMetadataOnFanout = false;
+  
+  /** 
+   * Cloner for optional cloning of message metadata 
+   * 
+   * @see #setCloneMetadataOnFanout(boolean)
+   */
+  private ObjectCloner cloner=new ObjectCloner();
   
   /**
    * Constructor.
@@ -134,11 +145,12 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   }
 
   /**
-   * Process an incoming msg.
+   * Process an incoming message.
    * <br>
    * This will typically lookup all the IMesssageProcessors which 
    * should be receiving this message, and ask each in turn to
    * process it.
+   * 
    * @param msg Incoming Message
    * @return Response, usually empty.
    */
@@ -159,7 +171,11 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   }
 
   /**
-   * Pass the message to a list of IMessageProcessors, in turn.
+   * Pass the message to a list of IMessageProcessors, in turn. If dealing with a fan-out
+   * (splitting of processing pipeline into branches) it optionally, i.e. depending
+   * of the value of <code>cloneMetadataOnFanout</code> flag, clone the metadata to 
+   * prevent sharing it between components in different branches. 
+   * 
    * @param msg
    * @param destinations
    * @return Response - Should be an empty Response assuming all goes well.
@@ -168,9 +184,30 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     if (log.isDebugEnabled()) {
       logRoutingDebug((IMessageProcessor)msg.getSender(), destinations);
     }
+   
+    Map [] metadataClones = null;
+    boolean fanout = destinations!=null && destinations.size()>1;
+    
+    /* 
+     * If fan-out and cloneMetadataOnFanout is ON create copies of meta data 
+     * for every branch. 
+     */
+    if(fanout && cloneMetadataOnFanout){
+      metadataClones = new Map[destinations.size()];
+      for(int i=0; i< destinations.size(); i++){
+        metadataClones[i] = (Map) cloner.clone(msg.getMetadata());
+      }
+    }
+    int destinationNo = 0;
     for (Iterator iter = destinations.iterator(); iter.hasNext();) {
       IMessageProcessor processor = (IMessageProcessor) iter.next();
-       process(msg,processor);
+      
+      /* Overwrite metadata with a clone if necessary*/
+      if(fanout && cloneMetadataOnFanout){
+        msg.setMetadata(metadataClones[destinationNo++]);
+      }
+      
+      process(msg,processor);
     }
     return new Response();
   }
@@ -283,5 +320,14 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
   public void setMetricsEnabled(boolean metricsEnabled) {
     metrics.setMetricsEnabled(metricsEnabled);
   }
- 
+
+  /**
+   * If set to true, metadata will be cloned on every entry to a new branch in the pipeline (fanout).
+   * For efficiency reasons (many adaptors may use fan-outs but not use the metadata 
+   * feature) the default value is false.
+   */
+  public void setCloneMetadataOnFanout(boolean cloneMetadataOnFanout) {
+    this.cloneMetadataOnFanout = cloneMetadataOnFanout;
+  }
+  
 }
