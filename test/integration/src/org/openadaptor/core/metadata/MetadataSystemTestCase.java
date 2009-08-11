@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.openadaptor.auxil.processor.GenericEnrichmentProcessor;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.IMetadataAware;
@@ -24,8 +25,8 @@ import junit.framework.TestCase;
  */
 public class MetadataSystemTestCase extends TestCase {
   
-  public static String TEST_METADATA_KEY = "Processor";
-  public static String TEST_METADATA_VALUE = "Metadata";
+  public static String TEST_METADATA_KEY    = "Processor";
+  public static String TEST_METADATA_VALUE  = "Metadata";
   
   private Router router = new Router();
   
@@ -182,6 +183,40 @@ public class MetadataSystemTestCase extends TestCase {
     assertTrue(eHandler.counter == 0);
   }
   
+  /**
+   *  Read connector -> Metadata enriching processor -> Metadata validating write connector
+   */
+  public void testEnrichmentProcessor(){
+    Map expectedMetadata = new HashMap();
+    /* From read connector */
+    expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
+    
+    /* From enrichment processor's read connector */
+    expectedMetadata.put("Enrichment Read Connector", "Hello");
+    
+    /* From enrichment processor itself */
+    expectedMetadata.put("EnrichmentProcessor", "Hello");
+    
+    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
+    
+    TestComponent.TestEnrichmentReadConnector enrichReadConnector = new TestComponent.TestEnrichmentReadConnector();
+    Map addToMetadata = new HashMap();
+    addToMetadata.put("Enrichment Read Connector", "Hello");
+    enrichReadConnector.setAddToMetadata(addToMetadata);
+    MetadataEnrichmentProcessor enrichmentProcessor = new MetadataEnrichmentProcessor();
+    enrichmentProcessor.setReadConnector(enrichReadConnector);
+    
+    IReadConnector readConnector = new TestComponent.TestReadConnector();
+    processMap.put(readConnector, enrichmentProcessor);
+    processMap.put(enrichmentProcessor, writeConnector);
+    router.setProcessMap(processMap);
+    TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
+    assertTrue(eHandler.counter == 0);
+    router.setExceptionProcessor(eHandler);
+    
+    adaptor.run();
+    assertTrue(eHandler.counter == 0);
+  }
  
   /**
    * A processor based on {@link TestComponent.DummyDataProcessor} that also
@@ -259,6 +294,13 @@ public class MetadataSystemTestCase extends TestCase {
        }
        dataCollection.add(data);
        
+       Iterator ite = metadata.keySet().iterator();
+       while(ite.hasNext()){
+         Object key = ite.next();
+         Object value = metadata.get(key);
+         System.out.println(key + "  " + value);
+       }
+       
        /* Check the metadata */
        if(metadata.size()!= expectedMetadata.size()){
          throw new RuntimeException("Wrong metadata size. " + "Expected " + expectedMetadata.size() + ". Received " + metadata.size());
@@ -274,6 +316,19 @@ public class MetadataSystemTestCase extends TestCase {
     }
     
     public void validate(List exceptions) {}
+
+    public void setMetadata(Map metadata) {
+      this.metadata = metadata;
+    }
+  }
+  
+  protected class MetadataEnrichmentProcessor extends GenericEnrichmentProcessor implements IMetadataAware{
+    protected Map metadata;
+    
+    public Object[] enrich(Object input, Object[] enrichmentData) {
+      metadata.put("EnrichmentProcessor", "Hello");      
+      return super.enrich(input, enrichmentData);
+    }
 
     public void setMetadata(Map metadata) {
       this.metadata = metadata;

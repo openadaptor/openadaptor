@@ -36,6 +36,9 @@ import org.openadaptor.core.IComponent;
 import org.openadaptor.core.IEnrichmentProcessor;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IMessageProcessor;
+import org.openadaptor.core.IMetadataAware;
+import org.openadaptor.core.Message;
+import org.openadaptor.core.Response;
 import org.openadaptor.core.lifecycle.ILifecycleComponent;
 
 /**
@@ -47,6 +50,9 @@ import org.openadaptor.core.lifecycle.ILifecycleComponent;
  * firstly this node connects and disconnects the underlying reader, secondly 
  * processing of a single record of data is different than in Node -
  * this difference is implemented in {@link EnrichmentProcessorNode#processSingleRecord(Object)}.
+ * 
+ * If the <code>enrichmentProcessor</code> and/or <code>readConnector</code> are 
+ * {@link IMetadataAware} this class injects the metadata.
  * 
  * @author Kris Lachor
  * @since Post 3.3
@@ -144,9 +150,8 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
       parameters = enrichmentProcessor.prepareParameters((IOrderedMap)record);
     }
     if (log.isDebugEnabled() && parameters!=null){
-        log.debug("Parameters to set on the reader: " + parameters);
-        log.debug("Number of parameters: " +  parameters.size());
-      
+      log.debug("Parameters to set on the reader: " + parameters);
+      log.debug("Number of parameters: " +  parameters.size()); 
     }
     if(parameters == null){
       log.warn("No parameters for reader");
@@ -158,8 +163,24 @@ public final class EnrichmentProcessorNode extends Node implements IMessageProce
     if (log.isDebugEnabled()) {
       log.debug("Reader returned: " + enrichmentData + ". Calling enricher...");
     }
-    Object [] outputs = enrichmentProcessor.enrich((IOrderedMap)record, enrichmentData);
+    Object [] outputs = enrichmentProcessor.enrich(record, enrichmentData);
     return outputs;
+  }
+  
+  /**
+   * Sets the metadata on enrichmentProcessor and the embedded read connector, then
+   * delegates to {@link Node#process(Message)}.
+   * 
+   * @see Node#process(Message)
+   */
+  public Response process(Message msg) {
+    if(enrichmentProcessor instanceof IMetadataAware){
+      ((IMetadataAware) enrichmentProcessor).setMetadata(msg.getMetadata());
+    }
+    if(readConnector instanceof IMetadataAware){
+      ((IMetadataAware) readConnector).setMetadata(msg.getMetadata());
+    }
+    return super.process(msg);
   }
   
   /**

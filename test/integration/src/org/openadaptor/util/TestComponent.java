@@ -28,6 +28,7 @@
 package org.openadaptor.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +58,9 @@ public class TestComponent {
   
   public static String TEST_ERROR_MESSAGE = "THIS IS A TEST ERROR/EXCEPTION AND SHOULD BE IGNORED.";
   
-  public static String TEST_METADATA_KEY = "Hello";
-  public static String TEST_METADATA_VALUE = "Uncle Jimmy";
+  public static String TEST_METADATA_KEY   = "Hello";
+  public static String TEST_METADATA_VALUE = "Uncle";
+ 
   //
   // IReadConnectors
   //
@@ -74,6 +76,11 @@ public class TestComponent {
     
     private Map metadata;
     
+    private Map addToMetadata = new HashMap();
+    {
+      addToMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+    }
+    
     public void connect() {}
     public void disconnect() {}
     public Object getReaderContext() {return null;}
@@ -87,7 +94,7 @@ public class TestComponent {
    
     public Object[] next(long timeoutMs) {
       /* Sample metadata can be accessed by downstream components.*/
-      metadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
+      metadata.putAll(addToMetadata);
       return new String[]{"Dummy read connector test data"}; 
     }
     
@@ -95,6 +102,10 @@ public class TestComponent {
     
     public void setMetadata(Map metadata) {
       this.metadata = metadata;  
+    }
+    
+    public void setAddToMetadata(Map addToMetadata) {
+      this.addToMetadata = addToMetadata;
     }
   }
   
