@@ -99,6 +99,8 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
 
   protected String recordKeySetByExistence = null;
 
+  protected String recordKeySetToMatchCount = null;
+
   protected Map incomingMap;
   
   protected Map outgoingMap;
@@ -179,6 +181,15 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
     return recordKeySetByExistence;
   }
   
+  public void setRecordKeySetToMatchCount(String recordKeySetToMatchCount) {
+    this.recordKeySetToMatchCount = recordKeySetToMatchCount;
+    this.enrichmentProcessorMode = true;
+  }
+
+  public String getRecordKeySetToMatchCount() {
+    return recordKeySetToMatchCount;
+  }
+  
   public void setIncomingMap(Map incomingMap) {
     this.incomingMap = incomingMap;
     this.enrichmentProcessorMode = true;
@@ -220,8 +231,8 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
         exceptions.add(new ValidationException("Must provide an incomingKeyMap and/or set recordKeyUsedAsSearchBase.",
             this));
       }
-      if ((outgoingMap == null || outgoingMap.size() < 1) && (recordKeySetByExistence == null)) {
-        log.warn("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence.");
+      if ((outgoingMap == null || outgoingMap.size() < 1) && (recordKeySetByExistence == null) && (recordKeySetToMatchCount == null)) {
+        log.warn("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence or recordKeySetToMatchCount.");
         exceptions.add(new ValidationException("Must provide an outgoingKeyMap and/or set recordKeyUsedForExistence.",
             this));
       }
@@ -324,6 +335,11 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
         if (recordKeySetByExistence != null) {
           ((IOrderedMap) result[0]).put(recordKeySetByExistence, valueIfDoesNotExist);
         }
+        
+        // And set match count flag to zero:
+        if (recordKeySetToMatchCount != null) {
+        	((IOrderedMap) result[0]).put(recordKeySetToMatchCount, "0");
+        }
       } else {
         int size = matches.length;
         log.debug("Enrichment search returned " + size + " results");
@@ -363,6 +379,11 @@ public abstract class AbstractJNDIReadConnector extends Component implements IRe
           // And set existence flag to exists:
           if (recordKeySetByExistence != null) {
             outgoing.put(recordKeySetByExistence, valueIfExists);
+          }
+
+          // And set match count flag to number of matches (set in each matching record):
+          if (recordKeySetToMatchCount != null) {
+            outgoing.put(recordKeySetToMatchCount, Integer.toString(size));
           }
 
           log.debug("OutputMap: " + outgoing);
