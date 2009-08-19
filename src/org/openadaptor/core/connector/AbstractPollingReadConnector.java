@@ -61,11 +61,15 @@ import java.util.List;
  * returns true
  * </ul>
  * 
+ * If the delate reader is {@link ITransactional} the polling reader will also be involved 
+ * in a transaction. For details see SC90.
+ * 
  * @see IPollingReadConnector
+ * @see ITransactional
  * @see IReadConnector
  * @author Fred Perry, Kris Lachor, Eddy Higgins
  */
-public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector{
+public abstract class AbstractPollingReadConnector extends Component implements IPollingReadConnector, ITransactional{
 
   private static final Log log = LogFactory.getLog(AbstractPollingReadConnector.class);
   
