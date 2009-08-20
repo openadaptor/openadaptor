@@ -40,6 +40,11 @@ Examples
  * Added an example that demonstrates use of message metadata
    (example\spring\adaptor\metadata.xml).  
 
+ * As far as possible property files containing values specific to particular service 
+   implementations, e.g, databases, JMS SPIs etc have now been consolidated in 
+   example/config. This has also allowed us to reduce the number of example specific readme 
+   files.
+     
 Miscellaneous
 =============
 
