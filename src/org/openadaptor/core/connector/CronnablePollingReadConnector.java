@@ -171,5 +171,6 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
       exceptions.add(new ValidationException("[cron] property not set. " 
           + "Please supply an instance of " + CronTrigger.class.getName(), this));   
     }
+    super.validate(exceptions);
   }
 }
