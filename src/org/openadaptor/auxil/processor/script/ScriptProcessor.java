@@ -46,6 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.ProcessingException;
@@ -63,10 +64,11 @@ import org.openadaptor.util.ObjectCloner;
  * @author higginse
  * 
  */
-public class ScriptProcessor extends Component implements IDataProcessor {
+public class ScriptProcessor extends Component implements IDataProcessor, IMetadataAware {
   private static final Log log =LogFactory.getLog(ScriptProcessor.class);
   public static final String DEFAULT_LANGUAGE="js"; //Javascript is the default language.
   public static final String DEFAULT_DATA_BINDING="oa_data"; //Bound name for data records
+  public static final String DEFAULT_METADATA_BINDING="oa_metadata"; //Bound name for data records
   public static final String DEFAULT_LOG_BINDING="oa_log"; //Bound name for logging
 
   protected ScriptEngine scriptEngine;
@@ -77,9 +79,12 @@ public class ScriptProcessor extends Component implements IDataProcessor {
   protected boolean compile = true;
   protected Object lastResult = null;
   protected String dataBinding = DEFAULT_DATA_BINDING;
+  protected String metadataBinding = DEFAULT_METADATA_BINDING;
   protected String logBinding= DEFAULT_LOG_BINDING;
   //This allows additional bindings
   protected Map additionalBindings=null;
+  
+  protected Map metadata = null;
 
   //Mechanism by which Objects are cloned.
   //This is due to change when a more general-purpose 
@@ -268,6 +273,7 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     //data=ReflectionUtils.clone(data);
     data=cloner.clone(data);
     try {
+      scriptEngine.put(metadataBinding, metadata);
       scriptEngine.put(dataBinding, data);
       if (compiledScript != null) {
         lastResult = compiledScript.eval();
@@ -570,4 +576,11 @@ public class ScriptProcessor extends Component implements IDataProcessor {
     return result;
   }
 
+  /**
+   * @see IMetadataAware#setMetadata(Map)
+   */
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata; 
+  }
+  
 }
