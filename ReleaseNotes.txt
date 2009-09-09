@@ -18,6 +18,8 @@ Connectors
  * (SC90) enrolling polling readers (LoopingPollingReadConnector and
    CronnablePollingReadConnector in a transaction if the delegate reader 
    is transactional.  
+   
+ * (SC92) correct validation of the CronnablePollingReadConnector   
 
 Processors
 ==========
