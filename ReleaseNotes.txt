@@ -12,21 +12,23 @@ openadaptor 3.4.4
 
 Connectors
 ==========
- * (SC43) setParametersForQuery in JDBCReadConnector gets called for every 
-   supplied parameter.
+
+ * (SC43) setParametersForQuery in JDBCReadConnector gets called for every supplied 
+   parameter.
    
  * (SC90) enrolling polling readers (LoopingPollingReadConnector and
    CronnablePollingReadConnector in a transaction if the delegate reader 
    is transactional.  
    
- * (SC92) correct validation of the CronnablePollingReadConnector   
+ * (SC92) correct validation of the CronnablePollingReadConnector.   
 
 Processors
 ==========
+
  * Default ScriptProcessor behaviour has been modified slightly. 
    Previously, all calls to process() method were forcibly synchronised.
-   This has now been changed to force synchronisation only if the 
-   synchronised property is set to true
+   This has now been changed to force synchronisation only if the synchronised 
+   property is set to true.
    
  * (SC83) GenericEnrichmentProcessor: new 'enrichmentElementName' property allows to
    further customise the way the input and enrichment data are merged together.  
@@ -35,27 +37,30 @@ Processors
    can now be overwritten via setters, enabling collaboration with databases such
    as Postgres. Contributed by Johannes Nicolai.   
      
- * (SC87, SC88) ScriptConditionProcessor now validates and resets ifProcessor and thenProcessor.
+ * (SC87, SC88) ScriptConditionProcessor now validates and resets ifProcessor 
+   and thenProcessor.
  
 Examples
 ========
+
  * Added an example that demonstrates use of message metadata
    (example\spring\adaptor\metadata.xml).  
 
  * As far as possible property files containing values specific to particular service 
    implementations, e.g, databases, JMS SPIs etc have now been consolidated in 
-   example/config. This has also allowed us to reduce the number of example specific readme 
-   files.
+   example/config. This has also allowed us to reduce the number of example specific
+   readme files.
      
 Miscellaneous
 =============
 
- * Support for message metadata. (SC84, SC89)
+ * Support for message metadata (SC84, SC89).
 
 Bug Fixes
 =========
 
-SC81: Exception when stopping Adaptor with AdaptorRunconfiguration via 'kill PID'
+SC81: Exception when stopping Adaptor with AdaptorRunconfiguration via 'kill PID'.
+
 
 =================================================
 openadaptor3 production 3.4.3 Release Notes
