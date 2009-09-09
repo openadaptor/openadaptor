@@ -92,7 +92,11 @@ public class ScriptProcessor extends Component implements IDataProcessor, IMetad
   //ToDo: Remove this (promote to Router or similar)
   private ObjectCloner cloner=new ObjectCloner();
   
-  private boolean synchronised=false;
+  /**
+   * Flag indicating whether or not script calls will be synchronised.
+   * Default value is <code>true<code> for historical compatibility reasons.
+   */
+  private boolean synchronised=true;
 
   /**
    * If true, then converted values will always be wrapped
@@ -236,12 +240,17 @@ public class ScriptProcessor extends Component implements IDataProcessor, IMetad
   
   /**
    * Used to force synchronisation on calls to the {@link #process} method.
-   * @param synchronised
+   * The default value is true for historical compatibility reasons.
+   * @param synchronised 
    */
   public void setSynchronised(boolean synchronised) {
   	this.synchronised=synchronised;
   }
   
+  /**
+   * Flag indicating whether script calls will be explicitly synchronised.
+   * @return true if calls will be syncronised, false otherwise
+   */
   public boolean getSynchronised() {return synchronised;}
   
   public Object[] process(Object data) {
