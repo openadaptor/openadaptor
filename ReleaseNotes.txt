@@ -4,7 +4,7 @@ openadaptor3 production 3.4.4 Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: stable release planned for early September
+Date: 15th September 2009
 Author: openadaptor Core Team
 
 openadaptor 3.4.4
