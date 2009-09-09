@@ -25,10 +25,10 @@ Connectors
 Processors
 ==========
 
- * Default ScriptProcessor behaviour has been modified slightly. 
-   Previously, all calls to process() method were forcibly synchronised.
-   This has now been changed to force synchronisation only if the synchronised 
-   property is set to true.
+ * Added synchronised property to ScriptProcessor. It is true by default, meaning
+   that existing behaviour is unchanged (i.e. calls to process() method will be 
+   forcibly synchronised). Unsetting this property will now mean that the process 
+   calls will no longer be explicitly synchronised.
    
  * (SC83) GenericEnrichmentProcessor: new 'enrichmentElementName' property allows to
    further customise the way the input and enrichment data are merged together.  
