@@ -39,8 +39,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-import org.openadaptor.auxil.processor.script.ScriptProcessorTestCase;
-import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.RecordException;
 
