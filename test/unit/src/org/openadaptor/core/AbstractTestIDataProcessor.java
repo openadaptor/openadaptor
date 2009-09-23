@@ -50,7 +50,7 @@ import org.openadaptor.core.exception.RecordException;
  * @author Kevin Scully
  */
 public abstract class AbstractTestIDataProcessor extends MockObjectTestCase {
-  private static final Log log =LogFactory.getLog(ScriptProcessorTestCase.class);
+  private static final Log log =LogFactory.getLog(AbstractTestIDataProcessor.class);
 
   protected static final String[] TEST_NAMES = { "F-1", "F-2", "F-3", "F-4" };
   protected static final String[] TEST_VALUES = { "Apples", "Oranges", "Bananas", "Pears" };
