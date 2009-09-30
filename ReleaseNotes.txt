@@ -30,8 +30,11 @@ Bug Fixes
 3rd Party
 =========
 
- * Upgraded: lib/XmlSchema_1.4.2.jar to 1.4.5
-             lib/cxf_2.1.jar to 2.2.3
+ * Upgraded: lib/cxf_2.1.jar to 2.2.3
+             lib/XmlSchema_1.4.2.jar to 1.4.5 (CXF related)
+             lib/FastInfoset_1.2.2 to 1.2.7 (CXF related)
+             lib/jaxb-impl_2.1.6.jar to 2.1.12 (CXF related)
+             lib/jaxb-xjc_2.1.6.jar to 2.1.12 (CXF related)
              
 
 =================================================
