@@ -26,7 +26,7 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     lib/opt/activation.jar
-    lib/opt/cxf_2.1.jar
+    lib/opt/cxf_2.2.3.jar
      
   To test the adaptor, the webservice it is connecting to needs to be running
   (see the ws-cxf-server.xml example or invoke your own webservice). 
