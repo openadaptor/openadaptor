@@ -45,7 +45,7 @@ import org.openadaptor.core.jmx.Administrable;
  * Going forwards this connector will be subsumed by {@link WebServiceCXFListeningReadConnector},
  * its CXF based equivalent.
  * @author perryj
- *
+ * @deprecated use WebServiceCXFListeningReadConnector instead.
  */
 public class WebServiceListeningReadConnector extends ServletServingReadConnector 
            implements IStringDataProcessor, Administrable {

@@ -61,7 +61,7 @@
   	</property>
   </bean>
 
-  <bean id="registrationWsEndpoint" class="org.openadaptor.auxil.connector.soap.WebServiceListeningReadConnector">
+  <bean id="registrationWsEndpoint" class="org.openadaptor.auxil.connector.soap.WebServiceCXFListeningReadConnector">
     <description>This is a read connector, that exposes a webservice.</description>
     <property name="serviceName" value="OARegistration"/>
     <property name="port" value="9191"/>

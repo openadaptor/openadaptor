@@ -21,6 +21,9 @@ Processors
 
 Examples
 ========
+ 
+ * Registration server (example\spring\register\oa-register-server.xml) now 
+   based on CXF instead of XFire.  
 
 Miscellaneous
 =============
