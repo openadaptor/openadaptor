@@ -13,7 +13,8 @@ openadaptor 3.x
 Connectors
 ==========
 
- * (SC93) review CXF Web service read connector (ongoing)
+ * (SC93) review CXF Web service read connector (ongoing). CXF read connector
+   separated from (now deprecated) XFire read connector.
 
 Processors
 ==========

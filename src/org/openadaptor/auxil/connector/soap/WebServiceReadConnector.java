@@ -48,6 +48,9 @@ import org.openadaptor.core.exception.ValidationException;
  * it has fairly limited capability - for instance using an HTTP proxy server is not supported. 
  * Delegates to XFire to handle low level Web service/SOAP.
  * 
+ * XFire based connectors are gradually phased out from OA, replaced by CXF connectors.
+ * 
+ * @deprecated use WebServiceCXFReadConnector instead
  * @author Kris Lachor
  */
 public class WebServiceReadConnector extends Component implements IEnrichmentReadConnector {
