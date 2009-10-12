@@ -134,6 +134,8 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
 
   public void start() {
     try {
+      /* First reset the exitCode (see SC94 for details) */
+      exitCode = 0;
       connector.connect();
     } catch (RuntimeException ex) {
       setExitError(ex);

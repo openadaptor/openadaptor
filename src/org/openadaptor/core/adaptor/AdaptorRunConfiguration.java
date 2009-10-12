@@ -166,6 +166,9 @@ public class AdaptorRunConfiguration {
     }
   }
 
+  /**
+   * Thread that starts the adaptor configured in the run configuration.
+   */
   public class StartThread extends Thread {
 
     private Adaptor adaptor;
@@ -209,6 +212,9 @@ public class AdaptorRunConfiguration {
     }
   }
 
+  /**
+   * Task for starting the adaptor (runs a few thread).
+   */
   public class StartTask extends TimerTask {
     private Adaptor adaptor;
 
@@ -227,6 +233,9 @@ public class AdaptorRunConfiguration {
     }
   }
 
+  /**
+   * Task for stopping the adaptor (runs a new thread). 
+   */
   public class StopTask extends TimerTask {
     private Adaptor adaptor;
 
@@ -247,6 +256,7 @@ public class AdaptorRunConfiguration {
 
   /**
    * Stops adaptor, waits for DEFAULT_RESTART_PAUSE ms and starts adaptor.
+   * Runs a new thread.
    */
   public class RestartTask extends TimerTask {
     
@@ -279,22 +289,47 @@ public class AdaptorRunConfiguration {
     restartAfterFailCronExpression = checkCronExpression(expression);
   }
 
+  /**
+   * Sets the delay for restarting the adaptor after it fails. 
+   *
+   * @param restartDelayMs -  the delay for restarting the adaptor after it fails. 
+   */
   public void setRestartAfterFailDelayMs(long restartDelayMs) {
     this.restartAfterFailDelayMs = restartDelayMs;
   }
 
+  /**
+   * Sets the limit on the adaptor fail-restart attempts.
+   * 
+   * @param restartLimit how many times the adaptor will be restarted after it fails.
+   */
   public void setRestartAfterFailLimit(int restartLimit) {
     this.restartAfterFailLimit = restartLimit;
   }
 
+  /**
+   * Cron expression for starting the adaptor.
+   * 
+   * @param expression cron expression for starting the adaptor.
+   */
   public void setStartCronExpression(String expression) {
     startCronExpression = checkCronExpression(expression);
   }
 
+  /**
+   * Cron expression for stopping the adaptor.
+   * 
+   * @param expression cron expression for stopping the adaptor.
+   */
   public void setStopCronExpression(String expression) {
     stopCronExpression = checkCronExpression(expression);
   }
 
+  /**
+   * Cron expression for restarting the adaptor.
+   * 
+   * @param expression cron expression for restarting the adaptor.
+   */
   public void setRestartCronExpression(String expression) {
     restartCronExpression = checkCronExpression(expression);
   }

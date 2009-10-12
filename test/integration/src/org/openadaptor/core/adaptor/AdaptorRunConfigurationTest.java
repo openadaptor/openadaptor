@@ -14,6 +14,9 @@ import org.openadaptor.core.adaptor.AdaptorRunConfiguration;
 import org.openadaptor.core.processor.TestProcessor;
 import org.openadaptor.core.router.Router;
 
+/**
+ * System/integration tests for {@link AdaptorRunConfiguration}.
+ */
 public class AdaptorRunConfigurationTest extends TestCase {
 
   private static final Object DATA = "foobar";
@@ -147,6 +150,26 @@ public class AdaptorRunConfigurationTest extends TestCase {
     assertTrue(reader.getRunCount() == 3);
   }
   
+  public void testRestartOnError() {
+    MyTestReadConnector reader = new MyTestReadConnector();
+    MyTestProcessorWithException processor = new MyTestProcessorWithException();
+    MyTestWriteConnector writer = new MyTestWriteConnector();
+    
+    Adaptor adaptor = createTestAdaptor(new Object[] { reader, processor, writer});
+    AdaptorRunConfiguration config = new AdaptorRunConfiguration();
+    config.setRestartAfterFailLimit(2);
+    adaptor.setRunConfiguration(config);
+    adaptor.run();
+    
+    /* Check the exit code is 1, not 2 (see SC94 for details) */
+    assertTrue(adaptor.getExitCode() == 1);
+    assertTrue(reader.connectedRanAndDisconnected());
+    assertTrue(processor.connectedRanAndDisconnected());
+    assertTrue(writer.connectedAndDisconnected());
+    assertTrue(reader.getRunCount() == 2);
+  }
+  
+  
   class TestComponent extends Component {
     int runCount = 0;
     boolean connected = false;
@@ -157,6 +180,9 @@ public class AdaptorRunConfigurationTest extends TestCase {
     }
     boolean connectedRanAndDisconnected() {
       return connected && hasRun && disconnected;
+    }
+    boolean connectedAndDisconnected() {
+      return connected && disconnected;
     }
     int getRunCount() {
       return runCount;
@@ -182,6 +208,20 @@ public class AdaptorRunConfigurationTest extends TestCase {
       runCount++;
     }
     
+  }
+  
+  /**
+   * Differs from {@link MyTestProcessor} in it always throws an 
+   * exception when msg received.
+   */
+  class MyTestProcessorWithException extends MyTestProcessor {  
+    public Object[] process(Object data) {
+      hasRun = true;
+      if(true){
+        throw new RuntimeException("TEST EXCEPTION FROM DATA PROCESSOR");
+      }
+      return null;
+    }
   }
   
   class MyTestWriteConnector extends TestComponent implements IWriteConnector {
