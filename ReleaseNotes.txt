@@ -28,6 +28,8 @@ Examples
 Miscellaneous
 =============
 
+ * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
+
 Bug Fixes
 =========
 
@@ -99,8 +101,6 @@ Miscellaneous
 
  * Support for message metadata (SC84, SC89).
    More information at http://www.openadaptor.org/metadata.html 
-   
- * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
 
 Bug Fixes
 =========
