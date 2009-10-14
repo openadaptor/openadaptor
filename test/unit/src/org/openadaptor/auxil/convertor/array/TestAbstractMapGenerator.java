@@ -27,88 +27,32 @@
 
 package org.openadaptor.auxil.convertor.array;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.convertor.AbstractMapGenerator;
-import org.openadaptor.auxil.orderedmap.IOrderedMap;
-import org.openadaptor.core.AbstractTestIDataProcessor;
+import org.openadaptor.auxil.convertor.delimited.AbstractDelimitedStringConvertor;
 /**
  * Common unit tests for {@link AbstractDelimitedStringConvertor}.
  */
-public abstract class TestAbstractMapGenerator extends AbstractTestIDataProcessor {
-  private static final Log log =LogFactory.getLog(AbstractTestIDataProcessor.class);
-  
+public abstract class TestAbstractMapGenerator extends TestAbstractMapConvertor {
+ 
   private AbstractMapGenerator amg;
-  private static final String[] DEFAULT_FIELD_NAMES={"F1","F2","F3","F4"};
-  private static final Object[] NON_STRING_FIELD_NAMES={new Integer(6),new StringBuffer("SB")};
    
   protected Object[] testInput;
   public void setup() throws Exception {
     super.setUp();
     //Cast testProcessor for our purposes.
     amg=(AbstractMapGenerator)testProcessor;
-    testInput=generateTestRecords(5, 6);
   }
   
-  public void tearDown() throws Exception {
-    super.tearDown();
-    amg=null;
-    testInput=null;
-  }
-  
-  public void testFieldNamesAccessors() {
-  	//Test setFieldNames
+  public void testValidate() {
   	amg.setFieldNames(DEFAULT_FIELD_NAMES);
-  	String[] stored=amg.getFieldNames();
-  	assertEquals("fieldName array length does not match expected", stored.length,DEFAULT_FIELD_NAMES.length);
-  	amg.setFieldNames((String[])null);
-  	List fieldNamesAsList=Arrays.asList(DEFAULT_FIELD_NAMES);
-  	amg.setFieldNames(fieldNamesAsList);
-  	stored=amg.getFieldNames();
-  	check(amg.getFieldNames(),DEFAULT_FIELD_NAMES);
-  	assertEquals("fieldName array length does not match expected", stored.length,DEFAULT_FIELD_NAMES.length);  	
-    //Non string field names
-    amg.setFieldNames(NON_STRING_FIELD_NAMES);
-    stored=amg.getFieldNames();
-    assertEquals("mismatched fiend name count",stored.length,NON_STRING_FIELD_NAMES.length);
-  }
-  
-  public void testPadMissingFields() {
-  	log.debug("Need test case for padMissingField here");
+  	amg.setFirstRecordContainsFieldNames(true);
+  	List exceptions=new ArrayList();
+  	amg.validate(exceptions);
+  	assertTrue("Should have one validation exception",exceptions.size()==1);
   }
   
     //Utility methods
-
-  	protected static void check(String[] actual, String[] expected) {
-  		assertNotNull("String array should not be null", actual);
-  		if (expected.length != actual.length) {
-  			String got = "Array length mismatch (expected " + expected.length + " but got " + actual.length + ". Here's the data we got:";
-  			for (int i = 0; i < actual.length; i++) {
-  				got += " {" + actual[i] + "}";
-  			}
-  			fail(got);
-  		}
-  		for (int i = 0; i < expected.length; i++) {
-  			assertEquals("Array parameter mismatch at " + i, expected[i], actual[i]);
-  		}
-  	}
-  	
-    protected static Object[] generateTestRecords(int count,int recordSize) {
-    	Object[] data=new Object[count];
-    	for (int i=0;i<count; i++) {
-    		Object[] record = new Object[recordSize];
-    		for (int j=0;j<recordSize;j++) {
-    			record[j]="R"+String.valueOf(i)+",C"+String.valueOf(j);
-    		}
-    	}
-    	return data;
-    }
-
-
 }
