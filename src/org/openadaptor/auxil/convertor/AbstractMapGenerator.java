@@ -29,8 +29,7 @@ package org.openadaptor.auxil.convertor;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.util.DefaultNameGenerator;
 import org.openadaptor.util.INameGenerator;
 
@@ -46,8 +45,7 @@ import org.openadaptor.util.INameGenerator;
  * 
  * @author Eddy Higgins
  */
-public abstract class AbstractMapGenerator extends AbstractConvertor {
-  private final static Log log = LogFactory.getLog(AbstractMapGenerator.class);
+public abstract class AbstractMapGenerator extends AbstractMapConvertor {
 
   // Internal state:
   // Flag indicating if the next record is to be used to supply field names.
@@ -56,76 +54,24 @@ public abstract class AbstractMapGenerator extends AbstractConvertor {
   protected INameGenerator nameGenerator=new DefaultNameGenerator("Col_");
 
   // Bean properties:
-  //List of field names to apply to incoming arrays
-  protected String[] fieldNames=null;
+  
   //Flag to limit warnings.
   protected boolean insufficientNamesWarningIssued=false;
-  //Flag to indicate whether missing fields may be substituted with null values
-  protected boolean padMissingFields=false;
 
   //Flag which indicates if the first record supplied will contain field names.
   protected boolean firstRecordContainsFieldNames = false;
 
   /**
-   * Return configured Array of field names, if any.
-   * @return String[] containing field names; possibly null.
-   */
-  public String[] getFieldNames() { 
-    return fieldNames;
-  }
-  /**
    * Configures the names to be used for fields.
+   * Overrides the base class to guarantee that it will not 
+   * attempt to use the next field for field names.
    * @param fieldNames String[] containing a list of field Names.
    */
   public void setFieldNames(String[] fieldNames) {
-    this.fieldNames = fieldNames;
+    super.setFieldNames(fieldNames);
     nextRecordContainsFieldNames=false;
   }
 
-  /**
-   * Wrapper around {@link setFieldNames(String[] fieldNames}.
-   * It will convert non-strings to Strings, and call
-   * setFieldNames(String[]).
-   * @param fieldNames
-   */
-  public void setFieldNames(Object[] fieldNames) {
-    if (fieldNames==null) {
-      this.fieldNames=null;
-    }
-    else {
-      String[] nameStrings=new String[fieldNames.length];
-      for (int i=0;i<nameStrings.length;i++) {
-        Object name=fieldNames[i];
-        nameStrings[i]= (name instanceof String)?(String)name:name.toString();
-      }
-      setFieldNames(nameStrings);     
-    }
-  }
-
-  /**
-   * Set fieldNames from a list. 
-   * Converts list to Array and calls {@link setFieldNames(Object[] fieldNames}
-   * @param fieldNameList
-   */
-  public void setFieldNames(List fieldNameList) {
-    if (fieldNameList==null) {
-      setFieldNames((String[])null);
-    }
-    else {
-      setFieldNames(fieldNameList.toArray(new Object[fieldNameList.size()]));
-    }
-  }
-
-  /**
-   * Flag to indicate if missing fields can safely be substituted with 
-   * null values.
-   * Default is false for backward compatibility reasons.
-   * @param padMissingFields true if padding is to be permitted; false otherwise
-   */
-  public void setPadMissingFields(boolean padMissingFields){
-    this.padMissingFields=padMissingFields;
-  }
-  
  /**
   * Override default name generator with an alternative implementation
   * @param nameGenerator Any INameGenerator implementation
@@ -178,5 +124,13 @@ public abstract class AbstractMapGenerator extends AbstractConvertor {
       nextRecordContainsFieldNames = true;
     }
     insufficientNamesWarningIssued=false;
+  }
+  public void validate(List exceptions) {
+  	super.validate(exceptions);
+  	if (nextRecordContainsFieldNames && (fieldNames!=null)) {
+  		String msg="Cannot simultaneously set nextRecordContainsFieldNames==true and supply fieldNames";
+  		exceptions.add(new ValidationException(msg,this));
+  	}
+  	
   }
 }
