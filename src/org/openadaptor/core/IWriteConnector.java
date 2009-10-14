@@ -76,7 +76,7 @@ public interface IWriteConnector {
    * It is assumed that the implementation will cast the data to the expected type(s).
    * Exceptions should be thrown as RuntimeExceptions.
    * Implementations that are {@link IComponent}s should throw {@link ConnectionException}s.
-   * @param data the data to process
+   * @param data an array of data records to process
    * @return the response from the external resource
    */
   Object deliver(Object[] data);
