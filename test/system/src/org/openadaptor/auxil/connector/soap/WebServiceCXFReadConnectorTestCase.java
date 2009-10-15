@@ -36,6 +36,8 @@ package org.openadaptor.auxil.connector.soap;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.Assert;
 
 /**
@@ -51,6 +53,10 @@ public class WebServiceCXFReadConnectorTestCase extends WebServiceReadConnectorT
     
   private WebServiceCXFReadConnector wsConnector = new WebServiceCXFReadConnector();
  
+  private static final String PREFIX = "http://soap.connector.auxil.openadaptor.org";
+  
+  public static final QName TEST_SERVICE_NAME = new QName(PREFIX, "getInt");
+  
   /**
    * Overrides the test from superclass not to execute twice.
    */
@@ -107,7 +113,7 @@ public class WebServiceCXFReadConnectorTestCase extends WebServiceReadConnectorT
       }
     };
     wsConnector.setWsEndpoint(URL_PREFIX + "/IRandomIntegerGeneratorWS"  + "?wsdl");
-    wsConnector.setServiceName("sum");
+    wsConnector.setServiceName(new QName(PREFIX, "sum"));
     wsConnector.setParameters(parameters);
     wsConnector.connect();
     new Thread(){
