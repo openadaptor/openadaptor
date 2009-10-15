@@ -58,7 +58,16 @@
   <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceCXFReadConnector">
     <description>This is a polling connector, that calls a webservice.</description>
     <property name="wsEndpoint" value="http://localhost:9999/OAService?wsdl"/>
-	<property name="serviceName" value="process"/>
+    
+    <!-- Type of the serviceName property changed from String to QName post 3.4.4  -->
+	<!-- 3.4.4 and earlier: property name="serviceName" value="process"/ -->
+    <property name="serviceName">
+      <bean class="javax.xml.namespace.QName">
+        <constructor-arg type="java.lang.String" index="0" value="http://www.openadaptor.org"></constructor-arg>
+	    <constructor-arg type="java.lang.String" index="1" value="process"></constructor-arg>
+      </bean>
+    </property>
+	
 	<!-- An optional list of parameters. These should be declared with the 
 		correct type, in the same order as the webservice parameters. -->
 	<property name="parameters">

@@ -30,6 +30,8 @@ package org.openadaptor.auxil.connector.soap;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.endpoint.Client;
@@ -63,7 +65,7 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
   protected static Object[] NO_PARAMETERS = new Object[0];
 
   private String wsEndpoint = null;
-  private String serviceName = null;
+  private QName serviceName = null;
   private List parameters;
   private Client client;
   
@@ -207,7 +209,7 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
    * 
    * @param name Service name
    */
-  public void setServiceName(final String name) {
+  public void setServiceName(final QName name) {
     serviceName = name;
   }
 
@@ -234,7 +236,7 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
    * 
    * @return the service name.
    */
-  public String getServiceName() {
+  public QName getServiceName() {
     return serviceName;
   }
 

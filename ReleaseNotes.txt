@@ -14,7 +14,19 @@ Connectors
 ==========
 
  * (SC93) review CXF Web service read connector (ongoing). CXF read connector
-   separated from (now deprecated) XFire read connector.
+   separated from (now deprecated) XFire read connector. Type of the serviceName
+   property in WebServiceCXFReadConnector changed to QName.
+
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.4                   |             OA 3.?                         |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | WebServiceCXFReadConnector         | WebServiceCXFReadConnector                 |  
+   | #serviceName is a String.          | #serviceName is a QName.                   |
+   |                                    | Changes required as per example: example/  |
+   |                                    | spring/connectors/soap/ws-cxf-reader.xml   |
+   |                                    |                                            |
+   |---------------------------------------------------------------------------------|
 
 Processors
 ==========
@@ -24,6 +36,9 @@ Examples
  
  * Registration server (example\spring\register\oa-register-server.xml) now 
    based on CXF instead of XFire.  
+   
+ * (SC93) example/spring/connectors/soap/ws-cxf-reader.xml - type of serviceName
+   property changed to QName.
 
 Miscellaneous
 =============
