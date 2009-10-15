@@ -40,6 +40,8 @@ import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.IEnrichmentReadConnector;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
@@ -101,7 +103,9 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
       client = dcf.createClient(getWsEndpoint());
       log.info(getId() + " bound to endpoint " + getWsEndpoint());
     } catch (Exception e) {
-      log.error("Connection to web service failed: " + getWsEndpoint() + " " + getServiceName(), e);
+      String msg = "Connection to web service failed: " + getWsEndpoint() + " " + getServiceName();
+      log.error(msg, e);
+      throw new ConnectionException(msg, e);
     }
   }
   
@@ -128,8 +132,9 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
     		      getParameters().toArray(new Object[getParameters().size()]) : NO_PARAMETERS);
       log.debug("Invoked the service. Result = " + (result != null && result.length > 0 ? result[0] : result));
     } catch (Exception e) {
-      log.error("Call to web service failed: " + getWsEndpoint() + " " + getServiceName(), e);
-      return null;
+      String msg = "Call to web service failed: " + getWsEndpoint() + " " + getServiceName();
+      log.error(msg, e);
+      throw new OAException(msg, e);     
     } 
     return result;
   }
