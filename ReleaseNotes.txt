@@ -16,7 +16,7 @@ Connectors
  * (SC93) review CXF Web service read connector (ongoing). CXF read connector
    separated from (now deprecated) XFire read connector. Type of the serviceName
    property in WebServiceCXFReadConnector changed to QName. Exceptions from #connect
-   and #invoke no longer suppressed.
+   and #invoke no longer suppressed. Added thread safety.
 
    |---------------------------------------------------------------------------------|
    |         OA 3.4.4                   |             OA 3.?                         |    

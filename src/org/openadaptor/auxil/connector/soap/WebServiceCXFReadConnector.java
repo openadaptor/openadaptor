@@ -120,16 +120,25 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
   }
 
   /**
+   * Calls {@link #invoke(List)} with parameters set in the {@link #parameters} property.
+   * 
+   * @see #invoke(List)
+   */
+  public Object [] invoke(){
+	  return invoke(getParameters());
+  }
+  
+  /**
    * Invokes webservice via CXF client.
    * 
    * Groovy Web services support for dynamic clients (comming soon, accoring to CXF's website)
    * may provide alternative ways of calling the service in the future. 
    */
-  public Object [] invoke(){
+  public Object [] invoke(List wsParameters){
     Object [] result = null;
     try {
-      result = client.invoke(getServiceName(), getParameters() != null ? 
-    		      getParameters().toArray(new Object[getParameters().size()]) : NO_PARAMETERS);
+      result = client.invoke(getServiceName(), wsParameters != null ? 
+    		  wsParameters.toArray(new Object[wsParameters.size()]) : NO_PARAMETERS);
       log.debug("Invoked the service. Result = " + (result != null && result.length > 0 ? result[0] : result));
     } catch (Exception e) {
       String msg = "Call to web service failed: " + getWsEndpoint() + " " + getServiceName();
@@ -167,19 +176,20 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
    * Uses values from <code>inputParameters</code> to set parameters
    * for the web service. Invokes the web service.
    * 
+   * Method is synchronized for thread safety when the connector is run by multiple threads, such as a 
+   * fan-in to an enrichment processor with this connector.
+   * 
    * @see IEnrichmentReadConnector#next(IOrderedMap, long)
    * @see #invoke()
    */
-  public Object[] next(IOrderedMap inputParameters, long timeout) {
+  public synchronized Object[] next(IOrderedMap inputParameters, long timeout) {
+	List dynamicParams = new ArrayList();
     log.debug("WS reader received dynamic parameters: " + inputParameters);
     if(parameters==null){
-      parameters = new ArrayList();
+      dynamicParams.addAll(parameters);
     }
-    else{
-      parameters.clear();
-    }
-    parameters.addAll(inputParameters.values());
-    return invoke();
+    dynamicParams.addAll(inputParameters.values());
+    return invoke(dynamicParams);
   }
   
   /**
