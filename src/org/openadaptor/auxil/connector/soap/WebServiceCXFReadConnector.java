@@ -50,6 +50,9 @@ import org.openadaptor.core.exception.ValidationException;
  * it has fairly limited capability - for instance using an HTTP proxy server is not supported. 
  * Delegates to CXF to handle low level Web service/SOAP.
  * 
+ * This connector may be used in multiple threads running concurrently (adaptors with multiple
+ * {@link IReadConnector}s) when embedded in an {@link IEnrichmentReadConnector}.
+ * 
  * Initial version of this class was meant to be fully compatible with {@link WebServiceReadConnector}
  * (a XFire equivalent). Going forwards, Web service connectors development will involve CXF connectors 
  * only, XFire based connectors are to be gradually phased out.
