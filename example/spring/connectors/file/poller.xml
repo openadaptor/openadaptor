@@ -50,7 +50,6 @@
 			config XML file.)
 		</description>
 		<property name="delegate" ref="Reader" />
-		<!--<property name="cronExpression" value="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?"/>-->
 		<!--<property name="forceInitialPoll" value="true"/>-->
 		<property name="pollLimit" value="0" />
 		<!--<property name="pollIntervalHours"  value="1"/>-->
