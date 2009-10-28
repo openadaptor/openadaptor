@@ -45,6 +45,8 @@ Miscellaneous
 =============
 
  * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
+ 
+ * (SC95) Support for Message History (ongoing).
 
 Bug Fixes
 =========
