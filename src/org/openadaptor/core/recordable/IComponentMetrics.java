@@ -51,6 +51,8 @@ import org.openadaptor.core.lifecycle.ILifecycleListener;
  * record starts and stops of those monitored components that are
  * {@link ILifecycleComponent}s.
  * 
+ * For more details about metrics see http://www.openadaptor.org/metrics.html
+ * 
  * @see ISimpleComponentMetrics
  * @see ComponentMetrics
  * @see IRecordableComponent

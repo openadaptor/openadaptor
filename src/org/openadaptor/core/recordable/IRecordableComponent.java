@@ -32,10 +32,13 @@ import org.openadaptor.core.IComponent;
 /**
  * A recordable component is capable of producing metrics that describe 
  * message volume and processing time.
- * 
+ *         
  * Recording metrics for a particular IRecordableComponent can be switched
  * on and off, also at runtime via the JMX console.
  * 
+ * For details about metrics see http://www.openadaptor.org/metrics.html
+ * 
+ * @see IComponentMetrics
  * @author Kris Lachor
  */
 public interface IRecordableComponent extends IComponent{
