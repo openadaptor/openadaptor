@@ -2,7 +2,6 @@ package org.openadaptor.core.metadata;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class MetadataSystemTestCase extends TestCase {
     Map expectedMetadata = new HashMap();
     expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     
-    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
+    IWriteConnector writeConnector = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata);
     processMap.put(new TestComponent.TestReadConnector(), writeConnector);
     router.setProcessMap(processMap);
     TestComponent.DummyExceptionHandler eHandler = new TestComponent.DummyExceptionHandler();
@@ -74,7 +73,7 @@ public class MetadataSystemTestCase extends TestCase {
     expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
     
-    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
+    IWriteConnector writeConnector = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata);
     Map addToMetadata = new HashMap();
     addToMetadata.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
     IDataProcessor processor = new MetadataDataProcessor(addToMetadata);
@@ -107,12 +106,12 @@ public class MetadataSystemTestCase extends TestCase {
     Map expectedMetadata1 = new HashMap();
     expectedMetadata1.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
-    IWriteConnector writeConnector1 = new MetadataValidatingWriteConnector(expectedMetadata1);
+    IWriteConnector writeConnector1 = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata1);
     
     Map expectedMetadata2 = new HashMap();
     expectedMetadata2.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata2.put("foo", "bar");
-    IWriteConnector writeConnector2 = new MetadataValidatingWriteConnector(expectedMetadata2);
+    IWriteConnector writeConnector2 = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata2);
     
     Map addToMetadata1 = new HashMap();
     addToMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
@@ -147,7 +146,7 @@ public class MetadataSystemTestCase extends TestCase {
     Map expectedMetadata1 = new HashMap();
     expectedMetadata1.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
     expectedMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
-    IWriteConnector writeConnector1 = new MetadataValidatingWriteConnector(expectedMetadata1);
+    IWriteConnector writeConnector1 = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata1);
     
     Map expectedMetadata2 = new HashMap();
     expectedMetadata2.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);
@@ -156,7 +155,7 @@ public class MetadataSystemTestCase extends TestCase {
     /* Extra element expected in Metadata (added in branch 1) */
     expectedMetadata2.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
   
-    IWriteConnector writeConnector2 = new MetadataValidatingWriteConnector(expectedMetadata2);
+    IWriteConnector writeConnector2 = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata2);
     
     Map addToMetadata1 = new HashMap();
     addToMetadata1.put(TEST_METADATA_KEY, TEST_METADATA_VALUE);
@@ -197,7 +196,7 @@ public class MetadataSystemTestCase extends TestCase {
     /* From enrichment processor itself */
     expectedMetadata.put("EnrichmentProcessor", "Hello");
     
-    IWriteConnector writeConnector = new MetadataValidatingWriteConnector(expectedMetadata);
+    IWriteConnector writeConnector = new TestComponent.MetadataValidatingWriteConnector(expectedMetadata);
     
     TestComponent.TestEnrichmentReadConnector enrichReadConnector = new TestComponent.TestEnrichmentReadConnector();
     Map addToMetadata = new HashMap();
@@ -260,67 +259,6 @@ public class MetadataSystemTestCase extends TestCase {
     }
   }
     
-  
-  /**
-   * A write connector based on {@link TestComponent.TestWriteConnector} that also
-   * validates the metadata set in previous components.
-   * 
-   * Expected metadata is passed in to the constructor. Failed validation results
-   * in a RuntimeException from {@link #deliver(Object[])}
-   */
-  protected class MetadataValidatingWriteConnector extends Component 
-       implements IWriteConnector, IMetadataAware {
-    
-    protected Map metadata;
-    
-    public int counter = 0;
-    
-    public List dataCollection = new ArrayList();
-  
-    private Map expectedMetadata;
-    
-    public MetadataValidatingWriteConnector(Map expectedMetadata) {
-      this.expectedMetadata = expectedMetadata;
-    }
-
-    public void connect() {}
-    
-    public void disconnect() {}
-    
-    public Object deliver(Object[] data) {
-       counter++;
-       if(data == null || data.length == 0){
-         throw new RuntimeException("No data to write");
-       }
-       dataCollection.add(data);
-       
-       Iterator ite = metadata.keySet().iterator();
-       while(ite.hasNext()){
-         Object key = ite.next();
-         Object value = metadata.get(key);
-         System.out.println(key + "  " + value);
-       }
-       
-       /* Check the metadata */
-       if(metadata.size()!= expectedMetadata.size()){
-         throw new RuntimeException("Wrong metadata size. " + "Expected " + expectedMetadata.size() + ". Received " + metadata.size());
-       }
-       Iterator it = expectedMetadata.keySet().iterator();
-       while(it.hasNext()){
-         Object key = it.next();
-         if(!metadata.get(key).equals(expectedMetadata.get(key))){
-           throw new RuntimeException("Wrong metadata content");
-         }
-       }       
-       return null;
-    }
-    
-    public void validate(List exceptions) {}
-
-    public void setMetadata(Map metadata) {
-      this.metadata = metadata;
-    }
-  }
   
   protected class MetadataEnrichmentProcessor extends GenericEnrichmentProcessor implements IMetadataAware{
     protected Map metadata;

@@ -29,6 +29,7 @@ package org.openadaptor.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -281,6 +282,62 @@ public class TestComponent {
     }
     public Object deliver(Object[] data) {return null;}
     public void validate(List exceptions) {}
+  }
+  
+  
+
+  /**
+   * A write connector based on {@link TestComponent.TestWriteConnector} that also
+   * validates the metadata set in previous components.
+   * 
+   * Expected metadata is passed in to the constructor. Failed validation results
+   * in a RuntimeException from {@link #deliver(Object[])}
+   */
+  public static final class MetadataValidatingWriteConnector extends Component 
+       implements IWriteConnector, IMetadataAware {
+    
+    protected Map metadata;
+    
+    public int counter = 0;
+    
+    public List dataCollection = new ArrayList();
+  
+    private Map expectedMetadata;
+    
+    public MetadataValidatingWriteConnector(Map expectedMetadata) {
+      this.expectedMetadata = expectedMetadata;
+    }
+
+    public void connect() {}
+    
+    public void disconnect() {}
+    
+    public Object deliver(Object[] data) {
+       counter++;
+       if(data == null || data.length == 0){
+         throw new RuntimeException("No data to write");
+       }
+       dataCollection.add(data);
+       
+       /* Check the metadata */
+       if(metadata.size()!= expectedMetadata.size()){
+         throw new RuntimeException("Wrong metadata size. " + "Expected " + expectedMetadata.size() + ". Received " + metadata.size());
+       }
+       Iterator it = expectedMetadata.keySet().iterator();
+       while(it.hasNext()){
+         Object key = it.next();
+         if(!metadata.get(key).equals(expectedMetadata.get(key))){
+           throw new RuntimeException("Wrong metadata content");
+         }
+       }       
+       return null;
+    }
+    
+    public void validate(List exceptions) {}
+
+    public void setMetadata(Map metadata) {
+      this.metadata = metadata;
+    }
   }
   
   
