@@ -35,11 +35,19 @@ import org.openadaptor.core.transaction.ITransaction;
 
 /**
  * Class that encapsulates the input data to be processed by an {@link IMessageProcessor}.
- * @author perryj
+ * Also encapsulates the metadata related to the data. The metadata may optionally
+ * store message history.
+ *
  * @see IMessageProcessor
  */
 public class Message {
 
+  /** Key under which a message history will (optionally) be stored in the metadata. */	
+  public static final String MESSAGE_HISTORY_KEY = "MessageHistory";	
+  
+  /** Constant to be used in message history for message processors that were not given a name */
+  public static final String UNNAMED_MESSAGE_PROCESSOR = "UNNAMED_MESSAGE_PROCESSOR";
+	
   /**
    * A reference to the object that initiated the processing, this is not necessarily the
    * caller of {@link IMessageProcessor#process} nor is it necessarily a IMessageProcessor.
@@ -61,6 +69,9 @@ public class Message {
    */
   private ITransaction transaction;
 	
+  /**
+   * Constructor. 
+   */
   public Message(final Object[] data, final Object sender, final ITransaction transaction, final Map metadata) {
     this.data = data;
     this.sender = sender;
@@ -68,10 +79,16 @@ public class Message {
     this.metadata = metadata!=null?metadata:new HashMap();
   }
 
+  /**
+   * Constructor. 
+   */
   public Message(final List data, final Object sender, final ITransaction transaction, final Map metadata) {
     this((Object[]) data.toArray(new Object[data.size()]),sender,transaction, metadata);
   }
   
+  /**
+   * Constructor. 
+   */
   public Message(final Object data, final Object sender, final ITransaction transaction, final Map metadata) {
     this(new Object[] {data},sender,transaction, metadata);
   }
@@ -80,6 +97,9 @@ public class Message {
   	return sender;
   }
   
+  /**
+   * @return the input data to be processed by an {@link IMessageProcessor}.
+   */
   public Object[] getData() {
   	return data;
   }

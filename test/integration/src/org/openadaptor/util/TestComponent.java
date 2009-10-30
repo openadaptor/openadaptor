@@ -72,7 +72,7 @@ public class TestComponent {
    * Also implements {@link IMetadataAware} and populates message metadata with
    * a sample key-value pair.
    */
-  public static class TestReadConnector implements IReadConnector, IMetadataAware{
+  public static class TestReadConnector extends Component implements IReadConnector, IMetadataAware{
     private boolean isDry = false;
     
     private Map metadata;
@@ -108,6 +108,10 @@ public class TestComponent {
     public void setAddToMetadata(Map addToMetadata) {
       this.addToMetadata = addToMetadata;
     }
+    
+    public String getId() {
+      return this.getClass().getName();
+    }  
   }
   
   
@@ -177,6 +181,10 @@ public class TestComponent {
     
     public void validate(List exceptions) {}
     public void reset(Object context) {}
+    
+    public String getId() {
+  	  return this.getClass().getName();
+  	}  
   }
   
   /**
@@ -338,6 +346,11 @@ public class TestComponent {
     public void setMetadata(Map metadata) {
       this.metadata = metadata;
     }
+
+	public String getId() {
+	  return this.getClass().getName();
+	}    
+    
   }
   
   

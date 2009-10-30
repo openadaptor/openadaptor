@@ -27,6 +27,7 @@
 
 package org.openadaptor.core.router;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,6 +81,9 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
 
   /** Metrics disabled by default .*/
   private boolean metricsEnabled = false;
+  
+  /** Recording message history disabled by default */
+  private boolean historyEnabled = false;
   
   /** See description at the setter method. */
   private boolean cloneMetadataOnFanout = false;
@@ -165,6 +169,8 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     }
     // return process(msg, routingMap.getProcessDestinations((IMessageProcessor)msg.getSender()));
     metrics.recordMessageStart(msg);
+    recordMessageHistory(msg, realSender);
+    
     Response response = process(msg, routingMap.getProcessDestinations(realSender));
     metrics.recordMessageEnd(msg, response);
     return response;
@@ -206,6 +212,9 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
       if(fanout && cloneMetadataOnFanout){
         msg.setMetadata(metadataClones[destinationNo++]);
       }
+      
+      /* Record message history */
+      recordMessageHistory(msg, processor);
       
       process(msg,processor);
     }
@@ -268,6 +277,34 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     }
     log.info("Processing exceptions complete.");
   }
+  
+  /**
+   * Records message history in the metadata if the historyEnabled flag is on.
+   * 
+   * @param msg currently processed message.
+   * @param processor currently processing IMessageProcessor.
+   */
+  private void recordMessageHistory(Message msg, IMessageProcessor processor){
+	if(!historyEnabled || msg==null || msg.getMetadata()==null){
+      return;
+	}
+	Object history = msg.getMetadata().get(Message.MESSAGE_HISTORY_KEY);
+	List historyList = null;
+    if(history==null){
+	  historyList = new ArrayList();
+	  msg.getMetadata().put(Message.MESSAGE_HISTORY_KEY, historyList);
+    }
+    else{
+      historyList = (List) history;
+    }
+    
+    if(processor instanceof IComponent){
+	  historyList.add(((IComponent) processor).getId());
+    }
+    else{
+      historyList.add(Message.UNNAMED_MESSAGE_PROCESSOR);
+    }
+  }
 
   private void logRoutingDebug(IMessageProcessor sender, List destinations) {
     StringBuffer buffer = new StringBuffer();
@@ -328,6 +365,21 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
    */
   public void setCloneMetadataOnFanout(boolean cloneMetadataOnFanout) {
     this.cloneMetadataOnFanout = cloneMetadataOnFanout;
+  }
+
+  /**
+   * @return flag stating if history is recorded for each message traversing an adaptor.
+   */
+  public boolean isHistoryEnabled() {
+	return historyEnabled;
+  }
+
+  /**
+   * Enables recording history for each message passing through an adaptor.
+   * By default it is disabled.
+   */
+  public void setHistoryEnabled(boolean historyEnabled) {
+	this.historyEnabled = historyEnabled;
   }
   
 }
