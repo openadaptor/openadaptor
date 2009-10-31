@@ -60,6 +60,7 @@ public class XMLTableWriterTestCase extends AbstractXMLWriterTests {
     XMLTableWriter writer = new XMLTableWriter();
     writer.setTableName(MockTableName);
     writer.setOutputColumns(Arrays.asList(ColumnNames));
+    writer.setQuoteIdentifiers(false); //Disable to match older tests.
     return writer;
   }
 
@@ -82,8 +83,9 @@ public class XMLTableWriterTestCase extends AbstractXMLWriterTests {
    */
   protected void setupInitialiseExpectations(boolean supportsBatch) {
     setupTypeGetMock();
-    connectionMock.expects(once()).method("getMetaData").will(returnValue(metaDataMock.proxy()));
-    metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
+    connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock();
+    dbMetaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
     connectionMock.expects(atLeastOnce()).method("createStatement").will(
         onConsecutiveCalls(returnValue(typeGetStatementMock.proxy()), returnValue(typeGetStatementMock.proxy()),
             returnValue(statementMock.proxy())));

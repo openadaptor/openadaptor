@@ -76,8 +76,6 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
     SampleMapThree.put(ColumnNames[4], new Integer(3000000));
     SampleMapThree.put(ColumnNames[5], new Double(3.253));
   }
-
-  protected Mock metaDataMock;
   protected Mock typeGetStatementMock;
   protected Mock statementMock;
   protected Mock typeResultSetMock;
@@ -89,6 +87,7 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
   protected ISQLWriter instantiateTestWriter() {
     MapTableWriter writer = new MapTableWriter();
     writer.setTableName(MockTableName);
+    writer.setQuoteIdentifiers(false); //Previous tests didn't expect it.
     return writer;
   }
 
@@ -97,7 +96,6 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
 
   protected void setUp() throws Exception {
     super.setUp();
-    metaDataMock = mock(DatabaseMetaData.class);
     typeGetStatementMock=mock(Statement.class); //This is the call to get the arg types.
     
     statementMock = mock(Statement.class);
@@ -109,7 +107,6 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
 
   protected void tearDown() throws Exception {
     super.tearDown();
-    metaDataMock = null;
     statementMock = null;
     resultSetMock = null;
     resultSetMetaDataMock = null;
@@ -124,8 +121,10 @@ public class MapTableWriterTestCase  extends AbstractMapWriterTests {
    */
   protected void setupInitialiseExpectations(boolean supportsBatch) {
     setupTypeGetMock();
-    connectionMock.expects(once()).method("getMetaData").will(returnValue(metaDataMock.proxy()));
-    metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
+    connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    
+    configureDbMetaDataMock();
+    dbMetaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
     connectionMock.expects(atLeastOnce()).method("createStatement").will(
         onConsecutiveCalls(returnValue(typeGetStatementMock.proxy()), returnValue(typeGetStatementMock.proxy()),
             returnValue(statementMock.proxy())));

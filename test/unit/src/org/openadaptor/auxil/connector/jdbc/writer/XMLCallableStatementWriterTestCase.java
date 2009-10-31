@@ -50,7 +50,6 @@ public class XMLCallableStatementWriterTestCase extends AbstractXMLWriterTests {
 
   protected void setUp() throws Exception {
     super.setUp();
-    metaDataMock = mock(DatabaseMetaData.class);
     statementMock = mock(Statement.class);
     resultSetMock = mock(ResultSet.class);
     resultSetMetaDataMock = mock(ResultSetMetaData.class);
@@ -73,16 +72,16 @@ public class XMLCallableStatementWriterTestCase extends AbstractXMLWriterTests {
    * @param supportsBatch Set batch support on the JDBC Layer
    */
   protected void setupInitialiseExpectations(boolean supportsBatch) {
-    connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(metaDataMock.proxy()));
+    connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
     
-    metaDataMock.stubs().method("getDatabaseProductName").will(returnValue("Mock Stub DB Product Name"));
-    metaDataMock.stubs().method("getDatabaseMajorVersion").will(returnValue(1));
-    metaDataMock.stubs().method("getDatabaseMinorVersion").will(returnValue(1));
-    metaDataMock.stubs().method("getDatabaseProductVersion").will(returnValue("Mock Stub DB Product version"));
+    dbMetaDataMock.stubs().method("getDatabaseProductName").will(returnValue("Mock Stub DB Product Name"));
+    dbMetaDataMock.stubs().method("getDatabaseMajorVersion").will(returnValue(1));
+    dbMetaDataMock.stubs().method("getDatabaseMinorVersion").will(returnValue(1));
+    dbMetaDataMock.stubs().method("getDatabaseProductVersion").will(returnValue("Mock Stub DB Product version"));
     
-    metaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
+    dbMetaDataMock.expects(once()).method("supportsBatchUpdates").will(returnValue(supportsBatch));
     connectionMock.expects(once()).method("getCatalog").will(returnValue(CatalogName));
-    metaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
+    dbMetaDataMock.expects(once()).method("getProcedureColumns").with(eq(CatalogName), eq("%"), eq(StoredProcName), eq("%")).will(returnValue(resultSetMock.proxy()));
     resultSetMock.expects(atLeastOnce()).method("next").will(onConsecutiveCalls(new Stub[] {returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(true), returnValue(false)}));
     resultSetMock.stubs().method("getInt").will(returnValue(2));
     resultSetMock.stubs().method("getString").will(returnValue("Dummy ResultSet Info")); // Not being specific here as this only happens when logging set to debug

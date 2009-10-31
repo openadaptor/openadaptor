@@ -31,6 +31,7 @@ import org.jmock.MockObjectTestCase;
 import org.openadaptor.core.IComponent;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
   protected Mock connectionMock;
   protected Mock componentMock;
   protected Mock preparedStatementMock;
+  protected Mock dbMetaDataMock;
 
   abstract protected ISQLWriter instantiateTestWriter();
 
@@ -57,6 +59,7 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
     testWriter = instantiateTestWriter();
     setMocksFor(testWriter);
     connectionMock = mock(Connection.class);
+    dbMetaDataMock=mock(DatabaseMetaData.class);
     componentMock = mock(IComponent.class);
     preparedStatementMock = mock(PreparedStatement.class);
   }
@@ -66,7 +69,16 @@ abstract public class AbstractSQLWriterTests extends MockObjectTestCase {
     testWriter = null;
     connectionMock = null;
     preparedStatementMock = null;
+    dbMetaDataMock=null;
   }
+  
+  protected void configureDbMetaDataMock() {
+    dbMetaDataMock.expects(atLeastOnce()).method("getDatabaseProductName").will(returnValue("MockDB"));
+    dbMetaDataMock.expects(atMostOnce()).method("getDatabaseMajorVersion").will(returnValue(0));
+    dbMetaDataMock.expects(atMostOnce()).method("getDatabaseMinorVersion").will(returnValue(0));
+    dbMetaDataMock.expects(atMostOnce()).method("getDatabaseProductVersion").will(returnValue("Mock V0.0"));   
+  }
+
 
   /**
    * Test initialisation. Specific subclasses should set expectations

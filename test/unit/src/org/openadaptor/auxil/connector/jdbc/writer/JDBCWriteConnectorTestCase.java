@@ -33,6 +33,7 @@ import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,13 +50,22 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
   protected Mock sqlConnectionMock;
   protected Mock preparedStatementMock;
   protected Mock sqlWriterMock;
+  protected Mock dbMetaDataMock;
 
   protected void setUp() throws Exception {
     testWriteConnector = instantiateTestObject();
     setMocksFor(testWriteConnector);
     preparedStatementMock = mock(PreparedStatement.class);
     sqlWriterMock = mock(ISQLWriter.class);
+    dbMetaDataMock=mock(DatabaseMetaData.class);
     super.setUp();
+  }
+  
+  private void configureDbMetaDataMock(Mock mock) {
+    mock.expects(atLeastOnce()).method("getDatabaseProductName").will(returnValue("MockDB"));
+    mock.expects(atMostOnce()).method("getDatabaseMajorVersion").will(returnValue(0));
+    mock.expects(atMostOnce()).method("getDatabaseMinorVersion").will(returnValue(0));
+    mock.expects(atMostOnce()).method("getDatabaseProductVersion").will(returnValue("Mock V0.0"));   
   }
 
   protected void tearDown() throws Exception {
@@ -96,6 +106,10 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
    */
   public void testConnect() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
+    
+    sqlConnectionMock.expects(once()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock(dbMetaDataMock);
+
     try {
       testValidate();
       testWriteConnector.connect();
@@ -136,6 +150,10 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
 
   public void testDisconnect() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
+
+    sqlConnectionMock.expects(once()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock(dbMetaDataMock);
+
     try {
       testValidate();
       testWriteConnector.connect();
@@ -153,6 +171,9 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
 
   public void testDisconnectWithException() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
+    sqlConnectionMock.expects(once()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock(dbMetaDataMock);
+
     try {
       testValidate();
       testWriteConnector.connect();
@@ -178,6 +199,9 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
   public void testDeliver() {
     // The default writer used by NewJDBCWriteConnector is RawSQLWriter. This test assumes that.
     Object[] testData = new Object[]{"hello"};
+
+    sqlConnectionMock.expects(once()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock(dbMetaDataMock);
 
     sqlConnectionMock.expects(once()).method("prepareStatement").with(eq(testData[0])).will(returnValue(preparedStatementMock.proxy()));
     preparedStatementMock.expects(once()).method("executeUpdate").will(returnValue(1));
@@ -218,6 +242,8 @@ public class JDBCWriteConnectorTestCase extends MockObjectTestCase {
    */
   public void testDeliverBatch() {
     Object[] testData = new Object[]{"hello", "world", "leaders"};
+    sqlConnectionMock.expects(once()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));
+    configureDbMetaDataMock(dbMetaDataMock);
 
     sqlConnectionMock.expects(once()).method("prepareStatement").with(eq(testData[0])).will(returnValue(preparedStatementMock.proxy()));
     sqlConnectionMock.expects(once()).method("prepareStatement").with((eq(testData[1]))).will(returnValue(preparedStatementMock.proxy()));

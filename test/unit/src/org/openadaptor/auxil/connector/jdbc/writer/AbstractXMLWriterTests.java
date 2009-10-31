@@ -26,7 +26,6 @@
 */
 package org.openadaptor.auxil.connector.jdbc.writer;
 
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
@@ -57,14 +56,12 @@ public abstract class AbstractXMLWriterTests extends AbstractSQLWriterTests {
     }
   }
   
-  protected Mock metaDataMock;
   protected Mock statementMock;
   protected Mock resultSetMock;
   protected Mock resultSetMetaDataMock;
   
   protected void setUp() throws Exception {
     super.setUp();
-    metaDataMock = mock(DatabaseMetaData.class);
     statementMock = mock(Statement.class);
     resultSetMock = mock(ResultSet.class);
     resultSetMetaDataMock = mock(ResultSetMetaData.class);
@@ -72,7 +69,6 @@ public abstract class AbstractXMLWriterTests extends AbstractSQLWriterTests {
   
   protected void tearDown() throws Exception {
     super.tearDown();
-    metaDataMock = null;
     statementMock = null;
     resultSetMock = null;
     resultSetMetaDataMock = null;

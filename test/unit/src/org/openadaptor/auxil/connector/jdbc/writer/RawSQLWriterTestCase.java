@@ -37,6 +37,8 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
   }
   
   protected void setupInitialiseExpectations(boolean supportsBatch) {
+    connectionMock.expects(atLeastOnce()).method("getMetaData").will(returnValue(dbMetaDataMock.proxy()));   
+    configureDbMetaDataMock();
   }
   
   protected Object[] setupWriteBatchDataAndExpectationsBatchingDisabled() {
@@ -58,17 +60,15 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
   /**
    * Since RawSQLWriter does not support batching this shaould always be false.
    */
-  public void testHasBatchSupport() {
-    // To check batch support the meta data must be first retrieved.
-    // RawSQLWriter doesn't look up meta data during initialisation so setting
-    // this expectation to "never" is a crude check. If this changes then
-    // more serious testing is needed.
-    connectionMock.expects(never()).method("getMetaData");
+  public void testHasBatchSupport() {   
+    setupInitialiseExpectations(true);
+
     testWriter.initialise((Connection)connectionMock.proxy());
     assertFalse("Does not support batching", testWriter.hasBatchSupport());
   }
 
   public void testWriteSingleton() {
+    setupInitialiseExpectations(true);
     testWriter.initialise((Connection)connectionMock.proxy());
     Object singleton = "this should really be sql";
     Object[] data = new Object [] {singleton};
@@ -84,6 +84,7 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
   }
 
   public void testWriteBatch() {
+    setupInitialiseExpectations(true);
     testWriter.initialise((Connection) connectionMock.proxy());
     Object[] data = new Object []{"this should really be sql", "so should this", "and this"};
     if (testWriter.hasBatchSupport()) {
@@ -104,6 +105,7 @@ public class RawSQLWriterTestCase extends AbstractSQLWriterTests {
   }
 
   public void testWriteNullData() {
+    setupInitialiseExpectations(true);
     testWriter.initialise((Connection)connectionMock.proxy());
     Object[] data = new Object [] { null };
     connectionMock.expects(never()).method("prepareStatement");
