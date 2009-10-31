@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.auxil.connector.jdbc.writer;
 
@@ -61,15 +61,61 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   //Mask to indicate that a db column type is an input (or inout) to stored proc.
   protected static final int SP_IN_ARG_TYPE_MASK= DatabaseMetaData.procedureColumnIn | DatabaseMetaData.procedureColumnInOut;
 
+  public static final char DEFAULT_ID_QUOTE='\"';
+  private static final char DEFAULT_MYSQL_ID_QUOTE='`';
+  private static final char QUOTE_UNSET='\u0000'; //Flag for unset quote char
+
   protected Connection connection;
   protected PreparedStatement reusablePreparedStatement=null;
   protected int[] argSqlTypes; //Might need the sql types for null columns.  
   protected String[] outputColumns;
 
   private boolean batchSupport;
-  
+
   //Potentially log database version info, but only once
   private boolean debug_db_version_not_logged=true; //flag indicating db version info has not yet been logged
+
+  //Flag to indicate whether table names and column identifiers should be quoted.
+  protected boolean quoteIdentifiers=true;
+
+  protected char identifierQuoteOpen =QUOTE_UNSET;
+  protected char identifierQuoteClose=QUOTE_UNSET;
+  /**
+   * Flag to indicate that table and column name identifiers should be quoted in 
+   * calls to the database.
+   * It is enabled by default (note that this changes default behaviour from 
+   * 3.4.4 where no quoting was possible)
+   * @since 3.4.5
+   * @param enabled - if true (the default), quoting will happen
+   */
+  public void setQuoteIdentifiers(boolean enabled) {
+    this.quoteIdentifiers=enabled;
+  }
+
+  /**
+   * If set, and identifierQuoting is enabled, this character will be used 
+   * to quote table and column identifiers. 
+   * If identifierQuoteCloseChar is not specified, this will also be 
+   * used as the closing quote character for such identifiers.
+   * It defaults to DEFAULT_ID_QUOTE (or DEFAULT_MYSQL_ID_QUOTE when using
+   * mysql databases).
+   * @param c quote character.
+   */
+  public void setIdentifierQuoteChar(char c) {
+    identifierQuoteOpen=c;
+  }
+
+  /**
+   * If set, and identifierQuoting is enabled, it
+   * assigned the character to use for closing quotes
+   * on table and column identifiers.
+   * @param c character to sue for quotes.
+   * It defaults to value assigned to identifierQuoteChar
+   * 
+   */
+  public void setIdentifierQuoteCloseChar(char c) {
+    identifierQuoteClose=c;
+  }
 
   /**
    * Initialise the writer.
@@ -80,6 +126,13 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     log.info("Initialising writer");
     try {
       this.connection=connection;
+      DatabaseMetaData dmd = connection.getMetaData();
+      logDBInfo(dmd);
+
+      //Initialise table and column name quoting mechanism.
+      if (quoteIdentifiers) {
+        initialiseQuoting(dmd.getDatabaseProductName().toLowerCase());
+      }
       batchSupport=checkBatchSupport();
       log.info("Writer does "+(batchSupport?"":"NOT ")+"have batch support");
       initialiseReusablePreparedStatement();
@@ -91,6 +144,24 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     } catch (SQLException e) {
       throw new ConnectionException("Failed to initialise" + e.toString(), e);
     }
+  }
+  /**
+   * Assigns appropriate values to opening and closing quote characters for
+   * table name and identifier quoting purposes.
+   * 
+   * Is uses db metadata to get the db name - mysql databases use a different
+   * default quoting mechanism to most others (backtick instead of double quote).
+   * @param connectionClassName String containing the database name
+   */
+  protected void initialiseQuoting(String dbName) {
+    //Cludge to assign mysql a different identifier default quot
+    char defaultQuote=(dbName.indexOf("mysql")>=0)?DEFAULT_MYSQL_ID_QUOTE:DEFAULT_ID_QUOTE; 
+    if (identifierQuoteOpen==QUOTE_UNSET) {
+      identifierQuoteOpen=defaultQuote;
+    }
+    if (identifierQuoteClose==QUOTE_UNSET) {
+      identifierQuoteClose=identifierQuoteOpen;
+    }   
   }
 
   /**
@@ -121,7 +192,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * Subclasses must implement this to allow reusable prepared statements.
    */
   protected abstract void initialiseReusablePreparedStatement();
-  
+
   /**
    * This creates a reusable Prepared Statement for insert statements 
    * into a table.
@@ -139,7 +210,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       throw new RuntimeException("Failed to initialise information for target table, " + e.toString(), e);
     }
   }
-  
+
   /**
    * This creates a reusable Prepared Statement for calls to a
    * stored procedure.
@@ -262,10 +333,11 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    */
 
   protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,String[] columnNames) throws SQLException {
-    StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
+    StringBuffer sql=new StringBuffer("INSERT INTO "+quoteIdentifier(tableName)+"(");
+    //StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
     StringBuffer params=new StringBuffer();
     for (int i=0;i<columnNames.length;i++) {
-      sql.append(columnNames[i]+",");
+      sql.append(quoteIdentifier(columnNames[i])+",");
       params.append("?,");
     }
     sql.setCharAt(sql.length()-1, ')'); //Swap last comma for a bracket.
@@ -275,6 +347,15 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       log.debug("Generated Prepared stmt: "+sql.toString());
     }
     return connection.prepareStatement(sql.toString());
+  }
+
+  protected String quoteIdentifier(String identifier) {
+    if ((identifier!=null) && (quoteIdentifiers)) {
+      return identifierQuoteOpen+identifier+identifierQuoteClose;
+    }
+    else {
+      return identifier;
+    }
   }
 
   /**
@@ -329,7 +410,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    */
   protected List getTableColumnNames(String tableName, Connection connection) throws SQLException {
     //Execute a dummy sql statement against database to collect table metadata
-    String sql= "SELECT * FROM "+tableName+" WHERE 1=2";
+    String sql= "SELECT * FROM "+quoteIdentifier(tableName)+" WHERE 1=2";
     Statement s = connection.createStatement();
     log.debug("Executing SQL: " + sql);
     ResultSet rs=s.executeQuery(sql);
@@ -397,11 +478,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     // Now it checks each columnType, and only includes IN or INOUT types.
     // ToDo: Further validation of this approach. Perhaps OUT should also be included?
     DatabaseMetaData dmd = connection.getMetaData();
-    if (debug_db_version_not_logged && log.isDebugEnabled()) {
-      log.debug("      DB Name (version major/minor): "+dmd.getDatabaseProductName()+"("+dmd.getDatabaseMajorVersion()+"/"+dmd.getDatabaseMinorVersion()+")");
-      log.debug("   DB Version: "+dmd.getDatabaseProductVersion());
-      debug_db_version_not_logged=false; //Don't report it any more.
-    }
     List sqlTypeList=new ArrayList();
     String catalog=connection.getCatalog();
     log.debug("Catalog for stored proc "+storedProcName+" is "+catalog);
@@ -443,6 +519,20 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     }
     rs.close(); 
     return sqlTypes;
+  }
+  
+  protected void logDBInfo(DatabaseMetaData dmd) throws SQLException {
+    if (debug_db_version_not_logged && log.isDebugEnabled()) {
+      String productName=dmd.getDatabaseProductName();
+      try {
+        log.debug("DB Name (version major/minor): "+productName+" ("+dmd.getDatabaseMajorVersion()+"/"+dmd.getDatabaseMinorVersion()+")");
+      }
+      catch (AbstractMethodError ame) { //Sybase jconn2 driver doesn't implement the maj/min methods.
+        log.debug("DB Name: "+productName);
+      }
+      log.debug("DB Version: "+dmd.getDatabaseProductVersion());
+      debug_db_version_not_logged=false; //Don't report it any more.
+    }
   }
   
   private static final String spTypeToString(int type) {
@@ -491,7 +581,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       this.outputColumns=(String[])columns.toArray(new String[columns.size()]);
     }
   }
-  
+
   /**
    * Returns the names of the columns which are written on output.
    * @return Unmodifiable List with names of the output columns.
