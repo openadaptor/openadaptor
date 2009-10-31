@@ -29,6 +29,10 @@ Connectors
    |                                    |                                            |
    |---------------------------------------------------------------------------------|
 
+ * Modified AbstractSQLWriter to allow (and by default use) quoting of table names and
+ column identifiers. This is necessary where reserved words are used for table and
+ column names. Thanks to Tim (ttrantx) for identifying this.
+ 
 Processors
 ==========
 
@@ -59,6 +63,7 @@ Bug Fixes
              lib/FastInfoset_1.2.2 to 1.2.7 (CXF related)
              lib/jaxb-impl_2.1.6.jar to 2.1.12 (CXF related)
              lib/jaxb-xjc_2.1.6.jar to 2.1.12 (CXF related)
+             lib/mysql-connector-java-5.1.10-bin-jar (from mysql-connector-java-5.0.6-bin-jar)
              
 
 =================================================
