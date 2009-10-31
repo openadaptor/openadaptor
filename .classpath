@@ -67,7 +67,7 @@
 	<classpathentry kind="lib" path="lib/rome_0.9.jar"/>
 	<classpathentry kind="lib" path="lib/resolver_from_xerces_2.9.0.jar"/>
 	<classpathentry kind="lib" path="lib/quartz_1.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.6-bin.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar" sourcepath="/home/higginse/work/eclipse/code-src-jars/mysql-connector-java-5.1.10/src"/>
 	<classpathentry kind="lib" path="lib/jta-spec_1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/js.jar"/>
 	<classpathentry kind="lib" path="lib/jetty-util_6.1.9.jar"/>
