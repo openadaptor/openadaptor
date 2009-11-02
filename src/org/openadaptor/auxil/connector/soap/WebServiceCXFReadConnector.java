@@ -188,7 +188,7 @@ public class WebServiceCXFReadConnector extends Component implements IEnrichment
   public synchronized Object[] next(IOrderedMap inputParameters, long timeout) {
 	List dynamicParams = new ArrayList();
     log.debug("WS reader received dynamic parameters: " + inputParameters);
-    if(parameters==null){
+    if(parameters!=null){
       dynamicParams.addAll(parameters);
     }
     dynamicParams.addAll(inputParameters.values());
