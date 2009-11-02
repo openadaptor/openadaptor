@@ -13,10 +13,10 @@ openadaptor 3.x
 Connectors
 ==========
 
- * (SC93) review CXF Web service read connector (ongoing). CXF read connector
-   separated from (now deprecated) XFire read connector. Type of the serviceName
-   property in WebServiceCXFReadConnector changed to QName. Exceptions from #connect
-   and #invoke no longer suppressed. Added thread safety.
+ * (SC93) review CXF Web service read connector. CXF read connector separated from 
+   (now deprecated) XFire read connector. Type of the serviceName property in 
+   WebServiceCXFReadConnector changed to QName. Exceptions from #connect and #invoke 
+   no longer suppressed. Added thread safety.
 
    |---------------------------------------------------------------------------------|
    |         OA 3.4.4                   |             OA 3.?                         |    
@@ -30,8 +30,8 @@ Connectors
    |---------------------------------------------------------------------------------|
 
  * Modified AbstractSQLWriter to allow (and by default use) quoting of table names and
- column identifiers. This is necessary where reserved words are used for table and
- column names. Thanks to Tim (ttrantx) for identifying this.
+   column identifiers. This is necessary where reserved words are used for table and
+   column names. Thanks to Tim (ttrantx) for identifying this.
  
 Processors
 ==========
@@ -58,6 +58,8 @@ Miscellaneous
  
  * (SC97) Bug where debug logging combined with older Sybase driver might cause an
           AbstractMethodError.
+          
+ * (SC98) Including message metadata in exception handling (ongoing).         
 
 Bug Fixes
 =========
