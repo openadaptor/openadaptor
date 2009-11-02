@@ -299,7 +299,13 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     }
     
     if(processor instanceof IComponent){
-	  historyList.add(((IComponent) processor).getId());
+      String id = ((IComponent) processor).getId();
+      if(id!=null){
+	    historyList.add(((IComponent) processor).getId());
+      }
+      else{
+        historyList.add(Message.UNNAMED_MESSAGE_PROCESSOR);
+      }
     }
     else{
       historyList.add(Message.UNNAMED_MESSAGE_PROCESSOR);
