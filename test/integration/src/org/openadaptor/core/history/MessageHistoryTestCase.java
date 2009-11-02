@@ -70,7 +70,7 @@ public class MessageHistoryTestCase extends TestCase {
 	expectedMetadata.put(TestComponent.TEST_METADATA_KEY, TestComponent.TEST_METADATA_VALUE);  
 	
 	List history = new ArrayList();
-	history.add(new TestComponent.TestReadConnector().getClass().getName());
+	history.add(null);
 	history.add(new TestComponent.DummyDataProcessor().getClass().getName());
 	history.add(new TestComponent.MetadataValidatingWriteConnector(expectedMetadata).getClass().getName());
 	expectedMetadata.put(Message.MESSAGE_HISTORY_KEY, history);  

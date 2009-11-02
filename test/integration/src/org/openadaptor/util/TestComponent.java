@@ -109,9 +109,6 @@ public class TestComponent {
       this.addToMetadata = addToMetadata;
     }
     
-    public String getId() {
-      return this.getClass().getName();
-    }  
   }
   
   
