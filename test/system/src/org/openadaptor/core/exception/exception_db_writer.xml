@@ -25,6 +25,7 @@
 	<property name="writer">
 	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
 		   <property name="tableName" value="OA_Exception" />
+		   <property name="quoteIdentifiers" value="false" />
 		</bean>
 	</property>
   </bean>
