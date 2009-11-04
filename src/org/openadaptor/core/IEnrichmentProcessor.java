@@ -30,15 +30,31 @@ package org.openadaptor.core;
 import java.util.List;
 
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
+import org.openadaptor.auxil.processor.GenericEnrichmentProcessor;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
+ * Enrichment processors in Openadaptor implement a pattern often called Content Enricher.
+ * Content Enricher uses information inside the incoming message to retrieve data from
+ * an external source. After it retrieves the required data from the resource, it 
+ * appends data to the message. The original information from the incoming message
+ * may be carried over into the resulting message or may no longer be needed, depending
+ * on the needs of the receiving component. 
+ * 
+ * Enrichment processors are often used to references contained in a message. In order
+ * to keep messages small and easy to manage, simple references are often passed as an
+ * adaptor message rather than complete objects with all data elements. These references
+ * usually take the form of keys or unisqu IDs. When the message needs to be processed
+ * by an adaptor, the required data items need to be retrieved based on object references
+ * included in the original message. 
+ * 
  * Interface that represents an enrichment processor. An enrichment processor 
  * has access to a read connector that will query an external resource for 
  * data that enrichment processor will then use to enrich its input data.
  * 
  * @author Kris Lachor
  * @since 3.4
+ * @see GenericEnrichmentProcessor
  */
 public interface IEnrichmentProcessor  {
   

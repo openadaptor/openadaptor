@@ -48,6 +48,7 @@ import org.openadaptor.core.IEnrichmentProcessor;
  *
  * @author Kris Lachor
  * @since Post 3.3
+ * @see IEnrichmentProcessor
  */
 public class GenericEnrichmentProcessor extends AbstractEnrichmentProcessor {
   
