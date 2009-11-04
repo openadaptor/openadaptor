@@ -50,7 +50,7 @@ Miscellaneous
 
  * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
  
- * (SC95) Support for Message History (ongoing).
+ * (SC95) Support for Message History. More information at http://www.openadaptor.org/history.html 
  
  * (SC96) Quoting issue in AbstractSQLWriter (see above)
           Note that this also required upgrading of mysql driver as older version did not
