@@ -44,7 +44,7 @@ import org.openadaptor.core.exception.ValidationException;
  * Enrichment processors are often used to references contained in a message. In order
  * to keep messages small and easy to manage, simple references are often passed as an
  * adaptor message rather than complete objects with all data elements. These references
- * usually take the form of keys or unisqu IDs. When the message needs to be processed
+ * usually take the form of keys or unique IDs. When the message needs to be processed
  * by an adaptor, the required data items need to be retrieved based on object references
  * included in the original message. 
  * 
