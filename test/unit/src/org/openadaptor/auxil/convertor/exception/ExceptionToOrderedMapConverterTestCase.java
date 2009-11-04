@@ -27,7 +27,7 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
    }
 
 	public void testProcessRecord() {
-		MessageException exception = new MessageException("EEEE", new RuntimeException("RUNTIME"), "SOURCE");
+		MessageException exception = new MessageException("EEEE", null, new RuntimeException("RUNTIME"), "SOURCE");
 		Object result = convertor.convert(exception);
 		assertTrue("Result is not a hash map", result instanceof OrderedHashMap);
 		OrderedHashMap map = (OrderedHashMap)result;
@@ -39,7 +39,7 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
 	}
 
 	public void testWithDateFormatConvert() {
-		MessageException exception = new MessageException("''", new java.sql.SQLException("SQL Exception"), "...");
+		MessageException exception = new MessageException("''", null, new java.sql.SQLException("SQL Exception"), "...");
 		convertor.setTimestampFormat("yyyy-MM-dd HH:mm");
 		String now = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new java.util.Date());
 		Object result = convertor.convert(exception);
@@ -64,7 +64,7 @@ public class ExceptionToOrderedMapConverterTestCase extends AbstractTestIDataPro
    * Tests  {@link ExceptionToOrderedMapConvertor#setConvertPayloadToString(boolean)}.
    */
   public void testConvertPayloadToString(){
-    MessageException exception = new MessageException(new Object(), new RuntimeException("RUNTIME"), "SOURCE");
+    MessageException exception = new MessageException(new Object(), null, new RuntimeException("RUNTIME"), "SOURCE");
     Object result = convertor.convert(exception);
     OrderedHashMap map = (OrderedHashMap)result;
     testBasicAssertions(map);

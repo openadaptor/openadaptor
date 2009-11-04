@@ -192,7 +192,7 @@ public class WriteNode extends Node {
             }
           }catch(Exception ex) {
             log.info(getId() + " caught " + ex.getClass().getName() + ":" + ex.getMessage());
-            response.addException(new MessageException(inputs[i], ex, getId(), fetchThreadName()));
+            response.addException(new MessageException(inputs[i], msg.getMetadata(), ex, getId(), fetchThreadName()));
             msg.getTransaction().delistForRollback(resource);
           }
     	}
@@ -216,7 +216,7 @@ public class WriteNode extends Node {
         output = connector.deliver(inputs);
       } catch (Exception e) {
         log.info(getId() + " caught "+ e.getClass().getName() + " [in batch]:" +e.getMessage());
-        response.addException(new MessageException(inputs,e,getId(),fetchThreadName()));
+        response.addException(new MessageException(inputs,null,e,getId(),fetchThreadName()));
         msg.getTransaction().delistForRollback(resource);
       }
       if (output != null) {

@@ -183,7 +183,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
                     metrics.recordDiscardedMsgEnd(msg);
 				}
 			} catch (Exception e) {
-				response.addException(new MessageException(inputs[i], e, getId(), fetchThreadName()));
+				response.addException(new MessageException(inputs[i], msg.getMetadata(), e, getId(), fetchThreadName()));
                 metrics.recordExceptionMsgEnd(msg);
 			}
 		}

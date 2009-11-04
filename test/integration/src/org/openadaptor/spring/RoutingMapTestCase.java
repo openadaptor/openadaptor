@@ -167,7 +167,7 @@ public class RoutingMapTestCase extends TestCase {
       assertTrue(destinations.size() == 1);
       assertTrue(destinations.get(0).toString().equals("Processor1"));
       /* MessageException directly extends Throwable and therefore won't be caught by the Exception handler */
-      destinations = map.getExceptionDestinations(getNode("WriteNode"), new MessageException("foo", null, null));
+      destinations = map.getExceptionDestinations(getNode("WriteNode"), new MessageException("foo", null, null, null));
       assertTrue(destinations.size() == 0);
       destinations = map.getExceptionDestinations(getNode("WriteNode"), new ProcessingException("foo"));
       assertTrue(destinations.size() == 2);

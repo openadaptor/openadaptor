@@ -27,6 +27,8 @@
 
 package org.openadaptor.core.exception;
 
+import java.util.Map;
+
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.Response;
 
@@ -47,23 +49,26 @@ public class MessageException extends Throwable {
     private String originatingModule;
     private String originatingThreadName = UNSET_THREAD_NAME;    
     private String adaptorName;
+    private Map metadata;
 
     /**
      * Constructor.
      */
-    public MessageException(final Object data, final Exception exception, 
+    public MessageException(final Object data, final Map metadata, final Exception exception, 
           final String originatingModule) {
 		this.data = data;
 		this.exception = exception;
         this.originatingModule = originatingModule;
+        this.metadata = metadata;
 	}
 
-    public MessageException(final Object data, final Exception exception, 
+    public MessageException(final Object data, final Map metadata, final Exception exception, 
         final String originatingModule, final String originatingThreadName) {
       this.data = data;
       this.exception = exception;
       this.originatingModule = originatingModule;
       this.originatingThreadName = originatingThreadName;
+      this.metadata = metadata;
     }
     
 	public Object getData() {
@@ -97,4 +102,13 @@ public class MessageException extends Throwable {
     public void setAdaptorName(String adaptorName) {
       this.adaptorName = adaptorName;
     }
+
+    public Map getMetadata() {
+      return metadata;
+    }
+
+    public void setMetadata(Map metadata) {
+      this.metadata = metadata;
+    }
+   
 }
