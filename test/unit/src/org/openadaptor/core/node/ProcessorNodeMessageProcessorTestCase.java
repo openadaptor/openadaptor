@@ -55,9 +55,9 @@ public class ProcessorNodeMessageProcessorTestCase extends AbstractTestNodeMessa
     super.setUp();
     data = new Object[]{"foo", "bar", "foobar"};
     exceptionData = new Object[]{
-      new MessageException(data[0], new RuntimeException("test"), "test"),
+      new MessageException(data[0], null, new RuntimeException("test"), "test"),
       data[1],
-      new MessageException(data[2], new RuntimeException("test"), "test")
+      new MessageException(data[2], null, new RuntimeException("test"), "test")
     };
   }
 
