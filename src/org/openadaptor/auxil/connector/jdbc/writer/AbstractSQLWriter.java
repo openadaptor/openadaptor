@@ -481,7 +481,25 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     List sqlTypeList=new ArrayList();
     String catalog=connection.getCatalog();
     log.debug("Catalog for stored proc "+storedProcName+" is "+catalog);
-    ResultSet rs = dmd.getProcedureColumns(catalog,"%",storedProcName,"%");
+    ResultSet rs;
+    //Oracle doesn't bother with catalogs at all :-(
+    //Thus if it's an oracle db, we need to substitute package name instead
+    //of catalog.
+    if ((catalog==null) &&
+        (dmd.getDatabaseProductName().toLowerCase().indexOf("oracle")>=0)) {
+      String orProc=storedProcName;
+      String orPackage="%";
+      String[] split=storedProcName.split("\\.");
+      if (split.length==2) {
+        orPackage=split[0];
+        orProc=split[1];
+      }
+      log.debug("Oracle DB; substituting package "+orPackage+"for catalog; using proc: "+orProc);
+      rs=dmd.getProcedureColumns(orPackage,null,orProc,"%");
+    }
+    else {
+      rs = dmd.getProcedureColumns(catalog,"%",storedProcName,"%");
+    }
     //If RS is empty, then we have failed in our mission.
     if (!rs.next()) { //First rs is return value.
       rs.close();
@@ -520,7 +538,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     rs.close(); 
     return sqlTypes;
   }
-  
+
   protected void logDBInfo(DatabaseMetaData dmd) throws SQLException {
     if (debug_db_version_not_logged && log.isDebugEnabled()) {
       String productName=dmd.getDatabaseProductName();
@@ -534,7 +552,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       debug_db_version_not_logged=false; //Don't report it any more.
     }
   }
-  
+
   private static final String spTypeToString(int type) {
     String result;
     switch(type) {
