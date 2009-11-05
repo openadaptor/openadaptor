@@ -74,6 +74,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   static final String THREAD_NAME             = "THREAD_NAME";
   static final String DATA_TYPE               = "DATA_TYPE";
   static final String DATA                    = "DATA";
+  static final String METADATA                = "METADATA";
   static final String FIXED                   = "FIXED";
   static final String REPROCESSED             = "REPROCESSED";
   
@@ -88,6 +89,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   private String componentColName             = COMPONENT;
   private String dataTypeColName              = DATA_TYPE;
   private String dataColName                  = DATA;
+  private String metadataColName              = METADATA;
   private String fixedColName                 = FIXED;
   private String reprocessedColName           = REPROCESSED;
   private String threadNameColName            = THREAD_NAME;
@@ -181,6 +183,13 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
       data = data.toString();
     }
     map.put(dataColName, data);
+    
+    /* metadata has to be Map */
+    Object metadata = messageException.getMetadata();
+    if(metadata!=null){
+      metadata = metadata.toString();
+    }
+    map.put(metadataColName, metadata);
  
     map.put(fixedColName, fixedColumnValue);
     map.put(reprocessedColName, reprocessedColumnValue);
@@ -234,6 +243,15 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    */
   public void setDataColName(String dataColName) {
     this.dataColName = dataColName;
+  }
+  
+  /**
+   * Overrides the default metadata column name.
+   * 
+   * @param dataColName the data column name.
+   */
+  public void setMetadataColName(String metadataColName) {
+    this.metadataColName = metadataColName;
   }
 
   /**
