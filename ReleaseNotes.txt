@@ -44,6 +44,9 @@ Examples
    
  * (SC93) example/spring/connectors/soap/ws-cxf-reader.xml - type of serviceName
    property changed to QName.
+   
+ * (SC95) New example that demonstrates use of message history
+   (example\spring\adaptor\history.xml).    
 
 Miscellaneous
 =============
