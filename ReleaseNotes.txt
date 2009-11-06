@@ -62,7 +62,10 @@ Miscellaneous
  * (SC97) Bug where debug logging combined with older Sybase driver might cause an
           AbstractMethodError.
           
- * (SC98) Including message metadata in exception handling (ongoing).         
+ * (SC98) Including message metadata in exception handling (ongoing).  
+ 
+ * (SC99) Added packageName property to facilitate Oracle Package names in stored proc
+          definitions.       
 
 Bug Fixes
 =========
