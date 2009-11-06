@@ -80,6 +80,9 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 
   protected char identifierQuoteOpen =QUOTE_UNSET;
   protected char identifierQuoteClose=QUOTE_UNSET;
+  
+  //If set, this package will be assumed (only for stored procs on  Oracle databases)
+  protected String oraclePackage=null;
   /**
    * Flag to indicate that table and column name identifiers should be quoted in 
    * calls to the database.
@@ -116,7 +119,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   public void setIdentifierQuoteCloseChar(char c) {
     identifierQuoteClose=c;
   }
-
+  
   /**
    * Initialise the writer.
    * Determines if batch handling is supported by the databse.
@@ -334,7 +337,6 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
 
   protected PreparedStatement generatePreparedStatement(Connection connection,String tableName,String[] columnNames) throws SQLException {
     StringBuffer sql=new StringBuffer("INSERT INTO "+quoteIdentifier(tableName)+"(");
-    //StringBuffer sql=new StringBuffer("INSERT INTO "+tableName+"(");
     StringBuffer params=new StringBuffer();
     for (int i=0;i<columnNames.length;i++) {
       sql.append(quoteIdentifier(columnNames[i])+",");
@@ -480,26 +482,32 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     DatabaseMetaData dmd = connection.getMetaData();
     List sqlTypeList=new ArrayList();
     String catalog=connection.getCatalog();
+    String schema="%";
+    String proc=storedProcName;
+    String column="%";
+    
     log.debug("Catalog for stored proc "+storedProcName+" is "+catalog);
     ResultSet rs;
-    //Oracle doesn't bother with catalogs at all :-(
-    //Thus if it's an oracle db, we need to substitute package name instead
-    //of catalog.
     if ((catalog==null) &&
         (dmd.getDatabaseProductName().toLowerCase().indexOf("oracle")>=0)) {
-      String orProc=storedProcName;
-      String orPackage="%";
-      String[] split=storedProcName.split("\\.");
-      if (split.length==2) {
-        orPackage=split[0];
-        orProc=split[1];
+      //Oracle doesn't bother with catalogs at all :-(
+      //Thus if it's an oracle db, we may need to substitute package name instead
+      //of catalog.
+      if (oraclePackage!=null) {
+        log.debug("Setting catalog to oracle package of"+oraclePackage);
+        catalog=oraclePackage;
+        schema=null;//Oracle 'ignore' setting. Probably the same as "%" anyway.
       }
-      log.debug("Oracle DB; substituting package "+orPackage+"for catalog; using proc: "+orProc);
-      rs=dmd.getProcedureColumns(orPackage,null,orProc,"%");
     }
-    else {
-      rs = dmd.getProcedureColumns(catalog,"%",storedProcName,"%");
+    //Check if there's a schema reference in the proc name...
+    String[] components=storedProcName.split("\\.");
+    int len=components.length;
+    if (len>1) {
+      schema=components[len-2];
+      proc=components[len-1];
     }
+    log.debug("Resolving proc - catalog="+catalog+";schema="+schema+";proc="+proc+";column="+column);
+    rs = dmd.getProcedureColumns(catalog,schema,proc,column);
     //If RS is empty, then we have failed in our mission.
     if (!rs.next()) { //First rs is return value.
       rs.close();
@@ -538,7 +546,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     rs.close(); 
     return sqlTypes;
   }
-
+ 
   protected void logDBInfo(DatabaseMetaData dmd) throws SQLException {
     if (debug_db_version_not_logged && log.isDebugEnabled()) {
       String productName=dmd.getDatabaseProductName();

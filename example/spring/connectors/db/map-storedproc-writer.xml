@@ -83,6 +83,14 @@
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="writer">
       <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapCallableStatementWriter">
+        <description>
+          The callable statement may optionally specify, e.g. myschema.procname
+          Actual behaviour may vary depending on the database vendor (and chosen driver).
+          Oracle stored procs may wish to specify a package - in this case they
+          should use the packageName property to identify the package to which the
+          procedure belongs. 
+        </description>
+        <!-- <property name="packageName" value="someOraclePackageName"/> -->
         <property name="callableStatement" value="sp_insert_example">
           <description>The stored proc to call.</description>
         </property>

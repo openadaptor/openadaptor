@@ -55,8 +55,27 @@ public class MapCallableStatementWriter extends AbstractMapWriter {
 
   private String procName;
 
+  /**
+   * This should contain the name of the stored procedure to be executed.
+   * Generally may also be prefixed with a schema name (e.g. myschema.myproc) but
+   * this behaviour is db vendor dependent.
+   * Note also that Oracle's package.proc syntax will not work - use packageName property
+   * instead to specify a package name.
+   * @param procName Name of a stored procedure to execute.
+   */
   public void setCallableStatement(String procName) {
     this.procName = procName;
+  }
+  
+  /**
+   * Optional argument to specify a package name for a CallableStatement.
+   * Optional, and only makes sense for Oracle databases.
+   * 
+   * @param oraclePackageName - String containing the name of package to which
+   *                            the stored procedure belongs.
+   */
+  public void setPackageName(String oraclePackageName) {
+    this.oraclePackage=oraclePackageName;
   }
 
   /**
