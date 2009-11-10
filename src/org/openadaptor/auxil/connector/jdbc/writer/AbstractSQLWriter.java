@@ -81,7 +81,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   protected char identifierQuoteOpen =QUOTE_UNSET;
   protected char identifierQuoteClose=QUOTE_UNSET;
   
-  //If set, this package will be assumed (only for stored procs on  Oracle databases)
+  //If set, this package will be assumed (only for stored procs on Oracle databases)
   protected String oraclePackage=null;
   /**
    * Flag to indicate that table and column name identifiers should be quoted in 
@@ -131,10 +131,16 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
       this.connection=connection;
       DatabaseMetaData dmd = connection.getMetaData();
       logDBInfo(dmd);
+      //Need to know vendor for a few quirks.
+      String dbVendorName=dmd.getDatabaseProductName().toLowerCase();
 
       //Initialise table and column name quoting mechanism.
       if (quoteIdentifiers) {
-        initialiseQuoting(dmd.getDatabaseProductName().toLowerCase());
+        initialiseQuoting(dbVendorName);
+      }
+      if ((oraclePackage!=null) && (dbVendorName.indexOf("oracle")<0)) {
+        log.warn("Oracle package specified, but db vendor is not Oracle. It will be ignored");
+        oraclePackage=null;
       }
       batchSupport=checkBatchSupport();
       log.info("Writer does "+(batchSupport?"":"NOT ")+"have batch support");
@@ -432,6 +438,12 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * @return String containing an SQL call ready for compilation as a PreparedStatement
    */
   protected String generateStoredProcSQL(String procName,int[] sqlTypes) {
+    //Fudge for oracle Packages.
+    //SC[99]
+    if (oraclePackage!=null) {
+      log.debug("Prepending oracle package name to stored proc name");
+      procName=oraclePackage+"."+procName;
+    }
     StringBuffer sqlString = new StringBuffer("{ CALL "+ procName + "(");
     int args=sqlTypes.length;// Only need the number of args.
     for (int i=0;i<args;i++) {
@@ -488,16 +500,13 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
     
     log.debug("Catalog for stored proc "+storedProcName+" is "+catalog);
     ResultSet rs;
-    if ((catalog==null) &&
-        (dmd.getDatabaseProductName().toLowerCase().indexOf("oracle")>=0)) {
-      //Oracle doesn't bother with catalogs at all :-(
-      //Thus if it's an oracle db, we may need to substitute package name instead
-      //of catalog.
-      if (oraclePackage!=null) {
-        log.debug("Setting catalog to oracle package of"+oraclePackage);
-        catalog=oraclePackage;
-        schema=null;//Oracle 'ignore' setting. Probably the same as "%" anyway.
-      }
+    //Oracle doesn't bother with catalogs at all :-(
+    //Thus if it's an oracle db, we may need to substitute package name instead
+    //of catalog.
+    if ((catalog==null) && (oraclePackage!=null)) { //oraclePackage will only be non-null for oracle db
+      log.debug("Setting catalog to oracle package of: "+oraclePackage);
+      catalog=oraclePackage;
+      schema=null;//Oracle 'ignore' setting. Probably the same as "%" anyway.
     }
     //Check if there's a schema reference in the proc name...
     String[] components=storedProcName.split("\\.");
