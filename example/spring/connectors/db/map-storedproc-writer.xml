@@ -79,7 +79,10 @@
   </bean>
 
   <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
-    <description>Writer which inserts data into test table.</description>
+    <description>Writer which inserts data into test table.
+       The preamble SQL is just to clear the table first.
+    </description>
+    <property name="preambleSQL" value="DELETE FROM WriterExample" />
     <property name="jdbcConnection" ref="JdbcConnection"/>
     <property name="writer">
       <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapCallableStatementWriter">
