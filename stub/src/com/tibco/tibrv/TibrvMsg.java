@@ -19,5 +19,13 @@ public class TibrvMsg {
   public void update(String field_name, Object value) throws TibrvException {
     throw new StubException(StubException.WARN_TIBCO_JAR);
   }
+  
+  public int getNumFields() throws TibrvException {
+    throw new StubException(StubException.WARN_TIBCO_JAR);
+  }
+  
+  public TibrvMsgField getFieldByIndex(int index) throws TibrvException {
+    throw new StubException(StubException.WARN_TIBCO_JAR);
+  }
 
 }
