@@ -27,6 +27,8 @@
 
 package org.openadaptor.thirdparty.tibco;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
 import org.openadaptor.core.exception.ConnectionException;
 
@@ -38,7 +40,7 @@ import com.tibco.tibrv.TibrvRvdTransport;
 import com.tibco.tibrv.TibrvTransport;
 
 public class TibrvConnection extends Component {
-
+	private static final Log log = LogFactory.getLog(TibrvConnection.class);
   private String service;
 
   private String network;
@@ -59,8 +61,9 @@ public class TibrvConnection extends Component {
     this.service = service;
   }
 
-  private TibrvTransport getTransport() {
+  private void initialiseTransport() {
     if (transport == null) {
+    	log.info("Initialising transport");
       try {
         Tibrv.open(Tibrv.IMPL_NATIVE);
       } catch (TibrvException e) {
@@ -71,16 +74,33 @@ public class TibrvConnection extends Component {
       } catch (TibrvException e) {
         throw new ConnectionException("failed to create tibrv transport", e, this);
       }
+      log.info("Transport initialiased");
     }
-    return transport;
+  }
+  
+  public void connect() {
+  	initialiseTransport();
+  }
+  public void disconnect() {
+  	if (transport!=null) {
+  			transport.destroy();
+  	}
   }
 
   public TibrvListener createListener(String topic, TibrvReadConnector connector) throws TibrvException  {
-    getTransport();
-    return new TibrvListener(Tibrv.defaultQueue(), connector, getTransport(), topic, null);
+  	if (transport==null) {
+  		initialiseTransport();
+  	}
+    return new TibrvListener(Tibrv.defaultQueue(), connector, transport, topic, null);
   }
-  
+  /**
+   * Sent a message via the transport.
+   * Note that this assumes that the transport is initialised -
+   * otherwise there would be an extra check on each call to send
+   * @param msg
+   * @throws TibrvException
+   */
   public void send(TibrvMsg msg) throws TibrvException {
-    getTransport().send(msg);
+    transport.send(msg);
   }
 }

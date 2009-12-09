@@ -62,6 +62,9 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     if (connection == null) {
       throw new ConnectionException("connection not set", this);
     }
+    else {
+    connection.connect();
+    }
   }
 
   public Object deliver(Object[] data) {
@@ -94,6 +97,7 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
   }
 
   public void disconnect() {
+  	connection.disconnect();
   }
 
 }

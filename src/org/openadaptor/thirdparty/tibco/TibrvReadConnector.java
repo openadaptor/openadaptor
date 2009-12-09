@@ -47,7 +47,7 @@ import com.tibco.tibrv.TibrvMsgCallback;
 
 /**
  * Read Connector that subcribes to a tibco rendezvous topic / subject.
- * @author perryj
+ * @author higginse
  *
  */
 public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsgCallback {
@@ -59,12 +59,11 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   private Set topicNames = new HashSet();
 
   private Map listenerMap = new HashMap();
-  
-  private DispathThread dispatchThread = null;
-  
-  private boolean decodeTibrvMsg = true;
-
-  private String fieldName = TibrvWriteConnector.FIELD_NAME;
+   
+  private Dispatcher dispatcher; //Thread for interaction with tibrv
+     
+  //By default messages are just passed through opaquely.
+  private ITibrvMessageDecoder decoder=null;
 
   public TibrvReadConnector() {
     super();
@@ -91,20 +90,13 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   }
   
   /**
-   * if true then extracts string value from single field on incoming messages
-   * otherwise queues actual TibrvMsg
-   * @param decodeTibrvMsg
+   * If a decoder is specified, it will be used to decode incoming raw TibrvMsg instances.
+   * It is null by default, meaning that the raw message will be passed on through
+   * the openadaptor pipeline.
+   * @param decoder ITibrvMessageDecoder instance
    */
-  public void setDecodeTibrvMsg(final boolean decodeTibrvMsg) {
-    this.decodeTibrvMsg = decodeTibrvMsg;
-  }
-
-  /**
-   * name of field this component expects the data to be in
-   * @param fieldName
-   */
-  public void setFieldName(final String fieldName) {
-    this.fieldName = fieldName;
+  public void setDecoder(ITibrvMessageDecoder decoder) {
+  	this.decoder=decoder;
   }
 
   public void connect() {
@@ -118,8 +110,9 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
         throw new ConnectionException("failed to create listener", e, this);
       }
     }
-    dispatchThread = new DispathThread();
-    dispatchThread.start();
+    dispatcher=new Dispatcher(this,"tibrv_dispatch");
+    dispatcher.setDaemon(true);
+    dispatcher.start();
   }
 
   public void disconnect() {
@@ -127,40 +120,61 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
       TibrvListener listener = (TibrvListener) iter.next();
       listener.destroy();
     }
+    if (dispatcher!=null) {
+      log.debug("Asking dispatcher to shutdown");
+      dispatcher.shutdown();
+    }
   }
 
   public void onMsg(TibrvListener listener, TibrvMsg msg) {
-    if (decodeTibrvMsg) {
+  	log.debug("Message received: "+msg);
+    if (decoder!=null) {
       try {
-        enqueue(msg.getField(fieldName).data);
-      } catch (TibrvException e) {
-        log.error("failed to extract " + fieldName + " from message");
+      enqueue(decoder.decode(msg));
       }
-    } else {
+      catch (TibrvException te) {
+        fail("Failed to process TibrvMsg: "+msg,te);
+      }
+    }
+    else {
       enqueue(msg);
     }
   }
 
-  class DispathThread extends Thread {
-    boolean active = false;
-
-    DispathThread() {
-      super("tibrvdispatch");
-      setDaemon(true);
-    }
-
-    public void run() {
-      while (true) {
-        try {
-          Tibrv.defaultQueue().dispatch();
-        } catch (InterruptedException e) {
-        } catch (Throwable e) {
-          log.error("unexpected exception dispatching tibrv message", e);
-        }
-      }
-    }
+  protected void fail(String msg,Throwable t) {
+    log.error(msg);
+    throw new ConnectionException(msg, t);
   }
 
   public void validate(List exceptions) {
   }
+  
+  class Dispatcher extends Thread {
+    private boolean running;
+    private TibrvReadConnector connector;
+    
+    public void shutdown() {
+      this.running=false;
+    }
+    public Dispatcher(TibrvReadConnector connector,String name) {
+      super(name);
+      this.connector=connector;
+      this.setDaemon(true);
+    }
+    public void run(){
+      running=true;
+      log.debug("Dispatcher starting");
+      while (running) {
+        try {
+          Tibrv.defaultQueue().dispatch();
+        }
+        catch (InterruptedException ie) {} //Can ignore this.
+        catch (TibrvException te) {
+          connector.fail("Exception dispatching tibrv message",te);
+        }
+      }
+      log.debug("Dispatcher stopped");
+    }
+  }
+
 }
