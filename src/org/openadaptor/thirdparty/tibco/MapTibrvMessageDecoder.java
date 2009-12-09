@@ -1,15 +1,3 @@
-package org.openadaptor.thirdparty.tibco;
-
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
-
-import com.tibco.tibrv.TibrvException;
-import com.tibco.tibrv.TibrvMsg;
-import com.tibco.tibrv.TibrvMsgField;
 /*
 Copyright (C) 2001 - 2009 The Software Conservancy as Trustee. All rights reserved.
 
@@ -35,7 +23,20 @@ patents, trade secrets or any other intellectual property of the licensor or any
 contributor except as expressly stated herein. No patent license is granted separate
 from the Software, for code that you delete from the Software, or for combinations
 of the Software with other software or hardware.
- */
+*/
+package org.openadaptor.thirdparty.tibco;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.auxil.orderedmap.OrderedHashMap;
+
+import com.tibco.tibrv.TibrvException;
+import com.tibco.tibrv.TibrvMsg;
+import com.tibco.tibrv.TibrvMsgField;
+
 /**
  * decodes Tibco Rendezvous messages into Maps
  * @author Eddy Higgins

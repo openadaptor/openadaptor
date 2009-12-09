@@ -1,7 +1,3 @@
-package org.openadaptor.thirdparty.tibco;
-
-import com.tibco.tibrv.TibrvException;
-import com.tibco.tibrv.TibrvMsg;
 /*
 Copyright (C) 2001 - 2009 The Software Conservancy as Trustee. All rights reserved.
 
@@ -28,6 +24,11 @@ contributor except as expressly stated herein. No patent license is granted sepa
 from the Software, for code that you delete from the Software, or for combinations
 of the Software with other software or hardware.
 */
+package org.openadaptor.thirdparty.tibco;
+
+import com.tibco.tibrv.TibrvException;
+import com.tibco.tibrv.TibrvMsg;
+
 /**
  * Interface for decoders which can decode Tibco Rendezvous messages
  * @author Eddy Higgins
