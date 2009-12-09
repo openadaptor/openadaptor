@@ -68,16 +68,16 @@
     	   includeSubject and fields are optional properties; if unspecified, 
     	   subject is included by default, and all fields are 
     	  decoded into map entries
-    	  </description
+    	  </description>
     		<property name="includeSubject" value="false"/>
     		<property name="fields">
-        <list>
-          <value>Timestamp</value>
-          <value>Bid</value>
-          <value>Maturity</value>
-        </list>
-    </property>
-    </bean>
+        	<list>
+         	 <value>Timestamp</value>
+         	 <value>Bid</value>
+         	 <value>Maturity</value>
+        	</list>
+    		</property>
+    	</bean>
     </property>
     
     <property name="topics">
