@@ -11,5 +11,9 @@ public class TibrvRvdTransport extends TibrvTransport {
   public void send(TibrvMsg msg) {
     throw new StubException(StubException.WARN_TIBCO_JAR);
   }
+  
+  public void destroy() {
+    throw new StubException(StubException.WARN_TIBCO_JAR);
+  }
 
 }
