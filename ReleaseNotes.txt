@@ -33,6 +33,9 @@ Connectors
    column identifiers. This is necessary where reserved words are used for table and
    column names. Thanks to Tim (ttrantx) for identifying this.
  
+ * Tibco read connector has been rewritten completely. Existing adaptors which use it 
+   may need slight reconfiguration.
+   
 Processors
 ==========
 
