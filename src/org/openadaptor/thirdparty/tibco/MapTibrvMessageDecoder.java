@@ -24,13 +24,12 @@ contributor except as expressly stated herein. No patent license is granted sepa
 from the Software, for code that you delete from the Software, or for combinations
 of the Software with other software or hardware.
 */
+
 package org.openadaptor.thirdparty.tibco;
 
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 
 import com.tibco.tibrv.TibrvException;
