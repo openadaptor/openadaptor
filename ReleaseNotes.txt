@@ -36,6 +36,9 @@ Connectors
  * Tibco read connector has been rewritten completely. Existing adaptors which use it 
    may need slight reconfiguration.
    
+ * JNDIConnection has been modified to allow the use of vendor specific values via
+   a new (optional) customProperties property. Again thanks to Tim (ttrantx) for this.
+   
 Processors
 ==========
 

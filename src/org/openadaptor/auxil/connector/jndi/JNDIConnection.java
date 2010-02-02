@@ -66,6 +66,8 @@ public class JNDIConnection {
   private String _securityPrincipal;
 
   private String _securityCredentials;
+  
+  private Properties _customProperties;
 
   // BEGIN Bean getters/setters
 
@@ -228,6 +230,27 @@ public class JNDIConnection {
   public JNDIConnection() { // No-arg constructor for beans
     setSecurityAuthentication(DEFAULT_SECURITY_AUTHENTICATION);
   }
+  
+  /**
+   * Assign custom properties for use with this JNDI connection.
+   * It may be used to configure Vendor specific values.
+   * When configured, these properties will be included as part of the environment passed to
+   * the call to create an InitialDirContext.
+   * Note that the other properties of this class (e.g. securityCredentials etc.)
+   * will override any supplied here.
+   * @param customProperties - an instance of Properties
+   */
+  public void setCustomProperties(Properties customProperties) {
+  	this._customProperties=customProperties;
+  }
+  
+  /**
+   * Return the configured custom properties, if any.
+   * @return an instance of Properties, or null.
+   */
+  public Properties getCustomProperties() {
+  	return _customProperties;
+  }
 
   /**
    * Connect to a JNDI Service.
@@ -237,27 +260,6 @@ public class JNDIConnection {
    */
   public DirContext connect() throws NamingException {
     return new InitialDirContext(getConnectionProperties());
-  }
-
-  public Properties getConnectionProperties() {
-    Properties env = new Properties();
-    if (_initialContextFactory != null) {
-      env.put(Context.INITIAL_CONTEXT_FACTORY, _initialContextFactory);
-    }
-    if (_providerUrl != null) {
-      env.put(Context.PROVIDER_URL, _providerUrl);
-    }
-    // Authentication details
-    if (_securityAuthentication != null) {
-      env.put(Context.SECURITY_AUTHENTICATION, _securityAuthentication);
-    }
-    if (_securityPrincipal != null) {
-      env.put(Context.SECURITY_PRINCIPAL, _securityPrincipal);
-    }
-    if (_securityCredentials != null) {
-      env.put(Context.SECURITY_CREDENTIALS, _securityCredentials);
-    }
-    return env;
   }
 
   /**
@@ -276,24 +278,35 @@ public class JNDIConnection {
     }
   }
 
+  public Properties getConnectionProperties() {
+  	return getConnectionProperties(_customProperties,_initialContextFactory,_providerUrl,_securityAuthentication,_securityPrincipal,_securityCredentials);
+  }
+
   public Properties getAlternateConnectionProperties() {
-    Properties env = new Properties();
-    if (_initialContextFactory != null) {
-      env.put(Context.INITIAL_CONTEXT_FACTORY, _initialContextFactory);
+  	return getConnectionProperties(_customProperties,_initialContextFactory,_alternateProviderUrl,_securityAuthentication,_securityPrincipal,_securityCredentials);
+  }
+  
+  protected Properties getConnectionProperties(Properties customProperties,String contextFactory,String providerUrl,String authentication,String principal,String credentials) {
+  	Properties env=new Properties();
+  	if (customProperties !=null) {
+  		env.putAll(customProperties);
+  	}
+    if (contextFactory != null) {
+      env.put(Context.INITIAL_CONTEXT_FACTORY, contextFactory);
     }
-    if (_providerUrl != null) {
-      env.put(Context.PROVIDER_URL, _alternateProviderUrl);
+    if (providerUrl != null) {
+      env.put(Context.PROVIDER_URL, _providerUrl);
     }
     // Authentication details
-    if (_securityAuthentication != null) {
-      env.put(Context.SECURITY_AUTHENTICATION, _securityAuthentication);
+    if (authentication != null) {
+      env.put(Context.SECURITY_AUTHENTICATION, authentication);
     }
-    if (_securityPrincipal != null) {
-      env.put(Context.SECURITY_PRINCIPAL, _securityPrincipal);
+    if (principal != null) {
+      env.put(Context.SECURITY_PRINCIPAL, principal);
     }
-    if (_securityCredentials != null) {
-      env.put(Context.SECURITY_CREDENTIALS, _securityCredentials);
+    if (credentials != null) {
+      env.put(Context.SECURITY_CREDENTIALS, credentials);
     }
-    return env;
+    return env; 	
   }
 }
