@@ -35,6 +35,7 @@ import org.openadaptor.core.exception.*;
 import org.openadaptor.core.transaction.ITransactional;
 
 import javax.jms.*;
+
 import java.util.List;
 
 /**
@@ -157,7 +158,10 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   public void connect() {
     if (!isConnected()) {
       session = jmsConnection.createSessionFor(this);
-      messageProducer = createMessageProducer();
+      
+      //destination may not be known until after a message is received for a request/reply
+      if(destination!=null || destinationName!=null)
+    	  messageProducer = createMessageProducer();
       transactionalResource = createTransactionalResource(session);
     }
   }
@@ -168,7 +172,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   public void disconnect() {
     if (isConnected()) {
       try {
-        messageProducer.close();
+        if(messageProducer!=null)
+        	messageProducer.close();
         session.close();
       } catch (JMSException e) {
         throw new ConnectionException("Exception closing JMSReadConnector.", e, this);
@@ -182,9 +187,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public void validate(List exceptions) {
-    if ((getDestinationName() == null) && (getDestination() == null)) {
-      exceptions.add(new ValidationException("One of destinationName or destination must be set.", this));
-    }
+//    if ((getDestinationName() == null) && (getDestination() == null)) {
+//      exceptions.add(new ValidationException("One of destinationName or destination must be set.", this));
+//    }
     if (jmsConnection == null) {
       exceptions.add(new ValidationException("Property jmsConnection is mandatory", this));
     } else {
@@ -203,7 +208,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @return whether connected or not.
    */
   public boolean isConnected() {
-    return ((session != null) && (messageProducer != null));
+//    return ((session != null) && (messageProducer != null));
+    return (session != null);
   }
 
   // ITransactional implementation
@@ -228,6 +234,23 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     return newProducer;
   }
 
+  protected MessageProducer createMessageProducer(Message msg) {
+	    MessageProducer newProducer;
+	    Destination reply;
+	    try {
+			reply = msg.getJMSDestination();
+		} catch (JMSException e) {
+		      throw new ConnectionException("Exception getting destination from message ", e, this);
+		}
+
+		try {
+	      newProducer = session.createProducer(reply);
+	    } catch (JMSException e) {
+	      throw new ConnectionException("Exception creating JMS Producer ", e, this);
+	    }
+	    log.info(" Producer initialised for JMS Destination=" + newProducer);
+	    return newProducer;
+	  }
 
   /**
    * Deliver the parameter to the confgured destination.
@@ -240,9 +263,24 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     try {
       // Delegate message creation to an instance of IMessageGenerator.
       Message msg = messageGenerator.createMessage(message, session);
+      // If a default destination has been supplied then set the message's
+      // to match that. If a default has not been set then we rely on the
+      // the message itself to supply one. Ideally this would be done in the
+      // MessageGenerator.
+      if (destination != null) {
+        msg.setJMSDestination(destination);
+      }
       // send the record
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + message + "]");
+      
+      // May need to create producer from the destination specified in the msg
+      if(messageProducer==null) {
+    	  messageProducer = createMessageProducer(msg);
+      } else if(messageProducer.getDestination()!=msg.getJMSDestination()) {
+    	  messageProducer.close();
+    	  messageProducer = createMessageProducer(msg);
+      }
       messageProducer.send(msg, deliveryMode, priority, timeToLive);
       msgId = msg.getJMSMessageID();
       if (logMessageId) { // Optionally log the message id of the published message.

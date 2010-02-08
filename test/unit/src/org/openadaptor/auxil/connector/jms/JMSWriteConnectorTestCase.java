@@ -124,7 +124,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     testWriteConnector.setDestination(null);
     testWriteConnector.setDestinationName(null);
     testWriteConnector.validate(validateExceptions);
-    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
+    assertFalse("Should not have failed validate.", validateExceptions.size() > 0);
   }
 
   public void testFailValidateNoConnection() {
@@ -252,6 +252,9 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     String testMessageID = "Test ID";
     sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
     objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
+    messageProducerMock.expects(once()).method("getDestination");
+    objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
+    objectMessageMock.expects(atMostOnce()).method("getJMSDestination");
     messageProducerMock.expects(once()).method("send")
       .with(eq(objectMessageMock.proxy()),
         eq(testWriteConnector.getDeliveryMode()),
@@ -284,6 +287,9 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
     objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
     messageProducerMock.expects(once()).method("send").will(throwException(testException));
+    messageProducerMock.expects(once()).method("getDestination");
+    objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
+    objectMessageMock.expects(once()).method("getJMSDestination");    
     try {
       testWriteConnector.deliver(new Object[] { testMessage } );
       fail("Expected ConnectionException");
