@@ -62,6 +62,13 @@ Processors
 Examples
 ========
  
+ * Added examples to illustrate the support for metadata now available in the 
+   jms read and write connectors. 
+   
+   See example/spring/connectors/jms/messageproperties_subscriber.xml,
+   example/spring/connectors/jms/messageproperties-publisher.xml and
+   example/spring/connectors/jms/publisher-destination.xml.
+ 
  * Registration server (example\spring\register\oa-register-server.xml) now 
    based on CXF instead of XFire.  
    
