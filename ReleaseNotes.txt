@@ -13,6 +13,23 @@ openadaptor 3.x
 Connectors
 ==========
 
+ * JMSReadConnector now implements IMetadataAware. JMSReadConnector now adds the 
+   property 'populateMetada' which if true then the connector will populate the 
+   adaptor message metadata from the JMSMessageProperties. The default is false 
+   in order to maintain backwards compatibility with legacy behaviour.
+
+ * JMSWriteConnector also implements IMetadataAware. It adds two new properties 
+   'propagateMetadata' and 'overrideDestinationName'. 
+   
+   If 'propagateMetadata' is set then the metadata is used to help generate the 
+   JMSMessage. In the case of the 'DefaultMessageGenerator' this means that the 
+   metadata is mapped as JMS Message Properties. The default value of 'propagateMetadata' 
+   is false to maintain backwards compatibility.
+   
+   By default the property 'overrideDestinationName' is unset. This is again to maintain
+   backwards compatibility. If set then the metadata value at that key is used to define
+   the jms destination for that message. 
+
  * (SC93) review CXF Web service read connector. CXF read connector separated from 
    (now deprecated) XFire read connector. Type of the serviceName property in 
    WebServiceCXFReadConnector changed to QName. Exceptions from #connect and #invoke 

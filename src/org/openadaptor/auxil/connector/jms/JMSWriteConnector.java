@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.jms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.*;
 import org.openadaptor.core.transaction.ITransactional;
@@ -37,6 +38,7 @@ import org.openadaptor.core.transaction.ITransactional;
 import javax.jms.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Write Connector class that implements publishing to JMS.
@@ -50,17 +52,21 @@ import java.util.List;
  * Main Properties
  * <ul>
  * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
+ * <li><b>destination</b>               Actual JMS Destination Object. If set overrides destinationName.
  * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
  * <li><b>transacted</b>                False by default. If true then a TransactionalResource is acquired as long as either the JMS Session is transacted or XA resources are available.
  * <li><b>deliveryMode</b>              Set the delivery mode for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_DELIVERY_MODE</code>.
  * <li><b>priority</b>                  Set the priority for the message messageProducer (used for publishing). Defaults to <code>Message.DEFAULT_PRIORITY</code>.
  * <li><b>timeToLive</b>                Set the time to live for messages published by the message messageProducer. Defaults to <code>Message.DEFAULT_TIME_TO_LIVE</code>.
  * <li><b>messageGenerator</b>          The IMessageGenerator instance used to generate JMSMessage instances. Defaults to an instance of <code>DefaultMessageGenerator</code>.
+ * <li><b>propagateMetadata</b>         If true then the JMS Message Properties will be populated from the message metadata. Any invalid values will trigger an error.
+ * <li><b>overrideDestinationName</b>   If a value is set then the entry at this key in the metadata will be used as the JMS Destination Name. Overrides any settings for 
+ *                                      <code>destination</code> or <code>destinationName</code>.
  * </ul>
  * <p/>
  * @author OA3 Core Team
  */
-public class JMSWriteConnector extends Component implements IWriteConnector, ITransactional {
+public class JMSWriteConnector extends Component implements IWriteConnector, ITransactional, IMetadataAware {
 
   private static final Log log = LogFactory.getLog(JMSWriteConnector.class);
 
@@ -98,7 +104,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   /**
    * Name used to look up destination (queue/topic) in JNDI.
    */
-  private String destinationName;
+  private String defaultDestinationName;
 
   /**
    * Default is true which means log JMS Message Id of any published messages.
@@ -110,7 +116,21 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    */
   private IMessageGenerator messageGenerator = new DefaultMessageGenerator();
 
-  private Destination destination;
+  private Destination defaultDestination;
+
+  private Map metadata;
+
+  /**
+   * Flag that is used to decide whether or not to propagate the Metadata to any referenced components.
+   * In order to maintain backwards compatibility this defaults to false.
+   */
+  private boolean propagateMetadata = false;
+
+  /**
+   * If this is populated (i.e. not null or empty) then the writer expects to use the value stored
+   * in the metadata of this message at this key as the jms destination name.
+   */
+  private String destinationFromMetadata;
 
   // Constructors
 
@@ -160,8 +180,9 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
       session = jmsConnection.createSessionFor(this);
       
       //destination may not be known until after a message is received for a request/reply
-      if(destination!=null || destinationName!=null)
+      if(defaultDestination!=null || defaultDestinationName!=null)
     	  messageProducer = createMessageProducer();
+      if (messageProducer == null) log.info("MessageProducer not defined at connection. Definition deferred to delivery.");
       transactionalResource = createTransactionalResource(session);
     }
   }
@@ -195,11 +216,22 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     } else {
       jmsConnection.validate(exceptions);
     }
-    if ((getDestinationName() != null) && (jmsConnection != null)) {  // Null jmsConnection is already a validation failure
+    // If either of destinationName or destinationMetadataKey
+    if (((getDestinationName() != null) || (getDestinationFromMetadata() != null)) && (jmsConnection != null)) {  // Null jmsConnection is already a validation failure
       if(jmsConnection.getJndiConnection() == null) {
-        exceptions.add(new ValidationException("I destinationName is set then jmsConnection MUST have jndiConnection set.", this));  
+        exceptions.add(new ValidationException("If destinationName is set then jmsConnection MUST have jndiConnection set.", this));  
       }
     }
+    
+    if ((getDestination() == null) && (getDestinationName() == null) && (getDestinationFromMetadata() == null)) {
+      exceptions.add(new ValidationException("At least one of 'destination', 'destinationName' or 'destinationMetadataKey' must be set.", this));
+    }
+    
+    if ( (getDestination() != null) && ((getDestinationName() != null) || (getDestinationFromMetadata() != null)) ||
+        ( ((getDestination() != null) || (getDestinationName() != null)) && (getDestinationFromMetadata() != null) ) ||
+        ( ((getDestination() != null) || (getDestinationName() != null)) && (getDestinationFromMetadata() != null) )) {
+      exceptions.add(new ValidationException("At most only one of 'destination', 'destinationName' or 'destinationMetadataKey' may be set.", this));        
+    }    
   }
 
   /**
@@ -208,7 +240,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    * @return whether connected or not.
    */
   public boolean isConnected() {
-//    return ((session != null) && (messageProducer != null));
+//  return ((session != null) && (messageProducer != null));
     return (session != null);
   }
 
@@ -219,38 +251,96 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   // Support methods
+  
+  private boolean isDestinationOverride() {
+    return ((getDestinationFromMetadata() != null) && (getDestinationFromMetadata() != ""));
+  }  
 
   protected MessageProducer createMessageProducer() {
-    MessageProducer newProducer;
-    if (destination == null) {
-      destination = jmsConnection.lookupDestination(destinationName);
-    }
+    MessageProducer newProducer = null;     
+    
+    // Logic (for want of a better word) is: If override is set use that otherwise 
+    // use the defaultDestination or the defaultDestinationName in that order.
+    
     try {
-      newProducer = session.createProducer(destination);
+      if(isDestinationOverride()) {
+        if (getMetaDefinedDestinationName() != null) { 
+          // Only define the producer if we have a usable metadata supplied destination name. 
+          newProducer = session.createProducer(lookupDestination(getMetaDefinedDestinationName()));
+        }
+      } else if (defaultDestination != null) {
+        newProducer = session.createProducer(defaultDestination);
+      } else if (getDestinationName() != null) {
+        newProducer = session.createProducer(lookupDestination(getDestinationName()));
+      }
     } catch (JMSException e) {
       throw new ConnectionException("Exception creating JMS Producer ", e, this);
     }
-    log.info(" Producer initialised for JMS Destination=" + newProducer);
+    if (newProducer != null) {
+      log.info(" Producer initialised for JMS Destination=" + newProducer);
+    } 
     return newProducer;
   }
 
-  protected MessageProducer createMessageProducer(Message msg) {
-	    MessageProducer newProducer;
-	    Destination reply;
-	    try {
-			reply = msg.getJMSDestination();
-		} catch (JMSException e) {
-		      throw new ConnectionException("Exception getting destination from message ", e, this);
-		}
+  /**
+   * Work out whether the default or metadata defined destination name should be used.
+   * @return destination name to use.
+   */
+  private String getActualDestinationName() {
+    String destinationName;
+    if((isDestinationOverride()) && (metadata != null) && (metadata.get(getDestinationFromMetadata()) != null)) {
+      destinationName = (String) metadata.get(getDestinationFromMetadata());
+    } else {
+      if (defaultDestination == null) {
+        destinationName = defaultDestinationName;
+      } else {
+        destinationName = defaultDestination.toString();
+      }
+    }
+    return destinationName;
+  }
+  
+  /**
+   * Work out whether the metadata defined destination name can be used.
+   * @return destination name to use or null if none defined.
+   */
+  private String getMetaDefinedDestinationName() {
+    String destinationName = null;
+    if((isDestinationOverride()) && (metadata != null) && (metadata.get(getDestinationFromMetadata()) != null)) {
+      destinationName = (String) metadata.get(getDestinationFromMetadata());
+    } 
+    return destinationName;
+  } 
 
-		try {
-	      newProducer = session.createProducer(reply);
-	    } catch (JMSException e) {
-	      throw new ConnectionException("Exception creating JMS Producer ", e, this);
-	    }
-	    log.info(" Producer initialised for JMS Destination=" + newProducer);
-	    return newProducer;
-	  }
+  private Destination lookupDestination(String destinationName) {
+    return (Destination)jmsConnection.lookupDestination(destinationName);
+  }
+
+  /**
+   * Given an existing JMS Message which already has a destination set return
+   * a MessageProducer for that destination.
+   * 
+   * @param msg Message with destination set.
+   * @return The new MessageProducer
+   */
+//  protected MessageProducer createMessageProducer(Message msg) {
+//	    MessageProducer newProducer;
+//	    Destination reply;
+//	    
+//	    try {
+//			reply = msg.getJMSDestination();
+//		} catch (JMSException e) {
+//		      throw new ConnectionException("Exception getting destination from message ", e, this);
+//		}
+//
+//		try {
+//	      newProducer = session.createProducer(reply);
+//	    } catch (JMSException e) {
+//	      throw new ConnectionException("Exception creating JMS Producer ", e, this);
+//	    }
+//	    log.info(" Producer initialised for JMS Destination=" + newProducer);
+//	    return newProducer;
+//	  }
 
   /**
    * Deliver the parameter to the confgured destination.
@@ -260,31 +350,38 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
    */
   protected String deliverRecord(Object message) {
     String msgId;
-    try {
+    if ((messageGenerator instanceof IMetadataAware) && (getPropagateMetadata()))  {
+      ((IMetadataAware) messageGenerator).setMetadata(metadata);
+    }
+    try {     
       // Delegate message creation to an instance of IMessageGenerator.
       Message msg = messageGenerator.createMessage(message, session);
-      // If a default destination has been supplied then set the message's
-      // to match that. If a default has not been set then we rely on the
-      // the message itself to supply one. Ideally this would be done in the
-      // MessageGenerator.
-      if (destination != null) {
-        msg.setJMSDestination(destination);
-      }
+      // At this point if a MessageProducer exists it should have a Destination set based
+      // on the configured destination, the override destination set in the metadata
+      // or the configured destination name. So we update the JMS Message to match.
+      //if (messageProducer != null) {
+      //  msg.setJMSDestination(messageProducer.getDestination());
+      //}
       // send the record
       if (log.isDebugEnabled())
         log.debug("JmsPublisher sending [" + message + "]");
       
-      // May need to create producer from the destination specified in the msg
+      
+      // If the override is set then we need to close any existing producer
+      if (isDestinationOverride() && (messageProducer != null)) {
+          messageProducer.close();
+          messageProducer = null; // Force getting a new producer
+        }
+        
+      // Go get a new producer. 
       if(messageProducer==null) {
-    	  messageProducer = createMessageProducer(msg);
-      } else if(messageProducer.getDestination()!=msg.getJMSDestination()) {
-    	  messageProducer.close();
-    	  messageProducer = createMessageProducer(msg);
-      }
+    	  messageProducer = createMessageProducer();
+      } 
+      
       messageProducer.send(msg, deliveryMode, priority, timeToLive);
       msgId = msg.getJMSMessageID();
       if (logMessageId) { // Optionally log the message id of the published message.
-        log.info( "[" + getId() + "=" + getDestinationName() + "] sent message [ JMSMessageID=" + msgId + "] to data connection/service" );
+        log.info( "[" + getId() + "=" + getActualDestinationName() + "] sent message [ JMSMessageID=" + msgId + "] to data connection/service" );
       }
     } catch (RecordFormatException e) {
       throw new ProcessingException("RecordFormatException during publish.", e, this);
@@ -295,6 +392,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
     }
     return msgId;
   }
+  
+
 
   /**
    * Create a transactional resource for this connector.<br>
@@ -354,7 +453,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public String getDestinationName() {
-    return destinationName;
+    return defaultDestinationName;
   }
 
   /**
@@ -408,7 +507,7 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public void setDestinationName(String destinationName) {
-    this.destinationName = destinationName;
+    this.defaultDestinationName = destinationName;
   }
 
   /**
@@ -439,10 +538,54 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
   }
 
   public Destination getDestination() {
-    return destination;
+    return defaultDestination;
   }
 
   public void setDestination(Destination destination) {
-    this.destination = destination;
+    this.defaultDestination = destination;
   }
+
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;    
+  }
+  
+  /**
+   * If this is populated (i.e. not null or empty) then the writer expects to use the value stored
+   * in the metadata of this message at this key as the jms destination name.
+   * 
+   * @return Key into metadata 
+   */
+  public String getDestinationFromMetadata() {
+    return destinationFromMetadata;
+  }
+  
+  /**
+   * If this is populated (i.e. not null or empty) then the writer expects to use the value stored
+   * in the metadata of this message at this key as the jms destination name.
+
+   * @param destinationFromMetadata Key to use to identify destination name in metadata
+   */
+  public void setDestinationFromMetadata(String destinationFromMetadata) {
+    this.destinationFromMetadata = destinationFromMetadata;
+  }
+
+  /**
+   * Flag that is used to decide whether or not to propagate the Metadata to any referenced components.
+   * In order to maintain backwards compatibility this defaults to false.
+   * @return Current setting of the flag 
+   */
+  public boolean getPropagateMetadata() {
+    return propagateMetadata;
+  }
+  
+  /**
+   * Flag that is used to decide whether or not to propagate the Metadata to any
+   * referenced components. In order to maintain backwards compatibility this
+   * defaults to false.
+   * 
+   * @param useMetadata
+   */
+  public void setPropagateMetadata(boolean useMetadata){
+    this.propagateMetadata = useMetadata;
+  }  
 }

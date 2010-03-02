@@ -27,22 +27,33 @@
 
 package org.openadaptor.auxil.connector.jms;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.exception.RecordFormatException;
 
 import javax.jms.*;
+
 import java.io.Serializable;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
  * Created Apr 23, 2007 by oa3 Core Team
  */
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Default implementation of IMessageGenerator that generates either a TextMessage or an ObjectMessage
  * depending on the type of the messageRecord. If the messageRecord is neither a String nor an instance
  * of Serializable then a RecordFormatException is thrown.
  */
-public class DefaultMessageGenerator implements IMessageGenerator {
+public class DefaultMessageGenerator implements IMessageGenerator, IMetadataAware {
+  
+  private static final Log log = LogFactory.getLog(DefaultMessageGenerator.class);
+  
+  protected Map metaData;
+
   public Message createMessage(Object messageRecord, Session session) throws JMSException {
     Message msg;
     if (messageRecord instanceof String) {
@@ -58,6 +69,22 @@ public class DefaultMessageGenerator implements IMessageGenerator {
       // If we do need them in future this is where they go.
       throw new RecordFormatException("Undeliverable record type [" + messageRecord.getClass().getName() + "]");
     }
+    setMessageProperties(msg);
     return msg;
   }
+
+  private void setMessageProperties(Message msg) throws JMSException {
+    if (metaData != null) {
+      for (Iterator keys = metaData.keySet().iterator(); keys.hasNext();) {
+        String key = (String) keys.next();
+        Object value = metaData.get(key);
+          msg.setObjectProperty(key, value);
+      }
+    }      
+  }
+
+  public void setMetadata(Map metadata) {
+    this.metaData = metadata;
+  }
+   
 }

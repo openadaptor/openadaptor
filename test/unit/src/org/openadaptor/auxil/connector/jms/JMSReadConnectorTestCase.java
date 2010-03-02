@@ -40,7 +40,12 @@ import javax.jms.*;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -300,6 +305,48 @@ public class JMSReadConnectorTestCase extends MockObjectTestCase {
     nextObjectArray = testReadConnector.next(10);
     assertTrue("Expected test object", nextObjectArray[0] == testTextMessage);
   }
+  
+  public void testNextMetadata() {
+    Mock mockObjectMessage = new Mock(ObjectMessage.class);
+    Mock mockTextMessage = new Mock(TextMessage.class);
+    
+    // Horrible messy enumeration stuff
+    // JMS getPropertyNames() returns an enumeration you see.
+    Vector names = new Vector();
+    String key1 = "Key One";
+    String value1 = "Property One";
+    names.add(key1);
+    String key2 = "Key Two";
+    Integer value2 = new Integer(2);
+    names.add(key2);
+    String key3 = "Key Three";
+    Boolean value3 = new Boolean(false);
+    names.add(key3);
+    Enumeration testEnum = names.elements();
+    
+    //Inject Metadata
+    Map metadata = new HashMap();
+
+    setupConnectExpectations();
+    testReadConnector.connect();
+    testReadConnector.setPopulateMetadataFromProperties(true);
+    testReadConnector.setMetadata(metadata);
+
+    String testTextMessage = "hello World";
+    messageConsumerMock.expects(once()).method("receive").will(returnValue(mockTextMessage.proxy()));
+    mockTextMessage.expects(once()).method("getJMSMessageID").will(returnValue("TestMessageID Text Message"));
+    mockTextMessage.expects(once()).method("getText").will(returnValue(testTextMessage));
+    mockTextMessage.expects(once()).method("getPropertyNames").will(returnValue(testEnum));
+    mockTextMessage.expects(once()).method("getObjectProperty").with(eq(key1)).will(returnValue(value1));
+    mockTextMessage.expects(once()).method("getObjectProperty").with(eq(key2)).will(returnValue(value2));
+    mockTextMessage.expects(once()).method("getObjectProperty").with(eq(key3)).will(returnValue(value3));
+
+    Object[] nextObjectArray = testReadConnector.next(10);
+    assertTrue("Expected test object", nextObjectArray[0] == testTextMessage);
+    assertTrue(metadata.get(key1).equals(value1));
+    assertTrue(metadata.get(key2).equals(value2));
+    assertTrue(metadata.get(key3).equals(value3));
+  }  
 
   public void testNextDisconnected() {
     try {

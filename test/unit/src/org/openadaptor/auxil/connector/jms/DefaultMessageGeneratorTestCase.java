@@ -26,12 +26,17 @@
 */
 package org.openadaptor.auxil.connector.jms;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.jmock.Mock;
+import org.openadaptor.core.IMetadataAware;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -42,6 +47,8 @@ import org.jmock.Mock;
  * Test DefaultMessageGenerator's implementation of the IMessageConvertor interface.
  */
 public class DefaultMessageGeneratorTestCase extends AbstractMessageGeneratorTests{
+  protected IMetadataAware metaAwareTestInstance;
+
   protected void setUp() throws Exception {
     // TODO Auto-generated method stub
     super.setUp();
@@ -49,7 +56,9 @@ public class DefaultMessageGeneratorTestCase extends AbstractMessageGeneratorTes
   }
 
   protected IMessageGenerator createTestInstance() {
-    return new DefaultMessageGenerator();
+    DefaultMessageGenerator testee = new DefaultMessageGenerator();
+    metaAwareTestInstance = (IMetadataAware)testee;
+    return testee;
   }
 
   public void testSendObject() {
@@ -62,11 +71,108 @@ public class DefaultMessageGeneratorTestCase extends AbstractMessageGeneratorTes
   
     Message generatedMessage = null;
   
-    try {
+    try {      
       generatedMessage = testInstance.createMessage(messageObject, (Session) sessionMock.proxy());
     } catch (JMSException e) {
       fail("Unexpected JMSException: " + e );
     }
     assertEquals("Didn't return the expected ObjectMessage.", message, generatedMessage );
   }
+  
+  public void testWithMetadata() {
+    
+    Map testMetadata = new HashMap();
+    testMetadata.put("StringValue", "TestString");
+    testMetadata.put("IntegerValue", new Integer(1));
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(atLeastOnce()).method("setObjectProperty");
+    
+    Message generatedMessage = null;
+    
+    try {
+      metaAwareTestInstance.setMetadata(testMetadata);
+      generatedMessage = testInstance.createMessage(messageText, (Session) sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+    assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
+  }
+  
+  public void testWithNullMetadata() {
+    
+    Map testMetadata = new HashMap();
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(never()).method("setObjectProperty");
+    
+    Message generatedMessage = null;
+    
+    try {
+      metaAwareTestInstance.setMetadata(testMetadata);
+      generatedMessage = testInstance.createMessage(messageText, (Session) sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+    assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
+  }  
+  
+  public void testWithEmptyMetadata() {
+    
+    Map testMetadata = null;
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(never()).method("setObjectProperty");
+    
+    Message generatedMessage = null;
+    
+    try {
+      metaAwareTestInstance.setMetadata(testMetadata);
+      generatedMessage = testInstance.createMessage(messageText, (Session) sessionMock.proxy());
+    } catch (JMSException e) {
+      fail("Unexpected JMSException: " + e );
+    }
+    assertEquals("Didn't return the expected TextMessage.", message, generatedMessage );
+  }    
+ 
+  public void testWithInvalidMetadata() {
+    
+    String exceptionMessage = "Test Exception";
+    
+    Map testMetadata = new HashMap();
+    testMetadata.put("test1", new Object());
+    
+    Mock sessionMock = new Mock(Session.class);
+    Mock textMessageMock = new Mock(TextMessage.class);
+
+    TextMessage message = (TextMessage)textMessageMock.proxy();
+    sessionMock.expects(once()).method("createTextMessage").will(returnValue(message));
+    textMessageMock.expects(once()).method("setText").with(eq(messageText));
+    textMessageMock.expects(once()).method("setObjectProperty").will(throwException(new JMSException(exceptionMessage)));
+    
+    try {
+      metaAwareTestInstance.setMetadata(testMetadata);
+      testInstance.createMessage(messageText, (Session) sessionMock.proxy());
+    } catch (JMSException e) {
+      assertEquals("Raised jms exception not the expected one", e.getMessage(), (exceptionMessage));
+    } catch (Exception e) {
+      fail("Unexpected Exception");
+    }
+  }    
+  
 }

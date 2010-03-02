@@ -38,7 +38,9 @@ import javax.jms.*;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 /*
  * File: $Header: $
  * Rev:  $Revision: $
@@ -96,6 +98,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     List validateExceptions = new ArrayList();
     testWriteConnector.setDestination(null);
     testWriteConnector.setDestinationName("Test");
+    testWriteConnector.setDestinationFromMetadata(null);
     testWriteConnector.validate(validateExceptions);
     assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
   }
@@ -106,9 +109,39 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     List validateExceptions = new ArrayList();
     testWriteConnector.setDestination(mockDestination);
     testWriteConnector.setDestinationName(null);
+    testWriteConnector.setDestinationFromMetadata(null);
     testWriteConnector.validate(validateExceptions);
     assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
   }
+  
+  public void testValidateDestinationFromMetadataSet() {
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(null);
+    testWriteConnector.setDestinationName(null);
+    testWriteConnector.setDestinationFromMetadata("MeaninglessName");
+    testWriteConnector.validate(validateExceptions);
+    assertTrue("Didn't validate when it should have.", validateExceptions.size() == 0);
+  }  
+  
+  public void testValidateMoreThanOneDestSet() {
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(null);
+    testWriteConnector.setDestinationName("MeaninglessName");
+    testWriteConnector.setDestinationFromMetadata("MeaninglessName");
+    testWriteConnector.validate(validateExceptions);
+    assertFalse("Should not have passed validate.", validateExceptions.size() == 0);
+  }    
+  
+  public void testValidateMoreAllDestSet() {
+    // Test instance should be set up to validate correctly
+    Destination mockDestination = (Destination)((new Mock(Destination.class)).proxy());
+    List validateExceptions = new ArrayList();
+    testWriteConnector.setDestination(mockDestination);
+    testWriteConnector.setDestinationName("MeaninglessName");
+    testWriteConnector.setDestinationFromMetadata("MeaninglessName");
+    testWriteConnector.validate(validateExceptions);
+    assertFalse("Should not have passed validate.", validateExceptions.size() == 0);
+  } 
 
 
   public void testFailValidate() {
@@ -123,8 +156,9 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     List validateExceptions = new ArrayList();
     testWriteConnector.setDestination(null);
     testWriteConnector.setDestinationName(null);
+    testWriteConnector.setDestinationFromMetadata(null);
     testWriteConnector.validate(validateExceptions);
-    assertFalse("Should not have failed validate.", validateExceptions.size() > 0);
+    assertTrue("Should have failed validate.", validateExceptions.size() > 0);
   }
 
   public void testFailValidateNoConnection() {
@@ -252,7 +286,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     String testMessageID = "Test ID";
     sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
     objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
-    messageProducerMock.expects(once()).method("getDestination");
+    //messageProducerMock.expects(atLeastOnce()).method("getDestination");
     objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
     objectMessageMock.expects(atMostOnce()).method("getJMSDestination");
     messageProducerMock.expects(once()).method("send")
@@ -266,7 +300,80 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     assertEquals("Expected returned messageID to match expected one", testMessageID, returnedMessagedID[0]);
 
   }
+  
+  public void testDeliverWithMetadata() {
+    
+    setupConnectExpectations();
+    
+    Map testMetadata = new HashMap();
+    testMetadata.put("StringValue", "TestString");
+    testMetadata.put("IntegerValue", new Integer(1));
+    
+    testWriteConnector.setPropagateMetadata(true);
+    testWriteConnector.setMetadata(testMetadata);
+    
+    testWriteConnector.connect();
 
+    Object testMessage = new ArrayList();
+    Mock objectMessageMock = new Mock(ObjectMessage.class);
+    String testMessageID = "Test ID";
+    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
+    objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
+    //messageProducerMock.expects(atLeastOnce()).method("getDestination");
+    objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
+    objectMessageMock.expects(atMostOnce()).method("getJMSDestination");
+    
+    objectMessageMock.expects(atLeastOnce()).method("setObjectProperty");
+    
+    messageProducerMock.expects(once()).method("send")
+      .with(eq(objectMessageMock.proxy()),
+        eq(testWriteConnector.getDeliveryMode()),
+        eq(testWriteConnector.getPriority()),
+        eq(testWriteConnector.getTimeToLive()));
+    objectMessageMock.expects(once()).method("getJMSMessageID").will(returnValue(testMessageID));
+
+    Object[] returnedMessagedID = (Object[])testWriteConnector.deliver(new Object[] { testMessage } );
+    assertEquals("Expected returned messageID to match expected one", testMessageID, returnedMessagedID[0]);
+  }
+  
+  public void testDeliverWithMetadataDefinedDestination() {
+    
+    setupConnectExpectations();
+    
+    Map testMetadata = new HashMap();
+    testMetadata.put("Destination", DESTINATION_NAME);
+    testMetadata.put("IntegerValue", new Integer(1));
+    
+    testWriteConnector.setPropagateMetadata(false);
+    testWriteConnector.setMetadata(testMetadata);
+    testWriteConnector.setDestinationFromMetadata("Destination");
+    testWriteConnector.setDestinationName(null);
+    
+    testWriteConnector.connect();
+
+    Object testMessage = new ArrayList();
+    Mock objectMessageMock = new Mock(ObjectMessage.class);
+    String testMessageID = "Test ID";
+    sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
+    objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
+    //messageProducerMock.expects(atLeastOnce()).method("getDestination");
+    objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
+    objectMessageMock.expects(atMostOnce()).method("getJMSDestination");
+    
+    objectMessageMock.expects(atLeastOnce()).method("setObjectProperty");
+    //dirContextMock.expects(once()).method("lookup").with(eq("TestDestination")).will(returnValue(destinationMock.proxy()));
+    
+    messageProducerMock.expects(once()).method("send")
+      .with(eq(objectMessageMock.proxy()),
+        eq(testWriteConnector.getDeliveryMode()),
+        eq(testWriteConnector.getPriority()),
+        eq(testWriteConnector.getTimeToLive()));
+    objectMessageMock.expects(once()).method("getJMSMessageID").will(returnValue(testMessageID));
+
+    Object[] returnedMessagedID = (Object[])testWriteConnector.deliver(new Object[] { testMessage } );
+    assertEquals("Expected returned messageID to match expected one", testMessageID, returnedMessagedID[0]);
+  }  
+  
   public void testDeliverDisconnected() {
     try {
       Object testMessage = new Object();
@@ -287,7 +394,7 @@ public class JMSWriteConnectorTestCase extends MockObjectTestCase {
     sessionMock.expects(once()).method("createObjectMessage").will(returnValue(objectMessageMock.proxy()));
     objectMessageMock.expects(once()).method("setObject").with(eq(testMessage));
     messageProducerMock.expects(once()).method("send").will(throwException(testException));
-    messageProducerMock.expects(once()).method("getDestination");
+    //messageProducerMock.expects(atLeastOnce()).method("getDestination");
     objectMessageMock.expects(atMostOnce()).method("setJMSDestination");
     objectMessageMock.expects(once()).method("getJMSDestination");    
     try {

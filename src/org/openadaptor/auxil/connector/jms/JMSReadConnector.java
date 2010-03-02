@@ -30,6 +30,7 @@ package org.openadaptor.auxil.connector.jms;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.Component;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.OAException;
@@ -39,7 +40,10 @@ import org.openadaptor.core.transaction.ITransactional;
 
 import javax.jms.*;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Read Connector class that implements listening to JMS.
@@ -51,6 +55,7 @@ import java.util.List;
  * Main Properties
  * <ul>
  * <li><b>destinationName</b>           Name used to look up destination (queue/topic) in JNDI
+ * <li><b>destination</b>               Actual JMS Destination Object. If set overrides destinationName.
  * <li><b>acknowledgeMode</b>           Defaults to <code>Session.AUTO_ACKNOWLEDGE</code>
  * <li><b>transacted</b>                False by default. If true then a TransactionalResource is acquired as long as either the JMS Session is transacted or XA resources are available.
  * <li><b>durable</b>                   Defaults to <i>false</i>. If <i>true</i> create a durable topic subscription.
@@ -58,13 +63,14 @@ import java.util.List;
  * <li><b>messageSelector</b>           Not set by default.
  * <li><b>noLocal</b>                   Default is <i>false</i>
  * <li><b>messageConvertor</b>          The IMessageConvertor instance used to extracts the message data from JMSMessage instances. Defaults to an instance of <code>DefaultMessageConvertor</code>.
+ * <li><b>populateMetadataFromProperties</b>    Default <i>false</i>. If true then copy any populated JMS Message Properties into the message metadata.
 
  * </ul>
  * <p/>
  * @see JMSConnection
  * @author OA3 Core Team
  */
-public class JMSReadConnector extends Component implements ExceptionListener, IReadConnector, ITransactional {
+public class JMSReadConnector extends Component implements ExceptionListener, IReadConnector, ITransactional, IMetadataAware {
 
   private static final Log log = LogFactory.getLog(JMSReadConnector.class);
 
@@ -116,6 +122,13 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
   private IMessageConvertor messageConvertor = new DefaultMessageConvertor();
 
   private Destination destination;
+  
+  /**
+   * If true then the metadata will be populated with any jms message properties.
+   */
+  private boolean populateMetadataFromProperties = false;
+
+  private Map metadata;
 
   // Constructors
 
@@ -217,6 +230,10 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
         msg = messageConsumer.receive();
       } else {
         msg = messageConsumer.receive(timeoutMs);
+        //Populate Metadata if this is configured
+        if (msg != null && isPopulateMetadataFromProperties()){
+          readMetadataFromMessageProperties(msg);
+        }
       }
       if ((msg != null) && (logMessageId)) {
         log.info("[" + getId() + "=" + getDestinationName() + "] received message [JMSMessageID=" + msg.getJMSMessageID() + "]");
@@ -250,6 +267,23 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
       }
     }
     return msgContents;
+  }
+  
+  /**
+   * Copy any JMS Message Properties into the metadata.
+   * 
+   * @param msg
+   * @throws JMSException
+   */
+  protected void readMetadataFromMessageProperties(Message msg) throws JMSException {
+    Map addToMetadata = new HashMap();
+    
+    Enumeration names = msg.getPropertyNames();
+    while (names.hasMoreElements()) {
+      String nextName = (String)names.nextElement();
+      addToMetadata.put(nextName, msg.getObjectProperty(nextName));
+    }
+    metadata.putAll(addToMetadata);
   }
 
   protected MessageConsumer createMessageConsumerFor(Session connectorSession) {
@@ -416,6 +450,29 @@ public class JMSReadConnector extends Component implements ExceptionListener, IR
 
   public void setDestination(Destination destination) {
     this.destination = destination;
+  }
+
+  /**
+   * If true then the metadata will be populated with any jms message properties.
+   * 
+   * @param populateMetadataFromProperties the populateMetadataFromProperties to set
+   */
+  public void setPopulateMetadataFromProperties(
+      boolean populateMetadataFromProperties) {
+    this.populateMetadataFromProperties = populateMetadataFromProperties;
+  }
+
+  /**
+   * If true then the metadata will be populated with any jms message properties.
+   * @return the populateMetadataFromProperties
+   */
+  public boolean isPopulateMetadataFromProperties() {
+    return populateMetadataFromProperties;
+  }
+
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;
+    
   }
 
   // End Bean implementation
