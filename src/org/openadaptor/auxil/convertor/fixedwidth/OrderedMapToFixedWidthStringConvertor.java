@@ -118,13 +118,13 @@ public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStr
     String rec = "";
 
     // loop through the elements of the ordered map and log a warning about
-    // any that will not be included in the outputted record (ie. any where
+    // any that will not be included in the output record (i.e. any where
     // there is not a corresponding field definition)
     for (int i = 0; i < map.size(); i++) {
 
       String field = (String) map.keys().get(i);
 
-      // check that this field is to be outputted
+      // check that this field is to be output
       if (!getFieldNames().contains(field)) {
         OrderedMapToFixedWidthStringConvertor.log.info("Field [" + field
             + "] is not defined in the fieldDetails and will be skipped");
@@ -149,14 +149,16 @@ public class OrderedMapToFixedWidthStringConvertor extends AbstractFixedWidthStr
             .warn("Field [" + key + "] not found in the map. Will use blank field");
       }
 
-      rec += trimPadValue(value, width, fieldDetails[i].isRightAlign());
-
+      String paddedField = trimPadValue(value, width, fieldDetails[i].isRightAlign());
+      
       // this possibly doesn't make sense as you could trim out the whitespace
       // we inserted to make the field the correct width but this is what the
-      // user wanted. We can get away with trimming the record itself as there
-      // should only ever be whitespace at the end :-)
+      // user wanted. 
       if (fieldDetails[i].isTrim())
-        rec = rec.trim();
+        paddedField = paddedField.trim();
+      
+      rec += paddedField;
+
     }
 
     return rec;
