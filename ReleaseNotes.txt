@@ -13,6 +13,10 @@ openadaptor 3.x
 Connectors
 ==========
 
+ * DynamicFileWriteConnector now implements IMetadataAware. For now all that is
+   new is that the metadata is passed to the embedded ScriptProcessor. This is 
+   in response to enhancement request SC102.
+
  * JMSReadConnector now implements IMetadataAware. JMSReadConnector now adds the 
    property 'populateMetada' which if true then the connector will populate the 
    adaptor message metadata from the JMSMessageProperties. The default is false 
@@ -76,7 +80,10 @@ Examples
    property changed to QName.
    
  * (SC95) New example that demonstrates use of message history
-   (example\spring\adaptor\history.xml).    
+   (example\spring\adaptor\history.xml).  
+   
+ * New example example/spring/processors/enrichment/db/counterparty-id-mapping.xml
+  to illustrate using a database lookup table to enrich a message.  
 
 Miscellaneous
 =============
@@ -95,7 +102,10 @@ Miscellaneous
  * (SC98) Including message metadata in exception handling (ongoing).  
  
  * (SC99) Added packageName property to facilitate Oracle Package names in stored proc
-          definitions.       
+          definitions.    
+          
+ * (SC101) Trimming a field when generating a fixed with record no longer trims the entire
+          record. Fix is to OrderedMapToFixedWidthStringConvertor.  
 
 Bug Fixes
 =========
