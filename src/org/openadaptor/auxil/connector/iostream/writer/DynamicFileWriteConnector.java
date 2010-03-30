@@ -27,28 +27,33 @@
 
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.processor.script.ScriptProcessor;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.exception.ValidationException;
 
 /**
  * A file write connector that opens and closes output stream for every message 
  * it receives. It allows for deriving the name of the output file dynamically
- * with script using massage payload.
+ * with script using message payload.
  * 
  * @author OA3 Core Team
  */
-public class DynamicFileWriteConnector extends FileWriteConnector {
+public class DynamicFileWriteConnector extends FileWriteConnector implements IMetadataAware {
 
   private static final Log log = LogFactory.getLog(DynamicFileWriteConnector.class);
   
   private ScriptProcessor scriptProcessor = new ScriptProcessor();
   
   private boolean scriptProvided = false;
+
+  private Map metadata = new HashMap(); // Empty to start with. Will be reset for each new message.
     
   /**
    * Constructor.
@@ -89,6 +94,8 @@ public class DynamicFileWriteConnector extends FileWriteConnector {
       return filename;
     }
     
+    /* Pass in any supplied metadata. This may need to be more sophisticated. */
+    scriptProcessor.setMetadata(metadata);
     /* We're using the first element of the payload array for now.. this may well change soon. */
     Object [] scriptResArray = scriptProcessor.process(data[0]);
     
@@ -144,5 +151,9 @@ public class DynamicFileWriteConnector extends FileWriteConnector {
     scriptProvided = true;
     scriptProcessor.setScript(script);
     scriptProcessor.validate(new java.util.ArrayList());
+  }
+
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;    
   }
 }
