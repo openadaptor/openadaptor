@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id:$
+	$HeadURL:$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads swift records from file
+    * converts Swift records into  XML
+    * convert XML into a DOM document (to allow manipulation)
+    * script to add a new element to begining of XML doc.
+    * convert back to XML (string) - do this later if further manipulation of XMl is desired
+    * writes messages to console (stdout) - plug in your preferred connector here instead
+    
+  This illustrates an adaptor which reads swift messages as XML, and modifies the XML .
+
+  It may be started as follows
+    java org.openadaptor.spring.SpringAdaptor -config swift-xml-modifier.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>Pipeline to read from file, convert and modify swift message; output to console</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="SwiftConvertor"/>
+						<ref bean="FromXMLConvertor"/>
+						<ref bean="HeaderInjector"/>
+						<ref bean="ToXMLConvertor"/>
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description></description>
+		<property name="filename" value="input/mt103_customer_transfer.swift" />
+		<property name="dataReader">
+			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+		</property>
+	</bean>
+
+	<bean id="SwiftConvertor" class="org.openadaptor.auxil.convertor.swift.SwiftConvertor">
+	  <description>Read Swift message as XML (SwiftConvertor.FORMAT_SWIFT_XML)</description>
+	  <property name="outputFormat">
+	    <util:constant static-field="org.openadaptor.auxil.convertor.swift.SwiftConvertor.FORMAT_SWIFT_XML"/>
+	  </property>
+	</bean>
+	
+	<bean id="FromXMLConvertor" class="org.openadaptor.thirdparty.dom4j.XmlToDom4jConvertor"/>
+	<bean id="HeaderInjector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+	<description>Add a new element at the beginning of the xml document</description>
+	<property name="script"><value>
+	  <![CDATA[
+		var root=oa_data.getRootElement();	 //Get the root element of the XML (e.g. 'message')	
+		children=root.elements(); //Get all the children of the root
+		//Add a new element 'MSGERPGM' as the first child of the root.
+		//Adding at the end is easier - would use root.addElement("MSGERPGM"); or similar
+		children.add(0,org.dom4j.DocumentHelper.createElement("MSGERPGM").addText("SUMMIT"));		
+      ]]>
+    </value>
+	</property>
+	</bean>
+	<bean id="ToXMLConvertor" class="org.openadaptor.thirdparty.dom4j.Dom4jToXmlConvertor"/>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>For this example it will just write to the console (stdout)</description>
+	</bean>
+
+</beans>
