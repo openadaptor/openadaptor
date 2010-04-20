@@ -137,9 +137,9 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
       String currentFilename="";
       /* Iterate through the Batch */
       for (int i = 0; i < data.length; i++) {
-        Object[] batchElement = new Object[] { data[i] };
+        Object batchElement = data[i];
         /* Derives file name from message payload */
-        String filename=deriveFilename(batchElement);
+        String filename=deriveFilename(new Object[] {batchElement});
         if (!filename.equals(currentFilename)) { //new Batch required.
            if (!subBatch.isEmpty()) {} { //Write out the previous batch first.
         	  results.add(deliverSubBatch(subBatch));
