@@ -87,20 +87,25 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
    * 
    * @param data message payload
    * @return a file name
-   */
+   */ 
+  protected String deriveFilename(Object[] data) {
+	 return (data!=null && data.length>0)?deriveFilename(data[0]):getFilename();
+  }
+  
+  /*
   protected String deriveFilename(Object[] data){
-    
+ 	  
     String filename = getFilename();
   
-    /* null checks */
+    // null checks
     if(data==null || data.length==0){
       log.debug("Returning default filename: " + filename);
       return filename;
     }
     
-    /* Pass in any supplied metadata. This may need to be more sophisticated. */
+    // Pass in any supplied metadata. This may need to be more sophisticated. 
     scriptProcessor.setMetadata(metadata);
-    /* We're using the first element of the payload array for now.. this may well change soon. */
+    // We're using the first element of the payload array for now.. this may well change soon. 
     Object [] scriptResArray = scriptProcessor.process(data[0]);
     
     if(null != scriptResArray && scriptResArray.length>0) {
@@ -116,7 +121,32 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
     }
     return filename;
   }
- 
+
+ */ 
+
+  protected String deriveFilename(Object data) {
+	String filename=getFilename();
+	if(data!=null) {
+      // Pass in any supplied metadata. This may need to be more sophisticated. 
+      scriptProcessor.setMetadata(metadata);
+      Object[] scriptResult=scriptProcessor.process(data);
+      if ((scriptResult!=null) && (scriptResult.length>0)) {
+    	log.debug("Size of objects = " + scriptResult.length); 
+    	Object dynamicFilename=scriptResult[0];
+    	if (dynamicFilename!=null) {
+          filename=dynamicFilename.toString();
+    	}
+      }
+      else {
+    	log.debug("Script did not return any filenames");
+      }
+	}
+	else {
+      log.debug("Returning default filename: " + filename);
+	}
+	return filename;
+  }
+
   /**
    * Writes data to a file with a dynamically derived name.
    */
@@ -141,7 +171,7 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
         /* Derives file name from message payload */
         String filename=deriveFilename(new Object[] {batchElement});
         if (!filename.equals(currentFilename)) { //new Batch required.
-           if (!subBatch.isEmpty()) {} { //Write out the previous batch first.
+           if (!subBatch.isEmpty()) { //Write out the previous batch first.
         	  results.add(deliverSubBatch(subBatch));
         	  subBatch.clear();
            }
