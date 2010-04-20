@@ -148,9 +148,7 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
            currentFilename=filename;
            setFilename(filename);
         }
-        else { //Just add it to the batch.
-          subBatch.add(batchElement);
-        }    
+        subBatch.add(batchElement); //Now add it to the current batch.
       }
       if (!subBatch.isEmpty()) { //Flush the last subBatch
     	 results.add(deliverSubBatch(subBatch));
