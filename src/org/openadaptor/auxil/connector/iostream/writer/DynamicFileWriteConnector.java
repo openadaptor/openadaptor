@@ -54,6 +54,8 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
   private boolean scriptProvided = false;
 
   private Map metadata = new HashMap(); // Empty to start with. Will be reset for each new message.
+
+  private boolean singleFilenameForBatch = true;
     
   /**
    * Constructor.
@@ -116,17 +118,31 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
   /**
    * Writes data to a file with a dynamically derived name.
    */
-  public Object deliver(Object[] data) {  
-    
-    /* Derives file name from message payload */
-    setFilename(deriveFilename(data));
-    
-    /* Opens stream, writes data, closes stream. */
-    super.connect();
-    Object result = super.deliver(data);
-    disconnect();
-    
-    return result;
+  public Object deliver(Object[] data) {
+    if (getSingleFilenameForBatch()) {
+      /* treat batch as a single unit */
+      /* Derives file name from message payload */
+      setFilename(deriveFilename(data));
+      /* Opens stream, writes data, closes stream. */
+      super.connect();
+      Object result = super.deliver(data);
+      disconnect();
+      return result;
+    } else {
+      /* Iterate through the Batch */
+      Object[] resultArray = new Object[data.length];
+      for (int i = 0; i < data.length; i++) {
+        Object[] batchElement = new Object[] { data[i] };
+        /* Derives file name from message payload */
+        setFilename(deriveFilename(batchElement));
+        /* Opens stream, writes data, closes stream. */
+        /* should keep track of filename and connect disconnect only if it changes */
+        super.connect();
+        resultArray[i] = super.deliver(batchElement);
+        disconnect();
+      }
+      return resultArray;
+    }
   }
   
   /**
@@ -156,4 +172,26 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
   public void setMetadata(Map metadata) {
     this.metadata = metadata;    
   }
+
+  /**
+   * Define whether or not to write all of a batch to a single file. The default is
+   * true for backwards compatibility.
+   * 
+   * @param singleFilenameForBatch the singleFilenameForBatch to set
+   */
+  public void setSingleFilenameForBatch(boolean singleFilenameForBatch) {
+    this.singleFilenameForBatch = singleFilenameForBatch;
+  }
+
+  /**
+   * Define whether or not to write all of a batch to a single file. The default is
+   * true for backwards compatibility.
+   * 
+   * @return the singleFilenameForBatch
+   */
+  public boolean getSingleFilenameForBatch() {
+    return singleFilenameForBatch;
+  }
+  
+  
 }
