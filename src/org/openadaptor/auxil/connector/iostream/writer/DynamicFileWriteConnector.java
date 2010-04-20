@@ -27,6 +27,8 @@
 
 package org.openadaptor.auxil.connector.iostream.writer;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,21 +130,46 @@ public class DynamicFileWriteConnector extends FileWriteConnector implements IMe
       Object result = super.deliver(data);
       disconnect();
       return result;
-    } else {
+    } 
+    else {
+      ArrayList results=new ArrayList();
+      ArrayList subBatch=new ArrayList();
+      String currentFilename="";
       /* Iterate through the Batch */
-      Object[] resultArray = new Object[data.length];
       for (int i = 0; i < data.length; i++) {
         Object[] batchElement = new Object[] { data[i] };
         /* Derives file name from message payload */
-        setFilename(deriveFilename(batchElement));
-        /* Opens stream, writes data, closes stream. */
-        /* should keep track of filename and connect disconnect only if it changes */
-        super.connect();
-        resultArray[i] = super.deliver(batchElement);
-        disconnect();
+        String filename=deriveFilename(batchElement);
+        if (!filename.equals(currentFilename)) { //new Batch required.
+           if (!subBatch.isEmpty()) {} { //Write out the previous batch first.
+        	  results.add(deliverSubBatch(subBatch));
+        	  subBatch.clear();
+           }
+           currentFilename=filename;
+           setFilename(filename);
+        }
+        else { //Just add it to the batch.
+          subBatch.add(batchElement);
+        }    
       }
-      return resultArray;
+      if (!subBatch.isEmpty()) { //Flush the last subBatch
+    	 results.add(deliverSubBatch(subBatch));
+      }
+      return results.toArray(new Object[results.size()]);
     }
+  }
+  
+  /**
+   * Deliver a batch of data (opening stream, writing data and closing stream)
+   * @param batch
+   * @return
+   */
+  private  Object deliverSubBatch(List batch) {
+	  Object result=null;
+	  super.connect();
+	  result= super.deliver(batch.toArray(new Object[batch.size()]));
+	  super.disconnect();
+	  return result;
   }
   
   /**
