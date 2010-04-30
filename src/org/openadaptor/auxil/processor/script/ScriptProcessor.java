@@ -306,6 +306,8 @@ public class ScriptProcessor extends Component implements IDataProcessor, IMetad
       }
       return (Object[])data;
     } catch (ScriptException e) {
+    	  log.debug("Script cause: "+e.getCause());
+    
       throw new ProcessingException("failed to execute script, " + e.getMessage()
           + " line " + e.getLineNumber() + " col " + e.getColumnNumber(), e, this);
     } catch (FileNotFoundException e) {
