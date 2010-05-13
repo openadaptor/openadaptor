@@ -31,8 +31,8 @@ package org.openadaptor.util;
  * Interface for Automatic name generators.
  * Provides accessors for prefix and suffix.
  * Implementations will generate a name automatically 
- * via calls to {@link generateName()} or build it 
- * from a supplied partialName via {@link generateName(String partialName)}. 
+ * via calls to {@link #generateName()} or build it 
+ * from a supplied partialName via {@link #generateName(String partialName)}. 
  * @author higginse
  *
  */

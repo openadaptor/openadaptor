@@ -64,7 +64,7 @@ public abstract class AbstractMapConvertor extends AbstractConvertor {
   }
 
   /**
-   * Wrapper around {@link setFieldNames(String[] fieldNames}.
+   * Wrapper around {@link #setFieldNames(String[] fieldNames)}.
    * It will convert non-strings to Strings, and call
    * setFieldNames(String[]).
    * @param fieldNames
@@ -85,7 +85,7 @@ public abstract class AbstractMapConvertor extends AbstractConvertor {
 
   /**
    * Set fieldNames from a list. 
-   * Converts list to Array and calls {@link setFieldNames(Object[] fieldNames}
+   * Converts list to Array and calls {@link #setFieldNames(Object[] fieldNames)}
    * @param fieldNameList
    */
   public void setFieldNames(List fieldNameList) {

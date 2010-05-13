@@ -56,7 +56,7 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
     this.includeSubject=includeSubject;
   }
   /**
-   * Useful to override the default field name {@link DEFAULT_SUBJECT_FIELDNAME}
+   * Useful to override the default field name {@link #DEFAULT_SUBJECT_FIELD_NAME}
    * Note: Behaviour is undefined if a subject field name is chosen which clashes
    * with the actual retreived message field name(s).
    * If includeSubject property is false, this has no effect.
@@ -80,7 +80,7 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
   }
   /**
    * Decode a supplied Tibco Rendezvous Message (TibrvMsg).
-   * @param message TibrvMsg instance
+   * @param msg TibrvMsg instance
    * @return Map containing the result of decoding
    */
   public Object decode(TibrvMsg msg) throws TibrvException {

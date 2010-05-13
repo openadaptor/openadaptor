@@ -160,7 +160,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
    * 
    * Is uses db metadata to get the db name - mysql databases use a different
    * default quoting mechanism to most others (backtick instead of double quote).
-   * @param connectionClassName String containing the database name
+   * @param dbName String containing the database name
    */
   protected void initialiseQuoting(String dbName) {
     //Cludge to assign mysql a different identifier default quot

@@ -37,7 +37,7 @@ import com.tibco.tibrv.TibrvMsg;
 public interface ITibrvMessageEncoder {
   /**
    * Encode supplied data in a Tibco Rendezvous Message (TibrvMsg).
-   * @param Object containing the data to be encoded
+   * @param data Object containing the data to be encoded
    * @return TibrvMsg instance
    */
   public TibrvMsg encode(Object data) throws TibrvException;

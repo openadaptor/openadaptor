@@ -41,8 +41,8 @@ import org.openadaptor.core.IEnrichmentProcessor;
  * enhancing input data. 
  * 
  * These generic implementations cover only the most common scenarios of preparing a query
- * for the embedded {@link IReadConnector} and enriching the input data with the result
- * from the {@link IReadConnector}'s query. See {@link #prepareParameters(Object)}
+ * for the embedded {@link org.openadaptor.core.IReadConnector} and enriching the input data with the result
+ * from the {@link org.openadaptor.core.IReadConnector}'s query. See {@link #prepareParameters(Object)}
  * and {@link #enrich(Object, Object[])} for details. Often users may want
  * to overwrite these implementations in a subclass to suit their needs.
  *

@@ -57,8 +57,11 @@ import java.sql.*;
  * The (pre 3.3) JDBCEventReadConnector is equivalent to this connector with the 
  * DBEventDrivenPollingReadConnector. 
  * 
- * @see LoopingPollingReadConnector, DBEventDrivenPollingReadConnector, ThrottlingReadConnector
- * @see ResultSetToOrderedMapConverter, ResultSetToXMLConverter
+ * @see org.openadaptor.core.connector.LoopingPollingReadConnector
+ * @see DBEventDrivenPollingReadConnector
+ * @see org.openadaptor.core.connector.ThrottlingReadConnector
+ * @see ResultSetToOrderedMapConverter
+ * @see org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter
  * @author Eddy Higgins, Kris Lachor
  */
 public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichmentReadConnector, ITransactional{

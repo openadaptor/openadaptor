@@ -59,7 +59,7 @@ public class MapTibrvMessageEncoder implements ITibrvMessageEncoder {
   }
   /**
    * Encode a supplied Object as a Tibco Rendezvous Message (TibrvMsg).
-   * @param Object containing Map of data to be encoded
+   * @param data Object containing Map of data to be encoded
    * @return TibrvMsg instance containing the encoded fields.
    * @throws RecordFormatException if Object does not contain a map.
    */
@@ -74,7 +74,7 @@ public class MapTibrvMessageEncoder implements ITibrvMessageEncoder {
 
   /**
    * Encode a supplied Map as a Tibco Rendezvous Message (TibrvMsg).
-   * @param Map of data to be encoded
+   * @param dataMap Map of data to be encoded
    * @return TibrvMsg instance containing the encoded fields.
    */
   public TibrvMsg encode(Map dataMap) throws TibrvException {

@@ -34,17 +34,18 @@ import org.openadaptor.core.exception.ValidationException;
 import org.openadaptor.core.node.ReadNode;
 
 /**
- * This represents a class which can connect to an external resource and aquire data.
+ * This represents a class which can connect to an external resource and acquire data.
  * Connectors expect to be polled for the acquired data.
  * 
- * @author perryj
+ * @author oa3 Core Team
  * 
  */
 public interface IReadConnector {
 
   /**
    * This method checks that the current state of an implementation is
-   * "meaningful". Implementations of {@link IReadConnector} are typically beans with
+   * consistent, and ready to process data. 
+   * Implementations of {@link IReadConnector} are typically beans with
    * zero-arg constructors.  Implementations are encouraged to add exception to the
    * list parameter rather than throwing them. This allows the calling code to collate
    * the exceptions. If the implementation is an {@link IComponent} then the exceptions
@@ -56,6 +57,7 @@ public interface IReadConnector {
   void validate(List exceptions);
 
   /**
+   * Connect to an external resource and prepare for reading.
    * This should be called before {@link #next(long)} is called. Implementations
    * should use this method to establish connections to external resources and
    * prepare to accept calls to {@link #next}. Exceptions should be thrown as
@@ -83,16 +85,16 @@ public interface IReadConnector {
    * future. The documentation for each implementation should state its
    * specific behaviour.
    * 
-   * @return true if no more data is available from the external rsource.
+   * @return true if no more data is available from the external resource.
    */
   boolean isDry();
 
   /**
-   * Polls the internal resource for some data. Exceptions should be thrown as RuntimeExceptions.
+   * Poll an external resource for data. Exceptions should be thrown as RuntimeExceptions.
    * Implementation that are {@link IComponent}s should throw {@link ConnectionException}s.
    * 
    * @param timeoutMs
-   *          the maximum time in milli-seconds to wait for data is none is
+   *          the maximum time in milliseconds to wait for data is none is
    *          available immediately
    * @return null or an array of data with one or more element.
    */

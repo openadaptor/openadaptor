@@ -37,7 +37,7 @@ import com.tibco.tibrv.TibrvMsg;
 public interface ITibrvMessageDecoder {
   /**
    * Decode a supplied Tibco Rendezvous Message (TibrvMsg).
-   * @param message TibrvMsg instance
+   * @param msg TibrvMsg instance
    * @return Object containing the result of decoding
    */
   public Object decode(TibrvMsg msg) throws TibrvException;

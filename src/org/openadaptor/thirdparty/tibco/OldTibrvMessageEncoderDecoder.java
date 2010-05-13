@@ -56,7 +56,7 @@ public class OldTibrvMessageEncoderDecoder implements ITibrvMessageDecoder,ITibr
   
   /**
    * Decode a supplied Tibco Rendezvous Message (TibrvMsg).
-   * @param message TibrvMsg instance
+   * @param msg TibrvMsg instance
    * @return Map containing the result of decoding
    */
   public Object decode(TibrvMsg msg) throws TibrvException {

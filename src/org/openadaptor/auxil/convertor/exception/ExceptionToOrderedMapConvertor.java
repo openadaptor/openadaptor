@@ -248,7 +248,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   /**
    * Overrides the default metadata column name.
    * 
-   * @param dataColName the data column name.
+   * @param metadataColName the data column name.
    */
   public void setMetadataColName(String metadataColName) {
     this.metadataColName = metadataColName;
@@ -329,7 +329,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   /**
    * Allows to overwrite the default message when the name of the adaptor could not be determined.
    * 
-   * @param noCauseException new message
+   * @param unknownAdaptorName new message
    */
   public void setUnknownAdaptorName(String unknownAdaptorName) {
     this.unknownAdaptorName = unknownAdaptorName;
@@ -339,7 +339,7 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
    * Allows to overwrite the default message when the name of the component that threw the 
    * exception could not be determined.
    * 
-   * @param noCauseException new message
+   * @param unknownComponentName new message
    */
   public void setUnknownComponentName(String unknownComponentName) {
     this.unknownComponentName = unknownComponentName;
