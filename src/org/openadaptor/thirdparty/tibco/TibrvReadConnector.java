@@ -98,6 +98,41 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   public void setDecoder(ITibrvMessageDecoder decoder) {
   	this.decoder=decoder;
   }
+  
+  /**
+   * if true then extracts string value from single field on incoming messages
+   * otherwise queues actual TibrvMsg
+   * @deprecated This only exists for backwards compatibility.
+   * @param decodeTibrvMsg
+   */
+  public void setDecodeTibrvMsg(final boolean decodeTibrvMsg) {
+    OldTibrvMessageEncoderDecoder legacyDecoder;
+    if (decoder==null) { //Create a legacy one
+      setDecoder(new OldTibrvMessageEncoderDecoder());
+    }
+    else { //setFieldName must have already created it.
+      if (! (decoder instanceof OldTibrvMessageEncoderDecoder)) {
+        String msg="Misconfiguration - use EITHER decoder OR setDecodeTibRvMsg / fieldName ";
+        log.warn(msg);
+        throw new RuntimeException(msg);
+      }
+    }
+  }
+  
+  /**
+   * name of field this component expects the data to be in
+   * @deprecated This only exists for backwards compatibility
+   * @param fieldName
+   */
+  public void setFieldName(final String fieldName) {
+    if (decoder==null) { //Set it up.
+      setDecodeTibrvMsg(true);
+    }
+    //setDecodeTibrvMsg will catch misconfiguration below
+    ((OldTibrvMessageEncoderDecoder)decoder).setFieldName(fieldName);
+  }
+
+
 
   public void connect() {
     for (Iterator iter = topicNames.iterator(); iter.hasNext();) {

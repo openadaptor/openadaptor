@@ -23,33 +23,38 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.ValidationException;
 
 import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
 
 public class TibrvWriteConnector extends AbstractWriteConnector {
-
-  // deliberately matches tibco examples tibrvlisten/send
-  public static final String FIELD_NAME = "DATA";
+  private static final Log log = LogFactory.getLog(TibrvWriteConnector.class);
 
   private TibrvConnection connection;
-  
+
   private String subject;
+  
+  private ITibrvMessageEncoder encoder=null;
 
   public TibrvWriteConnector() {
     super();
   }
-  
+
   public TibrvWriteConnector(String id) {
     super(id);
   }
-  
+
   public void setConnection(final TibrvConnection connection) {
     this.connection = connection;
   }
@@ -58,35 +63,62 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     this.subject = subject;
   }
 
+  public void setEncoder(ITibrvMessageEncoder encoder) {
+    this.encoder=encoder;
+  }
   public void connect() {
     if (connection == null) {
       throw new ConnectionException("connection not set", this);
     }
     else {
-    connection.connect();
+      connection.connect();
     }
   }
 
   public Object deliver(Object[] data) {
     for (int i = 0; i < data.length; i++) {
-      TibrvMsg msg;
+      Object record=data[i];
       try {
-        if (data[i] instanceof TibrvMsg) {
-          msg = (TibrvMsg)data[i];
-        } else {
-          msg = new TibrvMsg();
-          msg.update(FIELD_NAME, data[i].toString());
+        if (record instanceof TibrvMsg) {
+          deliver((TibrvMsg)record);
         }
-        setSendMessage(msg);
-        connection.send(msg);
-      } catch (TibrvException e) {
-        throw new ConnectionException("failed to send message", e, this);
+        else {
+          if (encoder!=null) {
+            deliver(encoder.encode(record));
+          }
+          else {
+            throw new RuntimeException("No encoder configured - this is probably a misconfiguration of encoder property");
+          }
+        }
+      }
+      catch (TibrvException te) {
+        throw new ConnectionException("Failed to send message",te, this);
       }
     }
     return null;
   }
+  
+  private void deliver(TibrvMsg msg) throws TibrvException {
+    String existingSubject=msg.getSendSubject();
+    if (existingSubject==null) {
+      if (subject==null) {    
+        String err="Required message subject is missing (and not configured)";
+        log.debug(err);
+        throw new ConnectionException(err, this);      
+      }
+      else {
+        msg.setSendSubject(subject);
+      }
+    }
+    else {
+      if (log.isDebugEnabled() && subject!=null) {
+        log.debug("TibrvMsg not overwriting existing subject (" +existingSubject+") with configured ("+subject+")");
+      }
+    }
+    connection.send(msg);
+  }
 
-  private void setSendMessage(TibrvMsg msg) throws TibrvException {
+  private void setMessageSubject(TibrvMsg msg) throws TibrvException {
     if (msg.getSendSubject() == null) {
       if (subject != null) {
         msg.setSendSubject(subject);
@@ -96,8 +128,14 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     }
   }
 
-  public void disconnect() {
-  	connection.disconnect();
+  public void validate(List exceptions) {
+    if (encoder==null) {
+      encoder=new OldTibrvMessageEncoderDecoder();
+      log.warn("Defaulting encoder to legacy "+encoder.getClass().getName()+" -future releases are likey to provide a different default");
+    }
   }
 
+  public void disconnect() {
+    connection.disconnect();
+  }
 }
