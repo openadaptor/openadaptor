@@ -37,7 +37,16 @@ import com.tibco.tibrv.TibrvMsg;
 import com.tibco.tibrv.TibrvMsgField;
 
 /**
- * decodes Tibco Rendezvous messages into Maps
+ * Decodes Tibco Rendezvous messages into Maps.
+ * This is an implementation of {@link ITibrvMessageDecoder} which 
+ * will take a tibrv message and convert its data into a Map for 
+ * use by downstream components.
+ * By default is will convert all the field it finds in the message
+ * (including the subject) although the set of fields converted may be
+ * controlled by providing a list of field names {@link #fields}.
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ * 
  * @author Eddy Higgins
  */
 public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
@@ -48,7 +57,7 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
 
   /**
    * If set, then subject will also be included in the decoded map.
-   * This is enabled by default, with DEFAULT_SUBJECT_FIELD_NAME as
+   * This is enabled by default, with {@link #DEFAULT_SUBJECT_FIELD_NAME} as
    * the name of the subject field
    * @param includeSubject
    */
@@ -58,7 +67,7 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
   /**
    * Useful to override the default field name {@link #DEFAULT_SUBJECT_FIELD_NAME}
    * Note: Behaviour is undefined if a subject field name is chosen which clashes
-   * with the actual retreived message field name(s).
+   * with the actual retrieved message field name(s).
    * If includeSubject property is false, this has no effect.
    * @param subjectFieldName a name for the subject field.
    */
@@ -67,8 +76,8 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
   }
   
   /**
-   * Specify the list of fields to be included intthe decoded map.
-   * If a named field does not existin the tibrv message, it will
+   * Specify the list of fields to be included in the decoded map.
+   * If a named field does not exist in the tibrv message, it will
    * be assigned a null value in the decoded map.
    * Note that it is an optional property - if left unspecified,
    * then all fields from the message will be used to populate

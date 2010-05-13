@@ -39,7 +39,16 @@ import com.tibco.tibrv.TibrvMsg;
 import com.tibco.tibrv.TibrvMsgField;
 
 /**
- * decodes Tibco Rendezvous messages into Maps
+ * Encode Maps in Tibco Rendezvous (Tibrv) message format.
+ * This is an implementation of {@link ITibrvMessageEncoder} which
+ * will encode Map key/value pairs into corresponding pairs within
+ * a Tibrv message.
+ * By default, all fields from the Map will be used, but this may be
+ * limited by using the optional {@link #fields} property.
+ * Note that the subject is not set here.
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ * 
  * @author Eddy Higgins
  */
 public class MapTibrvMessageEncoder implements ITibrvMessageEncoder {
@@ -59,6 +68,8 @@ public class MapTibrvMessageEncoder implements ITibrvMessageEncoder {
   }
   /**
    * Encode a supplied Object as a Tibco Rendezvous Message (TibrvMsg).
+   * Note that only Map data is permitted.
+   * 
    * @param data Object containing Map of data to be encoded
    * @return TibrvMsg instance containing the encoded fields.
    * @throws RecordFormatException if Object does not contain a map.

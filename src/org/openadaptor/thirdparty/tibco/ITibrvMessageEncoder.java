@@ -31,7 +31,13 @@ import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
 
 /**
- * Interface for decoders which can encode Tibco Rendezvous messages
+ * Interface for encoders which can encode data as Tibco Rendezvous messages.
+ * This is used in conjunction with {@link TibrvWriteConnector} to
+ * decode incoming tibrv messages into a format which can be used by
+ * downstream openadaptor components.
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ *
  * @author Eddy Higgins
  */
 public interface ITibrvMessageEncoder {

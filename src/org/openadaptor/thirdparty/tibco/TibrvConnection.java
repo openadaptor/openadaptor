@@ -38,7 +38,12 @@ import com.tibco.tibrv.TibrvListener;
 import com.tibco.tibrv.TibrvMsg;
 import com.tibco.tibrv.TibrvRvdTransport;
 import com.tibco.tibrv.TibrvTransport;
-
+/**
+ * This class models a Tibco Rendezvous connection.
+ * 
+ * 
+ * @author Eddy Higgins
+ */
 public class TibrvConnection extends Component {
 	private static final Log log = LogFactory.getLog(TibrvConnection.class);
   private String service;
@@ -66,12 +71,14 @@ public class TibrvConnection extends Component {
     	log.info("Initialising transport");
       try {
         Tibrv.open(Tibrv.IMPL_NATIVE);
-      } catch (TibrvException e) {
-        throw new ConnectionException("failed to init rendezvous, make sure you have TIBCO/tibrv/bin in your PATH / LD_LIBRARY_PATH", e, this);
+      } 
+      catch (TibrvException e) {
+        throw new ConnectionException("failed to initialise rendezvous, ensure PATH / LD_LIBRARY_PATH contains tibco resources", e, this);
       }
       try {
         transport = new TibrvRvdTransport(service, network, daemon);
-      } catch (TibrvException e) {
+      } 
+      catch (TibrvException e) {
         throw new ConnectionException("failed to create tibrv transport", e, this);
       }
       log.info("Transport initialiased");

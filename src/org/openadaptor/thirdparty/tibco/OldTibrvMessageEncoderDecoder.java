@@ -34,8 +34,15 @@ import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
 
 /**
- * Legacy decoder for Tibrv Messages
- * @deprecated - Only exists for backwards compatibility with older oa versions
+ * Legacy encoder/decoder for Tibrv Messages.
+ * This class only exists to maintain some backwards compatibility with the previous
+ * Tibrv connectors, which were extremely limited and incomplete.
+ * Users are strongly encouraged to avoid using the older mechanism.
+ * 
+ * @deprecated - Only exists for backwards compatibility with oa 3.x versions 3.4.4 and earlier
+ * 
+ * @since 3.4.5 solely for backwards compatibility with 3.4.4 behaviour
+ * 
  * @author Eddy Higgins
  */
 public class OldTibrvMessageEncoderDecoder implements ITibrvMessageDecoder,ITibrvMessageEncoder {

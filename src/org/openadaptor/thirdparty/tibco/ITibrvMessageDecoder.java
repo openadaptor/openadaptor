@@ -31,14 +31,22 @@ import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
 
 /**
- * Interface for decoders which can decode Tibco Rendezvous messages
+ * Interface for decoders which can decode Tibco Rendezvous messages.
+ * This is used in conjunction with {@link TibrvReadConnector} to
+ * encode incoming data from upstream components into tibrv messages
+ * which will ultimately be output to Rendezvous.
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ *
  * @author Eddy Higgins
  */
 public interface ITibrvMessageDecoder {
   /**
    * Decode a supplied Tibco Rendezvous Message (TibrvMsg).
-   * @param msg TibrvMsg instance
-   * @return Object containing the result of decoding
+   * The resultant data is dependent on the implementing classs.
+   * 
+   * @param msg s TibrvMsg instance
+   * @return Object containing the result of decoding the message
    */
   public Object decode(TibrvMsg msg) throws TibrvException;
 }
