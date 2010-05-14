@@ -33,18 +33,26 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.connector.AbstractWriteConnector;
 import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.ValidationException;
 
 import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
 
+/**
+ * Write Connector to publish messages to tibco Rendezvous.
+ * This has been completely rewritten as of release 3.4.5
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ * 
+ * @author Eddy Higgins (higginse)
+ *
+ */
 public class TibrvWriteConnector extends AbstractWriteConnector {
   private static final Log log = LogFactory.getLog(TibrvWriteConnector.class);
 
   private TibrvConnection connection;
 
   private String subject;
-  
+
   private ITibrvMessageEncoder encoder=null;
 
   public TibrvWriteConnector() {
@@ -55,17 +63,44 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     super(id);
   }
 
+  /**
+   * Associate  a TibrvConnection for this connector
+   * @param connection TibrvConnection instance
+   */
   public void setConnection(final TibrvConnection connection) {
     this.connection = connection;
   }
 
+  /**
+   * Set the subject for outgoing messages.
+   * Note that incoming messages (which are already TibrvMsg instances)
+   * may already have a subject set, in which case the subject
+   * configured here will NOT be used.
+   * 
+   * @param subject Rendezvous subject for outgoing messages.
+   */
   public void setSubject(final String subject) {
     this.subject = subject;
   }
 
+  /**
+   * Associate an encoder to encode incoming messages as TibrvMsg instances.
+   * If an {@link ITibrvMessageEncoder} is specified, it will be used to encode incoming messages as TibrvMsg instances.
+   * As of 3.4.5 a backwards-compatibility encoder is implicitly associated.
+   * Note that if the connector receives messages which are already TibrvMsg instances,
+   * then the encoder is not used - see {@link #deliver(Object[])}
+   * 
+   * but this is subject to chance whereby it will become mandatory.
+   * @param encoder {@link ITibrvMessageEncoder} instance
+   * 
+   * @since 3.4.5 Introduced as part of rewrite of tibrv connectors
+   */
   public void setEncoder(ITibrvMessageEncoder encoder) {
     this.encoder=encoder;
   }
+  /**
+   * Connect to Tibco Rendezvous
+   */
   public void connect() {
     if (connection == null) {
       throw new ConnectionException("connection not set", this);
@@ -75,6 +110,16 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     }
   }
 
+  /**
+   * Publish incoming messages on Rendezvous.
+   * This will take incoming messages and process them
+   * sequentially as follows.
+   * If the current message is already a TibrvMsg instance, it is 
+   * published directly; otherwise the configured encoder
+   * is used to encode the data record as a TibrvMsg instance.
+   * The configured subject is applied if the TibrvMsg instance does
+   * not already have a subject.
+   */
   public Object deliver(Object[] data) {
     for (int i = 0; i < data.length; i++) {
       Object record=data[i];
@@ -97,7 +142,14 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     }
     return null;
   }
-  
+
+  /**
+   * Publish a TibrvMsg.
+   * It will assign the configured subject if any, assuming 
+   * the message does not already have a subject set.
+   * @param msg Message to be published
+   * @throws TibrvException if Rendezvous fails to publish.
+   */
   private void deliver(TibrvMsg msg) throws TibrvException {
     String existingSubject=msg.getSendSubject();
     if (existingSubject==null) {
@@ -118,6 +170,14 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     connection.send(msg);
   }
 
+  /**
+   * Apply a subject if not already configured.
+   * Will throw a ConnectionException if a subject cannot be set.
+   * @param msg TibrvMsg instance
+   * @throws TibrvException if Rendezvous fails to assign the subject
+   * @throws ConnectionException if a subject is not defined and thus
+   *         cannot be set
+   */
   private void setMessageSubject(TibrvMsg msg) throws TibrvException {
     if (msg.getSendSubject() == null) {
       if (subject != null) {
@@ -128,6 +188,14 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     }
   }
 
+  /**
+   * Validate the configuration state of this connector
+   * Add any exceptions encountered to the working list of
+   * configuration issues
+   * @param exceptions - a list of outstanding exceptions encountered
+   *        as part of configuration.
+   */
+
   public void validate(List exceptions) {
     if (encoder==null) {
       encoder=new OldTibrvMessageEncoderDecoder();
@@ -135,6 +203,9 @@ public class TibrvWriteConnector extends AbstractWriteConnector {
     }
   }
 
+  /**
+   * Disconnect from Tibco Rendezvous
+   */
   public void disconnect() {
     connection.disconnect();
   }

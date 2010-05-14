@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
@@ -40,12 +40,12 @@ import com.tibco.tibrv.TibrvRvdTransport;
 import com.tibco.tibrv.TibrvTransport;
 /**
  * This class models a Tibco Rendezvous connection.
+ * See the Tibco Rendevous documentation for further information.
  * 
- * 
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public class TibrvConnection extends Component {
-	private static final Log log = LogFactory.getLog(TibrvConnection.class);
+  private static final Log log = LogFactory.getLog(TibrvConnection.class);
   private String service;
 
   private String network;
@@ -66,9 +66,12 @@ public class TibrvConnection extends Component {
     this.service = service;
   }
 
+  /**
+   * Connect to Tibco Rendezvous transport
+   */
   private void initialiseTransport() {
     if (transport == null) {
-    	log.info("Initialising transport");
+      log.info("Initialising transport");
       try {
         Tibrv.open(Tibrv.IMPL_NATIVE);
       } 
@@ -84,28 +87,28 @@ public class TibrvConnection extends Component {
       log.info("Transport initialiased");
     }
   }
-  
+
   public void connect() {
-  	initialiseTransport();
+    initialiseTransport();
   }
   public void disconnect() {
-  	if (transport!=null) {
-  			transport.destroy();
-  	}
+    if (transport!=null) {
+      transport.destroy();
+    }
   }
 
   public TibrvListener createListener(String topic, TibrvReadConnector connector) throws TibrvException  {
-  	if (transport==null) {
-  		initialiseTransport();
-  	}
+    if (transport==null) {
+      initialiseTransport();
+    }
     return new TibrvListener(Tibrv.defaultQueue(), connector, transport, topic, null);
   }
   /**
-   * Sent a message via the transport.
-   * Note that this assumes that the transport is initialised -
-   * otherwise there would be an extra check on each call to send
-   * @param msg
-   * @throws TibrvException
+   * Send a message via the transport.
+   * Note that for efficiency,it assumes that the transport has already been initialised
+   * 
+   * @param msg TibrvMsg instance to send
+   * @throws TibrvException if send fails for any reason
    */
   public void send(TibrvMsg msg) throws TibrvException {
     transport.send(msg);

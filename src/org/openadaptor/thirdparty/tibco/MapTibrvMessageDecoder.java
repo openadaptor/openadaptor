@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
@@ -47,7 +47,7 @@ import com.tibco.tibrv.TibrvMsgField;
  * 
  * @since 3.4.5 Introduced as part of tibrv connector overhaul
  * 
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
   public static final String DEFAULT_SUBJECT_FIELD_NAME="subject";
@@ -74,7 +74,7 @@ public class MapTibrvMessageDecoder implements ITibrvMessageDecoder {
   public void setSubjectFieldName(String subjectFieldName) {
     this.subjectFieldName=subjectFieldName;
   }
-  
+
   /**
    * Specify the list of fields to be included in the decoded map.
    * If a named field does not exist in the tibrv message, it will

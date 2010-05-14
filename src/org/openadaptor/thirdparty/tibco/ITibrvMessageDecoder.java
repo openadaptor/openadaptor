@@ -38,7 +38,7 @@ import com.tibco.tibrv.TibrvMsg;
  * 
  * @since 3.4.5 Introduced as part of tibrv connector overhaul
  *
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public interface ITibrvMessageDecoder {
   /**

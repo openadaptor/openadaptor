@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
@@ -46,8 +46,12 @@ import com.tibco.tibrv.TibrvMsg;
 import com.tibco.tibrv.TibrvMsgCallback;
 
 /**
- * Read Connector that subcribes to a tibco rendezvous topic / subject.
- * @author higginse
+ * Read Connector that subscribes to a tibco rendezvous topic / subject.
+ * This has been completely rewritten as of release 3.4.5.
+ * 
+ * @since 3.4.5 Introduced as part of tibrv connector overhaul
+ * 
+ * @author Eddy Higgins (higginse)
  *
  */
 public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsgCallback {
@@ -55,13 +59,13 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   private static final Log log = LogFactory.getLog(TibrvReadConnector.class);
 
   private TibrvConnection connection;
-  
+
   private Set topicNames = new HashSet();
 
   private Map listenerMap = new HashMap();
-   
+
   private Dispatcher dispatcher; //Thread for interaction with tibrv
-     
+
   //By default messages are just passed through opaquely.
   private ITibrvMessageDecoder decoder=null;
 
@@ -69,17 +73,17 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
     super();
     super.setTransacted(false);
   }
-  
+
   public TibrvReadConnector(String id) {
     super(id);
     super.setTransacted(false);
   }
-  
+
   public void setTopic(final String topic) {
     topicNames.clear();
     topicNames.add(topic);
   }
-  
+
   public void setTopics(final Set topics) {
     this.topicNames.clear();
     this.topicNames.addAll(topics);
@@ -88,21 +92,24 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   public void setConnection(final TibrvConnection connection) {
     this.connection = connection;
   }
-  
+
   /**
-   * If a decoder is specified, it will be used to decode incoming raw TibrvMsg instances.
+   * If a decoder {@link ITibrvMessageDecoder} is specified, it will be used to decode incoming raw TibrvMsg instances.
    * It is null by default, meaning that the raw message will be passed on through
    * the openadaptor pipeline.
    * @param decoder ITibrvMessageDecoder instance
+   * 
+   * @since 3.4.5 Introduced as part of rewrite of tibrv connectors
    */
   public void setDecoder(ITibrvMessageDecoder decoder) {
-  	this.decoder=decoder;
+    this.decoder=decoder;
   }
-  
+
   /**
    * if true then extracts string value from single field on incoming messages
    * otherwise queues actual TibrvMsg
-   * @deprecated This only exists for backwards compatibility.
+   * @deprecated This only exists for backwards compatibility (pre 3.4.5)
+   * 
    * @param decodeTibrvMsg
    */
   public void setDecodeTibrvMsg(final boolean decodeTibrvMsg) {
@@ -118,10 +125,13 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
       }
     }
   }
-  
+
   /**
-   * name of field this component expects the data to be in
-   * @deprecated This only exists for backwards compatibility
+   * Set name of field which is expected to contain record data.
+   * As of 3.4.5 this should no longer be used.
+   * 
+   * @deprecated This only exists for backwards compatibility with 
+   *             oa versions before 3.4.5
    * @param fieldName
    */
   public void setFieldName(final String fieldName) {
@@ -133,7 +143,9 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
   }
 
 
-
+  /**
+   * Connect to Tibco Rendezvous and begin processing incoming messages.
+   */
   public void connect() {
     for (Iterator iter = topicNames.iterator(); iter.hasNext();) {
       String topic = (String) iter.next();
@@ -150,6 +162,9 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
     dispatcher.start();
   }
 
+  /**
+   * Disconnect from Tibco Rendezvous. 
+   */
   public void disconnect() {
     for (Iterator iter = listenerMap.values().iterator(); iter.hasNext();) {
       TibrvListener listener = (TibrvListener) iter.next();
@@ -161,11 +176,18 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
     }
   }
 
+  /**
+   * process an incoming message (TibrvMsg) from Rendezvous.
+   * The message will be decoded {@link #setDecoder(ITibrvMessageDecoder)}
+   * if appropriate and made available to downstream oa components.
+   * @param listener - a {@link #connect}ed rendezvous listener 
+   * @param msg - the message received from the listener
+   */
   public void onMsg(TibrvListener listener, TibrvMsg msg) {
-  	log.debug("Message received: "+msg);
+    log.debug("Message received: "+msg);
     if (decoder!=null) {
       try {
-      enqueue(decoder.decode(msg));
+        enqueue(decoder.decode(msg));
       }
       catch (TibrvException te) {
         fail("Failed to process TibrvMsg: "+msg,te);
@@ -176,18 +198,37 @@ public class TibrvReadConnector extends QueuingReadConnector implements TibrvMsg
     }
   }
 
+  /**
+   * Utility message for connection failures.
+   * @param msg Message to log and throw
+   * @param t Throwable which caused the failure.
+   */
   protected void fail(String msg,Throwable t) {
     log.error(msg);
     throw new ConnectionException(msg, t);
   }
 
-  public void validate(List exceptions) {
-  }
-  
+  /**
+   * Validate the configuration state of this connector.
+   * Add any issues to the working list of configuration issues.
+   * 
+   * @param exceptions - a list of outstanding exceptions encountered
+   *        as part of configuration.
+   */
+  public void validate(List exceptions) {}
+
+  /**
+   * Thread to interact with Rendezvous.
+   * This interfaces with it's message dispatcher.
+   * it effectively loops makes blocking calls to
+   * <code>Tibrv.defaultQueue().dispatch();</code>
+   * @author higginse
+   *
+   */
   class Dispatcher extends Thread {
     private boolean running;
     private TibrvReadConnector connector;
-    
+
     public void shutdown() {
       this.running=false;
     }

@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
@@ -38,7 +38,7 @@ import com.tibco.tibrv.TibrvMsg;
  * 
  * @since 3.4.5 Introduced as part of tibrv connector overhaul
  *
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public interface ITibrvMessageEncoder {
   /**

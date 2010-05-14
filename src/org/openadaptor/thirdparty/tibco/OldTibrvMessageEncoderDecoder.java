@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.thirdparty.tibco;
 
@@ -43,13 +43,13 @@ import com.tibco.tibrv.TibrvMsg;
  * 
  * @since 3.4.5 solely for backwards compatibility with 3.4.4 behaviour
  * 
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public class OldTibrvMessageEncoderDecoder implements ITibrvMessageDecoder,ITibrvMessageEncoder {
   private static final Log log = LogFactory.getLog(OldTibrvMessageEncoderDecoder.class);
-  
+
   public static final String DEFAULT_FIELD_NAME="DATA"; //Backwards compatibility
-  
+
   private String fieldName=DEFAULT_FIELD_NAME;
 
   /**
@@ -60,7 +60,7 @@ public class OldTibrvMessageEncoderDecoder implements ITibrvMessageDecoder,ITibr
   public void setFieldName(final String fieldName) {
     this.fieldName = fieldName;
   }
-  
+
   /**
    * Decode a supplied Tibco Rendezvous Message (TibrvMsg).
    * @param msg TibrvMsg instance
@@ -71,10 +71,10 @@ public class OldTibrvMessageEncoderDecoder implements ITibrvMessageDecoder,ITibr
     if (msg!=null) { //Something to process!
       log.debug("Rendezvous message with subject:"+msg.getSendSubject());
       result=msg.getField(fieldName).data;
-      }
+    }
     return result;
   }
-  
+
   public TibrvMsg encode(Object data) throws TibrvException {
     TibrvMsg msg=new TibrvMsg();
     msg.update(fieldName, data.toString());

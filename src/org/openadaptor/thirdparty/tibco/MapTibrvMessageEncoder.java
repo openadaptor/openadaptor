@@ -31,12 +31,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.openadaptor.auxil.orderedmap.OrderedHashMap;
 import org.openadaptor.core.exception.RecordFormatException;
 
 import com.tibco.tibrv.TibrvException;
 import com.tibco.tibrv.TibrvMsg;
-import com.tibco.tibrv.TibrvMsgField;
 
 /**
  * Encode Maps in Tibco Rendezvous (Tibrv) message format.
@@ -49,7 +47,7 @@ import com.tibco.tibrv.TibrvMsgField;
  * 
  * @since 3.4.5 Introduced as part of tibrv connector overhaul
  * 
- * @author Eddy Higgins
+ * @author Eddy Higgins (higginse)
  */
 public class MapTibrvMessageEncoder implements ITibrvMessageEncoder {
   private List fields=null;
