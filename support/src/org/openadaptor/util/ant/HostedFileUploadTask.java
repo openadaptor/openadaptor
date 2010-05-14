@@ -61,12 +61,12 @@ public class HostedFileUploadTask extends Task {
   private HostedFile existingFile;
 
   public void setProjectURL(String projectUrl) {this.projectUrl=projectUrl;}
-  public void setProxyHost(String proxyHost){this.proxyHost=proxyHost;}
+  public void setProxyHost(String proxyHost){this.proxyHost=realValue(proxyHost);}
   private void setProxyPort(int proxyPort){this.proxyPort=proxyPort;} //Will cause an NFE if called with null - hence string variant below
   public void setProxyPort(String proxyPort) { //Convenience - mostly in case it's called with null
     if (proxyPort!=null) {
       try {
-        setProxyPort(Integer.parseInt(proxyPort));
+        setProxyPort(Integer.parseInt(realValue(proxyPort)));
       }
       catch (NumberFormatException nfe) {} //Just ignore it.
     }
