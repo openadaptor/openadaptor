@@ -54,8 +54,11 @@ Connectors
    column identifiers. This is necessary where reserved words are used for table and
    column names. Thanks to Tim (ttrantx) for identifying this.
  
- * Tibco read connector has been rewritten completely. Existing adaptors which use it 
-   may need slight reconfiguration.
+ * Tibco read connector has been rewritten completely and the implementation was extremely
+   limited. Existing adaptors which use it should work as before, but the mechanism has 
+   been deprecated, so they should be reconfigured. Note that our ability to test with 
+   Tibco Rendezvous is extremely limited as we do not have ready access to an instance to 
+   test against.
    
  * JNDIConnection has been modified to allow the use of vendor specific values via
    a new (optional) customProperties property. Again thanks to Tim (ttrantx) for this.
