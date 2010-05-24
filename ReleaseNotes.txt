@@ -4,7 +4,7 @@ openadaptor3 production 3.x Release Notes
 See licence.txt for Licence information.
 =================================================
 
-Date: ???
+Date: 27th May 2010
 Author: openadaptor Core Team
 
 openadaptor 3.x
@@ -40,7 +40,7 @@ Connectors
    no longer suppressed. Added thread safety.
 
    |---------------------------------------------------------------------------------|
-   |         OA 3.4.4                   |             OA 3.?                         |    
+   |         OA 3.4.4                   |             OA 3.4.5                       |    
    |---------------------------------------------------------------------------------|
    |                                    |                                            |
    | WebServiceCXFReadConnector         | WebServiceCXFReadConnector                 |  
