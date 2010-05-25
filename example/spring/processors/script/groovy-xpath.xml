@@ -24,11 +24,10 @@
     
   You need the following in your classpath
   
-    groovy/lib/groovy-engine-1.1-jdk14.jar
-    groovy/lib/groovy-1.5.7.jar
-    groovy/lib/asm-2.2.jar
-    groovy/lib/antlr-2.7.6.jar
     lib
+    lib/opt/groovy-1.7.2.jar
+    lib/opt/asm-3.2.jar
+    lib/opt/antlr-2.7.7.jar
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
