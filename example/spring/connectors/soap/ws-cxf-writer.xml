@@ -33,7 +33,7 @@
   processing to succeed, the webservice it is connecting to needs to be running
   (see the ws-cxf-server.xml example). 
    
-  Use JVM 1.5 only; CXF appears to have issues with any other JVM version. 
+  Use JVM 1.5 or newer only.
    
   ]]></description>
 
