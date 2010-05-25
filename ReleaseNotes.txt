@@ -1,5 +1,5 @@
 =================================================
-openadaptor3 production 3.x Release Notes
+openadaptor3 production 3.4.5 Release Notes
 
 See licence.txt for Licence information.
 =================================================
@@ -7,7 +7,7 @@ See licence.txt for Licence information.
 Date: 27th May 2010
 Author: openadaptor Core Team
 
-openadaptor 3.x
+openadaptor 3.4.5
 =======
 
 Connectors
@@ -54,7 +54,7 @@ Connectors
    column identifiers. This is necessary where reserved words are used for table and
    column names. Thanks to Tim (ttrantx) for identifying this.
  
- * Tibco read connector has been rewritten completely and the implementation was extremely
+ * Tibco read connector has been rewritten completely as the implementation was extremely
    limited. Existing adaptors which use it should work as before, but the mechanism has 
    been deprecated, so they should be reconfigured. Note that our ability to test with 
    Tibco Rendezvous is extremely limited as we do not have ready access to an instance to 
@@ -83,35 +83,36 @@ Examples
    property changed to QName.
    
  * (SC95) New example that demonstrates use of message history
-   (example\spring\adaptor\history.xml).  
+   (example/spring/adaptor/history.xml).  
    
  * New example example/spring/processors/enrichment/db/counterparty-id-mapping.xml
-  to illustrate using a database lookup table to enrich a message.  
+   to illustrate using a database lookup table to enrich a message.  
 
 Miscellaneous
 =============
 
  * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
  
- * (SC95) Support for Message History. More information at http://www.openadaptor.org/history.html 
+ * (SC95) Support for Message History. More information 
+          at http://www.openadaptor.org/history.html 
  
- * (SC96) Quoting issue in AbstractSQLWriter (see above)
-          Note that this also required upgrading of mysql driver as older version did not
-          appear to properly support quoting in prepared statements.
- 
- * (SC97) Bug where debug logging combined with older Sybase driver might cause an
-          AbstractMethodError.
-          
+ * (SC96) Quoting issue in AbstractSQLWriter (see above).
+          Note that this also required upgrading of mysql driver as older version 
+          did not appear to properly support quoting in prepared statements.
+           
  * (SC98) Including message metadata in exception handling (ongoing).  
  
- * (SC99) Added packageName property to facilitate Oracle Package names in stored proc
-          definitions.    
+ * (SC99) Added packageName property to facilitate Oracle Package names in stored 
+          proc definitions.    
           
- * (SC101) Trimming a field when generating a fixed with record no longer trims the entire
-          record. Fix is to OrderedMapToFixedWidthStringConvertor.  
+ * (SC101) Trimming a field when generating a fixed with record no longer trims 
+          the entire record. Fix is to OrderedMapToFixedWidthStringConvertor.  
 
 Bug Fixes
 =========
+
+ * (SC97) Bug where debug logging combined with older Sybase driver might cause an
+          AbstractMethodError.
 
 3rd Party
 =========
@@ -125,6 +126,7 @@ Bug Fixes
              lib/jaxb-impl_2.1.6.jar to 2.1.12 (CXF related)
              lib/jaxb-xjc_2.1.6.jar to 2.1.12 (CXF related)
              lib/mysql-connector-java-5.1.10-bin-jar (from mysql-connector-java-5.0.6-bin-jar)
+             
              
 
 =================================================
