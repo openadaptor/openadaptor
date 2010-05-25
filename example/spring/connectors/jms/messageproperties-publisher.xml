@@ -22,7 +22,7 @@
   
   using the appropriate jms property file.
 
-  Suggested Classpath
+  Suggested Classpath:
 
     lib
     lib/openadaptor.jar
@@ -39,7 +39,7 @@
    <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <description>
-          This creates the simple pipeline Reader -> Writer.
+          This creates the simple pipeline Reader -> MetadataProcessor -> Writer.
         </description>
         <property name="processors">
           <list>

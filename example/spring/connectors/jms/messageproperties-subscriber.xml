@@ -18,7 +18,7 @@
 
   Run this example like this...
 
-  java org.openadaptor.spring.SpringAdaptor -config messageproperties_subscriber.xml -props ../../../config/jms_*.properties
+  java org.openadaptor.spring.SpringAdaptor -config messageproperties-subscriber.xml -props ../../../config/jms_*.properties
   
   using the appropriate jms property file.
 
@@ -38,7 +38,7 @@
    <property name="messageProcessor">
       <bean class="org.openadaptor.core.router.Router">
         <description>
-          This creates the simple pipeline Reader -> Writer.
+          This creates the simple pipeline Reader -> MetadataLogger -> Writer.
         </description>
         <property name="processors">
           <list>
