@@ -115,6 +115,9 @@ Bug Fixes
 
 3rd Party
 =========
+ * Added:    lib/groovy-1.7.2.jar
+             lib/antlr-2.7.7.jar (Groovy dependency)
+             lib/asm-3.2.jar (Groovy dependency)
 
  * Upgraded: lib/cxf_2.1.jar to 2.2.3
              lib/XmlSchema_1.4.2.jar to 1.4.5 (CXF related)
