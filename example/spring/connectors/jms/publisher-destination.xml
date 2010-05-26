@@ -59,7 +59,7 @@
     <description>
       This read connector reads lines from a file.
     </description>
-    <property name="filename" value="input/input.txt" />
+    <property name="filename" value="input/input-jboss.txt" />
     <property name="dataReader">
       <bean
         class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
@@ -105,8 +105,8 @@
     </property>
     <property name="script">
       <value>
-        oa_metadata.put("DestinationNameInMetadata",oa_data.get("DestinationName"));
-        oa_data.remove("DestinationName");
+        oa_metadata.put("DestinationNameInMetadata",oa_data.get(DestinationName));
+        oa_data.remove(DestinationName);
       </value>
     </property>
   </bean>

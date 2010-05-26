@@ -58,7 +58,9 @@
   <description>Add some metadata to the message.</description>
     <property name="script">
       <value>
-        oa_metadata.put("Test Key","Test Value (from MetadataProcessor)");
+        // Jboss Note: During testing we found that Jboss doesn't like having a space in the Key.
+        // I.e while "TestKey" below is accepted "Test Key" causes an error.
+        oa_metadata.put("TestKey","Test Value (from MetadataProcessor)");
       </value>
     </property>
   </bean>
