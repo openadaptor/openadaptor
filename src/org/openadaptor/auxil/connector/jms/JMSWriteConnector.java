@@ -267,6 +267,8 @@ public class JMSWriteConnector extends Component implements IWriteConnector, ITr
         if (getMetaDefinedDestinationName() != null) { 
           // Only define the producer if we have a usable metadata supplied destination name. 
           newProducer = session.createProducer(lookupDestination(getMetaDefinedDestinationName()));
+        } else {
+          throw new ProcessingException("Unable to publish to JMS as no Destination defined in Message Metadata.", this);
         }
       } else if (defaultDestination != null) {
         newProducer = session.createProducer(defaultDestination);

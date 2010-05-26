@@ -76,6 +76,8 @@ public class DefaultMessageGenerator implements IMessageGenerator, IMetadataAwar
   private void setMessageProperties(Message msg) throws JMSException {
     if (metaData != null) {
       for (Iterator keys = metaData.keySet().iterator(); keys.hasNext();) {
+        // Jboss Note: During testing we found that Jboss doesn't like having a space in the Key.
+        // I.e while a key value of e.g. "TestKey" below is accepted "Test Key" causes an error.
         String key = (String) keys.next();
         Object value = metaData.get(key);
           msg.setObjectProperty(key, value);
