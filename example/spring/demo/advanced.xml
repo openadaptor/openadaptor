@@ -45,8 +45,6 @@
   Please ensure that the jboss client and server jars used are from compatible releases.  
   
   Graphical representation of this example can be found in example\docs\spring\demo\advanced.htm
-  
-  Note: use JVM 1.4 or 1.5. 
     
   ]]></description>
   
