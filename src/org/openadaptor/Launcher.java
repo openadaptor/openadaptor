@@ -443,6 +443,7 @@ public class Launcher implements Runnable {
    * prioritise(input,{a,b,c}) yields b,x,f,d,z,e,r
    * @param values List which will be prioritised
    * @param priorities List containing priorities, from low to high
+   * @return List of entries with highest priority items first
    */
   private static void prioritise(List values,final String[] priorities) {
     final List prioList=Arrays.asList(priorities);
@@ -519,8 +520,19 @@ public class Launcher implements Runnable {
     return parentPath;
   }
 
+  /**
+   * Simple GUI File chooser for selecting configurations and properties files.
+   * 
+   * @author higginse
+   *
+   */
   class AdaptorConfigFilter extends FileFilter {
-    List validExtensions;    
+    List validExtensions;  
+    /**
+     * Create a filter for the supplied list of extensions
+     *
+     * @param extensions String array of allowable extensions.
+     */
     public AdaptorConfigFilter(String[] extensions) {
       super();
       validExtensions=new ArrayList();
