@@ -77,6 +77,8 @@
       <li><a href="#examplesbrowsing">Can I browse the Examples/Tutorial online?</a></li>
       <li><a href="#javadocbrowsing">Can I browse the JavaDoc online?</a></li>
       <li><a href="#sourcebrowsing">Can I browse the Source Code online?</a></li>
+      <li><a href="#svncheckout">Can I access the source code using Subversion?</a></li>
+      
       <li><a href="#eclipsesvn">How do I use Eclipse to checkout the source code? (Subclipse)</a></li>
       <li><a href="#tortoisesvn">Is there a Windows client to checkout the source code? (TortoiseSVN)</a></li>
       <li><a href="#eclipsetortoiseversions">Which versions of Subclipse and TortoiseSVN work together?</a></li>
@@ -1451,6 +1453,11 @@ java -Dstart=whatever -Dend=whatever org.openadaptor...
     </p>
     <p class="back"><a href="#contents">back to contents</a></p>
 
+    <a id="svncheckout"></a>
+    <h2>Can I access the source code using Subversion?</h2>
+    <p>Yes - check out source code with a Subversion client using the following command:</br>
+      <code>svn checkout https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk openadaptor3 --username guest</code> 
+    </p>
 
     <a id="eclipsesvn"></a>
     <h2>How do I use Eclipse to checkout the source code? (Subclipse)</h2>
@@ -1470,7 +1477,7 @@ java -Dstart=whatever -Dend=whatever org.openadaptor...
       <li>Click Window &gt; Open Perspective &gt; Other &gt; SVN Repository Exploring.
       <li>Click Ok.  Move mouse to the SVN Repository explorer that appears.
       <li>Right click New &gt; Repository Location.
-      <li>Enter the URL as <code>https://openadaptor3.openadaptor.org/svn/openadaptor3</code>.
+      <li>Enter the URL as <code>https://openadaptor3.openadaptor.org/svn/openadaptor3</code> (If necessary use username guest / no password)
       <li>Click Finish.
       <li>Go to the SVN Repository explorer and expand the project from the navigation menu.
       <li>You can see the project contents listed in folders.
