@@ -37,6 +37,7 @@ import java.util.List;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
@@ -50,10 +51,12 @@ import org.apache.tools.ant.types.Reference;
 public class SpringConfigValidateTask extends Task {
   //If ignoreStubExceptions is set, then this system property will be set to true.
   public static final String IGNORE_STUB_EXCEPTION_FLAG="openadaptor.exception.stub.ignore";
-  
+ 
+  /* higginse -not necessary - can specify exclusions directly within the FileSet in build.xml
   // Edit this to add new configs to the exclusion list
   // Should really be done differently, list in the build file, property file, tag in the config something else sensible.
   private static String[] EXCLUDED_FILES={"spring-local-txn-demo.xml"};
+  */
 
   private static String SPRING_FACTORY_CLASSNAME = "org.springframework.beans.factory.xml.XmlBeanFactory";
   private static String SPRING_BEAN_DEFINITION_CLASSNAME = "org.springframework.beans.factory.config.BeanDefinition";
@@ -65,6 +68,9 @@ public class SpringConfigValidateTask extends Task {
   private List filesets = new ArrayList();
   private Path classpath;
   private boolean ignoreStubExceptions=false;
+  private boolean verbose=false; //Flag for verbose output
+  
+  private static final Object[] EMPTY_OBJ_ARRAY = new Object[] {};
 
   public void addFileset(FileSet set) {
     filesets.add(set);
@@ -73,6 +79,14 @@ public class SpringConfigValidateTask extends Task {
   public void setClasspathRef(Reference r) {
     classpath = new Path(getProject());
     classpath.setRefid(r);
+  }
+
+  /**
+   * Flag to generate more verbose output than usual.
+   * @param verbose - if true output will be more verbose than usual.
+   */
+  public void setVerbose(boolean verbose) {
+    this.verbose=verbose;
   }
 
   /**
@@ -89,15 +103,25 @@ public class SpringConfigValidateTask extends Task {
   }
 
   public void execute() throws BuildException {
+    vLog("Verbose flag is set");
     int processedFiles=0;
-    ArrayList excludedFiles = new ArrayList();
+    Project project=getProject();
+    //ArrayList excludedFiles = new ArrayList();
     //
     // create new class loader and use reflection to get constructors and method
     // for instantiating a spring factory and forcing named beans to be loaded
     //
 
-    AntClassLoader loader = getProject().createClassLoader(classpath);
-    loader.setParent(getProject().getCoreLoader());
+    if (verbose) {
+      String[] cpEntries=classpath.list(); 
+      vLog("Classpath:");
+      for (int i=0;i<cpEntries.length;i++) {
+        vLog(cpEntries[i]);
+      }
+    }
+    AntClassLoader loader = project.createClassLoader(classpath);
+    loader.setParent(project.getCoreLoader());
+    //higginse - hmm Ant api javadoc warns against setting this to false!
     loader.setParentFirst(false);
     loader.addJavaLibraries();
     loader.setIsolated(true);
@@ -126,7 +150,8 @@ public class SpringConfigValidateTask extends Task {
            
       getBeanIsAbstractMethod = beanDefinitionClass.getMethod("isAbstract", new Class[] {});
 
-    } catch (Throwable t) {
+    } 
+    catch (Throwable t) {
       t.printStackTrace();
       throw new BuildException(t);
     }
@@ -135,42 +160,50 @@ public class SpringConfigValidateTask extends Task {
     System.setProperty(IGNORE_STUB_EXCEPTION_FLAG, Boolean.toString(ignoreStubExceptions));
 
     //
-    // iterate thru spring config files, forcing named beans to be loaded
+    // iterate through spring config files, forcing named beans to be loaded
     //
     ArrayList failedFiles = new ArrayList();
     for (Iterator iter = filesets.iterator(); iter.hasNext();) {
       FileSet fileSet = (FileSet) iter.next();
-      DirectoryScanner ds = fileSet.getDirectoryScanner(getProject());
+      DirectoryScanner ds = fileSet.getDirectoryScanner(project);
       String[] files = ds.getIncludedFiles();
-      for (int i = 0; i < files.length; i++) {       
+      for (int i = 0; i < files.length; i++) { 
+        File dir=fileSet.getDir(project);
+        String configUrl="file:" + dir.getAbsolutePath() + "/" + files[i];
+        /* higginse - not needed; exclusions can be specified in FileSet in build.xml
         if (isExcluded(files[i])) {
-          File dir = fileSet.getDir(getProject());
-          excludedFiles.add("file:" + dir.getAbsolutePath() + "/" + files[i]);
+          excludedFiles.add(configUrl);
+          vLog("Excluded: "+configUrl);
          } 
         else {
+        */
+          vLog("Processing: "+configUrl);
           // HACK - reset registration url property
-          System.setProperty("openadaptor.registration.url", "");
-          File dir = fileSet.getDir(getProject());       
-          String configUrl = "file:" + dir.getAbsolutePath() + "/" + files[i];
+          System.setProperty("openadaptor.registration.url", "");       
           processedFiles++;
           try {
             Object resource = resourceConstructor.newInstance(new Object[] {configUrl});
             Object factory = factoryConstructor.newInstance(new Object[] {resource});
   
-            String[] beanNames = (String[]) getBeanNamesMethod.invoke(factory, new Object[] {});
+            String[] beanNames = (String[]) getBeanNamesMethod.invoke(factory, EMPTY_OBJ_ARRAY);
+            vLog(beanNames.length+" beans to process");
             for (int j = 0; j < beanNames.length; j++) {
-              Object beanDefinition = getBeanDefinitionMethod.invoke(factory, new Object[] {beanNames[j]});
-              Boolean isAbstract = (Boolean)getBeanIsAbstractMethod.invoke(beanDefinition, new Object[] {});
+              String beanName=beanNames[j];
+              Object[] beanNameAsArray=new Object[] {beanName};
+               Object beanDefinition = getBeanDefinitionMethod.invoke(factory, beanNameAsArray);
+              Boolean isAbstract = (Boolean)getBeanIsAbstractMethod.invoke(beanDefinition, EMPTY_OBJ_ARRAY);
               // We instantiate only if the bean name is not abstract.
               if (!isAbstract.booleanValue()) {
-                getBeanMethod.invoke(factory, new Object[] {beanNames[j]});
+                vLog("Instantiating (non-abstract): "+beanName);
+               getBeanMethod.invoke(factory, beanNameAsArray);
               }
             }       
-          } catch (Throwable e) {
+          } 
+          catch (Throwable e) {
             e.printStackTrace();
             failedFiles.add(configUrl);
           }
-        }
+        /* } */
       }
     }
 
@@ -184,15 +217,16 @@ public class SpringConfigValidateTask extends Task {
     if (!failedFiles.isEmpty()) {
       for (Iterator iter = failedFiles.iterator(); iter.hasNext();) {
         String filename = (String) iter.next();
-        System.err.println("Invalid Spring file: "+filename);
+        log("Invalid Spring file: "+filename);
       }
       String msg="Detected "+ failedFiles.size()+" invalid Spring configurations(s) from a total of "+processedFiles+".";
-      System.err.println(msg);
+      log(msg);
       throw new BuildException(msg);
     }
     else {
-      System.out.println("Processed "+processedFiles+" Spring configurations");
+      log("Processed "+processedFiles+" Spring configuration(s)");
     }
+    /* higginse - no longer needed as exclusions can be directly specified in the FileSet in build.xml
     if(!excludedFiles.isEmpty()){
       System.out.println("Excluded "+excludedFiles.size()+" Spring configuration(s) from check.");
       for (Iterator iter = excludedFiles.iterator(); iter.hasNext();) {
@@ -200,8 +234,12 @@ public class SpringConfigValidateTask extends Task {
         System.out.println("Excluded: "+filename);
       }     
     }
+    */
   }
   
+  /* 
+   * higginse - no longer needed as exclusions can be directly specified in the FileSet in build.xml
+   * 
   private boolean isExcluded(String fileName) {
     //System.out.println("Testing ["+fileName+"] for exclusion.");
     boolean excluded = false;
@@ -212,6 +250,12 @@ public class SpringConfigValidateTask extends Task {
       }      
     }
     return excluded; 
+  }
+  */
+  private void vLog(String msg) {
+    if (verbose) {
+      log(msg);
+    }
   }
 
 
