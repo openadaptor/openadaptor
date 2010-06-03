@@ -337,6 +337,7 @@
 				<exclude name="**/mq-*.xml" />
 				<exclude name="**/file/enrich-*.xml" />
 				<exclude name="**/db/jee/jboss/oa*.xml" />
+				<exclude name="transaction/spring-local-txn-demo.xml"/>
 			</fileset>
 		</spring.validate>
 	</target>
