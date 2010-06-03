@@ -51,6 +51,7 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.NullRecordException;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
+import org.openadaptor.util.ClasspathUtils;
 import org.openadaptor.util.ObjectCloner;
 /**
  * Processor which executes scripts in the context of a data record.
@@ -472,7 +473,21 @@ public class ScriptProcessor extends Component implements IDataProcessor, IMetad
     Iterator it=factories.iterator();
     while (it.hasNext() && (engine==null)) { //More factories to try, and no match yet.
       ScriptEngineFactory factory=(ScriptEngineFactory)it.next();
-      try {
+      if (log.isDebugEnabled()) { //Debug code to identify origins of factories etc.
+        Object origin=ClasspathUtils.getClassOrigin(mgr);
+        if (origin ==null) { 
+          origin="<JRE>";
+        }
+        log.debug("ScriptEngineManager loaded from: "+origin);
+        origin=ClasspathUtils.getClassOrigin(factory);
+        if (origin ==null) { 
+          origin="<JRE>";
+        }
+        String name=factory.getEngineName();
+        String version=factory.getEngineVersion();
+      log.debug("ScriptEngineFactory "+name+" ("+version+"): "+origin);
+      }
+     try {
         List aliases=getFactoryNames(factory); 
         if (aliases!=null) { //If null couldn't get any for factory.
           Iterator aliasIterator=aliases.iterator();
