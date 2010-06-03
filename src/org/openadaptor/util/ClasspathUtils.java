@@ -23,7 +23,7 @@
  contributor except as expressly stated herein. No patent license is granted separate
  from the Software, for code that you delete from the Software, or for combinations
  of the Software with other software or hardware.
-*/
+ */
 
 package org.openadaptor.util;
 
@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -130,6 +133,38 @@ public class ClasspathUtils {
       }
     }
     return sb.toString();
+  }
+
+  /**
+   * Utility to find where a class was originally loaded from.
+   * This may be handy to debug issues where it seems an incorrect
+   * class is being loaded (e.g. where the same class may exist in 
+   * multiple jars).
+   * It returns null if the class was loaded from JRE (I think!)
+   * @param cls The class to lookup
+   * @return URL where class was loaded from, or null if JRE
+   * @since 3.4.5
+   */
+  public static URL getClassOrigin(Class cls) {
+    URL result=null;
+    ProtectionDomain domain=cls.getProtectionDomain();
+    if (cls!=null) {
+      CodeSource source=domain.getCodeSource();
+      if (source!=null) {
+        result= source.getLocation();
+      }
+    }
+    return result;
+  }
+  /**
+   * Find where an object's class was loaded.
+   * This is just a thin wrapper around {@link #getClassOrigin(Class)}.
+   * @param o Object to be looked up
+   * @return URL of the location where the class of the object was loaded from.
+   * @since 3.4.5
+   */
+  public static URL getClassOrigin(Object o) {
+    return getClassOrigin(o.getClass());
   }
 
   private interface StreamLoader {
