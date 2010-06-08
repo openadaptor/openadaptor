@@ -87,6 +87,9 @@ Examples
    
  * New example example/spring/processors/enrichment/db/counterparty-id-mapping.xml
    to illustrate using a database lookup table to enrich a message.  
+   
+ * Added an example to demonstrate SMTPWriteConnector
+   (example/spring/connectors/mail/smtp-writer/xml).
 
 Miscellaneous
 =============
