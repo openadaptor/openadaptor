@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id$
+	$HeadURL$
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor illustrates the usage of an SMTPWriteConnector
+    
+    * It reads delimited records from file
+    * It converts delimited input into a map
+    * converts map to xml
+    * Emails each record to configures target.
+    
+  It is designed to illustrate the basic structure of a file reader/writer adaptor
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config smtp-writer.xml
+    
+  The runtime classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  Note that this example is configures with placeholders for: 
+  
+  * smtp mail host (smtp_host)
+  * sender - smtp_from
+  * receiver - smtp_to
+  
+  These may be configured by specifying on the command line, or by reference to a properties file
+  which contains the placeholder values e.g.
+  
+  java -Dsmtp_host=stmp.mydomain.com -Dsmtp_from=me@myhost.com -Dsmtp_to=you@myhost.com org.openadaptor...
+  or (assuming smtp.properties contains configured values)
+  java org.openadaptor.spring.SpringAdaptor -config smtp-writer.xml -props smtp.properties
+    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					Configure simple pipeline Reader ->
+					MapConverter -> XmlConvertor -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="MapConverter" />
+						<ref bean="XmlConverter" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+		<property name="dataReader">
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<description>
+					This (regular expression) will exclude comments
+					(lines beginning with #)
+				</description>
+				<property name="excludeRegex" value="^#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+		  Strings are delimited by commas; each value in the string will be associated with the
+			corresponding 'name' in the generated map
+		</description>
+		<property name="delimiter" value="," />
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+		<description>Convert the map into XML</description>
+		<property name="rootElementTag" value="record" />
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.smtp.SMTPWriteConnector">
+		<description>
+		  This writer writes data to email as per the configuration of the smtp connection
+		  smtp_host  - something like smtp.mailserver.com
+		  smtp_from  - something like jane.doe@hermaildomain.com
+		  smtp_to    - something like john.doe@mymaildomain.com
+		  See the adaptor description for options on how to configure these placeholder values
+		</description>
+		<property name="smtpConnection">
+		<bean class="org.openadaptor.auxil.connector.smtp.SMTPConnection">
+		<property name="mailHost" value="${smtp_host}"/>
+		<property name="from" value="${smtp_from}"/>
+		<property name="to" value="${smtp_to}"/>
+		<property name="subject" value="OA record"/>
+		</bean>
+		</property>
+	</bean>
+
+</beans>
