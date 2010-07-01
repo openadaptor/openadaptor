@@ -7,13 +7,16 @@ import junit.framework.TestCase;
 /**
  * System tests for {@link CronnablePollingReadConnector}.
  * 
- * @author Fred Perry, Kris Lachor
+ * @author OA3 Core Team
  */
 public class CronnablePollingReadConnectorTestCase extends TestCase {
-
+  //Default cron expression to use for the tests...
+	//public static final String DEFAULT_CRON_EXPRESSION="0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?";
+	public static final String DEFAULT_CRON_EXPRESSION="0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58 * * * * ?";
   TestReadConnector reader = new TestReadConnector("reader");
   
   CronnablePollingReadConnector poller = new CronnablePollingReadConnector("poller");
+  
   
   protected void setUp() throws Exception {
     super.setUp();
@@ -29,7 +32,7 @@ public class CronnablePollingReadConnectorTestCase extends TestCase {
 //  }
   
   public void testCron() {
-    poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
+    poller.setCronExpression(DEFAULT_CRON_EXPRESSION);
     poller.setPollLimit(2);
     poller.setForceInitialPoll(false);
 //    Date start = new Date();
@@ -41,7 +44,7 @@ public class CronnablePollingReadConnectorTestCase extends TestCase {
   }
 
   public void testCronForceInitialPoll() {
-    poller.setCronExpression("0,5,10,15,20,25,30,35,40,45,50,55 * * * * ?");
+    poller.setCronExpression(DEFAULT_CRON_EXPRESSION);
     poller.setPollLimit(2);
     poller.setForceInitialPoll(true);
     assertTrue(runPoller(poller, reader.getDataString()) == 2);
@@ -56,7 +59,8 @@ public class CronnablePollingReadConnectorTestCase extends TestCase {
         assertTrue(data.length == 1);
         assertTrue(data[0].equals(dataString));
         count++;
-      } else {
+      } 
+      else {
       }
     }
     return count;

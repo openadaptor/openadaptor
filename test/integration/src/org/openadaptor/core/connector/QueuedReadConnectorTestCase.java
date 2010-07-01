@@ -15,6 +15,7 @@ import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
 
 public class QueuedReadConnectorTestCase extends TestCase {
+	public static final long DEFAULT_PROCESS_DELAY_MS=300;
 
   public void testQueuing() {
     Object[] testData = new Object[] {"foo", "bar", "foobar"};
@@ -57,7 +58,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     readNode.setQueueLimit(1);
     
     // create processor that introduces delay
-    MySlowProcessor processor = new MySlowProcessor();
+    MySlowProcessor processor = new MySlowProcessor(DEFAULT_PROCESS_DELAY_MS);
     
     // create writeNode
     TestWriteConnector writeNode = new TestWriteConnector("out");
@@ -94,7 +95,7 @@ public class QueuedReadConnectorTestCase extends TestCase {
     readNode.setTransacted(false);
     
     // create processor that introduces delay
-    MySlowProcessor processor = new MySlowProcessor();
+    MySlowProcessor processor = new MySlowProcessor(DEFAULT_PROCESS_DELAY_MS);
     
     // create router
     RoutingMap routingMap = new RoutingMap();
@@ -222,10 +223,15 @@ public class QueuedReadConnectorTestCase extends TestCase {
   }
   
   class MySlowProcessor implements IDataProcessor {
+  	long processDelayMS=1000;
+  	
+  	public MySlowProcessor(long processDelayMS) {
+  		this.processDelayMS=processDelayMS;
+  	}
 
     public Object[] process(Object data) {
       try {
-        Thread.sleep(1000);
+        Thread.sleep(processDelayMS);
       } catch (InterruptedException e) {
       }
       return new Object[] {data};
