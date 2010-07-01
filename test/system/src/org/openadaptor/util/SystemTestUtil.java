@@ -106,10 +106,10 @@ public class SystemTestUtil {
 
   /**
    * Finds references to write connectors in a Spring adaptor that has been run.
-   * If passed a reference to SpringApplication that has not been run, the result
+   * If passed a reference to SpringAdaptor that has not been run, the result
    * will be an empty set.
    * 
-   * @param springAdaptor an executed SpringApplication
+   * @param springAdaptor an executed SpringAdaptor
    * @return a set with write connectors
    */
   public static List getWriteConnectors(SpringAdaptor springAdaptor){

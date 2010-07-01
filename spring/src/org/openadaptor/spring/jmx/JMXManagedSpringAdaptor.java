@@ -33,7 +33,7 @@ import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.spring.SpringAdaptor;
 
 /**
- * A SpringApplication exposable as a JMX mbean compliant with JBoss service contract.
+ * A SpringAdaptor exposable as a JMX mbean compliant with JBoss service contract.
  * This is meant to be used when OA is deployed to a JEE application server (tested
  * on JBoss) and allow to start the adaptor via a JMX console.
  * 

@@ -38,7 +38,7 @@ import org.openadaptor.util.ResourceUtil;
 
 import java.util.ArrayList;
 
-public class SpringApplicationTestCase extends TestCase {
+public class SpringAdaptorTestCase extends TestCase {
 
   public static String result;
   protected static final String RESOURCE_LOCATION = "test/integration/src/";

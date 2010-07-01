@@ -1,4 +1,43 @@
 =================================================
+openadaptor3 production 3.4.? Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: ??th ??? ????
+Author: openadaptor Core Team
+
+openadaptor 3.4.?
+=======
+
+Connectors
+==========
+   
+Processors
+==========
+
+Examples
+========
+ 
+ * All examples should now reference SpringAdaptor (which encompasses the
+   behaviour of the now defunct SpringApplication also)
+   
+
+Miscellaneous
+=============
+
+ * SpringApplication has been removed - SpringAdaptor now can be used anywhere it may
+   have been used - having both mechanisms was unnecessary and proved confusing. (Note 
+   that many files have required minor refactoring to make this change transparent).
+   Users must now use SpringAdaptor *instead* of SpringApplication which has been removed.
+
+Bug Fixes
+=========
+
+3rd Party
+========= 
+            
+=================================================
 openadaptor3 production 3.4.5 Release Notes
 
 See licence.txt for Licence information.

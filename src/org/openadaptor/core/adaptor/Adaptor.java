@@ -76,10 +76,10 @@ import java.util.Map;
  * 
  * The majority of all the openadaptor examples are within the context of an
  * Adaptor. Either as code which create and runs an Adaptor or as a spring
- * configuration which via the SpringApplication class is run as a stand alone
+ * configuration which via the SpringAdaptor class is run as a stand alone
  * process.
  * 
- * @author perryj
+ * @author OA3 Core Team
  * 
  */
 public class Adaptor extends Application implements IMessageProcessor, ILifecycleComponentManager, Runnable,
