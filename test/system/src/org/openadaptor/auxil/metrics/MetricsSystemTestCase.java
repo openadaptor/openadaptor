@@ -35,7 +35,7 @@ import org.openadaptor.core.node.ReadNode;
 import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.recordable.IComponentMetrics;
 import org.openadaptor.core.recordable.IRecordableComponent;
-import org.openadaptor.spring.SpringAdaptor;
+import org.openadaptor.spring.SpringApplication;
 import org.openadaptor.util.SystemTestUtil;
 
 import junit.framework.TestCase;
@@ -60,7 +60,7 @@ public class MetricsSystemTestCase extends TestCase {
    * Metrics are disabled.
    */
   public void testDisabled() throws Exception{
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_1);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_1);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertTrue(adaptor.getExitCode()==0);
     
@@ -89,7 +89,7 @@ public class MetricsSystemTestCase extends TestCase {
    * Metrics enabled.
    */
   public void testEnabled() throws Exception{
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertTrue(adaptor.getExitCode()==0);
     
@@ -148,7 +148,7 @@ public class MetricsSystemTestCase extends TestCase {
    * Adaptor with enabled metrics. Check components' uptime.
    */
   public void testUptime() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
     Adaptor adaptor = springAdaptor.getAdaptor();
     
     IComponentMetrics adaptorMetrics = adaptor.getMetrics();
@@ -169,7 +169,7 @@ public class MetricsSystemTestCase extends TestCase {
    * times are the same.
    */
   public void testProcessTime() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_2);
     Adaptor adaptor = springAdaptor.getAdaptor();
     
     ComponentMetrics adaptorMetrics = (ComponentMetrics) adaptor.getMetrics();
@@ -182,7 +182,7 @@ public class MetricsSystemTestCase extends TestCase {
    * Runs adaptor with enabled metrics. One message sent. Processor throws excepion.
    */
   public void testRecordingExceptions() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_3);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_3);
     Adaptor adaptor = springAdaptor.getAdaptor();
     
     IComponentMetrics adaptorMetrics = (IComponentMetrics) adaptor.getMetrics();
@@ -214,7 +214,7 @@ public class MetricsSystemTestCase extends TestCase {
    * Tests AggregateMetrics (metrics used by Adaptor/Router). Two parallel write nodes.
    */
   public void testAggregateMetricsFanOut() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_4);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_4);
     IComponentMetrics metrics = (IComponentMetrics) springAdaptor.getAdaptor().getMetrics();
     assertTrue(Arrays.equals(metrics.getInputMsgCounts(), new long[]{1}));
     assertTrue(Arrays.equals(metrics.getInputMsgTypes(), new String[]{"java.lang.String"}));
@@ -229,7 +229,7 @@ public class MetricsSystemTestCase extends TestCase {
    * processes it and the reader reports negative between message time interval (instead of unknown).
    */
   public void testTimeInterval() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_5);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, ADAPTOR_5);
     assertTrue(springAdaptor.getAdaptor().getExitCode()==0);
     IComponentMetrics metrics = (IComponentMetrics) springAdaptor.getAdaptor().getMetrics();
     assertEquals(metrics.getIntervalTimeAvg(), -1);

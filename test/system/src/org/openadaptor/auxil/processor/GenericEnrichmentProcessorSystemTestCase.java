@@ -31,7 +31,7 @@ import java.util.List;
 import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnectionTests;
 import org.openadaptor.auxil.orderedmap.IOrderedMap;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.spring.SpringAdaptor;
+import org.openadaptor.spring.SpringApplication;
 import org.openadaptor.util.SystemTestUtil;
 import org.openadaptor.util.TestComponent;
 
@@ -67,7 +67,7 @@ public class GenericEnrichmentProcessorSystemTestCase extends AbstractJDBCConnec
    * of which comes from the enrichment processor.
    */
   public void testPrepareParameters() throws Exception {
-    SpringAdaptor springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENRICHMENT_PROCESSOR);
+    SpringApplication springAdaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, DB_ENRICHMENT_PROCESSOR);
     Adaptor adaptor = springAdaptor.getAdaptor();
     assertEquals(adaptor.getExitCode(),0);
     List writeConnectors = SystemTestUtil.getWriteConnectors(springAdaptor);

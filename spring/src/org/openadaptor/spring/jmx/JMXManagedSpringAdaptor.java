@@ -30,10 +30,10 @@ package org.openadaptor.spring.jmx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.spring.SpringAdaptor;
+import org.openadaptor.spring.SpringApplication;
 
 /**
- * A SpringAdaptor exposable as a JMX mbean compliant with JBoss service contract.
+ * A SpringApplication exposable as a JMX mbean compliant with JBoss service contract.
  * This is meant to be used when OA is deployed to a JEE application server (tested
  * on JBoss) and allow to start the adaptor via a JMX console.
  * 
@@ -45,15 +45,15 @@ public class JMXManagedSpringAdaptor implements JMXManagedSpringAdaptorMBean {
   
   private boolean isStarted = false;
   
-  private SpringAdaptor springAdaptor = null;
+  private SpringApplication springAdaptor = null;
  
   /**
    * @param configFileName String containing name of Spring config file which defines the adaptor
    */
   public void runSpringAdaptor(String configFileName){
-    String [] args = new String[] {SpringAdaptor.CONFIG, configFileName};
+    String [] args = new String[] {SpringApplication.CONFIG, configFileName};
     log.info("starting adaptor (JMX)");
-    springAdaptor = new SpringAdaptor();
+    springAdaptor = new SpringApplication();
     //springAdaptor.execute(args);
     springAdaptor.main(args);
   }

@@ -41,7 +41,7 @@ public class AdaptorTestCase extends TestCase {
   protected static final String RESOURCE_LOCATION = "test/integration/src/";
 
   private void runAdaptor(String configUrl) {
-    SpringAdaptor app = new SpringAdaptor();
+    SpringApplication app = new SpringApplication();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, configUrl));
     app.run();
   }

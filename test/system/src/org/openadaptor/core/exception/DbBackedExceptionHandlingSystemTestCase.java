@@ -41,7 +41,7 @@ import org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector;
 import org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.router.Router;
-import org.openadaptor.spring.SpringAdaptor;
+import org.openadaptor.spring.SpringApplication;
 import org.openadaptor.util.LocalHSQLJdbcConnection;
 import org.openadaptor.util.SystemTestUtil;
 import org.openadaptor.util.TestComponent;
@@ -142,7 +142,7 @@ public class DbBackedExceptionHandlingSystemTestCase extends AbstractJDBCConnect
    * Verifies the hostpital has two exceptions, verifies corect values of its some data.
    */
   public void testHospitalWriterGetsTwoExceptions() throws Exception{
-    SpringAdaptor adaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, HOSPITAL_WRITER_2);
+    SpringApplication adaptor = SystemTestUtil.runAdaptor(this, RESOURCE_LOCATION, HOSPITAL_WRITER_2);
     SystemTestUtil.adaptorRun(adaptor);
     PreparedStatement preparedStmt = jdbcConnection.getConnection().prepareStatement(SELECT_ALL_ERRORS_SQL);
     ResultSet rs = preparedStmt.executeQuery();
