@@ -39,6 +39,7 @@ import org.openadaptor.core.router.Router;
  * beans where none are explicitly defined in the Spring configuration, 
  * allowing adaptors to be defined implicitly by simply declaring a
  * number of beans that implement {@link IComponent} in the desired order
- * of execution.  
+ * of execution.
+ * @deprectated - all functionality has been rolled into baseclass instead.  
  */
-public class SpringAdaptor extends SpringApplication {}
+public class ObsoleteSpringAdaptor extends SpringApplication {}
