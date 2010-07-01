@@ -62,10 +62,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Adaptor entry point for Spring Based adaptors.
+ * Adaptor entry point for adaptors based on Spring configurations.
  * 
+ *  This class may be used to launch adaptors, by providing runtime
+ *  arguments with adaptor configurations.
+ *  
+ *  e.g.
+ *  <code> 
+ *    java -cp <oa-classpath> org.openadaptor.spring.SpringAdaptor -config myadaptor.xml
+ *  </code>
+ * Note that for releases *after* 3.4.5 this class encompasses all of the
+ * behaviour previously found in SpringApplication which no longer exists.
+ * This includes behaviour whereby it will generate {@link Adaptor} and 
+ * {@link Router} components if the are not explicitly configures in the supplied spring
+ * configurations. In effect it allows an (ordered) sequence of configured 
+ * {@link IComponent}s to be chained together to build an adaptor. This mechanism may well
+ * be reviewed in future releases of oa however. 
+ * See {@link #registerAdaptor(ListableBeanFactory, String)} and 
+ * {@link #registerRouter(ListableBeanFactory)} for more detail on how the mechanism currently
+ * functions.
+ *  
  * @author OA3 Core Team
- *
  */
 public class SpringAdaptor {
 
@@ -81,7 +98,7 @@ public class SpringAdaptor {
 	public static final String DEFAULT_ROUTER_ID="Router";
 	public static final String DEFAULT_EXCEPTION_PROCESSOR_ID="ExceptionProcessor";
 
-	//Config that SpringApplication always looks for.
+	//Config that SpringAdaptor always looks for.
 	//Not sure we need it any more, but it's kept for backwards compatibility.
 	protected static final String OPENADAPTOR_SPRING_CONFIG=".openadaptor-spring.xml";
 
@@ -99,24 +116,6 @@ public class SpringAdaptor {
 	private boolean suppressAutomaticPropsConfig = false; // default is false
 
 	private Adaptor adaptor;
-
-	public static void main(String[] args) {
-		int exitCode=0;
-		try {
-			SpringAdaptor app = new SpringAdaptor();
-			app.parseArgs(args);
-			exitCode=app.run();   
-		} 
-		catch (Exception e) {
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			usage(System.err);
-			exitCode=1;
-		}
-		log.debug("Exiting with code "+exitCode);
-		System.exit(exitCode);
-	}  
-
 
 	protected String getBeanId() {
 		return beanId;
@@ -138,13 +137,21 @@ public class SpringAdaptor {
 	public void addConfigUrl(String configUrl) {
 		this.configUrls.add(configUrl);
 	}
-
-	protected int getJmxPort() {
-		return jmxPort;
+	
+	/** 
+	 * @return the instance of Adaptor related to this application, for starting/stopping/dumping 
+	 *         state via JMX console 
+	 */
+	public Adaptor getAdaptor() {
+		return adaptor;
 	}
 
 	public void setJmxPort(final int jmxPort) {
 		this.jmxPort = jmxPort;
+	}
+	
+	protected int getJmxPort() {
+		return jmxPort;
 	}
 
 	protected ArrayList getPropsUrls() {
@@ -162,6 +169,7 @@ public class SpringAdaptor {
 	protected void setSuppressAutomaticPropsConfig(boolean suppressAutomaticPropsConfig) {
 		this.suppressAutomaticPropsConfig = suppressAutomaticPropsConfig;
 	}
+	
 
 	protected void parseArgs(String[] args) {
 		// First check to see if automatic property configuration is suppressed
@@ -205,22 +213,6 @@ public class SpringAdaptor {
 		return buffer.toString();
 	}
 
-	public int run() {
-		int exitCode=0;
-		Runnable bean = getRunnableBean(createBeanFactory());
-		if (bean instanceof Application) {
-			((Application)bean).setConfigData(getConfigUrlsString());
-		}
-		if(bean instanceof Adaptor && adaptor==null){
-			adaptor = (Adaptor) bean;
-		}
-		Thread.currentThread().setName(beanId);
-		bean.run();
-		if (adaptor!=null) {
-			exitCode=adaptor.getExitCode();
-		}
-		return exitCode;
-	}
 
 	/**
 	 * Returns the {@link Adaptor} bean from the Spring context.
@@ -487,24 +479,6 @@ public class SpringAdaptor {
 		}
 	}
 
-	/** 
-	 * @return the instance of Adaptor related to this application, for starting/stopping/dumping 
-	 *         state via JMX console 
-	 */
-	public Adaptor getAdaptor() {
-		return adaptor;
-	}
-
-	//Methods promoted from SpringAdaptor (part of the merge process for these classes).
-
-	/**
-	 * Register an {@link Adaptor} within the Spring context, using a default id.
-	 * This is a convenience wrapper around registerAdaptor(factory,id);
-	 * @deprecated - the id should really be supplied.
-	 */
-	protected String registerAdaptor(ListableBeanFactory factory) {
-		return registerAdaptor(factory,DEFAULT_ADAPTOR_ID);
-	}
 
 	/**
 	 * Registers an instance of an {@link Adaptor} with the Spring context.
@@ -593,4 +567,50 @@ public class SpringAdaptor {
 
 		return (Router) factory.getBean(DEFAULT_ROUTER_ID);
 	}
+	
+	/**
+	 * Run the configured SpringAdaptor.
+	 * @return exitCode - zero if execution ran normally, non-zero otherwise
+	 */
+	public int run() {
+		int exitCode=0;
+		Runnable bean = getRunnableBean(createBeanFactory());
+		if (bean instanceof Application) {
+			((Application)bean).setConfigData(getConfigUrlsString());
+		}
+		if(bean instanceof Adaptor && adaptor==null){
+			adaptor = (Adaptor) bean;
+		}
+		Thread.currentThread().setName(beanId);
+		bean.run();
+		if (adaptor!=null) {
+			exitCode=adaptor.getExitCode();
+		}
+		return exitCode;
+	}
+
+	/**
+	 * Configure an adaptor using supplied configuration arguments and run it.
+	 * 
+	 * It will exit with an exit code of zero if the adaptor runs successfully,
+	 * or non-zero otherwise.
+	 * @param args configuration arguments to use
+	 */
+	public static void main(String[] args) {
+		int exitCode=0;
+		try {
+			SpringAdaptor app = new SpringAdaptor();
+			app.parseArgs(args);
+			exitCode=app.run();   
+		} 
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			usage(System.err);
+			exitCode=1;
+		}
+		log.debug("Exiting with code "+exitCode);
+		System.exit(exitCode);
+	}  
+
 }
