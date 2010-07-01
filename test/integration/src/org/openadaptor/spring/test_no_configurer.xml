@@ -11,7 +11,7 @@
       <constructor-arg value="run1"/>
 	</bean>
   
-	<bean id="Run2" class="org.openadaptor.spring.SpringAdaptornnTestCase$Test">
+	<bean id="Run2" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
       <constructor-arg value="run2"/>
 	</bean>
   
