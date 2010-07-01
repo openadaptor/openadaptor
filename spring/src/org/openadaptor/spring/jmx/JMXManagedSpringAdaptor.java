@@ -54,7 +54,8 @@ public class JMXManagedSpringAdaptor implements JMXManagedSpringAdaptorMBean {
     String [] args = new String[] {SpringAdaptor.CONFIG, configFileName};
     log.info("starting adaptor (JMX)");
     springAdaptor = new SpringAdaptor();
-    springAdaptor.execute(args);
+    //springAdaptor.execute(args);
+    springAdaptor.main(args);
   }
  
   /**
