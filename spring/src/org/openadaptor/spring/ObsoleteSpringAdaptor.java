@@ -42,4 +42,4 @@ import org.openadaptor.core.router.Router;
  * of execution.
  * @deprectated - all functionality has been rolled into baseclass instead.  
  */
-public class ObsoleteSpringAdaptor extends SpringApplication {}
+public class ObsoleteSpringAdaptor extends SpringAdaptor {}

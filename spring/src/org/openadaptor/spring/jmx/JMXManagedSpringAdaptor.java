@@ -30,7 +30,7 @@ package org.openadaptor.spring.jmx;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.adaptor.Adaptor;
-import org.openadaptor.spring.SpringApplication;
+import org.openadaptor.spring.SpringAdaptor;
 
 /**
  * A SpringApplication exposable as a JMX mbean compliant with JBoss service contract.
@@ -45,15 +45,15 @@ public class JMXManagedSpringAdaptor implements JMXManagedSpringAdaptorMBean {
   
   private boolean isStarted = false;
   
-  private SpringApplication springAdaptor = null;
+  private SpringAdaptor springAdaptor = null;
  
   /**
    * @param configFileName String containing name of Spring config file which defines the adaptor
    */
   public void runSpringAdaptor(String configFileName){
-    String [] args = new String[] {SpringApplication.CONFIG, configFileName};
+    String [] args = new String[] {SpringAdaptor.CONFIG, configFileName};
     log.info("starting adaptor (JMX)");
-    springAdaptor = new SpringApplication();
+    springAdaptor = new SpringAdaptor();
     //springAdaptor.execute(args);
     springAdaptor.main(args);
   }

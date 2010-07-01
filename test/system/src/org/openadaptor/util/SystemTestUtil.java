@@ -38,7 +38,7 @@ import org.openadaptor.core.IWriteConnector;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.node.WriteNode;
 import org.openadaptor.core.router.Router;
-import org.openadaptor.spring.SpringApplication;
+import org.openadaptor.spring.SpringAdaptor;
 import org.springframework.core.io.UrlResource;
 
 /**
@@ -59,9 +59,9 @@ public class SystemTestUtil {
    * @return an instance of adaptor that was executed
    * @throws Exception
    */
-  public static SpringApplication runAdaptor(Object caller, String resourceLocation, 
+  public static SpringAdaptor runAdaptor(Object caller, String resourceLocation, 
       String configFile) throws Exception{
-    SpringApplication adaptor = new SpringApplication();
+    SpringAdaptor adaptor = new SpringAdaptor();
     UrlResource urlResource = new UrlResource("file:" + ResourceUtil.getResourcePath(
         caller, resourceLocation, configFile));
     String configPath = urlResource.getFile().getAbsolutePath();
@@ -74,10 +74,10 @@ public class SystemTestUtil {
    * Run an adaptor, and wait for ADAPTOR_WAIT_TIMEOUT for it to complete.
    * @param adaptor
    */
-  public static void adaptorRun(SpringApplication adaptor) {
+  public static void adaptorRun(SpringAdaptor adaptor) {
     springAdaptorRun(adaptor,ADAPTOR_WAIT_TIMEOUT);
   }
-  private static void springAdaptorRun(SpringApplication adaptor,long waitTimeMS) {
+  private static void springAdaptorRun(SpringAdaptor adaptor,long waitTimeMS) {
     adaptor.run();
     try {
       log.debug("Sleeping for "+waitTimeMS+" milliseconds to allow adaptor to finish");
@@ -112,7 +112,7 @@ public class SystemTestUtil {
    * @param springAdaptor an executed SpringApplication
    * @return a set with write connectors
    */
-  public static List getWriteConnectors(SpringApplication springAdaptor){
+  public static List getWriteConnectors(SpringAdaptor springAdaptor){
 	List writeConnectors = new ArrayList();
     Adaptor adaptor = springAdaptor.getAdaptor();
     IMessageProcessor messageProcessor = adaptor.getMessageProcessor();

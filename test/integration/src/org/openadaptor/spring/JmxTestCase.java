@@ -41,7 +41,7 @@ public class JmxTestCase extends TestCase {
   protected static final String RESOURCE_LOCATION = "test/integration/src/";
 
   public void test() {
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl("file:" + ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "jmx.xml"));
     app.setBeanId("Test");
     app.run();

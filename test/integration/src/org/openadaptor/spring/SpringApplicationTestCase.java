@@ -53,7 +53,7 @@ public class SpringApplicationTestCase extends TestCase {
   }
 
   public void testNoProps() {
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
     app.setBeanId("Test");
     app.run();
@@ -62,7 +62,7 @@ public class SpringApplicationTestCase extends TestCase {
 
   public void testSystemProps() {
     System.setProperty("message", "foobar");
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
     app.setBeanId("Test");
     app.run();
@@ -74,7 +74,7 @@ public class SpringApplicationTestCase extends TestCase {
    * as no system properties have been set.
    */
   public void testNoSystemPropsAuto() {
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
     try {
@@ -91,7 +91,7 @@ public class SpringApplicationTestCase extends TestCase {
    */
   public void testSystemPropsAuto() {
     System.setProperty("noconfigurer_message", "foobar");
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
     app.run();
@@ -104,7 +104,7 @@ public class SpringApplicationTestCase extends TestCase {
    */
   public void testSystemPropsAutoSuppressed() {
     System.setProperty("noconfigurer_message", "foobar");
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
     app.setSuppressAutomaticPropsConfig(true);
@@ -119,7 +119,7 @@ public class SpringApplicationTestCase extends TestCase {
    * java properties file and test that the properties are resolved correctly.
    */
   public void testPropsURLAuto() {
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test_no_configurer.xml"));
     app.setBeanId("Test");
     ArrayList props = new ArrayList();
@@ -130,7 +130,7 @@ public class SpringApplicationTestCase extends TestCase {
   }
 
   public void testRunner() {
-    SpringApplication app = new SpringApplication();
+    SpringAdaptor app = new SpringAdaptor();
     app.addConfigUrl(ResourceUtil.getResourcePath(this, RESOURCE_LOCATION, "test.xml"));
     app.setBeanId("Runnables");
     app.run();

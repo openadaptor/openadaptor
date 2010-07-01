@@ -67,9 +67,9 @@ import java.util.Map;
  * @author OA3 Core Team
  *
  */
-public class SpringApplication {
+public class SpringAdaptor {
 
-	private static Log log = LogFactory.getLog(SpringApplication.class);
+	private static Log log = LogFactory.getLog(SpringAdaptor.class);
 
 	protected static final String NOPROPS = "-noprops";
 	public static final String CONFIG = "-config";
@@ -103,7 +103,7 @@ public class SpringApplication {
 	public static void main(String[] args) {
 		int exitCode=0;
 		try {
-			SpringApplication app = new SpringApplication();
+			SpringAdaptor app = new SpringAdaptor();
 			app.parseArgs(args);
 			exitCode=app.run();   
 		} 
@@ -225,7 +225,7 @@ public class SpringApplication {
 	/**
 	 * Returns the {@link Adaptor} bean from the Spring context.
 	 * 
-	 * @see org.openadaptor.spring.SpringApplication#getRunnableBean(org.springframework.beans.factory.ListableBeanFactory)
+	 * @see org.openadaptor.spring.SpringAdaptor#getRunnableBean(org.springframework.beans.factory.ListableBeanFactory)
 	 */
 
 	protected Runnable getRunnableBean(ListableBeanFactory factory) {
@@ -248,14 +248,14 @@ public class SpringApplication {
 
 
 	protected static void usage(PrintStream ps) {
-		ps.println("usage: java " + SpringApplication.class.getName()
+		ps.println("usage: java " + SpringAdaptor.class.getName()
 				+ "\n  "+CONFIG+" <url> [ "+CONFIG+" <url> ]"
 				+ "\n  "+BEAN+" <id> "
 				+ "\n  [ "+PROPS+" <url> [ "+PROPS+" <url> ] ]"
 				+ "\n  [ "+NOPROPS+" ]"
 				+ "\n  [ "+JMXPORT+" <http port>]"
 				+ "\n\n"
-				+ " e.g. java " + SpringApplication.class.getName() + " "+CONFIG+" file:test.xml "+BEAN+" Application");
+				+ " e.g. java " + SpringAdaptor.class.getName() + " "+CONFIG+" file:test.xml "+BEAN+" Application");
 	}
 
 	private ListableBeanFactory createBeanFactory() {
