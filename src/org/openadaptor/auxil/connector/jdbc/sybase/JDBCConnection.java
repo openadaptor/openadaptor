@@ -35,30 +35,45 @@ import org.openadaptor.core.exception.ConnectionException;
 import org.openadaptor.core.exception.ProcessingException;
 
 /**
- * sybase specific jdbc connection for deadlock identification and other exception ignores
- * @author perryj
+ * Sybase specific JDBC Connection with Sybase specific handling.
+ * Has Sybase specific tests for for deadlock identification and empty
+ * result sets, and exception type determination.
+ * 
+ * @author OA3 Core Team
  *
  */
 public class JDBCConnection extends org.openadaptor.auxil.connector.jdbc.JDBCConnection {
 
   private static final Log log = LogFactory.getLog(JDBCConnection.class);
+  //Sybase specific state indicating empty result set
+  public static final String SYBASE_EMPTY_RESULT_SET="JZ0R2";
+  
+  public static final int SYBASE_DEADLOCK_DETECTED=1205;
+  public static final int SYBASE_COMMUNICATION_ERROR=1602;
 
+  /**
+   * Perform Sybase specific exception handling.
+   * Has bespoke handling for deadlock detection, empty result set and determination
+   * of Exception type to propagate.
+   * @param e - SQLException to check for Sybase specific handling
+   * @param message - String which will be included as part of propagated Exception if necessary.
+   */
   public void handleException(SQLException e, String message) {
     
     // ignore deadlock, if num retries > 0
-    if (e.getErrorCode() == 1205 && incrementDeadlockCount() > 0) {
-      log.info("deadlock detected, " + getDeadlockRetriesRemaining() + " retries remaining");
+    if ( (SYBASE_DEADLOCK_DETECTED== e.getErrorCode()) && incrementDeadlockCount() > 0) {
+      log.info("Sybase deadlock detected, " + getDeadlockRetriesRemaining() + " retries remaining");
       return;
     }
-    
-    // ignore empty resultset
-    if (e.getSQLState().equals("JZ0R2")) {
+    // ignore empty ResultSet
+    // Fix for SC104 - e.sqlState() may return null, so put it as the argument to the equals() instead.
+    if (SYBASE_EMPTY_RESULT_SET.equals(e.getSQLState())) {
       return;
     }
     
     // decide whether its a ConnectionException or a ProcessingException
     switch (e.getErrorCode()) {
-      case 1602:
+      case SYBASE_COMMUNICATION_ERROR:
         throw new ConnectionException((message != null ? message + ", " : "")
             + ", SQLException, " + e.getMessage() 
             + ", Error Code = " + e.getErrorCode()
