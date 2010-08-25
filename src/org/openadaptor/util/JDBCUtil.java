@@ -33,14 +33,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class JDBCUtil {
+  private static final Log log = LogFactory.getLog(JDBCUtil.class);
 
   public static void closeNoThrow(Statement s) {
     if (s != null) {
       try {
         s.close();
       } catch (SQLException e) {
+      	if (log.isDebugEnabled()){
+      		log.debug("Ignoring exception "+e.getClass().getName()+" on close() -" +e.getMessage());
+      	}
       }
     }
   }
@@ -50,6 +55,9 @@ public class JDBCUtil {
       try {
         rs.close();
       } catch (SQLException e) {
+      	if (log.isDebugEnabled()){
+      		log.debug("Ignoring exception "+e.getClass().getName()+" on close() -" +e.getMessage());
+      	}
       }
     }
   }
