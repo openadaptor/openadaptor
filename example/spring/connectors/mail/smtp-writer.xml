@@ -27,6 +27,8 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    lib/opt/activation.jar
+    lib/opt/mail.jar
     
   Note that this example is configures with placeholders for: 
   
