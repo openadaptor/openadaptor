@@ -28,9 +28,11 @@
 package org.openadaptor.auxil.processor.script;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
+import org.openadaptor.core.IMetadataAware;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.ValidationException;
 
@@ -45,10 +47,11 @@ import org.openadaptor.core.exception.ValidationException;
  * @author higginse
  * 
  */
-public class ScriptFilterProcessor extends Component implements IDataProcessor {
+public class ScriptFilterProcessor extends Component implements IDataProcessor, IMetadataAware {
 
   private boolean filterOnMatch = true;
   private ScriptProcessor scriptProcessor; //Delegate ScriptProcessor
+  private Map metadata;
 
   public ScriptFilterProcessor() {
     super();
@@ -80,6 +83,7 @@ public class ScriptFilterProcessor extends Component implements IDataProcessor {
    * result.
    */
   public synchronized Object[] process(Object data) {
+    scriptProcessor.setMetadata(metadata);
     Object[] output = scriptProcessor.process(data);
     Object result=scriptProcessor.getLastResult();
     if (result instanceof Boolean) { 
@@ -106,5 +110,16 @@ public class ScriptFilterProcessor extends Component implements IDataProcessor {
     else {
       scriptProcessor.validate(exceptions);
     }
+  }
+
+  /**
+   * Method will be called by the OA framework for each messages that passes through
+   * the {@link IMetadataAware} component.
+   * 
+   * @param metadata - a set of key value pairs that may be used to pass information
+   *        to components down the adaptor pipeline.
+   */
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;    
   }
 }
