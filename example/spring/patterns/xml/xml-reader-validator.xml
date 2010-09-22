@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description>
+    <![CDATA[
+ 	  This adaptor illustrate how files containing one or more XML documents may be read, and 
+ 	  validated against an xml schema. 
+ 	  Documents which fail to validate against the schema are written to the console. 
+    validated messages are output to file.
+    Note that it expects documents to include a standard xml declaration - it uses this
+    to delimit records. Other mechanisms could be used to split incoming 
+    data into records, depending on the nature of the input.
+ 	  
+    * reads XML documents from a file (input/multiple_documents.xml)
+    * validates the documents against a configured schema (input/schema.xsd)
+    * Invalid documents are output to the console
+    * valid documents are output to output/validated.xml
+ 
+ It may be run as follows (assumes adaptor being run from same dir as config):
+    
+    java org.openadaptor.spring.SpringAdaptor -config xml-reader-validator.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]> 
+  </description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+       <property name="processors">
+        <list>
+         <ref bean="Reader" />
+         <ref bean="Validator" />
+         <ref bean="Writer" />
+        </list>
+       </property>
+       <property name="exceptionProcessor" ref="FailedWriter">
+        <description>this routes any exception to invalid writer</description>
+       </property>
+      </bean>
+    </property>
+  </bean>    
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/Phonebooks.xml"/>
+      <property name="dataReader">
+        <description>This reader uses an xml header to split 
+          individual records from the input stream
+        </description>
+        <bean class="org.openadaptor.auxil.connector.iostream.reader.string.RegexMultiLineReader">
+          <property name="startLineRegex" value="^\s*&lt;\?xml.*$"/>
+          <property name="includeRecordDelimiters" value="true"/>
+        </bean>
+      </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>This processor validates the data as an xml string.</description>
+    <property name="schemaURL" value="input/PhonebookSchema.xsd"/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+   <property name="filename" value="output/validated.xml"></property>
+  </bean>
+   
+  <bean id="FailedWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+ 
+</beans>

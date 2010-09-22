@@ -1,13 +1,13 @@
 =================================================
-openadaptor3 production 3.4.? Release Notes
+openadaptor3 production 3.4.6 Release Notes (PROVISIONAL - RELEASE NOT FINALISED)
 
 See licence.txt for Licence information.
 =================================================
 
-Date: ??th ??? ????
+Date: 12th November 2010 (Current plan)
 Author: openadaptor Core Team
 
-openadaptor 3.4.?
+openadaptor 3.4.6
 =======
 
 Connectors
@@ -21,6 +21,13 @@ Examples
  
  * All examples should now reference SpringAdaptor (which encompasses the
    behaviour of the now defunct SpringApplication also)
+   
+ * Added patterns area to examples. This area is intended for general usage patterns
+   for implementing common behaviours.
+ 
+ * Added example to illustrate how a file (or any stream) containing multiple
+   distinct XML documents may be split into individual records and processed (in this
+   case validated against a supplied schema).
    
 
 Miscellaneous
