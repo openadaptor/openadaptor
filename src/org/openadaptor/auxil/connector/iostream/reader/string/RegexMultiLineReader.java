@@ -50,17 +50,17 @@ import org.openadaptor.auxil.connector.iostream.reader.IDataReader;
  * </ul>
  * Notes:
  * <ul>
- * <li>Users should configure a starting regular expression ({@link setStartLineRegex() startLineRegex}) to identify the
+ * <li>Users should configure a starting regular expression ({@link #setStartLineRegex startLineRegex}) to identify the
  * beginning of a record.</li>
- * <li>Optionally they may configure a second expression ({@link setEndLineRegex() endLineRegex}) to identify the end of a record</li>
+ * <li>Optionally they may configure a second expression ({@link #setEndLineRegex endLineRegex}) to identify the end of a record</li>
  * <li>If the end expression is not defined, a record is assumed to end before the next
  * matching starting expression, or end of file.</li>
  * <li>lines between an ending expression and the next start expression are discarded.</li>
  * <li>The delimiting expressions themselves may be included or excluded from the record by setting 
- *     {@link #setIncludeRecordDelimiters() includeRecordDelimiters} as desired.
+ *     {@link #setIncludeRecordDelimiters includeRecordDelimiters} as desired.
  * <li>Note that if an end expression is omitted, the reader must read-ahead to find the next starting line. The size
- *     of the read-ahead buffer may be specified using {@link setReadAheadLimit() readAheadLimit}. By default
- *     this is set to {@link DEFAULT_READ_AHEAD_LIMIT}. It has no effect if the end expression is set.
+ *     of the read-ahead buffer may be specified using {@link #setReadAheadLimit readAheadLimit}. By default
+ *     this is set to {@link #DEFAULT_READ_AHEAD_LIMIT}. It has no effect if the end expression is set.
  * </li>
  * </ul>
  *  SC106 - Modified to make ending expression optional, allowing records to be delimited by starting regex alone
@@ -110,7 +110,7 @@ public class RegexMultiLineReader extends EncodingAwareObject implements IDataRe
 	 * @param readAheadLimit - size in characters of the read-ahead buffer to 
 	 * use. 
 	 * The read-ahead buffer will be <i>at least</i> this size.
-	 * Defaults to {@link DEFAULT_READ_AHEAD_LIMIT}.
+	 * Defaults to {@link #DEFAULT_READ_AHEAD_LIMIT}.
 	 * 
 	 * @since 3.4.6 - Introduced when ending regex became optional
 	 */
