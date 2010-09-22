@@ -35,6 +35,7 @@ Bug Fixes
 =========
 
  * (SC104) Possible NPE in Sybase specific JDBC Connection.
+ * (SC106) Make record end delimiter optional in RegexMultilineReader
  
 3rd Party
 ========= 
