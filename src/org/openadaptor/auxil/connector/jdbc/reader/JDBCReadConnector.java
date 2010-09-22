@@ -180,7 +180,7 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
     } catch (SQLException e) {
       handleException(e, "Failed to disconnect JDBC connection");
     }
-    clearInternalState(); //This will get called by connect() if reconnected, but no harm to do it here also.
+    clearInternalState(); // [SC105] This will get called by connect() if reconnected, but no harm to do it here also.
     log.info("Connector: [" + getId() + "] disconnected");
   }
 
@@ -285,10 +285,11 @@ public class JDBCReadConnector extends AbstractJDBCConnector implements IEnrichm
    * Clear internal state variables where necessary.
    * This is necessary in case connector is restarted (otherwise rs may end up as not null, but closed from a disconnect).
    * This may happen when using RunConfigs, or posssibly other embedded mechanisms.
-   * @todo: Need to revisit this when we have a more generic mechanism for internal state resets.
+   * This relates to [SC105]
    */
   protected void clearInternalState() {
   	log.debug("Clearing internal state for connector");
+  	statement=null;
   	rs=null;
   	rsmd=null;
   }

@@ -191,7 +191,7 @@ public class JDBCWriteConnector extends AbstractJDBCConnector implements IWriteC
     } catch (SQLException e) {
       jdbcConnection.handleException(e, "Failed to disconnect JDBC connection");
     }
-
+    clearInternalState();
     connected = false;
     log.info("Connector: [" + getId() + "] disconnected");
   }
@@ -211,4 +211,16 @@ public class JDBCWriteConnector extends AbstractJDBCConnector implements IWriteC
   public boolean isConnected() {
     return connected;
   }
+
+  /**
+   * Clear internal state variables where necessary.
+   * This is necessary in case connector is restarted
+   * This may happen when using RunConfigs, or posssibly other embedded mechanisms.
+   * This relates to [SC105]
+   */
+  protected void clearInternalState() {
+  	log.debug("Clearing internal state for connector");
+  	sqlWriter=null;
+  }
+
 }

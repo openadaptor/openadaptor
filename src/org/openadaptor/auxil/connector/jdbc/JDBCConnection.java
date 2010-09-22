@@ -321,6 +321,7 @@ public class JDBCConnection extends Component {
       log.debug("Closing JDBC connection.");
       connection.close();
       setConnection( null );
+      clearInternalState();//[SC105] Clean up in case of restart.
     }
   }
 
@@ -504,5 +505,16 @@ public class JDBCConnection extends Component {
     return ((driver != null) || (url != null) || (username != null) || (password != null));
   }
   
+  /**
+   * Clear internal state variables where necessary.
+   * This is necessary in case connection is reused
+   * This may happen when using RunConfigs, or posssibly other embedded mechanisms.
+   * This relates to [SC105]
+   */
+  protected void clearInternalState() {
+  	log.debug("Clearing internal state for connection");
+  	transactionalResource=null; //[SC105] Clean up in case of restart.
+  }
+
 
 }
