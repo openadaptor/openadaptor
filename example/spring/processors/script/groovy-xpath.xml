@@ -32,7 +32,10 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
 
-  The groovy-engine provides JSR223 scripting integration.
+  The groovy-engine provides JSR223 scripting integration. Be careful with classpath order 
+  to ensure that the correct engine version is loaded. If you still have problems even after
+  ensuring the classpath is as above remove openadaptor-depends.jar and replace it with 
+  individual jars from lib/opt.
      
   Once it is running it will read input from the configured file (input/inputboxes.xml)
   and it will insert a book review opinion for each book in each box. 
