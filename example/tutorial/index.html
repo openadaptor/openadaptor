@@ -134,6 +134,7 @@ Note, however, that familiarity with jBoss or Hypersonic is not expected.
 <h4>Additional info</h4>
 <ol type="i" start="13">
  <li><a href="#step13">Step 13: Exception Handling</a></li>
+ <li><a href="#step14">Step 14: Exception Handling Notes and Information</a></li>
  <li><a href="#summary">Summary</a></li>
 </ol>
 
@@ -1203,6 +1204,7 @@ as an exception handling entry point that implements a fan-out and redirects han
 exceptions to key-value pairs which are then sent to the <code>XMLConverter</code> and then 
 printed to the console as XML. The exceptions are also written in parallel directly to a log file.
 </p>
+<a name="step13b"></a>
 <h3>b) Exception Map</h3>
 <p>
 Defining an <code>exceptionProcessor</code> on the <code>Router</code> makes it the default handler for 
@@ -1330,6 +1332,79 @@ to suit complex needs, e.g. to create an <code>exceptionProcessor</code> consist
 some of which could branch off, include the Message Hospital and equally handle different exception 
 types differently by using the <code>exceptionMap</code>. 
 </p>
+
+<p class="back"><a href="#contents">back to contents</a></p>
+
+<!-- Step 14 - Exception Handling Notes and Information-->
+
+<a name="step14"></a>
+<h2>Step 14</h2>
+<h3>
+Exception Handling Notes and Information
+</h3>
+<p>
+<b>In the notes and info below</b>
+<br>
+oa_data is the name of the payload object.
+<br>
+oa_metadata is the name of the metadata associated with the payload, oa_data.
+</p>
+<p>
+<b>Change to contents of oa_data and oa_metadata when an exception occurs</b>
+<br>
+When an exception occurs, if there is an exception handler, then the component that receives the exception 
+receives is not the oa_data object being processed by the failing component but an instance of org.openadaptor.core.exception.MessageException object.
+<br>
+That MessageException object contains a number of useful pieces of information, including the exception, the 
+contents of oa_data as they were at the start of the failing component and the oa_metadata as it was when 
+the component failed. See the javadoc for org.openadaptor.core.exception.MessageException for more information.
+</p>
+<p>
+The oa_metadata after an exception is usually empty, though it can contain the component path taken since 
+the exception if <code>&lt;property name="historyEnabled" value="true"/&gt;</code> has been specified in the 
+Router bean. 
+</p>
+<p>
+<b>Looking at the contents of oa_data after an Exception</b>
+<br>
+The example <a href="../spring/exception/peekingAtPreAndPostExceptionData.xml" target="_blank">peekingAtPreAndPostExceptionData.xml</a> shows how 
+to look at the contents of the MessageException object (oa_data) and oa_metadata once an exception has been caught.
+<br>
+The example processes the payload through a script processor, displays the payload and metadata, amends 
+the data, throws an exception and then displays the post-exception payload and metadata.  
+<br>
+Note, testing has shown that if the exception occurs within the same (script) component as the change
+to the oa_data payload, the changes to the oa_data is not retained, but changes to oa_metadata are!				
+</p>
+<p>
+<b>Examples of how to 'send exception to hospital database'</b> 
+<br>
+i.e. When an exception occurs write it to a database for capture/fix/retry.
+<br>
+Remembering that the contents of oa_data may be changed by components before the component that experiences 
+the exception, you have to consider whether the captured exception wants to be stored on the hospital database 
+with the possibly modified oa_data (as received by the failing component) or the original oa_data (the oa_data passed from the reader).
+<br>
+An example that shows the writing of the (possibly modified) oa_data as received by the failing component 
+to the hospital is <a href="../spring/exception/sybase/sybase-exception-writer.xml" target="_blank">sybase-exception-writer.xml</a>
+<br>
+An example that shows the writing of the original oa_data as it was when it came out of the reader 
+to the hospital is <a href="../spring/exception/writeCachedOa_dataToHospital.xml" target="_blank">writeCachedOa_dataToHospital.xml</a>
+<br>
+</p>
+<p>
+<b>Faning out an exception after it has been caught</b>
+<br>
+<a href="#step13b">Step 13b) Exception Map</a> shows how to catch different types of exceptions and route them to different components based on the exception type.
+<br>
+But how do you cater for routing a single exception to different locations depending on the contents of the pre-exception oa_data?
+<br>
+Example <a href="../spring/exception/postExceptionFiltering.xml" target="_blank">postExceptionFiltering.xml</a> shows one solution.
+<br>
+It caches the original oa_data early in the routing and interogates that data in the MessageException object using a script to filter what
+gets routed where. 
+</p>
+
 
 <p class="back"><a href="#contents">back to contents</a></p>
 <!--
