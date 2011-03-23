@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: exception-004.xml 1177 2008-01-30 10:47:05Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/exception/exception-004.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"> 
+  <description>
+  <![CDATA[
+  	This adaptor does the following...
+  		Receives input from the Console (stdin) , try "apple" then "pear" then "squishy"
+  		Passed it through a script processor called ChangePayload to:
+  			1) Save the original payload in the metadata with a key of origPayload
+  		 	2) Cause an exception when required (un-comment line to force an error when testing)
+  		Writes original input plus appended text to the Console (stdout)
+  		
+  		If exception occurs it is caught and fanned out to three filters.
+  		The first filter only lets "apple" through
+  		The second filter only lets "pear" through
+  		The third filter does not let "apple" or "pear" through.
+  		
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config exception-004.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]>
+  </description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processMap">
+      			<map>
+        			<entry key-ref="Reader" value-ref="ChangePayload"/>
+        			<entry key-ref="ChangePayload" value-ref="Writer"/>
+        			<!-- Exception map -->
+       				<entry key-ref="ExceptionFanout">
+						<list>
+							<ref bean="FilterException1" />
+							<ref bean="FilterException2" />
+							<ref bean="FilterException3" />
+						</list>
+					</entry>
+       				<entry key-ref="FilterException1" value-ref="WriterException1"/>
+       				<entry key-ref="FilterException2" value-ref="WriterException2"/>
+       				<entry key-ref="FilterException3" value-ref="WriterException3"/>
+      			</map>
+    		</property>
+  			<property name="exceptionProcessor" ref="ExceptionHandler"/>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="ChangePayload" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			//Save original payload in metadata using a key=>value
+   			oa_metadata.put("origPayload",oa_data);
+   			oa_metadata.meantToFail(); //This is meant to fail! USed when testing exception path
+   		</value>
+  	</property>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="WriterException1" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="WriterException2" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="WriterException3" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="ExceptionFanout"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="ExceptionFanout" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			//Do nothing. I think we need this because you cannot fan-out in the exceptionMap
+   		</value>
+  	</property>
+  </bean>
+ 
+  <bean id="FilterException1" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			<![CDATA[
+   			//importPackage(Packages.javax.swing);
+   			//The pop ups to show oa_data and oa_metadata contents
+   			//JOptionPane.showMessageDialog(null,oa_data,"Filter1 oa_data",JOptionPane.PLAIN_MESSAGE);
+   			//JOptionPane.showMessageDialog(null,oa_metadata,"Filter1 oa_metadata",JOptionPane.PLAIN_MESSAGE);
+   			var payload = oa_data.getMetadata().get("origPayload");
+   			if (payload != "apple") {
+   				oa_data = "";
+   			}
+   			else {
+   				oa_data = "This was an apple."
+   			}
+   			]]>
+   		</value>
+  	</property>
+  </bean>
+  
+  <bean id="FilterException2" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			<![CDATA[
+   			var payload = oa_data.getMetadata().get("origPayload");
+   			if (payload != "pear") {
+   				oa_data = "";
+   			}
+   			else {
+   				oa_data = "This was a pear."
+   			}
+   			]]>
+   		</value>
+  	</property>
+  </bean>
+  
+  <bean id="FilterException3" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			<![CDATA[
+   			var payload = oa_data.getMetadata().get("origPayload");
+   			if (payload != "apple" && payload != "pear") {
+   				oa_data = "This was an odd fruit!";
+   			}
+   			else {
+   				oa_data = ""
+   			}
+   			]]>
+   		</value>
+  	</property>
+  </bean>
+  
+</beans>
