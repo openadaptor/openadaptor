@@ -1109,10 +1109,6 @@ illustrative.
 <a name="step13"></a>
 <h2>Step 13</h2>
 <p>
-This example (<a href="step13.xml" target="_blank">step13.xml</a>) demonstrates OpenAdaptor's exception 
-handling capabilities.
-</p>
-<p>
 Exception handling refers to an adaptor's behaviour when one of its components raises a Java exception.
 </p>
 <p>
@@ -1152,6 +1148,10 @@ If this basic exception handling isn't enough, OA provides alternatives for more
 handling.
 </p>
 <h3>a) Compound Exception Handler</h3>
+<p>
+This example <a href="step13a.xml" target="_blank">step13a.xml</a> demonstrates OpenAdaptor's 
+compount exception handling capabilities.
+</p>
 <p>
 The <code>exceptionProcessor</code> can consist of any number of nodes which can fan out just like any 
 other nodes that participate in the normal processing flow. Such composite <code>exceptionProcessor</code>s 
@@ -1261,7 +1261,8 @@ in the example as a <code>FileWriteConnector</code>.
 
 <h3>c) The Message Hospital</h3>
 <p>
-Lastly, an exception handler conventionally called the Message Hospital can be used to write exceptions to a 
+Lastly, an exception handler conventionally called the Message Hospital (example <a href="step13c.xml" target="_blank">step13c.xml</a>) 
+can be used to write exceptions to a 
 predefined table in a database (see <a href="#step9">Step  9: Writing to a Database</a> for guidance on
 how to setup an appopriate HSQL database for this example). Excepting that the Message Hospital respects the 
 format of the table it is 
