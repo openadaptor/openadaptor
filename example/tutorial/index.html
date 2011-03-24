@@ -131,12 +131,19 @@ Note, however, that familiarity with jBoss or Hypersonic is not expected.
  <li><a href="#step11">Step  11: Custom Components</a></li>
  <li><a href="#step12">Step  12: Reading from a File (without auto-boxing)</a></li>
 </ol>
-<h4>Additional info</h4>
+<h4>Building a robust error handling</h4>
 <ol type="i" start="13">
- <li><a href="#step13">Step 13: Exception Handling</a></li>
- <li><a href="#step14">Step 14: Exception Handling Notes and Information</a></li>
+ <li><a href="#step13">Step 13: Handling errors with the exception processor</a></li>
+ <li><a href="#step14">Step 14: Fan out erros with the Compound Exception Handler</a></li>
+ <li><a href="#step15">Step 15: Fine-tuned handling with the Exception Map</a></li>
+ <li><a href="#step16">Step 16: The Message Hospital</a></li>
+ <li><a href="#step17">Step 17: Debugging Message Exception Handling with the Script Processor</a></li>
+ <li><a href="#step18">Step 18: Exception Handling Summary</a></li>
+</ol>
+<ol type="i" start="19">
  <li><a href="#summary">Summary</a></li>
 </ol>
+
 
 <!--Initial Setup -->
 
@@ -1108,6 +1115,7 @@ illustrative.
 
 <a name="step13"></a>
 <h2>Step 13</h2>
+<h4>Handling errors with the exception processor</h4>
 <p>
 Exception handling refers to an adaptor's behaviour when one of its components raises a Java exception.
 </p>
@@ -1147,9 +1155,15 @@ file as configured. Then the adaptor is free to process subsequent data records.
 If this basic exception handling isn't enough, OA provides alternatives for more fine-grained exception 
 handling.
 </p>
-<h3>a) Compound Exception Handler</h3>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+<!-- Step 14 - Fan out with the Compound Exception Handler -->
+
+<a name="step14"></a>
+<h2>Step 14</h2>
+<h4>Fan out with the Compound Exception Handler</h4>
 <p>
-This example <a href="step13a.xml" target="_blank">step13a.xml</a> demonstrates OpenAdaptor's 
+This example <a href="step14.xml" target="_blank">step14.xml</a> demonstrates OpenAdaptor's 
 compount exception handling capabilities.
 </p>
 <p>
@@ -1204,8 +1218,13 @@ as an exception handling entry point that implements a fan-out and redirects han
 exceptions to key-value pairs which are then sent to the <code>XMLConverter</code> and then 
 printed to the console as XML. The exceptions are also written in parallel directly to a log file.
 </p>
-<a name="step13b"></a>
-<h3>b) Exception Map</h3>
+<p class="back"><a href="#contents">back to contents</a></p>
+
+<!-- Step 15 - Fine-tuned handling with the Exception Map -->
+
+<a name="step15"></a>
+<h2>Step 15</h2>
+<h4>Fine-tuned handling with the Exception Map</h4>
 <p>
 Defining an <code>exceptionProcessor</code> on the <code>Router</code> makes it the default handler for 
 all exception types. This means all exceptions will be handled by that <code>exceptionProcessor</code> 
@@ -1258,10 +1277,15 @@ a bean (or list of beans). In the example above this means that <code>Processing
 thrown by any bean in the adaptor will be routed to the <code>ErrorLog</code> bean; this is configured 
 in the example as a <code>FileWriteConnector</code>.
 </p>
+<p class="back"><a href="#contents">back to contents</a></p>
 
-<h3>c) The Message Hospital</h3>
+<!-- Step 16 - The Message Hospital -->
+
+<a name="step16"></a>
+<h2>Step 16</h2>
+<h4>The Message Hospital</h4>
 <p>
-Lastly, an exception handler conventionally called the Message Hospital (example <a href="step13c.xml" target="_blank">step13c.xml</a>) 
+Lastly, an exception handler conventionally called the Message Hospital (example <a href="step16.xml" target="_blank">step16.xml</a>) 
 can be used to write exceptions to a 
 predefined table in a database (see <a href="#step9">Step  9: Writing to a Database</a> for guidance on
 how to setup an appopriate HSQL database for this example). Excepting that the Message Hospital respects the 
@@ -1310,39 +1334,22 @@ SQL scripts for Sybase and HSQL, though others should be straightforward to crea
   &lt;/bean&gt;
 </pre></div>  
 <p>
-Here is how to run sample adaptors for paragraphs a and c above. For example c look into the file for 
-instructions on setting up the hospital schema:
+Here is how to run sample adaptor:
 </p>
 
 <div class="shell"><pre>
 
-  java org.openadaptor.spring.SpringAdaptor -config step13[a|c].xml 
+  java org.openadaptor.spring.SpringAdaptor -config step16.xml 
   
 </pre></div>
-
-<h3>Exception Handling Summary</h3>
-<p>
-Exception handling was designed to be simple but flexible. For basic scenarios, all that users need to
-do to enable exception handling is to set a file writer as an <code>exceptionProcessor</code> on the 
-<code>Router</code>.
-</p>
-<p>
-There are however, mechanisms to set up more sophisticated exception handlers as users' needs and 
-experience with OpenAdaptor dictate. The mechanisms not mutually exclusive, and may be used in combination 
-to suit complex needs, e.g. to create an <code>exceptionProcessor</code> consisting of several nodes, 
-some of which could branch off, include the Message Hospital and equally handle different exception 
-types differently by using the <code>exceptionMap</code>. 
-</p>
-
 <p class="back"><a href="#contents">back to contents</a></p>
 
-<!-- Step 14 - Exception Handling Notes and Information-->
-
-<a name="step14"></a>
-<h2>Step 14</h2>
-<h3>
-Exception Handling Notes and Information
-</h3>
+<!-- Step 17 - Debugging Exception Handling with the Script Processor -->
+<a name="step17"></a>
+<h2>Step 17</h2>
+<h4>
+Debugging Exception Handling with the Script Processor 
+</h4>
 <p>
 <b>In the notes and info below</b>
 <br>
@@ -1396,7 +1403,7 @@ to the hospital is <a href="../spring/exception/writeCachedOa_dataToHospital.xml
 <p>
 <b>Faning out an exception after it has been caught</b>
 <br>
-<a href="#step13b">Step 13b) Exception Map</a> shows how to catch different types of exceptions and route them to different components based on the exception type.
+<a href="#step15">Step 15) Exception Map</a> shows how to catch different types of exceptions and route them to different components based on the exception type.
 <br>
 But how do you cater for routing a single exception to different locations depending on the contents of the pre-exception oa_data?
 <br>
@@ -1406,8 +1413,26 @@ It caches the original oa_data early in the routing and interogates that data in
 gets routed where. 
 </p>
 
+<!-- Step 18 - Exception Handling Summary -->
+
+<a name="step18"></a>
+<h2>Step 18</h2>
+<h4>Exception Handling Summary</h4>
+<p>
+Exception handling was designed to be simple but flexible. For basic scenarios, all that users need to
+do to enable exception handling is to set a file writer as an <code>exceptionProcessor</code> on the 
+<code>Router</code>.
+</p>
+<p>
+There are however, mechanisms to set up more sophisticated exception handlers as users' needs and 
+experience with OpenAdaptor dictate. The mechanisms not mutually exclusive, and may be used in combination 
+to suit complex needs, e.g. to create an <code>exceptionProcessor</code> consisting of several nodes, 
+some of which could branch off, include the Message Hospital and equally handle different exception 
+types differently by using the <code>exceptionMap</code>. 
+</p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
+
 <!--
     Summary
 -->
