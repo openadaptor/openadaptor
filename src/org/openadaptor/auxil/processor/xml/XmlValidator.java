@@ -37,6 +37,7 @@ import org.openadaptor.core.Component;
 import org.openadaptor.core.IDataProcessor;
 import org.openadaptor.core.exception.ProcessingException;
 import org.openadaptor.core.exception.RecordException;
+import org.openadaptor.core.exception.XMLValidationException;
 import org.openadaptor.util.URLUtils;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -63,6 +64,8 @@ public class XmlValidator extends Component implements IDataProcessor {
   public static final Log log = LogFactory.getLog(XmlValidator.class);
 
   private String schemaURL = null;
+  
+  private boolean enableXMLValidationException = false;
 
   private boolean forcingURLValidation = true;
 
@@ -103,7 +106,16 @@ public class XmlValidator extends Component implements IDataProcessor {
     this.forcingURLValidation = b;
   }
 
-  /**
+  
+  public boolean enableXMLValidationException() {
+	return enableXMLValidationException;
+}
+
+  public void setEnableXMLValidationException(boolean enableXMLValidationException) {
+	this.enableXMLValidationException = enableXMLValidationException;
+}
+
+/**
    * Take the record, ensure it's a string and validate it against the schema
    * defined in the config file.
    *
@@ -112,22 +124,48 @@ public class XmlValidator extends Component implements IDataProcessor {
    * @return Object[] with zero or more records, resulting from the processing
    *         operation.
    *
-   * @throws RecordException if the record is not a string or does not contain
-   * valid XML or if it fails to be validated against the schema
+   * @throws RuntimeException if the record is not a string 
+   * 
+   * @throws ProcessingException if the record does not contain
+   * valid XML or if it fails to be validated against the schema and 
+   * enableXMLValidationException is false (default is false)
+   *  
+   * @throws XMLValidationException if the record does not contain
+   * valid XML or if it fails to be validated against the schema and 
+   * enableXMLValidationException is true (default is false)
+   * 
+   * Adaptors configured to catch ProcessingException will still catch them even if an 
+   * XMLValidationException is thrown as XMLValidationException extends ProcessingException
+   * 
+   * The property enableXMLValidationException can be set to true if the user wants a XMLValidationException
+   * instead of a ProcessingException 
+   * 
+   * The reasoning behind throwing a XMLValidationException instead of ProcessingException when 
+   * the XML fails validation is to allow fine tuning of the exception handling
+   *  
    */
   public Object[] process(Object data) {
     if (!(data instanceof String)) {
-      throw new RuntimeException("data is not an XML string");
+   		throw new RuntimeException("data is not a string");
     }
-
+    
     try {
       if (log.isDebugEnabled()) {
         log.debug("Data to be validated: "+data);
       }
       in.setCharacterStream(new StringReader((String)data));
       parser.parse(in);
-    } catch (Exception e) {
-      throw new ProcessingException("xml is invalid", e, this);
+    }
+    catch (SAXException se) {
+    	if (enableXMLValidationException() && se.getException() instanceof SAXParseException) {
+    		throw new XMLValidationException("xml is invalid", se, this);
+    	}
+		else {
+			throw new ProcessingException("xml is invalid", se, this);
+		}
+    }
+    catch (Exception e) {
+    	throw new ProcessingException("xml is invalid", e, this);
     }
 
     log.debug("XML validated");
