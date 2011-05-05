@@ -107,13 +107,22 @@ public class XmlValidator extends Component implements IDataProcessor {
   }
 
   
+  /**
+   * Default value is false
+   */
   public boolean enableXMLValidationException() {
 	return enableXMLValidationException;
-}
+  }
 
+  /**
+   * Set to true if you want the method process to throws a XMLValidationException 
+   * (not a ) if an exception it catched.
+   *
+   * @param enableXMLValidationException
+   */
   public void setEnableXMLValidationException(boolean enableXMLValidationException) {
 	this.enableXMLValidationException = enableXMLValidationException;
-}
+  }
 
 /**
    * Take the record, ensure it's a string and validate it against the schema
@@ -157,7 +166,7 @@ public class XmlValidator extends Component implements IDataProcessor {
       parser.parse(in);
     }
     catch (SAXException se) {
-    	if (enableXMLValidationException() && se.getException() instanceof SAXParseException) {
+    	if (enableXMLValidationException()==true && se.getException()!=null && se.getException() instanceof SAXParseException) {
     		throw new XMLValidationException("xml is invalid", se, this);
     	}
 		else {
