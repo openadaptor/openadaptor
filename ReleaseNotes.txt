@@ -1,11 +1,43 @@
 =================================================
-openadaptor3 production 3.4.6 Release Notes (PROVISIONAL - RELEASE NOT FINALISED)
+openadaptor3 production 3.4.7 Release Notes (PROVISIONAL - RELEASE NOT FINALISED)
 
 See licence.txt for Licence information.
 =================================================
 
-Date: 12th November 2010 (Current plan)
+Date: ?th ?Month 2011 (Current plan)
 Author: openadaptor Core Team
+
+openadaptor 3.4.7
+=======
+
+Connectors
+==========
+   
+Processors
+==========
+ * Amended XMLValidator to allow throwing of more specific ProcessingException to allow clearer exception handling
+
+Examples
+========
+ 
+ * Added examples to show how to use exception handling in different ways.
+   
+
+Miscellaneous
+=============
+
+Bug Fixes
+=========
+ 
+3rd Party
+=================================================
+openadaptor3 production 3.4.6 Release Notes 
+
+See licence.txt for Licence information.
+=================================================
+
+Date: February 2011 
+author: openadaptor Core Team
 
 openadaptor 3.4.6
 =======
