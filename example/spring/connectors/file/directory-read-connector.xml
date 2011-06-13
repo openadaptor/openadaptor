@@ -12,6 +12,10 @@
     
     * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
     * outputs to stdout
+    * in addition, because there is an Inspector bean between the reader and writer you can see
+    * the contents of oa_data and on_metadata
+    * because the properties appendEOFMessage and storeFileName are set to true in the DirectoryReader
+    * bean you can see the the effect of this via the Inspector bean
     
   It is designed to illustrate the basic structure of a directory reader adaptor
 
@@ -45,6 +49,7 @@
 				<property name="processors">
 					<list>
 						<ref bean="DirectoryReader" />
+						<ref bean="Inspector" />
 						<ref bean="Writer" />
 					</list>
 				</property>
@@ -56,11 +61,25 @@
 		class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">
 		<property name="dirname" value="input/inputs" />
 		<property name="filenameRegex" value="stuff[0-9].txt" />
+		<property name="batchSize" value="4" />
+		<property name="appendEOFMessage" value="true" />
+		<property name="storeFileName" value="true" />
 	</bean>
 
 	<bean id="Writer"
 		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
 		<description>This writer writes data to stdout.</description>
 	</bean>
+	
+  <bean id="Inspector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Handy debug component. Put this into the pipeline to view message.</description>
+    <property name="script">
+      <value>
+        importPackage(Packages.javax.swing);
+        JOptionPane.showMessageDialog(null,oa_data,"oa_data",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null,oa_metadata,"oa_metadata",JOptionPane.PLAIN_MESSAGE);
+   	  </value>
+    </property>
+  </bean>
 
 </beans>

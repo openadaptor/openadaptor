@@ -38,8 +38,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,6 +89,10 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   private Comparator fileComparator;
 
   private Object txnResource;
+  
+  private boolean appendEOFMessage = false;
+	
+  private boolean storeFileName = false;
 
   /** Used to mark reaching the end of a single file */
   private boolean currentStreamDry = false;
@@ -142,6 +148,38 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
       }
     });
   }
+  
+  public boolean isAppendEOFMessage() {
+	return appendEOFMessage;
+  }
+
+  /**
+   * if true then 
+   *    the path, i.e. java.io.File.getPath(), is available in the oa_metadata map for the key 'path' 
+   *    the absolutePath, i.e. java.io.File.getAbsolutePath(), is available in the oa_metadata map for the key 'absolutePath'
+   *    the name, i.e. java.io.File.getName(), is available in the oa_metadata map for the key 'name'
+   */
+  public void setAppendEOFMessage(boolean appendEOFMessage) {
+	this.appendEOFMessage = appendEOFMessage;
+  }
+
+  public boolean isStoreFileName() {
+	return storeFileName;
+  }
+
+  /**
+   * if true then an extra message is output from the reader after the
+   * last record from a file has been read 
+   * to identify the last record test oa_data for the existence of the key 'EOF' whose value will be true
+   *    also, for the file just read
+   *    the path, i.e. java.io.File.getPath(), is available in the oa_data map for the key 'path' 
+   *    the absolutePath, i.e. java.io.File.getAbsolutePath(), is available in the oa_data map for the key 'absolutePath'
+   *    the name, i.e. java.io.File.getName(), is available in the oa_data map for the key 'name'
+   */
+  public void setStoreFileName(boolean storeFileName) {
+	this.storeFileName = storeFileName;
+  }
+
 
   public void validate(List exceptions) {
     super.validate(exceptions);
@@ -213,12 +251,38 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
       for (int i = 0; i < batchSize; i++) {
         Object data = dataReader.read();
         if (data != null) {
-          batch.add(data);
-        } else {
-          currentStreamDry = true;
-          closeInputStream(); // TODO Hack. Fix Axel's issue with locked files. Revisit urgently.
-          break;
-        }
+        	if (i==0 && isStoreFileName()) {
+				Map<String,Object> map = new HashMap<String,Object>();
+				Map<String,Object> metadata = new HashMap<String,Object>();
+				metadata.put("path", currentFile.getPath());
+				metadata.put("absolutePath", currentFile.getAbsolutePath());
+				metadata.put("name", currentFile.getName());
+				map.put("data", data);
+	        	map.put("readNodeMetadata", metadata);
+	        	batch.add(map);
+			} else {
+			batch.add(data);
+			}
+		} else {
+	        if (isAppendEOFMessage()) {
+	        	Map<String,Object> map = new HashMap<String,Object>();
+	        	map.put("EOF", Boolean.TRUE);
+	        	map.put("path", currentFile.getPath());
+	        	map.put("absolutePath", currentFile.getAbsolutePath());
+	        	map.put("name", currentFile.getName());
+	        	if (i==0 && isStoreFileName()) {
+					Map<String,Object> metadata = new HashMap<String,Object>();
+					metadata.put("path", currentFile.getPath());
+					metadata.put("absolutePath", currentFile.getAbsolutePath());
+					metadata.put("name", currentFile.getName());
+		        	map.put("readNodeMetadata", metadata);
+				}	        	
+	        	batch.add(map);
+	        }
+			currentStreamDry = true;
+			super.closeInputStream(); //Fix
+			break;
+		}
       }
       return batch.toArray();
     } catch (IOException e) {

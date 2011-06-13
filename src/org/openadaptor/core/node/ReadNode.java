@@ -27,6 +27,9 @@
 
 package org.openadaptor.core.node;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.auxil.metrics.ComponentMetricsFactory;
@@ -42,7 +45,6 @@ import org.openadaptor.core.transaction.ITransactionInitiator;
 import org.openadaptor.core.transaction.ITransactionManager;
 import org.openadaptor.core.transaction.ITransactional;
 
-import java.util.List;
 
 /**
  * This class should be used to "wrap" an {@link IReadConnector}. It handles
@@ -238,6 +240,16 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
         resetProcessor(connector.getReaderContext());
         prevReaderContext = connector.getReaderContext();
       }
+	  Map metadata = msg.getMetadata();
+	  if (data[0] instanceof Map && ((Map) data[0]).containsKey("readNodeMetadata")) {
+		metadata.put("metadata", (((Map) data[0]).get("readNodeMetadata")));
+		if (((Map) data[0]).containsKey("EOF")) {
+			((Map)data[0]).remove("readNodeMetadata");
+		}
+		else {
+			data[0] = ((Map)data[0]).get("data");
+		}
+	  }      
       Message newMessage = new Message(data, this, msg.getTransaction(), msg.getMetadata());
       response = super.process(newMessage);
     } else {
