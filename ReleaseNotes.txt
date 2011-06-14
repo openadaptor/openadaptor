@@ -12,6 +12,10 @@ openadaptor 3.4.7
 
 Connectors
 ==========
+ * Corrected bug in DirectoryReadConnector that could cause cause an exception  when batchsize > 1
+ * Enhanced DirectoryReadConnector to allow option to: 
+ 	1) Put info about the read file in the oa_metadata
+ 	2) Insert an EOF record at the end of each read file to allow the user to configure an adaptor to identify and act upon an EOF event   
    
 Processors
 ==========
