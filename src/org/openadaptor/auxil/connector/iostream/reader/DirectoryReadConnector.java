@@ -252,8 +252,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
         Object data = dataReader.read();
         if (data != null) {
         	if (i==0 && isStoreFileName()) {
-				Map<String,Object> map = new HashMap<String,Object>();
-				Map<String,Object> metadata = new HashMap<String,Object>();
+				Map map = new HashMap();
+				Map metadata = new HashMap();
 				metadata.put("path", currentFile.getPath());
 				metadata.put("absolutePath", currentFile.getAbsolutePath());
 				metadata.put("name", currentFile.getName());
@@ -265,13 +265,13 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
 			}
 		} else {
 	        if (isAppendEOFMessage()) {
-	        	Map<String,Object> map = new HashMap<String,Object>();
+	        	Map map = new HashMap();
 	        	map.put("EOF", Boolean.TRUE);
 	        	map.put("path", currentFile.getPath());
 	        	map.put("absolutePath", currentFile.getAbsolutePath());
 	        	map.put("name", currentFile.getName());
 	        	if (i==0 && isStoreFileName()) {
-					Map<String,Object> metadata = new HashMap<String,Object>();
+					Map metadata = new HashMap();
 					metadata.put("path", currentFile.getPath());
 					metadata.put("absolutePath", currentFile.getAbsolutePath());
 					metadata.put("name", currentFile.getName());
