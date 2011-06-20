@@ -241,7 +241,10 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
    * @return name of current file we are reading
    */
   public Object getReaderContext() {
-    return currentFile.getAbsolutePath();
+	  if (currentFile==null) {
+		  return null;
+	  }
+	  return currentFile.getAbsolutePath();
   }
   
   public Object[] next(long timeoutMs) {
@@ -264,7 +267,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
 			batch.add(data);
 			}
 		} else {
-	        if (isAppendEOFMessage()) {
+			
+			if (currentFile != null && isAppendEOFMessage()) {
 	        	Map map = new HashMap();
 	        	map.put("EOF", Boolean.TRUE);
 	        	map.put("path", currentFile.getPath());
@@ -279,8 +283,9 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
 				}	        	
 	        	batch.add(map);
 	        }
+			
 			currentStreamDry = true;
-			super.closeInputStream(); //Fix
+			closeInputStream(); //Fix
 			break;
 		}
       }

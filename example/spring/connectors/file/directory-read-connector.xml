@@ -59,7 +59,7 @@
 
 	<bean id="DirectoryReader"
 		class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">
-		<property name="dirname" value="input/inputs" />
+		<property name="dirname" value="example/spring/connectors/file/input/inputs" />
 		<property name="filenameRegex" value="stuff[0-9].txt" />
 		<property name="batchSize" value="4" />
 		<property name="appendEOFMessage" value="true" />

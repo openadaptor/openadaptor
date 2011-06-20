@@ -237,7 +237,9 @@ public class ReadNode extends Node implements IRunnable, ITransactionInitiator {
     Object[] data = getNext();
     if (data != null && data.length != 0) {
       if (connector.getReaderContext() == prevReaderContext) {
-        resetProcessor(connector.getReaderContext());
+        if (connector.getReaderContext()!=null) { 
+    	  resetProcessor(connector.getReaderContext());
+        }
         prevReaderContext = connector.getReaderContext();
       }
 	  Map metadata = msg.getMetadata();
