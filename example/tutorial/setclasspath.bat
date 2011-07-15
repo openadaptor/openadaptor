@@ -1,8 +1,12 @@
 @echo off
 set CLASSPATH=.
+set CLASSPATH=%CLASSPATH%;..\..\lib\opt\antlr-2.7.7.jar
+set CLASSPATH=%CLASSPATH%;..\..\lib\opt\asm-3.2.jar
+set CLASSPATH=%CLASSPATH%;..\..\lib\opt\groovy-1.7.2.jar
+set CLASSPATH=%CLASSPATH%;..\..\lib\opt\groovy-engine-1.1-jdk14.jar
 set CLASSPATH=%CLASSPATH%;..\..\lib\openadaptor.jar
 set CLASSPATH=%CLASSPATH%;..\..\lib\openadaptor-spring.jar
 set CLASSPATH=%CLASSPATH%;..\..\lib\openadaptor-depends.jar
-set CLASSPATH=%CLASSPATH%;..\..\lib\3rdparty\hsqldb.jar
+set CLASSPATH=%CLASSPATH%;..\..\lib\opt\hsqldb.jar
 set CLASSPATH=%CLASSPATH%;..\..\lib\3rdparty\jbossall-client.jar
 @echo on

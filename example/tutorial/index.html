@@ -140,7 +140,11 @@ Note, however, that familiarity with jBoss or Hypersonic is not expected.
  <li><a href="#step17">Step 17: Debugging Message Exception Handling with the Script Processor</a></li>
  <li><a href="#step18">Step 18: Exception Handling Summary</a></li>
 </ol>
+<h4>Additional examples</h4>
 <ol type="i" start="19">
+ <li><a href="#step19">Step 19: Caching example</a></li>
+</ol>
+<ol type="i" start="20">
  <li><a href="#summary">Summary</a></li>
 </ol>
 
@@ -1432,7 +1436,150 @@ types differently by using the <code>exceptionMap</code>.
 </p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
+<!-- Step 19 - Exception Handling -->
 
+<a name="step19"></a>
+<h2>Step 19</h2>
+<h4>Caching example</h4>
+<p>
+This example (<a href="step19.xml" target="_blank">step19.xml</a>) demonstrates how to populate a cache in OpenAdaptor with a enrichment processor and script.
+</p>
+<p>
+The ability to populate a cache (once only) before processing the first message is sometimes required.
+The requirement could be a database lookup to get additional information, while processing the reader messages.
+This scenario could arise due to performance issues. If a database request is done for each message, sometimes fetching the same data 
+for multiple messages then it may be better to cache the data once and then lookup on the cache instead of the database.
+</p>
+<p>
+The "best practice" for solving this issue is demonstrated in the following example.
+</p>
+<p>
+<b>The functional background</b>
+</p>
+<p> 
+In this example it's required to get additional information from a database.
+This additional information will be stored in an internal cache (hashmap). This internal cache have to be build once only.
+Each incoming message will be updated with information stored in the internal cache.
+</p>
+<p>
+<u>The following bullets specify the whole prcoess:</u>
+</p>
+<ol>
+	<li>Defines a hashmap to act as the cache for the data read from the database.</li>
+	
+	<li>Reads input messages (trades) from a file.</li>
+	
+	<li>Converts input into a map.</li>
+	
+	<li>Checks if the hashmap (cache) is empty.</li>
+	
+	<li>If it is empty (first time round):
+		<ul>
+			<li>Calls an enrichment processor to read the database, note that in this example the batchsize is limited to 500.</li>
+			<li>Uses a groovy script processor to populate the hashmap (cache) with a key/value pair based on the data read from the database.</li>
+		</ul>
+	</li>
+	
+	<li>If it is not empty (second and subsequent times round):
+		<ul>
+			<li>It skips the populating of the hashmap (cache).</li>
+		</ul>
+	</li>
+	
+	<li>Replaces the long form of the counterparty id with the short form using data cached in the hashmap.</li>
+	<li>Populates the message metadata with the tradeid to use to identify the record later.</li>
+	
+	
+	<li>At this point the adaptor fans out:
+		<ul>
+			<li>first path: Writes each record as txt (fixedwidth records) to an individaul file named using the tradeid from the metadata.</li>
+			<li>second path: Writes each record as xml to an individaul file named using the tradeid from the metadata.</li>
+		</ul>
+	</li>
+</ol>
+</p>
+<b>The caching example adaptor configuration</b>
+<p>
+</p>
+For more details take a close look into the configuration file (<a href="step19.xml" target="_blank">step19.xml</a>).
+The follwing xml configuration snippet specify the route of the example adaptor:
+<p>
+<div class="config"><pre>
+	&lt;bean class="org.openadaptor.core.router.Router"&gt;
+	  &lt;property name="processMap"&gt;
+		&lt;map&gt;
+		  &lt;entry key-ref="Reader" value-ref="MapConverter"/&gt;
+		  &lt;entry key-ref="MapConverter"&gt;
+			&lt;list&gt;
+			  &lt;ref bean="Filter1"/&gt;
+			  &lt;ref bean="Filter2"/&gt;
+			&lt;/list&gt;
+		  &lt;/entry&gt;
+		  &lt;entry key-ref="Filter1" value-ref="CounterpartyIdReplace"/&gt;
+		  &lt;entry key-ref="Filter2" value-ref="CounterpartyIdLookup"/&gt;
+		  &lt;entry key-ref="CounterpartyIdLookup" value-ref="BuildCache"/&gt;
+		  &lt;entry key-ref="BuildCache" value-ref="CounterpartyIdReplace"/&gt;
+		  &lt;entry key-ref="CounterpartyIdReplace" value-ref="ExtractMessageId"/&gt;
+		  &lt;entry key-ref="ExtractMessageId"&gt;
+			&lt;list&gt;
+			  &lt;ref bean="FixedWidthConvertor"/&gt;
+			  &lt;ref bean="XmlConverter"/&gt;
+			&lt;/list&gt;
+		  &lt;/entry&gt;
+		  &lt;entry key-ref="FixedWidthConvertor" value-ref="FixedWidthWriter"/&gt;
+		  &lt;entry key-ref="XmlConverter" value-ref="XMLWriter"/&gt;
+		&lt;/map&gt;
+	  &lt;/property&gt;
+	  &lt;property name="exceptionProcessor" ref="ExceptionHandler"/&gt;
+	&lt;/bean&gt;
+</pre></div>
+<p>
+The configuration above describes the adaptor behavior.
+The first entry is the <code>Reader</code> which reads a input file, each line as one message.
+</p>
+<p>The read message is passed to the <code>MapConverter</code>.
+This result as a message (map) is passed to a chain of two script filter processor (<code>Filter1</code> and <code>Filter2</code>).
+</p>
+<p>
+These script filter processors checks if the internal cache (hashmap) is empty or not.
+Depending of the result the message is going to pass only one of both filters.
+If the internal cache is empty the next entry of the route will be the <code>CounterpartyIdLookup</code> entry (first time round),
+else the next entry will be the <code>CounterpartyIdReplace</code> entry (second and subsequent times round).
+</p>
+<p>
+Coming from the <code>CounterpartyIdLookup</code> (generic enrichment processor) this component does the database lookup and stores the data.
+The next entry comming from the CounterpartyIdLookup is the <code>BuildCache</code> entry.
+This component builds the internal cache (hashmap) with the stored data from the database lookup and pass the message (map) to the <code>CounterpartyIdReplace</code>.
+</p>
+<p>
+For further messages the internal cache (hashmap) is built and the the filters pass the message also to the <code>CounterpartyIdReplace</code>.
+This components replace the message (map) value with the "PartyId" key, with the value of the data from the internal cache.
+</p>
+<p>
+Adter this process the modified message (map) is passed to the further components, which fan out the message (map) in a text and xml file.
+</p>
+<p>
+<b>Here is how to run the sample adaptor:</b>
+</p>
+
+<div class="shell"><pre>
+
+  java org.openadaptor.spring.SpringAdaptor -config step19.xml 
+  
+</pre></div>
+<p>
+This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+up the server make sure hsqldb.jar is in your class path and run the following...<br/>
+<b>Note:</b> The command needs to be executed from a folder containing Hypersonic script and properties
+(hsql.script and hsql.properties) located in /tutorial/db/caching
+</p>
+<div class="shell"><pre>
+
+  java org.hsqldb.Server -database.0 hsql -dbname.0 xdb  
+  
+</pre></div>
+
+<p class="back"><a href="#contents">back to contents</a></p>
 <!--
     Summary
 -->

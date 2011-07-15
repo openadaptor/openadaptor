@@ -25,6 +25,12 @@ Examples
 ========
  
  * Added examples to show how to use exception handling in different ways.
+ * Added example to show how to use caching mechanism. 
+   
+Tutorial
+========
+ 
+ * Added Step 19 (caching) to show how to use caching mechanism. 
    
 
 Miscellaneous
