@@ -45,6 +45,7 @@ import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.UrlResource;
@@ -116,6 +117,37 @@ public class SpringAdaptor {
 	private boolean suppressAutomaticPropsConfig = false; // default is false
 
 	private Adaptor adaptor;
+	
+	/** The internal context. */
+	protected GenericApplicationContext internalContext = null;
+	
+	/**
+	 * Returns the internal context.
+	 * 
+	 * @return The internal context.
+	 */
+	protected GenericApplicationContext getInternalContext() {
+		if(internalContext == null) {
+			// creates an empty generic application context, if the context is "null"
+			internalContext = new GenericApplicationContext();
+		} else {
+			// When the same instance is used more as once, you could run in a refresh issue.
+			// That requires a new created instance by using the default listable bean factory functionality.
+			internalContext = new GenericApplicationContext(internalContext.getDefaultListableBeanFactory());
+		}
+		return internalContext;
+	}
+
+	/** Flag to ignore the config urls error.  */
+	protected boolean ignoreConfigUrls = false;
+
+	protected boolean isIgnoreConfigUrls() {
+		return ignoreConfigUrls;
+	}
+
+	protected void setIgnoreConfigUrls(boolean ignoreConfigUrls) {
+		this.ignoreConfigUrls = ignoreConfigUrls;
+	}
 
 	protected String getBeanId() {
 		return beanId;
@@ -158,8 +190,13 @@ public class SpringAdaptor {
 		return propsUrls;
 	}
 
-	protected void setPropsUrls(ArrayList propsUrls) {
-		this.propsUrls = propsUrls;
+	public void setPropsUrls(final List propsUrls) {
+		this.propsUrls.clear();
+		this.propsUrls.addAll(propsUrls);
+	}
+	
+	public void addPropsUrls(String propsUrl) {
+		this.propsUrls.add(propsUrl);
 	}
 
 	protected boolean isSuppressAutomaticPropsConfig() {
@@ -251,10 +288,10 @@ public class SpringAdaptor {
 	}
 
 	private ListableBeanFactory createBeanFactory() {
-		if (configUrls.isEmpty()) {
+		if (configUrls.isEmpty() && !ignoreConfigUrls) {
 			throw new RuntimeException("no config urls specified");
 		}
-		GenericApplicationContext context = new GenericApplicationContext();
+		GenericApplicationContext context = getInternalContext();
 		//Changed to make failure to load OPENADAPTOR_SPRING_CONFIG non-fatal.
 		try {
 			loadBeanDefinitions("classpath:" + ResourceUtil.getResourcePath(this, "",OPENADAPTOR_SPRING_CONFIG), context);

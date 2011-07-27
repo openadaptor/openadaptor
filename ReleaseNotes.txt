@@ -21,6 +21,12 @@ Processors
 ==========
  * Amended XMLValidator to allow throwing of more specific ProcessingException to allow clearer exception handling
 
+Core
+==========
+
+ * Enriched the SpringAdaptor to be more flexible.
+ * Added a utility ConfigurableSpringAdaptor.
+ 
 Examples
 ========
  
