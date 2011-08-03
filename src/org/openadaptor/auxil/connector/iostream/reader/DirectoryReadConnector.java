@@ -93,6 +93,8 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   private boolean appendEOFMessage = false;
 	
   private boolean storeFileName = false;
+  
+  private boolean continueIfFileNotFound = false;
 
   /** Used to mark reaching the end of a single file */
   private boolean currentStreamDry = false;
@@ -179,7 +181,20 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
   public void setStoreFileName(boolean storeFileName) {
 	this.storeFileName = storeFileName;
   }
+  /**
+   * if true then if a file that existed in the directory when the directory list was populated
+   * is no longer in the directory when the time comes to read it then the directory reader 
+   * will continue as if the file had been successfully read to eof.
+   *   
+   * if false (default) the reader will fail with an exception 
+   */
+  public void setContinueIfFileNotFound(boolean fnfContinue) {
+	this.continueIfFileNotFound = fnfContinue;
+  }
 
+  public boolean isContinueIfFileNotFound() {
+	return continueIfFileNotFound;
+  }
 
   public void validate(List exceptions) {
     super.validate(exceptions);
@@ -308,6 +323,13 @@ public class DirectoryReadConnector extends AbstractStreamReadConnector implemen
         currentStreamDry = false;
         return new FileInputStream(f);
       } catch (FileNotFoundException e) {
+    	  if (isContinueIfFileNotFound()) {
+    		  log.warn(getId() + " The file " + f.getAbsolutePath() + "was no longer in the directory. Continuing with the next file (if any).");
+    		  processedFiles.remove(f); //Otherwise the component will attempt to move the missing file from the directory later on 
+    		  currentFile = null; 
+    	      return new ByteArrayInputStream(new byte[] {}); // Any empty stream will do.
+    	
+    	  }
         throw new RuntimeException("FileNotFoundException, " + e.getMessage(), e);
       }
     } else {
