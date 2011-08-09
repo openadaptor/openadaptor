@@ -349,7 +349,7 @@
 	<!-- Javadoc tasks -->
 	<target name="javadocs" depends="init" description="Compile javadoc from openadaptor source" unless="suppress.javadoc">
 		<echo level="info" message="Generating javadoc ${dir.src},${dir.spring.src} -> ${dir.build.javadocs}" />
-		<javadoc destdir="${dir.build.javadocs}" classpathref="classpath.spring" doctitle="openadaptor ${tag}" verbose="false" additionalparam="-quiet">
+		<javadoc destdir="${dir.build.javadocs}" classpathref="classpath.spring" doctitle="openadaptor ${tag}" verbose="false" additionalparam="-quiet" useexternalfile="yes">
 			<fileset dir="${dir.src}">
 				<include name="**/*.java" />
 			</fileset>
