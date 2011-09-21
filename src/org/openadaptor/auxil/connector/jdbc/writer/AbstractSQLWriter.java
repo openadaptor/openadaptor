@@ -69,6 +69,7 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   protected PreparedStatement reusablePreparedStatement=null;
   protected int[] argSqlTypes; //Might need the sql types for null columns.  
   protected String[] outputColumns;
+  private boolean usedBatch = false;
 
   private boolean batchSupport;
 
@@ -272,7 +273,8 @@ public abstract class AbstractSQLWriter implements ISQLWriter{
   public void writeBatch(Object[] data) throws SQLException {
     try {
       int len=data.length;
-      if ((len>1) && (batchSupport)) {
+      if (((len>1 || this.usedBatch) && (batchSupport))) {
+    	this.usedBatch = true;
         log.debug("Constructing a batch, size="+len);
         PreparedStatement ps=createBatchStatement(data);
         log.debug("Writing batch");
