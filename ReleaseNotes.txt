@@ -42,6 +42,9 @@ Tutorial
 Miscellaneous
 =============
 
+ * Extended build script to generate 2 jars with sources, one corresponding 
+   for the openadaptor.jar and one for the openadaptor-spring.jar
+
 Bug Fixes
 =========
  

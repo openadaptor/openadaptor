@@ -442,8 +442,20 @@
 
 	</target>
 
-	<target name="src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.src}, ${dir.spring.src}" unless="suppress.src.jar">
-		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}" />
+	<target name="openadaptor-spring-src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.spring.src}" unless="suppress.src.jar">
+		<echo level="info" message="Creating jars from from openadaptor sources {dir.spring.src}" />
+		<jar destfile="${dir.build.lib}/openadaptor-spring-src.jar">
+	  	<manifest>
+	  		<attribute name="Built-By" value="${user.name}"/>
+	  	  <attribute name="Build-Tag" value="${tag}"/>
+	  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
+	  	</manifest>
+			<fileset dir="${dir.spring.src}" />
+		</jar>
+	</target>
+
+	<target name="openadaptor-src.jar" depends="compile" description="Create jar from openadaptor sources ${dir.src}" unless="suppress.src.jar">
+		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}" />
 		<jar destfile="${dir.build.lib}/openadaptor-src.jar">
 	  	<manifest>
 	  		<attribute name="Built-By" value="${user.name}"/>
@@ -451,8 +463,11 @@
 	  	  <attribute name="Build-Timestamp" value="${DSTAMP}:${TSTAMP}"/>
 	  	</manifest>
 			<fileset dir="${dir.src}" />
-			<fileset dir="${dir.spring.src}" />
 		</jar>
+	</target>
+	
+	<target name="src.jar" depends="compile,openadaptor-src.jar,openadaptor-spring-src.jar" description="Create jar from openadaptor sources" unless="suppress.src.jar">
+		<echo level="info" message="Creating jars from from openadaptor sources ${dir.src}, ${dir.spring.src}" />
 	</target>
 
 	<target name="src.jar.suppressed" description="Warns of suppressed source jar generation" if="suppress.src.jar">
