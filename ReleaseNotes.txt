@@ -4,7 +4,7 @@ openadaptor3 production 3.4.7 Release Notes (PROVISIONAL - RELEASE NOT FINALISED
 See licence.txt for Licence information.
 =================================================
 
-Date: ?th ?Month 2011 (Current plan)
+Date: 18th November 2011 (Current plan)
 Author: openadaptor Core Team
 
 openadaptor 3.4.7
@@ -47,8 +47,11 @@ Miscellaneous
 
 Bug Fixes
 =========
- 
+ 	
 3rd Party
+ * An issue was found in the Sybase jconn2-5.5 and jconn3 drivers that would cause SQL exceptions in particular circumstances.
+   A workaround has been added to the OA code that prevents that particular set of circumstances from occuring. 
+    
 =================================================
 openadaptor3 production 3.4.6 Release Notes 
 
