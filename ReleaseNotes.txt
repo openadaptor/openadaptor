@@ -1,10 +1,10 @@
 =================================================
-openadaptor3 production 3.4.7 Release Notes (PROVISIONAL - RELEASE NOT FINALISED)
+openadaptor3 production 3.4.7 Release Notes
 
 See licence.txt for Licence information.
 =================================================
 
-Date: 18th November 2011 (Current plan)
+Date: 18th November 2011
 Author: openadaptor Core Team
 
 openadaptor 3.4.7
