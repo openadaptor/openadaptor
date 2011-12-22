@@ -13,7 +13,10 @@
     * converts the result set to XML
     * writes data to stdout
     
-  It is designed to illustrate the basic structure of an adaptor that polls a database
+  It is designed to illustrate the basic structure of an adaptor that reads a database.
+  Note: This is a very basic adaptor, it does not mark the databse rows as having been processed, 
+  so if there is no external update (i.e. not in this adaptor) of the data then the next time the 
+  adaptor is run it will read the same set of rows again.   
 
   Run it like this...
     

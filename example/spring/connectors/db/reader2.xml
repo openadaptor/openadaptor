@@ -15,6 +15,11 @@
     * marks status as processed
     
   It is designed to illustrate the basic structure of an adaptor that polls a database
+  Note: The "postReadSql" is only executed when the resultset returned from the "sql" statement has be processed.
+  This means that there may be multiple commits prior to the "postReadSql" applying the update, with implications
+  as to how to manage any exceptions prior to the "postReadSql" running and commiting.
+  In fact if there is an error it would only give the "expected results" if a batchSize of 0 is used.
+  Alternative patterns are shown in reader3.xml and reader4.xml. 
 
   Run it like this...
     
@@ -26,10 +31,10 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/opt/hsqldb.jar
+    lib/opt/hsqldb.jar 				//Or relevant database driver jar if not using hsql
     
-  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
-  up the server make sure hsqldb.jar is in your class path and run the following...
+  This example relies on a hypersonic database running (http://www.hsqldb.org). To run
+  the server make sure hsqldb.jar is in your class path and run the following...
   
     java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
   ]]>
@@ -72,7 +77,7 @@
   </property>
   <property name="sql">
    <value>
-   UPDATE TRADE_STATUS SET status='PROCESSING' WHERE status='NEW';
+   UPDATE TRADE_STATUS SET status='PROCESSING' WHERE status='PROCESSED';
    SELECT TRADE.* FROM TRADE,TRADE_STATUS 
    WHERE TRADE.TRADEID=TRADE_STATUS.TRADEID 
    AND TRADE_STATUS.STATUS='PROCESSING'
