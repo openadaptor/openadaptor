@@ -30,4 +30,8 @@ public class MQMessage extends MQMD {
   public int getMessageLength() throws java.io.IOException {
     throw new StubException(StubException.WARN_MQ_JAR);
   }
+
+  public String readStringOfByteLength(int messageLength) {
+    throw new StubException(StubException.WARN_MQ_JAR);
+  }
 }

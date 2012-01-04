@@ -557,7 +557,10 @@ public class MqConnection extends Component {
       //
       // get message string
       //
-      messageString = message.readString(message.getMessageLength());
+      /* SC123
+         Fix: Exception examining message, java.io.EOFException: MQJE086: End of file exception
+      */
+      messageString = message.readStringOfByteLength (message.getMessageLength());
     }
     catch (MQException mqe) {
       //
