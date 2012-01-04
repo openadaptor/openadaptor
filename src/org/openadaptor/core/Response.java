@@ -68,7 +68,7 @@ public class Response {
 
   private Set types = new HashSet();
   
-  private Map matadata = null;
+  private Map metadata = null;
 
   /**
    * adds some data that is a result of sucessfully processing some input data to the response.
@@ -279,12 +279,25 @@ public class Response {
     private static final long serialVersionUID = DataBatch.serialVersionUID;
   }
 
-  public void setMatadata(Map matadata) {
-    this.matadata = matadata;
+  public void setMetadata(Map metadata) {
+    this.metadata = metadata;
   }
 
-  public Map getMatadata() {
-    return matadata;
+  public Map getMetadata() {
+    return metadata;
   }
-  
+  /**
+   * @deprecated set meta data was incorrectly spelled as setMatadata. Replaced with setMetadata 
+   */
+  //@Deprecated
+  public void setMatadata(Map metadata) {
+	  this.metadata = metadata;
+  }
+  /**
+   * @deprecated get meta data was incorrectly spelled as getMatadata. Replaced with getMetadata 
+   */  
+  //@Deprecated
+  public Map getMatadata() {
+    return metadata;
+  }  
 }

@@ -235,7 +235,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
     for (Iterator iter = batches.iterator(); iter.hasNext();) {
       DataBatch batch = (DataBatch) iter.next();
       if (batch instanceof OutputBatch) {
-        process(new Message(batch.getData(),node,transaction, response.getMatadata()),routingMap.getProcessDestinations(node));
+        process(new Message(batch.getData(),node,transaction, response.getMetadata()),routingMap.getProcessDestinations(node));
       } 
       else if (batch instanceof DiscardBatch) {
         if (logDiscardAsInfo) {
@@ -244,7 +244,7 @@ public class AbstractRouter extends Component implements ILifecycleComponentCont
         else {
           log.debug(node.toString() + " discarded " + batch.size() + " input(s)");
         }
-        process(new Message(batch.getData(),node,transaction, response.getMatadata()),routingMap.getDiscardDestinations(node));
+        process(new Message(batch.getData(),node,transaction, response.getMetadata()),routingMap.getDiscardDestinations(node));
       } 
       else if (batch instanceof ExceptionBatch) {
         processExceptions(node, batch.getData(), transaction);

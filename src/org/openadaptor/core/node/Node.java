@@ -159,7 +159,7 @@ public class Node extends LifecycleComponent implements IMessageProcessor, Admin
       
 		Response response = new Response();
 		
-        response.setMatadata(msg.getMetadata());
+        response.setMetadata(msg.getMetadata());
         
         if(processor instanceof IMetadataAware){
           ((IMetadataAware) processor).setMetadata(msg.getMetadata());
