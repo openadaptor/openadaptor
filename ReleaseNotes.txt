@@ -15,7 +15,12 @@ Connectors
  * Enhanced the MQMessage stub implementation with the "readStringOfByteLength(int)" method
  * Changed the MqConnection to get message string without exception message
    - Exception examining message, java.io.EOFException: MQJE086: End of file exception
-   
+
+Core
+==========
+ * Corrected typo in Response.java.
+ * matadata attribute corrected to metadata and setter/getter and it's usages corrected.
+    
 =================================================
 openadaptor3 production 3.4.7 Release Notes
 
