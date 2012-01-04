@@ -1,4 +1,22 @@
 =================================================
+openadaptor3 production 3.4.8 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: ???
+Author: openadaptor Core Team
+
+openadaptor 3.4.8
+=======
+
+Connectors
+==========
+ * Enhanced the MQMessage stub implementation with the "readStringOfByteLength(int)" method
+ * Changed the MqConnection to get message string without exception message
+   - Exception examining message, java.io.EOFException: MQJE086: End of file exception
+   
+=================================================
 openadaptor3 production 3.4.7 Release Notes
 
 See licence.txt for Licence information.
