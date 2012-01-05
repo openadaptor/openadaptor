@@ -19,7 +19,7 @@
   This means that there may be multiple commits prior to the "postReadSql" applying the update, with implications
   as to how to manage any exceptions prior to the "postReadSql" running and commiting.
   In fact if there is an error it would only give the "expected results" if a batchSize of 0 is used.
-  Alternative patterns are shown in reader3.xml and reader4.xml. 
+  An alternative (and better) pattern is shown in reader3.xml. 
 
   Run it like this...
     
