@@ -68,9 +68,9 @@ import org.openadaptor.util.ObjectCloner;
 public class ScriptProcessor extends Component implements IDataProcessor, IMetadataAware {
   private static final Log log =LogFactory.getLog(ScriptProcessor.class);
   public static final String DEFAULT_LANGUAGE="js"; //Javascript is the default language.
-  public static final String DEFAULT_DATA_BINDING="oa_data"; //Bound name for data records
-  public static final String DEFAULT_METADATA_BINDING="oa_metadata"; //Bound name for data records
-  public static final String DEFAULT_LOG_BINDING="oa_log"; //Bound name for logging
+  public static final String DEFAULT_DATA_BINDING=org.openadaptor.core.Constants.DEFAULT_DATA_BINDING; //Bound name for data records
+  public static final String DEFAULT_METADATA_BINDING=org.openadaptor.core.Constants.DEFAULT_METADATA_BINDING; //Bound name for data records
+  public static final String DEFAULT_LOG_BINDING=org.openadaptor.core.Constants.DEFAULT_LOG_BINDING; //Bound name for logging
 
   protected ScriptEngine scriptEngine;
   protected String language=DEFAULT_LANGUAGE;

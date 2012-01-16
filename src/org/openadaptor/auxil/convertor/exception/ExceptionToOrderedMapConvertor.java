@@ -50,33 +50,29 @@ public class ExceptionToOrderedMapConvertor extends AbstractConvertor {
   
   private static final Log log = LogFactory.getLog(ExceptionToOrderedMapConvertor.class);
   
-  private static final String NO_CAUSE_EXCEPTION     = "No cause exception detected.";
-  private static final String UNKNOWN_ADAPTOR_NAME   = "Unknown";
-  private static final String UNKNOWN_COMPONENT_NAME = "Unknown";
-  
   /* Messges for missing non-critical data, initialised to defaults. */
-  private String noCauseException     = NO_CAUSE_EXCEPTION;
-  private String unknownAdaptorName   = UNKNOWN_ADAPTOR_NAME;
-  private String unknownComponentName = UNKNOWN_COMPONENT_NAME;
+  private String noCauseException     = org.openadaptor.core.Constants.NO_CAUSE_EXCEPTION;
+  private String unknownAdaptorName   = org.openadaptor.core.Constants.UNKNOWN_ADAPTOR_NAME;
+  private String unknownComponentName = org.openadaptor.core.Constants.UNKNOWN_COMPONENT_NAME;
   
   /* 
    * Default ordered map field names. Ideally, these should correspond to column names
    * in the database - public setters allow for overriding the defaults.
    */
-  static final String TIMESTAMP               = "TIMESTAMP";
-  static final String EXCEPTION_CLASS         = "EXCEPTION_CLASS_NAME";
-  static final String EXCEPTION_MESSAGE       = "EXCEPTION_MESSAGE";
-  static final String CAUSE_EXCEPTION_CLASS   = "CAUSE_EXCEPTION_CLASS_NAME";
-  static final String CAUSE_EXCEPTION_MESSAGE = "CAUSE_EXCEPTION_MESSAGE";
-  static final String STACK_TRACE             = "STACK_TRACE";
-  static final String ADAPTOR_NAME            = "ADAPTOR_NAME";
-  static final String COMPONENT               = "ORIGINATING_COMPONENT";
-  static final String THREAD_NAME             = "THREAD_NAME";
-  static final String DATA_TYPE               = "DATA_TYPE";
-  static final String DATA                    = "DATA";
-  static final String METADATA                = "METADATA";
-  static final String FIXED                   = "FIXED";
-  static final String REPROCESSED             = "REPROCESSED";
+  static final String TIMESTAMP               = org.openadaptor.core.Constants.TIMESTAMP;
+  static final String EXCEPTION_CLASS         = org.openadaptor.core.Constants.EXCEPTION_CLASS;
+  static final String EXCEPTION_MESSAGE       = org.openadaptor.core.Constants.EXCEPTION_MESSAGE;
+  static final String CAUSE_EXCEPTION_CLASS   = org.openadaptor.core.Constants.CAUSE_EXCEPTION_CLASS;
+  static final String CAUSE_EXCEPTION_MESSAGE = org.openadaptor.core.Constants.CAUSE_EXCEPTION_MESSAGE;
+  static final String STACK_TRACE             = org.openadaptor.core.Constants.STACK_TRACE;
+  static final String ADAPTOR_NAME            = org.openadaptor.core.Constants.ADAPTOR_NAME;
+  static final String COMPONENT               = org.openadaptor.core.Constants.COMPONENT;
+  static final String THREAD_NAME             = org.openadaptor.core.Constants.THREAD_NAME;
+  static final String DATA_TYPE               = org.openadaptor.core.Constants.DATA_TYPE;
+  static final String DATA                    = org.openadaptor.core.Constants.DATA;
+  static final String METADATA                = org.openadaptor.core.Constants.METADATA;
+  static final String FIXED                   = org.openadaptor.core.Constants.FIXED;
+  static final String REPROCESSED             = org.openadaptor.core.Constants.REPROCESSED;
   
   /* Field names, initialised to defaults defined above. */
   private String timestampColName             = TIMESTAMP;
