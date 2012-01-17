@@ -20,6 +20,7 @@ Core
 ==========
  * Corrected typo in Response.java.
  * matadata attribute corrected to metadata and setter/getter and it's usages corrected.
+ * Constants.java class created as a location for defining constant attributes for central reference.
     
 =================================================
 openadaptor3 production 3.4.7 Release Notes
