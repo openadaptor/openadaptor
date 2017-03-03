@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 	$Id: swift-modifier.xml 2055 2010-04-15 08:33:31Z higginse $
-	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/convertors/swift/swift-modifier.xml $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/convertors/swift/swift-modifier.xml $
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

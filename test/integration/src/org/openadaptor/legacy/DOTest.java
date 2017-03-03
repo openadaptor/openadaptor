@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 //import org.openadaptor.legacy.converter.dataobjects.DataObjectToOrderedMapConvertor;
 
 
-public class DOTest extends TestCase {
+public abstract class DOTest extends TestCase {
 
   // no way to get this to compile in IDE without givin precedence to 
   // the legacy openadaptor jar which we do not want to do.

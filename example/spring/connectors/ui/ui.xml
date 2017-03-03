@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  $Id: ui.xml 1499 2008-05-28 10:26:58Z higginse $
- $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/ui/ui.xml $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/ui/ui.xml $
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">

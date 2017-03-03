@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: messageproperties-publisher.xml 2081 2010-05-26 09:24:13Z kscully $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/jms/messageproperties-publisher.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/jms/messageproperties-publisher.xml $
  --> 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

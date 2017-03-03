@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: map-transformation.xml 1249 2008-02-19 15:15:23Z lachork $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/processors/map/map-transformation.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/map/map-transformation.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

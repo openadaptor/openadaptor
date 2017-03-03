@@ -35,6 +35,7 @@ package org.openadaptor.auxil.connector.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -71,14 +72,16 @@ public abstract class AbstractJDBCConnectionTests extends TestCase {
     jdbcConnection.setProperties(props);
     jdbcConnection.connect();
 
-    /* run in schema if defined */
-    String schema = getSchemaDefinition();
-    if(null != schema){
-      PreparedStatement preparedStatement = jdbcConnection.getConnection().prepareStatement(schema);
-      preparedStatement.executeUpdate();
-      preparedStatement.close();
-    }
-    log.debug("setUp() complete");
+		/* run in schema if defined */
+		List<String> schemas = getSchemaDefinitions();
+		if (null != schemas) {
+			for (String schema : schemas) {
+				PreparedStatement preparedStatement = jdbcConnection.getConnection().prepareStatement(schema);
+				preparedStatement.executeUpdate();
+				preparedStatement.close();
+			}
+		}
+		log.debug("setUp() complete");
   }
 
   protected void tearDown() throws Exception {
@@ -105,5 +108,5 @@ public abstract class AbstractJDBCConnectionTests extends TestCase {
   /**
    * @return DB schemat definition to be set up before the tests are run.
    */
-  public abstract String getSchemaDefinition();
+  public abstract List<String> getSchemaDefinitions();
 }

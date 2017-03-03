@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: groovy-xpath.xml 2136 2011-02-08 16:26:49Z kscully $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/processors/script/groovy-xpath.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/processors/script/groovy-xpath.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -25,12 +25,10 @@
   You need the following in your classpath
   
     lib
-    lib/opt/groovy-1.7.2.jar
-    lib/opt/asm-3.2.jar
-    lib/opt/antlr-2.7.7.jar
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
+    lib/opt/groovy-all-2.4.7.jar
 
   The groovy-engine provides JSR223 scripting integration. Be careful with classpath order 
   to ensure that the correct engine version is loaded. If you still have problems even after

@@ -246,7 +246,7 @@ public class ReadConnectorServletTestCase extends TestCase {
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       readResponse(connection);
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage());
+      throw new RuntimeException(e.getMessage(), e);
     }
   }
 

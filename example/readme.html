@@ -50,7 +50,7 @@
   1.4 then you need to install a new version. Please refer to <a href="http://www.java.com" target="_blank">http://www.java.com</a>
   for details on how to do this.</p>
   
- <p>OpenAdaptor is currently built and tested with version 1.5 of the JDK. The build configuration 
+ <p>OpenAdaptor is currently built and tested with version 1.6 of the JDK. The build configuration 
   ensures that the resulting installation is compatible with Java 1.4 </p>
 
 <p class="back"><a href="#contents">back to contents</a></p>
@@ -87,7 +87,7 @@
 <pre>
   opendaptor-X.Y.Z
    |
-   |- example         // README.txt and ant build file to compile code examples
+   |- example         // README.txt and gradle build file to compile code examples
    |   |
    |   |- bin         // scripts to set your Java classpath
    |   |- docs		  
@@ -243,11 +243,15 @@
 -->
 <a name="code"></a>
 <h2>The Code Examples</h2>
-<p>The <code>src</code> dir contains code examples. The ant build file <code>build.xml</code> will 
+<p>The <code>src</code> dir contains code examples. The gradle build file <code>build.gradle</code> will 
   compile these examples. In order to run the compiled examples you will need to set your classpath 
   and include example/classes. Please refer to 
-  <a href="http://ant.apache.org" target="_blank">http://ant.apache.org</a> if you are not familiar 
-  with ant.</p>
+  <a href="https://gradle.org/" target="_blank">https://gradle.org/</a> if you are not familiar 
+  with gradle.</p>
+<p>To build the example code, please run:</p>
+<div class="shell"><pre>
+  gradlew classes
+</pre></div>
 <p class="back"><a href="#contents">back to contents</a></p>
 
 

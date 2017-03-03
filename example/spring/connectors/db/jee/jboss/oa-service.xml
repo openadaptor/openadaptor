@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   $Id: oa-service.xml 1808 2008-10-20 13:47:30Z lachork $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/db/jee/jboss/oa-service.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/db/jee/jboss/oa-service.xml $
  -->
 <!--  
 Descriptor of JMX managed spring adaptor bean that will be available through JBoss console

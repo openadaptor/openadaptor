@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  $Id: archiveWriter.xml 2190 2016-12-16 14:00:20Z fschlier $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/file/archiveWriter.xml $
+	$Id: file.xml 1728 2012-03-23 13:42:09Z wratisp $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/file/archiveWriter.xml $
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

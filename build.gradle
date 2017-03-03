@@ -1,0 +1,846 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+version = '3.5.0-SNAPSHOT'
+
+project.ext {
+    dirs = [
+        src : [
+            root     : "/",
+            src      : "src",
+            example  : "example",
+            lib      : "lib",
+            licences : "licences",
+            sql      : "sql",
+            www      : "www",
+        ],
+        target : [
+            build    : "build",
+            example  : "build/example",
+            javadocs : "build/javadocs",
+            lib      : "build/lib",
+            test     : "build/test",
+            unitout  : "test/unit/output",
+            package  : "build/package"
+        ]
+    ]
+    files = [
+        licence : "licence.txt"
+    ]
+
+	// Allow builds that do not access www.openadaptor.org and other external sites
+    if (System.properties['localBuild'] == null) {
+       localBuild = false
+    } else {
+       localBuild = true
+    }
+
+    if (System.properties['tag'] == null) {
+        tag = 'trunk'
+    } else {
+        tag = System.properties['tag']
+        project.version = System.properties['tag']
+    }
+
+    if (!project.hasProperty("timestamp")) {
+        timestamp = new Date().format("yyyyMMdd':'HHmm")
+    }
+    username = System.getProperty('user.name')
+
+    if (project.hasProperty("graphviz.dot")) {
+        System.setProperty("graphviz.dot", project.getProperty("graphviz.dot"))
+    }
+
+    // Set copyrightAutoFix to true to automatically fix copyright notices.
+    // Warning: this may modify source files!
+    copyrightAutoFix = false
+
+    if (!project.hasProperty("mavenCentralUrl")) {
+        mavenCentralUrl = "https://repo1.maven.org/maven2/"
+    }
+}
+
+// Build intro
+println()
+println("Building Openadaptor ${project.version}")
+println()
+println("Openadaptor base directory is ${project.projectDir}")
+println("Builds tag is ${project.tag}")
+println("Builds timestamp is ${project.timestamp}")
+if (project.localBuild) {
+	println("This is a local build.")
+}
+println()
+
+// Java Source Configurations
+
+sourceSets {
+    stub {
+        java {
+            srcDirs = ['stub/src']
+        }
+        resources {}
+    }
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['/']
+            include 'licence.txt'
+        }
+    }
+    spring {
+        java {
+            srcDirs = ['spring/src']
+            exclude 'org/openadaptor/spring/.openadaptor-spring.xml'
+        }
+        resources {
+            srcDirs = ['spring/src']
+            include 'org/openadaptor/spring/.openadaptor-spring.xml'
+        }
+    }
+    legacy {
+        java {
+            srcDirs = ['legacy/src']
+        }
+    }
+    support {
+        java {
+            srcDirs = ['support/src']
+        }
+        resources {}
+        output.classesDir = 'build/support/classes'
+    }
+    test {
+        java {
+            srcDirs = ['test/unit/src']
+        }
+        resources {
+            srcDirs = ['test/unit/input']
+        }
+        // TODO: Move these files to a res dir and out of src dir!
+        resources {
+            srcDir 'test/unit/src'
+            include 'org/openadaptor/auxil/convertor/xml/test.xml'
+            include 'org/openadaptor/auxil/connector/iostream/reader/test.txt'
+            include 'org/openadaptor/auxil/connector/iostream/reader/test.xml'
+            include 'org/openadaptor/auxil/processor/xml/input.xml'
+            include 'org/openadaptor/auxil/processor/xml/output.xml'
+            include 'org/openadaptor/auxil/processor/xml/schema.xsd'
+        }
+    }
+    integrationTest {
+        java {
+            srcDirs = ['test/integration/src']
+        }
+        resources {}
+    }
+    systemTest {
+        java {
+            srcDirs = ['test/system/src']
+        }
+        resources {}
+    }
+}
+
+//Java Compilation Configurations 
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+compileIntegrationTestJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+compileTestJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+compileSystemTestJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+task compile(dependsOn: [stubClasses, supportClasses, classes, springClasses], description: 'Compile all source code') {}
+
+task compileTest(dependsOn: [integrationTestClasses, systemTestClasses, testClasses], description: 'Compile all test code') {}
+
+task compileAll(dependsOn: [compile, compileTest], description: 'Compile all source code')
+
+repositories {
+    maven {
+        url mavenCentralUrl
+    }
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+// Core Configuration
+
+dependencies {
+    compile files(project.sourceSets.stub.output)
+    compile 'commons-logging:commons-logging:1.2'
+    compile 'javax.jms:jms-api:1.1-rev-1'
+    compile 'org.ow2.spec.ee:ow2-jta-1.1-spec:1.0.13'
+    compile 'javax.mail:mail:1.4.7'
+    compile 'org.apache.cxf:cxf-rt-frontend-jaxws:3.0.12' // Branch 3.0 supports Java 6, 3.1requires Java 7
+    compile 'org.apache.cxf:cxf-rt-transports-http:3.0.12'
+    compile('org.apache.cxf:cxf-rt-transports-http-jetty:3.0.12') {
+		exclude module: 'geronimo-servlet_3.0_spec'
+	}
+    compile 'dom4j:dom4j:1.6.1'
+    compile 'jdom:jdom:1.0'
+    compile 'org.quartz-scheduler:quartz:2.2.3'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'commons-net:commons-net:3.5'
+    compile 'commons-httpclient:commons-httpclient:3.1'
+    compile 'commons-codec:commons-codec:1.10'
+    compile 'joda-time:joda-time:2.9.7'
+    compile 'org.json:json:20160810'
+    compile 'org.apache.velocity:velocity:1.5' // Raised from 1.4 to 1.5 to avoid dependency collision after artifact relocation in maven central
+    compile 'org.eclipse.jetty:jetty-server:8.1.19.v20160209'
+    compile 'org.eclipse.jetty:jetty-servlet:8.1.19.v20160209'
+    compile 'xerces:xercesImpl:2.9.0'
+    compile 'jaxen:jaxen:1.1-beta-9'
+    compile 'jotm:jotm:1.5.3' // was 1.4.3, but not available in central
+    runtime 'jotm:jotm-carol:1.5.3' // Moved from depends
+    runtime 'jotm:jotm-jrmp-stubs:1.5.3' // Moved from depends
+    compile 'com.thoughtworks.xstream:xstream:1.4.9'
+    compile name: 'wife' // is 5.1 -> available 'com.prowidesoftware:wife:6.4.1' seems to be incompatible
+
+    //compile name: 'jmxtools' // 'com.sun.jdmk:jmxtools:1.2.1' does not include the needed jar in mavenCentral due to license issues!
+    compile 'org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea'
+    compile 'org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea'
+
+    compile 'com.rometools:rome:1.7.1'
+    runtime 'org.hsqldb:hsqldb:2.3.4'
+    compile 'commons-collections:commons-collections:3.2.2'
+    compile('log4j:log4j:1.2.15') {
+        exclude module: 'jms'
+        exclude module: 'jmxtools'
+        exclude module: 'jmxri'
+    }
+    runtime 'org.slf4j:slf4j-log4j12:1.7.16'
+    runtime 'commons-dbcp:commons-dbcp:1.2.2'
+    runtime('commons-jxpath:commons-jxpath:1.2') { // Is this dependency realy needed. It brings in a lot of ugly stuff! There is no direct code usage!
+        exclude module: 'junit'
+        exclude module: 'xerces'
+        exclude module: 'servletapi'
+        exclude module: 'ant-optional'
+    }
+    runtime 'com.sun.xml.fastinfoset:FastInfoset:1.2.7'
+    runtime 'javax.xml.bind:jaxb-api:2.1'
+    runtime 'com.sun.xml.bind:jaxb-impl:2.1.12'
+    runtime 'com.sun.xml.bind:jaxb-xjc:2.1.12'
+    runtime('javax.xml.ws:jaxws-api:2.1-1') {
+        exclude module: 'jsr181'
+    }
+    runtime 'org.codehaus.groovy:groovy-all:2.4.7'
+    runtime 'mysql:mysql-connector-java:6.0.5'
+    runtime 'org.apache.geronimo.specs:geronimo-annotation_1.0_spec:1.1.1'
+    runtime 'net.sourceforge.jtds:jtds:1.2.2'
+    runtime 'javax.xml:jaxrpc-api:1.1'
+    runtime name: 'jonas_timer'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'xalan:xalan:2.7.2'
+    }
+}
+
+// Spring Configuration
+
+configurations {
+    springCompile.extendsFrom(runtime)
+}
+
+dependencies {
+    springCompile files(project.sourceSets.main.output)
+    springCompile 'org.springframework:spring-context:4.3.5.RELEASE'
+    springCompile 'org.springframework:spring-jms:4.3.5.RELEASE'
+}
+
+// Depends Configuration
+
+configurations {
+    depends.extendsFrom(springRuntime)
+    depends.exclude group: 'org.springframework', module: 'spring-jms'
+    depends.exclude group: 'org.apache.cxf'
+    depends.exclude group: 'javax.mail', module: 'mail'
+    depends.exclude group: 'org.hsqldb', module: 'hsqldb'
+    depends.exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    depends.exclude group: 'mysql', module: 'mysql-connector-java'
+    depends.exclude group: 'net.sourceforge.jtds', module: 'jtds'
+}
+
+// Legacy Configuration
+
+dependencies {
+    legacyCompile files(project.sourceSets.main.output)
+    legacyCompile files(project.sourceSets.main.compileClasspath)
+    legacyCompile('org.codehaus.xfire:xfire-core:1.2.6') {
+        exclude module: 'XmlSchema'
+        exclude module: 'junit'
+    }
+    legacyRuntime('org.codehaus.xfire:xfire-aegis:1.2.6') {
+        exclude module: 'XmlSchema'
+        exclude module: 'junit'
+    }
+    legacyRuntime 'org.apache.ws.commons.schema:XmlSchema:1.4.5'
+}
+
+// Support Configuration
+
+configurations {
+    supportCompile.extendsFrom(compile)
+}
+
+dependencies {
+    supportCompile files(project.sourceSets.main.output)
+    supportCompile 'ant:ant:1.6.5'
+    supportCompile 'httpunit:httpunit:1.6.2'
+}
+
+configurations {
+    antTasks
+}
+
+dependencies {
+    antTasks files(configurations.supportRuntime)
+    antTasks files(project.sourceSets.support.output)
+}
+
+// Test Configurations
+
+// TODO: Currently unit test source has a dependency on common class in integration
+// Namely TestComponent. This needs to be reorganised.
+
+configurations {
+    integrationTestCompile.extendsFrom(springCompile)
+}
+
+dependencies {
+    integrationTestCompile files(project.sourceSets.main.output)
+    integrationTestCompile files(project.sourceSets.spring.output)
+    integrationTestCompile 'junit:junit:4.12'
+}
+
+configurations {
+    testCompile.extendsFrom(integrationTestCompile)
+    systemTestCompile.extendsFrom(integrationTestCompile)
+    systemTestCompile.extendsFrom(legacyRuntime)
+    springTestRuntime.extendsFrom(integrationTestCompile)
+	springTestRuntime.extendsFrom(legacyRuntime)
+}
+
+dependencies {
+    systemTestCompile files(project.sourceSets.integrationTest.output)
+    systemTestCompile files(project.sourceSets.legacy.output)
+    systemTestCompile('dumbster:dumbster:1.6') {
+        exclude module: 'activation'
+        exclude module: 'mail'
+    }
+    systemTestCompile 'axis:axis:1.4'
+    systemTestCompile 'javax.xml:jaxrpc-api:1.1'
+    systemTestRuntime 'commons-discovery:commons-discovery:0.2' // Seems to be a dependency of axis
+    systemTestRuntime 'org.mortbay.jetty:jetty:6.1.9' // Needed by xfire, but should not be included in distribution after mogration to jetty >= 7.x.x
+}
+
+dependencies {
+    testCompile files(project.sourceSets.integrationTest.output)
+    testCompile 'jmock:jmock-cglib:1.2.0'
+    testCompile 'commons-io:commons-io:2.5'
+}
+
+dependencies {
+    springTestRuntime files(project.sourceSets.legacy.output)
+}
+
+javadoc {
+    source = sourceSets.main.allJava + sourceSets.spring.allJava + sourceSets.legacy.allJava
+    classpath = sourceSets.main.output + sourceSets.main.compileClasspath + sourceSets.spring.compileClasspath
+    options.author = true
+    destinationDir = file(project.dirs.target.javadocs)
+}
+
+task exampleDoc(type: GradleBuild, description: 'Build example documentation') {
+    buildFile = "${project.dirs.src.example}/tools/build.gradle"
+    tasks = ['docs']
+	startParameter.projectProperties = gradle.startParameter.projectProperties
+    startParameter.projectProperties += [
+    	localBuild: project.localBuild,
+        tag: project.tag,
+        timestamp: project.timestamp,
+        docgenBin: "${project.projectDir}/${project.dirs.src.example}/tools",
+        docgenProjectName: project.name,
+        docgenInputDir: "${project.projectDir}/${project.dirs.src.example}",
+        docgenOutputDir: "${project.projectDir}/${project.dirs.target.example}/docs"
+    ]
+    inputs.dir project.dirs.src.example
+    outputs.dir project.dirs.target.example
+    doFirst {
+        initializeDir(project.dirs.target.example)
+    }
+}
+
+// Tests
+
+task integrationTest(type: Test, description: 'Integration tests') {
+    testClassesDir project.sourceSets.integrationTest.output.classesDir
+    classpath = project.sourceSets.integrationTest.runtimeClasspath
+}
+
+task systemTest(type: Test, description: 'System tests') {
+    testClassesDir project.sourceSets.systemTest.output.classesDir
+    classpath = project.sourceSets.systemTest.runtimeClasspath
+    exclude '**/WebServiceCXFR*'
+    exclude '**/WebServiceCXFW*'
+    exclude '**/WebServiceL*'
+    exclude '**/WebServiceR*'
+    exclude '**/WebServiceW*'
+    exclude '**/MQ*'
+    exclude '**/TIBCO*'
+    exclude '**/RMIConnectorTestCase*'
+}
+
+tasks.withType(Test) {
+    // show standard out and standard error of the test JVM(s) on the console
+    it.testLogging.showStandardStreams = false
+
+    it.reports {
+        html.enabled = false
+    }
+}
+
+task springTest(description: 'Validate Spring example configurations') << {
+    ant.taskdef(name: 'springvalidate',
+            classname: 'org.openadaptor.util.ant.SpringConfigValidateTask',
+            classpath: configurations.antTasks.asPath)
+    def springClassPath = ant.path(id: 'classpath.test.spring') {}
+    springClassPath.addJavaRuntime()
+    configurations.springTestRuntime.each {
+        springClassPath.setLocation(it)
+    }
+
+    ant.springvalidate(verbose: true, ignorestubexceptions: true, classpathref: 'classpath.test.spring') {
+        fileset(dir: "${project.dirs.src.example}/spring") {
+            include(name: "**/*.xml")
+            exclude(name: "**/input/*")
+            exclude(name: "**/output/*")
+            exclude(name: "**/mq-*.xml")
+            exclude(name: "**/file/enrich-*.xml")
+            exclude(name: "**/db/jee/jboss/oa*.xml")
+            exclude(name: "transaction/spring-local-txn-demo.xml")
+        }
+    }
+}
+
+task testReport(type: TestReport) {
+    reportOn test
+    reportOn systemTest
+    reportOn integrationTest
+    destinationDir = file('build/reports/tests')
+}
+
+check.dependsOn testReport
+check.dependsOn springTest
+
+// Copyright Validation
+
+task copyrightValidate(dependsOn: supportClasses, description: 'Checks copyright notices in code') << {
+    ant.taskdef(name: 'copyright',
+            classname: 'org.openadaptor.util.ant.CopyrightTask',
+            classpath: configurations.antTasks.asPath)
+    ant.copyright(update: project.copyrightAutoFix, copyright: "${project.projectDir}/${project.files.licence}") {
+        project.sourceSets.main.java.srcDirs.each {
+            fileset(dir: it, includes: "**/*.java")
+        }
+        project.sourceSets.spring.java.srcDirs.each {
+            fileset(dir: it, includes: "**/*.java")
+        }
+        project.sourceSets.support.java.srcDirs.each {
+            fileset(dir: it, includes: "**/*.java")
+        }
+        fileset(dir: project.dirs.src.example, includes: "**/*.java")
+    }
+}
+
+// Packaging
+
+def sharedJarConfiguration = {
+    destinationDir = file(project.dirs.target.lib)
+    version = ""
+    manifest {
+        attributes('Build-Tag' : project.tag,
+                   'Build-Timestamp' : project.timestamp,
+                   'Build-By' : project.username)
+    }
+}
+
+jar {
+    configure sharedJarConfiguration
+    manifest {
+        attributes('Main-Class': 'org.openadaptor.JarLauncher')
+    }
+    from(sourceSets.legacy.output)
+}
+
+processResources {
+    with copySpec {
+        from 'src' 
+        include '.openadaptor.properties'
+        filter(ReplaceTokens, tokens: ['BUILDCOMPILER':JavaVersion.current().toString(), 'BUILDTIME':project.timestamp, 'BUILDTAG':project.tag])
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    configure sharedJarConfiguration
+
+    from(sourceSets.main.allSource)
+    classifier "src"
+}
+
+task springJar(type: Jar, dependsOn: springClasses) {
+    configure sharedJarConfiguration
+
+    from(sourceSets.spring.output)
+    appendix "spring"
+}
+
+task springSourcesJar(type: Jar, dependsOn: springClasses) {
+    configure sharedJarConfiguration
+
+    from(sourceSets.spring.allSource)
+    appendix "spring"
+    classifier "src"
+}
+
+task bootstrapJar(type: Jar, dependsOn: classes) {
+    configure sharedJarConfiguration
+
+    from(sourceSets.main.output) {
+        include 'org/openadaptor/bootstrap/**'
+    }
+    from(sourceSets.spring.output) {
+        include 'org/openadaptor/bootstrap/**'
+    }
+    from(project.dirs.src.lib) {
+        include 'log4j.properties'
+    }
+    baseName "bootstrap"
+    manifest {
+        attributes('Main-Class': 'org.openadaptor.bootstrap.Usage')
+    }
+}
+
+task stubJar(type: Jar, dependsOn: stubClasses) {
+    configure sharedJarConfiguration
+
+    from(sourceSets.stub.output)
+    appendix "stub"
+}
+
+task dependsJar(type: Jar, description: 'Create openadaptor-depends.jar from 3rd party libs') {
+    configure sharedJarConfiguration
+
+    appendix "depends"
+
+    doFirst {
+        // select the jars which should be included into depends jar
+        def jars = configurations.depends.findAll({ it.name.endsWith('.jar') })
+
+        // Include all classpath sources into the depends jar
+        from(jars.collect { 
+            zipTree(it).matching({ 
+                    include 'net/sourceforge/**'
+                    include 'org/**'
+                    include 'javax/**'
+                    include 'com/**'
+                    include 'META-INF/services/**'
+                    include 'carol-defaults.properties'
+                    include 'countries.properties'
+                    include 'currencies.properties'
+                }) 
+        })
+
+        // Combines files from multiple jars into one single file, containing all the content
+        def combine = { name ->
+            def path = ""
+            def filename = name
+            if (name.indexOf('/') > 0) {
+                path = name.substring(0, name.lastIndexOf('/'))
+                filename = filename.substring(filename.lastIndexOf('/') + 1)
+            }
+            def base = file("build/tmp/dependsJar/combine/${path}")
+            base.mkdirs()
+            File file = new File(base, filename)
+            file.text = ""
+
+            jars.each {
+                zipTree(it).matching({ include "${name}" }).each { file << ("${it.text}\r\n") }
+            }
+
+            into(path) {
+                from file
+            }
+
+        }
+
+        combine('META-INF/spring.handlers')
+        combine('META-INF/spring.schemas')
+
+        def folderNameMappings = [
+                'FastInfoset-1.2.7':'fast-infoset',
+                'geronimo-annotation_1.0_spec-1.1.1':'geronimo', 
+                'jaxrpc-api-1.1':'jaxrpc',
+                'jaxb-api-2.1':'jaxb', 
+                'jaxb-impl-2.1.12':'jaxb', 
+                'jaxb-xjc-2.1.12':'jaxb', 
+                'jaxen-1.1-beta-9':'jaxen', 
+                'jaxws-api-2.1-1':'jaxws-api',
+                'jms-api-1.1-rev-1':'jms',
+                'jotm-jrmp-stubs-1.5.3':'jotm_jrmp_stubs',
+                'json-20160810':'json',
+                'stax-api-1.0-2':'stax-api'
+            ]
+
+        // Include all metadata of the included jars into the depends jar
+        jars.collect { zip ->
+            zipTree(zip).matching({ 
+                    exclude 'net/sourceforge/**'
+                    exclude 'org/**'
+                    exclude 'javax/**'
+                    exclude 'com/**'
+                    exclude 'META-INF/services/**'
+                    exclude 'META-INF/spring*'
+                    exclude 'carol-defaults.properties'
+                    exclude 'countries.properties'
+                    exclude 'currencies.properties'
+            }).visit { f ->
+                if (!f.isDirectory() && !f.name.endsWith('.class')) {
+                    // Calculate the base folder which should contain the metadata for the processed jar
+                    def zipName = zip.name.substring(0, zip.name.length() - 4)
+                    if (folderNameMappings.containsKey(zipName)) {
+                        zipName = folderNameMappings.get(zipName)
+                    }
+                    zipName = zipName.replaceAll(~ /[-_]\d+\.\d+(\.\d+)?/, "")
+
+                    // Calculate the path and name of the files inside the jar specific folder
+                    def entry = f.entry
+                    def entryPath = ''
+                    def entryName = entry.name
+                    if (entryName.contains('/')) {
+                        def i = entryName.lastIndexOf('/')
+                        entryPath = entryName.substring(0, i)
+                        entryName = entryName.substring(i)
+                    }
+                    // Include the files into the depends jar
+                    into("${zipName}/${entryPath}") {
+                        from f.file
+                    }
+                }
+            }
+        }
+    }
+}
+
+task jarsCompiled(dependsOn: [jar, springJar, bootstrapJar, stubJar], description: 'Create jars from compiled classes') {}
+
+task sourcesJars(dependsOn: [sourcesJar, springSourcesJar], description: 'Create jar from openadaptor sources') {}
+
+task jars(dependsOn: [jarsCompiled, sourcesJars, dependsJar], description: 'Assemble all jars') {}
+
+task packageFiles(type: Copy, description: 'Copying static files to package area') {
+    destinationDir = file(project.dirs.target.package)
+    // SQL
+    into('sql') {
+        from project.dirs.src.sql
+    }
+    // FAQ
+    into('') {
+        from project.dirs.src.www
+        include 'FAQ.html'
+    }
+    // Examples
+    into('example') {
+        from project.dirs.src.example
+        from exampleDoc
+        exclude 'tools/.gradle'
+        exclude 'tools/build'
+    }
+    into('example/tutorial') {
+        from project.dirs.src.example
+        include 'log4j.properties'
+    }
+    // Release notes
+    into('') {
+        from project.dirs.src.root
+        include 'ReleaseNotes.txt'
+    }
+    // Licences
+    into('') {
+        from project.files.licence
+    }
+    into('licences') {
+        from project.dirs.src.licences
+    }
+    // Javadocs
+    into('javadocs') {
+        from javadoc
+    }
+    // Libs
+    into('lib') {
+        from jar
+        from sourcesJar
+        from springJar
+        from springSourcesJar
+        from dependsJar
+    }
+    into('lib') {
+        from project.dirs.src.lib
+        include 'log4j.properties'
+    }
+    into('lib') {
+        from project.dirs.src.src
+        include 'registration.properties'
+    }
+    into('lib/opt') {
+        from project.sourceSets.main.runtimeClasspath
+        from project.dirs.src.lib
+        from project.sourceSets.spring.runtimeClasspath
+        include '*.jar'
+        include '*.zip'
+    }
+    into('lib/legacy') {
+        from project.sourceSets.legacy.runtimeClasspath
+        include '*.jar'
+        include '*.zip'
+        // Exclude all jars included in lib/opt, even if version differs because of separate resolution
+        project.sourceSets.main.runtimeClasspath.collect({ it.name }).findAll({ it.endsWith('.jar') }).each {
+            def idx = it.lastIndexOf('-')
+            if (idx < 0) { idx = it.size() - 4}
+            exclude it.substring(0, idx) + '*.jar'
+        } 
+    }
+    doFirst {
+        println("Packaging resources in ${file(project.dirs.target.package)}")
+    }
+    doLast {
+        // Create empty lib/ext dir in package area
+        initializeDir("${project.dirs.target.package}/lib/ext")
+    }
+}
+
+task zip(type: Zip, dependsOn: packageFiles, description: 'Create a zip file with packaged build') {
+    from new File("${project.projectDir}", "${project.dirs.target.package}")
+    into("openadaptor-${project.tag}")
+
+    version = "${project.tag}"
+    classifier = "bin"
+}
+
+task copyBinZip(type: Copy, dependsOn: zip, description: 'Moves created distributable into build/ folder') {
+    from zip
+    into project.dirs.target.build
+}
+
+assemble.dependsOn copyBinZip
+assemble.dependsOn copyrightValidate
+
+// Legacy tasks
+
+task upload(dependsOn: [zip], description: 'Upload packaged build to hosted website') {
+    ext.uploadFilePath = tasks.zip.outputs.files.singleFile
+    ext.uploadFileDescription = "Automated build ${project.timestamp} - TEST ONLY"
+
+    Properties props = new Properties()
+    props.load(new FileInputStream("${project.projectDir}/src/hosting.properties"))
+    props.each { prop ->
+        ext.set(prop.key, prop.value)
+    }
+
+    onlyIf {
+        ext.has('uploadProjectUrl')
+    }
+
+    doFirst {
+        //if (hasProperty('uploadProjectUrl')) {
+            ant.taskdef(name: 'upload',
+                classname: 'org.openadaptor.util.ant.HostedFileUploadTask', classpath: configurations.antTasks.asPath)
+            ant.upload(filepath: uploadFilePath, description: uploadFileDescription, overwrite: true, 
+                projecturl: uploadProjectUrl,
+                proxyhost: uploadProxyHost,
+                proxyport: uploadProxyPort,
+                username: uploadUsername,
+                password: uploadPassword)
+        //}
+    }
+}
+
+task cruise(dependsOn: [build, 'upload'], description: "Cruise target for openadaptor build") << {
+	// Legacy target which triggered build
+}
+
+// Helper
+void initializeDir(path) {
+    def f = file(path)
+    println("Initializing directory " + f)
+    f.mkdirs()
+}
+
+// Eclipse project configurations
+eclipse {
+    jdt {
+        // There are tests with generics, so we need Java 1.5 here for the complete eclipse project
+        sourceCompatibility = 1.5
+        targetCompatibility = 1.5
+//        javaRuntimeName = "J2SE-1.5"
+    }
+
+    classpath {
+        defaultOutputDir = file('build/classes/main')
+
+        plusConfigurations += [ configurations.systemTestRuntime, configurations.supportCompile ]
+
+        file {
+            beforeMerged { classpath ->
+                classpath.entries.removeAll { entry -> entry.kind == 'lib' || entry.kind == 'var' }
+            }
+            whenMerged { classpath ->
+                classpath.entries.removeAll { entry -> entry.kind == 'lib' && entry.path.contains('openadaptor/build') }
+                classpath.entries.removeAll { entry -> entry.kind == 'src' && entry.path == '.' }
+
+                // Set output directory
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('stub') }).each { it.output = 'build/classes/stub' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('spring') }).each { it.output = 'build/classes/spring' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('legacy') }).each { it.output = 'build/classes/legacy' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('support') }).each { it.output = 'build/support/classes' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('unit') }).each { it.output = 'build/classes/test' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('integration') }).each { it.output = 'build/classes/integrationTest' }
+                classpath.entries.findAll({ entry -> entry.kind == 'src' && entry.path.contains('system') }).each { it.output = 'build/classes/systemTest' }
+
+                // Change JDK Level
+                classpath.entries.findAll({ entry -> entry.kind == 'con' && entry.path.contains('JavaSE-1.4') }).each { it.path = it.path.replaceAll('JavaSE-1.4', 'JavaSE-1.6') }
+
+                // Remove duplicate entries
+                Map entryByPath = classpath.entries.groupBy { entry -> entry.path }
+                entryByPath.each { key, values ->
+                    if (values.size() > 1) {
+                        def entry = values.first()
+                        if (entry.kind == 'src') {
+                            entry.includes = []
+                            entry.excludes = []
+                        }
+                        int index = classpath.entries.indexOf entry
+                        classpath.entries.removeAll values
+                        classpath.entries.add index, entry
+                    }
+                }
+            }
+        }
+    }
+}

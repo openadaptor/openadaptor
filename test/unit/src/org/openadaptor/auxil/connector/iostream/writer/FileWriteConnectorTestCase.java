@@ -15,7 +15,7 @@ import junit.framework.TestCase;
  */
 public class FileWriteConnectorTestCase extends TestCase {
 
-  private static String DIR = "test/unit/output";
+  private static String DIR = "build/test/unit/output";
   
   private static String TEST_FILE_CONTENT = "larry\ncurly\nmo\n";
   

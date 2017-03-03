@@ -90,7 +90,9 @@ public class WebServiceCXFListeningReadConnectorTestCase extends TestCase {
         Call call = (Call) webService.createCall();
         endpoint = endpoint.substring(0, endpoint.indexOf("?wsdl"));
         call.setTargetEndpointAddress(new java.net.URL(endpoint));
-        call.setOperationName(new QName("http://soap.connector.auxil.openadaptor.org/", "process"));
+        call.setOperationName(new QName("http://www.openadaptor.org", "process"));
+        call.addParameter(new QName("http://www.openadaptor.org", "arg0"), org.apache.axis.Constants.XSD_STRING, javax.xml.rpc.ParameterMode.IN);
+        call.setReturnType(new QName("http://www.openadaptor.org", "processResponse"));
         for (int i = 0; i < data.length; i++) {
           call.invoke(new Object[] { data[i] });
         }

@@ -26,7 +26,9 @@
  */
 package org.openadaptor.auxil.connector.jdbc.reader;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -55,9 +57,10 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
 
   protected static String COL2 = "COL2";
 
-  private static String SCHEMA = "CREATE MEMORY TABLE OA_TEST(" + COL1 + " CHAR(32)," + COL2 + " CHAR(32)); "
-  + "INSERT INTO OA_TEST VALUES ('foo1', 'bar1'); INSERT INTO OA_TEST VALUES ('foo2', 'bar2');"
-  + "INSERT INTO OA_TEST VALUES ('foo3', 'bar3')";
+	private static List<String> SCHEMA = Arrays.asList("CREATE MEMORY TABLE OA_TEST(" + COL1 + " VARCHAR(32)," + COL2 + " VARCHAR(32));",
+			"INSERT INTO OA_TEST VALUES ('foo1', 'bar1');",
+			"INSERT INTO OA_TEST VALUES ('foo2', 'bar2');",
+			"INSERT INTO OA_TEST VALUES ('foo3', 'bar3')");
 
   protected static String SELECT_STMT_1 = "SELECT " + COL1 + ", " +  COL2 + " FROM OA_TEST";
 
@@ -95,8 +98,8 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
       Map row = (Map)((Object [])writer.dataCollection.get(i))[0];
       String rowNo = new Integer(i+1).toString();
       assertNotNull(row.get(COL1));
-      assertEquals(row.get(COL1), "foo" + rowNo);
-      assertEquals(row.get(COL2), "bar" + rowNo);
+      assertEquals("foo" + rowNo, row.get(COL1));
+      assertEquals("bar" + rowNo, row.get(COL2));
     }
     log.debug("--- Ending testLoopingPollingReadConnectorBatchOne --");
   }
@@ -123,8 +126,8 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
       Map row = (Map)rows[i];
       String rowNo = new Integer(i+1).toString();
       assertNotNull(row.get(COL1));
-      assertEquals(row.get(COL1), "foo" + rowNo);
-      assertEquals(row.get(COL2), "bar" + rowNo);
+      assertEquals("foo" + rowNo, row.get(COL1));
+      assertEquals("bar" + rowNo, row.get(COL2));
     }
     log.debug("--- Ending testLoopingPollingReadConnectorBatchAll --");
   }
@@ -149,14 +152,14 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
       Map row = (Map)firstTwoRows[i];
       String rowNo = new Integer(i+1).toString();
       assertNotNull(row.get(COL1));
-      assertEquals(row.get(COL1), "foo" + rowNo);
-      assertEquals(row.get(COL2), "bar" + rowNo);
+      assertEquals("foo" + rowNo, row.get(COL1));
+      assertEquals("bar" + rowNo, row.get(COL2));
     }
     Object [] lastRow = (Object []) writer.dataCollection.get(1);    
     Map row = (Map)lastRow[0];
     assertNotNull(row.get(COL1));
-    assertEquals(row.get(COL1), "foo3");
-    assertEquals(row.get(COL2), "bar3");
+    assertEquals("foo3", row.get(COL1));
+    assertEquals("bar3", row.get(COL2));
     log.debug("--- Ending testLoopingPollingReadConnectorBatchTwo --");
   }
 
@@ -192,7 +195,7 @@ public class JDBCReadConnectorTestCase extends AbstractJDBCConnectionTests{
   /**
    * @return test table definition.
    */
-  public String getSchemaDefinition() {
+  public List<String> getSchemaDefinitions() {
     return SCHEMA;
   }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: reader3.xml 2176 2012-01-04 12:54:24Z Wratislp $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/db/reader3.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/db/reader3.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
@@ -33,9 +33,7 @@
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
     lib/opt/hsqldb.jar  				//Or relevant database driver jar if not using hsql
-	lib/opt/groovy-1.7.2.jar
-    lib/opt/asm-3.2.jar
-    lib/opt/antlr-2.7.7.jar
+	lib/opt/groovy-all-2.4.7.jar
     
   This example relies on a hypersonic database running (http://www.hsqldb.org). To run
   the server make sure hsqldb.jar is in your class path and run the following...

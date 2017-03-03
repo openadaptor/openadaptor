@@ -129,7 +129,7 @@ public class WebServiceCXFListeningReadConnector extends QueuingReadConnector im
   }
 
   public void disconnect() { 
-	if(null==server){
+	if (null != server) {
 	  server.stop();
 	}
   }

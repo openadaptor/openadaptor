@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   $Id: ws-cxf-reader.xml 2183 2016-09-22 14:48:18Z fschlier $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/soap/ws-cxf-reader.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/soap/ws-cxf-reader.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -25,8 +25,21 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/opt/activation.jar
-    lib/opt/cxf_2.6.16.jar
+    lib/opt/cxf-api-2.6.16.jar;
+    lib/opt/cxf-rt-bindings-soap-2.6.16.jar;
+    lib/opt/cxf-rt-bindings-xml-2.6.16.jar;
+    lib/opt/cxf-rt-core-2.6.16.jar;
+    lib/opt/cxf-rt-databinding-jaxb-2.6.16.jar;
+    lib/opt/cxf-rt-frontend-jaxws-2.6.16.jar;
+    lib/opt/cxf-rt-frontend-simple-2.6.16.jar;
+    lib/opt/cxf-rt-transports-http-2.6.16.jar;
+    lib/opt/cxf-rt-ws-addr-2.6.16.jar;
+    lib/opt/cxf-rt-ws-policy-2.6.16.jar
+    lib/opt/xmlschema-core-2.0.3.jar
+    lib/opt/neethi-3.0.3.jar
+    lib/opt/wsdl4j-1.6.3.jar
+    lib/opt/woodstox-core-asl-4.4.0.jar
+    lib/opt/stax2-api-3.1.4.jar
      
   To test the adaptor, the webservice it is connecting to needs to be running
   (see the ws-cxf-server.xml example or invoke your own webservice). 

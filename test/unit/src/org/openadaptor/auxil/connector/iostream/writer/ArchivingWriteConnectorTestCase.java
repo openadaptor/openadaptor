@@ -5,12 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-//import java.io.IOException;
-import java.util.SortedMap;
+import java.util.Iterator;
 
+import org.apache.commons.io.filefilter.CanWriteFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openadaptor.util.FileUtils;
 
 import junit.framework.TestCase;
 
@@ -22,7 +22,8 @@ import junit.framework.TestCase;
 public class ArchivingWriteConnectorTestCase extends TestCase {
 
 	private static final Log log = LogFactory.getLog(ArchivingWriteConnectorTestCase.class);
-	private static String DIR = "test/unit/input/org/openadaptor/auxil/connector/iostream/writer/ArchivingWriteConnectorTest";
+	private static String TEMPLATE_DIR = "test/unit/input/org/openadaptor/auxil/connector/iostream/writer/ArchivingWriteConnectorTest";
+	private static String DIR = "build/test/unit/output/org/openadaptor/auxil/connector/iostream/writer/ArchivingWriteConnectorTest";
 
 	private static String TEST_DIR_1 = "test1";
 	private static String TEST_DIR_2 = "test2";
@@ -33,6 +34,8 @@ public class ArchivingWriteConnectorTestCase extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		org.apache.commons.io.FileUtils.deleteQuietly(new File(DIR));
+		org.apache.commons.io.FileUtils.copyDirectory(new File(TEMPLATE_DIR), new File(DIR));
 	}
 
 	/**

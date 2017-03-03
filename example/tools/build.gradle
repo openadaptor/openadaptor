@@ -1,0 +1,234 @@
+// Load doc.properties file into project properties
+def prps = new Properties()
+prps.load(file("docs.properties").newReader())
+prps.each { k, v ->
+	project.ext["${k}"] = "${v}"
+}
+
+ext {
+	oaVersion = "${project.docgenProjectName} ${project.tag} ${project.timestamp}"
+
+	dirOutputImages = project.docgenOutputDir
+	dirTools = project.docgenBin
+	dirXsl = "${dirTools}/xsl"
+
+	// Try various paths for graphviz 'dot' executable
+	['graphviz.dot.windows', 'graphviz.dot.linux', 'graphviz.dot.unix', 'graphviz.dot.mac'].each { 
+		if (!project.ext.has('graphviz.dot')) {
+			if (file(project.ext[it]).exists()) {
+				project.ext['graphviz.dot'] = project.ext[it]
+			}
+		}
+	}
+	if (!project.ext.has('graphviz.dot')) {
+		throw new ProjectConfigurationException("There was no installation of graphviz found. Check docs.properties or pass in via project property 'graphviz.dot'", null)
+	} else {
+		logger.info("Using Graphviz installation at ${project.ext['graphviz.dot']} for documentation image generation.")
+	}
+
+	examples_relative_basename = "trunk"
+	// if tag is not 'trunk' set relative path to 'tags/<tagname>' instead of just 'trunk'
+	if (!project.localBuild && !project.tag.equals('trunk')) {
+			examples_relative_basename = "tags/${project.tag}"
+	}
+	
+	// Set patterns for matching file headers
+	filecomment_path_pattern1 = "HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples_relative_basename}/example/"
+	filecomment_path_pattern2 = "HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples_relative_basename}/example/"
+	filecomment_path_pattern3 = "this pattern will not be found"
+	filecomment_path_pattern4 = "this pattern will not be found"
+}
+
+task initXml(description: 'XML location configuration') << {
+	// Include all of the XML example files, except the ones that are not Spring XML config:
+	ant.patternset(id: "example.xml.config.files") {
+		include(name: "spring/**/*.xml")
+		include(name: "tutorial/**/*.xml")
+		exclude(name: "**/input/*.xml")
+		exclude(name: "**/output/*.xml")
+		exclude(name: "**/spring/client/*.xml")
+		exclude(name: "**/spring/connectors/db/jee/jboss/*.xml")
+	}
+	
+	// Where to find the schema files:
+	ant.xmlcatalog(id: "oa3XmlCatalog") {
+		entity(publicId: "adaptorDoc.xsl", location: "${dirXsl}/adaptorDoc.xsl")
+		dtd(publicId: "-//SPRING//DTD BEAN 2.0//EN", location: "${dirXsl}/spring-beans-2.0.dtd")
+		entity(publicId: "http://www.springframework.org/schema/beans", location: "${dirXsl}/spring-beans-2.0.xsd")
+	}
+}
+
+task generateDot(dependsOn: [initXml], description: 'Generate GraphViz dot notation file using XSLT for each cookbook example') << {
+	ant.xslt(basedir: project.docgenInputDir, destdir: dirOutputImages, style: "${dirXsl}/oa3toDot.xsl") {
+		patternset(refid:"example.xml.config.files")
+		param(name:"oaVersion", expression:"${oaVersion}")
+
+		//<!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
+		//<!-- <param name="filepathGlobPrefix1" expression="HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
+		//<!-- <param name="filepathGlobPrefix2" expression="HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples.relative.basename}/example/" /> -->
+		param(name:"filepathGlobPrefix1", expression:"${filecomment_path_pattern1}")
+		param(name:"filepathGlobPrefix2", expression:"${filecomment_path_pattern2}")
+		param(name:"filepathGlobPrefix3", expression:"${filecomment_path_pattern3}")
+		param(name:"filepathGlobPrefix4", expression:"${filecomment_path_pattern4}")
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "*.xml", to: "*.dot")
+	}
+}
+
+task generateImageMap(dependsOn: generateDot, description: 'Generate image map for each cookbook example from GraphViz dot notation file') << {
+	ant.mapper(id: "outCmap", type: "glob", from: "*.dot", to: "${dirOutputImages}/*.map")
+	
+	ant.apply(executable: "${project.ext['graphviz.dot']}", dest: "${dirOutputImages}", failifexecutionfails: "false") {
+		arg(value: "-Tcmapx")
+		srcfile()
+		fileset(dir: "${dirOutputImages}", includes: "** /*.dot")
+		mapper(refid: "outCmap")
+		redirector() {
+			outputmapper(refid: "outCmap")
+		}
+	}
+}
+
+task generateImageGif(dependsOn: generateImageMap, description: 'Generate images for each cookbook example from GraphViz dot notation file') << {
+    def tree = fileTree(dir: project.docgenOutputDir, include: '**/*.dot')
+    tree.each {File file ->
+        def target = file.path.substring(0, file.path.length() - 4) + ".gif"
+        
+        exec {
+            executable project.ext['graphviz.dot']
+            args "-Tgif"
+            args "${file}"
+            args "-o"
+            args "${target}"
+        }
+
+    }
+}
+
+task generateHtml(dependsOn: [initXml, generateImageGif], description: 'Generate html page using XSLT for each cookbook example') << {
+	ant.xslt(basedir: docgenInputDir, destdir: docgenOutputDir, style: "${dirXsl}/beans.xsl") {
+		patternset(refid: "example.xml.config.files")
+		param(name: "oaVersion", expression:"${oaVersion}")
+		param(name: "imageFileExtension", expression: "${project.ext.get('graphviz.image.fileextension')}")
+
+		//<!-- Workaround so XSLT can find out name of file including relative path: (must have trailing slash) -->
+		param(name:"filepathGlobPrefix1", expression:"${filecomment_path_pattern1}")
+		param(name:"filepathGlobPrefix2", expression:"${filecomment_path_pattern2}")
+		param(name:"filepathGlobPrefix3", expression:"${filecomment_path_pattern3}")
+		param(name:"filepathGlobPrefix4", expression:"${filecomment_path_pattern4}")
+		param(name: "showJavaDocLinks", expression: "true")
+		param(name: "showConfigIndexLinks", expression: "true")
+		param(name: "docgenInputDir", expression: "${docgenOutputDir}/")
+		//<!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
+		//<!-- <param name="javaDocPath" expression="https://myserver.mydomain/javadocs/" /> -->
+		
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "*.xml", to: "*.html")
+	}
+}
+
+task generateCombined(dependsOn: [initXml], description: 'Combine all cookbook examples into a single file (so we can later generate index)') << {
+	ant.concat(destfile: "${docgenOutputDir}/cookbook_combined.xml", fixlastline: "yes") {
+		fileset(dir: "${docgenInputDir}") {
+			patternset(refid: "example.xml.config.files")
+		}
+		filterchain() {
+			tokenfilter() {
+				// Apply regexps to whole of input file at once:
+				filetokenizer()
+				/*
+				 * Here we change the beans namespace to a dummy one - otherwise the xsl transforms
+				 * don't match on 'beans' elements. Other namespaces e.g. xmlns:util will be preserved unmodified
+				 */
+				replaceregex(pattern: "(xmlns=)", flags: "sg", replace: "xmlns:dummy=")
+				/*
+				 * Pull the name of each cookbook example out of its CVS Header comment,
+				 * and add as "id" attribute to its "beans" element (preserving schema namespace attributes):
+				 */
+				replaceregex(pattern: "(${filecomment_path_pattern1})([^.]+?)(\\.xml .*?<beans)([^>]*)>", flags: "sg", replace: '\\1\\2\\3 id="\\2" \\4>')
+				replaceregex(pattern: "(${filecomment_path_pattern2})([^.]+?)(\\.xml .*?<beans)([^>]*)>", flags: "sg", replace: '\\1\\2\\3 id="\\2" \\4>')
+				replaceregex(pattern: "(${filecomment_path_pattern3})([^.]+?)(\\.xml .*?<beans)([^>]*)>", flags: "sg", replace: '\\1\\2\\3 id="\\2" \\4>')
+				replaceregex(pattern: "(${filecomment_path_pattern4})([^.]+?)(\\.xml .*?<beans)([^>]*)>", flags: "sg", replace: '\\1\\2\\3 id="\\2" \\4>')
+
+				// Cope (dumbly) with up to 3 underscores in bean relative path filename (map to minus sign):
+				replaceregex(pattern: '(beans id="[^"_]*?)_([^"]*?")', flags: "sg", replace: "\\1-\\2")
+				replaceregex(pattern: '(beans id="[^"_]*?)_([^"]*?")', flags: "sg", replace: "\\1-\\2")
+				replaceregex(pattern: '(beans id="[^"_]*?)_([^"]*?")', flags: "sg", replace: "\\1-\\2")
+				// Cope (dumbly) with up to 7 levels of directory nesting:
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				replaceregex(pattern: '(beans id="[^"/]*?)/([^"]*?")', flags: "sg", replace: "\\1_\\2")
+				// Strip out the first two lines of every cookbook example (as inappropriate):
+				replaceregex(pattern: '<\\?xml version="1.0" encoding="UTF-8"\\?>', flags: "g", replace: "")
+				// Add xml version declaration back once at top of file, and open cookbook element:
+				replaceregex(pattern: "^", flags: "m", replace: '''<\\?xml version="1.0" encoding="UTF-8"\\?>\r\n<cookbook>''')
+				// Close cookbook element at end of file:
+				replaceregex(pattern: "\$", flags: "s", replace: "</cookbook>")
+			}
+		}
+	}
+}
+
+task generateImageMapLocal(dependsOn: [generateImageMap], description: 'Modifying imagemaps to use relative paths (*.map -> *.localmap)') << {
+	ant.copy(todir: "${dirOutputImages}", overwrite: "true", failonerror: "true", flatten: "false") {
+		fileset(dir: "${dirOutputImages}", includes: "**/*.map")
+		mapper(type: "glob", from: "*.map", to: "*.localmap")
+		filterchain() {
+			tokenfilter() {
+				// Replace the HREF relative path with "../" (because map was originally built for use deep in images tree)
+				replaceregex(pattern: '( href=")[./]+([^./][^"])', flags: "sg", replace: "\\1./\\2")
+			}
+		}
+	}
+}
+
+task generateConfig2Beans(dependsOn: generateCombined, description: 'Generate html page using XSLT: mapping cookbook examples to beans') << {
+	ant.xslt(basedir: "${docgenOutputDir}", destdir: "${docgenOutputDir}", includes: "cookbook_combined.xml", style: "${dirXsl}/cookbook2beans.xsl") {
+		param(name:"oaVersion", expression:"${oaVersion}")
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "cookbook_combined.xml", to: "config2beans.html")
+	}
+}
+
+task generateBeans2Config(dependsOn: generateCombined, description: 'Generate html page using XSLT: mapping beans to cookbook examples') << {
+	ant.xslt(basedir: "${docgenOutputDir}", destdir: "${docgenOutputDir}", includes: "cookbook_combined.xml", style: "${dirXsl}/beans2cookbook.xsl") {
+		param(name:"oaVersion", expression:"${oaVersion}")
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "cookbook_combined.xml", to: "beans2config.html")
+	}
+}
+
+task generateAllImages(dependsOn: [generateCombined, generateImageMapLocal, generateImageGif], description: 'Generate html image page using XSLT: containing node maps for all cookbook examples') << {
+	ant.xslt(basedir: "${docgenOutputDir}", destdir: "${dirOutputImages}", includes: "cookbook_combined.xml", style: "${dirXsl}/allnodemaps.xsl") {
+		param(name:"oaVersion", expression:"${oaVersion}")
+		param(name: "imageFileExtension", expression: "${project.ext.get('graphviz.image.fileextension')}")
+		param(name: "docgenInputDir", expression: "${docgenOutputDir}/")
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "cookbook_combined.xml", to: "allimages.html")
+	}
+}
+
+task generateIndex(dependsOn: generateCombined, description: 'Generating top level index - index.html') << {
+	ant.xslt(basedir: "${docgenOutputDir}", destdir: "${docgenOutputDir}", includes: "cookbook_combined.xml", style: "${dirXsl}/index.xsl") {
+		param(name:"oaVersion", expression:"${oaVersion}")
+		xmlcatalog(refid: "oa3XmlCatalog")
+		mapper(type: "glob", from: "cookbook_combined.xml", to: "index.html")
+	}
+}
+
+task docs(type: Delete, dependsOn: [generateHtml, generateConfig2Beans, generateBeans2Config, generateAllImages, generateIndex], description: 'Generate the documentation') {
+	delete fileTree(docgenOutputDir) {
+		include '**/*.dot'
+	}
+	delete fileTree(dirOutputImages) {
+		include '**/*.map'
+		include '**/*.localmap'
+	}
+	delete fileTree(docgenOutputDir) {
+		include 'cookbook_combined.xml'
+	}
+}

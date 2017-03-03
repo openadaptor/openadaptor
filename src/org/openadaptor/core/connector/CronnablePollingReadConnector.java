@@ -27,14 +27,13 @@
 
 package org.openadaptor.core.connector;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.IReadConnector;
 import org.openadaptor.core.exception.ValidationException;
-import org.quartz.CronExpression;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 
 /**
@@ -134,12 +133,7 @@ public class CronnablePollingReadConnector extends AbstractPollingReadConnector 
    *           if the cron entry is invalid
    */
   public void setCronExpression(String s) {
-    cron = new CronTrigger();
-    try {
-      cron.setCronExpression(new CronExpression(s));
-    } catch (ParseException e) {
-      throw new RuntimeException("cron parse exception", e);
-    }
+    cron = (CronTrigger) CronScheduleBuilder.cronSchedule(s).build();
     limit = 0;
   }
   

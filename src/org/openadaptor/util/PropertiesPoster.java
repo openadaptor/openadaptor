@@ -110,7 +110,7 @@ public class PropertiesPoster {
        client = new OAClient(wsWriterBuilder);
     }
     catch(java.lang.NoClassDefFoundError e){
-      log.error("Error while connecting to registration web service. Make sure activation.jar is on the classpath. Class not found: " + e.getMessage());
+      log.error("Error while connecting to registration web service. Make sure cxf-*.jar files are on the classpath. Class not found: " + e.getMessage());
       log.info("Registration failed.");
       return;
     }

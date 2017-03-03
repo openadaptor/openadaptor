@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   $Id: registration.xml 1611 2008-06-25 09:26:48Z lachork $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/adaptor/registration.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/adaptor/registration.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,7 +10,7 @@
   Illustrates how to get the adaptor to "register" the fact that it is starting with
   a servlet. It registers a subset of system properties plus any additionalRegistrationProps.
     
-  Typically the url is a jsp that will store these props, thus enabling organisations
+  Typically the url is a SOAP webservice that will store these props, thus enabling organisations
   which deploy openadaptor to maintain an inventory if it's use.
     
   The distribution may contain embedded properties, these cannot be overwritten
@@ -22,6 +22,28 @@
   Run it like this...
 
     java org.openadaptor.spring.SpringAdaptor -config registration.xml -bean Adaptor -props registration.properties
+
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/cxf-api-2.6.16.jar;
+    lib/opt/cxf-rt-bindings-soap-2.6.16.jar;
+    lib/opt/cxf-rt-bindings-xml-2.6.16.jar;
+    lib/opt/cxf-rt-core-2.6.16.jar;
+    lib/opt/cxf-rt-databinding-jaxb-2.6.16.jar;
+    lib/opt/cxf-rt-frontend-jaxws-2.6.16.jar;
+    lib/opt/cxf-rt-frontend-simple-2.6.16.jar;
+    lib/opt/cxf-rt-transports-http-2.6.16.jar;
+    lib/opt/cxf-rt-ws-addr-2.6.16.jar;
+    lib/opt/cxf-rt-ws-policy-2.6.16.jar
+    lib/opt/xmlschema-core-2.0.3.jar
+    lib/opt/neethi-3.0.3.jar
+    lib/opt/wsdl4j-1.6.3.jar
+    lib/opt/woodstox-core-asl-4.4.0.jar
+    lib/opt/stax2-api-3.1.4.jar
 
   ]]></description>
   

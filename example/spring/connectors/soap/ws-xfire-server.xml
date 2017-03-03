@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: ws-xfire-server.xml 1818 2008-10-23 11:18:36Z higginse $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/soap/ws-xfire-server.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/spring/connectors/soap/ws-xfire-server.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,7 +28,8 @@
     lib/openadaptor.jar
     lib/openadaptor-spring.jar
     lib/openadaptor-depends.jar
-    lib/opt/activation.jar
+    lib/legacy/xfire-core-1.2.6.jar
+    lib/legacy/xfire-aegis-1.2.6.jar
      
   Once it is running it will echo the webservice endpoint to the log, you can put
   this into a web browser and verify that you can see the wsdl.

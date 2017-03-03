@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
   $Id: step19.xml 2156 2011-07-15 12:56:42Z nbartel $
-  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/tutorial/step19.xml $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/trunk/example/tutorial/step19.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -35,13 +35,10 @@
 		You need the following in your classpath
 
 			lib
-			lib/opt/groovy-engine-1.1-jdk14.jar
-			lib/opt/groovy-1.7.2.jar
-			lib/opt/asm-3.2.jar
-			lib/opt/antlr-2.7.7.jar
 			lib/openadaptor.jar
 			lib/openadaptor-depends.jar
 			lib/openadaptor-spring.jar
+			lib/opt/groovy-all-2.4.7.jar
 			lib/opt/hsqldb.jar
 
 		This example relies on a hypersonic database running (http://www.hsqldb.org) to run

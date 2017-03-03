@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.List;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -115,6 +116,21 @@ public class XsltProcessor extends Component implements IDataProcessor {
     // load the transform
     try {
       TransformerFactory factory = TransformerFactory.newInstance();
+      ErrorListener errorListener = new ErrorListener() {
+		
+		public void warning(TransformerException exception) throws TransformerException {
+			log.warn(exception.getMessage(), exception);
+		}
+		
+		public void fatalError(TransformerException exception) throws TransformerException {
+			throw exception;
+		}
+		
+		public void error(TransformerException exception) throws TransformerException {
+			throw exception;
+		}
+	};
+	factory.setErrorListener(errorListener);
       transform = factory.newTransformer(new StreamSource(url.getPath()));
 
       log.info("Loaded XSLT [" + xsltFile + "] successfully");

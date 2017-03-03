@@ -1,5 +1,27 @@
 =================================================
-openadaptor3 production 3.4.9 Release Notes
+openadaptor3 production 3.5.0 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 3rd March 2017
+Author: openadaptor Core Team
+
+openadaptor 3.5.0
+=======
+
+ Common
+==========
+ * Migration of Ant build to Gradle.
+ * Runtime JDK now required to be minimum Java 1.6 JDK.
+ * The used build JDK (for building openadaptor itself!) is now required to be a Java 1.6 JDK.
+
+ External Libraries
+==========
+ * Removed Java Scripting API (JSR 223) and Rhino from dependency set, as this is included in all JVMs starting from version Java 1.6. 
+
+=================================================
+openadaptor3 production 3.4.8 Release Notes
 
 See licence.txt for Licence information.
 =================================================

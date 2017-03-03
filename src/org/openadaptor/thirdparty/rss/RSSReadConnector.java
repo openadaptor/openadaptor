@@ -27,19 +27,6 @@
 
 package org.openadaptor.thirdparty.rss;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openadaptor.core.Component;
-import org.openadaptor.core.IReadConnector;
-import org.openadaptor.core.exception.ConnectionException;
-import org.openadaptor.core.exception.OAException;
-
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,6 +34,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openadaptor.core.Component;
+import org.openadaptor.core.IReadConnector;
+import org.openadaptor.core.exception.ConnectionException;
+import org.openadaptor.core.exception.OAException;
+
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.SyndFeedOutput;
+import com.rometools.rome.io.XmlReader;
 
 /**
  * This class implements a simple RSS aggregator. Originally contibuted with the name FeedAggregator. Renamed
@@ -78,6 +79,11 @@ public class RSSReadConnector extends Component implements IReadConnector {
 
   private Date lastTime = new Date();
 
+  /**
+   * Indicates that the initial read should process all entries.
+   */
+  private boolean completeInitialRead = false;
+
   public List getUrlStrings() {
     return urlStrings;
   }
@@ -100,6 +106,9 @@ public class RSSReadConnector extends Component implements IReadConnector {
    */
   public void connect() {
     log.debug(getId() + " connecting ....");
+    if (completeInitialRead) {
+      lastTime = new Date(Long.MIN_VALUE);
+    }
     if (urlStrings != null) {
       for (int i = 0; i < urlStrings.size(); i++) {
         try {
@@ -190,5 +199,13 @@ public class RSSReadConnector extends Component implements IReadConnector {
     urls.clear();
     lastTime = new Date();
     return result;
+  }
+
+  public boolean isCompleteInitialRead() {
+    return completeInitialRead;
+  }
+
+  public void setCompleteInitialRead(boolean completeInitialRead) {
+    this.completeInitialRead = completeInitialRead;
   }
 }

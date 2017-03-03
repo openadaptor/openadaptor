@@ -35,7 +35,7 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openadaptor.core.node.ReadNode;
-import org.quartz.CronTrigger;
+import org.quartz.CronExpression;
 
 /**
  * This component can be used to control running an adaptor, it supports restart
@@ -96,8 +96,7 @@ public class AdaptorRunConfiguration {
 
   private String checkCronExpression(String expression) {
     try {
-      CronTrigger trigger = new CronTrigger();
-      trigger.setCronExpression(expression);
+      CronExpression.validateExpression(expression);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }
@@ -155,9 +154,8 @@ public class AdaptorRunConfiguration {
       if (timer == null) {
         timer = new Timer();
       }
-      CronTrigger trigger = new CronTrigger();
-      trigger.setCronExpression(cronExpression);
-      Date time = trigger.getFireTimeAfter(currentTime);
+      CronExpression cron = new CronExpression(cronExpression);
+      Date time = cron.getTimeAfter(currentTime == null ? new Date() : currentTime);
       log.info("scheduled " + task.toString() + " for " + time);
       timer.schedule(task, time);
       return time;

@@ -27,14 +27,14 @@
 
 package org.openadaptor.auxil.client;
 
-import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
+import org.openadaptor.auxil.connector.soap.WebServiceCXFWriteConnector;
 import org.openadaptor.core.IWriteConnector;
 
 /**
  * A <code>WriterBuilder</code> that creates a <code>WebServiceWriteConnector</code>.
  * 
  * @author Kris Lachor
- * @see SpringWriterBuilder
+ * @see org.openadaptor.auxil.client.SpringWriterBuilder
  * @see OAClient
  */
 public class WebServiceWriterBuilder implements WriterBuilder {
@@ -43,7 +43,7 @@ public class WebServiceWriterBuilder implements WriterBuilder {
   
   private static final String DEFAULT_WRITER_NAME = "OAWebServiceClient";
   
-  private WebServiceWriteConnector webServiceWriteConnector;
+  private WebServiceCXFWriteConnector webServiceWriteConnector;
   
   private String endpoint = DEFAULT_ENDPOINT;
   
@@ -83,7 +83,7 @@ public class WebServiceWriterBuilder implements WriterBuilder {
     if(webServiceWriteConnector!=null){
       return webServiceWriteConnector;
     }
-    webServiceWriteConnector = new WebServiceWriteConnector(writerName);
+    webServiceWriteConnector = new WebServiceCXFWriteConnector(writerName);
     webServiceWriteConnector.setEndpoint(endpoint);
     return webServiceWriteConnector;
   }

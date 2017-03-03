@@ -26,6 +26,7 @@
  */
 package org.openadaptor.auxil.processor;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openadaptor.auxil.connector.jdbc.AbstractJDBCConnectionTests;
@@ -43,10 +44,15 @@ import org.openadaptor.util.TestComponent;
  * @author Kris Lachor
  */
 public class GenericEnrichmentProcessorSystemTestCase extends AbstractJDBCConnectionTests {
-  
-  private static String SCHEMA = "CREATE MEMORY TABLE TRADE(TRADEID INTEGER NOT NULL,BUYSELL CHAR(1) NOT NULL,SECID INTEGER NOT NULL,PARTYID INTEGER NOT NULL,QTY INTEGER NOT NULL,PRICE FLOAT NOT NULL); INSERT INTO TRADE VALUES(1,\'B\',1,1,1000000,3.25E0); INSERT INTO TRADE VALUES(2,\'B\',1,1,500000,3.21E0); INSERT INTO TRADE VALUES(3,\'S\',2,1,250000,1.01E0); INSERT INTO TRADE VALUES(4,\'B\',2,1,1000000,0.99E0);"
-                                + " INSERT INTO TRADE VALUES(5,\'S\',1,1,1000000,3.26E0)";
-  
+
+	private static List<String> SCHEMA = Arrays.asList(
+			"CREATE MEMORY TABLE TRADE(TRADEID INTEGER NOT NULL,BUYSELL CHAR(1) NOT NULL,SECID INTEGER NOT NULL,PARTYID INTEGER NOT NULL,QTY INTEGER NOT NULL,PRICE FLOAT NOT NULL);",
+			"INSERT INTO TRADE VALUES(1,\'B\',1,1,1000000,3.25E0);",
+			"INSERT INTO TRADE VALUES(2,\'B\',1,1,500000,3.21E0);",
+			"INSERT INTO TRADE VALUES(3,\'S\',2,1,250000,1.01E0);",
+			"INSERT INTO TRADE VALUES(4,\'B\',2,1,1000000,0.99E0);",
+			"INSERT INTO TRADE VALUES(5,\'S\',1,1,1000000,3.26E0)");
+
   private static final String RESOURCE_LOCATION = "test/system/src/";
   
   private static final String DB_ENRICHMENT_PROCESSOR = "db_enrichment_processor.xml";
@@ -54,7 +60,7 @@ public class GenericEnrichmentProcessorSystemTestCase extends AbstractJDBCConnec
   /**
    * @see AbstractJDBCConnectionTests#getSchemaDefinition()
    */
-  public String getSchemaDefinition() {
+  public List<String> getSchemaDefinitions() {
     return SCHEMA;
   }
   

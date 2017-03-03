@@ -31,12 +31,12 @@ import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.openadaptor.util.NetUtil;
 
 /**
@@ -53,7 +53,7 @@ public class ServletContainer {
   
   private String context = "/";
   
-  private Context root;
+  private ServletContextHandler root;
   
   private boolean managed = false;
   
@@ -118,25 +118,27 @@ public class ServletContainer {
     return server;
   }
   
-  private Context getRootContext() {
+  private ServletContextHandler getRootContext() {
     getJettyServer();
     if (root == null) {
       Handler[] handlers = server.getHandlers();
       for (int i = 0; handlers != null && i < handlers.length; i++) {
-        if (handlers[i] instanceof Context) {
-          return (Context) handlers[i];
+        if (handlers[i] instanceof ServletContextHandler) {
+          return (ServletContextHandler) handlers[i];
         }
       }
     }
     if (root == null) {
-      root = new Context(server, context, Context.SESSIONS);
+      root = new ServletContextHandler(ServletContextHandler.SESSIONS);
+      root.setContextPath(context);
+      server.setHandler(root);
       /*
        * lachork: upgrading jetty from 6.0.1 to 6.1.9 made the following step necessary.
        * In the older Jetty the context was already started in the constructor; in
        * newer it appears to require an explicit call to start()
        */
       try {
-        root.start();
+        //root.start();
       } catch (Exception e) {
         log.error("Failed to start Jetty servlet context", e);
       }

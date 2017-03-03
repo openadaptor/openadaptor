@@ -53,11 +53,6 @@ import java.io.OutputStream;
  * 
  * Uses the org.apache.commons.net.ftp classes to perform the actual file transfer. <p/>
  * 
- * Supported Properties: <p/>
- * 
- * <code>useReaderThread</code> - if true then a separate reader thread is used to perform the data transfers. On some
- * platforms this is known to cause deadlocks! Default is false.
- * 
  * Based on the original ideas by Pablo Bawdekar
  * 
  * @author Russ Fennell
@@ -72,21 +67,20 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
 
   private boolean _loggedIn = false;
 
-  private boolean useReaderThread = false;
-
   /**
-   * Set to true if a separate reader thread is to be used to perform the data transfers. On some platforms this is
-   * known to cause deadlocks! Default is false
+   * Method is deprecated after switch to commons-net 3.x
    */
+  @Deprecated
   public void setUseReaderThread(boolean b) {
-    this.useReaderThread = b;
   }
 
   /**
-   * @return true if a separate reader thread is to be used to perform the data transfers.
+   * Method is deprecated after switch to commons-net 3.x
+   * @return always returns false
    */
+  @Deprecated
   public boolean isUseReaderThread() {
-    return useReaderThread;
+    return false;
   }
 
   /**
@@ -101,10 +95,6 @@ public class ApacheFTPConnection extends AbstractFTPLibrary {
 
     try {
       _ftpClient = new FTPClient();
-
-      // on some platforms the reader thread can cause deadlocks
-      // so it is best to turn it off
-      _ftpClient.setReaderThread(useReaderThread);
 
       _ftpClient.connect(hostName, port);
 

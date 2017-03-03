@@ -41,20 +41,19 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 
-import junit.framework.TestCase;
-
 import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
 import org.codehaus.xfire.transport.http.XFireServlet;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.openadaptor.auxil.connector.soap.WebServiceWriteConnector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.openadaptor.core.adaptor.Adaptor;
 import org.openadaptor.core.connector.TestReadConnector;
 import org.openadaptor.core.router.Router;
 import org.openadaptor.core.router.RoutingMap;
+
+import junit.framework.TestCase;
 
 /**
  * System tests for {@link WebServiceWriteConnector}.
@@ -101,7 +100,7 @@ public class WebServiceWriteConnectorTestCase extends TestCase {
   protected MyServiceImpl runUpWebService(){
 	MyServiceImpl impl = new MyServiceImpl();
 	Server server = new Server(8191);
-	Context root = new Context(server, "/",Context.SESSIONS);
+	ServletContextHandler root = new ServletContextHandler(server, "/",ServletContextHandler.SESSIONS);
 	root.addServlet(new ServletHolder(new MyServlet(MyService.class, impl, "MyService")), "/*");
 	try {
 	  server.start();

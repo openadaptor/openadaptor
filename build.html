@@ -2,7 +2,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Cp1252"/>
 <STYLE TYPE="text/css">
-  .shell    { width: 90%; background-color: #EEEEEE }
+  .shell    { margin-right: 20px; background-color: #EEEEEE }
   .heading  { width:100%; font-size:14pt; font-weight:bold; border-bottom-style:solid; border-bottom-width:1px; margin-top:40 }
   .back     { text-align: right; font-size:9pt }
 </STYLE>
@@ -11,52 +11,47 @@
 
 <body>
 
-<h1>The build files</h1>
+<h1>Build basics</h1>
+
+<p>The build is based on <a href="https://gradle.org">Gradle</a> and replaces the prior existing Apache Ant build.</p>
+<p>Currently the build requires a JDK 6 (including correct set JAVA_HOME environemtn variable) to run. A Gradle installation is not required.
+The projects root directory contains a gradlew/gradlew.bat shell script for unix/windows, which automatically provides the correct version
+of Gradle on the build machine. The build always needs to be started via the gradlew commands.</p>
+
+<p>Additionally the build needs to have <a href="http://www.graphviz.org/">Graphviz</a> (working with 2.36) installed on the build machine.
+The default installation directories can be seen in <code>openadaptor/example/tools/docs.properties</code>. If your installation differs,
+the executable could be passed in with as command line option: <code>-Pgraphviz.dot=E:\your\path\to\graphviz\bin\dot.exe</code></p>
+
+<p>In cases where external web sites like www.openadaptor.org are not accessible, it is possible to do a local release build. Use the command line
+option <code>-DlocalBuild</code> then.</p>
+
+<h1>The build file</h1>
 
 <table>
   <tr>
-    <td><code><b>build.xml</b></code></td>
-    <td>Compiles everything in the work area, runs junit tests and verification targets.</td>
+    <td><code><b>build.gradle</b></code></td>
+    <td>Manages all build relevant tasks. This includes compiling everything in the work area, runing junit tests and verification of 
+      targets for development as well as releases.</td>
   </tr>
-  <tr>
-    <td><code><b>release.xml</b></code></td>
-    <td>Checks out a clean work area from the revision control system and then invokes build.xml and package.xml.</td>
-  </tr>
-  <tr>
-    <td><code><b>patch.xml</b></code></td>
-    <td>Checks out a clean work area from the revision control system and then invokes build.xml and package.xml.
-        Then checks out explicit patches to the release, compiles these against the release, reruns the
-        tests against the patched classpath and generates a patch.jar for distribution.</td>
-  </tr>
-</table>     
+</table>
 
-<h1>The default targets</h1>
+<h1>The default tasks</h1>
 
-<p>You can use <code>ant -p</code> to see the important targets of the respective files but all of these 
+<p>You can use <code>gradlew tasks --all</code> to see the important tasks of the respective files but all of these 
   have sensible default targets. The following commands are normally sufficient.</p>
 
 <table>
   <tr>
-    <td><div class="shell"><pre>ant [-f build.xml]</pre></div></td>
-    <td>Performs a clean compile and runs all the tests.</td>
+    <td><div class="shell"><pre>gradlew clean build</pre></div></td>
+    <td>Performs a clean compile and runs all the tests and packages the distribution from local sources.</td>
   </tr>
   <tr>
-    <td><div class="shell"><pre>ant -f release.xml</pre></div></td>
-    <td>"Checks out" a new work area from subversion (in a temp directory called checkout), compiles ,tests and packages it.</td>
-  </tr>
-  <tr>
-    <td><div class="shell"><pre>ant -f patch.xml -Dtag=x.y.z</pre></div></td>
-    <td>"Checks out" a new work area from subversion for a tagged release (in a temp directory called checkout), compiles ,tests and packages it.
-    "Checks out" explicit patches based on pacthes/x.y.z.xml, compiles these against the compiled tagged release, reruns test and "spits ou" a patch.jar file</td>
+    <td><div class="shell"><pre>gradlew clean build -Dtag=x.y.z</pre></div></td>
+    <td>Performs a clean release build from local sources.</td>
   </tr>
 </table>
 
-<p>A developer might normally only invoke <code>build.xml</code>. Invoking <code>release</code>.xml in the local workarea is really only 
-applicable for testing the release process. 
-
-See the next section for how to build a release for general use.</p> 
-
-<p>The compilation and packaging is parameterised by an ant property called "tag". This affects
+<p>The compilation and packaging is parameterised by an property called "tag". This affects
 the version number that is embedded in the openadpator.jar file, the javadocs, the directory
 structure and name of the distribution zip. If the tag property is not specified then is
 gets set to "trunk", the resultant zip file will be called <code>openadaptor-trunk-bin.zip</code>, 
@@ -64,7 +59,7 @@ gets set to "trunk", the resultant zip file will be called <code>openadaptor-tru
   following log line</p>
 
 <div class="shell"><pre>
-  INFO  [main] openadaptor.build.tag = untagged
+  Builds tag is trunk
 </pre></div>
 
 <p>This reflects the fact that the distribution is based on your local workarea and is of indeterminate
@@ -72,75 +67,20 @@ version.</p>
   
 <h1>Building releases</h1>
 
-<p>If you want to create a release you should use <code>release.xml</code>, this will checkout a workarea from 
-subversion and invoke <code>build.xml</code> and <code>package.xml</code>. As part of the checkout 
-it generates  a file called <code>checkout.properties</code> in the checkout area. This will be 
-automatically sourced when <code>build.xml</code> and <code>package.xml</code> are invoked in the 
-workarea. Basically it sets the value for the <code>tag</code> property.</p> 
-  
-<p>If you invoke release.xml like this...</p>
+<p>In contrast to prior versions of the Ant build, the current Gradle build does not perform release builds directly from SVN tags. This will
+be reintroduced in the future. In the meantime this is covered by the following process.</p>
 
-<div class="shell"><pre>
-  ant -f release.xml
-</pre></div>
-  
-<p>then the workarea will be based on the trunk and hence the resulting output will be 
-  <code>openadaptor-trunk-bin.zip</code> this is typically used to provide daily build.</p>
+<p>If you want to create a release you should do the following steps:<p>
+<ul>
+  <li>Check out the state of the working directory you want to create the release for. Take care that your local working directory is 
+    identical with the remote source repository.</li>
+  <li>Update the <code>build.gradle</code> with the version of the release in top line. E.g. <code>version = 'x.y.z'</code>. This variable exists 
+  need to be changed in the build files of openadaptor and dealbus.</li>
+  <li>Check in the changed <code>build.gradle</code> into the source repository and create a svn tag for the version.</li>
+  <li>Run the release build by calling <code>gradlew clean build -Dtag=x.y.z</code>.</li>
+</ul>
 
-<p>Versioned releases relate to specific subversion tags. If you invoke release.xml like this..</p>
+<p>The resulting output will be <code>openadaptor-x.y.z-bin.zip</code>.</p>
 
-<div class="shell"><pre>
-  ant -f release.xml -Dtag=3.2.1
-</pre></div>
-  
-<p>then the workarea will be based on that tag and hence the resulting output will be 
-  <code>openadaptor-3.2.1-bin.zip</code>
-</p>.
-  
-<h1>Building patches</h1>
-
- <p>For minor fixes and enhancements we typically deliver a patch jar. patch.xml provides a way of
- building patch jars. To avoid having to branch releases patch definitions are maintained in patch files,
- these are checked into the trunk under the patch directory. By convention the patch definition files
- are named after the release that they relate to. The patch definition files are actually ant build files,
- the contents specify the files and revisions that form the patch. There is a template in the patches directory
- which should serve as the basis for any patch.</p>
-  
-<p>
-Building a patch consists of the following steps  
-</p>
-<ol>
-  <li>checking out the release the patch relates to</li>
-  <li>building and packaging that release</li>
-  <li>checking out the constitients of the patch (by invoking the patch definition file)</li>
-  <li>compiling the patch constituents (against the packaged release)</li>
-  <li>augmenting the .openadaptor.properties with the patch info</li>
-  <li>running any test cases contained in the patch (with the patched classpath)</li>
-  <li>rerunning the release tests (with the patched classpath)</li>
-  <li>jar-ing the compiled patch and .openadaptor.properties and patch definition file</li>
-</ol>
-  
-<p>All of this is automated by the default target of patch.xml, this must be invoked with the tag
-property defined, e.g.</p>
-  
-<div class="shell"><pre>
-  ant -f patch.xml -Dtag=3.2.1
-</pre></div>
-
-<p>If everything is sucessful, this will generate patch.jar. Since this mechanism has been put in place
-both setclasspath.sh and setclasspath.bat include patch.jar. The ClasspathBootstrapper used by bootstrap.jar
-will ensure that patch.jar is at the head of the classpath. You should notice that when a patch is picked
-up this is apparent in the log output </p>  
-
-<div class="shell"><pre>
-INFO  [main] openadaptor.build.tag = 3.2.1
-INFO  [main] openadaptor.build.patch = 522 compiled by perryj on 20070314:1627
-INFO  [main] openadaptor.build.compiler = 1.4
-INFO  [main] openadaptor.build.timestamp = 20070314:1458
-</pre></div>
-
-<p>The patch number is the subversion revision of the patch definition file. It is also worth knowing
-that the patch definition file is also bundled into the patch.jar.</p>
-  
 </body>
 </html>
