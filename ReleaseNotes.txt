@@ -1,4 +1,20 @@
 =================================================
+openadaptor3 production 3.4.9 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 22nd September 2016
+Author: openadaptor Core Team
+
+openadaptor 3.4.9
+=======
+
+ Common
+==========
+ * Keep versions synchronized with internal distribution. No changes to openadaptor.
+    
+=================================================
 openadaptor3 production 3.4.8 Release Notes
 
 See licence.txt for Licence information.

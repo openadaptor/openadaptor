@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  $Id: history.xml 2023 2009-11-05 10:38:13Z lachork $
- $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/history.xml $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/adaptor/history.xml $
 -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">

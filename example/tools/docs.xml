@@ -169,7 +169,6 @@
 			</redirector>
 		</apply>
 
-
 		<!-- Clean up the generated dot files at this point -->
 		<delete>
 			<fileset dir="${dir.output.images}" includes="**/*.dot" />

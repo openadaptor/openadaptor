@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
     $Id: processor-group.xml 1249 2008-02-19 15:15:23Z lachork $
-    $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/group/processor-group.xml $
+    $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/processors/group/processor-group.xml $
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

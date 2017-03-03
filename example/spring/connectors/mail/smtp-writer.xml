@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
 	$Id: smtp-writer.xml 2126 2010-09-01 19:11:27Z lachork $
-	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/mail/smtp-writer.xml $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.9/example/spring/connectors/mail/smtp-writer.xml $
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

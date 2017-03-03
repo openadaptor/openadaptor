@@ -3,7 +3,7 @@
 
   <property name="svn.root" value="https://openadaptor3.openadaptor.org/svn/openadaptor3"/>
   
-  <taskdef resource="svntask.properties"/>
+  <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" />
 
   <property name="dir.checkout" value="checkout"/>
 	<property name="build.target" value="cruise"/>
@@ -36,7 +36,8 @@
 
   <target name="checkout">
     <delete dir="${dir.checkout}"/>
-    <svn>
+    <svnSetting id="svn.settings" svnkit="false" javahl="false" username="guest" password="" />
+		<svn refid="svn.settings">
       <checkout url="${url}" destPath="${dir.checkout}"/>
     </svn>
     <concat destfile="${dir.checkout}/checkout.properties">tag = ${checkout.tag}
@@ -44,7 +45,8 @@
   </target>
   
   <target name="update">
-    <svn>
+    <svnSetting id="svn.settings" svnkit="false" javahl="false" username="guest" password="" />
+		<svn refid="svn.settings">
       <update dir="${dir.checkout}"/>
     </svn>
   </target>
