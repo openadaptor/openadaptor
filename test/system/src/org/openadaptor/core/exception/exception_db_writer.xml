@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  
+  <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="router"/>
+  </bean>
+  
+  <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="reader" value-ref="dummyWriter"/> 
+        
+        <entry key-ref="exceptionConvertor" value-ref="jdbcWriter"/> 
+      </map>
+    </property>
+    <property name="exceptionProcessor" ref="exceptionConvertor"/>
+  </bean>
+  
+  <bean id="exceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor"/>
+  
+  <bean id="jdbcWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="jdbcConnection" />
+	<property name="writer">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+		   <property name="tableName" value="OA_Exception" />
+		   <property name="quoteIdentifiers" value="false" />
+		</bean>
+	</property>
+  </bean>
+  
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:mem:test"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+  
+  <bean id="reader" class="org.openadaptor.util.TestComponent$TestReadConnector"/>
+  
+  <bean id="dummyWriter" class="org.openadaptor.util.TestComponent$TestWriteConnector"/>
+ 
+</beans>

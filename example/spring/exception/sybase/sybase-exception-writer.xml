@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: sybase-exception-writer.xml 1508 2008-06-02 14:06:48Z cawthorng $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/exception/sybase/sybase-exception-writer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+   <description><![CDATA[    
+   
+  Adaptor based on step 13c from the OA tutorial, that has been modified to work with Sybase
+  (SQL insert statement is slightly different).
+  
+  This adaptor does the following...
+    
+    * reads XML from stdin
+    * validates XML against schema.xsd (located in the same folder as this file)
+    * writes correct XML to stdout
+    * writes anything that didn't validate to the hospital
+    * example of a valid XML: <Trade><buySell>1</buySell><ticker>1</ticker><price>1</price></Trade>
+    
+  It is designed to illustrate the basic use of the Sybase backed exception handler.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config sybase-exception-writer.xml -props sybase.properties
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <Sybase Driver>       
+   
+  once running any data read from std will be validated as XML.
+  ]]></description>
+    
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <!-- Normal flow -->
+        <entry key-ref="ConsoleReader" value-ref="Validator"/> 
+        <entry key-ref="Validator" value-ref="ConsoleWriter"/> 
+      
+        <!-- Exception processors -->
+        <entry key-ref="ExceptionConvertor" value-ref="ExceptionWriter"/> 
+      
+      </map>
+    </property>
+  
+    <property name="exceptionProcessor" ref="ExceptionConvertor"/>
+  </bean>
+  
+  <bean id="ConsoleReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+   
+  <bean id="ConsoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>This validates against the configured schema</description>
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+  
+  <bean id="SybaseJdbcConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Sybase database account configuration </description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+  
+  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor">
+    <property name="adaptor" ref="Adaptor"/>
+  </bean>
+  
+  <bean id="ExceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="SybaseJdbcConnection" />
+	<property name="writer">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+		   <property name="tableName" value="OA_Exception" />
+		   <property name="outputColumns">
+			 <list>
+			   <value>TIMESTAMP</value> 
+			   <value>EXCEPTION_CLASS_NAME</value> 
+			   <value>EXCEPTION_MESSAGE</value> 
+			   <value>CAUSE_EXCEPTION_CLASS_NAME</value> 
+			   <value>CAUSE_EXCEPTION_MESSAGE</value> 
+			   <value>STACK_TRACE</value>
+			   <value>ADAPTOR_NAME</value> 
+			   <value>ORIGINATING_COMPONENT</value> 
+			   <value>THREAD_NAME</value> 
+			   <value>DATA_TYPE</value> 
+			   <value>DATA</value> 
+			   <value>FIXED</value> 
+			   <value>REPROCESSED</value> 
+			 </list>
+		   </property>   
+		</bean>
+	</property>
+  </bean>
+  
+</beans>

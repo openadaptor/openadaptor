@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: multi-doxml-script.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/legacy/multi-doxml-script.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd">
+ <description>
+  <![CDATA[  
+  This adaptor does the following...
+    
+    * reads DOXML from a file
+    * converts to DataObjects (legacy data structures from previous openadaptor versions)
+    * converts DataObjects to map
+    * processes the map with javascript
+    * writes to file (raw ordered maps - further conversion left as an reader exercise ;-)
+    
+  It is designed to illustrate the basic structure something that needs to receive
+  the legacy DataObject format.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config multi-doxml-script.xml
+
+  For this example to run correctly you need to include the legacy openadaptor.jar from
+  openadaptor 1.7.2.2 or later in the classpath. 
+  This is available from http://www.openadaptor.org. 
+  Ensure that the that the classpath:
+  (1) does not include openadaptor-stub.jar
+  (2) has legacy openadaptor.jar is at the *end* of your classpath.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <legacy-openadaptor-jar>
+    
+  ]]>
+ </description>
+
+ <!-- OpenAdaptor beans -->
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates pipeline DOXML->DO->MAP->SCRIPT->FILE</description>
+    <property name="processMap">
+     <map>
+      <entry key-ref="FileReader" value-ref="doxml_dataObject" />
+      <entry key-ref="doxml_dataObject" value-ref="dataObject_orderedMap" />
+      <entry key-ref="dataObject_orderedMap" value-ref="scriptProcessor" />
+      <entry key-ref="scriptProcessor" value-ref="FileWriter" />
+     </map>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="FileReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <description>
+    Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader will allow
+    the file to potentially contain multiple DOXML messages if necessary).
+  </description>
+  <property name="filename" value="input/bike_multi-doxml.txt" />
+  <property name="dataReader">
+    <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
+  </property>
+ </bean>
+
+ <bean id="doxml_dataObject" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor" />
+
+ <bean id="dataObject_orderedMap" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor" />
+
+ <bean id="scriptProcessor" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+  <description>
+    Note: Scripts must be careful with Maps created from DataObject arrays.
+    Only DataObject Attributes may be addressed directly. Otherwise an
+    array subscript is required, even if it only contains a single
+    DataObject instance (as is often the case with DOs).
+  </description>
+  <property name="script">
+   <value>
+    <![CDATA[ 
+        //Equivalent of java import     
+        importClass(java.text.SimpleDateFormat);
+        //We only care about the year
+        var sdf=new SimpleDateFormat("yyyy");
+			  //Populate the easy values first
+        var mfr=Bike.get("Manufacturer")[0].get("Name");
+        var modelInfo=Bike.get("Model")[0];
+        var model=modelInfo.get("Name");
+        var cc=modelInfo.get("Capacity");
+        var price=Bike.get("Price");
+        var rangeInfo=modelInfo.get("DateRange")[0];
+        var range="["+sdf.format(rangeInfo.get("From"))+"-"+sdf.format(rangeInfo.get("To"))+"]";
+        
+				oa_data.put("Make",mfr);
+				oa_data.put("Model",model);
+        oa_data.put("Year",sdf.format(Bike.get("Registered")));
+        oa_data.put("Range",range);
+				oa_data.put("Capacity",cc);
+        oa_data.put("Price",price);
+        
+        //Clear out leftover dataobject stuff.
+				oa_data.remove("Bike");
+    
+			 ]]>
+   </value>
+  </property>
+ </bean>
+
+ <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+  <description>
+   Temporary file connector which generates ordered map dumps of output data. Note the data is purely a dump of the hierarchical ordered map
+  </description>
+  <!--  property name="filename" value="output.txt" / -->
+ </bean>
+
+</beans>

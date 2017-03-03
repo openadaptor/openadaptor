@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: publisher.xml 1912 2008-12-18 14:44:50Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/jms/publisher.xml $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads data from stdin
+    * publishes data to a JMS topic
+    
+  It is designed to illustrate the basic structure of an adaptor that processes
+  data by publishing to a JMS topic.
+
+  Run this example like this...
+
+  java org.openadaptor.spring.SpringAdaptor -config publisher.xml -props ../../../config/jms_*.properties
+  
+  using the appropriate jms property file.
+
+  Suggested Classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    appropiate jms client jars
+     
+  Once the example is running you need to type some data into the command line. To
+  verify that this is working you need to be running the corresponding
+  subscriber example.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline Reader -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+   </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <description>
+      This defines jndi connection, from which we get jms connection.
+    </description>
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
+    <!-- 
+      Uncomment the following property to specify an alternate provider url. 
+      Currently only JMSConnection can take advantage of this feature 
+    -->
+    <!--    
+    <property name="alternateProviderUrl" value="url goes here"/>
+    -->
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <description>jms connection for queue we wish to publish to.</description>
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.tp.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <description>writer that publishes data onto a queue.</description>
+    <property name="destinationName" value="${jms.t.destinationName.1}"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+  </bean>
+
+</beans>

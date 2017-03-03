@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="PropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound" value="false"/>
+    <property name="systemPropertiesMode">
+      <bean id="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+    </property>
+    <property name="locations">
+      <list>
+        <value>file:test/integration/src/org/openadaptor/spring/test.properties</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="Test" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="${message}"/>
+	</bean>
+  
+	<bean id="Run1" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="run1"/>
+	</bean>
+  
+	<bean id="Run2" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="run2"/>
+	</bean>
+  
+  <bean id="Runnables" class="org.openadaptor.util.Runnables">
+    <constructor-arg>
+      <list>
+        <ref bean="Run1"/>
+        <ref bean="Run2"/>
+      </list>
+    </constructor-arg>
+  </bean>
+</beans>

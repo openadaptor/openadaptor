@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: poller.xml 2001 2009-10-28 09:51:06Z lachork $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/file/poller.xml $    
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[
+  This adaptor does the following...
+    
+    * polls data from a file at a configured interval
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that polls a file.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config poller.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<property name="processors">
+					<list>
+						<ref bean="Poller" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Poller"
+		class="org.openadaptor.core.connector.LoopingPollingReadConnector">
+		<description>
+			Poller which wraps File Reader and polls infinitely every 30
+			seconds. (More example config parameters commented out in
+			config XML file.)
+		</description>
+		<property name="delegate" ref="Reader" />
+		<!--<property name="forceInitialPoll" value="true"/>-->
+		<property name="pollLimit" value="0" />
+		<!--<property name="pollIntervalHours"  value="1"/>-->
+		<!--<property name="pollIntervalMins"   value="1"/>-->
+		<!--<property name="pollIntervalSecs"   value="30"/>-->
+		<property name="pollIntervalMs" value="3000" />
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/input.txt" />
+		<property name="dataReader">
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<property name="excludeRegex" value="^#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

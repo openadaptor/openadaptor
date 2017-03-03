@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: xml-to-doxml.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/legacy/xml-to-doxml.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd">
+ <description>
+  <![CDATA[  
+  This adaptor does the following...
+    
+    * reads XML from a file
+    * converts to DataObjects (legacy data structures from previous openadaptor versions)
+    * converts DataObjects to DOXML
+    * writes to file
+    
+  It is designed to illustrate the basic structure something that needs to generate
+  legacy DOXML output
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config xml-to-doxml.xml
+
+  For this example to run correctly you need to include the legacy openadaptor.jar from
+  openadaptor 1.7.2.2 or later in the classpath. 
+  This is available from http://www.openadaptor.org. 
+  Ensure that the that the classpath:
+  (1) does not include openadaptor-stub.jar
+  (2) has legacy openadaptor.jar is at the *end* of your classpath.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <legacy-openadaptor-jar>
+    
+  ]]>
+ </description>
+
+ <!-- OpenAdaptor beans -->
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates pipeline XML->DO->DOXML->FILE</description>
+    <property name="processMap">
+     <map>
+      <entry key-ref="FileReader" value-ref="xml_dataObject" />
+      <entry key-ref="xml_dataObject" value-ref="dataObject_doxml" />
+      <entry key-ref="dataObject_doxml" value-ref="FileWriter" />
+     </map>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="FileReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <description>
+    Read a file containing XML
+  </description>
+  <property name="filename" value="input/singleBike.xml" />
+  <property name="dataReader">
+   <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader" />
+  </property>
+ </bean>
+
+ <bean id="xml_dataObject" class="org.openadaptor.legacy.convertor.dataobjects.XmlToDataObjectConvertor" />
+
+ <bean id="dataObject_doxml" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToDOXmlConvertor" />
+
+ <bean id="FileWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+  <description>
+   File connector which generates DOXML output
+  </description>
+  <!--  property name="filename" value="output.txt" / -->
+ </bean>
+
+</beans>

@@ -1,0 +1,5 @@
+# delimited test file
+BUY,1000000,BT.L,MR. SMITH,325,topic/testTopic
+SELL,500000,BT.L,MR. SMITH,324,topic/testTopic
+SELL,25000,BT.L,MR. JONES,321,topic/testTopic
+BUY,1000000,BT.L,MR. SMITH,325,topic/testTopic

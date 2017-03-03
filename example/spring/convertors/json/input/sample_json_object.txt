@@ -1,0 +1,12 @@
+{
+	"id" : "Fred" ,
+	"age" : 40 ,
+	"address" :
+		{
+			"house" : 42,
+			"street" : "Universe Parade",
+			"postcode" : "XA1 444"
+		} ,
+	"net worth" : "0" ,
+	"hobbies" : [ "cars", "bikes", "football" ]
+}

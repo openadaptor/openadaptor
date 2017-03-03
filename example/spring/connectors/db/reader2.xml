@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: reader2.xml 2179 2012-01-05 13:52:23Z Wratislp $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/reader2.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ <description>
+  <![CDATA[    
+  This adaptor does the following...
+    
+    * selects data from a db using a query, marking status as processing
+    * converts the result set to XML
+    * writes data to stdout
+    * marks status as processed
+    
+  It is designed to illustrate the basic structure of an adaptor that polls a database
+  Note: The "postReadSql" is only executed when the resultset returned from the "sql" statement has be processed.
+  This means that there may be multiple commits prior to the "postReadSql" applying the update, with implications
+  as to how to manage any exceptions prior to the "postReadSql" running and commiting.
+  In fact if there is an error it would only give the "expected results" if a batchSize of 0 is used.
+  An alternative (and better) pattern is shown in reader3.xml. 
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config reader2.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/hsqldb.jar 				//Or relevant database driver jar if not using hsql
+    
+  This example relies on a hypersonic database running (http://www.hsqldb.org). To run
+  the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates the simple router Reader -> Writer.</description>
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+  <description>This defines jdbc connection.</description>
+  <property name="driver" value="org.hsqldb.jdbcDriver" />
+  <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb" />
+  <property name="username" value="sa" />
+  <property name="password" value="" />
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+  <description>
+   Read messages from database, marking them as processing. Mark 'processing' messages as processed on disconnect.
+   Configured for hypersonic (hsql). For Sybase, wrap the statements into a BEGIN/END block...
+   BEGIN
+     UPDATE ...
+     SELECT ...
+   END
+  </description>
+  <property name="jdbcConnection" ref="JdbcConnection" />
+  <property name="resultSetConverter">
+   <bean class="org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter" />
+  </property>
+  <property name="sql">
+   <value>
+   UPDATE TRADE_STATUS SET status='PROCESSING' WHERE status='PROCESSED';
+   SELECT TRADE.* FROM TRADE,TRADE_STATUS 
+   WHERE TRADE.TRADEID=TRADE_STATUS.TRADEID 
+   AND TRADE_STATUS.STATUS='PROCESSING'
+   </value>
+  </property>
+  <property name="postReadSql">
+   <value>UPDATE TRADE_STATUS SET status='PROCESSED' WHERE status='PROCESSING'</value>
+  </property>
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

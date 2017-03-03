@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: readerWithHandshake.xml 2193 2016-12-16 14:42:32Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/socket/readerWithHandshake.xml $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * binds to a socket and accepts a single socket connection
+    * once socket channel is opened, it does a handshake and if succesful it reads data
+    * prints data to std out
+    
+  It is designed to illustrate the basic structure of an adaptor that accepts a socket
+  connection and reads data from that socket
+  With the inclusion of the handshake delegate the socket will expect a handshake to be initiated by the process 
+  connecting to it. If handshakeGreetCheck is "Y" then it compares the received greeting with the value of handshakeGreet.
+  If the values match then it will reply with handshakeReply.
+  If the handshake fails the socket will throw an exception.
+  The amount of time that it waits for the reply can be limited by using 
+    <property name="handshakeTimeoutMs" value="3000"/>
+    In this case we have specified 3000 milliseconds.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config readerWithHandshake.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  
+  To test you can use the corresponding writer example.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<description>
+  				This creates the simple pipeline Reader -> Writer.
+  			</description>
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.socket.SocketReadConnector">
+    <description>Reader that accepts a single socket connection on a configured port and reads data.</description>
+    <property name="port" value="9990"/>
+    <property name="socketHandshake" ref="handshaker"/>
+    <property name="handshakeTimeoutMs" value="3000"/>
+  </bean>
+  
+  <bean id="handshaker" class="org.openadaptor.auxil.connector.socket.SimpleSocketHandshake">
+    <description>We want to shake hands</description>
+    <property name="handshakeGreet" value="Hello"/>
+    <property name="handshakeGreetCheck" value="Y"/>
+    <property name="handshakeReply" value="HelloBack"/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

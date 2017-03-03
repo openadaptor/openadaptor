@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Phonebook>
+  <Entry>
+   <Name>Eric Idle</Name>
+   <Tel>012345678</Tel>
+  </Entry>
+</Phonebook>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Phonebook>
+  <Entry>
+   <Name>Bad Entry - No Postcode</Name>
+   <Address>
+   </Address>
+   <Mob>012345678</Mob>
+  </Entry>
+</Phonebook>
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Phonebook>
+  <Entry>
+   <Name>John Cleese</Name>
+   <Address>
+    <Street>Silly Walks St.</Street>
+    <City>Harpenden</City>
+    <Postcode>ABC123</Postcode>
+   </Address>
+   <Mob>012345678</Mob>
+  </Entry>
+</Phonebook>
+ 

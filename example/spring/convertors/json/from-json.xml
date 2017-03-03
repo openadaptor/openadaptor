@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: from-json.xml 1247 2008-02-19 13:26:05Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/convertors/json/from-json.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+  <description><![CDATA[
+  This adaptor does the following...
+
+    * reads all data in sample_json_object.txt
+    * converts the text it to a JSONObject
+    * converts the JSON to an OrderedMap
+    * converts the OrderedMap to XML
+    * outputs to stdout
+
+  It is designed to illustrate a simple use of a JSONToOrderedMapConvertor
+
+  Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config from-json.xml
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
+  writes to stdout
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+      This adaptor is designed to illustrate a simple use of a JSONToOrderedMapConvertor.
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="reader"/>
+            <ref bean="json"/>
+            <ref bean="xml"/>
+            <ref bean="writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/sample_json_object.txt"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
+  </bean>
+
+  <bean id="json" class="org.openadaptor.thirdparty.json.JSONToOrderedMapConvertor"/>
+
+  <bean id="xml" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="customer"/>   
+  </bean>
+
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

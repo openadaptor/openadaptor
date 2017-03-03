@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: publisher-destination.xml 2081 2010-05-26 09:24:13Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/jms/publisher-destination.xml $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads csv data from input/input.txt
+    * converts data into an orderedmap
+    * updates the metadata with the destination from the map.
+    * converts the map to xml ('cos it can!) 
+    * publishes data to a JMS topic
+    
+  It is designed to illustrate defining a jms destination based on values in the message.
+
+  Run this example like this...
+
+  java org.openadaptor.spring.SpringAdaptor -config publisher-destination.xml -props ../../../config/jms_*.properties
+  
+  using the appropriate jms property file.
+
+  Suggested Classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    appropiate jms client jars
+     
+  Once the example is running you need to type some data into the command line. To
+  verify that this is working you need to be running the corresponding subscriber example 
+  configured to connect to the destination you wish to check.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline Reader -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="MapConverter"/>
+            <ref bean="AssignDestination"/>
+            <ref bean="MapToXML"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+   </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>
+      This read connector reads lines from a file.
+    </description>
+    <property name="filename" value="input/input-jboss.txt" />
+    <property name="dataReader">
+      <bean
+        class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+        <description>
+          This (regular expression) will exclude comments
+          (lines beginning with #)
+        </description>
+        <property name="excludeRegex" value="^#.*" />
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>
+      Strings are delimited by commas; each value in the string will be associated with the
+      corresponding 'name' in the generated map
+    </description>
+    <property name="delimiter" value="," />
+    <property name="fieldNames">
+      <list>
+        <value>Side</value>
+        <value>Qty</value>
+        <value>SecurityId</value>
+        <value>Counterparty</value>
+        <value>Price</value>
+        <value>${jms.destination.metadata_key}</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="AssignDestination" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      Add some metadata to the message. In this case the field nominated as the 
+      destination. We also strip that field from the message itself. The 
+      additionalBindings property illustrates a way of using property substitution
+      to enable specifying the actual value of the destination key in an external
+      property file. Be careful there is a lot of indirection going on here.
+    </description>
+    <property name="additionalBindings">
+      <map>
+        <entry key="DestinationName" value="${jms.destination.metadata_key}"/>
+      </map>
+    </property>
+    <property name="script">
+      <value>
+        oa_metadata.put("DestinationNameInMetadata",oa_data.get(DestinationName));
+        oa_data.remove(DestinationName);
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="MapToXML" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>Convert the map to XML.</description>
+    <property name="rootElementTag" value="Trade"/>
+  </bean>
+
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <description>
+      This defines jndi connection, from which we get jms connection.
+    </description>
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
+    <!-- 
+      Uncomment the following property to specify an alternate provider url. 
+      Currently only JMSConnection can take advantage of this feature 
+    -->
+    <!--    
+    <property name="alternateProviderUrl" value="url goes here"/>
+    -->
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <description>jms connection for queue we wish to publish to.</description>
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.tp.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <description>writer that publishes data onto a queue.</description>
+    <property name="jmsConnection" ref="JmsConnection"/>
+    <property name="destinationFromMetadata" value="DestinationNameInMetadata"/> 
+    <property name="transacted" value="true"/>
+  </bean>
+
+</beans>

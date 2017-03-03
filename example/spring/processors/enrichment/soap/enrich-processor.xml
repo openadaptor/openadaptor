@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: enrich-processor.xml 1821 2008-10-23 11:29:07Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/enrichment/soap/enrich-processor.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    * reads input from the console
+    * attemps to convert input (expects two integers separated with a comma) to a map
+    * uses a Web Service enrichment processor to call a Web service that sums 
+      the numbers.
+    * writes output from the enrichment processor to the console.
+    
+  It is designed to illustrate the basic structure of an adaptor that uses a 
+  Web service enrichment processor.
+
+  Run it like this...
+    
+    1) Start the Web service endpoint:
+    
+       java SumWSEndpoint
+    
+    2) Run the adaptor:
+    
+       java org.openadaptor.spring.SpringAdaptor -config enrich-processor.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/activation.jar
+    sum-ws-endpoint.jar
+    
+     
+  To test the adaptor, type two integers separated with a comma: 3,4
+   
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  	  <bean class="org.openadaptor.core.router.Router">
+  		<property name="processors">
+  		  <list>
+  		    <ref bean="consoleReader" />
+  		    <ref bean="mapConverter" />
+  			<ref bean="enrichmentProcessor" />
+  		    <ref bean="writer" />
+  		  </list>
+  		 </property>
+  	  </bean>
+  	</property>
+  </bean>
+
+  <bean id="consoleReader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="mapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+     <property name="fieldNames">
+		<list>
+			<value>arg1</value>
+			<value>arg2</value>
+		</list>
+     </property>
+  </bean>
+  
+  <bean id="enrichmentProcessor" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
+     <property name="readConnector" ref="webServiceReader"/>
+     <property name="discardInput" value="true"/>
+  </bean>
+
+  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceReadConnector">
+    <property name="wsEndpoint" value="http://localhost:9998/ISumWS?wsdl"/>
+	<property name="serviceName" value="sum"/>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that writes to the console.</description>
+  </bean>
+  
+</beans>

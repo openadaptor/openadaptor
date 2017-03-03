@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: oa-register-server.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/register/oa-register-server.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * exposes a webservice that awaits Openadaptor registration data
+    * writes the data to an OA registration database
+    
+  It is designed to serve as an Openadaptor registration backend.
+  It requires database with a schema (sample defined in sql\register\mysql\schema.sql) to be available.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config oa-register-server.xml -props db.properties
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/activation.jar
+    lib/opt/cxf_2.6.16.jar
+     
+  Once it is running it will echo the webservice endpoint to the log, you can put
+  this into a web browser and verify that you can see the wsdl.
+  
+  Other adaptors that wish to register require providing registration URL in their
+  lib/registration.properties
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="runConfiguration">
+      <bean class="org.openadaptor.core.adaptor.AdaptorRunConfiguration">
+        <property name="restartCronExpression" value="0 0 1 * * ?">
+          <description>Restart at 1am every day</description>
+        </property>
+      </bean>
+    </property>
+  	<property name="messageProcessor">
+  	  <bean class="org.openadaptor.core.router.Router">
+  		<property name="processMap">
+  		  <map>
+	        <!-- Normal flow -->
+	        <entry key-ref="registrationWsEndpoint" value-ref="propertiesUnmarshaller"/> 
+	        <entry key-ref="propertiesUnmarshaller" value-ref="attributeMapper"/> 
+	        <entry key-ref="attributeMapper" value-ref="mapEnricherTimestamp"/> 
+	        <entry key-ref="mapEnricherTimestamp" value-ref="registrationDbWriter"/> 
+	        
+  		    <!-- Exception processors -->
+            <entry key-ref="exceptionConvertor" value-ref="exceptionWriter"/> 
+  	      </map>
+  		</property>
+  	    <property name="exceptionProcessor" ref="exceptionConvertor"/>
+  	  </bean>
+  	</property>
+  </bean>
+
+  <bean id="registrationWsEndpoint" class="org.openadaptor.auxil.connector.soap.WebServiceCXFListeningReadConnector">
+    <description>This is a read connector, that exposes a webservice.</description>
+    <property name="serviceName" value="OARegistration"/>
+    <property name="port" value="9191"/>
+  </bean>
+ 
+  <bean id="propertiesUnmarshaller" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <property name="script">
+      <value>
+        var props=new java.util.Properties();
+        //props.load(new java.io.ByteArrayInputStream(oa_data.toString().getBytes()));
+        props.load(new java.io.ByteArrayInputStream(new java.lang.String(oa_data.toString()).getBytes()));
+        oa_data=props;
+      </value>
+    </property>	
+  </bean>
+  
+  <bean id="registrationDbConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description> Registration database account configuration </description>
+    <property name="driver" value="${db.driver}"/>
+    <property name="url" value="${db.url}"/>
+    <property name="username" value="${db.username}"/>
+    <property name="password" value="${db.password}"/>
+  </bean>
+  
+  <bean id="mapEnricherTimestamp" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+    <property name="script">
+      <value>
+         oa_data.put("Timestamp", new java.util.Date());
+         var log =Packages.org.apache.commons.logging.LogFactory.getLog("oa-register-server");
+         log.info(oa_data.get("OSName") + " " + oa_data.get("AdaptorVersion") + " " + oa_data.get("Username")  + " " + oa_data.get("PropertiesFile"));
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="attributeMapper" class="org.openadaptor.auxil.processor.map.AttributeMapProcessor">
+    <property name="map">
+      <map>
+	    <entry key="adaptorname" value="AdaptorName"/>
+	    <entry key="adaptorid" value="AdaptorId"/>
+	    <entry key="oaversion" value="AdaptorVersion"/>
+	    <entry key="hostname" value="Hostname"/>
+	    <entry key="ipaddress" value="IpAddress"/>
+	    <entry key="osname" value="OSName"/>
+	    <entry key="osversion" value="OSVersion"/>
+	    <entry key="username" value="Username"/>
+	    <entry key="installdir" value="InstallDir"/>
+	    <entry key="javaversion" value="JavaVersion"/>
+	    <entry key="javaclasspath" value="JavaClasspath"/>
+	    <entry key="propertiesfile" value="PropertiesFile"/>
+	    <entry key="additionaldetails" value="AdditionalDetails"/>
+	  </map>
+    </property>
+  </bean>
+  
+  <bean id="registrationDbWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="registrationDbConnection" />
+	<property name="writer">
+	  <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+	    <property name="tableName" value="OA_Register" />
+	    <property name="outputColumns">
+			<list>
+			  <value>AdaptorName</value> 
+			  <value>AdaptorId</value> 
+			  <value>AdaptorVersion</value>
+			  <value>Hostname</value>
+			  <value>IpAddress</value>
+			  <value>OSName</value>
+			  <value>OSVersion</value>
+			  <value>Username</value>
+			  <value>InstallDir</value>
+			  <value>JavaVersion</value>
+			  <value>JavaClasspath</value>
+			  <value>PropertiesFile</value>
+			  <value>AdditionalDetails</value>
+			  <value>Timestamp</value>
+			</list>
+		 </property>   
+	  </bean>
+	</property>
+  </bean>
+  
+  <bean id="exceptionHandlerDbConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Exception handler database account configuration </description>
+    <property name="driver" value="${exhandler.db.driver}"/>
+    <property name="url" value="${exhandler.db.url}"/>
+    <property name="username" value="${exhandler.db.username}"/>
+    <property name="password" value="${exhandler.db.password}"/>
+  </bean>
+    
+  <bean id="exceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor">
+    <property name="adaptor" ref="Adaptor"/>
+  </bean>
+ 
+  <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="exceptionHandlerDbConnection" />
+	<property name="writer">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+		   <property name="tableName" value="OA_Exception" />
+		   <property name="outputColumns">
+			 <list>
+			   <value>TIMESTAMP</value> 
+			   <value>EXCEPTION_CLASS_NAME</value> 
+			   <value>EXCEPTION_MESSAGE</value> 
+			   <value>CAUSE_EXCEPTION_CLASS_NAME</value> 
+			   <value>CAUSE_EXCEPTION_MESSAGE</value> 
+			   <value>STACK_TRACE</value>
+			   <value>ADAPTOR_NAME</value> 
+			   <value>ORIGINATING_COMPONENT</value> 
+			   <value>THREAD_NAME</value> 
+			   <value>DATA_TYPE</value> 
+			   <value>DATA</value> 
+			   <value>FIXED</value> 
+			   <value>REPROCESSED</value> 
+			 </list>
+		   </property>   
+		</bean>
+	</property>
+  </bean>
+ 
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Exposes JMX interface via http and rmi.</description>
+    <property name="port" value="8082"/>
+  </bean>
+ 
+</beans>

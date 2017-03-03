@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: file-rollover.xml 1880 2008-11-24 13:46:01Z lachork $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/file/file-rollover.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads data from a file, line by line
+    * writes to file. Output file is rolled over if it's reached the rolloverSize 
+    
+  It is designed to illustrate the size-based rollover of the output file.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config file-rollover.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes output to the output/ folder.
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline Reader -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="reader" />
+						<ref bean="writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+	    <description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+		<property name="dataReader">
+			<bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+		</property>
+	</bean>
+
+	<bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>
+		  This writer writes data to a file. Output file is rolled over if
+		  it has reached the 'rolloverSize'.
+		</description>
+		<property name="filename" value="output/output.txt" />
+		<property name="rolloverSize" value="10b"/>
+		<property name="append" value="true"/>
+	</bean>
+
+</beans>

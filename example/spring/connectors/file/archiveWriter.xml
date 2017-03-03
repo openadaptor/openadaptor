@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: archiveWriter.xml 2193 2016-12-16 14:42:32Z fschlier $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/file/archiveWriter.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads records from file
+    * writes to file using the writer specified the delegate specified in the archive writer
+    
+  It is designed to illustrate the basic structure of a archivig file writer adaptor
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config archiveWriter.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes output to  file output/output.txt
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline Reader -> ArchiveWriter -> Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="ArchiveWriter" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+	</bean>
+
+
+	<bean id="ArchiveWriter" class="org.openadaptor.auxil.connector.iostream.writer.ArchivingFileWriterConnector">
+		<property name="delegate" ref="Writer"/>
+		<property name="checkAtConnection" value="true"/>
+		<property name="checkAfterDelivery" value="true"/>
+		<property name="numDeliveriesBetweenChecks" value="3"/>
+		<property name="maxDirSize" value="1"/>
+	</bean>
+
+	<bean id="WriterAA" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to a file.</description>
+		<property name="filename" value="output/output.txt" />
+		<property name="append" value="false" />
+	</bean>
+	
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">
+		<description>
+		  This writer writes data to a file with a dynamically generated name.
+		  If name cannot be derived, the default (filename) name will be used.
+		</description>
+		<property name="filename" value="output/output.txt" />
+		<property name="append" value="true" />
+		<property name="script">
+		   <value>
+		   oa_data="output/output2.txt";
+		   </value>
+		</property>
+	</bean>
+
+</beans>

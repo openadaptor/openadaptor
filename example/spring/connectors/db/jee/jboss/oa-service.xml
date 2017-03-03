@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: oa-service.xml 1808 2008-10-20 13:47:30Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/jee/jboss/oa-service.xml $
+ -->
+<!--  
+Descriptor of JMX managed spring adaptor bean that will be available through JBoss console
+and will allow for kicking off openadaptor after it's been deployed to JBoss.
+Openadaptor jars needs to be made available to JBoss (by being copied to the appropriate 
+JBoss server lib area). This file needs to be copied to an auto-deploy area of JBoss.
+-->
+
+<server>
+  <mbean code="org.openadaptor.spring.jmx.JMXManagedSpringAdaptor" name="openadaptor.org:service=openadaptor"/>
+</server>

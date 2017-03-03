@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: javascript-xml.xml 1905 2008-12-09 12:01:09Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/javascript-xml.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This adaptor does the following...
+    
+    * reads xml from a file
+    * converts the file into a Dom4J Document
+    * A Script converts it into a w3c Document, manipulates it and converts it back
+    * writes to stdout
+    
+    It also illustrates how logging may be used within a script.
+    
+  It may be run as follows
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript-xml.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Convertor"/>
+            <ref bean="DocumentToDom4jDocument"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>    
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read entire contents of input file</description>
+     <property name="filename" value="input/input.xml"/>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader"/>
+    </property>
+  </bean>
+  
+  <bean id="Convertor" class="org.openadaptor.thirdparty.dom4j.XmlToDom4jConvertor">
+    <description>Convert incoming records into Dom4j Documents</description>
+  </bean>
+
+  <bean id="DocumentToDom4jDocument" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Convert Dom4j Document inton org.w3c.dom.Document</description>
+    <property name="script">
+      <value>
+        importPackage(Packages.org.dom4j.io);
+        //Illustrate some logging for good measure (this is not actually necessary as
+        //the script processor's log is already available as bound variable oa_log)
+        var log =Packages.org.apache.commons.logging.LogFactory.getLog("dom4j->w3c");
+        log.info("Converting: "+oa_data.getClass().getName());
+        oa_data=new DOMWriter().write(oa_data);
+        log.info("Converted to: "+oa_data.getClass().getName());
+        //Do some pointless manipulation via the w3c Document interface...
+        var element=oa_data.createElement("anotherElement"); 
+        oa_data.getLastChild().appendChild(element);
+        //Now convert it back to dom4j and change it back into an XML String
+        oa_data=new DOMReader().read(oa_data).asXML();
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

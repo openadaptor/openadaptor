@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>  
+  
+  <bean id="Test" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="${noconfigurer_message}"/>
+	</bean>
+  
+	<bean id="Run1" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="run1"/>
+	</bean>
+  
+	<bean id="Run2" class="org.openadaptor.spring.SpringAdaptorTestCase$Test">
+      <constructor-arg value="run2"/>
+	</bean>
+  
+  <bean id="Runnables" class="org.openadaptor.util.Runnables">
+    <constructor-arg>
+      <list>
+        <ref bean="Run1"/>
+        <ref bean="Run2"/>
+      </list>
+    </constructor-arg>
+  </bean>
+</beans>

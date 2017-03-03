@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: directory-read-connector.xml 2154 2011-06-20 10:18:05Z wratislp $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/file/directory-read-connector.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads all files in a directory 'inputs' where the filenames match the regex stuff[0-9].txt
+    * outputs to stdout
+    * in addition, because there is an Inspector bean between the reader and writer you can see
+    * the contents of oa_data and on_metadata
+    * because the properties appendEOFMessage and storeFileName are set to true in the DirectoryReader
+    * bean you can see the the effect of this via the Inspector bean
+    
+  It is designed to illustrate the basic structure of a directory reader adaptor
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config directory-read-connector.xml -bean Adaptor
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes to stdout
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+			Illustrate a basic directory reader adaptor. * reads all
+			files in a directory input/inputs whose filenames match the
+			regex stuff[0-9].txt * outputs to stdout
+		</description>
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline DirectoryReader ->
+					Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="DirectoryReader" />
+						<ref bean="Inspector" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="DirectoryReader"
+		class="org.openadaptor.auxil.connector.iostream.reader.DirectoryReadConnector">
+		<property name="dirname" value="example/spring/connectors/file/input/inputs" />
+		<property name="filenameRegex" value="stuff[0-9].txt" />
+		<property name="batchSize" value="4" />
+		<property name="appendEOFMessage" value="true" />
+		<property name="storeFileName" value="true" />
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to stdout.</description>
+	</bean>
+	
+  <bean id="Inspector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Handy debug component. Put this into the pipeline to view message.</description>
+    <property name="script">
+      <value>
+        importPackage(Packages.javax.swing);
+        JOptionPane.showMessageDialog(null,oa_data,"oa_data",JOptionPane.PLAIN_MESSAGE);
+        JOptionPane.showMessageDialog(null,oa_metadata,"oa_metadata",JOptionPane.PLAIN_MESSAGE);
+   	  </value>
+    </property>
+  </bean>
+
+</beans>

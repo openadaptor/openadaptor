@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: javascript.xml 1782 2008-10-06 14:48:23Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/javascript.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This (contrived) adaptor does the following...
+    
+    * reads lines from stdin
+    * prefixes "hello" to the front
+    * writes to stdout
+    
+  It is designed to illustrate the use of scripts within openadaptor. It also shows how 
+  scripts may include logging statements.
+
+  It may be invoked as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  When launched, it will wait for command line input.
+    
+  type something like this...
+    
+    Dolly
+    
+  ...and it should be converted to something like this...
+  
+    hello mum!    
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>
+      This is the bean that actually gets run.
+    </description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="ScriptProcessor"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="ScriptProcessor" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      This is a processor that converts an ordered map into an xml string.
+    </description>
+    <property name="language" value="js"/>
+    <property name="script">
+      <value>
+        oa_log.debug("About to process record: "+oa_data);
+        oa_data = "Hello " + oa_data + "!";
+        oa_log.debug("Record processed :-)");
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that outputs the data to a stream (stdout).</description>
+  </bean>
+  
+</beans>

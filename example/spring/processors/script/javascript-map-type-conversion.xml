@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	$Id: javascript-map-type-conversion.xml 1619 2008-06-26 14:21:31Z higginse $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/javascript-map-type-conversion.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<description>
+		<![CDATA[
+  This is a simple script to illustrate how data types within maps may be converted in a script.
+ 
+  It may be run as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript-map-type-conversion.xml
+    
+  Classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+    It expects input in input/trades.txt.
+  
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+			This is the bean that actually gets run.
+		</description>
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="OrderedMap" />
+						<ref bean="ScriptProcessor" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/trades.txt" />
+		<property name="dataReader">
+		<description>Reader which ignores comment lines (first non whitespace is #)</description>
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<property name="excludeRegex" value="^\s*#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="OrderedMap"
+		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+			Convert to OrderedMap providing fields names
+		</description>
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="ScriptProcessor"
+		class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+		<description> 
+       Replace String value with Integer one
+		</description>
+		<property name="script"><value>
+     oa_data.put("oldQtyJavaClass",oa_data.get("Qty").getClass().getName());
+     oa_data.put("Qty",new java.lang.Integer(oa_data.get("Qty")));
+     oa_data.put("newQtyJavaClass",oa_data.get("Qty").getClass().getName());
+     </value>
+		</property>
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+</beans>

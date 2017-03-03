@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: javascript-filter-metadata.xml 2128 2010-09-08 12:59:02Z kscully $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/javascript-filter-metadata.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<description>
+		<![CDATA[  
+  This adaptor does the following...
+    
+    * reads all data in input/trades.txt
+    * converts to orderedmaps
+    * adds an arbitrary value to the metadata (For illustraion purposes)
+    * applies a simple filter to records (logging the arbitrary metadata entry for filtered recoords only)
+    * outputs to stdout
+    
+  It is designed to illustrate a simple use of a ScriptFilterProcessor with access to oa_metadata.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript-filter-metadata.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  writes to stdout.
+  Discarded records go to output/discards.txt
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+	 <description></description>
+	 <property name="messageProcessor">
+	  <bean class="org.openadaptor.core.router.Router">
+	   <property name="processors">
+	    <list>
+	     <ref bean="Reader" />
+	     <ref bean="OrderedMap" />
+       <ref bean="set_metadata" />
+	     <ref bean="js_filter" />
+	     <ref bean="Writer" />
+	    </list>
+	   </property>
+	   <property name="discardMap">
+	    <map>
+	     <entry key-ref="js_filter" value-ref="DiscardWriter" />
+	    </map>
+	   </property>
+
+	  </bean>
+	 </property>
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/trades.txt" />
+		<property name="dataReader">
+		<description>Reader which ignores comment lines (first non whitespace is #)</description>
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<property name="excludeRegex" value="^\s*#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="OrderedMap"
+		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+			Convert to OrderedMap providing fields names
+		</description>
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+  
+  <bean id="set_metadata" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Add some arbitrary metadata to use later in the Filter for illustration</description>
+    <property name="script">
+      <value><![CDATA[
+        oa_metadata.put("CP_Metadata", oa_data.get("Counterparty"))
+       ]]></value>
+    </property>
+  </bean>
+
+	<bean id="js_filter"
+		class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+		<description>
+			Simple use of a ScriptFilterProcessor. Filter will
+			discard trades with Qty below 200 or value below 40000.
+			Note use of CDATA to allow embedded less-than characters in script.
+      This example also logs the value of "CP_Metadata" in oa_metadata
+      for the filtered record.
+		</description>
+		<property name="scriptProcessor">
+			<bean
+				class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+				<property name="script">
+				<value><![CDATA[
+          if (Qty < 200 || (Qty*Price<40000) ) {
+            oa_log.info("CP_Metadata in oa_metadata of filtered record is: [" + oa_metadata.get("CP_Metadata") + "]");
+            true; // i.e. filter
+          } else {
+            false; // i.e. don't filter
+          }
+			  ]]>
+			  </value>
+			  </property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+  
+	<bean id="DiscardWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+	 <property name="filename" value="output/discards.txt" />
+	 <property name="append" value="false"></property>
+	</bean>
+
+</beans>

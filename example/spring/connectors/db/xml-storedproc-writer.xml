@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: xml-storedproc-writer.xml 1657 2008-07-16 15:27:04Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/xml-storedproc-writer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  
+  This adaptor does the following...
+    
+    * reads data from stdin
+    * converts it into a dom4j document
+    * writes the data via a stored procedure call
+    
+  It is designed to illustrate the basic structure of an adaptor that writes to a database.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config xml-storedproc-writer.xml -props db.props
+
+  You must supply db.props populated appropriately for your environment.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <database jar>
+  
+  NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
+        database with an "sp_insert_example" procedure available in it.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <description>
+         This creates the simple router: Reader -> Dom4jConverter -> Writer.
+       </description>
+       <property name="processors">
+         <list>
+           <ref bean="Reader"/>
+           <ref bean="Dom4jConverter"/>
+           <ref bean="Writer"/>
+         </list>
+       </property>
+     </bean>
+    </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <property name="filename" value="input/input-writer.xml" />
+ </bean>
+
+ <bean id="Dom4jConverter" class="org.openadaptor.thirdparty.dom4j.XmlToDom4jConvertor">
+  <description>Converts input into a dom4j Document.</description>
+ </bean>
+ 
+  <!-- 
+    The connection parameters referenced here should be defined in a separate properties file 
+      and referenced on the command line via -props <path-to-props-file> 
+    -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines a jdbc connection.</description>
+    <property name="driver" value="${db.driver}" />
+    <property name="url" value="${db.url}" />
+    <property name="username" value="${db.username}" />
+    <property name="password" value="${db.password}" />
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.</description>
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="writer">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.xml.XMLCallableStatementWriter">
+        <property name="callableStatement" value="sp_insert_example">
+          <description>The stored proc to call.</description>
+        </property>
+        <property name="outputColumns">
+          <description>Ordered list of ordered map attributes to call proc with.</description>
+          <list>
+            <value>id</value>
+            <value>name</value>
+            <value>description</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+</beans>

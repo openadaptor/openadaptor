@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<dataobjectmessage version="1.0">
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DOMessageWrapper__">
+   <AttributeDef Name="data" Datatype="Bike"/>
+   <AttributeDef Name="UniqueID" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="Bike"/>
+    <AttributeDef Name="Manufacturer" Datatype="ManType"/>
+    <AttributeDef Name="Model" Datatype="ModelType"/>
+    <AttributeDef Name="Price" Datatype="Double"/>
+    <AttributeDef Name="Registered" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+ 
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="ManType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Country" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+<metadata type="NDCD" version="1.0">
+  <ElementDef Name="ModelType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Capacity" Datatype="Int64"/>
+    <AttributeDef Name="DateRange" Datatype="DateRangeType"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DateRangeType"/>
+    <AttributeDef Name="From" Datatype="Date"/>
+    <AttributeDef Name="To" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+
+
+ <dataobjects type="basicdo" version="1.0">
+  <DOMessageWrapper__>
+   <Row>
+    <data>
+     <Bike>
+     
+     <Row>
+      <Manufacturer>
+        <ManType>
+        <Row>
+          <Name>BMW</Name>
+          <Country>Germany</Country>
+        </Row>
+        </ManType>
+      </Manufacturer>     
+      <Model>
+        <ModelType>
+        <Row>
+         <Name>K75S</Name>
+         <Capacity>750</Capacity>
+         <DateRange>
+          <DateRangeType>
+          <Row>
+           <From>1983-01-01</From>
+           <To>1995-12-31</To>
+          </Row>
+          </DateRangeType>
+         </DateRange>
+        </Row>
+        </ModelType>
+      </Model> 
+      <Registered>1987-05-24</Registered>   
+      <Price>2500</Price>
+     </Row> 
+ 
+     <Row>
+       <Manufacturer>
+        <ManType>
+        <Row>
+          <Name>Ducati</Name>
+          <Country>Italy</Country>
+        </Row>
+        </ManType>
+      </Manufacturer>     
+      <Model>
+        <ModelType>
+        <Row>
+         <Name>996</Name>
+         <Capacity>996</Capacity>
+         <DateRange>
+          <DateRangeType>
+          <Row>
+           <From>1999-01-01</From>
+           <To>2003-12-31</To>
+          </Row>
+          </DateRangeType>
+         </DateRange>
+        </Row>
+        </ModelType>
+      </Model>  
+      <Registered>2001-03-04</Registered>  
+      <Price>4000</Price>
+    </Row>    
+                
+    </Bike>
+   </data>
+  </Row>   
+  </DOMessageWrapper__>
+ </dataobjects>
+</dataobjectmessage>
+
+<?xml version='1.0' encoding='iso-8859-1'?>
+<dataobjectmessage version="1.0">
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DOMessageWrapper__">
+   <AttributeDef Name="data" Datatype="Car"/>
+   <AttributeDef Name="UniqueID" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="Car"/>
+    <AttributeDef Name="Manufacturer" Datatype="ManType"/>
+    <AttributeDef Name="Model" Datatype="ModelType"/>
+    <AttributeDef Name="Price" Datatype="Double"/>
+    <AttributeDef Name="Registered" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+ 
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="ManType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Country" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+<metadata type="NDCD" version="1.0">
+  <ElementDef Name="ModelType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Capacity" Datatype="Int64"/>
+    <AttributeDef Name="DateRange" Datatype="DateRangeType"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DateRangeType"/>
+    <AttributeDef Name="From" Datatype="Date"/>
+    <AttributeDef Name="To" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+
+
+ <dataobjects type="basicdo" version="1.0">
+  <DOMessageWrapper__>
+   <Row>
+    <data>
+     <Car>
+     
+     <Row>
+      <Manufacturer>
+        <ManType>
+        <Row>
+          <Name>BMW</Name>
+          <Country>Germany</Country>
+        </Row>
+        </ManType>
+      </Manufacturer>     
+      <Model>
+        <ModelType>
+        <Row>
+         <Name>330d</Name>
+         <Capacity>3000</Capacity>
+         <DateRange>
+          <DateRangeType>
+          <Row>
+           <From>2000-01-01</From>
+           <To>2007-12-31</To>
+          </Row>
+          </DateRangeType>
+         </DateRange>
+        </Row>
+        </ModelType>
+      </Model> 
+      <Registered>2001-03-17</Registered>   
+      <Price>14000</Price>
+     </Row>    
+                
+    </Car>
+   </data>
+  </Row>   
+  </DOMessageWrapper__>
+ </dataobjects>
+</dataobjectmessage>
+
+
+<?xml version='1.0' encoding='iso-8859-1'?>
+<dataobjectmessage version="1.0">
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DOMessageWrapper__">
+   <AttributeDef Name="data" Datatype="Bike"/>
+   <AttributeDef Name="UniqueID" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="Bike"/>
+    <AttributeDef Name="Manufacturer" Datatype="ManType"/>
+    <AttributeDef Name="Model" Datatype="ModelType"/>
+    <AttributeDef Name="Price" Datatype="Double"/>
+    <AttributeDef Name="Registered" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+ 
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="ManType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Country" Datatype="String"/>
+  </ElementDef>
+ </metadata>
+
+<metadata type="NDCD" version="1.0">
+  <ElementDef Name="ModelType"/>
+    <AttributeDef Name="Name" Datatype="String"/>
+    <AttributeDef Name="Capacity" Datatype="Int64"/>
+    <AttributeDef Name="DateRange" Datatype="DateRangeType"/>
+  </ElementDef>
+ </metadata>
+
+ <metadata type="NDCD" version="1.0">
+  <ElementDef Name="DateRangeType"/>
+    <AttributeDef Name="From" Datatype="Date"/>
+    <AttributeDef Name="To" Datatype="Date"/>
+  </ElementDef>
+ </metadata>
+
+
+ <dataobjects type="basicdo" version="1.0">
+  <DOMessageWrapper__>
+   <Row>
+    <data>
+     <Bike>
+     
+     <Row>
+      <Manufacturer>
+        <ManType>
+        <Row>
+          <Name>Yamaha</Name>
+          <Country>Japan</Country>
+        </Row>
+        </ManType>
+      </Manufacturer>     
+      <Model>
+        <ModelType>
+        <Row>
+         <Name>FJ11</Name>
+         <Capacity>1100</Capacity>
+         <DateRange>
+          <DateRangeType>
+          <Row>
+           <From>1984-01-01</From>
+           <To>1993-12-31</To>
+          </Row>
+          </DateRangeType>
+         </DateRange>
+        </Row>
+        </ModelType>
+      </Model> 
+      <Registered>1984-04-16</Registered>   
+      <Price>1500</Price>
+     </Row>    
+                
+    </Bike>
+   </data>
+  </Row>   
+  </DOMessageWrapper__>
+ </dataobjects>
+</dataobjectmessage>
+
+

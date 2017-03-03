@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id: doxml-do-filter.xml 1570 2008-06-20 09:56:21Z higginse $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/legacy/doxml-do-filter.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[  
+  This adaptor does the following...
+    
+    * reads DOXML from a file
+    * converts to DataObjects (legacy data structures from previous openadaptor versions)
+    * Filters based on the data object type
+    * converts DataObjects to map
+    * converts map to xml
+    * writes to console
+    
+  It is designed to illustrate the basic structure something that needs to receive
+  the legacy DataObject format.
+
+  It may be run as follows.
+    
+    java org.openadaptor.spring.SpringAdaptor -config doxml-do-filter.xml
+
+  This example requires the legacy openadaptor.jar from openadaptor 1.7.2.2 or later. 
+  This is available from http://www.openadaptor.org. Ensure
+  that the legacy openadaptor.jar is at the end of the classpath and that the classpath
+  does *not* include openadaptor-stub.jar.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <legacy openadaptor>/openadaptor.jar
+    
+  writes output to stdout.
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="DOXmlConverter" />
+      <ref bean="DataObjectFilter" />
+      <ref bean="MapConverter" />
+      <ref bean="XmlConverter" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <description>
+   Read a file containing legacy DOXML (Using DOXMLReader instead of StringReader allows the file 
+   to potentially contain multiple DOXML messages if necessary).
+  </description>
+  <property name="filename" value="input/mixed-type-doxml.txt" />
+  <property name="dataReader">
+   <bean class="org.openadaptor.legacy.connector.iostream.reader.string.DOXMLReader" />
+  </property>
+ </bean>
+
+ <bean id="DOXmlConverter" class="org.openadaptor.legacy.convertor.dataobjects.DOXmlToDataObjectConvertor">
+  <description>Converts DOXML string to DataObjects</description>
+ </bean>
+
+ <bean id="DataObjectFilter" class="org.openadaptor.legacy.processor.DOFilterProcessor">
+  <description>Fiter which removes any data objects of type 'Car'</description>
+  <property name="matchedTypes">
+   <list>
+    <value>Car</value>
+   </list>
+  </property>
+  <!-- (filterOnMatch=true is the default anyway) -->
+  <property name="filterOnMatch" value="true" />
+ </bean>
+
+ <bean id="MapConverter" class="org.openadaptor.legacy.convertor.dataobjects.DataObjectToOrderedMapConvertor">
+  <description>Converts DataObject to IOrderedMap.</description>
+ </bean>
+
+ <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+  <description>Converts IOrderedMap to XML.</description>
+  <property name="rootElementTag" value="record" />
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

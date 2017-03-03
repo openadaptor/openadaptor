@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: counterparty-id-mapping.xml 2052 2010-03-30 10:03:35Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/enrichment/db/counterparty-id-mapping.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[ 
+  This adaptor does the following...
+    
+    * reads input (trades) from a csv file
+    * converts input into a map.
+    * uses an enrichment processor to lookup a database to find a short form of the counterparty id.
+    * replaces the long form of the counterparty id with the short form.
+    * populates the message metadata with the tradeid to use to identify the record later.
+    * at this point the adaptor fans out.
+    * first path writes to stdout as fixedwidth records.
+    * second path writes each record as xml to an individaul file named using the tradeid from the metadata.
+    
+  It is designed to illustrate an enrichment processor to replace values in a message by using message data to 
+  lookup a mapping in an external database. The database contains a single table with two columns the old counterparty
+  name an the new name it should map to.
+  
+  The multiple paths are just to illustrate using metadata and fanout to produce varied outputs.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config counterparty-id-mapping.xml
+   
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/hsqldb.jar
+    
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb  
+    
+  The command needs to be executed from a folder containing Hypersonic script and properties 
+  (hsql.script and hsql.properties) located in example/spring/connectors/db 
+  
+  Once the adaptor is running you should see several records emitted in fixed width form in stdout eg:
+  
+    1B1001        1000000    3.25E0
+  	2B1002         500000    3.21E0
+  	.....
+    
+  You will also see a file per trade in an output folder containing xml representing the same 
+  information as previously. The file will be generated from the TradeId E.g.:
+  
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <trade>
+    <TradeId>1</TradeId>
+    <BuySell>B</BuySell>
+    <SecId>1</SecId>
+    <PartyId>001</PartyId>
+    <Quantity>1000000</Quantity>
+    <Price>3.25E0</Price>
+  </trade>
+  
+  	
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+          <property name="processMap">
+            <map>
+              <entry key-ref="Reader" value-ref="MapConverter"/>
+              <entry key-ref="MapConverter" value-ref="CounterpartyIdLookup"/>
+              <entry key-ref="CounterpartyIdLookup" value-ref="CounterpartyIdReplace"/>
+              <entry key-ref="CounterpartyIdReplace" value-ref="ExtractMessageId"/>
+              <entry key-ref="ExtractMessageId">
+                <list>
+                  <ref bean="FixedWidthConvertor"/>
+                  <ref bean="XmlConverter"/>
+                </list>
+              </entry>              
+              <entry key-ref="FixedWidthConvertor" value-ref="FixedWidthWriter"/>
+              <entry key-ref="XmlConverter" value-ref="XMLWriter"/>
+            </map>
+          </property>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/trades.txt"/>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+     <property name="fieldNames">
+		<list>
+		  <value>TradeId</value>
+      <value>BuySell</value>
+      <value>SecId</value>
+      <value>PartyId</value>
+      <value>Quantity</value>
+      <value>Price</value>
+		</list>
+     </property>
+  </bean>
+  
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection used by the Counterparty Id Lookup.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+ 
+  <bean id="DBReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <description>This defines database reader used by the Counterparty Id Lookup.</description>
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="sql">
+      <value>
+        SELECT Short_Id
+        FROM COUNTERPARTY_ID_MAP 
+        WHERE Long_Id = '?'
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="CounterpartyIdLookup" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
+    <description>
+      Enrich the map with the lookup value keyed by PartyId.
+      Makes use of beans JdbcConnection and DBReader to perform the lookup.
+    </description>
+    <property name="readConnector" ref="DBReader"/>
+    <property name="parameterNames" value="PartyId"/>
+  </bean>
+  
+  <bean id="CounterpartyIdReplace" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      What we do here is replace the value at PartyId with that at SHORT_ID.
+      We also remove the now redundant SHORT_ID from the record.
+    </description>
+    <property name="language" value="js"/>
+    <property name="script">
+      <value>
+        oa_log.debug("About to process record: "+oa_data);
+        
+        oa_data.put("PartyId", oa_data.get("SHORT_ID"));
+        oa_data.remove("SHORT_ID");
+        
+        oa_log.debug("Record processed :" + oa_data);
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="ExtractMessageId" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      Add the TradeId to the Message MetaData.
+      Intending to use this later on to name files etc ...
+    </description>
+    <property name="language" value="js"/>
+    <property name="script">
+      <value>
+        oa_log.debug("About to process record: "+oa_data);
+        // Planning to use this metadata filename later in a dynamic file writer.
+        oa_metadata.put("filename", oa_data.get("TradeId"));               
+        oa_log.debug("Record processed :" + oa_data);
+      </value>
+    </property>
+  </bean>  
+
+  <bean id="FixedWidthConvertor"
+    class="org.openadaptor.auxil.convertor.fixedwidth.OrderedMapToFixedWidthStringConvertor">
+    <description>Generate a fixed width record from the supplied Map.</description>
+    <property name="fieldDetails">
+      <list>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="3" />
+          <property name="fieldName" value="TradeId" />
+          <property name="rightAlign" value="true" />
+        </bean>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="1" />
+          <property name="fieldName" value="BuySell" />
+        </bean>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="1" />
+          <property name="fieldName" value="SecId" />
+        </bean>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="3" />
+          <property name="fieldName" value="PartyId" />
+        </bean>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="15" />
+          <property name="fieldName" value="Quantity" />
+          <property name="rightAlign" value="true" />
+        </bean>
+        <bean
+          class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+          <property name="fieldWidth" value="10" />
+          <property name="fieldName" value="Price" />
+          <property name="rightAlign" value="true" />
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>Generate XML from the Map. Use 'trade' as the root tag.</description>
+    <property name="rootElementTag" value="trade"/>
+  </bean>
+   
+  <bean id="FixedWidthWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+     
+<!--  <bean id="FixedWidthWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">-->
+<!--  <description>Append each fixed width representation of a trade to the specified file</description>-->
+<!--    <property name="filename" value="output/fw_trades.txt"/>-->
+<!--    <property name="append" value="true"/>-->
+<!--  </bean> -->
+ 
+ 
+<!--  <bean id="FixedWidthWriter" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">-->
+<!--  <description>-->
+<!--          Write each fixed width representation of a trade to a new file -->
+<!--          named with the specified filename from the message metadata</description> -->
+<!--    <property name="script">-->
+<!--      <value>-->
+<!--        oa_data = "output/TradeId-"+(oa_metadata.get("filename"))+".txt";-->
+<!--      </value>-->
+<!--    </property>-->
+<!--    <property name="append" value="false"/>-->
+<!--  </bean> -->
+    
+  <bean id="XMLWriter" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">
+    <description>
+          Write each xml representation of a trade to a new file named 
+          with the specified filename from the message metadata
+    </description>   
+    <property name="script">
+      <value>
+        oa_data = "output/TradeId-"+(oa_metadata.get("filename"))+".xml";
+      </value>
+    </property>
+    <property name="append" value="false"/>
+  </bean>
+
+  <bean id="Inspector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Handy debug component. Put this into the pipeline to view message.</description>
+    <property name="script">
+      <value>
+        importPackage(Packages.javax.swing);
+        JOptionPane.showMessageDialog(null,oa_data,"before CSV",JOptionPane.PLAIN_MESSAGE);
+   	  </value>
+    </property>
+  </bean>
+  
+</beans>

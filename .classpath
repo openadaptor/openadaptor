@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="classes" path="src"/>
+	<classpathentry kind="src" output="build/support/classes" path="support/src"/>
+	<classpathentry kind="src" output="test/unit/classes" path="test/unit/src"/>
+	<classpathentry kind="src" output="test/system/classes" path="test/system/src"/>
+	<classpathentry kind="src" output="test/integration/classes" path="test/integration/src"/>
+	<classpathentry kind="src" output="example/classes" path="example/src"/>
+	<classpathentry kind="src" output="stub/classes" path="stub/src"/>
+	<classpathentry kind="src" output="spring/classes" path="spring/src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="test/lib"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="spring/lib/spring.jar" sourcepath="/export/work/spring/spring-framework-2.5.3/dist/spring-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="spring/lib/spring-core.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="test/lib/junit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jta-spec.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/spring-mock.jar" sourcepath="C:/dev/official_src_trees/spring-framework-2.0.2/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/dev/official_src_trees/spring-framework-2.0.2/docs/api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/dumbster.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jonas_timer.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/mockrunner-jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmxremote.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmxri.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jmxtools.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/commons-discovery.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/qname.jar"/>
+	<classpathentry exported="true" kind="lib" path="test/lib/hsqldb.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/carol.jar"/>
+	<classpathentry kind="lib" path="lib/jotm.jar"/>
+	<classpathentry kind="lib" path="lib/jotm_jrmp_stubs.jar"/>
+	<classpathentry kind="lib" path="lib/script.jar"/>
+	<classpathentry kind="lib" path="test/lib/jmock-core-1.2.0.jar"/>
+	<classpathentry kind="lib" path="test/lib/jmock-cglib-1.2.0.jar"/>
+	<classpathentry kind="lib" path="test/lib/cglib-nodep.jar"/>
+	<classpathentry kind="lib" path="lib/xstream-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/XmlSchema_1.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/xml-apis_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/xfire-all_1.2.6.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/wstx-asl_3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j_1.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/velocity_1.4.jar"/>
+	<classpathentry kind="lib" path="lib/stax-api_1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api_2.5-6.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/serializer_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/rome_0.9.jar"/>
+	<classpathentry kind="lib" path="lib/resolver_from_xerces_2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/quartz_1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.10-bin.jar" sourcepath="/home/higginse/work/eclipse/code-src-jars/mysql-connector-java-5.1.10/src"/>
+	<classpathentry kind="lib" path="lib/jta-spec_1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/jetty-util_6.1.9.jar"/>
+	<classpathentry kind="lib" path="lib/jetty_6.1.9.jar"/>
+	<classpathentry kind="lib" path="lib/jdom_1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jaxen_1.1-beta-9.jar"/>
+	<classpathentry kind="lib" path="lib/jaxws-api_2.1-1.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j_1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net_1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang_2.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-jxpath_1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient_3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections_3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec_1.3.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/jtds-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api_2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl_2.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc_2.1.12.jar"/>
+	<classpathentry kind="lib" path="lib/neethi-3.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/FastInfoset_1.2.7.jar"/>
+	<classpathentry kind="lib" path="lib/geronimo-annotation_1.0_spec_1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/cxf-2.6.16.jar"/>
+	<classpathentry kind="lib" path="support/lib/ant.jar"/>
+	<classpathentry kind="lib" path="support/lib/nekohtml.jar"/>
+	<classpathentry kind="lib" path="support/lib/junit.jar"/>
+	<classpathentry kind="lib" path="support/lib/httpunit.jar"/>
+	<classpathentry kind="lib" path="lib/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/wife.jar" sourcepath="test/lib/wife-src.zip"/>
+	<classpathentry kind="lib" path="lib/joda-time-1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="lib/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/groovy-1.7.2.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

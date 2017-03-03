@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: simple.xml 1374 2008-04-16 12:17:17Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/demo/simple.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This (contrived) adaptor does the following...
+    
+    * starts a servlet that listens for HTTP requests
+    * applies a simple filter to records
+    * outputs to stdout
+    
+  It is designed to illustrate a simple adaptor.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config simple.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  Once the adaptor is running, open test.html and send sample data to the adaptor.  
+  
+  This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
+  reference implementation and automatically runs a http adaptor which you can browse 
+  at http://localhost:8082).
+  
+  Graphical representation of this example can be found in example\docs\spring\demo\simple.htm
+  
+  In a realistic implementation the connectors could be reading/writing from/to
+  enterprise middleware (jms, mqseries, tibco...etc), databases, webservices, filesystems, 
+  ftp sites, tcp/ip sockets or specific system APIs. The processors could be converting this 
+  data to a cannonical form, normalising and enriching it, validating it against enterprise 
+  information models.      
+  
+  ]]></description>
+  
+  <bean id="adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <description>Defines the adaptor - arranges other beans into a processing pipeline</description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="servlet"/>
+            <ref bean="toXmlConverter"/>
+            <ref bean="consoleWriter"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <description>Starts up an HTTP server on indicated port</description>
+    <property name="port" value="9999"/>
+  </bean>
+  
+  <bean id="toXmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <description>Converts an ordered map to XML</description>
+    <property name="rootElementTag" value="Trade"/>
+  </bean>
+  
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>By default (with no filename specified) writes to the console</description>
+  </bean>
+  
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Exposes a JMX interface via HTTP, on indicated port</description>
+    <property name="port" value="8082"/>
+  </bean>
+   
+</beans>  

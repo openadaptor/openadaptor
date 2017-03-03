@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: pubsub-xa.xml 1918 2009-01-28 13:51:41Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/jms/pubsub-xa.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+<description><![CDATA[
+    This adaptor does the following...
+    
+      * reads data from JMS Topic
+      * publishes data to a JMS Queue
+      * uses jta transaction management.
+    
+    It is designed to illustrate the basic structure of an adaptor that processes
+    data by subscribing to a jms topic and publishing to a jms queue. The adaptor
+    is transacted using a JTA transaction manager (JOTM by default) to manage a
+    distributed transaction including both connectors
+
+    Run this example like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config pubsub-xa.xml -props ../../../config/jms_*.properties
+  
+    using the appropriate jms property file.
+
+    Suggested Classpath
+
+      lib
+      lib/openadaptor.jar
+      lib/openadaptor-spring.jar
+      lib/openadaptor-depends.jar
+       appropiate jms client jars
+    
+    The jars for JOTM are included in lib/openadaptor-depends.jar by default.
+    
+    Once it is running you need to publish some data to the topic subscribed to.
+    You can use the publisher example for this.
+ ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <!-- JTA transaction manager -->
+    <property name="transactionManager">
+      <bean class="org.openadaptor.core.transaction.jta.JtaTransactionManager"/>
+    </property>
+  </bean>
+
+
+  <!-- This defines jndi connection, from which we get jms connections -->
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="${jndi.initialContextFactory}"/>
+    <property name="providerUrl" value="${jndi.providerUrl}"/>
+    <property name="securityPrincipal" value="${jndi.securityPrincipal}"/>
+    <property name="securityCredentials" value="${jndi.securityCredentials}"/>
+  </bean>
+
+  <!-- jms connection for queue we wish to subscribe to -->
+  <bean id="JmsReaderConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.xats.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+    <!-- useXa must be set true otherwise the connection overrides the use of xa transactions -->
+    <property name="useXa" value="true"/>
+  </bean>
+
+  <!-- 
+    The reader that polls a jms topic Note that we have to set 'transacted' to 
+    true in spite of configuring an XA capable connection via the ConnectionFactory.
+    -->
+  <bean id="Reader" class="org.openadaptor.auxil.connector.jms.JMSReadConnector">
+    <property name="destinationName" value="${jms.t.destinationName.1}"/>
+    <property name="jmsConnection" ref="JmsReaderConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+  
+  <!-- jms connection for queue we wish to publish to -->
+  <bean id="JmsWriterConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="${jms.xaqs.connectionFactoryName.1}"/>
+    <property name="username" value="${jms.username}"/>
+    <property name="password" value="${jms.password}"/>
+    <!-- useXa must be set true otherwise the connection overrides the use of xa transactions -->
+    <property name="useXa" value="true"/>
+  </bean>
+  
+  <!--  
+    The writer that publishes data onto a queue. Note that we have to set 'transacted' to 
+    true in spite of configuring an XA capable connection via the ConnectionFactory.
+    -->
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="${jms.q.destinationName.1}"/>
+    <property name="jmsConnection" ref="JmsWriterConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+
+</beans>

@@ -1,0 +1,24 @@
+<!-- <box xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="bookbox.xsd"> -->
+<box>
+  <book>
+    <title>Zen and the Art of Motorcycle Maintenance</title>
+    <title>Dummy second title to test first one is picked for opinion</title>
+  </book>
+  <book>
+    <author>Descartes</author>
+  </book>
+  <book>
+    <title lang='fr_fr'>Le Petit Prince</title>
+    <title lang='en_us'>The Little Prince</title>
+    <author>Yves Saint Exupery</author>
+  </book>
+  <book>
+    <title lang='gr_gr'>Illiad</title>
+    <author>Homer</author>
+  </book>
+  <book>
+    <title lang='en_gb'>Alice&apos;s Adventures in Wonderland</title>
+    <author>Lewis Carroll</author>
+  </book>
+</box>

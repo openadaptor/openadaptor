@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: subscriber.xml 2040 2009-12-09 16:54:27Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/tibco/subscriber.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * subscribes to a subject
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that subscribes
+  to rendezvous.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config subscriber.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+    tibrvj.jar (this is not distributed with openadaptor)
+    
+  tibrvj calls the native rendezvous installation, so this needs to be installed
+  and the libraries need to be in your PATH / LD_LIBRARY_PATH.
+     
+  Once it is running you need to publish a message, either by running the
+  corresponding publisher example or using tibrvsend.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<description>
+  				This creates the simple pipeline Reader -> Writer.
+  			</description>
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="TibrvConnection" class="org.openadaptor.thirdparty.tibco.TibrvConnection">
+    <description>This defines rv connection.</description>
+    <property name="service" value=""/>  
+    <property name="network" value=""/>  
+    <property name="daemon" value=""/>  
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.thirdparty.tibco.TibrvReadConnector">
+    <description>This is a read connector, that subscribes to rendezvous.</description>
+    <property name="connection" ref="TibrvConnection"/>
+    <property name="decoder">
+    	<bean class="org.openadaptor.thirdparty.tibco.MapTibrvMessageDecoder">
+    	  <description>
+    	   includeSubject and fields are optional properties; if unspecified, 
+    	   subject is included by default, and all fields are 
+    	  decoded into map entries
+    	  </description>
+    		<property name="includeSubject" value="false"/>
+    		<property name="fields">
+        	<list>
+         	 <value>Timestamp</value>
+         	 <value>Bid</value>
+         	 <value>Maturity</value>
+        	</list>
+    		</property>
+    	</bean>
+    </property>
+    
+    <property name="topics">
+      <list>
+        <value>test</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

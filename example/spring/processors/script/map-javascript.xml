@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	$Id: map-javascript.xml 2183 2016-09-22 14:48:18Z fschlier $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/map-javascript.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<description>
+		<![CDATA[
+  This adaptor illustrates the use of the MapScriptProcessor.
+  This processor binds each of an incoming Map's entries to the
+  script engine, thus making them directly available for manipulations
+  by the scripts.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config map-javascript.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+    It expects input in input/trades.txt.
+    Alternatively, modify or remove the filename property in Reader to
+    read from an alternate file or stdin respectively.
+  
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+			This is the bean that actually gets run.
+		</description>
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="OrderedMap" />
+						<ref bean="ScriptProcessor" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/trades.txt" />
+		<property name="dataReader">
+		<description>Reader which ignores comment lines (first non whitespace is #)</description>
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader">
+				<property name="excludeRegex" value="^\s*#.*" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="OrderedMap"
+		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+			Convert to OrderedMap providing fields names
+		</description>
+		<property name="fieldNames">
+			<list>
+				<value>Side</value>
+				<value>Qty</value>
+				<value>SecurityId</value>
+				<value>Counterparty</value>
+				<value>Price</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="ScriptProcessor"
+		class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+		<description>
+		  Illustrates use of the map elements directly. Note that new map entries
+		  may be added by using oa_data.put(key,value)
+		</description>
+		<property name="script">
+			<value>oa_data.put("Value",Qty * Price);</value>
+		</property>
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+</beans>

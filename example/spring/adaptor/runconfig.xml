@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: runconfig.xml 1162 2008-01-29 14:11:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/runconfig.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * reads xml from stdin
+    * validates the xml
+    * writes to stdout
+    
+  Validation failures cause the adaptor to fail. It is designed to show how to
+  use the run configuration. This can be used to restart on failure and to
+  perform scheduled stops, starts and restarts using Cron Expressions.
+  
+  See quartz documentation for cron expression format (http://www.opensymphony.com/quartz)
+    
+  Run it like this...
+   
+    java org.openadaptor.spring.SpringAdaptor -config runconfig.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will wait for command line input
+    
+  type something like this...
+    
+    <data>hello</data>
+    
+  ...and you should see it echo-ed
+  
+  type something which is not an xml doc with a element called data and the validation
+  exception will be thrown and the adaptor will fail (because this example has no exception 
+  capture defined).
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="runConfiguration">
+      <bean class="org.openadaptor.core.adaptor.AdaptorRunConfiguration">
+        <property name="restartAfterFailLimit" value="3">
+          <description>It will restart 3 times after a failure.</description>
+        </property>
+        <property name="restartAfterFailDelayMs" value="2000">
+          <description>It will sleep for 2 secs before restarting.</description>
+        </property>          
+<!--        <property name="startCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri">-->
+<!--          <description>This schedules the start for 7am Mon-Fri, starts immediately otherwise.</description>-->
+<!--        </property>-->
+        <property name="stopCronExpression" value="0 0 19 ? * mon,tue,wed,thu,fri">
+          <description>This schedules the stop for 7pm weekdays.</description>
+        </property>
+        <property name="restartCronExpression" value="0 0 7 ? * mon,tue,wed,thu,fri">
+          <description>This schedules the restart for 7am weekdays.</description>
+        </property>
+      </bean>
+    </property>
+    
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Validator"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="input/schema.xsd"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

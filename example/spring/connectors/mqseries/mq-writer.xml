@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: mq-writer.xml 1931 2009-04-28 13:09:01Z kscully $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/mqseries/mq-writer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  Demonstrates an adaptor which reads from stdin and publishes to IBM MQ directly.
+
+  Data originates: stdin.
+  Data terminates: MQ.
+
+  Run using
+    java org.openadaptor.spring.SpringAdaptor -config mq-writer.xml -props ../../../config/mq.properties
+
+  mq.properties is a properties format file which should be edited to supply specific mq property
+  values e.g. channel etc. Alternatively just edit MQSeries_WriteConnector below directly.
+  
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    mq.jar  (this is not distributed with openadaptor)
+    connector-api.jar (From JCA. Certain versions of MQ may not require this. Also not distributed)
+    
+  Once it is running you need to type some data into the command line. To verify that this is working you 
+  need to be running the corresponding mq-reader example.
+    
+  ]]></description>
+ 
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline ReadConnector-MQSeries -> WriteConnector.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="ReadConnector"/>
+            <ref bean="MQSeries_WriteConnector"/>
+          </list>
+        </property>
+      </bean>
+   </property>
+  </bean>
+ 
+  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="MQSeries_WriteConnector" class="org.openadaptor.thirdparty.mq.MqWriteConnector">
+    <description>
+      Configured to write directly to MQ Series.
+    </description>
+    <property name="connection">
+      <bean class="org.openadaptor.thirdparty.mq.MqConnection">
+        <description>
+          Set one or other (not both) of useLocalTransactions and useXATransactions
+          to true so as to enable the appropriate transaction mode.
+        </description>
+        <property name="channelName" value="${mq.channel}"/>
+        <property name="hostName" value="${mq.host}"/>
+        <property name="managerName" value="${mq.manager}"/>
+        <property name="port" value="${mq.port}"/>
+        <property name="queueName" value="${mq.queue}"/>
+        <property name="userName" value="${mq.user}"/>
+        <property name="password" value="${mq.password}"/>
+        <property name="mqCharacterSet" value="37"/>
+        <property name="useLocalTransactions" value="false"/>
+        <property name="useXATransactions" value="false"/>
+        <!-- Some more optional properties.
+        <property name="replyToQueueName" value="${mq.queue}"/>
+        <property name="replyToQueueManagerName" value="${mq.manager}"/>
+         -->
+      </bean>
+    </property>
+  </bean>
+
+</beans>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: servlet.xml 1162 2008-01-29 14:11:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/http/servlet.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * exposes a servlet that clients can send data to
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of exposing an adaptor as a
+  servlet, typically you want to do this to allow a non java application
+  use openadaptor functionality.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config servlet.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running you can test it using a web browser, like this...
+  
+    http://localhost:9999/?data=foobar
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline Servlet -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="Servlet"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+  
+   
+  <!-- This is a read connector, that exposes a servlet -->
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+    <property name="acceptGet" value="true"/>
+    <property name="parameterNames">
+      <list>
+        <value>data</value>
+      </list>
+    </property>
+   </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

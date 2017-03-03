@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<Bike>
+ <Manufacturer>
+  <Name>BMW</Name>
+  <Country>Germany</Country>
+ </Manufacturer>
+ <Model>
+  <Name>K75S</Name>
+  <Capacity>750</Capacity>
+  <DateRange>
+   <From>1983-01-01</From>
+   <To>1995-12-31</To>
+  </DateRange>
+ </Model>
+ <Price>2500.0</Price>
+ <Registered>1987-05-24</Registered>
+</Bike>

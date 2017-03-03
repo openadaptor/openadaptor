@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: throttling-file.xml 1590 2008-06-23 16:40:09Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/polling/throttling-file.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads input file line by line, with time intervals between every line
+    * writes to console
+    
+  It is designed to illustrate the basic structure of a throttling read connector, that allows to 'throttle' reading of input
+  data (in this case from a file, but any IReadConnector could be wrapped in a ThrottlingReadConnector with the same effect).
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config throttling-file.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline ThrottlingReader -> Writer
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="ThrottlingReader" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.txt" />
+	</bean>
+
+    <bean id="ThrottlingReader" class="org.openadaptor.core.connector.ThrottlingReadConnector">
+		<description>
+		  Read connector that adds 'throttling' to the connector it wraps.
+		  It reads 2 lines of input file, then pauses for 3 seconds, reads 2 lines etc.
+		</description>
+		<property name="delegate" ref="Reader" />
+		<property name="pollIntervalSecs" value="3"/>
+		<property name="pauseOnlyAfterMsgs" value="2"/>
+	</bean>
+
+	<bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<description>This writer writes data to the console.</description>
+	</bean>
+
+</beans>

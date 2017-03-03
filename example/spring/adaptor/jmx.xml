@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: jmx.xml 1162 2008-01-29 14:11:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/jmx.xml $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  Illustrates how to run a jmx MBeanServer. Any other bean in the config that is an "MBean" 
+  will automatically be registered. The adaptor will be registered and this example includes 
+  a utility bean that exposes useful methods for viewing JVM properties.
+
+Run it like this...
+
+    java [-Dcom.sun.management.jmxremote] org.openadaptor.spring.SpringAdaptor -config jmx.xml
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+
+  This example specifies the MBeanServer bean that comes with openadaptor (uses the sun 
+  reference implementation and automatically runs a http adaptor which you can browse 
+  at http://localhost:8082).
+  
+  The optional vm argument -Dcom.sun.management.jmxremote will also permit the adaptor to be monitored
+  locally via jconsole (1.5+).
+    
+  The actual adaptor, simply reads stdin and writes to stdout.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="ReadConnector"/>
+            <ref bean="WriteConnector"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+
+  <bean id="ReadConnector" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="WriteConnector" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean class="org.openadaptor.core.jmx.MBeanServer">
+    <description>Embed this in your config to expose jmx interface via http and rmi.</description>
+    <property name="port" value="8082"/>
+  </bean>
+  
+  <bean id="SystemUtil" class="org.openadaptor.util.SystemUtil">
+    <description>Embed this in your config to expose useful management bean.</description>
+  </bean>
+  
+  <bean id="LogAdmin" class="org.openadaptor.thirdparty.log4j.LogAdmin">
+    <description>Embed this in your config to expose log4j management.</description>
+  </bean>
+  
+</beans>

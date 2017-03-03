@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: reader3.xml 2176 2012-01-04 12:54:24Z Wratislp $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/reader3.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ <description>
+  <![CDATA[    
+  This adaptor does the following...
+    
+    * selects data from a db using a query, marking status as processing
+	* fans out to the 'normal' Writer and to a path for updating the status of the read row
+	* Fanout 1
+    * creates a sql statement to update a specific row as processed
+	* executes the sql statement to mark specific row as processed
+	* Fanout 2
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that reads a database 
+  and for every unit of work also applies an update to mark the row as processed.
+  If a batchSize != 1 it will commit all the rows in that bach within the same unit of work.
+  This is seen as a better alternative to the "postReadSql" pattern seen in the reader2.xml example.  
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config reader3.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/hsqldb.jar  				//Or relevant database driver jar if not using hsql
+	lib/opt/groovy-1.7.2.jar
+    lib/opt/asm-3.2.jar
+    lib/opt/antlr-2.7.7.jar
+    
+  This example relies on a hypersonic database running (http://www.hsqldb.org). To run
+  the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    
+  Note: With hsql the adaptor will run but the commits do not actually commit!!
+  Testing against Sybase showed that the adaptor ran as expected, with the commits 
+  working as expected.
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description><![CDATA[
+	This creates the router 
+		Reader -> 
+				UpdateStatusScript -> UpdateStatusWriter
+				Writer
+	]]></description>
+    <property name="processMap">
+		<map>
+			<entry key-ref="Reader">
+				<list>
+					<ref bean="UpdateStatusScript" />
+					<ref bean="Writer" />
+				</list>
+			</entry>
+			<entry key-ref="UpdateStatusScript" value-ref="UpdateStatusWriter" />
+		</map>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection" scope="singleton">
+  <description>This defines jdbc connection.</description>
+  <property name="driver" value="org.hsqldb.jdbcDriver" />
+  <property name="url" value="jdbc:hsqldb:file:C:\hsql\hsql" />
+  <property name="username" value="SA" />
+  <property name="password" value="" />
+ </bean>
+ <bean id="JdbcConnection2" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection" scope="singleton">
+  <description>This defines jdbc connection.</description>
+  <property name="driver" value="org.hsqldb.jdbcDriver" />
+  <property name="url" value="jdbc:hsqldb:file:C:\hsql\hsql" />
+  <property name="username" value="SA" />
+  <property name="password" value="" />
+ </bean>
+ 
+ <bean id="Reader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+  <description>
+   Read messages from database, marking them as processing.
+   Configured for hypersonic (hsql). For Sybase, wrap the statements into a BEGIN/END block...
+   BEGIN
+     UPDATE ...
+     SELECT ...
+   END
+  </description>
+  <property name="jdbcConnection" ref="JdbcConnection" />
+  <property name="resultSetConverter">
+   <bean class="org.openadaptor.auxil.connector.jdbc.reader.orderedmap.ResultSetToOrderedMapConverter" />
+  </property>
+  <property name="sql">
+   <value>	
+    UPDATE TRADE_STATUS SET STATUS='PROCESSING' WHERE STATUS='NEW';
+	SELECT TRADE.*, TRADE_STATUS.STATUS FROM TRADE,TRADE_STATUS
+	WHERE TRADE.TRADEID=TRADE_STATUS.TRADEID
+	AND TRADE_STATUS.STATUS='PROCESSING'
+   </value>
+  </property>
+ </bean>
+ 
+  <bean id="UpdateStatusScript" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>Builds the SQL for updating the status of this trade and puts it into oa_data</description>
+    <property name="language" value="groovy" />
+    <property name="script">
+      <value><![CDATA[
+		oa_data = "UPDATE TRADE_STATUS SET STATUS='PROCESSED' WHERE TRADEID = '" + oa_data.get('TRADEID') + "'";
+      ]]></value>
+    </property>
+  </bean>
+
+ <bean id="UpdateStatusWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Executes the SQL that is in the payload (oa_data).</description>
+    <property name="jdbcConnection" ref="JdbcConnection2"/>
+ </bean>
+ 
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

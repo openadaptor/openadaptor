@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: caching.xml 2171 2011-11-18 14:49:29Z nbartel $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/caching/caching.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	   
+	<description><![CDATA[ 
+		This adaptor does the following...
+
+		* defines a hashmap to act as the cache for the data read from the database
+		* reads input messages (trades) from a file
+		* converts input into a map
+		* checks if the hashmap (cache) is empty 
+		* if it is empty (first time round):
+		*	calls an enrichment processor to read the database, note that the batchsize is limited to 500
+		*	uses a groovy script processor to populate the hashmap (cache) with a key/value pair based on the data read from the database
+		* if it is not empty (second and subsequent times round):
+		*	it skips the populating of the hashmap (cache)
+		* replaces the long form of the counterparty id with the short form using data cached in the hashmap
+		* populates the message metadata with the tradeid to use to identify the record later
+		* at this point the adaptor fans out
+		* first path: writes each record as txt (fixedwidth records) to an individaul file named using the tradeid from the metadata
+		* second path: writes each record as xml to an individaul file named using the tradeid from the metadata
+
+		It is designed to illustrate an enrichment processor and script being used to populate a cache (the hashmap) once only.
+		There is then a script processor which replaces values in a message by using message data to lookup data on the hashmap (cache).
+
+		Run it like this...
+
+			java org.openadaptor.spring.SpringAdaptor -config caching.xml
+
+		You need the following in your classpath
+
+			lib
+			lib/opt/groovy-engine-1.1-jdk14.jar
+			lib/opt/groovy-1.7.2.jar
+			lib/opt/asm-3.2.jar
+			lib/opt/antlr-2.7.7.jar
+			lib/openadaptor.jar
+			lib/openadaptor-depends.jar
+			lib/openadaptor-spring.jar
+			lib/opt/hsqldb.jar
+
+		This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+		up the server make sure hsqldb.jar is in your class path and run the following...
+		Note: You have the possibillity to set the classpath with the /tutorial/db/caching/setclasspath.bat file.
+
+			java org.hsqldb.Server -database.0 hsql -dbname.0 xdb  
+
+		Note:	The command needs to be executed from a folder containing Hypersonic script and properties 
+				(hsql.script and hsql.properties) located in /tutorial/db
+
+		Once the adaptor is running you should see several records emitted in fixed width form in stdout eg:
+
+			001B1CP1        1000000    3.25E0
+			002B1CP2         500000    3.21E0
+			.....
+
+		You will also see a file per trade in an output folder containing xml representing the same 
+		information as previously. The file will be generated from the TradeId E.g.:
+
+			<?xml version="1.0" encoding="ISO-8859-1"?>
+			<trade>
+				<TradeId>001</TradeId>
+				<BuySell>B</BuySell>
+				<SecId>1</SecId>
+				<PartyId>CP1</PartyId>
+				<Quantity>1000000</Quantity>
+				<Price>3.25E0</Price>
+			</trade>
+	]]></description>
+	
+	<!-- The caching example adaptor. -->
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+			  <property name="processMap">
+				<map>
+				  <entry key-ref="Reader" value-ref="MapConverter"/>
+				  <entry key-ref="MapConverter">
+					<list>
+					  <ref bean="Filter1"/>
+					  <ref bean="Filter2"/>
+					</list>
+				  </entry>
+				  <entry key-ref="Filter1" value-ref="CounterpartyIdReplace"/>
+				  <entry key-ref="Filter2" value-ref="CounterpartyIdLookup"/>
+				  <entry key-ref="CounterpartyIdLookup" value-ref="BuildCache"/>
+				  <entry key-ref="BuildCache" value-ref="CounterpartyIdReplace"/>
+				  <entry key-ref="CounterpartyIdReplace" value-ref="ExtractMessageId"/>
+				  <entry key-ref="ExtractMessageId">
+					<list>
+					  <ref bean="FixedWidthConvertor"/>
+					  <ref bean="XmlConverter"/>
+					</list>
+				  </entry>
+				  <entry key-ref="FixedWidthConvertor" value-ref="FixedWidthWriter"/>
+				  <entry key-ref="XmlConverter" value-ref="XMLWriter"/>
+				</map>
+			  </property>
+			  <property name="exceptionProcessor" ref="ExceptionHandler"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- The simple exception handler writes errors in the log file.  -->
+	<bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<property name="filename" value="errors.log"/>
+	</bean>
+	
+	<!-- The internal trader cache map. -->
+	<bean id="traderMap" class="java.util.HashMap">
+		<description>
+		   Cache the long id for the short id.
+		</description>
+	</bean>
+	
+	<!-- The reader process the messages/trades from the read input file. -->
+	<bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/trades.txt"/>
+	</bean>
+	
+	<!-- The map converter creates a map from the input with the configured field names. -->
+	<bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+	 <property name="fieldNames">
+		<list>
+			<value>TradeId</value>
+			<value>BuySell</value>
+			<value>SecId</value>
+			<value>PartyId</value>
+			<value>Quantity</value>
+			<value>Price</value>
+		</list>
+	 </property>
+	</bean>
+	
+	<!-- The filter checks if the map is empty, for the following process. -->
+	<bean id="Filter1" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+		<description>
+			Only do this path if the cache has been built
+		</description>
+		<property name="scriptProcessor">
+			<bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+				<property name="additionalBindings">
+					<map>
+						<entry key="map" value-ref="traderMap"/>
+					</map>
+				</property>
+				<property name="language" value="groovy"/>
+				<property name="script">
+				<value>
+					<![CDATA[
+					map.isEmpty(); 
+					//Discard if the map is empty, 
+					//i.e. only continue this route if the cache has been built
+					]]>
+				  </value>
+			  </property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- The filter checks if the map is not empty, for the following process. -->
+	<bean id="Filter2" 	class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+		<description>
+			Only do this path if the cache has not been built
+		</description>
+		<property name="scriptProcessor">
+			<bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+				<property name="additionalBindings">
+					<map>
+						<entry key="map" value-ref="traderMap"/>
+					</map>
+				</property>
+				<property name="language" value="groovy"/>
+				<property name="script">
+					<value>
+					<![CDATA[
+						!map.isEmpty(); 
+						//Discard if the map has been populated,
+						//i.e. only continue this route if the cache has not yet been built
+					  	]]>
+					  </value>
+			  	</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- The jdbc default hsql configuration -->
+	<bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+		<description>This defines jdbc connection used by the Counterparty Id Lookup.</description>
+		<property name="driver" value="org.hsqldb.jdbcDriver"/>
+		<property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+		<property name="username" value="sa"/>
+		<property name="password" value=""/>
+	</bean>
+	
+	<!-- The database reader for getting the counterparty information. -->
+	<bean id="DBReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+		<description>This defines database reader used by the Counterparty Read.</description>
+		<property name="jdbcConnection" ref="JdbcConnection"/>
+		<property name="batchSize" value="500"></property>
+		<property name="sql">
+		  <value>
+			SELECT Long_Id,Short_Id
+			FROM COUNTERPARTY_ID_MAP
+		  </value>
+		</property>
+	</bean>
+	
+	<!-- The counterparty id lookup component to enrich the map. -->
+	<bean id="CounterpartyIdLookup" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
+		<description>
+		  Enrich the map with the lookup value keyed by PartyId.
+		  Makes use of beans JdbcConnection and DBReader to perform the lookup.
+		</description>
+		<property name="readConnector" ref="DBReader"/>
+		<property name="enrichmentElementName" value="myLookupData"/>
+	</bean>
+	
+	<!-- The build cache component using the enriched map from the counterparty id lookup. -->
+	<bean id="BuildCache" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+		<property name="additionalBindings">
+				<map>
+					<entry key="map" value-ref="traderMap"/>
+				</map>
+		</property>
+		<property name="language" value="groovy"/>
+		<property name="script">
+			<value>
+				<![CDATA[
+				oa_log.info "Building cache" 
+				tMap = oa_data.get("myLookupData");
+				tMap.each() {
+					sId = it.get("SHORT_ID");
+					lId = it.get("LONG_ID");
+					map.put(lId,sId);
+				}
+				oa_data.remove("myLookupData")
+				flag = true;
+				oa_log.info "Cache built. " + map.size() + " entries."
+				]]>
+			</value>
+		</property>
+	</bean>
+	
+	<!-- The counterparty id replace component. -->
+	<bean id="CounterpartyIdReplace" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+		<description>
+		  What we do here is replace the value at PartyId with the shortid that is held in the cache.
+		</description>
+		<property name="additionalBindings">
+				<map>
+					<entry key="map" value-ref="traderMap"/>
+				</map>
+		</property>
+		<property name="language" value="js"/>
+		<property name="script">
+		  <value>
+			<![CDATA[
+			oa_log.debug("About to process record: "+oa_data);
+			oa_data.put("PartyId", map.get(oa_data.get("PartyId")));
+			oa_log.debug("Record processed :" + oa_data);
+			]]>
+		  </value>
+		</property>
+	</bean>
+	
+	<!-- The extract message id to metadata component. -->
+	<bean id="ExtractMessageId" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+		<description>
+		  Add the TradeId to the Message MetaData.
+		  Intending to use this later on to name files etc ...
+		</description>
+		<property name="language" value="js"/>
+		<property name="script">
+		  <value>
+			oa_log.debug("About to process record: "+oa_data);
+			// Planning to use this metadata filename later in a dynamic file writer.
+			oa_metadata.put("filename", oa_data.get("TradeId"));               
+			oa_log.debug("Record processed :" + oa_data);
+		  </value>
+		</property>
+	</bean>
+	
+	<!-- The fixed width converter generate a fixed width record from the supplied map. -->
+	<bean id="FixedWidthConvertor"
+		class="org.openadaptor.auxil.convertor.fixedwidth.OrderedMapToFixedWidthStringConvertor">
+		<description>Generate a fixed width record from the supplied Map.</description>
+		<property name="fieldDetails">
+		  <list>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="3" />
+			  <property name="fieldName" value="TradeId" />
+			  <property name="rightAlign" value="true" />
+			</bean>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="1" />
+			  <property name="fieldName" value="BuySell" />
+			</bean>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="1" />
+			  <property name="fieldName" value="SecId" />
+			</bean>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="3" />
+			  <property name="fieldName" value="PartyId" />
+			</bean>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="15" />
+			  <property name="fieldName" value="Quantity" />
+			  <property name="rightAlign" value="true" />
+			</bean>
+			<bean
+			  class="org.openadaptor.auxil.convertor.fixedwidth.FixedWidthFieldDetail">
+			  <property name="fieldWidth" value="10" />
+			  <property name="fieldName" value="Price" />
+			  <property name="rightAlign" value="true" />
+			</bean>
+		  </list>
+		</property>
+	</bean>
+	
+	<!-- The fixed width dynamic file writer. -->
+	<bean id="FixedWidthWriter" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">
+		<description>
+			  Write each fixed width representation of a trade to a new file 
+			  named with the specified filename from the message metadata</description> 
+		<property name="script">
+		  <value>
+			oa_data = "output/TradeId-"+(oa_metadata.get("filename"))+".txt";
+		  </value>
+		</property>
+		<property name="append" value="false"/>
+	</bean>
+	
+	<!-- The xml converter generate xml from the passed map. -->
+	<bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+		<description>Generate XML from the Map. Use 'trade' as the root tag.</description>
+		<property name="rootElementTag" value="trade"/>
+	</bean>
+	
+	<!-- The xml output writer. -->
+	<bean id="XMLWriter" class="org.openadaptor.auxil.connector.iostream.writer.DynamicFileWriteConnector">
+		<description>
+			  Write each xml representation of a trade to a new file named 
+			  with the specified filename from the message metadata
+		</description>   
+		<property name="script">
+		  <value>
+			oa_data = "output/TradeId-"+(oa_metadata.get("filename"))+".xml";
+		  </value>
+		</property>
+		<property name="append" value="false"/>
+	</bean>
+	
+	<!-- The inspector debug component. -->
+	<bean id="Inspector" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+		<description>Handy debug component. Put this into the pipeline to view message.</description>
+		<property name="script">
+		  <value>
+			importPackage(Packages.javax.swing);
+			JOptionPane.showMessageDialog(null,oa_data,"before CSV",JOptionPane.PLAIN_MESSAGE);
+		  </value>
+		</property>
+	</bean>
+	
+</beans>

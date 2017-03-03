@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: javascript-xpath.xml 1877 2008-11-21 17:25:01Z shirea $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/script/javascript-xpath.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  This adaptor does the following...
+    
+    * reads xml from stdin
+    * validates the xml (traps errors and forwards them to stdout)
+    * adds an 'opinion' attribute using the 'title' contents if available
+    * writes to stdout
+    
+  It's intended to show you how to configure the Javascript processor to use simple xpath to reference SimpleRecord
+  attributes. The validation is not strictly necessary but useful for this example.
+    
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config javascript-xpath.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will wait for command line input
+    
+  type something like this...
+    
+    <book><title>Dances with Goldfish</title></book>
+    
+  ...and you should see it echo-ed including an 'opinion' attribute that references the title.
+
+  type something like this (i.e. without a 'title')...
+
+    <book><author>A Writer</author></book>
+
+  ...and you should see it echo-ed including an 'opinion" atttribute that does not reference a title.
+
+  type something which is not an xml doc with a root element called book and a validation exception will
+  show up on stdout with the offending xml. NB the error goes to a diferent Writer (ErrorWriter) from that
+  which writes normal output and this can be configured to write the error information anywhere required.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Validator"/>
+            <ref bean="Accessor"/>
+            <ref bean="AddOpinion"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+          <property name="exceptionProcessor" ref="ErrorWriter"/> 
+      </bean>
+    </property>
+  </bean>    
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>Read from stdin a line at a time</description>
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>
+      This processor validates the data as an xml string.
+      Ensure that the xml has book as root.
+    </description>
+    <property name="schemaURL" value="input/schema.xsd"/>
+  </bean>
+
+  <bean id="Accessor" class="org.openadaptor.auxil.convertor.simplerecord.ToSimpleRecordConvertor">
+    <description>Add a SimpleRecord accessor that understands simplified XPath expressions.</description>
+    <property name="simpleRecordAccessor">
+      <bean class="org.openadaptor.thirdparty.dom4j.Dom4jSimpleRecordAccessor"/>
+    </property>
+  </bean>
+  
+  <bean id="AddOpinion" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      Add an opinion including the title if present.
+      Note that it can only cope with a single book as Dom4jSimpleRecordAccessor only supports
+      a subset of simplified XPath expressions.
+      
+      Script is both legal javascript and legal groovy (defaults to javascript unless you set the language property).
+    </description>
+    <!-- <property name="language" value="groovy" /> -->
+    <property name="script">
+      <value><![CDATA[
+      if( oa_data.get('book/title') == null ) {
+        oa_data.put( 'opinion', 'Can\'t tell you what this book is called but it is indeed a fine book');
+      } else {
+        oa_data.put( 'opinion', (oa_data.get('book/title') + ' is indeed a fine book' ) );
+      }
+      ]]></value>
+    </property>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+  <bean id="ErrorWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

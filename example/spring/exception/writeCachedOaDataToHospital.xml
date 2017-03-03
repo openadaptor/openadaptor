@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: writeCachedOaDataToHospital.xml 2144 2011-03-25 12:01:25Z wratislp $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/exception/writeCachedOaDataToHospital.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"> 
+  <description><![CDATA[
+  
+  	This adaptor does the following...
+  		Receives input from the Console (stdin) 
+  		Passes it through a script processor called ChangePayload to:
+  			1) Cache the original payload in the metadata with a key of origPayload
+  		 	2) Append text to the payload 
+  		 	3) Cause three windows to pop up in sequence
+  		 		a) Show the payload (oa_data)
+  		 		b) Show the metadata (oa_metadata)
+  		 		3) Show the original payload via the key origPayload
+  		Passes it through a script processor called CauseException to:
+  		 	1) Cause an exception 
+  		Catches exception
+  		Passes it through a script processor called CopyCached_oa_data to:
+  			1) Copy cached oa_data to replace oa_data (which contains oa_data as it was at start of failing component) which is in MessageException
+  		Converts MessageException to ordered map as new oa_data
+  		Uses script to show pop-up to see the oa_data
+  		Writes original input plus appended text to the Console (stdout)
+  		Alternative write to OA_Hospital beans are also there but commented out for this example
+  			
+     Run adaptor like this:
+        
+        java org.openadaptor.spring.SpringAdaptor -config exception-005.xml
+        
+     You need the following in your classpath
+  
+        lib
+        lib/openadaptor.jar
+        lib/openadaptor-spring.jar
+        lib/openadaptor-depends.jar
+
+  ]]>
+  </description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processMap">
+      			<map>
+        			<entry key-ref="Reader" value-ref="ChangePayload"/>
+        			<entry key-ref="ChangePayload" value-ref="CauseException"/>
+        			<entry key-ref="CauseException" value-ref="Writer"/>
+        			<!-- Exception map -->
+       				<entry key-ref="CopyCached_oa_data" value-ref="ExceptionConvertor"/>
+       				<entry key-ref="ExceptionConvertor" value-ref="ExceptionWriter"/>
+      			</map>
+    		</property>
+  			<property name="exceptionProcessor" ref="ExceptionHandler"/>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="ChangePayload" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			//Save original payload in metadata using a key=>value
+   			oa_metadata.put("origPayload",oa_data);
+   			//Append text to payload (to differentiate between cached data)
+   			oa_data = oa_data + " Yes, I have changed.";
+   			importPackage(Packages.javax.swing);
+   			//The pop ups to show oa_data and oa_metadata contents
+   			JOptionPane.showMessageDialog(null,oa_data,"amendedPayload",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_metadata,"metadataMap",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_metadata.get("origPayload"),"savedPayload",JOptionPane.PLAIN_MESSAGE);
+   		</value>
+  	</property>
+  </bean>
+  
+  <bean id="CauseException" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			oa_metadata.meantToFail(); //This is meant to fail!
+   		</value>
+  	</property>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+      	<!-- Catch this exception and route it to a bean -->
+        <entry key="java.lang.RuntimeException" value-ref="CopyCached_oa_data"/>
+      </map>
+    </property>
+  </bean>
+ 
+   <bean id="CopyCached_oa_data" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			<!-- oa_data is an instance of MessageException (after an exception is caught.
+   				 However the payload in oa_data.getData() hold the contents of oa_data as they were prior to the failing component.
+   				 Set oa_data to a new instance of MessageException and set the values of this MessageException to the previously cached oa_data
+   				 and other values from the 'old' MessageException.
+   			-->  
+   			oa_data = new org.openadaptor.core.exception.MessageException(oa_data.getMetadata().get("origPayload"),  oa_metadata, oa_data.getException(), oa_data.getOriginatingModule(), oa_data.getOriginatingThreadName());
+   		</value>
+  	</property>
+  </bean>
+  
+  <bean id="ExceptionConvertor" class="org.openadaptor.auxil.convertor.exception.ExceptionToOrderedMapConvertor">
+    <property name="adaptor" ref="Adaptor"/>
+  </bean>
+  
+  <bean id="ExceptionWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <!--
+  <bean id="SybaseJdbcConnection" class="org.openadaptor.auxil.connector.jdbc.sybase.JDBCConnection">
+    <description> Sybase database account configuration </description>
+    <property name="driver" value="${sybase.driver}"/>
+    <property name="url" value="${sybase.url}"/>
+    <property name="username" value="${sybase.username}"/>
+    <property name="password" value="${sybase.password}"/>
+  </bean>
+ 
+  <bean id="ExceptionWriter" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+	<property name="jdbcConnection" ref="SybaseJdbcConnection" />
+	<property name="writer">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+		   <property name="tableName" value="OA_Exception" />
+		   <property name="outputColumns">
+			 <list>
+			   <value>TIMESTAMP</value> 
+			   <value>EXCEPTION_CLASS_NAME</value> 
+			   <value>EXCEPTION_MESSAGE</value> 
+			   <value>CAUSE_EXCEPTION_CLASS_NAME</value> 
+			   <value>CAUSE_EXCEPTION_MESSAGE</value> 
+			   <value>STACK_TRACE</value>
+			   <value>ADAPTOR_NAME</value> 
+			   <value>ORIGINATING_COMPONENT</value> 
+			   <value>THREAD_NAME</value> 
+			   <value>DATA_TYPE</value> 
+			   <value>DATA</value> 
+			   <value>FIXED</value> 
+			   <value>REPROCESSED</value> 
+			 </list>
+		   </property>   
+		</bean>
+	</property>
+  </bean>
+  -->
+  
+</beans>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ $Id: history.xml 2023 2009-11-05 10:38:13Z lachork $
+ $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/history.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+ <description>
+  <![CDATA[
+ Trivial adaptor to illustrate recording of history (list of components that a message has passed through) for each message.
+ More information about Message History at http://www.openadaptor.org/history.html 
+    
+    * reads lines of csv from a file (input/input.txt)
+    * prints out the data and metadata in Processor1 (message history is available in metadata under the MessageHistory key)
+    * prints out the data and metadata in Processor2
+    * prints out the data to the console
+ 
+ It may be run as follows:
+    
+    java org.openadaptor.spring.SpringAdaptor -config history.xml
+    
+  The classpath should include the following:
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <description>This is the bean that gets run.</description>
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="Processor1" />
+      <ref bean="Processor2" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+    <property name="historyEnabled" value="true"/>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <property name="filename" value="input/input.txt" />
+ </bean>
+
+ <bean id="Processor1" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  <property name="script">
+   <value>
+   importPackage(Packages.javax.swing);
+   JOptionPane.showMessageDialog(null,"Data: " + oa_data + "\nMetadata:" + oa_metadata,"Processor 1",JOptionPane.PLAIN_MESSAGE);
+   </value>
+  </property>
+ </bean>
+
+ <bean id="Processor2" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+   <property name="script">
+   <value>
+   importPackage(Packages.javax.swing);
+   JOptionPane.showMessageDialog(null,"Data: " + oa_data + "\nMetadata:" + oa_metadata,"Processor 2",JOptionPane.PLAIN_MESSAGE);
+    </value>
+  </property>
+ </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+  <description>This is a write connector that outputs the data to stdout</description>
+ </bean>
+
+</beans>

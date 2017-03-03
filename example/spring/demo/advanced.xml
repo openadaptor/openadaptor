@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: advanced.xml 2082 2010-05-26 10:00:58Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/demo/advanced.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads comma delimited recrods from a file (input/delim.txt), 
+      with 1 sec time interval between records
+    * converts comma delimited records into maps (key-value pairs)
+    * applies a simple filter to records
+    * applies a database based enrichment processor
+    * outputs to stdout
+    * outputs data to a JMS queue
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config advanced.xml
+    
+  You need the following in your classpath (note the extra hsqldb.jar and jbossall-client.jar):
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/hsqldb.jar
+    jbossall-client.jar (this is not distributed with openadaptor)
+  
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+    
+  The above command needs to be run from current folder (that includes htsql.script with the USER 
+  table definition and sample data).  
+    
+  This example relies on a default instance of jboss (http://www.jboss.org)
+  running on the same machine that the example is being run.
+
+  Please ensure that the jboss client and server jars used are from compatible releases.  
+  
+  Graphical representation of this example can be found in example\docs\spring\demo\advanced.htm
+    
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor"> 
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processMap">
+          <map>
+			<entry key-ref="throttlingReader" value-ref="orderedmap" />
+			<entry key-ref="orderedmap" value-ref="jsFilter" />
+			<entry key-ref="jsFilter" value-ref="dbBasedEnhancer" />
+			<entry key-ref="dbBasedEnhancer">
+				<list>
+					<ref bean="writer" />
+					<ref bean="jmsPublisher" />
+				</list>
+			</entry>
+		  </map>
+        </property>
+        <property name="exceptionProcessor" ref="exceptionWriter"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/delim.txt"/>
+  </bean>
+  
+  <bean id="throttlingReader" class="org.openadaptor.core.connector.ThrottlingReadConnector">
+	<description>Read connector that adds 'throttling' to the connector it wraps</description>
+	<property name="delegate" ref="reader" />
+	<property name="pollIntervalSecs" value="1"/>
+  </bean>
+  
+  <bean id="orderedmap" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Convert to OrderedMap providing fields names</description>
+    <property name="fieldNames">
+        <list>
+            <value>username</value>
+            <value>fullname</value>
+            <value>uniqueid</value>
+        </list>
+    </property>
+  </bean>
+  
+  <bean id="jsFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+    <description>
+      Simple use of a ScriptFilterProcessor. 
+      Filter will discard any records with a fullname field starting with 'Michael'
+    </description>
+    <property name="scriptProcessor">
+      <bean class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+        <property name="script" value="fullname.indexOf('Michael') == 0"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="dbReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+    <property name="jdbcConnection" ref="jdbcConnection"/>
+    <property name="sql">
+      <value>
+        SELECT dob FROM USER WHERE UserId = ?
+      </value>
+    </property>
+  </bean>
+  
+  <bean id="jdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+  
+  <bean id="dbBasedEnhancer" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
+     <property name="readConnector" ref="dbReader"/>
+     <property name="parameterNames" value="uniqueid"/>
+  </bean>
+  
+  <bean id="jndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="jmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="jndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="jmsPublisher" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="jmsConnection"/>
+    <property name="transacted" value="true"/>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="exceptionWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/errors.txt"/>
+  </bean>
+  
+</beans>  

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: testAdaptor.xml 2158 2011-07-27 07:56:56Z nbartel $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/tools/test/testAdaptor.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor is used for unit tests.
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+            			<ref bean="ScriptProcessor"/>
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="${inputfile}" />
+	</bean>  
+	
+	<bean id="ScriptProcessor" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+    <description>
+      This is a processor that converts an ordered map into an xml string.
+    </description>
+    <property name="language" value="js"/>
+    <property name="script">
+      <value>
+        oa_data = "key: ${key}, " + " " + "value: ${value}, " + oa_data;
+      </value>
+    </property>
+  </bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

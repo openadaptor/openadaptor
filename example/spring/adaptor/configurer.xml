@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: configurer.xml 1162 2008-01-29 14:11:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/configurer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This (contrived) adaptor does the following...
+    
+    * reads lines from file named via a system property.
+    * writes to file named in a properties file "example.properties"
+    
+  It is designed to illustrate using a Spring PropertyPlaceholderConfigurer defined in the adaptor config file.
+
+  The important point to note is the use of the "-noprops" flag on the command line. This suppresses any attempt
+  by openadaptor to trigger property substitution by adding a generated PropertyPlaceholderConfigurer directly to the
+  Spring context. In this case we are then entirely reliant on the PropertyPlaceholderConfigurer in the config file
+  itself.
+
+  Run it like this...
+    
+    java -Dinput=input/input.txt org.openadaptor.spring.SpringAdaptor -config configurer.xml -noprops
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will read from the input file and write to the output
+
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <description>This is the bean that actually gets run.</description>
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processors">
+          <list>
+            <ref bean="Reader"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+    </property>  
+  </bean>
+
+  <bean id="PropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound" value="false"/>
+    <property name="systemPropertiesMode">
+      <bean id="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE"
+        class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+    </property>
+    <property name="locations">
+      <list>
+        <value>file:example.properties</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <description>This is a read connector, it reads records from a stream (stdin).</description>
+    <property name="filename" value="${input}"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that outputs the data to a stream (stdout).</description>
+    <property name="filename" value="${output}"/>
+  </bean>
+  
+</beans>

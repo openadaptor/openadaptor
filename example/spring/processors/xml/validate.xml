@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: validate.xml 1370 2008-04-16 09:02:14Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/xml/validate.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * reads xml from stdin
+    * validates the xml
+    * writes to stdout
+    
+  It's intended to show you how to configured the Validator Pipe
+    
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config validate.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  Once it is running it will wait for command line input
+    
+  type some valid xml like this...
+    
+    <data>hello</data>
+    
+  ...and it should be echoed to standard output
+  
+  Invalid xml (or anything else) will instead be routed to the failures file.
+  
+  type something which is not an XML doc with an element called data and the validation
+  exception will be thrown.
+  The adaptor is configured to route all failures to the configured output file.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+       <property name="processors">
+        <list>
+         <ref bean="Reader" />
+         <ref bean="Validator" />
+         <ref bean="Writer" />
+        </list>
+       </property>
+       <property name="exceptionProcessor" ref="FailedWriter">
+        <description>this routes any exception to invalid writer</description>
+       </property>
+      </bean>
+    </property>
+  </bean>    
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="dataReader">
+      <bean class="org.openadaptor.auxil.connector.iostream.reader.string.LineReader"/>
+    </property>
+  </bean>
+  
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <description>This processor validates the data as an xml string.</description>
+    <property name="schemaURL" value="input/schema.xsd"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  <bean id="FailedWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+   <property name="filename" value="output/failedvalidation.out"></property>
+  </bean>
+  
+</beans>

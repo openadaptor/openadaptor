@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: step06.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/tutorial/step06.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[
+  Adaptor for step 6 of the tutorial.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor" ref="Router"/>
+  </bean>
+  
+  <bean id="Router" class="org.openadaptor.core.router.Router">
+    <property name="processors">
+      <list>
+        <ref bean="Servlet"/>
+        <ref bean="TickerFilter"/>
+        <ref bean="XMLConverter"/>
+        <ref bean="Validator"/>
+        <ref bean="Writer"/>
+      </list>
+    </property>
+    <property name="exceptionProcessor" ref="ExceptionHandler"/>
+  </bean>
+   
+  <bean id="Servlet" class="org.openadaptor.auxil.connector.http.ReadConnectorServlet">
+    <property name="port" value="9999"/>
+   </bean>
+
+  <bean id="TickerFilter" class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+   <property name="scriptProcessor">
+    <bean class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+     <property name="script">
+      <value>
+       <![CDATA[
+         //Return true if the ticker is 'XXX';
+         oa_data.get('ticker') == 'XXX';
+       ]]>
+      </value>
+     </property>
+
+    </bean>
+   </property>
+  </bean>
+
+  <bean id="XMLConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="Trade"/>
+  </bean>
+
+  <bean id="Validator" class="org.openadaptor.auxil.processor.xml.XmlValidator">
+    <property name="schemaURL" value="schema.xsd"/>
+  </bean>
+
+  <bean id="JndiConnection" class="org.openadaptor.auxil.connector.jndi.JNDIConnection">
+    <property name="initialContextFactory" value="org.jnp.interfaces.NamingContextFactory"/>
+    <property name="providerUrl" value="jnp://localhost:1099"/>
+  </bean>
+  
+  <bean id="JmsConnection" class="org.openadaptor.auxil.connector.jms.JMSConnection">
+    <property name="jndiConnection" ref="JndiConnection"/>
+    <property name="connectionFactoryName" value="ConnectionFactory"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jms.JMSWriteConnector">
+    <property name="destinationName" value="queue/testQueue"/>
+    <property name="jmsConnection" ref="JmsConnection"/>
+  </bean>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <property name="filename" value="output/puberror.txt"/>
+  </bean>
+  
+</beans>

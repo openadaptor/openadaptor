@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: server.xml 1177 2008-01-30 10:47:05Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/rmi/server.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[  
+  This adaptor does the following...
+    
+    * exposes an RMI service that clients can send data to
+    * writes data to stdout
+    
+  It is designed to illustrate the basic structure of exposing an adaptor as a
+  an RMI service.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config server.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+     
+  To test it fully you can run the other example which processes data by invoking
+  the service.
+  ]]></description>
+  
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+   <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <description>
+          This creates the simple pipeline RMIService -> Writer.
+        </description>
+        <property name="processors">
+          <list>
+            <ref bean="RMIService"/>
+            <ref bean="Writer"/>
+          </list>
+        </property>
+      </bean>
+   </property>
+  </bean>
+
+  <bean id="RMIService" class="org.openadaptor.auxil.connector.rmi.RMIReadConnector">
+    <description>This is a read connector, that exposes an RMI service.</description>
+    <property name="serviceName" value="TestService"/>
+    <property name="createRegistry" value="true"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

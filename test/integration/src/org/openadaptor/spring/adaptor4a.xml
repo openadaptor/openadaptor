@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+      <bean class="org.openadaptor.core.router.Router">
+        <property name="processMap">
+          <map>
+            <entry key-ref="ReadConnector">
+              <list>
+                <ref bean="Exceptor"/>
+                <ref bean="Processor"/>
+              </list>
+            </entry>
+            <entry key-ref="Processor">
+              <list>
+                <ref bean="WriteConnector"/>
+                <ref bean="ConnectExceptor"/>
+              </list>
+            </entry>
+          </map>
+        </property>
+        <property name="exceptionProcessor" ref="ExceptionHandler"/>
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="ReadConnector" class="org.openadaptor.core.connector.TestReadConnector">
+    <property name="id" value="ReadConnector"/>
+  </bean>
+
+  <bean id="Processor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="Processor"/>
+  </bean>
+
+  <bean id="WriteConnector" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="WriteConnector"/>
+    <property name="expectedOutput" value="Processor(test data 1)"/>
+  </bean>
+
+  <bean id="Exceptor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="Exceptor"/>
+    <property name="exceptionFrequency" value="1"/>
+  </bean>
+
+  <bean id="ConnectExceptor" class="org.openadaptor.core.processor.TestProcessor">
+    <property name="id" value="ConnectExceptor"/>
+    <property name="exception">
+      <bean class="org.openadaptor.core.exception.ConnectionException">
+        <constructor-arg value="test"/>
+        <constructor-arg ref="ConnectExceptor"/>
+      </bean>
+    </property>
+    <property name="exceptionFrequency" value="1"/>
+  </bean>
+
+  <bean id="Error" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="Error"/>
+    <property name="expectedOutput" value="java.lang.RuntimeException:null:test data 1"/>
+  </bean>
+
+  <bean id="ConnectError" class="org.openadaptor.core.connector.TestWriteConnector">
+    <property name="id" value="NpeError"/>
+    <property name="expectedOutput" value="org.openadaptor.core.exception.ConnectionException:null:Processor(test data 1)"/>
+  </bean>
+ 
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+     <property name="exceptionMap">
+        <map>
+          <entry key="org.openadaptor.core.exception.ConnectionException" value-ref="ConnectError"/>
+          <entry key="java.lang.Exception" value-ref="Error"/>
+        </map>
+     </property>
+  </bean>
+
+</beans>

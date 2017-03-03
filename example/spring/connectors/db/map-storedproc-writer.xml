@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: map-storedproc-writer.xml 2030 2009-11-10 18:54:07Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/map-storedproc-writer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  
+  This adaptor does the following...
+    
+    * reads data from stdin
+    * converts it into an ordered map
+    * writes the data via a stored procedure call
+    
+  It is designed to illustrate the basic structure of an adaptor that writes to a database.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config map-storedproc-writer.xml -props db.props
+
+  You must supply db.props populated appropriately for your environment.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <database jar>
+    
+  NOTE: For this example to work JdbcConnection bean needs to be configured to point to a 
+        database with an "sp_insert_example" procedure available in it.
+  ]]></description>
+  
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+    <property name="messageProcessor">
+     <bean class="org.openadaptor.core.router.Router">
+       <description>
+         This creates the simple router: Reader -> MapConverter -> Writer.
+       </description>
+       <property name="processors">
+         <list>
+           <ref bean="Reader"/>
+           <ref bean="MapConverter"/>
+           <ref bean="Writer"/>
+         </list>
+       </property>
+     </bean>
+    </property>
+  </bean>
+  
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+   <property name="filename" value="input/input.txt"/>
+   <property name="batchSize" value="5"/>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+    <description>Converts input into an ordered map with two fields.</description>
+    <property name="fieldNames">
+      <list>
+        <value>id</value>
+        <value>name</value>
+      </list>
+    </property>
+  </bean>
+ 
+  <!-- 
+    The connection parameters referenced here should be defined in a separate properties file 
+      and referenced on the command line via -props <path-to-props-file> 
+    -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines a jdbc connection.</description>
+    <property name="driver" value="${db.driver}" />
+    <property name="url" value="${db.url}" />
+    <property name="username" value="${db.username}" />
+    <property name="password" value="${db.password}" />
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+    <description>Writer which inserts data into test table.
+       The preamble SQL is just to clear the table first.
+    </description>
+    <property name="preambleSQL" value="DELETE FROM WriterExample" />
+    <property name="jdbcConnection" ref="JdbcConnection"/>
+    <property name="writer">
+      <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapCallableStatementWriter">
+        <description>
+          The callable statement may optionally specify, e.g. myschema.procname
+          Actual behaviour may vary depending on the database vendor (and chosen driver).
+          Oracle stored procs may wish to specify a package - in this case they
+          should use the packageName property to identify the package to which the
+          procedure belongs. 
+        </description>
+        <!-- <property name="packageName" value="someOraclePackageName"/> -->
+        <property name="callableStatement" value="sp_insert_example">
+          <description>The stored proc to call.</description>
+        </property>
+        <property name="outputColumns">
+          <description>Ordered list of ordered map attributes to call proc with.</description>
+          <list>
+            <value>id</value>
+            <value>name</value>
+            <value>description</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+</beans>

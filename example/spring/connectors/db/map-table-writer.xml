@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: map-table-writer.xml 1589 2008-06-23 16:35:59Z higginse $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/db/map-table-writer.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ <description>
+  <![CDATA[    
+  
+  This adaptor does the following...
+    
+    * reads data from stdin
+    * converts it into an ordered map
+    * writes the data via an insert statement
+    
+  It is designed to illustrate the basic structure of an adaptor that writes to a database.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config map-table-writer.xml -props db.props
+
+  You must supply db.props populated appropriately for your environment.
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    <database jar>
+  
+   ]]>
+ </description>
+
+ <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  <property name="messageProcessor">
+   <bean class="org.openadaptor.core.router.Router">
+    <description>This creates the simple router: Reader -> MapConverter -> ScriptProcessor -> Writer.</description>
+    <property name="processors">
+     <list>
+      <ref bean="Reader" />
+      <ref bean="MapConverter" />
+      <ref bean="ScriptProcessor" />
+      <ref bean="Writer" />
+     </list>
+    </property>
+   </bean>
+  </property>
+ </bean>
+
+ <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+  <property name="filename" value="input/input.txt" />
+  <property name="batchSize" value="10" />
+ </bean>
+
+ <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+  <description>Converts input into an ordered map with two fields.</description>
+  <property name="fieldNames">
+   <list>
+    <value>id</value>
+    <value>name</value>
+   </list>
+  </property>
+ </bean>
+
+ <bean id="ScriptProcessor" class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+  <description>This will just change the id field from a String (as parsed) into an int. Default dataBinding to record is 'oa_data'.</description>
+  <property name="script">
+   <value>
+    <![CDATA[
+     id=parseInt(id);//This will make it an int :-) 
+     oa_data.put('detail',null); //Just to test writing null field
+   ]]>
+   </value>
+  </property>
+ </bean>
+
+ <!-- 
+    The connection parameters referenced here should be defined in a separate properties file 
+      and referenced on the command line via -props <path-to-props-file> 
+    -->
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines a jdbc connection.</description>
+    <property name="driver" value="${db.driver}" />
+    <property name="url" value="${db.url}" />
+    <property name="username" value="${db.username}" />
+    <property name="password" value="${db.password}" />
+  </bean>
+
+ <bean id="Writer" class="org.openadaptor.auxil.connector.jdbc.writer.JDBCWriteConnector">
+  <description>
+   Writer which inserts data into test table.
+   The preamble SQL is just to clear the table first.
+  </description>
+  <property name="jdbcConnection" ref="JdbcConnection" />
+  <property name="preambleSQL" value="DELETE FROM WriterExample" />
+  <property name="writer">
+   <bean class="org.openadaptor.auxil.connector.jdbc.writer.map.MapTableWriter">
+    <description>When 'outputColumns' is not configured,map keys should match table columns</description>
+    <property name="tableName" value="WriterExample" />
+   </bean>
+  </property>
+
+ </bean>
+
+</beans>

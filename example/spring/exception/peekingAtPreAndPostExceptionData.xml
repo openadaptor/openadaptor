@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: peekingAtPreAndPostExceptionData.xml 2141 2011-03-23 16:02:34Z wratislp $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/exception/peekingAtPreAndPostExceptionData.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"> 
+  <description><![CDATA[
+  
+  	This adaptor does the following...
+  		Receives input from the Console (stdin) 
+  		Passed it through a script processor called ChangePayload to:
+  			1) Save the original payload in the metadata with a key of origPayload
+  		 	2) Append text to the payload 
+  		 	3) Cause three windows to pop up in sequence
+  		 		a) Show the payload (oa_data)
+  		 		b) Show the metadata (oa_metadata)
+  		 		3) Show the original payload via the key origPayload
+  		 	4) Cause an exception when required (un-comment line to force an error when testing)
+  		Writes original input plus appended text to the Console (stdout)
+  		
+  		If exception occurs it is caught and:
+  			The MessageException is passed to a script processor called InspectException via the ExceptionHandler
+  			 InspectException will cause five windows to pop up in sequence 
+  			 1) Shows the MessageException payload(oa_data)
+  			 2) Shows the MessageException metadata (oa_metadata) (is empty if not historyEnabled, see below)
+  			 3) Shows the pre-exception payload (oa_data)
+  			 4)	Shows the pre-exception metadata
+  			 5) Shows the pre-exception payload (oa_data) that was stored in the pre-exception metadata prior to text 
+  			    being appended
+  			The MessageException is written to the Console (stdout)
+  			
+  		Please note that the Router has a property:
+  			<property name="historyEnabled" value="true"/>
+  			This puts some information into the metadata under the MessageHistory key. This lists the components the payload 
+  			has passed through. 
+  			
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config exception-003.xml 
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  ]]>
+  </description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processMap">
+      			<map>
+        			<entry key-ref="Reader" value-ref="ChangePayload"/>
+        			<entry key-ref="ChangePayload" value-ref="Writer"/>
+        			<!-- Exception map -->
+       				<entry key-ref="InspectException" value-ref="Writer"/>
+      			</map>
+    		</property>
+    		<property name="historyEnabled" value="true"/>
+  			<property name="exceptionProcessor" ref="ExceptionHandler"/>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector"/>
+  
+  <bean id="ChangePayload" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			//Save original payload in metadata using a key=>value
+   			oa_metadata.put("origPayload",oa_data);
+   			//Append text to payload
+   			oa_data = oa_data + " Something for the weekend?";
+   			importPackage(Packages.javax.swing);
+   			//The pop ups to show oa_data and oa_metadata contents
+   			JOptionPane.showMessageDialog(null,oa_data,"amendedPayload",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_metadata,"metadataMap",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_metadata.get("origPayload"),"savedPayload",JOptionPane.PLAIN_MESSAGE);
+   			oa_metadata.meantToFail(); //This is meant to fail!
+   		</value>
+  	</property>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+  <bean id="ExceptionHandler" class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+    <property name="exceptionMap">
+      <map>
+        <entry key="java.lang.RuntimeException" value-ref="InspectException"/>
+      </map>
+    </property>
+  </bean>
+ 
+   <bean id="InspectException" class="org.openadaptor.auxil.processor.script.ScriptProcessor">
+  	<property name="script">
+   		<value>
+   			importPackage(Packages.javax.swing);
+   			JOptionPane.showMessageDialog(null,oa_data,"MessageException Payload",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_metadata,"MessageException Metadata",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_data.getData(),"Pre-exception Payload",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_data.getMetadata(),"Pre-exception Metadata",JOptionPane.PLAIN_MESSAGE);
+   			JOptionPane.showMessageDialog(null,oa_data.getMetadata().get("origPayload"),"Pre-exception Original oa_data",JOptionPane.PLAIN_MESSAGE);
+   		</value>
+  	</property>
+  </bean>
+  
+</beans>

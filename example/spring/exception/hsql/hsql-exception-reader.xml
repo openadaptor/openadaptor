@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: hsql-exception-reader.xml 1642 2008-07-14 15:50:53Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/exception/hsql/hsql-exception-reader.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[    
+  This example relies on a hypersonic database running (http://www.hsqldb.org) to run
+  up the server make sure hsqldb.jar is in your class path and run the following...
+  
+    java org.hsqldb.Server -database.0 hsql -dbname.0 xdb
+   
+  This adaptor does the following...
+    
+    * connects to a hypersonic instance with a hospital schema
+    * queries for hospital messages
+    
+  It is designed to illustrate the basic structure of an adaptor that reads from the hospital.
+  
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config hsql-exception-reader.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/hsqldb.jar
+    
+  once running any data in the hospital with the flag fixed set to true, and reprocessed to false,
+  will be printed to stdout.
+  
+    insert into testoutput values ('hello mum')
+  ]]></description>
+  
+   <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+     <property name="messageProcessor" ref="router"/>
+   </bean>
+  
+   <bean id="router" class="org.openadaptor.core.router.Router">
+    <property name="processMap">
+      <map>
+        <entry key-ref="hospitalReader" value-ref="consoleWriter"/> 
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="JdbcConnection" class="org.openadaptor.auxil.connector.jdbc.JDBCConnection">
+    <description>This defines jdbc connection.</description>
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:hsql://localhost/xdb"/>
+    <property name="username" value="sa"/>
+    <property name="password" value=""/>
+  </bean>
+
+  <bean id="hospitalReader" class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+	  <description>Reader which polls database using configured SQL.</description>
+	  <property name="jdbcConnection" ref="JdbcConnection"/>
+	  <property name="resultSetConverter">
+	    <bean class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+	  </property>
+	  <property name="sql">
+	    <value>
+	      SELECT id, timestamp, data, exception_class_name, originating_component
+	      FROM OA_Exception
+	      WHERE fixed = 'true' AND REPROCESSED = 'false' 
+	    </value>
+	  </property>
+	  <!--  property name="postReadSql" value="UPDATE ERROR_LOG SET REPROCESSED='true'"/ -->
+  </bean>
+       
+  <bean id="consoleWriter" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>  
+  
+</beans>

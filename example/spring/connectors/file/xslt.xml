@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	$Id: xslt.xml 1162 2008-01-29 14:11:25Z lachork $
+	$HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/file/xslt.xml $
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[    
+  This adaptor does the following...
+    
+    * reads an XML document from an XML file
+    * converts the document with XSLT  
+    * writes the result to the console
+    
+  It is designed to illustrate the basic usage of XSL transforms
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config xslt.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<property name="messageProcessor">
+			<bean class="org.openadaptor.core.router.Router">
+				<description>
+					This creates the simple pipeline Reader ->
+					XsltProcessor ->Writer.
+				</description>
+				<property name="processors">
+					<list>
+						<ref bean="Reader" />
+						<ref bean="XsltProcessor" />
+						<ref bean="Writer" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="XsltProcessor"
+		class="org.openadaptor.auxil.processor.xml.XsltProcessor">
+		<description>
+			Process the XML string using the XLST defined in the xsl
+			directory.
+		</description>
+		<!-- Substitute with your favourite XSLT -->
+		<property name="xsltFile" value="xsl/sample.xsl" />
+	</bean>
+
+	<bean id="Reader"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<description>
+			This read connector reads lines from a file.
+		</description>
+		<property name="filename" value="input/input.xml" />
+		<property name="dataReader">
+			<bean
+				class="org.openadaptor.auxil.connector.iostream.reader.string.StringReader">
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="Writer"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector" />
+
+</beans>

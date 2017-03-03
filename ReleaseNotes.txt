@@ -1,0 +1,1517 @@
+=================================================
+openadaptor3 production 3.4.8 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 22nd May 2015
+Author: openadaptor Core Team
+
+openadaptor 3.4.8
+=======
+
+Connectors
+==========
+ * Enhanced the MQMessage stub implementation with the "readStringOfByteLength(int)" method
+ * Changed the MqConnection to get message string without exception message
+   - Exception examining message, java.io.EOFException: MQJE086: End of file exception
+ * Enhanced the socket reader/writer connectors and added new socket examples
+ * Created connector ArchiveFileWriteConnector that allows user to specify max directory size, 
+ * the component will drop the oldest writable file(s) in the directory to reduce its size below the max.
+
+Core
+==========
+ * Corrected typo in Response.java.
+ * matadata attribute corrected to metadata and setter/getter and it's usages corrected.
+ * Constants.java class created as a location for defining constant attributes for central reference.
+ 
+ External Libraries
+==========
+ * Raised cxf to version 2.6.16 to fix a security vulnerability.
+ * Raised neethi to version 3.0.3 to ensure compatibility with the raised cxf.
+    
+=================================================
+openadaptor3 production 3.4.7 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 18th November 2011
+Author: openadaptor Core Team
+
+openadaptor 3.4.7
+=======
+
+Connectors
+==========
+ * Corrected bug in DirectoryReadConnector that could cause cause an exception  when batchsize > 1
+ * Enhanced DirectoryReadConnector to allow option to: 
+ 	1) Put info about the read file in the oa_metadata
+ 	2) Insert an EOF record at the end of each read file to allow the user to configure an adaptor to identify and act upon an EOF event   
+   
+Processors
+==========
+ * Amended XMLValidator to allow throwing of more specific ProcessingException to allow clearer exception handling
+
+Core
+==========
+
+ * Enriched the SpringAdaptor to be more flexible.
+ * Added a utility ConfigurableSpringAdaptor.
+ 
+Examples
+========
+ 
+ * Added examples to show how to use exception handling in different ways.
+ * Added example to show how to use caching mechanism. 
+   
+Tutorial
+========
+ 
+ * Added Step 19 (caching) to show how to use caching mechanism. 
+   
+
+Miscellaneous
+=============
+
+ * Extended build script to generate 2 jars with sources, one corresponding 
+   for the openadaptor.jar and one for the openadaptor-spring.jar
+
+Bug Fixes
+=========
+ 	
+3rd Party
+ * An issue was found in the Sybase jconn2-5.5 and jconn3 drivers that would cause SQL exceptions in particular circumstances.
+   A workaround has been added to the OA code that prevents that particular set of circumstances from occuring. 
+    
+=================================================
+openadaptor3 production 3.4.6 Release Notes 
+
+See licence.txt for Licence information.
+=================================================
+
+Date: February 2011 
+author: openadaptor Core Team
+
+openadaptor 3.4.6
+=======
+
+Connectors
+==========
+   
+Processors
+==========
+
+Examples
+========
+ 
+ * All examples should now reference SpringAdaptor (which encompasses the
+   behaviour of the now defunct SpringApplication also)
+   
+ * Added patterns area to examples. This area is intended for general usage patterns
+   for implementing common behaviours.
+ 
+ * Added example to illustrate how a file (or any stream) containing multiple
+   distinct XML documents may be split into individual records and processed (in this
+   case validated against a supplied schema).
+   
+
+Miscellaneous
+=============
+
+ * SpringApplication has been removed - SpringAdaptor now can be used anywhere it may
+   have been used - having both mechanisms was unnecessary and proved confusing. (Note 
+   that many files have required minor refactoring to make this change transparent).
+   Users must now use SpringAdaptor *instead* of SpringApplication which has been removed.
+
+Bug Fixes
+=========
+
+ * (SC104) Possible NPE in Sybase specific JDBC Connection.
+ * (SC106) Make record end delimiter optional in RegexMultilineReader
+ 
+3rd Party
+========= 
+            
+=================================================
+openadaptor3 production 3.4.5 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 16th June 2010
+Author: openadaptor Core Team
+
+openadaptor 3.4.5
+=======
+
+Connectors
+==========
+
+ * DynamicFileWriteConnector now implements IMetadataAware. For now all that is
+   new is that the metadata is passed to the embedded ScriptProcessor. This is 
+   in response to enhancement request SC102.
+
+ * JMSReadConnector now implements IMetadataAware. JMSReadConnector now adds the 
+   property 'populateMetada' which if true then the connector will populate the 
+   adaptor message metadata from the JMSMessageProperties. The default is false 
+   in order to maintain backwards compatibility with legacy behaviour.
+
+ * JMSWriteConnector also implements IMetadataAware. It adds two new properties 
+   'propagateMetadata' and 'overrideDestinationName'. 
+   
+   If 'propagateMetadata' is set then the metadata is used to help generate the 
+   JMSMessage. In the case of the 'DefaultMessageGenerator' this means that the 
+   metadata is mapped as JMS Message Properties. The default value of 'propagateMetadata' 
+   is false to maintain backwards compatibility.
+   
+   By default the property 'overrideDestinationName' is not set. This is again to maintain
+   backwards compatibility. If set then the metadata value at that key is used to define
+   the jms destination for that message. 
+
+ * (SC93) review CXF Web service read connector. CXF read connector separated from 
+   (now deprecated) XFire read connector. Type of the serviceName property in 
+   WebServiceCXFReadConnector changed to QName. Exceptions from #connect and #invoke 
+   no longer suppressed. Added thread safety.
+
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.4                   |             OA 3.4.5                       |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | WebServiceCXFReadConnector         | WebServiceCXFReadConnector                 |  
+   | #serviceName is a String.          | #serviceName is a QName.                   |
+   |                                    | Changes required as per example: example/  |
+   |                                    | spring/connectors/soap/ws-cxf-reader.xml   |
+   |                                    |                                            |
+   |---------------------------------------------------------------------------------|
+
+ * Modified AbstractSQLWriter to allow (and by default use) quoting of table names and
+   column identifiers. This is necessary where reserved words are used for table and
+   column names. Thanks to Tim (ttrantx) for identifying this.
+ 
+ * Tibco read connector has been rewritten completely as the implementation was extremely
+   limited. Existing adaptors which use it should work as before, but the mechanism has 
+   been deprecated, so they should be reconfigured. Note that our ability to test with 
+   Tibco Rendezvous is extremely limited as we do not have ready access to an instance to 
+   test against.
+   
+ * JNDIConnection has been modified to allow the use of vendor specific values via
+   a new (optional) customProperties property. Again thanks to Tim (ttrantx) for this.
+   
+Processors
+==========
+
+Examples
+========
+ 
+ * Added examples to illustrate the support for metadata now available in the 
+   jms read and write connectors. 
+   
+   See example/spring/connectors/jms/messageproperties_subscriber.xml,
+   example/spring/connectors/jms/messageproperties-publisher.xml and
+   example/spring/connectors/jms/publisher-destination.xml.
+ 
+ * Registration server (example\spring\register\oa-register-server.xml) now 
+   based on CXF instead of XFire.  
+   
+ * (SC93) example/spring/connectors/soap/ws-cxf-reader.xml - type of serviceName
+   property changed to QName.
+   
+ * (SC95) New example that demonstrates use of message history
+   (example/spring/adaptor/history.xml).  
+   
+ * New example example/spring/processors/enrichment/db/counterparty-id-mapping.xml
+   to illustrate using a database lookup table to enrich a message.  
+   
+ * Added an example to demonstrate SMTPWriteConnector
+   (example/spring/connectors/mail/smtp-writer/xml).
+
+Miscellaneous
+=============
+
+ * (SC94) Resetting exitCode in ReadNode (affects use with AdaptorRunConfiguration).  
+ 
+ * (SC95) Support for Message History. More information 
+          at http://www.openadaptor.org/history.html 
+ 
+ * (SC96) Quoting issue in AbstractSQLWriter (see above).
+          Note that this also required upgrading of mysql driver as older version 
+          did not appear to properly support quoting in prepared statements.
+           
+ * (SC98) Including message metadata in exception handling (ongoing).  
+ 
+ * (SC99) Added packageName property to facilitate Oracle Package names in stored 
+          proc definitions.    
+          
+ * (SC101) Trimming a field when generating a fixed with record no longer trims 
+          the entire record. Fix is to OrderedMapToFixedWidthStringConvertor.  
+
+Bug Fixes
+=========
+
+ * (SC97) Bug where debug logging combined with older Sybase driver might cause an
+          AbstractMethodError.
+
+3rd Party
+=========
+ * Added:    lib/groovy-1.7.2.jar
+             lib/antlr-2.7.7.jar (Groovy dependency)
+             lib/asm-3.2.jar (Groovy dependency)
+
+ * Upgraded: lib/cxf_2.1.jar to 2.2.3
+             lib/XmlSchema_1.4.2.jar to 1.4.5 (CXF related)
+             lib/FastInfoset_1.2.2 to 1.2.7 (CXF related)
+             lib/jaxb-impl_2.1.6.jar to 2.1.12 (CXF related)
+             lib/jaxb-xjc_2.1.6.jar to 2.1.12 (CXF related)
+             lib/mysql-connector-java-5.1.10-bin-jar (from mysql-connector-java-5.0.6-bin-jar)
+             
+             
+
+=================================================
+openadaptor3 production 3.4.4 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 15th September 2009
+Author: openadaptor Core Team
+
+openadaptor 3.4.4
+=======
+
+Connectors
+==========
+
+ * (SC43) setParametersForQuery in JDBCReadConnector gets called for every supplied 
+   parameter.
+   
+ * (SC90) enrolling polling readers (LoopingPollingReadConnector and
+   CronnablePollingReadConnector in a transaction if the delegate reader 
+   is transactional.  
+   
+ * (SC92) correct validation of the CronnablePollingReadConnector.   
+
+Processors
+==========
+
+ * Added synchronised property to ScriptProcessor. It is true by default, meaning
+   that existing behaviour is unchanged (i.e. calls to process() method will be 
+   forcibly synchronised). Unsetting this property will now mean that the process 
+   calls will no longer be explicitly synchronised.
+   
+ * (SC83) GenericEnrichmentProcessor: new 'enrichmentElementName' property allows to
+   further customise the way the input and enrichment data are merged together.  
+   
+ * (SC80) Default values of FIXED and REPROCESSED columns in ExceptionToOrderedMapConvertor
+   can now be overwritten via setters, enabling collaboration with databases such
+   as Postgres. Contributed by Johannes Nicolai.   
+     
+ * (SC87, SC88) ScriptConditionProcessor now validates and resets ifProcessor 
+   and thenProcessor.
+ 
+Examples
+========
+
+ * Added an example that demonstrates use of message metadata
+   (example\spring\adaptor\metadata.xml).  
+
+ * As far as possible property files containing values specific to particular service 
+   implementations, e.g, databases, JMS SPIs etc have now been consolidated in 
+   example/config. This has also allowed us to reduce the number of example specific
+   readme files.
+     
+Miscellaneous
+=============
+
+ * Support for message metadata (SC84, SC89).
+   More information at http://www.openadaptor.org/metadata.html 
+
+Bug Fixes
+=========
+
+SC81: Exception when stopping Adaptor with AdaptorRunconfiguration via 'kill PID'.
+
+
+=================================================
+openadaptor3 production 3.4.3 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 28th November 2008
+Author: openadaptor Core Team
+
+openadaptor 3.4.3
+=======
+
+Connectors
+==========
+
+ * New DynamicFileWriteConnector allows writing to files with names dynamically 
+   derived from a message payload (SC68). 
+   
+ * FileWriteConnector - ported rollover functionality (based on file size and file age)  
+   from legacy Openadaptor.   
+   
+ * WebServicePollingReadConnector: a)renamed to WebServiceReadConnector to match OA 
+   naming standards. b)now implements IEnrichmentReadConnector and can be used
+   with enrichment processors.
+   
+ * New CXF based Web service connectors: WebServiceCXFListeningReadConnector,
+   WebServiceCXFWriteConnector, WebServiceCXFReadConnector. The connectors are 
+   equivalents of the existing XFire based connectors. 
+       
+ * AbstractPollingReadConnector: the 'reconnect' property renamed to a more descriptive
+   'reconnectDelegateBetweenPolls'. Changes in adaptors' configs that use 
+   LoopingPollingReadConnectors or CronnablePollingReadConnectors need to be made
+   accordingly. 
+   
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.2                   |             OA 3.4.3                       |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | LoopingPollingReadConnectors and   | LoopingPollingReadConnectors and           |  
+   | CronnablePollingReadConnector:     | CronnablePollingReadConnector:             |
+   | property 'reconnect'               | property 'reconnectDelegateBetweenPolls'   |
+   |---------------------------------------------------------------------------------|   
+   
+ * A new IMessageGenerator for generating JMS Messages has been added to the JMS Connector
+   package. This class 'JMSPropertiesMessageGenerator' allows the definition of literal
+   values for message properties or when an XML payload is supplied xpath to extract a 
+   message property value from the XML document itself. This component was contributed
+   by Martin Mooney.    
+   
+ * JMSConnection now has a new property 'useXa' which defaults to 'false'. JMSConnection
+   will no longer allow xa transactions be managed by openadaptor's transaction managers
+   unless set to 'true'. This breaks backwards compatibility as previously the JMSConnection 
+   attempted to derive the transaction type automatically. For non-XA transactions everything 
+   works as before and 'useXa' can be effectively ignored.
+   
+   |---------------------------------------------------------------------------------|
+   |         OA 3.4.2                   |             OA 3.4.3                       |    
+   |---------------------------------------------------------------------------------|
+   |                                    |                                            |
+   | Rely entirely on ConnectionFactory | As well as ConnectionFactory, JMSConnection|  
+   | config to determine transaction    | must also have property 'useXa' set true.  |
+   | type. XA Transactions take priority| Without this only non-XA transactioning    |
+   | over other transaction config      | can be used. Default is 'false'.           | 
+   | options                            |                                            | 
+   |---------------------------------------------------------------------------------|   
+
+Processors
+==========
+
+ * GenericEnrichmentProcessor - new 'discardInput' property allows for treating input 
+   message merely as a source of parameters for the enrichment read connector.
+
+ * ScriptProcessor - added binding to allow scripts to access logging facility.
+ 
+ * Added support for Swift Messages via org.openadaptor.auxil.convertor.SwiftConvertor class.
+ 
+Examples
+========
+
+ * Added an example of a file write connector with dynamically derived file names
+   (example\spring\connectors\file\file-dynamic.xml).
+   
+ * Added an example of a file write connector that rolls over output files
+   (example\spring\connectors\file\file-rollover.xml).  
+   
+ * Added an example of a Web service enrichment processor
+   (example\spring\processors\enrichment\soap\enrich-processor.xml).    
+   
+ * Added examples of CXF based Web service connectors
+   (example\spring\connectors\soap\ws-cxf-server.xml, ws-cxf-writer.xml and ws-cxf-reader.xml).  
+   
+ * Added an example of reading from a database and generating csv output
+   (example\spring\processors\csv\db-csv.xml).
+   
+ * Added an example of an adaptor with enabled metrics recording 
+   (example\spring\adaptor\metrics.xml).  
+   
+ * New script examples: example\spring\processors\script\ruby-xpath.xml, groovy-xpath.xml,
+   jython-xpath.xml (usage will require additional libraries which are not bundled with 
+   Openadaptor). 
+
+Miscellaneous
+=============
+
+ * New functionality of recording quantitative and temporal metrics about the payload 
+   that traverses an adaptor (SC77). 
+   More information at http://www.openadaptor.org/metrics.html 
+
+ * SpringAdaptor will automatically configure and register an Adaptor and associated Router
+   in the Spring context if they are not explicitly defined. This allows simple Adaptor
+   configurations to be defined just by declaring an ordered set of IComponents.
+   A bean defined with an id of ExceptionProcessor will be automatically set as the Router's 
+   exceptionProcessor.
+ 
+ * The automatic example/tutorial documentation generation mechanism has been tweaked slightly.
+ 
+ * Tutorial modified slightly (added links to clarify hsql setup for hospital examples).
+ 
+ * Fixed typo in ScriptProcessor (it logged failed script execution as failed script compilation).
+ 
+Bug Fixes
+=========
+
+SC66: Added support for setting ReplyToQueueName and ReplyToQueueManagerName by MqConnection. 
+      Also suppressed the "MQJE001: Completion Code 2, Reason 2033" log statement. 
+
+SC69: Changes in handling of the JVM shutdown hook.
+
+SC72: The value for mqContextUserAndPassword was not being set by MqConnection.
+
+SC73: Correct recognition of JVM 1.6 in registration.
+
+SC79: Added property 'useXa' to JMSConnection rather than simply rely on the ConnectionFactory 
+      config.
+
+=================================================
+openadaptor3 production 3.4.2 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 18th July 2008
+Author: openadaptor Core Team
+
+openadaptor 3.4.2
+=======
+
+Connectors
+==========
+
+ * JDBCReadConnector & JDBCWriteConnector - preambleSQL and postambleSQL properties
+   renamed to afterConnectSql and beforeDisconnectSql, respectively. Setters for 
+   old properties have been deprecated.
+
+ * JDBCReadConnector - new properties, preReadSql and postReadSql, get executed
+   before the 'main' SQL that returns a result set, and after the result set
+   has been read, respectively.
+
+ * JDBCWriteConnector#connect - additional safety checks to allow a subclass 
+   to use the connection from this class at the same time not using the sqlWriter.
+   
+ * JDBCWriteConnector - the two ISQLWriter implementations MapTableWriter and
+   MapCallableStatementWriter have moved to the new 
+   org.openadaptor.auxil.connector.jdbc.writer.map package. Configurations need
+   to be adjusted accordingly:
+   
+   |------------------------------------------------------------------------------|
+   |        OA 3.4.1                |            OA 3.4.2                         |    
+   |------------------------------------------------------------------------------|
+   |                                |                                             |
+   |org.openadaptor.auxil.connector.|org.openadaptor.auxil.connector.             |  
+   |jdbc.writer.MapTableWriter      |jdbc.writer.map.MapTableWriter               |
+   |(/MapCallableStatementWriter)   |(/MapCallableStatementWriter)                | 
+   |                                |                                             | 
+   |------------------------------------------------------------------------------|  
+   
+ * JDBCWriteConnector - two new ISQLWriter implementations, XMLTableWriter and
+   XMLCallableStatementWriter added in org.openadaptor.auxil.connector.jdbc.writer.xml
+   package.
+   
+ * LoopingPollingReadConnector and CronnableReadConnector - new 'reconnect' property.
+   Set to false will cause the underlying IReadConnector not to be physically
+   reconnected on every poll (useful when the underlying reader is JDBCReadConnector). 
+   
+ * WebServiceListeningReadConnector - changed default namespace in the response.
+   Exposed queueSize and queueLimit via JMX.  
+   
+Processors
+==========
+ 
+ * ExceptionToOrderedMapConvertor - 1. Correct detection of the message data type.
+   2. New property 'convertPayloadToString' that allows for keeping message payload
+   in its original form (default is true).
+
+ * Added Legacy DataObject type filter (& corresponding example)
+
+Examples
+========
+
+ * Added example of a Sybase event driven read connector 
+   (example\spring\connectors\db\sybase\event.xml). 
+
+ * Modified looping/cronnable connector examples as per comments above.
+ 
+ * Added new example to illustrate how to mark data as processing/processed when
+   reading from database (example\spring\connectors\db\reader2.xml)
+   
+ * Added example to illustrate how legacy 'Inspectors' may be approximated using scripts
+   (example\spring\processors\script\script-inspector.xml)
+   
+ * Added examples for new ISQLWriter implementations in example\spring\connectors\db  
+   (xml-table-writer.xml and xml-storedproc-writer.xml)
+
+Miscellaneous
+=============
+ 
+ * Added registration mechanism to allow adaptors to register its properties such as
+   name, username, classpath, timestamp and more, in a central database 
+   (www\register.html, example\spring\register\oa-register-server.xml). 
+
+ * Adaptor class has two static utility methods for programmatic invocation of adaptors.
+   Simple.java (in example/src/...) demonstrates usage.
+   
+ * Adaptor class now supports an extra property "timeoutMs". This is a timeout measured
+ 	 in milliseconds which will be applied as an override to all connector read timeouts.
+   
+ * OA1.x->OA3 migration guidelines (draft): www/migration.html. 
+ 
+ * DocumentMapFacade allows setting and retrieving prefixes for the default namespace. 
+   This prefix can be used with xpath. See setDefaultNamespacePrefix(String prefix) 
+   and getDefaultNamespacePrefix(). 
+   
+ * SpringAdaptor exits with a code based on Adaptor#exitCode (used to be 0).  
+ 	
+ * The third party libraries that are used to construct openadaptor-depends.jar have 
+   been move in the package from lib/3rdparty to lib/opt. This is to faciliate a 
+   future mechansim which will allow automatic generation of the classpath, recursively 
+   traversing the lib directory (tree) for jars.
+   
+ * Launching adaptors via bootstrap.jar has been removed as this hasn't worked effectively.
+   A better mechanism is in the pipeline.
+      
+Bug Fixes
+=========
+
+SC48: Transaction rollback when handling exceptions from IWriteConnectors.
+
+SC53: A failed JMSConnection close does not clear the reference to the underlying jms connection.
+
+SC53: ScriptProcessor fails when used with java 1.6. Symptoms are AbstractMethodErrors being thrown.
+
+SC56: AdaptorRunConfiguration - transaction problem at restart.
+
+SC57: Component lifecycle management problem when stopping adaptors externally.
+
+SC59: DBEventDrivenPollingReadConnector doesn't participate in adaptor transactions.
+
+SC60: DBEventDrivenPollingReadConnector skips every second row when an embedded JDBCReadConnector 
+      has batch size set to one.
+      
+SC62: Checks if JDBC connection is active before performing a transaction rollback.      
+
+3rd Party
+=========
+
+ * Upgraded: lib/XmlSchema_1.1.jar 1.4.2.
+             lib/commons-httpclient_3.0.1.jar to 3.1.
+             lib/commons-lang_2.0.jar to 2.4.
+             lib/xfire-all_1.2.3.jar to 1.2.6.
+             lib/jetty-6.0.1.jar to 6.1.9 (related change in ServletContainer).
+             lib/jetty-util-6.0.1.jar to 6.1.9 (related change in ServletContainer).
+             lib/js_1_6R5.jar replaced by js.jar, version 1.6R7 (related changes in build.xml)
+ 
+ * Added (in preparation for support of CXF web service framework):    
+             lib/jaxws-api_2.1-1.jar.
+             lib/neethi_2.0.4.jar.
+             lib/FastInfoset_1.2.2.jar.
+             lib/geronimo-annotation_1.0_spec_1.1.1.jar.
+             lib/jaxb-api_2.1.jar.
+             lib/jaxb-impl_2.1.6.jar.
+             lib/jaxb-xjc_2.1.6.jar.
+             lib/cxf_2.1.jar.
+
+
+=================================================
+openadaptor3 production 3.4.1 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 17th April 2008
+Author: openadaptor Core Team
+
+openadaptor 3.4.1
+=======
+
+ Summary
+ =======
+ 
+ This release focuses on minor cleanup of the codebase & examples as well as some specific 
+ changes as outlined below.
+ 
+
+Processors
+==========
+
+ * Any processor that implements the ILifecycleListener interface will be notified 
+   of state changes of its associated Node.
+   
+ * Added StringSubstitutor processor for escaping illegal XML characters.
+ 
+Spring
+======
+
+ * We have upgraded to release 2.5.3 of the Spring Framework.   
+  
+Miscellaneous
+=============
+
+ * Clean up of JUnit tests e.g. warnings (unused imports, non-static references to static 
+   fields, etc.) have been tidied.
+   
+ * Spring XML files with examples config renamed to follow industry standard (lower case,
+   hyphen separated).
+   
+ * Failure to load .openadaptor-spring.xml from classpath is no longer fatal (reduced to warning).   
+ 
+ * Added an ignoreExceptionProcessorErrors flag on the Router class. If set to true and an 
+   exceptionProcessor is set on the Adaptor, any exceptions thrown by the exceptionProcessor
+   will be logged only (they will not cause the adaptor to shut down).
+   
+ * New OAClient class may be used to send data into Openadaptor from a Java program. Added 
+   examples: spring/client/*.xml.  
+ 
+ * Moved .openadaptor.properties and registration.properties to top level of openadaptor.jar
+ 
+ * Moved licence file licence.txt to top level
+ 
+ * Extended the database schema for handling exceptions. Exception message,
+   cause exception, exception stack trace, thread name (and more) are now recorded.
+   Examples can be found in example\spring\exception\sybase\*.xml.
+ 
+ * Added preambleSQL and postambleSQL to JDBCReadConnector
+ 
+ * Added jtds-1.2.2.jar to lib 
+ 
+ * A number of changes have been made to enable use of Declarative Transaction Management. 
+   One JMS/JDBC example spring-local-txn-demo.xml has been added to example/spring/transaction.
+ 
+ * WriteNode - new 'suppressDisconnectionErrors' property allows for preventing disconnection
+   errors (IWriteConnector#disconnect) from being propagated to the Adaptor
+
+Cleanup of Build Process
+========================
+
+ * Moved build tools into support area, and fixed package/directory setup.
+
+ * Startup is more forgiving of locations of certain property files
+  
+Deprecated Components Removed
+=============================
+
+  The following deprecated components have been removed in this release:
+
+	JDBC:
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.IStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.JDBCWriteConnector
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.StatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.AbstractStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.CallableStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.PreparedStatementTableConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.TableStatementConverter
+	org.openadaptor.auxil.connector.jdbc.writer.deprecated.orderedmap.SQLStatementConvertorTestCase
+	org.openadaptor.core.connector.PollingReadConnector
+	example/spring/connectors/db/writer2.xml
+	example/spring/connectors/db/writer3.xml
+  
+	JNDI:
+	org.openadaptor.auxil.connector.jndi.OldJNDIReadConnector
+	org.openadaptor.auxil.processor.jndi.JNDIEnhancementProcessor
+	
+	Javascript Processor:
+	org.openadaptor.auxil.processor.javascript.JavascriptConditionProcessor
+    org.openadaptor.auxil.processor.javascript.JavascriptFilterProcessor
+    org.openadaptor.auxil.processor.javascript.JavascriptProcessor
+    org.openadaptor.auxil.processor.javascript.ScriptableSimpleRecord 
+   
+Known Issues
+============
+
+ * Incompatibility between ScriptProcessor and JVM 1.6 was detected. Adaptors that use 
+   ScriptProcessor should use JVM 1.4 or 1.5 until this issue has been resolved.
+   
+   
+=================================================
+openadaptor3 production 3.4 Release Notes
+
+See licence.txt for Licence information.
+=================================================
+
+Date: 31st January 2008
+Author: openadaptor Core Team
+
+openadaptor 3.4
+=======
+
+Summary
+=======
+
+This release focuses on improving the documentation, the migration (from 1.x)
+and on further stabilisation. It comes with a number of bug fixes and a new 
+component type - an enrichment processor.
+
+Connectors
+==========
+
+New IPollingReadConnector - ThrottlingReadConnector allows for throttling
+of calls of read connector it wraps. The new connector is similar to 
+the LoopingPollingReadConnector except it operates on more fine-grained level,
+adding time intervals in between individual calls for data by the underlying
+reader, rather than treating all calls (until source data is exhausted) of the 
+wrapped reader as one call.
+
+The deprecated PollingReadConnector has been deleted; all occurences need to be
+replaced with either LoopingPollingReadConnector or CronnablePollingReadConnector.
+
+|------------------------------------------------------------------------------|
+|        OA 3.3                  |            OA 3.4                           |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|PollingReadConnector            | either LoopingPollingReadConnector or       |
+|         (deleted)              | CronnablePollingReadConnector depending on  |
+|                                | which mode (interval or cron) the           |
+|                                | PollingReadConnector  was used in.          |
+|------------------------------------------------------------------------------|
+
+Processors
+==========
+
+A new component type - an enrichment processor. Its goal is to 'enrich' its input 
+with more data from an external resource. Standard read connectors are used to 
+connect to and retrieve data from external resources.
+
+* IEnrichmentProcessor represents a new type of component, on a par with IReadConnector, 
+  IDataProcessor and IWriteConnector
+
+* An enrichment processor needs to be able to a) prepare query parameters for 
+  the underlying read connector, b) to interprete the results from the underlying 
+  read connector and use them to 'enrich' the input data
+
+* IEnrichmentReadConnector extends IReadConnector and represents a read connector 
+  that can be plugged-in to an enrichment processor. IEnrichmentReadConnector requires 
+  implementation of the next() method that accepts input parameters as an argument. 
+  Some of the existing IReadConnectors were already altered to extend IEnrichmentReadConnector
+
+* GenericEnrichmentProcessor is its generic implementation 
+
+* JNDIEnhancementProcessor has been deprecated by GenericEnrichmentProcessor 
+
+* Spring examples of a db based and file based enrichment processors are 
+  in example\spring\processors\enrichment\* 
+
+|------------------------------------------------------------------------------|
+|        OA 3.3                  |              OA 3.4                         |    
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|JNDIEnhancementProcessor        | GenericEnrichmentProcessor                  |  
+|(deprecated)                    | (JNDI specific properties from              |
+|                                | JNDIEnhancementProcessor should now be      | 
+|                                | set on JNDIReadConnector)                   |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+
+Legacy DataObjects / DOXML Conversion
+=====================================
+
+  * Significant refactor of legacy convertor code.
+    Convertors now subclass AbstractLegacyConvertor which optionally provides a generic 
+    mechanism to set attributes (properties) as spring bean properties on legacy convertors.
+    Currently this includes ( XMLFormatter,GenericXMLWriter, GenericXMLReader)
+    
+  * Refactored conversion to DataObjects to use 'template' DOXML during conversion. This now
+    permits correct generation of DataObjects/DOXML for consumption by legacy adaptors.
+    
+  * Added some extra legacy conversion examples also.
+  
+  *  Modified DataObjectToDOXmlConvertor to issue uniqueId by default (this mirrors default
+    legacy adaptors behaviour)
+
+Minor changes
+=============
+
+  * JDBCWriteConnector now defaults the sqlWriter in validate() instead of constructor.
+    It also issues an INFO log message that it has done so.
+
+  * Application now logs the jvm version near the beginning of adaptor 
+    startup (in case adaptor dies before reporting it).
+
+  * Minor improvement to the efficiency of AbstractFixedWidthStringConvertor. It now
+    caches the field names rather than trying to work them out each time its asked.
+    
+  * Added a convenience subclass of RegexMultiLineReader (DOXMLReader) for reading 
+    legacy DOXML which may contain multiple DOXML messages in sequence (the default 
+    StringReader would only process the first DOXML message received)
+   
+  * Modified stub code to generate StubException when stub method is called. It still 
+    extends RuntimeException but now can be distinguished if necessary.  
+   
+  * ServletContainer.setJettyServer(Server server) was nonsensical. Fixed.
+  
+  * Modified ScriptProcessor to allow returned arrays, adding a boxReturnedArrays property.
+    boxReturnedArrays (default false) can be set to true to force legacy behaviour.  
+
+  * Modified ScriptProcessor to allow specification of a Map of additional bindings. The
+    entries in the Map will be used to bind names to object values, which may then be
+    referenced within the script by those bound names.
+    
+  * Modified OrderedMapToDelimitedStringConvertor to allow for enclosing quotes to always 
+    be output around the field (default false). This can be done by adding 
+    a forceEnclosingQuotes property to true.  
+    
+  * JDBCConnection modified to allow for getting java.sql.Connection from a DataSource 
+    looked up in the JNDI tree. This is done by setting dataSourceName and jndiConnection
+    properties. Folder openadaptor\example\spring\connectors\db\jee\jboss\ contains an
+    example.
+    
+  * FileWriteConnector has a new flag (addTimestampToMovedFile) that allows for appending 
+    a timestamp to the moveExistingFileTo (name of the file the existing file is going to 
+    be moved to). The default timestamp format can be overwritten.  
+  
+  * Added NullWriteConnector.
+  
+  * Modified ResultSet conversion to permit the use of column labels (aliases), by adding 
+    a corresponding property. Based on a suggestion by browe. Thanks Brian :-)
+    
+Bug Fixes
+=========
+
+SC28: JDBC PreparedStatement writers should not use setObject(null), but setNull().
+
+SC29: DB Event Mechanism error message for invalid SPROC is unclear
+    
+SC30: Remove need for constructor-arg on MBeanServer
+
+SC31: DateHolder types should become java Dates when converting legacy DataObjects
+      Added property to allow conversion of proprietary DataObject DateHolder types
+      into java.util.Dates.
+      The default value for this property is 'true' which means default behaviour will 
+      differ from 3.3  
+      
+SC32: The pipeline DOXmlToDataObject -> DataObjectToOrderedMap will fail if the incoming
+      DOXML contains more than one top-level data object. 
+      Note that as a side-efffect, the default value for 'box returned arrays' in the
+      AbstractConvertor class has changed from 3.3 (true) to 'false'.
+
+SC33: JMSConnection cannot work without a valid JNDIConnection. This is because the
+      connectors need to always lookup the JMS Destination. The Connectors have now
+      changed to allow their destinations to be set directly if this is required.
+
+SC34: (Bug (and patch for it) in OrderedMapToXMLConverter that does not allow to set a 
+      slash substitution value)
+      
+SC35: OrderedMapToXmlConvertor should, but does not map slashes in the root tag 
+
+SC36: MapCallableStatementWriter misses first argument for Oracle databases
+    
+Dependencies
+============
+
+  * log4j library upgraded from v1.2.9 to 1.2.15
+  * JBoss jars were removed from lib/3rdparty  due to licence restrictions
+
+    
+    
+=================================================
+openadaptor3 production 3.3 Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 5th October 2007
+Author: openadaptor Core Team
+
+openadaptor 3.3
+=======
+
+Summary
+=======
+This is the third release of openadaptor 3
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+This release focuses on stabilization. A number of areas have been reworked
+or significantly enhanced.
+
+==============================================================================
+
+Major Changes
+=============
+
+This section details the main changes and enhancements in openadaptor 3.3
+
+Documentation
+=============
+
+No major changes. Ongoing improvements to JavaDocs and to Examples.
+
+Configuration
+=============
+
+No major changes. Some detail changes have been made to the configuration of 
+individual components. See these separately for details.
+
+Database
+========
+
+JDBC Read Connectors & Polling Read Connectors
+----------------------------------------------
+
+JDBC read connectors and polling read connectors have undergone a significant 
+rework: 
+
+  * The concept of an IPollingReadConnector that wraps another read connector 
+    has been introduced. An IPollingReadConnector basically defines the way the 
+    underlying read connector will poll its resource. The idea follows the 
+    Decorator design pattern and is similar to how input and output streams 
+    can be 'wrapped' in the Java I/O API
+
+  * Three implementations of IPollingReadConnector have been implemented: 
+    LoopingPollingReadConnector, CronnablePollingReadConnector and 
+    DBEventDrivenPollingReadConnector. The first two were based on the legacy 
+    (now deprecated) PollingReadConnector. The last was based on 
+    JDBCEventReadConnector.
+
+  * JDBCPollConnector has been deleted and its role subsumed by 
+    JDBCReadConnector.
+
+  * JDBCEventReadConnector has been deleted. Its role is now shared between
+    JDBCReadConnector and DBEventDrivenPollingReadConnector.
+
+  * JDBCReadConnector now has the batching capability - result sets can be read 
+    in batches of say, a 1000 records, rather than one by one, which should 
+    increase performance. Batching is available via the batchSize property 
+    (batchSize=0 means the entire result set is read in one batch, batchSize=1 
+    means a batch will hold one element, batchSize=1000 means one batch holds 
+    thousand elements etc).
+
+  * XML and orderedmap ResultSetConverters were renamed to 
+    ResultSetToXMLConverter and ResultSetToOrderedMapConverter respectively.
+
+Since some of the classes were deleted and some renamed, certain changes need 
+to be done to the existing deployed adaptors in versions 3.2.1 and 3.2.1.1 when 
+upgrading them to version 3.3. The following table shows which classes need to 
+be replaced in adaptors config files and how to replace them:
+
+|------------------------------------------------------------------------------|
+|     OA 3.2.1.1                 |            OA 3.3                           |    
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| JDBCPollConnector (deleted)    | JDBCReadConnector wrapped in                |  
+|                                | LoopingPollingReadConnector with pollLimit  |
+|                                | property set to 0 and pollIntervalSecs set  | 
+|                                | to 1 (see EX 1)                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|JDBCEventReadConnector (deleted)| JDBCReadConnector wrapped in                | 
+|                                | DBEventDrivenPollingReadConnector (EX 2)    |  
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+|PollingReadConnector            | either LoopingPollingReadConnector or       |
+|         (deprecated)           | CronnablePollingReadConnector depending on  |
+|                                | which mode (interval or cron) the           |
+|                                | PollingReadConnector  was used in .         |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| ResultSetConverter             | ResultSetToOrderedMapConverter              |
+| in orderedmap package (renamed)|                                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+|                                |                                             |
+| ResultSetConverter             | ResultSetToXMLConverter                     |
+| in xml package (renamed)       |                                             |
+|                                |                                             |
+|------------------------------------------------------------------------------|
+
+EXAMPLE 1.
+
+OA 3.2.1.1:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCPollConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="sqlStatement" value="{ call PollTradeEvent () }"/>
+ <property name="resultSetConverter">
+  <bean 
+   class="org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetConverter"/>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="sql" value="{ call PollTradeEvent () }"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+  
+<bean id="PollingReader" 
+      class="org.openadaptor.core.connector.LoopingPollingReadConnector">
+ <property name="pollLimit" value="3"/>
+ <property name="pollIntervalMs" value="1000"/>
+ <property name="delegate" ref="Reader"/>
+</bean>
+
+EXAMPLE 2.
+
+OA 3.2.1.1:
+
+<bean id="Reader" 
+    class="org.openadaptor.auxil.connector.jdbc.reader.JDBCEventReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="eventServiceID" value="1"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean id="Reader" 
+      class="org.openadaptor.auxil.connector.jdbc.reader.JDBCReadConnector">
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="resultSetConverter">
+  <bean class=
+    "org.openadaptor.auxil.connector.jdbc.reader.xml.ResultSetToXMLConverter"/>
+ </property>
+</bean>
+  
+<bean id="PollingReader" 
+      class="org.openadaptor.core.connector.DBEventDrivenPollingReadConnector">
+ <property name="eventServiceID" value="1"/>
+ <property name="jdbcConnection" ref="JdbcConnection"/>
+ <property name="delegate" ref="Reader"/>
+</bean>	
+
+JDBCWriteConnector refactor
+---------------------------
+
+JDBC write connector has been completely refactored.
+The old JDBCWriteConnector has been deprecated, and moved
+into a deprecated package, along with all of its supporting
+classes.
+
+1. JDBC writer components now support database batching.
+2. Prepared statements are reused where possible.
+3. Behaviour has been expanded to permit the use of java.util.Maps
+    (subject to some limitations)
+4. The components now pass data transparently to the jdbc drivers
+    (i.e. no artificial type-conversion)
+
+Users should migrate existing usages as follows:
+
+JDBCWriteConnector (deprecated) -> JDBCWriteConnector
+
+Implementations of IStatementConvertor have been refactored (as
+ISQLWriter) as follows:
+
+SQLConvertor                    -> RawSQLWriter
+PreparedStatementTableConvertor -> MapTableWriter
+TableStatementConvertor         -> MapTableWriter
+CallableStatementConvertor      -> MapCallableStatementWriter
+SQLStatementConvertor           -> MapCallableStatementWriter + stored proc
+
+The pre-existing implementations have all been marked as deprecated;
+further use is actively discouraged.
+
+Processors
+==========
+
+ScriptProcessor refactor
+------------------------
+
+ScriptProcessor has been refactored. It should now be used in place of
+the deprecated javascript variants.
+
+1. Compiled Script property has been removed (it is dependent on
+   the ScriptEngine)
+
+2. Script language now defaults to javascript ("js")
+
+3. ScriptEngine is no longer settable. It is generated automatically
+   during the validate() method. Subclasses may override generation
+   through the createScriptEngine() method.
+
+4. Comments and logging have been added.
+
+5. The default binding for records has been changed from 'data' to
+   'oa_data'. This reduces the likelihood of a conflict between field
+   names and the record itself, particularly for MapScriptProcessor
+   (see next section). Note that this may require some changes to existing
+   adaptors which use ScriptProcessors (e.g. change data to oa_data 
+   in scripts).
+
+MapScriptProcessor added
+------------------------
+
+This allows direct access to entries in Map records from scripts. Again
+this should prove more useful than the javascript equivalents (which
+have been marked deprecated)
+
+ScriptFilterProcessor & ScriptConditionProcessor refactoring
+
+Both of these have been changed to use delegation rather than
+inheritance from ScriptProcessor. This means that other ScriptProcessor
+instances (e.g. MapScriptProcessor) may be uses with them.
+
+Thus existing usage of thes processors will have to have their configs
+altered to match - i.e. the ScriptProcessor becomes a property of the
+filter/condition one. Behaviour should be unchanged.
+
+Core
+====
+
+Exception Handling
+------------------
+
+The exception handling mechanism has been revised:
+
+  * setting the exceptionProcessor property on the Router is now the only way 
+    of manipulation of exception handling
+
+  * exceptionMap, that allows for 'fine-grained' mapping between exception types
+    and exception processing nodes is now set on ExceptionHandlerProxy class 
+    rather than the Router.
+
+  * exceptionList property setter has been removed from the Router (using 
+    exceptionMap achieves the same purpose)
+
+  * exception handler can now be made up of any number of nodes rather than
+    always a single node
+
+  * a concept of a message hospital has been introduced 
+
+  * new section titled 'Step 11: Exception Handling' was added to the tutorial. 
+    It explains the exception handling interface, different ways of configuring 
+    the exceptionProcessor (including the message hospital) and provides 
+    pointers to examples.
+
+The following changes in adaptor configuration files are necessary to migrate 
+from OA 3.2.1.x to 3.3:
+
+|------------------------------------------------------------------------------|
+|      OA 3.2.1.1                   |                 OA 3.3                   |    
+|------------------------------------------------------------------------------|
+|                                   |                                          |
+| setting 'exceptionMap'  property  | setting 'exceptionMap' property on the   |
+| on the Router                     | ExceptionHandlerProxy which is then set  |
+|                                   | as exceptionProcessor on the Router      | 
+|                                   | (see EX 1)                               |
+|                                   |                                          |
+|------------------------------------------------------------------------------|
+
+EXAMPLE 1.
+
+OA 3.2.1.1:
+
+<bean class="org.openadaptor.core.router.Router">
+ ...
+ <property name="exceptionMap">
+  <map>
+   <entry key="java.lang.Exception" value-ref="FileWriter"/>
+  </map>
+ </property>
+</bean>
+
+OA 3.3:
+
+<bean class="org.openadaptor.core.router.Router">
+ ...
+ <property name="exceptionProcessor" ref="ExceptionHandler"/>
+</bean>
+
+<bean id="ExceptionHandler" 
+      class="org.openadaptor.core.exception.ExceptionHandlerProxy">
+ <property name="exceptionMap">
+   <map>
+     <entry key="java.lang.Exception" value-ref="FileWriter"/>
+   </map>
+ </property>
+</bean>
+
+Pipeline Deprecated
+-------------------
+
+The Pipeline class (org.openadaptor.core.router) has been
+deprecated, and it's functionality promoted to the Router class.
+(There was considerable confusion over the use of both classes,
+and inconsistencies in the dual implementations.
+
+It is still possible to define a pipeline, through the use
+of the 'processors' property (this now delegates to a true
+process map implementation).
+
+ReadNode Refactored
+-------------------
+
+ReadNode has been refactored so that its IMessageProcessor implementation is
+used by its IRunnable incarnation. This allows the two roles to be decoupled.
+In future releases this will make the integration of openadaptor with container
+managed resources much simpler.
+
+Tests
+=====
+
+A move towards interface based unit tests has been made. This is still ongoing.
+
+IDataProcessor interface testing
+--------------------------------
+
+The tests for this have been moved to the matching package (in the test
+tree). Additionally, ScriptProcessor, ScriptFilterProcessor,
+ScriptConditionProcessor & MapScriptProcessor now all extend the interface test.
+Several other IDataProcessor implementations now include the interface testing 
+(A few still remain to be modified however)
+
+Other Interface tests
+---------------------
+
+Interface tests also exist in less complete form for IMessageProcessor, 
+ILifecycleComponent, and ITransactionInitiator.
+
+Miscellaneous & forum
+===================== 
+
+ * a public String getState() method added on the 
+   org.openadaptor.core.adaptor.Adaptor class for JMX use (rwallsch).  
+
+ * a public List getExitErrors() method added on the 
+   org.openadaptor.core.adaptor.Adaptor class to allow for easier system testing
+   of adaptors assembled 'by hand', i.e. not using Spring. The IRunnable 
+   interface was extended by a new method: Throwable getExitError(). The method 
+   was implemented in the only implementation that exists in OA: ReadNode.
+
+ * an HTTP write connector and a HTTP read connector that polls an HTTP server 
+   were added
+
+ * SMTPConnection - added an optional mimeContentType property that allows to 
+   configure the MIME type for the body of the message, or the attached body (tnd). 
+
+ * AbstractDelimitedStringConvertor - new optional properties for escaping 
+   quoted characters were added: escapeQuoteCharacters, quoteEscapeChar and 
+   smartEscapeQuoteCharacters. 
+   They allow for more fine-grained configuration of behaviour when the 
+   protectQuotedFields flag is set to true
+
+ * registerComponents call in Adaptor moved following feedback (rwallsch).
+ 
+ * MqConnection.nextRecord bug (return immediately rather than wait for the 
+   specified timeout)fixed (erik).
+
+Bug Fixes
+=========
+
+Specifically bugs mentioned in Project Tracker.
+
+SC20: JDBCReadConnector fails when participating in a JTA Transaction
+SC22: Node attempts invalid cast when processing Exceptions
+
+
+Known Issues
+============
+
+In addition to issues already noted in openadaptor.org's project tracker a 
+number of issues have shown up in testing for this release. 
+
+SC24: JTA Two phase commit
+--------------------------
+
+There seems to be a problem configuring an adaptor with an xa transacted reader
+and writer using JOTM and Jboss MQ. This problem does not occur when JMS Grid 
+is used in place of Jboss. The issue manifests as a forced rollback due to an
+End Of File Exception. Its not known if this is merely a configuration issue
+with the adaptor configuration file or a symptom of a deeper problem. More
+investigation is needed to qualify this.
+
+
+SC25: Unexpected fanout behaviour
+---------------------------------
+
+Input records may be modified by processors; in certain
+circumstances this may cause unexpected behaviour in fanout/exception
+handling situations. where a 'peer' component is incorrectly supplied
+with a modified input record, rather than the expected 'unmodified' one.
+
+
+SC26: Handling of exceptions from ReadNodes
+-------------------------------------------
+
+Exceptions thrown in ReadNodes are currently beyond the reach of OA exception
+handlers. Even with an exceptionProcessor set, the adaptor will print stack 
+trace to stdout and terminate. As a precaution only minimal read-specific 
+functionality should be handled by ReadNodes, with all data processing 
+behaviour delegated to separate ProcessorNodes.
+
+SC27: Documentation is out of date & needs to be revisited
+----------------------------------------------------------
+
+The documentation doesn't properly reflect the significant changes made
+in the last releases, and needs to be revisited.
+
+
+=================================================
+openadaptor3 production 3.2.1.1 Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 7th June 2007
+Author: openadaptor Core Team
+
+openadaptor 3.2.1.1
+=======
+
+Summary
+=======
+This is the second production release of openadaptor 3.2.1
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+This release focuses on fixing defects and some enhancements.
+
+================================================================================
+
+
+Enhancements
+============
+
+Documentation
+
+  Jboss environment - 'Environment' section was added to the example/readme.html
+  detailing versions of the JBoss application server successfully tested to work
+  with those openadaptor examples that require a JMS implementation.
+
+
+Configuration
+
+  SpringApplication and SpringAdaptor have been enhanced to substitute for 
+  system properties. Properties resources can be specified on the command line
+  using one or more "-props <resource-name>" arguments. This is now the default
+  behaviour. Default 3.2.1 behaviour can be reinstated by supplying "- noprops"
+  as a command line argument.
+
+
+Database
+
+  TableStatementConverter has been modified to issue a warning and throw a 
+  RecordFormatException when an incoming ordered map contains more fields than
+  the output table it is writing to.
+
+
+General Enhancements
+
+  Legacy JMS 1.0.2 compliant connection code has been removed. We see no 
+  advantage in maintaining this going forward.
+
+  The Pipeline class has been refactored as a trivial subclass of Router. It is
+  likely to be deprecated from the next release - Router already implements all
+  of its behaviour and can be configured similarly if desired.
+
+  PreparedStatementTableConverter has been added. This can offer significant 
+  performance improvements over previous mechanisms by reusing a prepared 
+  statement for multiple written data records.
+
+  The exception manager/store has been temporarily removed. We intend to 
+  refactor this to be easier to use and less reliant on webservices. In
+  the meantime, exception handling and re-routing works as before using standard
+  components. 
+
+  We have begun the process of replacing usage of ISimpleRecord with Map
+  instances. Ultimately this should allow generic processors which operate on 
+  standard Maps.
+ 
+  JDBCWriteConnector now allows preamble and postamble SQL to be executed before
+  the connector starts processing records and after it finishes processing the
+  last records, respectively.
+
+  ScriptableSimpleRecord has been enhanced to support returned Object[] values.
+
+
+Packaging
+
+  The webservice tests have been removed as they are failing due to differences
+  in the running environment. New tests will appear in due  course.
+
+
+Defects
+
+  SC13  Bug in OrderedMapToXmlConvertor - Conversion would fail if key could not
+        be cast to a string as it used (String)key. Modified to use
+        key.toString() instead which is considerably more optimistic.
+
+  SC14  Bug in OrderedMapToDelimitedStringConvertor This was failing to convert
+        non-String value objects to delimited strings. Now uses toString() to
+        obtain its String representation
+
+  SC15  Bug in Dom4J simple record processora - this would have failed if an
+        attempt to put(key,null) was made.
+
+  SC16  Bug in AbstractDelimitedStringConvertor - The mechanism for splitting
+        strings was inconsistent; one character long delimiters were treated as
+        either literal strings or regular expressions depending on the 
+        delimited strings having quoted blocks in them.(blocks of text not to
+        be broken up by the convertor even if they contained the delimiter)
+        Users to specify via bean properties if the delimiter is to be always
+        treated as a regular expression or always as a delimited string. For
+        the default behaviour a one character delimiter (anticipated to be the
+        case in most situations) is used as a literal string whereas longer
+        delimiters are interpreted as regular expressions.
+ 
+  SC17  Bug in AbstractDelimitedStringConvertor - it was dropping
+        trailing empty elements.
+        
+  SC18  Null values in returned data will cause data to be lost. Fixed.
+        
+  SC19  OrderedMapToXMLConvertor could inadvertently have introduced illegal tag
+        names in the generated XML. This would occur if an incoming key name
+        contained a forward slash (/) character, which is illegal in XML tag
+        names. Unfortunately dom4j does not detect this, and will generate XML
+        with the illegal tag names. Subsequent parsing of the generated XML will
+        fail however, by virtue of the illegal key name. Consequently, the
+        mappedSlashValue property has been added. This specifies the value that
+        will be substituted in place of slash characters in generated key names.
+        By default this is implicitly set to DEFAULT_SLASH_SUBSTITUTE. Note that
+        if the mappedSlashValue property is not explicitly set, a warning will
+        issue each time a slash has been implicitly mapped (explicitly setting
+        the mapped value will prevent such warnings).
+
+
+++++++++++++++++++++++++
+
+=================================================
+openadaptor3.2.1.1 production Release Notes
+
+See licences/licence.txt for Licence information.
+=================================================
+
+Date: 07th June 2007
+Author: openadaptor Core Team
+
+openadaptor 3.2.1.1
+=======
+
+Summary
+=======
+This is the first monthly release since the production release of 
+openadaptor 3.2.1
+
+The openadaptor white paper can be downloaded from:
+
+https://www.openadaptor.org/docs/whitepaper.pdf
+
+
+
+
+
+
+
+

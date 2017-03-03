@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: reader.xml 1177 2008-01-30 10:47:05Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/socket/reader.xml $
+ --> 
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * binds to a socket and accepts a single socket connection
+    * once socket channel is opened, it reads data
+    * prints data to std out
+    
+  It is designed to illustrate the basic structure of an adaptor that accepts a socket
+  connection and reads data from that socket
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config reader.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+  
+  To test you can use the corresponding writer example.
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<description>
+  				This creates the simple pipeline Reader -> Writer.
+  			</description>
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.socket.SocketReadConnector">
+    <description>Reader that accepts a single socket connection on a configured port and reads data.</description>
+    <property name="port" value="9990"/>
+  </bean>
+
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+
+</beans>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  $Id: enrich-processor.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/processors/enrichment/file/enrich-processor.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+ 
+  <description><![CDATA[ 
+  This adaptor does the following...
+    
+    * reads input from a file (trade_ids.txt)
+    * converts input into a map
+    * uses a file based enrichment processor to enrich the input data with data from trades.txt
+    * the enrichment processor uses a custom file read connector that 
+      implements a simple search-by-id mechanism
+    * converts the resulting orderedmap to xml
+    * writes to stdout
+    
+  It is designed to illustrate the basic structure of a file based enrichment processor.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config enrich-processor.xml
+   
+  Node that this example uses a custom file reader (CustomFileReadConnector.java), located in this folder.
+  
+  You need the following in your classpath (note the extra read connector):
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    CustomFileReadConnector.class
+      
+  Once the adaptor is running you should see several records echo-ed in XML:
+  
+  <?xml version="1.0" encoding="ISO-8859-1"?>
+  <record><TradeId>1</TradeId><BuyOrSell>'B'</BuyOrSell><Price>3.25</Price><Quantity>1000000</Quantity></record>
+   ...
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  		<bean class="org.openadaptor.core.router.Router">
+  			<property name="processors">
+  				<list>
+  					<ref bean="Reader" />
+  					<ref bean="MapConverter" />
+  					<ref bean="EnrichmentProcessor" />
+  					<ref bean="XmlConverter" />
+  					<ref bean="Writer" />
+  				</list>
+  			</property>
+  		</bean>
+  	</property>
+  </bean>
+
+  <bean id="Reader" class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+    <property name="filename" value="input/trade_ids.txt"/>
+  </bean>
+  
+  <bean id="MapConverter" class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+     <property name="fieldNames">
+		<list>
+			<value>TradeId</value>
+		</list>
+     </property>
+  </bean>
+
+  <bean id="FileReader" class="CustomFileReadConnector">
+    <property name="filename" value="input/trades.txt"/>
+  </bean>
+  
+  <bean id="EnrichmentProcessor" class="org.openadaptor.auxil.processor.GenericEnrichmentProcessor">
+     <property name="readConnector" ref="FileReader"/>
+  </bean>
+  
+  <bean id="XmlConverter" class="org.openadaptor.auxil.convertor.xml.OrderedMapToXmlConvertor">
+    <property name="rootElementTag" value="trade"/>
+  </bean>
+  
+  <bean id="Writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector"/>
+  
+</beans>

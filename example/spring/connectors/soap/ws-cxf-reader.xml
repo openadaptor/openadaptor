@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: ws-cxf-reader.xml 2183 2016-09-22 14:48:18Z fschlier $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/connectors/soap/ws-cxf-reader.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+  <description><![CDATA[    
+  This adaptor does the following...
+    
+    * invokes a webservice with optional parameters on a polling basis
+    * writes data returned from the webservice to stdout
+    
+  It is designed to illustrate the basic structure of an adaptor that processes
+  data by calling a webservice.
+
+  Run it like this...
+    
+    java org.openadaptor.spring.SpringAdaptor -config ws-cxf-reader.xml
+    
+  You need the following in your classpath
+  
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar
+    lib/opt/activation.jar
+    lib/opt/cxf_2.6.16.jar
+     
+  To test the adaptor, the webservice it is connecting to needs to be running
+  (see the ws-cxf-server.xml example or invoke your own webservice). 
+  ]]></description>
+
+  <bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+  	<property name="messageProcessor">
+  	  <bean class="org.openadaptor.core.router.Router">
+  		<property name="processors">
+  		  <list>
+  			<ref bean="throttlingReader" />
+  		    <ref bean="writer" />
+  		  </list>
+  		 </property>
+  	  </bean>
+  	</property>
+  </bean>
+  
+  <bean id="throttlingReader" class="org.openadaptor.core.connector.ThrottlingReadConnector">
+	<description>
+	  Read connector that adds 'throttling' to the Web service connector it wraps.
+	  It calls the Web service 2 times, then pauses for 3 seconds, calls 2 times etc.
+	</description>
+	<property name="delegate" ref="webServiceReader" />
+	<property name="pollIntervalSecs" value="3"/>
+	<property name="pauseOnlyAfterMsgs" value="2"/>
+  </bean>
+
+  <bean id="webServiceReader" class="org.openadaptor.auxil.connector.soap.WebServiceCXFReadConnector">
+    <description>This is a polling connector, that calls a webservice.</description>
+    <property name="wsEndpoint" value="http://localhost:9999/OAService?wsdl"/>
+    
+    <!-- Type of the serviceName property changed from String to QName post 3.4.4  -->
+	<!-- 3.4.4 and earlier: property name="serviceName" value="process"/ -->
+    <property name="serviceName">
+      <bean class="javax.xml.namespace.QName">
+        <constructor-arg type="java.lang.String" index="0" value="http://www.openadaptor.org"></constructor-arg>
+	    <constructor-arg type="java.lang.String" index="1" value="process"></constructor-arg>
+      </bean>
+    </property>
+	
+	<!-- An optional list of parameters. These should be declared with the 
+		correct type, in the same order as the webservice parameters. -->
+	<property name="parameters">
+		<list>
+			<value type="java.lang.String">TEST STRING</value>
+			<value type="java.lang.Integer">12345</value>
+			<value type="java.lang.Character">A</value>
+			<value type="java.lang.Float">35.45</value>
+		</list>
+	</property>
+  </bean>
+  
+  <bean id="writer" class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+    <description>This is a write connector that writes to the console.</description>
+  </bean>
+  
+</beans>

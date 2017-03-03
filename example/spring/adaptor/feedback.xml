@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $Id: feedback.xml 1162 2008-01-29 14:11:25Z lachork $
+  $HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/tags/3.4.8/example/spring/adaptor/feedback.xml $
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<description>
+		<![CDATA[
+  WARNING: this example illustrates feedback loops.
+  These should be avoided as your adaptor will be very sensitive to correct coding of all of the filters/processors,
+  otherwise it may fail to terminate recursion in data dependent ways (resulting in stack overflow).
+
+  In general if you find yourself adopting this pattern there is a better way to write your adaptor.
+  (Conversely it does make a good example of some of the routing that is possible.)
+  
+  Objective: clone incoming records that have multiple values for the "guid" attribute,
+  such that each individual "guid" is in a separate cloned outgoing record.
+
+  Run it like this...
+
+    java org.openadaptor.spring.SpringAdaptor -config feedback.xml 
+
+  You need the following in your classpath
+
+    lib
+    lib/openadaptor.jar
+    lib/openadaptor-spring.jar
+    lib/openadaptor-depends.jar    
+  
+  Split on semi-colon guid attribute values like:
+     user1,a878de987dd;c56e987f8ad
+  To create two cloned records with with respective guid attributes values of:
+     user1,a878de987dd
+     user1,c56e987f8ad
+     
+  So for the example data it does:
+  
+  $ cat input/feedback.csv
+  user1,a878de987d1
+  user2,a878de987d2;c56e987f8a3
+  user3,
+  user4,a878de987d4;c56e987f8a5;g89d427f8a6
+
+  $ cat output/feedback.csv
+  OM[uid->user1,guid->a878de987d1]
+  OM[uid->user2,guid->a878de987d2]
+  OM[uid->user2,guid->c56e987f8a3]
+  OM[uid->user3,guid->]
+  OM[uid->user4,guid->a878de987d4]
+  OM[uid->user4,guid->c56e987f8a5]
+  OM[uid->user4,guid->g89d427f8a6]
+
+  Where the output data file is simply the toString() of the Map (you could convert it to a CSV
+  format or anything else before writing it to a file, etc).
+
+  This example also illustrates the use of regular expression capture groups in JavaScriptProcessor.
+
+  Problem: Script Processing currently only allows the input record to be modified,
+  and does not allow new (cloned) output records to be created.
+  It may only output the modified input record.
+  NOTE: we are likely to support outputting multiple records in a future release!
+  
+  Workaround: use feedback to separately re-inject the head of the "guid" list (now a single value)
+  and the tail of the "guid" list (one or more values).
+  NOTE: best to avoid this pattern, but shows what can be done (look at picture in generated documentation).  
+  ]]>
+	</description>
+
+	<bean id="Adaptor" class="org.openadaptor.core.adaptor.Adaptor">
+		<description>
+			This is the bean that actually gets run.
+		</description>
+		<property name="messageProcessor" ref="Router" />
+	</bean>
+
+	<bean id="Router" class="org.openadaptor.core.router.Router">
+		<description>
+			processor chain with discard route that feeds back into filter.
+		</description>
+		<property name="processMap">
+			<map>
+				<entry key-ref="InputData" value-ref="MapConvertor" />
+				<entry key-ref="MapConvertor"
+					value-ref="MultipleGuidFilter" />
+				<entry key-ref="MultipleGuidFilter"
+					value-ref="OutputData" />
+				<!--  Other subsidiary pipelines: -->
+				<entry key-ref="MultipleGuidHead"
+					value-ref="MultipleGuidFilter" />
+				<entry key-ref="MultipleGuidTail"
+					value-ref="MultipleGuidFilter" />
+			</map>
+		</property>
+		<property name="discardMap">
+			<map>
+				<entry key-ref="MultipleGuidFilter">
+					<!-- Head should be before Tail so guid ordering is preserved in single control thread mode. -->
+					<list>
+						<ref bean="MultipleGuidHead" />
+						<ref bean="MultipleGuidTail" />
+					</list>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="InputData"
+		class="org.openadaptor.auxil.connector.iostream.reader.FileReadConnector">
+		<property name="filename" value="input/feedback.csv" />
+	</bean>
+
+	<bean id="MapConvertor"
+		class="org.openadaptor.auxil.convertor.delimited.DelimitedStringToOrderedMapConvertor">
+		<description>
+			Converts input into an ordered map with a field called uid
+			and another called guid (e.g. "abc,4f67abc63").
+		</description>
+		<property name="fieldNames">
+			<list>
+				<value>uid</value>
+				<value>guid</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="MultipleGuidFilter"
+		class="org.openadaptor.auxil.processor.script.ScriptFilterProcessor">
+		<description>
+			Discard if semi-colon(s) in guid attribute.
+		</description>
+		<property name="scriptProcessor">
+			<bean class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+			<description>
+			Ampersands have to be mapped as it's XML. (Could use CDATA instead)
+			</description>
+				<property name="script">
+					<value>
+						guid != null &amp;&amp; (guid.indexOf(';') != -1);
+					</value>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="MultipleGuidHead"
+		class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+		<description>
+			Extract the guid head (everything before first semi-colon).
+			Uses JavaScript regular expression to parse and takes first
+			capture group as result.
+		</description>
+		<property name="script">
+			<value>
+			  guid=/([^;]*);(.*)/.exec(guid)[1];
+			</value>
+		</property>
+	</bean>
+
+	<bean id="MultipleGuidTail"
+		class="org.openadaptor.auxil.processor.script.MapScriptProcessor">
+		<description>
+			Extract the guid tail (everything after first semi-colon).
+			Uses JavaScript regular expression to parse and takes second
+			capture group as result.
+		</description>
+		<property name="script">
+			<value>
+			  print("Incoming guid: "+guid);
+			  guid=/([^;]*);(.*)/.exec(guid)[2];
+			</value>
+		</property>
+	</bean>
+
+	<bean id="OutputData"
+		class="org.openadaptor.auxil.connector.iostream.writer.FileWriteConnector">
+		<property name="filename" value="output/feedback.csv" />
+		<property name="append" value="false" />
+	</bean>
+</beans>
