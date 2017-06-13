@@ -1,9 +1,14 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.internal.artifacts.dependencies.DefaultSelfResolvingDependency
 
-version = '3.5.0-SNAPSHOT'
+group = "org.openadaptor"
+archivesBaseName = "openadaptor"
+version = '3.5.1-SNAPSHOT'
 
 project.ext {
     dirs = [
@@ -841,6 +846,145 @@ eclipse {
                     }
                 }
             }
+        }
+    }
+}
+
+
+artifacts {
+    archives jar, sourcesJar, springJar, springSourcesJar, dependsJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment)
+            }
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+                if (project.hasProperty("systemProp.https.proxyHost")) {
+                    proxy(host: project.getProperty("systemProp.https.proxyHost"), port: Integer.parseInt(project.getProperty("systemProp.https.proxyPort")), type: 'https')
+                }
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+                if (project.hasProperty("systemProp.https.proxyHost")) {
+                    proxy(host: project.getProperty("systemProp.https.proxyHost"), port: Integer.parseInt(project.getProperty("systemProp.https.proxyPort")), type: 'https')
+                }
+            }
+
+            addFilter('openadaptor') {artifact, file -> artifact.name == 'openadaptor' }
+            addFilter('openadaptor-spring') {artifact, file -> artifact.name == 'openadaptor-spring' }
+            addFilter('openadaptor-depends') {artifact, file -> artifact.name == 'openadaptor-depends' }
+
+            pom('openadaptor').project {
+                name 'Openadaptor'
+                groupId 'org.openadaptor'
+                packaging 'jar'
+                description 'Openadaptor is a Java/XML-based software platform which allows for rapid business system integration with little or no custom programming.'
+                url 'http://www.openadaptor.org'
+                scm {
+                    connection 'scm:git:git://github.com/openadaptor/openadaptor.git'
+                    developerConnection 'scm:git:ssh://github.com/openadaptor/openadaptor.git'
+                    url 'https://github.com/openadaptor/openadaptor'
+                }
+
+                licenses {
+                    license {
+                        name 'The Software Conservancy as Trustee Licence'
+                        url 'https://github.com/openadaptor/openadaptor/blob/master/licence.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'fschlier'
+                        name 'Fabian Schlier'
+                        email 'mail@fabian-schlier.de'
+                    }
+                }
+            }
+
+            pom('openadaptor-spring').project {
+                name 'Openadaptor-Spring'
+                groupId 'org.openadaptor'
+                packaging 'jar'
+                description 'Openadaptor-Spring is a Java/XML-based software platform which allows for rapid business system integration with little or no custom programming.'
+                url 'http://www.openadaptor.org'
+                scm {
+                    connection 'scm:git:git://github.com/openadaptor/openadaptor.git'
+                    developerConnection 'scm:git:ssh://github.com/openadaptor/openadaptor.git'
+                    url 'https://github.com/openadaptor/openadaptor'
+                }
+                licenses {
+                    license {
+                        name 'The Software Conservancy as Trustee Licence'
+                        url 'https://github.com/openadaptor/openadaptor/blob/master/licence.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'fschlier'
+                        name 'Fabian Schlier'
+                        email 'mail@fabian-schlier.de'
+                    }
+                }
+            }
+
+            pom('openadaptor-spring').whenConfigured {
+                dependencies = new ArrayList<Dependency>()
+            }
+
+            pom('openadaptor-spring').withXml {
+                def root = asNode()
+                def dependencies = root.appendNode('dependencies')
+                def dependency = dependencies.appendNode('dependency')
+                dependency.appendNode('groupId', 'org.openadaptor')
+                dependency.appendNode('artifactId', 'openadaptor')
+                dependency.appendNode('version', version)
+                dependency.appendNode('scope', 'compile')
+                dependency = dependencies.appendNode('dependency')
+                for (def dep : configurations.springCompile.dependencies) {
+                    if (!(dep instanceof DefaultSelfResolvingDependency)) {
+                        dependency.appendNode('groupId', dep.group)
+                        dependency.appendNode('artifactId', dep.name)
+                        dependency.appendNode('version', dep.version)
+                        dependency.appendNode('scope', 'compile')
+                        dependency = dependencies.appendNode('dependency')
+                    }
+                }
+            }
+
+            pom('openadaptor-depends').project {
+                name 'Openadaptor-Depends'
+                groupId 'org.openadaptor'
+                packaging 'jar'
+                description 'openadaptor-depends is a Java/XML-based software platform which allows for rapid business system integration with little or no custom programming.'
+                url 'http://www.openadaptor.org'
+                scm {
+                    connection 'scm:git:git://github.com/openadaptor/openadaptor.git'
+                    developerConnection 'scm:git:ssh://github.com/openadaptor/openadaptor.git'
+                    url 'https://github.com/openadaptor/openadaptor'
+                }
+                licenses {
+                    license {
+                        name 'The Software Conservancy as Trustee Licence'
+                        url 'https://github.com/openadaptor/openadaptor/blob/master/licence.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'fschlier'
+                        name 'Fabian Schlier'
+                        email 'mail@fabian-schlier.de'
+                    }
+                }
+            }
+            pom('openadaptor-depends').whenConfigured { dependencies = new ArrayList<Dependency>() }
         }
     }
 }
