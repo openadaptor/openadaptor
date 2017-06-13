@@ -1,0 +1,10 @@
+classes
+build
+.gradle
+.settings
+test/unit/output
+
+velocity.log
+/classes/
+.classpath
+.project
