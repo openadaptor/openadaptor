@@ -8,3 +8,4 @@ velocity.log
 /classes/
 .classpath
 .project
+.springBeans
