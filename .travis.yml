@@ -6,5 +6,7 @@ addons:
       - openjdk-6-jdk
 jdk:
 - openjdk6
+install:
+- ./gradlew assemble -PossrhUsername= -PossrhPassword=
 script:
 - ./gradlew clean build -PossrhUsername= -PossrhPassword=
