@@ -1,5 +1,5 @@
 language: java
-sudo: false
+sudo: required
 addons:
   apt:
     packages:
@@ -7,9 +7,9 @@ addons:
 jdk:
 - openjdk6
 before_install:
-- mkdir /usr/share/ca-certificates/extra
+- sudo mkdir /usr/share/ca-certificates/extra
 - wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /usr/share/ca-certificates/extra/comodo-ca.crt
-- dpkg-reconfigure ca-certificates
+- sudo dpkg-reconfigure ca-certificates
 install:
 - ./gradlew assemble
 script:
