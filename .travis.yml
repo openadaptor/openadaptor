@@ -1,12 +1,13 @@
 language: java
 sudo: required
-#addons:
-#  apt:
-#    packages:
-#      - openjdk-6-jdk
-#jdk:
-#- openjdk6
-#before_install:
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
+jdk:
+- openjdk6
+before_install:
+- cp /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts /usr/lib/jvm/java-6-openjdk-amd64/jre/lib/security/cacerts
 #- wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /tmp/comodo-ca.crt
 #- sudo mv /tmp/comodo-ca.crt /usr/local/share/ca-certificates/comodo-ca.crt
 #- sudo update-ca-certificates
