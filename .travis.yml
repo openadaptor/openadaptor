@@ -8,7 +8,7 @@ jdk:
 - openjdk6
 before_install:
 - sudo mkdir /usr/share/ca-certificates/extra
-- wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /usr/share/ca-certificates/extra/comodo-ca.crt
+- sudo wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /usr/share/ca-certificates/extra/comodo-ca.crt
 - sudo dpkg-reconfigure ca-certificates
 install:
 - ./gradlew assemble
