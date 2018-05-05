@@ -1,16 +1,16 @@
 language: java
 sudo: required
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
-jdk:
-- openjdk6
-before_install:
-- wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /tmp/comodo-ca.crt
-- sudo mv /tmp/comodo-ca.crt /usr/local/share/ca-certificates/comodo-ca.crt
-- sudo update-ca-certificates
-install:
-- ./gradlew assemble
+#addons:
+#  apt:
+#    packages:
+#      - openjdk-6-jdk
+#jdk:
+#- openjdk6
+#before_install:
+#- wget -k http://www.tbs-x509.com/COMODOECCCertificationAuthority.crt > /tmp/comodo-ca.crt
+#- sudo mv /tmp/comodo-ca.crt /usr/local/share/ca-certificates/comodo-ca.crt
+#- sudo update-ca-certificates
+#install:
+#- ./gradlew assemble
 script:
 - ./gradlew clean build -PossrhUsername= -PossrhPassword=
