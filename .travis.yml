@@ -8,6 +8,6 @@ addons:
 jdk:
 - openjdk6
 install:
-- ./gradlew assemble -PossrhUsername= -PossrhPassword=
+- ./gradlew assemble -PossrhUsername= -PossrhPassword= -Pgraphviz.dot=/usr/bin/dot
 script:
-- ./gradlew clean build -PossrhUsername= -PossrhPassword=
+- ./gradlew clean build -PossrhUsername= -PossrhPassword= -Pgraphviz.dot=/usr/bin/dot
