@@ -13,10 +13,14 @@ ext {
 	dirXsl = "${dirTools}/xsl"
 
 	// Try various paths for graphviz 'dot' executable
-	['graphviz.dot.windows', 'graphviz.dot.linux', 'graphviz.dot.unix', 'graphviz.dot.mac'].each { 
+	['graphviz.dot.windows', 'graphviz.dot.linux', 'graphviz.dot.unix', 'graphviz.dot.mac'].each {
 		if (!project.ext.has('graphviz.dot')) {
-			if (file(project.ext[it]).exists()) {
-				project.ext['graphviz.dot'] = project.ext[it]
+			try {
+				if (file(project.ext[it]).exists()) {
+					project.ext['graphviz.dot'] = project.ext[it]
+				}
+			} catch (Exception e) {
+				// ignore
 			}
 		}
 	}
@@ -31,7 +35,7 @@ ext {
 	if (!project.localBuild && !project.tag.equals('trunk')) {
 			examples_relative_basename = "tags/${project.tag}"
 	}
-	
+
 	// Set patterns for matching file headers
 	filecomment_path_pattern1 = "HeadURL: https://www.openadaptor.org/svn/openadaptor3/${examples_relative_basename}/example/"
 	filecomment_path_pattern2 = "HeadURL: https://openadaptor3.openadaptor.org/svn/openadaptor3/${examples_relative_basename}/example/"
@@ -49,7 +53,7 @@ task initXml(description: 'XML location configuration') << {
 		exclude(name: "**/spring/client/*.xml")
 		exclude(name: "**/spring/connectors/db/jee/jboss/*.xml")
 	}
-	
+
 	// Where to find the schema files:
 	ant.xmlcatalog(id: "oa3XmlCatalog") {
 		entity(publicId: "adaptorDoc.xsl", location: "${dirXsl}/adaptorDoc.xsl")
@@ -77,7 +81,7 @@ task generateDot(dependsOn: [initXml], description: 'Generate GraphViz dot notat
 
 task generateImageMap(dependsOn: generateDot, description: 'Generate image map for each cookbook example from GraphViz dot notation file') << {
 	ant.mapper(id: "outCmap", type: "glob", from: "*.dot", to: "${dirOutputImages}/*.map")
-	
+
 	ant.apply(executable: "${project.ext['graphviz.dot']}", dest: "${dirOutputImages}", failifexecutionfails: "false") {
 		arg(value: "-Tcmapx")
 		srcfile()
@@ -89,14 +93,14 @@ task generateImageMap(dependsOn: generateDot, description: 'Generate image map f
 	}
 }
 
-task generateImageGif(dependsOn: generateImageMap, description: 'Generate images for each cookbook example from GraphViz dot notation file') << {
+task generateImage(dependsOn: generateImageMap, description: 'Generate images for each cookbook example from GraphViz dot notation file') << {
     def tree = fileTree(dir: project.docgenOutputDir, include: '**/*.dot')
     tree.each {File file ->
-        def target = file.path.substring(0, file.path.length() - 4) + ".gif"
-        
+        def target = file.path.substring(0, file.path.length() - 4) + ".png"
+
         exec {
             executable project.ext['graphviz.dot']
-            args "-Tgif"
+            args "-Tpng"
             args "${file}"
             args "-o"
             args "${target}"
@@ -105,7 +109,7 @@ task generateImageGif(dependsOn: generateImageMap, description: 'Generate images
     }
 }
 
-task generateHtml(dependsOn: [initXml, generateImageGif], description: 'Generate html page using XSLT for each cookbook example') << {
+task generateHtml(dependsOn: [initXml, generateImage], description: 'Generate html page using XSLT for each cookbook example') << {
 	ant.xslt(basedir: docgenInputDir, destdir: docgenOutputDir, style: "${dirXsl}/beans.xsl") {
 		patternset(refid: "example.xml.config.files")
 		param(name: "oaVersion", expression:"${oaVersion}")
@@ -121,7 +125,7 @@ task generateHtml(dependsOn: [initXml, generateImageGif], description: 'Generate
 		param(name: "docgenInputDir", expression: "${docgenOutputDir}/")
 		//<!-- JavaDoc relative path or an http(s) URL: (must have trailing slash) -->
 		//<!-- <param name="javaDocPath" expression="https://myserver.mydomain/javadocs/" /> -->
-		
+
 		xmlcatalog(refid: "oa3XmlCatalog")
 		mapper(type: "glob", from: "*.xml", to: "*.html")
 	}
@@ -202,7 +206,7 @@ task generateBeans2Config(dependsOn: generateCombined, description: 'Generate ht
 	}
 }
 
-task generateAllImages(dependsOn: [generateCombined, generateImageMapLocal, generateImageGif], description: 'Generate html image page using XSLT: containing node maps for all cookbook examples') << {
+task generateAllImages(dependsOn: [generateCombined, generateImageMapLocal, generateImage], description: 'Generate html image page using XSLT: containing node maps for all cookbook examples') << {
 	ant.xslt(basedir: "${docgenOutputDir}", destdir: "${dirOutputImages}", includes: "cookbook_combined.xml", style: "${dirXsl}/allnodemaps.xsl") {
 		param(name:"oaVersion", expression:"${oaVersion}")
 		param(name: "imageFileExtension", expression: "${project.ext.get('graphviz.image.fileextension')}")
