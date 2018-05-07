@@ -7,3 +7,5 @@ addons:
       - graphviz
 jdk:
 - openjdk6
+script:
+- ./gradlew check --stacktrace
