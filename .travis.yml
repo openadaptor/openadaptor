@@ -8,4 +8,4 @@ addons:
 jdk:
 - openjdk6
 script:
-- ./gradlew check -PexcludeTests=**/ArchivingWriteConnectorTestCase*
+- ./gradlew check -PexcludeTests=org/openadaptor/auxil/connector/iostream/writer
