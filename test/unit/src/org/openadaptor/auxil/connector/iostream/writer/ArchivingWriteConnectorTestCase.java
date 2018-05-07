@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Iterator;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.CanWriteFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.logging.Log;
@@ -34,8 +35,13 @@ public class ArchivingWriteConnectorTestCase extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		org.apache.commons.io.FileUtils.deleteQuietly(new File(DIR));
-		org.apache.commons.io.FileUtils.copyDirectory(new File(TEMPLATE_DIR), new File(DIR));
+		FileUtils.deleteQuietly(new File(DIR));
+		FileUtils.copyDirectory(new File(TEMPLATE_DIR), new File(DIR));
+		FileUtils.forceMkdir(new File(DIR + "/" + TEST_DIR_1));
+		FileUtils.forceMkdir(new File(DIR + "/" + TEST_DIR_2));
+		FileUtils.forceMkdir(new File(DIR + "/" + TEST_DIR_3));
+		FileUtils.forceMkdir(new File(DIR + "/" + TEST_DIR_4));
+		FileUtils.forceMkdir(new File(DIR + "/" + TEST_DIR_5));
 	}
 
 	/**

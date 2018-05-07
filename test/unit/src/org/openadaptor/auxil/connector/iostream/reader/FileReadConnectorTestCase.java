@@ -66,7 +66,7 @@ public class FileReadConnectorTestCase extends TestCase {
     FileReadConnector connector = new FileReadConnector("reader");
     connector.setFilename(ResourceUtil.getResourcePath(this, "test/unit/src/", "test.xml"));
     RegexReader dataReader = new RegexReader();
-    dataReader.setRegex("(<record>.*</record>)\r\n");
+    dataReader.setRegex("(<record>.*</record>)\r?\n");
     connector.setDataReader(dataReader);
     connector.connect();
     while (!connector.isDry()) {
