@@ -7,7 +7,3 @@ addons:
       - graphviz
 jdk:
 - openjdk6
-install:
-- ./gradlew assemble
-script:
-- ./gradlew clean build
