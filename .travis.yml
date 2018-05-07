@@ -8,6 +8,6 @@ addons:
 jdk:
 - openjdk6
 install:
-- ./gradlew assemble -x test
+- ./gradlew assemble
 script:
-- ./gradlew clean build -x test
+- ./gradlew clean build
