@@ -365,6 +365,12 @@ dependencies {
     testCompile 'commons-io:commons-io:2.5'
 }
 
+test { 
+    if (project.hasProperty('excludeTests')) { 
+        exclude project.property('excludeTests')
+    } 
+}
+
 dependencies {
     springTestRuntime files(project.sourceSets.legacy.output)
 }
